@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scholarscore.models.Assignment;
 import com.scholarscore.api.util.ErrorCode;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 /**
  * The class defines the REST controller end points for create, read, update and delete operations on the Assignment resource.
@@ -29,9 +31,11 @@ public class AssignmentController {
 	public static Map<Long, Assignment> assignments = new HashMap<>();
 	public static Long nextAssignmentId = 0l;
 
+	@ApiOperation(value = "Get an assignment", notes = "Given an assignment ID, the endpoint returns the assignment")
 	 @RequestMapping(value = "/{assignmentId}", method = RequestMethod.GET, produces = {JSON_ACCEPT_HEADER})
 	 @SuppressWarnings("rawtypes")
 	 public @ResponseBody ResponseEntity getAssignment(
+			 @ApiParam(name = "assignmentId", required = true, value = "The assignment long ID")
 			 @PathVariable(value="assignmentId") Long assignmentId) {
 		 Assignment assignment = null;
 		 HttpStatus status = HttpStatus.NOT_FOUND;
@@ -42,6 +46,7 @@ public class AssignmentController {
 		 return new ResponseEntity<>(assignment, status);
 	 }
 
+	@ApiOperation(value = "Create an assignment", notes = "Creates, assigns and ID to, persists and returns an assignment")
 	 @RequestMapping(value = "/", method = RequestMethod.POST, produces = {JSON_ACCEPT_HEADER})
 	 @SuppressWarnings("rawtypes")
 	 public @ResponseBody ResponseEntity createAssignment(@RequestBody Assignment assignment) {
@@ -50,9 +55,11 @@ public class AssignmentController {
 		 return new ResponseEntity<>(assignment, HttpStatus.OK);
 	 }
 	 
+	@ApiOperation(value = "Overwrite an existing assignment", notes = "Overwrites an existing assignment with the ID provided")
 	 @RequestMapping(value = "/{assignmentId}", method = RequestMethod.PUT, produces = {JSON_ACCEPT_HEADER})
 	 @SuppressWarnings("rawtypes")
 	 public @ResponseBody ResponseEntity replaceAssignment(
+			 @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
 			 @PathVariable(value="assignmentId") Long assignmentId,
 			 @RequestBody Assignment assignment) {
 		 ResponseEntity returnValue = null;
@@ -64,9 +71,11 @@ public class AssignmentController {
 		 return returnValue;
 	 }
 	 
+	@ApiOperation(value = "Delete an assignment", notes = "Deletes the assignment with the ID provided")
 	 @RequestMapping(value = "/{assignmentId}", method = RequestMethod.DELETE, produces = {JSON_ACCEPT_HEADER})
 	 @SuppressWarnings("rawtypes")
 	 public @ResponseBody ResponseEntity deleteAssignment(
+			 @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
 			 @PathVariable(value="assignmentId") Long assignmentId) {
 		 HttpStatus status = HttpStatus.OK;
 		 if(null == assignmentId) {
