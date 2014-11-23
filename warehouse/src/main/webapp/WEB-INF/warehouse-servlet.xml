@@ -19,6 +19,6 @@
     <context:mbean-export registration="replaceExisting"/>
 
     <!-- <mvc:interceptors></mvc:interceptors> -->
-    <context:component-scan base-package="com.scholarscore.endpoints"/>
+    <context:component-scan base-package="com.scholarscore.api.controller"/>
 
 </beans>

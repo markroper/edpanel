@@ -25,7 +25,6 @@ subprojects {
     repositories {
         mavenCentral()
     }
-
 }
 
 configure([project(':common'), project(':warehouse')]) { }
