@@ -15,6 +15,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.api.util.ErrorCode;
 
+/**
+ * The class defines the REST controller end points for create, read, update and delete operations on the Assignment resource.
+ * 
+ * @author markroper
+ * @see Assignment
+ */
 @Controller
 @RequestMapping("/api/v1/assignment")
 public class AssignmentController {
@@ -27,8 +33,13 @@ public class AssignmentController {
 	 @SuppressWarnings("rawtypes")
 	 public @ResponseBody ResponseEntity getAssignment(
 			 @PathVariable(value="assignmentId") Long assignmentId) {
-		 return new ResponseEntity<Assignment>(assignments.get(assignmentId), HttpStatus.OK);
-
+		 Assignment assignment = null;
+		 HttpStatus status = HttpStatus.NOT_FOUND;
+		 if(assignments.containsKey(assignmentId)) {
+			 assignment = assignments.get(assignmentId);
+			 status = HttpStatus.OK;
+		 }
+		 return new ResponseEntity<>(assignment, status);
 	 }
 
 	 @RequestMapping(value = "/", method = RequestMethod.POST, produces = {JSON_ACCEPT_HEADER})
@@ -36,7 +47,7 @@ public class AssignmentController {
 	 public @ResponseBody ResponseEntity createAssignment(@RequestBody Assignment assignment) {
 		 assignment.setId(nextAssignmentId++);
 		 assignments.put(assignment.getId(), assignment);
-		 return new ResponseEntity<Assignment>(assignment, HttpStatus.OK);
+		 return new ResponseEntity<>(assignment, HttpStatus.OK);
 	 }
 	 
 	 @RequestMapping(value = "/{assignmentId}", method = RequestMethod.PUT, produces = {JSON_ACCEPT_HEADER})
@@ -44,11 +55,11 @@ public class AssignmentController {
 	 public @ResponseBody ResponseEntity replaceAssignment(
 			 @PathVariable(value="assignmentId") Long assignmentId,
 			 @RequestBody Assignment assignment) {
-		 ResponseEntity<Assignment> returnValue = null;
+		 ResponseEntity returnValue = null;
 		 if(null != assignmentId && assignments.containsKey(assignmentId)) {
-			 returnValue = new ResponseEntity<Assignment>(assignments.get(assignmentId), HttpStatus.OK);
+			 returnValue = new ResponseEntity<>(assignments.get(assignmentId), HttpStatus.OK);
 		 } else {
-			 returnValue = new ResponseEntity<Assignment>((Assignment)null, HttpStatus.NOT_FOUND);
+			 returnValue = new ResponseEntity<>((Assignment) null, HttpStatus.NOT_FOUND);
 		 }
 		 return returnValue;
 	 }
@@ -64,6 +75,6 @@ public class AssignmentController {
 			 status = HttpStatus.NOT_FOUND;
 		 }
 		 assignments.remove(assignmentId);
-		 return new ResponseEntity<Assignment>((Assignment) null, status);
+		 return new ResponseEntity<>((Assignment) null, status);
 	 }
 }

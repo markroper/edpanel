@@ -17,10 +17,10 @@ subprojects {
     apply plugin: 'idea'
     evaluationDependsOn(':common')
 
-    compileJava {
+    /*compileJava {
         options.compilerArgs << "-Werror"
         options.compilerArgs << "-Xlint:unchecked"
-    }
+    }*/
 
     repositories {
         mavenCentral()
