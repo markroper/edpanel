@@ -21,6 +21,11 @@ subprojects {
         options.compilerArgs << "-Werror"
         options.compilerArgs << "-Xlint:unchecked"
     }
+
+    repositories {
+        mavenCentral()
+    }
+
 }
 
 configure([project(':common'), project(':warehouse')]) { }

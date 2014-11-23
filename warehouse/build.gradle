@@ -1,0 +1,13 @@
+// used only for quick dev testing, not required if building war to deploy in tomcat
+apply plugin: 'jetty'
+
+apply plugin: 'war'
+
+dependencies {
+    compile "javax.ws.rs:jsr311-api:1.1.1"
+
+    compile 'com.sun.jersey:jersey-server:1.18.1'
+    compile 'com.sun.jersey:jersey-core:1.18.1'
+    compile 'com.sun.jersey:jersey-servlet:1.18.1'
+    compile 'com.sun.jersey:jersey-json:1.18.1'
+}

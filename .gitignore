@@ -1,5 +1,7 @@
 bin/
 out/
+build/
+.gradle
 *.iml
 .project
 .classpath
