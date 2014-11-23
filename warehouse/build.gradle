@@ -28,6 +28,7 @@ dependencies {
             "org.springframework.security:spring-security-web:$springSecurityVersion",
             "org.springframework.security:spring-security-core:$springSecurityVersion",
             "org.springframework.security:spring-security-config:$springSecurityVersion",
+            
             //Jackson for JSON & XML API serialization
             "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
             "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion",
@@ -47,7 +48,5 @@ dependencies {
             "javax.validation:validation-api:1.1.0.Final",
             "org.hibernate:hibernate-validator:5.1.0.Final",
             "org.hibernate:hibernate-validator-annotation-processor:5.1.0.Final",
-            "org.hibernate:hibernate-validator-cdi:5.1.0.Final"
-            //"javax.servlet:servlet-api:2.5",
-            //"javax.servlet:javax.servlet-api:3.1.0"        
+            "org.hibernate:hibernate-validator-cdi:5.1.0.Final"      
 }
