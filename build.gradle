@@ -1,0 +1,26 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+repositories {
+    mavenCentral()
+}
+
+idea {
+    project {
+        jdkName = '1.7'
+        languageLevel = '1.7'
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    evaluationDependsOn(':common')
+
+    compileJava {
+        options.compilerArgs << "-Werror"
+        options.compilerArgs << "-Xlint:unchecked"
+    }
+}
+
+configure([project(':common'), project(':warehouse')]) { }
