@@ -7,35 +7,35 @@ package com.scholarscore.models;
  *
  */
 public class Assignment {
-	private long id;
-	private String name;
-	private long courseId;
-	
-	public Assignment() {
-		
-	}
+    private long id;
+    private String name;
+    private long courseId;
 
-	public long getId() {
-		return id;
-	}
+    public Assignment() {
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    }
 
-	public String getName() {
-		return name;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public long getCourseId() {
-		return courseId;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setCourseId(long courseId) {
-		this.courseId = courseId;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(long courseId) {
+        this.courseId = courseId;
+    }
 }

@@ -7,37 +7,37 @@ package com.scholarscore.models;
  *
  */
 public abstract class StudentAssignment {
-	private Assignment assignment;
-	private Boolean completed;
-	private IGrade grade;
-	
-	public StudentAssignment() {
-		
-	}
+    private Assignment assignment;
+    private Boolean completed;
+    private IGrade grade;
 
-	public Boolean getCompleted() {
-		return completed;
-	}
+    public StudentAssignment() {
 
-	public void setCompleted(Boolean completed) {
-		this.completed = completed;
-	}
+    }
 
-	public Assignment getAssignment() {
-		return assignment;
-	}
+    public Boolean getCompleted() {
+        return completed;
+    }
 
-	public void setAssignment(Assignment assignment) {
-		this.assignment = assignment;
-	}
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
+    }
 
-	public IGrade getGrade() {
-		return grade;
-	}
+    public Assignment getAssignment() {
+        return assignment;
+    }
 
-	public void setGrade(IGrade grade) {
-		this.grade = grade;
-	}
-	
-	
+    public void setAssignment(Assignment assignment) {
+        this.assignment = assignment;
+    }
+
+    public IGrade getGrade() {
+        return grade;
+    }
+
+    public void setGrade(IGrade grade) {
+        this.grade = grade;
+    }
+
+
 }
