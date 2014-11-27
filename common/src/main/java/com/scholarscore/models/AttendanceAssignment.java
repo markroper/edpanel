@@ -1,26 +1,31 @@
 package com.scholarscore.models;
 
+import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Expresses attendance to a single class on a specific date as a subclass of Assignment.
  * 
  * @author markroper
- * @see Assignment
+ * @see com.scholarscore.models.Assignment
  *
  */
-public class AttendanceAssignment extends Assignment {
-	private Date date;
-	
-	public AttendanceAssignment() {
-		
-	}
+@SuppressWarnings("serial")
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
+public class AttendanceAssignment extends Assignment implements Serializable {
+    private Date date;
 
-	public Date getDate() {
-		return date;
-	}
+    public AttendanceAssignment() {
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 }

@@ -1,25 +1,35 @@
 package com.scholarscore.models;
 
+import com.scholarscore.models.serializers.*;
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 /**
  * Base class for all assignment subclasses encapsulating shared attributes and behaviors.
  * 
  * @author markroper
  *
  */
-public class Assignment {
-    private long id;
+@SuppressWarnings("serial")
+@JsonDeserialize(using = AssignmentDeserializer.class)
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
+public abstract class Assignment implements Serializable {
+    private Long id;
+    private String type;
     private String name;
-    private long courseId;
+    private Long courseId;
 
     public Assignment() {
 
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -31,11 +41,19 @@ public class Assignment {
         this.name = name;
     }
 
-    public long getCourseId() {
+    public Long getCourseId() {
         return courseId;
     }
 
-    public void setCourseId(long courseId) {
+    public void setCourseId(Long courseId) {
         this.courseId = courseId;
+    }
+    
+    public String getType() {
+        return this.type;
+    }
+    
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -1,12 +1,19 @@
 package com.scholarscore.models;
 
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 /**
  * Represents the students performance on an assignment in a specific course.
  * 
  * @author markroper
  *
  */
-public abstract class StudentAssignment {
+@SuppressWarnings("serial")
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
+public abstract class StudentAssignment implements Serializable {
     private Assignment assignment;
     private Boolean completed;
     private IGrade grade;
