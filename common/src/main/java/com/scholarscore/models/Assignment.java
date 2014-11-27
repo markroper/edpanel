@@ -1,41 +1,59 @@
 package com.scholarscore.models;
 
+import com.scholarscore.models.serializers.*;
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 /**
  * Base class for all assignment subclasses encapsulating shared attributes and behaviors.
  * 
  * @author markroper
  *
  */
-public class Assignment {
-	private long id;
-	private String name;
-	private long courseId;
-	
-	public Assignment() {
-		
-	}
+@SuppressWarnings("serial")
+@JsonDeserialize(using = AssignmentDeserializer.class)
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
+public abstract class Assignment implements Serializable {
+    private Long id;
+    private String type;
+    private String name;
+    private Long courseId;
 
-	public long getId() {
-		return id;
-	}
+    public Assignment() {
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public long getCourseId() {
-		return courseId;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setCourseId(long courseId) {
-		this.courseId = courseId;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
+    
+    public String getType() {
+        return this.type;
+    }
+    
+    public void setType(String type) {
+        this.type = type;
+    }
 }

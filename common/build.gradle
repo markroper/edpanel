@@ -1,0 +1,14 @@
+
+ext {
+	jacksonVersion = "2.4.3"
+}
+
+dependencies {
+	//Jackson for JSON & XML API model serialization
+	compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
+            "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion",
+            "com.fasterxml.jackson.core:jackson-core:$jacksonVersion",
+            "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion",
+            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion",
+            "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion"
+}

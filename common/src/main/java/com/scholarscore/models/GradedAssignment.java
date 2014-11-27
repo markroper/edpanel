@@ -1,6 +1,9 @@
 package com.scholarscore.models;
 
+import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Expresses graded assignments such a quiz, test, homework, lab, and so on.
@@ -9,36 +12,38 @@ import java.util.Date;
  * @see Assignment
  *
  */
-public class GradedAssignment extends Assignment {
-	private Date assignedDate;
-	private Date dueDate;
-	private IGrade grade;
-	
-	public GradedAssignment() {
-	}
+@SuppressWarnings("serial")
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
+public class GradedAssignment extends Assignment implements Serializable {
+    private Date assignedDate;
+    private Date dueDate;
+    private Double grade;
 
-	public Date getAssignedDate() {
-		return assignedDate;
-	}
+    public GradedAssignment() {
+    }
 
-	public void setAssignedDate(Date assignedDate) {
-		this.assignedDate = assignedDate;
-	}
+    public Date getAssignedDate() {
+        return assignedDate;
+    }
 
-	public Date getDueDate() {
-		return dueDate;
-	}
+    public void setAssignedDate(Date assignedDate) {
+        this.assignedDate = assignedDate;
+    }
 
-	public void setDueDate(Date dueDate) {
-		this.dueDate = dueDate;
-	}
+    public Date getDueDate() {
+        return dueDate;
+    }
 
-	public IGrade getGrade() {
-		return grade;
-	}
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
 
-	public void setGrade(IGrade grade) {
-		this.grade = grade;
-	}
-	
+    public Double getGrade() {
+        return grade;
+    }
+
+    public void setGrade(Double grade) {
+        this.grade = grade;
+    }
+
 }
