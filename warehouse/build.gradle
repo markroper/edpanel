@@ -7,12 +7,20 @@ ext {
     springVersion = "4.0.3.RELEASE"
     springSecurityVersion = "3.1.4.RELEASE"
     jacksonVersion = "2.4.3"
+    apacheHttpVersion = "4.3.3"
 }
 
 dependencies {
     compile project(':common'),
+    		"javax.servlet:javax.servlet-api:3.1.1",
     		"javax.ws.rs:jsr311-api:1.1.1",
-			 "org.springframework:spring-aop:$springVersion",
+    		//Apache commons
+    		"commons-io:commons-io:2.4",
+    		//"commons-lang:commons-lang:2.6",
+    		"org.apache.commons:commons-lang3:3.3.2",
+    		
+			//Spring dependencies
+			"org.springframework:spring-aop:$springVersion",
             "org.springframework:spring-aspects:$springVersion",
             "org.springframework:spring-expression:$springVersion",
             "org.springframework:spring-instrument:$springVersion",
@@ -48,5 +56,11 @@ dependencies {
             "javax.validation:validation-api:1.1.0.Final",
             "org.hibernate:hibernate-validator:5.1.0.Final",
             "org.hibernate:hibernate-validator-annotation-processor:5.1.0.Final",
-            "org.hibernate:hibernate-validator-cdi:5.1.0.Final"      
+            "org.hibernate:hibernate-validator-cdi:5.1.0.Final" 
+        
+        testCompile "org.testng:testng:6.8.8",
+        	"org.apache.httpcomponents:httpclient:$apacheHttpVersion",
+        	"org.apache.httpcomponents:httpcore:$apacheHttpVersion",
+        	"org.apache.httpcomponents:httpmime:$apacheHttpVersion",
+        	"org.springframework:spring-test:$springVersion"     
 }
