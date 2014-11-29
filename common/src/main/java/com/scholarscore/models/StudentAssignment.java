@@ -12,11 +12,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  *
  */
 @SuppressWarnings("serial")
-@JsonInclude(value = JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class StudentAssignment implements Serializable {
     private Assignment assignment;
     private Boolean completed;
-    private IGrade grade;
+    private Double grade;
 
     public StudentAssignment() {
 
@@ -38,11 +38,11 @@ public abstract class StudentAssignment implements Serializable {
         this.assignment = assignment;
     }
 
-    public IGrade getGrade() {
+    public Double getGrade() {
         return grade;
     }
 
-    public void setGrade(IGrade grade) {
+    public void setGrade(Double grade) {
         this.grade = grade;
     }
 

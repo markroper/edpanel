@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  *
  */
 @SuppressWarnings("serial")
-@JsonInclude(value = JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Course implements Serializable {
     private Long id;
     private Map<String, List<Assignment>> assignmentsByType;

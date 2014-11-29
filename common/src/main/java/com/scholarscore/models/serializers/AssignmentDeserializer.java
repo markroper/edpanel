@@ -53,9 +53,5 @@ public class AssignmentDeserializer extends JsonDeserializer<Assignment>
         if(null != node.get(JsonKeyConstants.TYPE)){
             assignment.setType(node.get(JsonKeyConstants.TYPE).asText());
         }
-        
-        if(null != node.get(JsonKeyConstants.COURSE_ID)){
-            assignment.setCourseId(node.get(JsonKeyConstants.COURSE_ID).asLong());
-        } 
     }
 }

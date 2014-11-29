@@ -2,6 +2,8 @@ package com.scholarscore.models;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * All entities in the system are assigned a unique ID within an individual 
  * tenant of the system, for example, a school district.  Some API calls,
@@ -14,6 +16,7 @@ import java.io.Serializable;
  *
  */
 @SuppressWarnings("serial")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EntityId implements Serializable {
     public Long id;
     

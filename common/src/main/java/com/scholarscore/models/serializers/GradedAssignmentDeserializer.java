@@ -18,10 +18,7 @@ implements IAssignmentSubclassDeserializer<GradedAssignment> {
             assignment.setAssignedDate(new Date(node.get(JsonKeyConstants.ASSIGNED_DATE).asLong()));
         }
         if(null != node.get(JsonKeyConstants.DUE_DATE)) {
-            assignment.setAssignedDate(new Date(node.get(JsonKeyConstants.DUE_DATE).asLong()));
-        }
-        if(null != node.get(JsonKeyConstants.GRADE)) {
-            assignment.setGrade(node.get(JsonKeyConstants.GRADE).asDouble());
+            assignment.setDueDate(new Date(node.get(JsonKeyConstants.DUE_DATE).asLong()));
         }
         deserializeAttributes(assignment, node, context);
         return assignment;

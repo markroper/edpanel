@@ -14,12 +14,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  */
 @SuppressWarnings("serial")
 @JsonDeserialize(using = AssignmentDeserializer.class)
-@JsonInclude(value = JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class Assignment implements Serializable {
     private Long id;
     private String type;
     private String name;
-    private Long courseId;
 
     public Assignment() {
 
@@ -39,14 +38,6 @@ public abstract class Assignment implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Long getCourseId() {
-        return courseId;
-    }
-
-    public void setCourseId(Long courseId) {
-        this.courseId = courseId;
     }
     
     public String getType() {

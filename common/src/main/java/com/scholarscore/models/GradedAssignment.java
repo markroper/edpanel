@@ -13,11 +13,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  *
  */
 @SuppressWarnings("serial")
-@JsonInclude(value = JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GradedAssignment extends Assignment implements Serializable {
     private Date assignedDate;
     private Date dueDate;
-    private Double grade;
 
     public GradedAssignment() {
     }
@@ -37,13 +36,4 @@ public class GradedAssignment extends Assignment implements Serializable {
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
     }
-
-    public Double getGrade() {
-        return grade;
-    }
-
-    public void setGrade(Double grade) {
-        this.grade = grade;
-    }
-
 }
