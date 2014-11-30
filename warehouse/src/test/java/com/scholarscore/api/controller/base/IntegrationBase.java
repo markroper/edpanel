@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -48,18 +47,18 @@ public class IntegrationBase {
 
     private final static MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
-    private final static MediaType APPLICATION_XML_UTF8 = new MediaType(MediaType.APPLICATION_XML.getType(),
-            MediaType.APPLICATION_XML.getSubtype(), StandardCharsets.UTF_8);
-    private final static MediaType MULTIPART_FORM_DATA = new MediaType(MediaType.MULTIPART_FORM_DATA.getType(),
-            MediaType.MULTIPART_FORM_DATA.getSubtype(), StandardCharsets.UTF_8);
-    
+//    private final static MediaType APPLICATION_XML_UTF8 = new MediaType(MediaType.APPLICATION_XML.getType(),
+//            MediaType.APPLICATION_XML.getSubtype(), StandardCharsets.UTF_8);
+//    private final static MediaType MULTIPART_FORM_DATA = new MediaType(MediaType.MULTIPART_FORM_DATA.getType(),
+//            MediaType.MULTIPART_FORM_DATA.getSubtype(), StandardCharsets.UTF_8);
+//    
     private static final String BASE_API_ENDPOINT = "/api/v1";
     private static final String ASSIGNMENT_ENDPOINT = "/assignment";
 
     public LocaleServiceValidator localeServiceValidator;
     public AssignmentServiceValidator assignmentServiceValidator;
     
-    protected CopyOnWriteArrayList<Assignment> assignmentsCreated = new CopyOnWriteArrayList();
+    public CopyOnWriteArrayList<Assignment> assignmentsCreated = new CopyOnWriteArrayList<>();
 
     // Locale used in testing. Supplied as command-line arguments to JVM: -Dlocale=de_DE
     // Valid values include the following:
@@ -82,7 +81,6 @@ public class IntegrationBase {
     // (json and xml where used instead of application/json and application/json because the
     // contentType used also includes UTF8 charset)
     private String contentType;
-
     private ThreadLocal<URL> endpoint = new ThreadLocal<URL>();
     private URL defaultEndpoint;
     private Properties properties;
@@ -121,7 +119,7 @@ public class IntegrationBase {
     @AfterSuite(groups = { "integration" })
     protected void removeTestData() {
         // Remove all Apps created during testing
-        Long startTime = new Date().getTime();
+        //Long startTime = new Date().getTime();
         if (null == endpoint || null == endpoint.get()) {
             if (null != properties) {
                 try {
@@ -143,7 +141,7 @@ public class IntegrationBase {
             Assignment assignment = it.next();
             cleanupAssignment(assignment);
         }
-        Long completionTime = new Date().getTime();
+        //Long completionTime = new Date().getTime();
     }
 
      /**
@@ -229,7 +227,7 @@ public class IntegrationBase {
      * Expected Result:
      * Generic Results object returned from request
      */
-    ResultActions makeRequest(HttpMethod method, String url, Map<String, String> params) {
+    public ResultActions makeRequest(HttpMethod method, String url, Map<String, String> params) {
         return makeRequest(method, url, params, null);
     }
 
@@ -240,7 +238,7 @@ public class IntegrationBase {
      * Expected Result:
      * Generic Results object returned from request
      */
-    ResultActions makeRequest(HttpMethod method, String url, Map<String, String> params, Object content) {
+    public ResultActions makeRequest(HttpMethod method, String url, Map<String, String> params, Object content) {
         return makeRequest(method, url, null, params, content);
     }
 
@@ -258,6 +256,7 @@ public class IntegrationBase {
      */
     ResultActions makeRequest(HttpMethod method, String url, Map<String, String> headers, Map<String, String> params, Object content) {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(method, endpoint.get().toString() + url, "");
+        System.out.println(endpoint.get().toString() + url);
         addHeadersAndParamsToRequest(request, headers, params);
 
         // Set any supplied content in request (ex: App, Report, Table, etc.)
@@ -358,8 +357,8 @@ public class IntegrationBase {
      * Expected Result:
      * Expected information updated and generic reference type from response returned.
      */
-    @SuppressWarnings("unchecked")
-    <T> T validateResponse(ResultActions response, Class controller, String methodName, final TypeReference<T> type) {
+    public <T> T validateResponse(ResultActions response, 
+            final TypeReference<T> type) {
         try {
             // Validate Http status and handler info
             // If Https status isn't 200, then determine ErrorCode and return

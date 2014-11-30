@@ -15,10 +15,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AttendanceAssignment extends Assignment implements Serializable {
+    public static final String ATTENDANCE = "ATTENDANCE";
     private Date date;
 
     public AttendanceAssignment() {
-
+        super();
+        this.type = ATTENDANCE;
+    }
+    
+    public AttendanceAssignment(AttendanceAssignment assignment) {
+        super(assignment);
+        this.date = assignment.date;
+        this.type = ATTENDANCE;
     }
 
     public Date getDate() {

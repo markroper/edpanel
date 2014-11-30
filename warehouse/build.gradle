@@ -1,6 +1,27 @@
 apply plugin: 'war'
 apply plugin: 'com.bmuschko.cargo'
 
+sourceSets {
+	main {
+		java {
+			srcDir 'src/main/java'
+		}
+		resources {
+			srcDir 'src/main/resources'
+		}
+	}
+	
+	test {
+		java {
+			srcDir 'src/test/java'
+		}
+		resources {
+			srcDir 'src/test/resources'
+		}
+	}
+}
+
+//Cargo tomcat deploy
 buildscript {
     repositories {
         jcenter()
@@ -24,31 +45,32 @@ cargo {
     }
 }
 
-apply plugin: 'com.bmuschko.cargo'
-
-buildscript {
-    repositories {
-        jcenter()
+//Integration test suite
+def getFileByPattern(File dir, String pat, String stripDir) {
+    String path = ""
+    if (dir.isDirectory()) {
+        dir?.eachFileRecurse { file -> if (file.path ==~ pat) { path = file.getAbsolutePath().toString() } }
+        if (null != path && !path.isEmpty())
+            path = path?.substring(stripDir.length(), path?.length())
     }
-
-    dependencies {
-        classpath 'com.bmuschko:gradle-cargo-plugin:2.0.2'
-    }
-
+    path
 }
 
-cargo {
-    containerId = 'tomcat7x'
-
-    local {
-        installer {
-            installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.zip'
-            downloadDir = file("$buildDir/download")
-            extractDir = file("$buildDir/extract")
-        }
+task integrationLocal(type: Test) { task ->
+	useTestNG() {
+		useDefaultListeners = true
+        def suiteFile = getFileByPattern(new File("$projectDir/src/test/resources/"), ".*-integration.xml", "$projectDir")
+        if (suiteFile) options.suites(suiteFile)
+        println "project.name: ${project.name} Task: integrationLocal"
+    }
+    testLogging.showStandardStreams = true
+    //include '**/integration/**'
+    beforeTest { descriptor ->
+        logger.lifecycle("RUNNING INTEGRATION TEST LOCALLY: " + descriptor)
     }
 }
 
+//Dependencies section:
 ext {
     springVersion = "4.0.3.RELEASE"
     springSecurityVersion = "3.1.4.RELEASE"

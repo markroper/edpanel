@@ -18,13 +18,26 @@ import javax.validation.constraints.Size;
 @JsonDeserialize(using = AssignmentDeserializer.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class Assignment implements Serializable {
-    private Long id;
-    private String type;
+    protected Long id;
+    protected String type;
     @Size(min=1, max=256)
-    private String name;
+    protected String name;
 
+    /**
+     * Default constructor used by the serializer
+     */
     public Assignment() {
 
+    }
+    
+    /**
+     * Copy constructor used to clone entities
+     * @param assignment
+     */
+    public Assignment(Assignment assignment) {
+        this.id = assignment.id;
+        this.type = assignment.type;
+        this.name = assignment.name;
     }
 
     public Long getId() {

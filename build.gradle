@@ -25,6 +25,19 @@ subprojects {
     repositories {
         mavenCentral()
     }
+    
+    test {
+    	useTestNG() {
+    		useDefaultListeners = true
+    		def suiteFile = "*-unit.xml"
+    		options.suites(suiteFile)
+    		println "project.name: ${project.name} Test: useTestNg"
+    	}
+    	
+    	beforeTest { descriptor ->
+    		logger.lifecycle("Running test: " + descriptor)
+    	}
+    }
 }
 
 configure([project(':common'), project(':warehouse')]) { }
