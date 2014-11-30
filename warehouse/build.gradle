@@ -1,4 +1,28 @@
 apply plugin: 'war'
+apply plugin: 'com.bmuschko.cargo'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.0.2'
+    }
+
+}
+
+cargo {
+    containerId = 'tomcat7x'
+
+    local {
+        installer {
+            installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.zip'
+            downloadDir = file("$buildDir/download")
+            extractDir = file("$buildDir/extract")
+        }
+    }
+}
 
 apply plugin: 'com.bmuschko.cargo'
 
@@ -29,12 +53,20 @@ ext {
     springVersion = "4.0.3.RELEASE"
     springSecurityVersion = "3.1.4.RELEASE"
     jacksonVersion = "2.4.3"
+    apacheHttpVersion = "4.3.3"
 }
 
 dependencies {
+
     compile project(':common'),
-    		"javax.ws.rs:jsr311-api:1.1.1",
-			 "org.springframework:spring-aop:$springVersion",
+            "javax.servlet:javax.servlet-api:3.1.0",
+            "javax.ws.rs:jsr311-api:1.1.1",
+            //Apache commons
+            "commons-io:commons-io:2.4",
+            "org.apache.commons:commons-lang3:3.3.2",
+
+            //Spring dependencies
+            "org.springframework:spring-aop:$springVersion",
             "org.springframework:spring-aspects:$springVersion",
             "org.springframework:spring-expression:$springVersion",
             "org.springframework:spring-instrument:$springVersion",
@@ -50,7 +82,7 @@ dependencies {
             "org.springframework.security:spring-security-web:$springSecurityVersion",
             "org.springframework.security:spring-security-core:$springSecurityVersion",
             "org.springframework.security:spring-security-config:$springSecurityVersion",
-            
+
             //Jackson for JSON & XML API serialization
             "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
             "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion",
@@ -59,7 +91,7 @@ dependencies {
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion",
             "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion",
             "com.fasterxml.jackson.module:jackson-module-scala_2.10:$jacksonVersion",
-            
+
             //Swagger for API documentation, & dependent JARs
             "com.wordnik:swagger-core_2.10:1.3.2",
             "com.wordnik:swagger-annotations:1.3.2",
@@ -71,6 +103,12 @@ dependencies {
             "org.hibernate:hibernate-validator:5.1.0.Final",
             "org.hibernate:hibernate-validator-annotation-processor:5.1.0.Final",
             "org.hibernate:hibernate-validator-cdi:5.1.0.Final"
+
+    testCompile "org.testng:testng:6.8.8",
+            "org.apache.httpcomponents:httpclient:$apacheHttpVersion",
+            "org.apache.httpcomponents:httpcore:$apacheHttpVersion",
+            "org.apache.httpcomponents:httpmime:$apacheHttpVersion",
+            "org.springframework:spring-test:$springVersion"
 
     runtime "javax.servlet:jstl:1.2"
 }
