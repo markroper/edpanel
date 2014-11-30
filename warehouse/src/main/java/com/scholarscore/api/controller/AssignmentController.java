@@ -18,6 +18,8 @@ import com.scholarscore.api.util.ErrorCode;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
+import javax.validation.Valid;
+
 /**
  * The class defines the REST controller end points for create, read, update and delete operations on the Assignment resource.
  * 
@@ -62,7 +64,7 @@ public class AssignmentController {
             method = RequestMethod.POST, 
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity createAssignment(@RequestBody Assignment assignment) {
+    public @ResponseBody ResponseEntity createAssignment(@RequestBody @Valid Assignment assignment) {
         assignment.setId(nextAssignmentId++);
         assignments.put(assignment.getId(), assignment);
         return new ResponseEntity<>(new EntityId(assignment.getId()), HttpStatus.OK);
@@ -84,6 +86,7 @@ public class AssignmentController {
         ResponseEntity returnValue = null;
         if(null != assignmentId && assignments.containsKey(assignmentId)) {
             returnValue = new ResponseEntity<>(null, HttpStatus.OK);
+            assignments.put(assignmentId, assignment);
         } else {
             returnValue = new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }

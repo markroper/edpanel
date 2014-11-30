@@ -6,6 +6,8 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import javax.validation.constraints.Size;
+
 /**
  * Base class for all assignment subclasses encapsulating shared attributes and behaviors.
  * 
@@ -18,6 +20,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public abstract class Assignment implements Serializable {
     private Long id;
     private String type;
+    @Size(min=1, max=256)
     private String name;
 
     public Assignment() {
