@@ -12,6 +12,12 @@ import com.scholarscore.models.EntityId;
 
 import factory.AssignmentFactory;
 
+/**
+ * Manages making API CRUD operations for Assignments and validating their results.
+ * 
+ * @author markroper
+ * @see IServiceValidator
+ */
 public class AssignmentServiceValidator implements IServiceValidator<Assignment>{
 
     private final IntegrationBase serviceBase;
@@ -51,38 +57,41 @@ public class AssignmentServiceValidator implements IServiceValidator<Assignment>
     
     @Override
     public void createNegative(Assignment assignment, HttpStatus expectedCode, String msg) {
-        
+        //TODO: implement me
     }
     
     @Override
     public void delete(Long assignment, String msg) {
-        
+      //TODO: implement me
     }
     
     @Override
     public void deleteNegative(Long assignmentId, HttpStatus expectedCode, String msg) {
-        
+      //TODO: implement me
     }
 
     @Override
     public Assignment replace(Long id, Assignment entity, String msg) {
+      //TODO: implement me
         return null;
     }
 
     @Override
     public void replaceNegative(Long id, Assignment entity,
             HttpStatus expectedCode, String msg) {
-        
+      //TODO: implement me
     }
 
     @Override
     public Assignment update(Long id, Assignment entity, String msg) {
+        //TODO: implement me
         return null;
     }
 
     @Override
     public void updateNegative(Long id, Assignment entity,
             HttpStatus expectedCode, String msg) {
+      //TODO: implement me
     }
 
     public IntegrationBase getServiceBase() {
