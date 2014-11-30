@@ -1,7 +1,29 @@
-// used only for quick dev testing, not required if building war to deploy in tomcat
-apply plugin: 'jetty'
-
 apply plugin: 'war'
+
+apply plugin: 'com.bmuschko.cargo'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.0.2'
+    }
+
+}
+
+cargo {
+    containerId = 'tomcat7x'
+
+    local {
+        installer {
+            installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.zip'
+            downloadDir = file("$buildDir/download")
+            extractDir = file("$buildDir/extract")
+        }
+    }
+}
 
 ext {
     springVersion = "4.0.3.RELEASE"
@@ -48,5 +70,7 @@ dependencies {
             "javax.validation:validation-api:1.1.0.Final",
             "org.hibernate:hibernate-validator:5.1.0.Final",
             "org.hibernate:hibernate-validator-annotation-processor:5.1.0.Final",
-            "org.hibernate:hibernate-validator-cdi:5.1.0.Final"      
+            "org.hibernate:hibernate-validator-cdi:5.1.0.Final"
+
+    runtime "javax.servlet:jstl:1.2"
 }
