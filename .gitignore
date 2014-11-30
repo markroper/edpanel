@@ -1,6 +1,7 @@
 bin/
 out/
 build/
+test-output/
 .gradle
 *.iml
 .project

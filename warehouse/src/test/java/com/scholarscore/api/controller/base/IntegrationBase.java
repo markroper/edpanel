@@ -256,7 +256,6 @@ public class IntegrationBase {
      */
     ResultActions makeRequest(HttpMethod method, String url, Map<String, String> headers, Map<String, String> params, Object content) {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(method, endpoint.get().toString() + url, "");
-        System.out.println(endpoint.get().toString() + url);
         addHeadersAndParamsToRequest(request, headers, params);
 
         // Set any supplied content in request (ex: App, Report, Table, etc.)

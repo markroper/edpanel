@@ -72,7 +72,7 @@ public class NetMvc {
      * @return server response
      */
     public ResultActions perform(RequestBuilder requestBuilder, byte[] content) {
-        MockHttpServletRequest mockRequest = requestBuilder.buildRequest(new MockServletContext("/api"));
+        MockHttpServletRequest mockRequest = requestBuilder.buildRequest(new MockServletContext("/warehouse"));
 
         ResultActions resultActions = null;
         try {
