@@ -1,4 +1,4 @@
-package com.scholarscore.api.controller;
+package com.scholarscore.api.controller.service;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.testng.Assert;

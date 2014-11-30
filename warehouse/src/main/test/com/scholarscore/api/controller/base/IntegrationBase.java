@@ -6,9 +6,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.http.HttpMethod;
@@ -31,8 +33,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableMap;
-import com.scholarscore.api.controller.AssignmentServiceValidator;
-import com.scholarscore.api.controller.LocaleServiceValidator;
+import com.scholarscore.api.controller.service.AssignmentServiceValidator;
+import com.scholarscore.api.controller.service.LocaleServiceValidator;
 import com.scholarscore.models.Assignment;
 
 /**
@@ -56,6 +58,8 @@ public class IntegrationBase {
 
     public LocaleServiceValidator localeServiceValidator;
     public AssignmentServiceValidator assignmentServiceValidator;
+    
+    protected CopyOnWriteArrayList<Assignment> assignmentsCreated = new CopyOnWriteArrayList();
 
     // Locale used in testing. Supplied as command-line arguments to JVM: -Dlocale=de_DE
     // Valid values include the following:
@@ -91,7 +95,7 @@ public class IntegrationBase {
      */
     @BeforeClass(alwaysRun=true)
     public void configureServices() {
-        this.mockMvc = new NetMvc(); //MockMvcBuilders.webAppContextSetup(this.wac).build();
+        this.mockMvc = new NetMvc();
         localeServiceValidator = new LocaleServiceValidator(this);
         assignmentServiceValidator = new AssignmentServiceValidator(this);
         validateServiceConfig();
@@ -105,7 +109,7 @@ public class IntegrationBase {
      * Test services initialization validated
      */
     private void validateServiceConfig() {
-        //Assert.assertNotNull(appServiceValidator, "Unable to configure app service");
+        Assert.assertNotNull(assignmentServiceValidator, "Unable to configure app service");
     }
 
     /**
@@ -114,9 +118,8 @@ public class IntegrationBase {
      * Expected Result:
      * All test data associated with application is removed
      */
-    @AfterSuite(groups = {"integration"})
+    @AfterSuite(groups = { "integration" })
     protected void removeTestData() {
-
         // Remove all Apps created during testing
         Long startTime = new Date().getTime();
         if (null == endpoint || null == endpoint.get()) {
@@ -135,22 +138,21 @@ public class IntegrationBase {
         localeServiceValidator.setLocale();
         contentType = System.getProperty("contentType", "json");
 
-        // Remove all apps created during testing
-//        for (Iterator<App> it = appsCreated.iterator(); it.hasNext(); ) {
-//            App app = it.next();
-//            ////LOGGER.sys().info("REMOVING TEST DATA APPID={}  WITH NAME={}", app.getId(), app.getName());
-//            cleanupApp(app);
-//        }
+        // Remove all assignments created during testing
+        for (Iterator<Assignment> it = assignmentsCreated.iterator(); it.hasNext(); ) {
+            Assignment assignment = it.next();
+            cleanupAssignment(assignment);
+        }
         Long completionTime = new Date().getTime();
     }
 
      /**
-     * Deletes an app without validating the response. Should only be called
+     * Deletes an assignment without validating the response. Should only be called
      * to cleanup test data after tests have finished running.
      *
-     * @param app the app to delete
+     * @param Assignment the assignment to delete
      */
-    private void cleanupApp(Assignment assignment) {
+    private void cleanupAssignment(Assignment assignment) {
         // Make call to controller and do not validate the response
         makeRequest(HttpMethod.DELETE, getAssignmentEndpoint(assignment.getId()));
     }
