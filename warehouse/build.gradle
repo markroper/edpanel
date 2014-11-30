@@ -97,17 +97,13 @@ dependencies {
             "javax.validation:validation-api:1.1.0.Final",
             "org.hibernate:hibernate-validator:5.1.0.Final",
             "org.hibernate:hibernate-validator-annotation-processor:5.1.0.Final",
-
-//    <<<<<<< HEAD
-//            "org.hibernate:hibernate-validator-cdi:5.1.0.Final"
-        
-//        testCompile "org.testng:testng:6.8.8",
-//        	"org.apache.httpcomponents:httpclient:$apacheHttpVersion",
-//        	"org.apache.httpcomponents:httpcore:$apacheHttpVersion",
-//        	"org.apache.httpcomponents:httpmime:$apacheHttpVersion",
-//        	"org.springframework:spring-test:$springVersion"
-
             "org.hibernate:hibernate-validator-cdi:5.1.0.Final"
+
+    testCompile "org.testng:testng:6.8.8",
+        	"org.apache.httpcomponents:httpclient:$apacheHttpVersion",
+        	"org.apache.httpcomponents:httpcore:$apacheHttpVersion",
+        	"org.apache.httpcomponents:httpmime:$apacheHttpVersion",
+        	"org.springframework:spring-test:$springVersion"
 
     runtime "javax.servlet:jstl:1.2"
 }
