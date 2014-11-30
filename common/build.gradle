@@ -11,4 +11,11 @@ dependencies {
             "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion",
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion",
             "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion"
+
+            //Needed for hibernate bean validation which was added to support swagger
+    compile "javax.validation:validation-api:1.1.0.Final",
+            "org.hibernate:hibernate-validator:5.1.0.Final",
+            "org.hibernate:hibernate-validator-annotation-processor:5.1.0.Final",
+            "org.hibernate:hibernate-validator-cdi:5.1.0.Final"
+
 }
