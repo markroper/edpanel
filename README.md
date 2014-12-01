@@ -2,7 +2,7 @@ Scholar Store
 ================
 Scholar Store is a multi-module application designed to act as a data warehouse, analytics, and visualization platform for student performance data. 
 
-The data warehouse component of the platform exposes a REST API to create, update, retrieve and delete resources within the platform related to school districts, individual schools, grade levels, courses, assignments, teachers, students, and student assignments and  student course performance. This functionality is  related to this data warehouse functionality is in the **warehouse** module.
+The data warehouse component of the platform exposes a REST API to create, update, retrieve and delete resources within the platform related to school districts, individual schools, grade levels, courses, assignments, teachers, students, and student assignments and  student course performance. Functionality related to the data warehouse and its API reside in the **warehouse** module.
 
 The platform will also have a data analytics and visualization engine that will consume data from the **warehouse** API related to student, teacher, school, and district performance and allow users to visualize that data in a a UI.  This module is not yet written, but expect to see an **analytics** module.
 
