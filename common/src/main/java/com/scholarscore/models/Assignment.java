@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
  *
  */
 @SuppressWarnings("serial")
-@JsonDeserialize(using = AssignmentDeserializer.class)
+@JsonDeserialize(using = AssignmentDeserializerFactory.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class Assignment implements Serializable {
     protected Long id;
