@@ -7,7 +7,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * Expresses graded assignments such a quiz, test, homework, lab, and so on.
+ * Represents a graded assignment such as a quiz, test, homework, lab, or other.
  * 
  * @author markroper
  * @see Assignment
