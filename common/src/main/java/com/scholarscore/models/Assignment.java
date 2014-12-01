@@ -19,7 +19,7 @@ import javax.validation.constraints.Size;
 @SuppressWarnings("serial")
 @JsonDeserialize(using = AssignmentDeserializerFactory.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class Assignment implements Serializable {
+public abstract class Assignment implements Serializable, IApiModel<Assignment> {
     protected Long id;
     protected String type;
     @Size(min=1, max=256)
@@ -40,6 +40,21 @@ public abstract class Assignment implements Serializable {
         this.id = assignment.id;
         this.type = assignment.type;
         this.name = assignment.name;
+    }
+    
+    public void mergePropertiesIfNull(Assignment assignment) {
+        if(null == assignment) {
+            return;
+        }
+        if(null == this.id) {
+            this.id = assignment.id;
+        }
+        if(null == this.type) {
+            this.type = assignment.type;
+        }
+        if(null == this.name) {
+            this.name = assignment.name;
+        }
     }
 
     public Long getId() {

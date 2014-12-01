@@ -217,7 +217,7 @@ public class IntegrationBase {
      * Expected Result:
      * Generic Results object returned from request
      */
-    ResultActions makeRequest(HttpMethod method, String url) {
+    public ResultActions makeRequest(HttpMethod method, String url) {
         return makeRequest(method, url, null, null);
     }
 

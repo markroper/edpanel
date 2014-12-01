@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class StudentAssignment implements Serializable {
+public class StudentAssignment implements Serializable, IApiModel<StudentAssignment> {
     private Assignment assignment;
     private Boolean completed;
     private Double grade;
@@ -22,6 +22,22 @@ public abstract class StudentAssignment implements Serializable {
 
     }
 
+    @Override
+    public void mergePropertiesIfNull(StudentAssignment mergeFrom) {
+        if(null == mergeFrom) {
+            return;
+        }
+        if(null == this.assignment) {
+            this.assignment = mergeFrom.assignment;
+        }
+        if(null == this.completed) {
+            this.completed = mergeFrom.completed;
+        }
+        if(null == this.grade) {
+            this.grade = mergeFrom.grade;
+        } 
+    }
+    
     public Boolean getCompleted() {
         return completed;
     }
@@ -45,6 +61,4 @@ public abstract class StudentAssignment implements Serializable {
     public void setGrade(Double grade) {
         this.grade = grade;
     }
-
-
 }

@@ -6,6 +6,17 @@ import org.springframework.http.HttpStatus;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
 
+/**
+ * Every resource for which there is a REST API endpoint should have a class capable of
+ * calling the endpoints for that resource and validating what is returned in positive 
+ * and in negative cases.  This interface defines the API actions that should be validated
+ * by each implementation of this interface.
+ * 
+ * @author markroper
+ *
+ * @param <T> The class that represents the resource whose API the implementer 
+ *      calls and verifies responses from
+ */
 public interface IServiceValidator<T extends Serializable> {
     
     /**
@@ -25,6 +36,19 @@ public interface IServiceValidator<T extends Serializable> {
      * @return
      */
     public T get(Long id, String msg);
+    
+    /**
+     * Implementations should attempt to retrieve the resouce with ID 
+     * equal to the id parameter and should assert that the retrieval fails
+     * with the HTTP status returned by the API equal to the expectedCode
+     * parameter
+     * 
+     * @param id
+     * @param expectedCode
+     * @param msg
+     * @return
+     */
+    public void getNegative(Long id, HttpStatus expectedCode, String msg);
     
     /**
      * Implementations should attempt to create an instance of T by making an HTTP 

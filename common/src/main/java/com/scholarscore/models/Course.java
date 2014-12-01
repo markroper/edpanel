@@ -14,13 +14,26 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Course implements Serializable {
+public class Course implements Serializable, IApiModel<Course> {
     private Long id;
     private Map<String, List<Assignment>> assignmentsByType;
 
     public Course() {
     }
 
+    @Override
+    public void mergePropertiesIfNull(Course mergeFrom) {
+        if(null == mergeFrom) {
+            return;
+        }
+        if(null == this.id) {
+            this.id = mergeFrom.id;
+        }
+        if(null == this.assignmentsByType) {
+            this.assignmentsByType = mergeFrom.assignmentsByType;
+        } 
+    }
+    
     public Map<String, List<Assignment>> getAssignmentsByType() {
         return assignmentsByType;
     }

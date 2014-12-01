@@ -30,6 +30,18 @@ public class AttendanceAssignment extends Assignment implements Serializable {
         this.type = ATTENDANCE;
     }
 
+    @Override
+    public void mergePropertiesIfNull(Assignment mergeFrom) {
+        super.mergePropertiesIfNull(mergeFrom);
+        if(null == mergeFrom || !(mergeFrom instanceof AttendanceAssignment)) {
+            return;
+        }
+        AttendanceAssignment attendance = (AttendanceAssignment) mergeFrom;
+        if(null == this.date) {
+            this.date = attendance.date;
+        }
+    }
+    
     public Date getDate() {
         return date;
     }

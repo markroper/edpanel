@@ -32,6 +32,21 @@ public class GradedAssignment extends Assignment implements Serializable {
         this.type = GRADED;
     }
 
+    @Override
+    public void mergePropertiesIfNull(Assignment mergeFrom) {
+        super.mergePropertiesIfNull(mergeFrom);
+        if(null == mergeFrom || !(mergeFrom instanceof GradedAssignment)) {
+            return;
+        }
+        GradedAssignment graded = (GradedAssignment) mergeFrom;
+        if(null == this.dueDate) {
+            this.dueDate = graded.dueDate;
+        }
+        if(null == this.assignedDate) {
+            this.assignedDate = graded.assignedDate;
+        }
+    }
+    
     public Date getAssignedDate() {
         return assignedDate;
     }

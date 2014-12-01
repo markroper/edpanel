@@ -13,7 +13,7 @@ import com.scholarscore.models.EntityId;
 import factory.AssignmentFactory;
 
 /**
- * Manages making API CRUD operations for Assignments and validating their results.
+ * Makes and validates API CRUD requests for Assignments (/warehouse/api/v1/assignment/{id})
  * 
  * @author markroper
  * @see IServiceValidator
@@ -39,65 +39,121 @@ public class AssignmentServiceValidator implements IServiceValidator<Assignment>
     }
     
     @Override
+    public void getNegative(Long id, HttpStatus expectedCode, String msg) {
+        ResultActions response = serviceBase.makeRequest(
+                HttpMethod.GET, 
+                serviceBase.getAssignmentEndpoint() + "/" + Long.toString(id), 
+                null);
+        Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
+                "Unexpected status code returned while retreiving assignment: " + msg);
+    }
+    
+    @Override
     public Assignment create(Assignment assignment, String msg) {
         //Create the assignment
         ResultActions response = serviceBase.makeRequest(HttpMethod.POST, serviceBase.getAssignmentEndpoint(), null, assignment);
         EntityId assignmentId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
         Assert.assertNotNull(assignmentId, "unexpected null app returned from create call for case: " + msg);
-      
-        //Retrieve and validate the created assignment
-        Assignment createdAssignment = this.get(assignmentId.getId(), msg);
-        //Keep a reference to the created assignment for later cleanup
-        serviceBase.assignmentsCreated.add(createdAssignment);
-        Assignment expectedAssignment = generateExpectationAssignment(assignment, createdAssignment);
-        Assert.assertEquals(createdAssignment, expectedAssignment, "Unexpected assignment created for case: " + msg);
-        
-        return createdAssignment;
+        return retrieveAndValidateCreatedAssignment(assignmentId, assignment, HttpMethod.POST, msg);
     }
     
     @Override
     public void createNegative(Assignment assignment, HttpStatus expectedCode, String msg) {
-        //TODO: implement me
+        //Attempt to create the assignment
+        ResultActions response = serviceBase.makeRequest(HttpMethod.POST, serviceBase.getAssignmentEndpoint(), null, assignment);
+        Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
+                "Unexpected status code returned for case: " + msg);
     }
     
     @Override
-    public void delete(Long assignment, String msg) {
-      //TODO: implement me
+    public void delete(Long assignmentId, String msg) {
+        //Delete the assignment
+        ResultActions response = serviceBase.makeRequest(HttpMethod.DELETE, 
+                serviceBase.getAssignmentEndpoint(assignmentId));
+        Assert.assertEquals(response.andReturn().getResponse().getStatus(), HttpStatus.OK.value(),
+                "Non 200 HttpStatus returned on delete for case: " + msg);
+        getNegative(assignmentId, HttpStatus.NOT_FOUND, msg);
     }
     
     @Override
     public void deleteNegative(Long assignmentId, HttpStatus expectedCode, String msg) {
-      //TODO: implement me
+        //Attempt to delete the assignment
+        ResultActions response = serviceBase.makeRequest(HttpMethod.DELETE, 
+                serviceBase.getAssignmentEndpoint(assignmentId));
+        Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(),
+                "Unexpected Http status code returned for negative test case for DELETE: " + msg);
     }
 
     @Override
-    public Assignment replace(Long id, Assignment entity, String msg) {
-      //TODO: implement me
-        return null;
+    public Assignment replace(Long id, Assignment assignment, String msg) {
+        //Create the assignment
+        ResultActions response = serviceBase.makeRequest(HttpMethod.PUT, 
+                serviceBase.getAssignmentEndpoint(id), 
+                null, 
+                assignment);
+        EntityId assignmentId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
+        Assert.assertNotNull(assignmentId, "unexpected null app returned from create call for case: " + msg);
+        return retrieveAndValidateCreatedAssignment(assignmentId, assignment, HttpMethod.PUT, msg);
     }
 
     @Override
-    public void replaceNegative(Long id, Assignment entity,
-            HttpStatus expectedCode, String msg) {
-      //TODO: implement me
+    public void replaceNegative(Long id, Assignment assignment, HttpStatus expectedCode, String msg) {
+        //Create the assignment
+        ResultActions response = serviceBase.makeRequest(HttpMethod.PUT, 
+                serviceBase.getAssignmentEndpoint(id), 
+                null, 
+                assignment);
+        Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(),
+                "Unexpected Http status code returned for negative test case for PUT: " + msg);
     }
 
     @Override
-    public Assignment update(Long id, Assignment entity, String msg) {
-        //TODO: implement me
-        return null;
+    public Assignment update(Long id, Assignment assignment, String msg) {
+      //Create the assignment
+        ResultActions response = serviceBase.makeRequest(HttpMethod.PATCH, 
+                serviceBase.getAssignmentEndpoint(id), 
+                null, 
+                assignment);
+        EntityId assignmentId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
+        Assert.assertNotNull(assignmentId, "unexpected null app returned from create call for case: " + msg);
+        return retrieveAndValidateCreatedAssignment(assignmentId, assignment, HttpMethod.PATCH, msg);
     }
 
     @Override
-    public void updateNegative(Long id, Assignment entity,
-            HttpStatus expectedCode, String msg) {
-      //TODO: implement me
+    public void updateNegative(Long id, Assignment assignment, HttpStatus expectedCode, String msg) {
+      //Create the assignment
+        ResultActions response = serviceBase.makeRequest(HttpMethod.PATCH, 
+                serviceBase.getAssignmentEndpoint(id), 
+                null, 
+                assignment);
+        Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(),
+                "Unexpected Http status code returned for negative test case for PUT: " + msg);
     }
 
     public IntegrationBase getServiceBase() {
         return serviceBase;
     }
     
+    /**
+     * Given an ID and the value submitted to a GET/PUT endpoint, retrieve the assignment via GET, validate it, and 
+     * return it to the caller.
+     * 
+     * @param assignmentId
+     * @param submittedAssignment
+     * @param msg
+     * @return
+     */
+    protected Assignment retrieveAndValidateCreatedAssignment(
+            EntityId assignmentId, Assignment submittedAssignment, HttpMethod method, String msg) {
+        //Retrieve and validate the created assignment
+        Assignment createdAssignment = this.get(assignmentId.getId(), msg);
+        //Keep a reference to the created assignment for later cleanup
+        serviceBase.assignmentsCreated.add(createdAssignment);
+        Assignment expectedAssignment = generateExpectationAssignment(submittedAssignment, createdAssignment, method);
+        Assert.assertEquals(createdAssignment, expectedAssignment, "Unexpected assignment created for case: " + msg);
+        
+        return createdAssignment;
+    }
     /**
      * Given a submitted assignment object and an assignment instance returned by the API after creation,
      * this method returns a new Assignment instance that represents the expected state of the submitted 
@@ -109,9 +165,11 @@ public class AssignmentServiceValidator implements IServiceValidator<Assignment>
      * @param created
      * @return
      */
-    protected Assignment generateExpectationAssignment(Assignment submitted, Assignment created) {
+    protected Assignment generateExpectationAssignment(Assignment submitted, Assignment created, HttpMethod method) {
         Assignment returnAssignment = AssignmentFactory.cloneAssignment(submitted);
-        if(null != returnAssignment && null == returnAssignment.getId()) {
+        if(method == HttpMethod.PATCH) {
+            returnAssignment.mergePropertiesIfNull(created);
+        } else if(null != returnAssignment && null == returnAssignment.getId()) {
             returnAssignment.setId(created.getId());
         }
         return returnAssignment;
