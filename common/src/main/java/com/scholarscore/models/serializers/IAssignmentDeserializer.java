@@ -2,7 +2,6 @@ package com.scholarscore.models.serializers;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.scholarscore.models.Assignment;
 
