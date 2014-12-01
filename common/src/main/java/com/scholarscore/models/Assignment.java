@@ -1,7 +1,9 @@
 package com.scholarscore.models;
 
 import com.scholarscore.models.serializers.*;
+
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -63,4 +65,22 @@ public abstract class Assignment implements Serializable {
     public void setType(String type) {
         this.type = type;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final Assignment other = (Assignment) obj;
+        return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name) && Objects.equals(this.type, other.type);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, type);
+    }
+    
 }

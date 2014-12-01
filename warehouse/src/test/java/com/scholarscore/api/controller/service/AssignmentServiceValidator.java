@@ -30,7 +30,7 @@ public class AssignmentServiceValidator implements IServiceValidator<Assignment>
     public Assignment get(Long id, String msg) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.GET, 
-                serviceBase.getAssignmentEndpoint() + Long.toString(id), 
+                serviceBase.getAssignmentEndpoint() + "/" + Long.toString(id), 
                 null);
         Assignment assignment = serviceBase.validateResponse(response, new TypeReference<Assignment>(){});
         Assert.assertNotNull(assignment, "Unexpected null assignment returned for case: " + msg);

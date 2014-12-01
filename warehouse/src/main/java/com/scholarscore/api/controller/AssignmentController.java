@@ -60,7 +60,6 @@ public class AssignmentController {
             notes = "Creates, assigns and ID to, persists and returns an assignment",
             response = EntityId.class)
     @RequestMapping(
-            value = "/", 
             method = RequestMethod.POST, 
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")

@@ -129,9 +129,10 @@ public class NetMvc {
      */
     private URI buildUri(MockHttpServletRequest mockRequest) throws URISyntaxException {
         // Build the list of query params
-        List<NameValuePair> reqParams = new ArrayList<>();
-        if (null != mockRequest.getParameterMap()) {
-            Map<String,String[]> parameters = mockRequest.getParameterMap();
+        List<NameValuePair> reqParams = new ArrayList<>();;
+        Map<String, String[]> paramsMap = mockRequest.getParameterMap();
+        if (null != paramsMap) {
+            Map<String,String[]> parameters = paramsMap;
             for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
                 reqParams.add(new BasicNameValuePair(entry.getKey(), entry.getValue()[0]));
             }
@@ -146,7 +147,6 @@ public class NetMvc {
                 .addParameters(reqParams)
                 .build();
 
-        //LOGGER.sys().info("Request URL: " + uri.toString());
         return uri;
     }
 
