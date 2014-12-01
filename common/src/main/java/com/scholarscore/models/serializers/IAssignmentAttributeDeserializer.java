@@ -18,10 +18,11 @@ import com.scholarscore.models.Assignment;
 public interface IAssignmentAttributeDeserializer<T extends Assignment> {
     /**
      * Given an assignment, node and context, populate attributes on the assignment instance from the node 
-     * making use of the context
+     * making use of the context.  In a chained inheritance hierarchy, implementations should call 
+     * super.deserializeAttributes(..) to ensure that all properties are serialized up the hierarchy.
      * 
      * @param assignment The assignment to populate attributes on
-     * @param node The JsonNode containing assignment attribuets
+     * @param node The JsonNode containing assignment attributes
      * @param context The deserialization context
      * @throws IOException
      */
