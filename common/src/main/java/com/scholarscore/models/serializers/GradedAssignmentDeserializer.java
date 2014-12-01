@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.scholarscore.models.GradedAssignment;
 
 public class GradedAssignmentDeserializer extends AssignmentDeserializer 
-implements IAssignmentSubclassDeserializer<GradedAssignment> {
+        implements IAssignmentSubclassDeserializer<GradedAssignment> {
 
     @Override
     public GradedAssignment deserializeAssignmentSubclass(JsonNode node,
