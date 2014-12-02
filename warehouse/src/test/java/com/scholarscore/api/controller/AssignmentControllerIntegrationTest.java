@@ -1,5 +1,5 @@
 package com.scholarscore.api.controller;
-
+    
 import java.util.Date;
 
 import org.springframework.http.HttpStatus;
@@ -19,14 +19,14 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
         GradedAssignment emptyGradedAssignment = new GradedAssignment();
         
         GradedAssignment gradedAssignment = new GradedAssignment();
-        gradedAssignment.setName(localeServiceValidator.generateName());
+        gradedAssignment.setName(localeServiceUtil.generateName());
         gradedAssignment.setDueDate(new Date(1234567L));
         gradedAssignment.setAssignedDate(new Date(123456L));
         
         AttendanceAssignment emptyAttendanceAssignment = new AttendanceAssignment();
         
         AttendanceAssignment attendanceAssignment = new AttendanceAssignment();
-        attendanceAssignment.setName(localeServiceValidator.generateName());
+        attendanceAssignment.setName(localeServiceUtil.generateName());
         attendanceAssignment.setDate(new Date());
         
         return new Object[][] {
@@ -39,25 +39,25 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createAssignmentProvider")
     public void createAssignmentTest(String msg, Assignment assignment) {
-        assignmentServiceValidator.create(assignment, msg);
+        assignmentServiceValidatingExecutor.create(assignment, msg);
     }
     
     @Test(dataProvider = "createAssignmentProvider")
     public void deleteAssignmentTest(String msg, Assignment assignment) {
-        Assignment createdAssignment = assignmentServiceValidator.create(assignment, msg);
-        assignmentServiceValidator.delete(createdAssignment.getId(), msg);
+        Assignment createdAssignment = assignmentServiceValidatingExecutor.create(assignment, msg);
+        assignmentServiceValidatingExecutor.delete(createdAssignment.getId(), msg);
     }
     
     @Test(dataProvider = "createAssignmentProvider")
     public void replaceAssignmentTest(String msg, Assignment assignment) {
-        Assignment createdAssignment = assignmentServiceValidator.create(assignment, msg);
-        assignmentServiceValidator.replace(createdAssignment.getId(), new GradedAssignment(), msg);
+        Assignment createdAssignment = assignmentServiceValidatingExecutor.create(assignment, msg);
+        assignmentServiceValidatingExecutor.replace(createdAssignment.getId(), new GradedAssignment(), msg);
     }
     
     @DataProvider
     public Object[][] createAssignmentNegativeProvider() {
         GradedAssignment gradedAssignmentNameTooLong = new GradedAssignment();
-        gradedAssignmentNameTooLong.setName(localeServiceValidator.generateName(257));
+        gradedAssignmentNameTooLong.setName(localeServiceUtil.generateName(257));
         
         return new Object[][] {
                 { "Assignment with name exceeding 256 char limit", gradedAssignmentNameTooLong, HttpStatus.BAD_REQUEST }
@@ -66,12 +66,12 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createAssignmentNegativeProvider")
     public void createAssignmentNegativeTest(String msg, Assignment assignment, HttpStatus expectedStatus) {
-        assignmentServiceValidator.createNegative(assignment, expectedStatus, msg);
+        assignmentServiceValidatingExecutor.createNegative(assignment, expectedStatus, msg);
     }
     
     @Test(dataProvider = "createAssignmentNegativeProvider")
     public void replaceAssignmentNegativeTest(String msg, Assignment assignment, HttpStatus expectedStatus) {
-        Assignment created = assignmentServiceValidator.create(new GradedAssignment(), msg);
-        assignmentServiceValidator.replaceNegative(created.getId(), assignment, expectedStatus, msg);
+        Assignment created = assignmentServiceValidatingExecutor.create(new GradedAssignment(), msg);
+        assignmentServiceValidatingExecutor.replaceNegative(created.getId(), assignment, expectedStatus, msg);
     }
 }

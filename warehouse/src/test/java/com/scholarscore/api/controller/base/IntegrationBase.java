@@ -32,8 +32,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableMap;
-import com.scholarscore.api.controller.service.AssignmentServiceValidator;
-import com.scholarscore.api.controller.service.LocaleServiceValidator;
+import com.scholarscore.api.controller.service.AssignmentServiceValidatingExecutor;
+import com.scholarscore.api.controller.service.LocaleServiceUtil;
 import com.scholarscore.models.Assignment;
 
 /**
@@ -55,8 +55,8 @@ public class IntegrationBase {
     private static final String BASE_API_ENDPOINT = "/api/v1";
     private static final String ASSIGNMENT_ENDPOINT = "/assignment";
 
-    public LocaleServiceValidator localeServiceValidator;
-    public AssignmentServiceValidator assignmentServiceValidator;
+    public LocaleServiceUtil localeServiceUtil;
+    public AssignmentServiceValidatingExecutor assignmentServiceValidatingExecutor;
     
     public CopyOnWriteArrayList<Assignment> assignmentsCreated = new CopyOnWriteArrayList<>();
 
@@ -94,8 +94,8 @@ public class IntegrationBase {
     @BeforeClass(alwaysRun=true)
     public void configureServices() {
         this.mockMvc = new NetMvc();
-        localeServiceValidator = new LocaleServiceValidator(this);
-        assignmentServiceValidator = new AssignmentServiceValidator(this);
+        localeServiceUtil = new LocaleServiceUtil(this);
+        assignmentServiceValidatingExecutor = new AssignmentServiceValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -107,7 +107,7 @@ public class IntegrationBase {
      * Test services initialization validated
      */
     private void validateServiceConfig() {
-        Assert.assertNotNull(assignmentServiceValidator, "Unable to configure app service");
+        Assert.assertNotNull(assignmentServiceValidatingExecutor, "Unable to configure app service");
     }
 
     /**
@@ -133,7 +133,7 @@ public class IntegrationBase {
             }
         }
 
-        localeServiceValidator.setLocale();
+        localeServiceUtil.setLocale();
         contentType = System.getProperty("contentType", "json");
 
         // Remove all assignments created during testing
@@ -163,7 +163,7 @@ public class IntegrationBase {
      */
     synchronized void initializeTestConfig() {
         // only initialize once
-        localeServiceValidator.setLocale();
+        localeServiceUtil.setLocale();
         contentType = System.getProperty("contentType", "json");
         if (null == properties) {
             String env = System.getProperty("env", "localhost");
@@ -203,12 +203,12 @@ public class IntegrationBase {
         }
     }
 
-    public AssignmentServiceValidator getAssignmentServiceValidator() {
-        return assignmentServiceValidator;
+    public AssignmentServiceValidatingExecutor getAssignmentServiceValidator() {
+        return assignmentServiceValidatingExecutor;
     }
     
-    public LocaleServiceValidator getLocaleServiceValidator() {
-        return localeServiceValidator;
+    public LocaleServiceUtil getLocaleServiceValidator() {
+        return localeServiceUtil;
     }
 
     /**

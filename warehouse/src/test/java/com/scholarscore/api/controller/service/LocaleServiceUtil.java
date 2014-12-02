@@ -11,7 +11,7 @@ import java.util.Random;
 /**
  * Class that contains all the methods that are used in locale definition and testing
  */
-public class LocaleServiceValidator {
+public class LocaleServiceUtil {
 
     private final IntegrationBase sb;
     private String [] validCharacterSet;
@@ -21,7 +21,7 @@ public class LocaleServiceValidator {
      * Constructor that takes a service base object
      * @param sb    IntegrationBase object associated with Service
      */
-    public LocaleServiceValidator(IntegrationBase sb) {
+    public LocaleServiceUtil(IntegrationBase sb) {
         this.sb = sb;
     }
 
