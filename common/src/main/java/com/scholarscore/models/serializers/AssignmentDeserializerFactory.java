@@ -23,7 +23,7 @@ public class AssignmentDeserializerFactory extends JsonDeserializer<Assignment> 
             throws IOException, JsonProcessingException {
         ObjectCodec codec = jp.getCodec();
         JsonNode node = codec.readTree(jp);
-        IAssignmentSubclassDeserializer deserializer = null;
+        IAssignmentDeserializer deserializer = null;
         if(null != node.get(JsonKeyConstants.TYPE)
                 && !node.get(JsonKeyConstants.TYPE).isNull()) {
             switch(node.get(JsonKeyConstants.TYPE).asText()) {
@@ -40,7 +40,7 @@ public class AssignmentDeserializerFactory extends JsonDeserializer<Assignment> 
         } else {
             throw new IOException("Cannot resolve the assignment type");
         }
-        return deserializer.deserializeAssignmentSubclass(node, ctxt);
+        return deserializer.deserializeAttributes(node);
     }
 
 
