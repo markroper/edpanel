@@ -81,10 +81,10 @@ public class AssignmentController {
     public @ResponseBody ResponseEntity replaceAssignment(
             @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
-            @RequestBody Assignment assignment) {
+            @RequestBody @Valid Assignment assignment) {
         ResponseEntity returnValue = null;
         if(null != assignmentId && assignments.containsKey(assignmentId)) {
-            returnValue = new ResponseEntity<>(null, HttpStatus.OK);
+            returnValue = new ResponseEntity<>(new EntityId(assignmentId), HttpStatus.OK);
             assignments.put(assignmentId, assignment);
         } else {
             returnValue = new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
