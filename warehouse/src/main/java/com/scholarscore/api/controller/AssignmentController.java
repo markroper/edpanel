@@ -124,7 +124,7 @@ public class AssignmentController {
     public @ResponseBody ResponseEntity updateAssignment(
             @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
-            @RequestBody Assignment assignment) {
+            @RequestBody @Valid Assignment assignment) {
         ResponseEntity returnValue = null;
         if(null != assignment && null != assignmentId && assignments.containsKey(assignmentId)) {
             assignment.mergePropertiesIfNull(assignments.get(assignmentId));
