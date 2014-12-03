@@ -1,6 +1,8 @@
 package com.scholarscore.api.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -35,13 +37,31 @@ public class AssignmentController {
     public static Long nextAssignmentId = 0l;
 
     @ApiOperation(
+            value = "Get all assignments", 
+            notes = "Retrieve all assignments", 
+            response = List.class)
+    @RequestMapping(
+            method = RequestMethod.GET, 
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getAllAssignments() {
+        List<Assignment> assignmentsList = null;
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        if(!assignments.isEmpty()) {
+            assignmentsList = new ArrayList<>(assignments.values());
+            status = HttpStatus.OK;
+        }
+        return new ResponseEntity<>(assignmentsList, status);
+    }
+    
+    @ApiOperation(
             value = "Get an assignment", 
             notes = "Given an assignment ID, the endpoint returns the assignment ID", 
             response = Assignment.class)
     @RequestMapping(
             value = "/{assignmentId}", 
             method = RequestMethod.GET, 
-            produces = {JSON_ACCEPT_HEADER})
+            produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAssignment(
             @ApiParam(name = "assignmentId", required = true, value = "The assignment long ID")
@@ -72,11 +92,11 @@ public class AssignmentController {
     @ApiOperation(
             value = "Overwrite an existing assignment", 
             notes = "Overwrites an existing assignment with the ID provided",
-            response = Void.class)
+            response = EntityId.class)
     @RequestMapping(
             value = "/{assignmentId}", 
             method = RequestMethod.PUT, 
-            produces = {JSON_ACCEPT_HEADER})
+            produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity replaceAssignment(
             @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
@@ -91,6 +111,30 @@ public class AssignmentController {
         }
         return returnValue;
     }
+    
+    @ApiOperation(
+            value = "Update an existing assignment", 
+            notes = "Updates an existing assignment. Will not overwrite existing values with null.",
+            response = EntityId.class)
+    @RequestMapping(
+            value = "/{assignmentId}", 
+            method = RequestMethod.PATCH, 
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity updateAssignment(
+            @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
+            @PathVariable(value="assignmentId") Long assignmentId,
+            @RequestBody @Valid Assignment assignment) {
+        ResponseEntity returnValue = null;
+        if(null != assignment && null != assignmentId && assignments.containsKey(assignmentId)) {
+            assignment.mergePropertiesIfNull(assignments.get(assignmentId));
+            assignments.put(assignmentId, assignment);
+            returnValue = new ResponseEntity<>(new EntityId(assignmentId), HttpStatus.OK);
+        } else {
+            returnValue = new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        return returnValue;
+    }
 
     @ApiOperation(
             value = "Delete an assignment", 
@@ -99,7 +143,7 @@ public class AssignmentController {
     @RequestMapping(
             value = "/{assignmentId}", 
             method = RequestMethod.DELETE, 
-            produces = {JSON_ACCEPT_HEADER})
+            produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity deleteAssignment(
             @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")

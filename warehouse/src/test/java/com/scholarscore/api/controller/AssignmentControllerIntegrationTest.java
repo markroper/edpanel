@@ -3,6 +3,7 @@ package com.scholarscore.api.controller;
 import java.util.Date;
 
 import org.springframework.http.HttpStatus;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -13,7 +14,14 @@ import com.scholarscore.models.GradedAssignment;
 
 @Test(groups = { "integration" })
 public class AssignmentControllerIntegrationTest extends IntegrationBase {
-
+    private int numberOfItemsCreated = 0;
+    
+    @BeforeClass
+    public void init() {
+        numberOfItemsCreated = 0;
+    }
+    
+    //Positive test cases
     @DataProvider
     public Object[][] createAssignmentProvider() {
         GradedAssignment emptyGradedAssignment = new GradedAssignment();
@@ -40,6 +48,7 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createAssignmentProvider")
     public void createAssignmentTest(String msg, Assignment assignment) {
         assignmentServiceValidatingExecutor.create(assignment, msg);
+        numberOfItemsCreated++;
     }
     
     @Test(dataProvider = "createAssignmentProvider")
@@ -52,8 +61,25 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
     public void replaceAssignmentTest(String msg, Assignment assignment) {
         Assignment createdAssignment = assignmentServiceValidatingExecutor.create(assignment, msg);
         assignmentServiceValidatingExecutor.replace(createdAssignment.getId(), new GradedAssignment(), msg);
+        numberOfItemsCreated++;
     }
     
+    @Test(dataProvider = "createAssignmentProvider")
+    public void updateAssignmentTest(String msg, Assignment assignment) {
+        Assignment createdAssignment = assignmentServiceValidatingExecutor.create(assignment, msg);
+        GradedAssignment updatedAssignment = new GradedAssignment();
+        updatedAssignment.setName(localeServiceUtil.generateName());
+        //PATCH the existing record with a new name.
+        assignmentServiceValidatingExecutor.update(createdAssignment.getId(), updatedAssignment, msg);
+        numberOfItemsCreated++;
+    }
+    
+    @Test
+    public void getAllItems() {
+        assignmentServiceValidatingExecutor.getAll("Get all records created so far", numberOfItemsCreated++);
+    }
+    
+    //Negative test cases
     @DataProvider
     public Object[][] createAssignmentNegativeProvider() {
         GradedAssignment gradedAssignmentNameTooLong = new GradedAssignment();
