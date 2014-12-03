@@ -35,6 +35,7 @@ buildscript {
 
 cargo {
     containerId = 'tomcat7x'
+	port = '8085'
 
     local {
         installer {
