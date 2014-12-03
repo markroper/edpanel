@@ -17,7 +17,7 @@ import com.scholarscore.api.controller.base.IntegrationBase;
  * @param <T> The class that represents the resource whose API the implementer 
  *      calls and verifies responses from
  */
-public interface IServiceValidator<T extends Serializable> {
+public interface IServiceValidatingExecutor<T extends Serializable> {
     
     /**
      * Should return the IntegrationBase instance that the service uses to make

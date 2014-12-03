@@ -1,5 +1,8 @@
 package com.scholarscore.api.controller.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
@@ -16,13 +19,13 @@ import factory.AssignmentFactory;
  * Makes and validates API CRUD requests for Assignments (/warehouse/api/v1/assignment/{id})
  * 
  * @author markroper
- * @see IServiceValidator
+ * @see IServiceValidatingExecutor
  */
-public class AssignmentServiceValidator implements IServiceValidator<Assignment>{
+public class AssignmentServiceValidatingExecutor implements IServiceValidatingExecutor<Assignment>{
 
     private final IntegrationBase serviceBase;
     
-    public AssignmentServiceValidator(IntegrationBase sb) {
+    public AssignmentServiceValidatingExecutor(IntegrationBase sb) {
         this.serviceBase = sb;
     }
     
@@ -36,6 +39,16 @@ public class AssignmentServiceValidator implements IServiceValidator<Assignment>
         Assert.assertNotNull(assignment, "Unexpected null assignment returned for case: " + msg);
         
         return assignment;
+    }
+    
+    public void getAll(String msg, int numberOfItems) {
+        ResultActions response = serviceBase.makeRequest(
+                HttpMethod.GET, 
+                serviceBase.getAssignmentEndpoint(), 
+                null);
+        ArrayList<Assignment> assignments = serviceBase.validateResponse(response, new TypeReference<ArrayList<Assignment>>(){});
+        Assert.assertNotNull(assignments, "Unexpected null assignment returned for case: " + msg);
+        Assert.assertEquals(assignments.size(), numberOfItems, "Unexpected number of items returned for case: " + msg);
     }
     
     @Override
