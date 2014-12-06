@@ -1,4 +1,4 @@
-package factory;
+package com.scholarscore.models.factory;
 
 import java.lang.reflect.Constructor;
 
@@ -22,5 +22,4 @@ public class AssignmentFactory {
         }
         return newAssignment;
     }
-
 }

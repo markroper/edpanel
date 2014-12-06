@@ -1,5 +1,7 @@
 package com.scholarscore.api.util;
 
+import java.util.Arrays;
+
 import javax.xml.bind.annotation.*;
 
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class ErrorCode {
 	private long code;
 	private String message;
+	private Object[] arguments;
 	@XmlTransient
 	HttpStatus httpStatus;
 	
@@ -35,6 +38,13 @@ public class ErrorCode {
 		this.code = code;
 		this.message = message;
 		this.httpStatus = status;
+	}
+	
+	public ErrorCode(ErrorCode code) {
+	    this.code = code.code;
+	    this.message = code.message;
+	    this.httpStatus = code.httpStatus;
+	    this.arguments = code.arguments;
 	}
 
 	public long getCode() {
@@ -60,4 +70,23 @@ public class ErrorCode {
 	public void setHttpStatus(HttpStatus httpStatus) {
 		this.httpStatus = httpStatus;
 	}
+
+    public Object[] getArguments() {
+        if(null != arguments) {
+            return arguments.clone();
+        } else {
+            return null;
+        }
+    }
+
+    public void setArguments(Object[] args) {
+        if(null == args) {
+            this.arguments = null;
+        } else {
+            this.arguments = Arrays.copyOf(args, args.length);
+        }
+    }
+    
+    
+	
 }
