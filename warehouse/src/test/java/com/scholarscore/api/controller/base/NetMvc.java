@@ -226,9 +226,6 @@ public class NetMvc {
                 // Add the part for each file
                 while (fileNameIterator.hasNext()) {
                     String fileName = fileNameIterator.next();
-//                    LOGGER.sys().info("Multipart fileName={}  contentType={}  size={}", fileName,
-//                            multipartHttpServletRequest.getMultipartContentType(fileName),
-//                            multipartHttpServletRequest.getFile(fileName).getSize());
                     InputStreamBody inputStreamBody = new InputStreamBody(
                             multipartHttpServletRequest.getFile(fileName).getInputStream(),
                             ContentType.create(multipartHttpServletRequest.getMultipartContentType(fileName)),

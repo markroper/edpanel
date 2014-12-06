@@ -1,7 +1,6 @@
 package com.scholarscore.api.controller.service;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -12,8 +11,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.EntityId;
-
-import factory.AssignmentFactory;
+import com.scholarscore.models.factory.AssignmentFactory;
 
 /**
  * Makes and validates API CRUD requests for Assignments (/warehouse/api/v1/assignment/{id})

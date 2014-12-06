@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.api.util.ErrorCode;
+import com.scholarscore.api.util.ErrorCodes;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
@@ -30,7 +29,7 @@ import javax.validation.Valid;
  */
 @Controller
 @RequestMapping("/api/v1/assignment")
-public class AssignmentController {
+public class AssignmentController extends BaseController {
     //TODO: @mroper we need to add a real persistence layer that we call instead of manipulating this map
     public static final String JSON_ACCEPT_HEADER = "application/json";
     public static Map<Long, Assignment> assignments = new HashMap<>();
@@ -45,13 +44,7 @@ public class AssignmentController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAllAssignments() {
-        List<Assignment> assignmentsList = null;
-        HttpStatus status = HttpStatus.NOT_FOUND;
-        if(!assignments.isEmpty()) {
-            assignmentsList = new ArrayList<>(assignments.values());
-            status = HttpStatus.OK;
-        }
-        return new ResponseEntity<>(assignmentsList, status);
+        return respond(new ArrayList<>(assignments.values()));
     }
     
     @ApiOperation(
@@ -66,13 +59,10 @@ public class AssignmentController {
     public @ResponseBody ResponseEntity getAssignment(
             @ApiParam(name = "assignmentId", required = true, value = "The assignment long ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
-        Assignment assignment = null;
-        HttpStatus status = HttpStatus.NOT_FOUND;
         if(assignments.containsKey(assignmentId)) {
-            assignment = assignments.get(assignmentId);
-            status = HttpStatus.OK;
+            return respond(assignments.get(assignmentId));
         }
-        return new ResponseEntity<>(assignment, status);
+        return respond(ErrorCodes.ASSIGNMENT_NOT_FOUND, new Object[] { assignmentId });
     }
 
     @ApiOperation(
@@ -86,7 +76,7 @@ public class AssignmentController {
     public @ResponseBody ResponseEntity createAssignment(@RequestBody @Valid Assignment assignment) {
         assignment.setId(nextAssignmentId++);
         assignments.put(assignment.getId(), assignment);
-        return new ResponseEntity<>(new EntityId(assignment.getId()), HttpStatus.OK);
+        return respond(new EntityId(assignment.getId()));
     }
 
     @ApiOperation(
@@ -102,14 +92,12 @@ public class AssignmentController {
             @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
             @RequestBody @Valid Assignment assignment) {
-        ResponseEntity returnValue = null;
         if(null != assignmentId && assignments.containsKey(assignmentId)) {
-            returnValue = new ResponseEntity<>(new EntityId(assignmentId), HttpStatus.OK);
             assignments.put(assignmentId, assignment);
+            return respond(new EntityId(assignmentId));
         } else {
-            returnValue = new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return respond(ErrorCodes.ASSIGNMENT_NOT_FOUND, new Object[]{ assignmentId });
         }
-        return returnValue;
     }
     
     @ApiOperation(
@@ -125,15 +113,13 @@ public class AssignmentController {
             @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
             @RequestBody @Valid Assignment assignment) {
-        ResponseEntity returnValue = null;
         if(null != assignment && null != assignmentId && assignments.containsKey(assignmentId)) {
             assignment.mergePropertiesIfNull(assignments.get(assignmentId));
             assignments.put(assignmentId, assignment);
-            returnValue = new ResponseEntity<>(new EntityId(assignmentId), HttpStatus.OK);
+            return respond(new EntityId(assignmentId));
         } else {
-            returnValue = new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return respond(ErrorCodes.ASSIGNMENT_NOT_FOUND, new Object[]{ assignmentId });
         }
-        return returnValue;
     }
 
     @ApiOperation(
@@ -148,13 +134,12 @@ public class AssignmentController {
     public @ResponseBody ResponseEntity deleteAssignment(
             @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
-        HttpStatus status = HttpStatus.OK;
         if(null == assignmentId) {
-            status = HttpStatus.BAD_REQUEST;
+            return respond(ErrorCodes.BAD_REQUEST_CANNOT_PARSE_BODY);
         } else if (!assignments.containsKey(assignmentId)) {
-            status = HttpStatus.NOT_FOUND;
+            return respond(ErrorCodes.ASSIGNMENT_NOT_FOUND, new Object[] { assignmentId });
         }
         assignments.remove(assignmentId);
-        return new ResponseEntity<>(null, status);
+        return respond((Assignment) null);
     }
 }

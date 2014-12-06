@@ -34,11 +34,13 @@ public class AssignmentDeserializerFactory extends JsonDeserializer<Assignment> 
                     deserializer = new AttendanceAssignmentDeserializer();
                     break;
                 default:
-                    throw new IOException("Type not supported");
+                    throw new ObjectParsingException("warehouse.api.error.assignment.unsupportedtype", 
+                            new Object[]{ node.get(JsonKeyConstants.TYPE).asText() });
             }
 
         } else {
-            throw new IOException("Cannot resolve the assignment type");
+            throw new ObjectParsingException("warehouse.api.error.assignment.unsupportedtype", 
+                    new Object[]{ "null" });
         }
         return deserializer.deserializeAttributes(node);
     }
