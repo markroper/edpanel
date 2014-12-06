@@ -4,6 +4,16 @@ import java.lang.reflect.Constructor;
 
 import com.scholarscore.models.Assignment;
 
+/**
+ * Given an instance of a subclass of Assignment, produces a shallow clone of that 
+ * instance.
+ * 
+ * @author markroper
+ * @see Assignment
+ * @see GradedAssignment
+ * @see AttendanceAssignment
+ *
+ */
 public class AssignmentFactory {
     public static Assignment cloneAssignment(Assignment assignment) {
         Assignment newAssignment = null;
