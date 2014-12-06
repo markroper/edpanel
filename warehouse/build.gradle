@@ -33,9 +33,13 @@ buildscript {
 
 }
 
+Properties props = new Properties()
+props.load(new FileInputStream(projectDir.toString() + "/src/test/resources/localhost.config.properties"))
+def portnum = new URI(props.get("endpoint").toString()).port
+
 cargo {
     containerId = 'tomcat7x'
-	port = 8085
+	port = portnum
 
     local {
         installer {
