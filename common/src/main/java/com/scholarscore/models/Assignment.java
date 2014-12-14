@@ -19,11 +19,9 @@ import javax.validation.constraints.Size;
 @SuppressWarnings("serial")
 @JsonDeserialize(using = AssignmentDeserializerFactory.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class Assignment implements Serializable, IApiModel<Assignment> {
-    protected Long id;
+public abstract class Assignment 
+        extends ApiModel implements Serializable, IApiModel<Assignment> {
     protected String type;
-    @Size(min=1, max=256)
-    protected String name;
 
     /**
      * Default constructor used by the serializer
@@ -37,40 +35,18 @@ public abstract class Assignment implements Serializable, IApiModel<Assignment> 
      * @param assignment
      */
     public Assignment(Assignment assignment) {
-        this.id = assignment.id;
+        super(assignment);
         this.type = assignment.type;
-        this.name = assignment.name;
     }
     
     public void mergePropertiesIfNull(Assignment assignment) {
+        super.mergePropertiesIfNull(assignment);
         if(null == assignment) {
             return;
-        }
-        if(null == this.id) {
-            this.id = assignment.id;
         }
         if(null == this.type) {
             this.type = assignment.type;
         }
-        if(null == this.name) {
-            this.name = assignment.name;
-        }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
     
     public String getType() {
@@ -86,16 +62,19 @@ public abstract class Assignment implements Serializable, IApiModel<Assignment> 
         if (this == obj) {
             return true;
         }
+        if(! super.equals(obj)) {
+            return false;
+        }
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
         final Assignment other = (Assignment) obj;
-        return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name) && Objects.equals(this.type, other.type);
+        return Objects.equals(this.type, other.type);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, type);
+        return 31 * super.hashCode() + Objects.hash(type);
     }
     
 }
