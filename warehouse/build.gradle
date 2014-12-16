@@ -1,5 +1,6 @@
 apply plugin: 'war'
 apply plugin: 'com.bmuschko.cargo'
+apply plugin: 'com.bmuschko.cargo-base'
 
 sourceSets {
 	main {
@@ -52,6 +53,14 @@ cargo {
             property 'cargo.tomcat.ajp.port', 9199
         }
     }
+}
+
+task deployRemote(type: com.bmuschko.gradle.cargo.tasks.remote.CargoDeployRemote) {
+    containerId = 'tomcat7x'
+    hostname = 'localhost'
+//    port = TomcatPortQA as Integer
+    username = 'cargo'
+    password = '0BxLrz7zG4dqDX2q6vi4'
 }
 
 //Integration test suite
