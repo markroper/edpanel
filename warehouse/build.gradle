@@ -35,13 +35,13 @@ buildscript {
 
 Properties props = new Properties()
 props.load(new FileInputStream(projectDir.toString() + "/src/test/resources/localhost.config.properties"))
-def portnum = new URI(props.get("endpoint").toString()).port
+def local_portnum = new URI(props.get("endpoint").toString()).port
 
 cargo {
     containerId = 'tomcat7x'
-	port = portnum
 
     local {
+        port = local_portnum
         installer {
             installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.zip'
             downloadDir = file("$buildDir/download")
@@ -51,6 +51,13 @@ cargo {
             // use a non-standard ajp port (not 9099) so as to not conflict with other tomcat instances
             property 'cargo.tomcat.ajp.port', 9199
         }
+    }
+
+    remote {
+        hostname = 'localhost'
+        port = 8090
+        username = 'cargo'
+        password = '0BxLrz7zG4dqDX2q6vi4'
     }
 }
 
