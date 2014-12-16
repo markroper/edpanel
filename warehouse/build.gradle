@@ -1,6 +1,5 @@
 apply plugin: 'war'
 apply plugin: 'com.bmuschko.cargo'
-apply plugin: 'com.bmuschko.cargo-base'
 
 sourceSets {
 	main {
@@ -61,16 +60,6 @@ cargo {
         password = '0BxLrz7zG4dqDX2q6vi4'
     }
 }
-
-/*
-task deployRemote(type: com.bmuschko.gradle.cargo.tasks.remote.CargoDeployRemote) {
-    containerId = 'tomcat7x'
-    hostname = 'localhost'
-    port = 8090
-    username = 'cargo'
-    password = '0BxLrz7zG4dqDX2q6vi4'
-}
-*/
 
 //Integration test suite
 def getFileByPattern(File dir, String pat, String stripDir) {
