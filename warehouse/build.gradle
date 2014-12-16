@@ -47,6 +47,10 @@ cargo {
             downloadDir = file("$buildDir/download")
             extractDir = file("$buildDir/extract")
         }
+        containerProperties {
+            // use a non-standard ajp port (not 9099) so as to not conflict with other tomcat instances
+            property 'cargo.tomcat.ajp.port', 9199
+        }
     }
 }
 
