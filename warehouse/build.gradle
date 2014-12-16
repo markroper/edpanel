@@ -41,7 +41,6 @@ cargo {
     containerId = 'tomcat7x'
 
     local {
-        port = local_portnum
         installer {
             installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.zip'
             downloadDir = file("$buildDir/download")
@@ -50,6 +49,7 @@ cargo {
         containerProperties {
             // use a non-standard ajp port (not 9099) so as to not conflict with other tomcat instances
             property 'cargo.tomcat.ajp.port', 9199
+            property 'cargo.servlet.port', local_portnum
         }
     }
 
