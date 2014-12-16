@@ -28,13 +28,8 @@ import javax.validation.Valid;
  * @see com.scholarscore.models.Assignment
  */
 @Controller
-@RequestMapping("/api/v1/assignment")
+@RequestMapping("/api/v1/school/{schoolId}/course/{courseId}/assignment")
 public class AssignmentController extends BaseController {
-    //TODO: @mroper we need to add a real persistence layer that we call instead of manipulating this map
-    public static final String JSON_ACCEPT_HEADER = "application/json";
-    public static Map<Long, Assignment> assignments = new HashMap<>();
-    public static Long nextAssignmentId = 0l;
-
     @ApiOperation(
             value = "Get all assignments", 
             notes = "Retrieve all assignments", 
@@ -43,13 +38,27 @@ public class AssignmentController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity getAllAssignments() {
-        return respond(new ArrayList<>(assignments.values()));
+    public @ResponseBody ResponseEntity getAllAssignments(
+            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "courseId", required = true, value = "The course long ID")
+            @PathVariable(value="courseId") Long courseId) {
+        if(null == schoolId || !schools.containsKey(schoolId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        }
+        if(null == courseId || !courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
+        }
+        ArrayList<Assignment> returnAssignments = new ArrayList<Assignment>();
+        if(assignments.containsKey(schoolId) && assignments.get(schoolId).containsKey(courseId)) {
+            returnAssignments = new ArrayList<>(assignments.get(schoolId).get(courseId).values());
+        }
+        return respond(returnAssignments);
     }
     
     @ApiOperation(
             value = "Get an assignment", 
-            notes = "Given an assignment ID, the endpoint returns the assignment ID", 
+            notes = "Given an assignment ID, the endpoint returns the assignment", 
             response = Assignment.class)
     @RequestMapping(
             value = "/{assignmentId}", 
@@ -57,12 +66,24 @@ public class AssignmentController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAssignment(
+            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "courseId", required = true, value = "The course long ID")
+            @PathVariable(value="courseId") Long courseId,
             @ApiParam(name = "assignmentId", required = true, value = "The assignment long ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
-        if(assignments.containsKey(assignmentId)) {
-            return respond(assignments.get(assignmentId));
+        if(null == schoolId || !schools.containsKey(schoolId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
-        return respond(ErrorCodes.ASSIGNMENT_NOT_FOUND, new Object[] { assignmentId });
+        if(null == courseId || !courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
+        }
+        
+        if(assignments.containsKey(schoolId) && assignments.get(schoolId).containsKey(courseId) 
+                && assignments.get(schoolId).get(courseId).containsKey(assignmentId)) {
+            return respond(assignments.get(schoolId).get(courseId).get(assignmentId));
+        }
+        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { ASSIGNMENT, assignmentId });
     }
 
     @ApiOperation(
@@ -73,9 +94,27 @@ public class AssignmentController extends BaseController {
             method = RequestMethod.POST, 
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity createAssignment(@RequestBody @Valid Assignment assignment) {
-        assignment.setId(nextAssignmentId++);
-        assignments.put(assignment.getId(), assignment);
+    public @ResponseBody ResponseEntity createAssignment(
+            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "courseId", required = true, value = "The course long ID")
+            @PathVariable(value="courseId") Long courseId,
+            @RequestBody @Valid Assignment assignment) {
+        if(null == schoolId || !schools.containsKey(schoolId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        }
+        if(null == courseId || !courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
+        }
+        
+        assignment.setId(assignmentCounter.getAndIncrement());
+        if(!assignments.containsKey(schoolId)) {
+            assignments.put(schoolId, new HashMap<Long, Map<Long, Assignment>>());
+        }
+        if(!assignments.get(schoolId).containsKey(courseId)) {
+            assignments.get(schoolId).put(courseId, new HashMap<Long, Assignment>());
+        }
+        assignments.get(schoolId).get(courseId).put(assignment.getId(), assignment);
         return respond(new EntityId(assignment.getId()));
     }
 
@@ -89,14 +128,26 @@ public class AssignmentController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity replaceAssignment(
+            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "courseId", required = true, value = "The course long ID")
+            @PathVariable(value="courseId") Long courseId,
             @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
             @RequestBody @Valid Assignment assignment) {
-        if(null != assignmentId && assignments.containsKey(assignmentId)) {
-            assignments.put(assignmentId, assignment);
+        if(null == schoolId || !schools.containsKey(schoolId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        }
+        if(null == courseId || !courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
+        }
+ 
+        if(null != assignmentId && assignments.containsKey(schoolId) && assignments.get(schoolId).containsKey(courseId) 
+                && assignments.get(schoolId).get(courseId).containsKey(assignmentId)) {
+            assignments.get(schoolId).get(courseId).put(assignmentId, assignment);
             return respond(new EntityId(assignmentId));
         } else {
-            return respond(ErrorCodes.ASSIGNMENT_NOT_FOUND, new Object[]{ assignmentId });
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ ASSIGNMENT, assignmentId });
         }
     }
     
@@ -110,15 +161,27 @@ public class AssignmentController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity updateAssignment(
+            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "courseId", required = true, value = "The course long ID")
+            @PathVariable(value="courseId") Long courseId,
             @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
             @RequestBody @Valid Assignment assignment) {
-        if(null != assignment && null != assignmentId && assignments.containsKey(assignmentId)) {
-            assignment.mergePropertiesIfNull(assignments.get(assignmentId));
-            assignments.put(assignmentId, assignment);
+        if(null == schoolId || !schools.containsKey(schoolId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        }
+        if(null == courseId || !courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
+        }
+        
+        if(null != assignmentId && assignments.containsKey(schoolId) && assignments.get(schoolId).containsKey(courseId) 
+                && assignments.get(schoolId).get(courseId).containsKey(assignmentId)) {
+            assignment.mergePropertiesIfNull(assignments.get(schoolId).get(courseId).get(assignmentId));
+            assignments.get(schoolId).get(courseId).put(assignmentId, assignment);
             return respond(new EntityId(assignmentId));
         } else {
-            return respond(ErrorCodes.ASSIGNMENT_NOT_FOUND, new Object[]{ assignmentId });
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ ASSIGNMENT, assignmentId });
         }
     }
 
@@ -132,14 +195,23 @@ public class AssignmentController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity deleteAssignment(
+            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "courseId", required = true, value = "The course long ID")
+            @PathVariable(value="courseId") Long courseId,
             @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
-        if(null == assignmentId) {
-            return respond(ErrorCodes.BAD_REQUEST_CANNOT_PARSE_BODY);
-        } else if (!assignments.containsKey(assignmentId)) {
-            return respond(ErrorCodes.ASSIGNMENT_NOT_FOUND, new Object[] { assignmentId });
+        if(null == schoolId || !schools.containsKey(schoolId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
-        assignments.remove(assignmentId);
-        return respond((Assignment) null);
+        if(null == courseId || !courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
+        }
+        if(null != assignmentId && assignments.containsKey(schoolId) && assignments.get(schoolId).containsKey(courseId) 
+                && assignments.get(schoolId).get(courseId).containsKey(assignmentId)) {
+            assignments.get(schoolId).get(courseId).remove(assignmentId);
+            return respond((Assignment) null);
+        }
+        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { ASSIGNMENT, assignmentId });
     }
 }

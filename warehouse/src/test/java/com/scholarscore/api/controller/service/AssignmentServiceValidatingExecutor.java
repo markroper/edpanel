@@ -1,6 +1,8 @@
 package com.scholarscore.api.controller.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -19,7 +21,7 @@ import com.scholarscore.models.factory.AssignmentFactory;
  * @author markroper
  * @see IServiceValidatingExecutor
  */
-public class AssignmentServiceValidatingExecutor implements IServiceValidatingExecutor<Assignment>{
+public class AssignmentServiceValidatingExecutor {
 
     private final IntegrationBase serviceBase;
     
@@ -27,11 +29,10 @@ public class AssignmentServiceValidatingExecutor implements IServiceValidatingEx
         this.serviceBase = sb;
     }
     
-    @Override
-    public Assignment get(Long id, String msg) {
+    public Assignment get(Long schoolId, Long courseId, Long id, String msg) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.GET, 
-                serviceBase.getAssignmentEndpoint() + "/" + Long.toString(id), 
+                serviceBase.getAssignmentEndpoint(schoolId, courseId, id),// + "/" + Long.toString(id), 
                 null);
         Assignment assignment = serviceBase.validateResponse(response, new TypeReference<Assignment>(){});
         Assert.assertNotNull(assignment, "Unexpected null assignment returned for case: " + msg);
@@ -39,102 +40,93 @@ public class AssignmentServiceValidatingExecutor implements IServiceValidatingEx
         return assignment;
     }
     
-    public void getAll(String msg, int numberOfItems) {
+    public void getAll(Long schoolId, Long courseId, String msg, int numberOfItems) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.GET, 
-                serviceBase.getAssignmentEndpoint(), 
+                serviceBase.getAssignmentEndpoint(schoolId, courseId), 
                 null);
         ArrayList<Assignment> assignments = serviceBase.validateResponse(response, new TypeReference<ArrayList<Assignment>>(){});
         Assert.assertNotNull(assignments, "Unexpected null assignment returned for case: " + msg);
         Assert.assertEquals(assignments.size(), numberOfItems, "Unexpected number of items returned for case: " + msg);
     }
     
-    @Override
-    public void getNegative(Long id, HttpStatus expectedCode, String msg) {
+    public void getNegative(Long schoolId, Long courseId, Long id, HttpStatus expectedCode, String msg) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.GET, 
-                serviceBase.getAssignmentEndpoint() + "/" + Long.toString(id), 
+                serviceBase.getAssignmentEndpoint(schoolId, courseId, id),// + "/" + Long.toString(id), 
                 null);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
                 "Unexpected status code returned while retreiving assignment: " + msg);
     }
     
-    @Override
-    public Assignment create(Assignment assignment, String msg) {
+    public Assignment create(Long schoolId, Long courseId, Assignment assignment, String msg) {
         //Create the assignment
-        ResultActions response = serviceBase.makeRequest(HttpMethod.POST, serviceBase.getAssignmentEndpoint(), null, assignment);
+        ResultActions response = serviceBase.makeRequest(HttpMethod.POST, serviceBase.getAssignmentEndpoint(schoolId, courseId), null, assignment);
         EntityId assignmentId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
         Assert.assertNotNull(assignmentId, "unexpected null app returned from create call for case: " + msg);
-        return retrieveAndValidateCreatedAssignment(assignmentId, assignment, HttpMethod.POST, msg);
+        return retrieveAndValidateCreatedAssignment(schoolId, courseId, assignmentId, assignment, HttpMethod.POST, msg);
     }
     
-    @Override
-    public void createNegative(Assignment assignment, HttpStatus expectedCode, String msg) {
+    public void createNegative(Long schoolId, Long courseId, Assignment assignment, HttpStatus expectedCode, String msg) {
         //Attempt to create the assignment
-        ResultActions response = serviceBase.makeRequest(HttpMethod.POST, serviceBase.getAssignmentEndpoint(), null, assignment);
+        ResultActions response = serviceBase.makeRequest(HttpMethod.POST, serviceBase.getAssignmentEndpoint(schoolId, courseId), null, assignment);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
                 "Unexpected status code returned for case: " + msg);
     }
     
-    @Override
-    public void delete(Long assignmentId, String msg) {
+    public void delete(Long schoolId, Long courseId, Long assignmentId, String msg) {
         //Delete the assignment
         ResultActions response = serviceBase.makeRequest(HttpMethod.DELETE, 
-                serviceBase.getAssignmentEndpoint(assignmentId));
+                serviceBase.getAssignmentEndpoint(schoolId, courseId, assignmentId));
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), HttpStatus.OK.value(),
                 "Non 200 HttpStatus returned on delete for case: " + msg);
-        getNegative(assignmentId, HttpStatus.NOT_FOUND, msg);
+        getNegative(schoolId, courseId, assignmentId, HttpStatus.NOT_FOUND, msg);
     }
     
-    @Override
-    public void deleteNegative(Long assignmentId, HttpStatus expectedCode, String msg) {
+    public void deleteNegative(Long schoolId, Long courseId, Long assignmentId, HttpStatus expectedCode, String msg) {
         //Attempt to delete the assignment
         ResultActions response = serviceBase.makeRequest(HttpMethod.DELETE, 
-                serviceBase.getAssignmentEndpoint(assignmentId));
+                serviceBase.getAssignmentEndpoint(schoolId, courseId, assignmentId));
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(),
                 "Unexpected Http status code returned for negative test case for DELETE: " + msg);
     }
 
-    @Override
-    public Assignment replace(Long id, Assignment assignment, String msg) {
+    public Assignment replace(Long schoolId, Long courseId, Long id, Assignment assignment, String msg) {
         //Create the assignment
         ResultActions response = serviceBase.makeRequest(HttpMethod.PUT, 
-                serviceBase.getAssignmentEndpoint(id), 
+                serviceBase.getAssignmentEndpoint(schoolId, courseId, id), 
                 null, 
                 assignment);
         EntityId assignmentId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
         Assert.assertNotNull(assignmentId, "unexpected null app returned from create call for case: " + msg);
-        return retrieveAndValidateCreatedAssignment(assignmentId, assignment, HttpMethod.PUT, msg);
+        return retrieveAndValidateCreatedAssignment(schoolId, courseId, assignmentId, assignment, HttpMethod.PUT, msg);
     }
 
-    @Override
-    public void replaceNegative(Long id, Assignment assignment, HttpStatus expectedCode, String msg) {
+    public void replaceNegative(Long schoolId, Long courseId, Long id, Assignment assignment, HttpStatus expectedCode, String msg) {
         //Create the assignment
         ResultActions response = serviceBase.makeRequest(HttpMethod.PUT, 
-                serviceBase.getAssignmentEndpoint(id), 
+                serviceBase.getAssignmentEndpoint(schoolId, courseId, id), 
                 null, 
                 assignment);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(),
                 "Unexpected Http status code returned for negative test case for PUT: " + msg);
     }
 
-    @Override
-    public Assignment update(Long id, Assignment assignment, String msg) {
+    public Assignment update(Long schoolId, Long courseId, Long id, Assignment assignment, String msg) {
       //Create the assignment
         ResultActions response = serviceBase.makeRequest(HttpMethod.PATCH, 
-                serviceBase.getAssignmentEndpoint(id), 
+                serviceBase.getAssignmentEndpoint(schoolId, courseId, id), 
                 null, 
                 assignment);
         EntityId assignmentId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
         Assert.assertNotNull(assignmentId, "unexpected null app returned from create call for case: " + msg);
-        return retrieveAndValidateCreatedAssignment(assignmentId, assignment, HttpMethod.PATCH, msg);
+        return retrieveAndValidateCreatedAssignment(schoolId, courseId, assignmentId, assignment, HttpMethod.PATCH, msg);
     }
 
-    @Override
-    public void updateNegative(Long id, Assignment assignment, HttpStatus expectedCode, String msg) {
+    public void updateNegative(Long schoolId, Long courseId, Long id, Assignment assignment, HttpStatus expectedCode, String msg) {
       //Create the assignment
         ResultActions response = serviceBase.makeRequest(HttpMethod.PATCH, 
-                serviceBase.getAssignmentEndpoint(id), 
+                serviceBase.getAssignmentEndpoint(schoolId, courseId, id), 
                 null, 
                 assignment);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(),
@@ -154,12 +146,18 @@ public class AssignmentServiceValidatingExecutor implements IServiceValidatingEx
      * @param msg
      * @return
      */
-    protected Assignment retrieveAndValidateCreatedAssignment(
+    protected Assignment retrieveAndValidateCreatedAssignment( Long schoolId, Long courseId,
             EntityId assignmentId, Assignment submittedAssignment, HttpMethod method, String msg) {
         //Retrieve and validate the created assignment
-        Assignment createdAssignment = this.get(assignmentId.getId(), msg);
+        Assignment createdAssignment = this.get(schoolId, courseId, assignmentId.getId(), msg);
         //Keep a reference to the created assignment for later cleanup
-        serviceBase.assignmentsCreated.add(createdAssignment);
+        if(!serviceBase.assignmentsCreated.containsKey(schoolId)) {
+            serviceBase.assignmentsCreated.put(schoolId, new HashMap<Long, List<Assignment>>());
+        }
+        if(!serviceBase.assignmentsCreated.get(schoolId).containsKey(courseId)) {
+            serviceBase.assignmentsCreated.get(schoolId).put(courseId, new ArrayList<Assignment>());
+        }
+        serviceBase.assignmentsCreated.get(schoolId).get(courseId).add(createdAssignment);
         Assignment expectedAssignment = generateExpectationAssignment(submittedAssignment, createdAssignment, method);
         Assert.assertEquals(createdAssignment, expectedAssignment, "Unexpected assignment created for case: " + msg);
         

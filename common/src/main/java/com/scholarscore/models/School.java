@@ -1,38 +1,29 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * The class represents a course, for example 'AP Calculus BC'. The course
- * may be taught in many different schools, in many different years and 
- * terms.  A course may have different assignments and teachers and grading 
- * from year to year, but there is still one instance with a district, unique
- * ID for each course.
- * 
- * The instance of a course thats being taught at a particular time in a particular school
- * is represented by the {@link com.scholarscore.models.Section} class.
+ * The class represents a single school within a school district.
  * 
  * @author markroper
  *
  */
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Course extends ApiModel implements Serializable, IApiModel<Course> {
-    public Course() {
+public class School extends ApiModel implements Serializable, IApiModel<School>{
+    public School() {
         super();
     }
     
-    public Course(Course clone) {
+    public School(School clone) {
         super(clone);
     }
-
+    
     @Override
-    public void mergePropertiesIfNull(Course mergeFrom) {
+    public void mergePropertiesIfNull(School mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
     }
     
@@ -54,4 +45,5 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
     public int hashCode() {
         return 31 * super.hashCode();
     }
+
 }

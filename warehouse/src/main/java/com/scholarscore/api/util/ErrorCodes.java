@@ -15,8 +15,8 @@ public class ErrorCodes {
     public static final ErrorCode BAD_REQUEST_CANNOT_PARSE_BODY = 
             new ErrorCode(UNPARSABLE_REQUEST_CODE, "warehouse.api.error.bodyunparsable", HttpStatus.BAD_REQUEST);
     
-    public static final ErrorCode ASSIGNMENT_NOT_FOUND = 
-            new ErrorCode(ENTITY_NOT_FOUND_CODE, "warehouse.api.error.assignment.notfound", HttpStatus.NOT_FOUND);
+    public static final ErrorCode MODEL_NOT_FOUND = 
+            new ErrorCode(ENTITY_NOT_FOUND_CODE, "warehouse.api.error.model.notfound", HttpStatus.NOT_FOUND);
     
     public static final ErrorCode UNSUPPORTED_ASSIGNMENT_TYPE = 
             new ErrorCode(UNSUPPORTED_VALUE_CODE, "", HttpStatus.BAD_REQUEST);
