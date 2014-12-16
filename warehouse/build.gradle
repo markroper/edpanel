@@ -41,8 +41,6 @@ cargo {
     containerId = 'tomcat7x'
 	port = portnum
 
-
-
     local {
         installer {
             installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.zip'
