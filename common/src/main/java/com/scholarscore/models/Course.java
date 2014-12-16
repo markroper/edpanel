@@ -26,6 +26,10 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
     public Course() {
         super();
     }
+    
+    public Course(Course clone) {
+        super(clone);
+    }
 
     @Override
     public void mergePropertiesIfNull(Course mergeFrom) {

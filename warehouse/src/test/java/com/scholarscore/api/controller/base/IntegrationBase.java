@@ -6,9 +6,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -33,8 +35,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableMap;
 import com.scholarscore.api.controller.service.AssignmentServiceValidatingExecutor;
+import com.scholarscore.api.controller.service.CourseServiceValidatingExecutor;
 import com.scholarscore.api.controller.service.LocaleServiceUtil;
+import com.scholarscore.api.controller.service.SchoolServiceValidatingExecutor;
 import com.scholarscore.models.Assignment;
+import com.scholarscore.models.Course;
+import com.scholarscore.models.School;
 
 /**
  * Class that contains all common methods for servicing requests
@@ -53,12 +59,18 @@ public class IntegrationBase {
 //            MediaType.MULTIPART_FORM_DATA.getSubtype(), StandardCharsets.UTF_8);
 //    
     private static final String BASE_API_ENDPOINT = "/api/v1";
+    private static final String SCHOOL_ENDPOINT = "/school";
+    private static final String COURSE_ENDPOINT = "/course";
     private static final String ASSIGNMENT_ENDPOINT = "/assignment";
 
     public LocaleServiceUtil localeServiceUtil;
     public AssignmentServiceValidatingExecutor assignmentServiceValidatingExecutor;
+    public CourseServiceValidatingExecutor courseServiceValidatingExecutor;
+    public SchoolServiceValidatingExecutor schoolServiceValidatingExecutor;
     
-    public CopyOnWriteArrayList<Assignment> assignmentsCreated = new CopyOnWriteArrayList<>();
+    public ConcurrentHashMap<Long, Map<Long, List<Assignment>>> assignmentsCreated = new ConcurrentHashMap<>();
+    public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
+    public ConcurrentHashMap<Long, List<Course>> coursesCreated = new ConcurrentHashMap<>();
 
     // Locale used in testing. Supplied as command-line arguments to JVM: -Dlocale=de_DE
     // Valid values include the following:
@@ -96,6 +108,8 @@ public class IntegrationBase {
         this.mockMvc = new NetMvc();
         localeServiceUtil = new LocaleServiceUtil(this);
         assignmentServiceValidatingExecutor = new AssignmentServiceValidatingExecutor(this);
+        courseServiceValidatingExecutor = new CourseServiceValidatingExecutor(this);
+        schoolServiceValidatingExecutor = new SchoolServiceValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -107,7 +121,9 @@ public class IntegrationBase {
      * Test services initialization validated
      */
     private void validateServiceConfig() {
-        Assert.assertNotNull(assignmentServiceValidatingExecutor, "Unable to configure app service");
+        Assert.assertNotNull(assignmentServiceValidatingExecutor, "Unable to configure assignment service");
+        Assert.assertNotNull(courseServiceValidatingExecutor, "Unable to configure course service");
+        Assert.assertNotNull(schoolServiceValidatingExecutor, "Unable to configure school service");
     }
 
     /**
@@ -137,9 +153,24 @@ public class IntegrationBase {
         contentType = System.getProperty("contentType", "json");
 
         // Remove all assignments created during testing
-        for (Iterator<Assignment> it = assignmentsCreated.iterator(); it.hasNext(); ) {
-            Assignment assignment = it.next();
-            cleanupAssignment(assignment);
+        for (Map.Entry<Long, Map<Long, List<Assignment>>> entry : assignmentsCreated.entrySet()) {
+            Long schoolId = entry.getKey();
+            Map<Long, List<Assignment>> courseMap = entry.getValue();
+            for(Map.Entry<Long, List<Assignment>> courseEntry : courseMap.entrySet()) {
+                for(Assignment assignment : courseEntry.getValue()) {
+                    cleanupAssignment(schoolId, courseEntry.getKey(), assignment);
+                }
+            }
+        }
+        
+        for(Map.Entry<Long, List<Course>> courseEntry : coursesCreated.entrySet()) {
+            for(Course course : courseEntry.getValue()) {
+                cleanupCourse(courseEntry.getKey(), course);
+            }
+        }
+
+        for(Iterator<School> it = schoolsCreated.iterator(); it.hasNext();) {
+            cleanupSchool(it.next());
         }
         //Long completionTime = new Date().getTime();
     }
@@ -150,11 +181,18 @@ public class IntegrationBase {
      *
      * @param Assignment the assignment to delete
      */
-    private void cleanupAssignment(Assignment assignment) {
+    private void cleanupAssignment(Long schoolId, Long courseId, Assignment assignment) {
         // Make call to controller and do not validate the response
-        makeRequest(HttpMethod.DELETE, getAssignmentEndpoint(assignment.getId()));
+        makeRequest(HttpMethod.DELETE, getAssignmentEndpoint(schoolId, courseId, assignment.getId()));
     }
 
+    private void cleanupSchool(School school) {
+        makeRequest(HttpMethod.DELETE, getSchoolEndpoint(school.getId()));
+    }
+    
+    private void cleanupCourse(Long schoolId, Course course) {
+        makeRequest(HttpMethod.DELETE, getCourseEndpoint(schoolId, course.getId()));
+    }
     /**
      * Description:
      * Helper method used to initialize test config (environment, locale, etc)
@@ -443,13 +481,49 @@ public class IntegrationBase {
     }
 
     /**
+     * returns the school endpoint
+     * @return
+     */
+    public String getSchoolEndpoint() {
+        return BASE_API_ENDPOINT + SCHOOL_ENDPOINT;
+    }
+    
+    /**
+     * returns the school endpoint
+     * @param schoolId
+     * @return
+     */
+    public String getSchoolEndpoint(Long schoolId) {
+        return getSchoolEndpoint() + pathify(schoolId);
+    }
+    
+    /**
+     * Generates and return the course endpoint
+     * @param schoolId
+     * @return
+     */
+    public String getCourseEndpoint(Long schoolId) {
+        return getSchoolEndpoint(schoolId) + COURSE_ENDPOINT;
+    }
+    
+    /**
+     * Generates and returns the course endpoint including courseId
+     * @param schoolId
+     * @param courseId
+     * @return
+     */
+    public String getCourseEndpoint(Long schoolId, Long courseId) {
+        return getCourseEndpoint(schoolId) + pathify(courseId);
+    }
+    
+    /**
      * Description:
      * Private helper method to get string to connect to application endpoint
      * Expected Result:
      * String for application endpoint
      */
-    public String getAssignmentEndpoint() {
-        return BASE_API_ENDPOINT + ASSIGNMENT_ENDPOINT;
+    public String getAssignmentEndpoint(Long schoolId, Long courseId) {
+        return getCourseEndpoint(schoolId, courseId) + ASSIGNMENT_ENDPOINT;
     }
 
     /**
@@ -458,8 +532,8 @@ public class IntegrationBase {
      * Expected Result:
      * String for application endpoint containing supplied appId
      */
-    public String getAssignmentEndpoint(Long assignmentId) {
-        return getAssignmentEndpoint() + pathify(assignmentId);
+    public String getAssignmentEndpoint(Long schoolId, Long courseId, Long assignmentId) {
+        return getAssignmentEndpoint(schoolId, courseId) + pathify(assignmentId);
     }
 
     /**

@@ -201,7 +201,7 @@ public class AssignmentController extends BaseController {
             @PathVariable(value="courseId") Long courseId,
             @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
-        if(null == schoolId || schools.containsKey(schoolId)) {
+        if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == courseId || !courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {

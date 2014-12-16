@@ -18,6 +18,10 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         super();
     }
     
+    public School(School clone) {
+        super(clone);
+    }
+    
     @Override
     public void mergePropertiesIfNull(School mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
