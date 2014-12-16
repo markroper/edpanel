@@ -21,7 +21,7 @@ import com.scholarscore.models.factory.AssignmentFactory;
  * @author markroper
  * @see IServiceValidatingExecutor
  */
-public class AssignmentServiceValidatingExecutor {//implements IServiceValidatingExecutor<Assignment>{
+public class AssignmentServiceValidatingExecutor {
 
     private final IntegrationBase serviceBase;
     

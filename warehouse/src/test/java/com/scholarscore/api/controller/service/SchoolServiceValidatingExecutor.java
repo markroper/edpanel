@@ -30,14 +30,13 @@ public class SchoolServiceValidatingExecutor {
         return school;
     }
     
-    public void getAll(String msg, int numberOfItems) {
+    public void getAll(String msg) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.GET, 
                 serviceBase.getSchoolEndpoint(), 
                 null);
         ArrayList<School> schools = serviceBase.validateResponse(response, new TypeReference<ArrayList<School>>(){});
         Assert.assertNotNull(schools, "Unexpected null school returned for case: " + msg);
-        Assert.assertEquals(schools.size(), numberOfItems, "Unexpected number of items returned for case: " + msg);
     }
     
     public void getNegative(Long schoolId, HttpStatus expectedCode, String msg) {
@@ -93,7 +92,7 @@ public class SchoolServiceValidatingExecutor {
         return retrieveAndValidateCreatedSchool(schoolId, school, HttpMethod.PUT, msg);
     }
 
-    public void replaceNegative(Long schoolId, Long courseId, Long id, School school, HttpStatus expectedCode, String msg) {
+    public void replaceNegative(Long schoolId, School school, HttpStatus expectedCode, String msg) {
         //Create the school
         ResultActions response = serviceBase.makeRequest(HttpMethod.PUT, 
                 serviceBase.getSchoolEndpoint(schoolId), 
