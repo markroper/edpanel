@@ -58,7 +58,7 @@ cargo {
 task deployRemote(type: com.bmuschko.gradle.cargo.tasks.remote.CargoDeployRemote) {
     containerId = 'tomcat7x'
     hostname = 'localhost'
-//    port = TomcatPortQA as Integer
+    port = 8080
     username = 'cargo'
     password = '0BxLrz7zG4dqDX2q6vi4'
 }
