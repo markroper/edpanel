@@ -1,7 +1,7 @@
 package com.scholarscore.api.controller.service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedHashSet;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -172,11 +172,13 @@ private final IntegrationBase serviceBase;
         }
         
         if(null != returnSchoolYear.getTerms() && !returnSchoolYear.getTerms().isEmpty()) {
-            Iterator<Term> it = created.getTerms().iterator();
-            for(Term t : returnSchoolYear.getTerms()) {
-                Term createdTerm = it.next();
-                t.setId(createdTerm.getId());
+            LinkedHashSet<Term> termSetToReturn = new LinkedHashSet<>();
+            for (Term t : created.getTerms()) {
+                Term copiedTerm = new Term(t);
+                copiedTerm.setId(t.getId());
+                termSetToReturn.add(copiedTerm);
             }
+            returnSchoolYear.setTerms(termSetToReturn);
         }
         return returnSchoolYear;
     }
