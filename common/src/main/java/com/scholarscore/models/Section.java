@@ -7,6 +7,14 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+/**
+ * A Section is a temporal instance of a Course.  Where a course defines that which is to be taught, a Section has
+ * a reference to a course, and in addition, a start and end date, a set of enrolled students, a room, a grade book,
+ * and so on.
+ * 
+ * @author markroper
+ *
+ */
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Section extends ApiModel implements Serializable, IApiModel<Section> {

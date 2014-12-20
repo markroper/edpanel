@@ -6,6 +6,15 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+/**
+ * SectionAssignment is to Assignment as Section is to Course.  A SectionAssignment is 
+ * a temporal instance of an assignment.  In addition to an Assignment reference, a SectionAssignment
+ * has a due date, a grade weighting for the section it is in, and a reference to a section, among other
+ * attributes.
+ * 
+ * @author markroper
+ *
+ */
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SectionAssignment extends ApiModel implements Serializable, IApiModel<SectionAssignment> {
