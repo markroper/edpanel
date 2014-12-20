@@ -39,6 +39,7 @@ import com.scholarscore.api.controller.service.CourseValidatingExecutor;
 import com.scholarscore.api.controller.service.LocaleServiceUtil;
 import com.scholarscore.api.controller.service.SchoolValidatingExecutor;
 import com.scholarscore.api.controller.service.SchoolYearValidatingExecutor;
+import com.scholarscore.api.controller.service.TermValidatingExecutor;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
@@ -65,12 +66,14 @@ public class IntegrationBase {
     private static final String SCHOOL_YEAR_ENDPOINT = "/years";
     private static final String COURSE_ENDPOINT = "/courses";
     private static final String ASSIGNMENT_ENDPOINT = "/assignments";
+    private static final String TERM_ENDPOINT = "/terms";
 
     public LocaleServiceUtil localeServiceUtil;
     public AssignmentValidatingExecutor assignmentValidatingExecutor;
     public CourseValidatingExecutor courseValidatingExecutor;
     public SchoolValidatingExecutor schoolValidatingExecutor;
     public SchoolYearValidatingExecutor schoolYearValidatingExecutor;
+    public TermValidatingExecutor termValidatingExecutor;
     
     public ConcurrentHashMap<Long, Map<Long, List<Assignment>>> assignmentsCreated = new ConcurrentHashMap<>();
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
@@ -116,6 +119,7 @@ public class IntegrationBase {
         courseValidatingExecutor = new CourseValidatingExecutor(this);
         schoolValidatingExecutor = new SchoolValidatingExecutor(this);
         schoolYearValidatingExecutor = new SchoolYearValidatingExecutor(this);
+        termValidatingExecutor = new TermValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -130,6 +134,8 @@ public class IntegrationBase {
         Assert.assertNotNull(assignmentValidatingExecutor, "Unable to configure assignment service");
         Assert.assertNotNull(courseValidatingExecutor, "Unable to configure course service");
         Assert.assertNotNull(schoolValidatingExecutor, "Unable to configure school service");
+        Assert.assertNotNull(schoolYearValidatingExecutor, "Unable to configure school year service");
+        Assert.assertNotNull(termValidatingExecutor, "Unable to configure term service");
     }
 
     /**
@@ -549,6 +555,27 @@ public class IntegrationBase {
      */
     public String getCourseEndpoint(Long schoolId, Long courseId) {
         return getCourseEndpoint(schoolId) + pathify(courseId);
+    }
+    
+    /**
+     * Generates and returns a term endpoint
+     * @param schoolId
+     * @param schoolYearId
+     * @return
+     */
+    public String getTermEndpoint(Long schoolId, Long schoolYearId) {
+        return getSchoolYearEndpoint(schoolId, schoolYearId) + TERM_ENDPOINT;
+    }
+    
+    /**
+     * Generates and returns a term endpoint including termId
+     * @param schoolId
+     * @param schoolYearId
+     * @param termId
+     * @return
+     */
+    public String getTermEndpoint(Long schoolId, Long schoolYearId, Long termId) {
+        return getTermEndpoint(schoolId, schoolYearId) + pathify(termId);
     }
     
     /**

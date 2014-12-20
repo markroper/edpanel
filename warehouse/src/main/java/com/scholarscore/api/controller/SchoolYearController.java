@@ -57,7 +57,7 @@ public class SchoolYearController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(!schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, schoolYearId });
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, schoolYearId });
         } else {
             return respond(schoolYears.get(schoolId).get(schoolYearId));
         }
@@ -122,7 +122,7 @@ public class SchoolYearController extends BaseController {
             schoolYears.get(schoolId).put(schoolYearId, schoolYear);
             return respond(new EntityId(schoolYearId));
         } else {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ COURSE, schoolYearId });
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL_YEAR, schoolYearId });
         }
     }
     
@@ -159,7 +159,7 @@ public class SchoolYearController extends BaseController {
             schoolYears.get(schoolId).put(schoolYearId, schoolYear);
             return respond(new EntityId(schoolYearId));
         } else {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ COURSE, schoolYearId });
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL_YEAR, schoolYearId });
         }
     }
 
@@ -181,19 +181,9 @@ public class SchoolYearController extends BaseController {
         }
         if(null == schoolYearId || !schoolYears.containsKey(schoolId) 
                 || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ COURSE, schoolYearId });
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL_YEAR, schoolYearId });
         }
         schoolYears.get(schoolId).remove(schoolYearId);
         return respond((SchoolYear) null);
-    }
-    
-    private HashSet<Long> resolveTermIds(SchoolYear year) {
-        HashSet<Long> termIds = new HashSet<>();
-        if(null != year.getTerms()) {
-            for(Term t : year.getTerms()) {
-                termIds.add(t.getId());
-            }
-        }
-        return termIds;
     }
 }
