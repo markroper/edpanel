@@ -23,6 +23,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Course extends ApiModel implements Serializable, IApiModel<Course> {
+    //TODO: Boolean honors
+    //TODO: GPA weight
+    
     public Course() {
         super();
     }
