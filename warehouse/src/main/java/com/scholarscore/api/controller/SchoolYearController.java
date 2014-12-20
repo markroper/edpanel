@@ -2,6 +2,7 @@ package com.scholarscore.api.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -108,14 +109,16 @@ public class SchoolYearController extends BaseController {
         if(!schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
-        if(null != schoolYear.getTerms() && !schoolYear.getTerms().isEmpty()) {
-            for(Term t : schoolYear.getTerms()) {
-                if(null == t.getId()) {
-                    t.setId(termCounter.incrementAndGet());
+        if(null != schoolYearId && schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
+            SchoolYear originalSchoolYear = schoolYears.get(schoolId).get(schoolYearId);
+            HashSet<Long> termIds = resolveTermIds(originalSchoolYear);
+            if(null != schoolYear.getTerms() && !schoolYear.getTerms().isEmpty()) {
+                for(Term t : schoolYear.getTerms()) {
+                    if(null == t.getId() || !termIds.contains(t.getId())) {
+                        t.setId(termCounter.incrementAndGet());
+                    }
                 }
             }
-        }
-        if(null != schoolYearId && schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
             schoolYears.get(schoolId).put(schoolYearId, schoolYear);
             return respond(new EntityId(schoolYearId));
         } else {
@@ -143,10 +146,12 @@ public class SchoolYearController extends BaseController {
         }
         if(null != schoolYear && null != schoolYearId && schoolYears.containsKey(schoolId) 
                 && schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            schoolYear.mergePropertiesIfNull(schoolYears.get(schoolId).get(schoolYearId));
+            SchoolYear originalSchoolYear = schoolYears.get(schoolId).get(schoolYearId);
+            schoolYear.mergePropertiesIfNull(originalSchoolYear);
             if(null != schoolYear.getTerms() && !schoolYear.getTerms().isEmpty()) {
+                HashSet<Long> termIds = resolveTermIds(originalSchoolYear);
                 for(Term t : schoolYear.getTerms()) {
-                    if(null == t.getId()) {
+                    if(null == t.getId() || !termIds.contains(t.getId())) {
                         t.setId(termCounter.getAndIncrement());
                     }
                 }
@@ -180,5 +185,15 @@ public class SchoolYearController extends BaseController {
         }
         schoolYears.get(schoolId).remove(schoolYearId);
         return respond((SchoolYear) null);
+    }
+    
+    private HashSet<Long> resolveTermIds(SchoolYear year) {
+        HashSet<Long> termIds = new HashSet<>();
+        if(null != year.getTerms()) {
+            for(Term t : year.getTerms()) {
+                termIds.add(t.getId());
+            }
+        }
+        return termIds;
     }
 }
