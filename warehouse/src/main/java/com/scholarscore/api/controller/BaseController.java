@@ -2,6 +2,7 @@ package com.scholarscore.api.controller;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -14,7 +15,9 @@ import com.scholarscore.api.util.ErrorResponseFactory;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
+import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.SubjectArea;
+import com.scholarscore.models.Term;
 
 /**
  * All SpringMVC controllers defined in the package subclass this base
@@ -32,9 +35,16 @@ public abstract class BaseController {
     protected static final String SCHOOL = "school";
     protected static final String ASSIGNMENT = "assignment";
     protected static final String COURSE = "course";
+    protected static final String SCHOOL_YEAR = "school year";
+    protected static final String TERM = "term";
     
-    protected final AtomicLong schoolIdCounter = new AtomicLong();
+    protected final AtomicLong schoolCounter = new AtomicLong();
     protected static Map<Long, School> schools = Collections.synchronizedMap(new HashMap<Long, School>());
+    protected final AtomicLong schoolYearCounter = new AtomicLong();
+    protected final AtomicLong termCounter = new AtomicLong();
+    protected static Map<Long, Map<Long, SchoolYear>> schoolYears = 
+            Collections.synchronizedMap(new HashMap<Long, Map<Long, SchoolYear>>());
+    
     protected final AtomicLong subjectAreaCounter = new AtomicLong();
     protected static Map<Long, Map<Long, SubjectArea>> subjectAreas = Collections.synchronizedMap(new HashMap<Long, Map<Long, SubjectArea>>());
     protected final AtomicLong courseCounter = new AtomicLong();
@@ -58,6 +68,16 @@ public abstract class BaseController {
         ErrorCode returnError = new ErrorCode(code);
         returnError.setArguments(args);
         return new ResponseEntity<ErrorCode>(factory.localizeError(returnError), returnError.getHttpStatus());
+    }
+    
+    protected HashSet<Long> resolveTermIds(SchoolYear year) {
+        HashSet<Long> termIds = new HashSet<>();
+        if(null != year.getTerms()) {
+            for(Term t : year.getTerms()) {
+                termIds.add(t.getId());
+            }
+        }
+        return termIds;
     }
 
 }

@@ -25,11 +25,11 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
         numberOfItemsCreated = 0;
         school = new School();
         school.setName(localeServiceUtil.generateName());
-        school = schoolServiceValidatingExecutor.create(school, "Create base school");
+        school = schoolValidatingExecutor.create(school, "Create base school");
         
         course = new Course();
         course.setName(localeServiceUtil.generateName());
-        course = courseServiceValidatingExecutor.create(school.getId(), course, "create base course");
+        course = courseValidatingExecutor.create(school.getId(), course, "create base course");
     }
     
     //Positive test cases
@@ -58,36 +58,36 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createAssignmentProvider")
     public void createAssignmentTest(String msg, Assignment assignment) {
-        assignmentServiceValidatingExecutor.create(school.getId(), course.getId(), assignment, msg);
+        assignmentValidatingExecutor.create(school.getId(), course.getId(), assignment, msg);
         numberOfItemsCreated++;
     }
     
     @Test(dataProvider = "createAssignmentProvider")
     public void deleteAssignmentTest(String msg, Assignment assignment) {
-        Assignment createdAssignment = assignmentServiceValidatingExecutor.create(school.getId(), course.getId(), assignment, msg);
-        assignmentServiceValidatingExecutor.delete(school.getId(), course.getId(), createdAssignment.getId(), msg);
+        Assignment createdAssignment = assignmentValidatingExecutor.create(school.getId(), course.getId(), assignment, msg);
+        assignmentValidatingExecutor.delete(school.getId(), course.getId(), createdAssignment.getId(), msg);
     }
     
     @Test(dataProvider = "createAssignmentProvider")
     public void replaceAssignmentTest(String msg, Assignment assignment) {
-        Assignment createdAssignment = assignmentServiceValidatingExecutor.create(school.getId(), course.getId(), assignment, msg);
-        assignmentServiceValidatingExecutor.replace(school.getId(), course.getId(), createdAssignment.getId(), new GradedAssignment(), msg);
+        Assignment createdAssignment = assignmentValidatingExecutor.create(school.getId(), course.getId(), assignment, msg);
+        assignmentValidatingExecutor.replace(school.getId(), course.getId(), createdAssignment.getId(), new GradedAssignment(), msg);
         numberOfItemsCreated++;
     }
     
     @Test(dataProvider = "createAssignmentProvider")
     public void updateAssignmentTest(String msg, Assignment assignment) {
-        Assignment createdAssignment = assignmentServiceValidatingExecutor.create(school.getId(), course.getId(), assignment, msg);
+        Assignment createdAssignment = assignmentValidatingExecutor.create(school.getId(), course.getId(), assignment, msg);
         GradedAssignment updatedAssignment = new GradedAssignment();
         updatedAssignment.setName(localeServiceUtil.generateName());
         //PATCH the existing record with a new name.
-        assignmentServiceValidatingExecutor.update(school.getId(), course.getId(), createdAssignment.getId(), updatedAssignment, msg);
+        assignmentValidatingExecutor.update(school.getId(), course.getId(), createdAssignment.getId(), updatedAssignment, msg);
         numberOfItemsCreated++;
     }
     
     @Test
     public void getAllItems() {
-        assignmentServiceValidatingExecutor.getAll(school.getId(), course.getId(), "Get all records created so far", numberOfItemsCreated++);
+        assignmentValidatingExecutor.getAll(school.getId(), course.getId(), "Get all records created so far", numberOfItemsCreated++);
     }
     
     //Negative test cases
@@ -103,12 +103,12 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createAssignmentNegativeProvider")
     public void createAssignmentNegativeTest(String msg, Assignment assignment, HttpStatus expectedStatus) {
-        assignmentServiceValidatingExecutor.createNegative(school.getId(), course.getId(), assignment, expectedStatus, msg);
+        assignmentValidatingExecutor.createNegative(school.getId(), course.getId(), assignment, expectedStatus, msg);
     }
     
     @Test(dataProvider = "createAssignmentNegativeProvider")
     public void replaceAssignmentNegativeTest(String msg, Assignment assignment, HttpStatus expectedStatus) {
-        Assignment created = assignmentServiceValidatingExecutor.create(school.getId(), course.getId(), new GradedAssignment(), msg);
-        assignmentServiceValidatingExecutor.replaceNegative(school.getId(), course.getId(), created.getId(), assignment, expectedStatus, msg);
+        Assignment created = assignmentValidatingExecutor.create(school.getId(), course.getId(), new GradedAssignment(), msg);
+        assignmentValidatingExecutor.replaceNegative(school.getId(), course.getId(), created.getId(), assignment, expectedStatus, msg);
     }
 }

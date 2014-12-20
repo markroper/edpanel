@@ -32,36 +32,36 @@ public class SchoolControllerIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createSchoolProvider")
     public void createSchoolTest(String msg, School school) {
-        schoolServiceValidatingExecutor.create(school, msg);
+        schoolValidatingExecutor.create(school, msg);
         numberOfItemsCreated++;
     }
     
     @Test(dataProvider = "createSchoolProvider")
     public void deleteSchoolTest(String msg, School school) {
-        School createdSchool = schoolServiceValidatingExecutor.create(school, msg);
-        schoolServiceValidatingExecutor.delete(createdSchool.getId(), msg);
+        School createdSchool = schoolValidatingExecutor.create(school, msg);
+        schoolValidatingExecutor.delete(createdSchool.getId(), msg);
     }
     
     @Test(dataProvider = "createSchoolProvider")
     public void replaceSchoolTest(String msg, School school) {
-        School createdSchool = schoolServiceValidatingExecutor.create(school, msg);
-        schoolServiceValidatingExecutor.replace(createdSchool.getId(), new School(), msg);
+        School createdSchool = schoolValidatingExecutor.create(school, msg);
+        schoolValidatingExecutor.replace(createdSchool.getId(), new School(), msg);
         numberOfItemsCreated++;
     }
     
     @Test(dataProvider = "createSchoolProvider")
     public void updateSchoolTest(String msg, School school) {
-        School createdSchool = schoolServiceValidatingExecutor.create(school, msg);
+        School createdSchool = schoolValidatingExecutor.create(school, msg);
         School updatedSchool = new School();
         updatedSchool.setName(localeServiceUtil.generateName());
         //PATCH the existing record with a new name.
-        schoolServiceValidatingExecutor.update(createdSchool.getId(), updatedSchool, msg);
+        schoolValidatingExecutor.update(createdSchool.getId(), updatedSchool, msg);
         numberOfItemsCreated++;
     }
     
     @Test
     public void getAllItems() {
-        schoolServiceValidatingExecutor.getAll("Get all records created so far");
+        schoolValidatingExecutor.getAll("Get all records created so far");
     }
     
     //Negative test cases
@@ -77,12 +77,12 @@ public class SchoolControllerIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createSchoolNegativeProvider")
     public void createSchoolNegativeTest(String msg, School school, HttpStatus expectedStatus) {
-        schoolServiceValidatingExecutor.createNegative(school, expectedStatus, msg);
+        schoolValidatingExecutor.createNegative(school, expectedStatus, msg);
     }
     
     @Test(dataProvider = "createSchoolNegativeProvider")
     public void replaceSchoolNegativeTest(String msg, School school, HttpStatus expectedStatus) {
-        School created = schoolServiceValidatingExecutor.create(new School(), msg);
-        schoolServiceValidatingExecutor.replaceNegative(created.getId(), school, expectedStatus, msg);
+        School created = schoolValidatingExecutor.create(new School(), msg);
+        schoolValidatingExecutor.replaceNegative(created.getId(), school, expectedStatus, msg);
     }
 }

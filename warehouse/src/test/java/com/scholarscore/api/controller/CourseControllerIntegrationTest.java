@@ -19,7 +19,7 @@ public class CourseControllerIntegrationTest extends IntegrationBase {
         numberOfItemsCreated = 0;
         school = new School();
         school.setName(localeServiceUtil.generateName());
-        school = schoolServiceValidatingExecutor.create(school, "Create base school");
+        school = schoolValidatingExecutor.create(school, "Create base school");
     }
     
     //Positive test cases
@@ -37,36 +37,36 @@ public class CourseControllerIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createCourseProvider")
     public void createCourseTest(String msg, Course course) {
-        courseServiceValidatingExecutor.create(school.getId(), course, msg);
+        courseValidatingExecutor.create(school.getId(), course, msg);
         numberOfItemsCreated++;
     }
     
     @Test(dataProvider = "createCourseProvider")
     public void deleteCourseTest(String msg, Course course) {
-        Course createdCourse = courseServiceValidatingExecutor.create(school.getId(), course, msg);
-        courseServiceValidatingExecutor.delete(school.getId(), createdCourse.getId(), msg);
+        Course createdCourse = courseValidatingExecutor.create(school.getId(), course, msg);
+        courseValidatingExecutor.delete(school.getId(), createdCourse.getId(), msg);
     }
     
     @Test(dataProvider = "createCourseProvider")
     public void replaceCourseTest(String msg, Course course) {
-        Course createdCourse = courseServiceValidatingExecutor.create(school.getId(), course, msg);
-        courseServiceValidatingExecutor.replace(school.getId(), createdCourse.getId(), new Course(), msg);
+        Course createdCourse = courseValidatingExecutor.create(school.getId(), course, msg);
+        courseValidatingExecutor.replace(school.getId(), createdCourse.getId(), new Course(), msg);
         numberOfItemsCreated++;
     }
     
     @Test(dataProvider = "createCourseProvider")
     public void updateCourseTest(String msg, Course course) {
-        Course createdCourse = courseServiceValidatingExecutor.create(school.getId(), course, msg);
+        Course createdCourse = courseValidatingExecutor.create(school.getId(), course, msg);
         Course updatedCourse = new Course();
         updatedCourse.setName(localeServiceUtil.generateName());
         //PATCH the existing record with a new name.
-        courseServiceValidatingExecutor.update(school.getId(), createdCourse.getId(), updatedCourse, msg);
+        courseValidatingExecutor.update(school.getId(), createdCourse.getId(), updatedCourse, msg);
         numberOfItemsCreated++;
     }
     
     @Test
     public void getAllItems() {
-        courseServiceValidatingExecutor.getAll(school.getId(), "Get all records created so far", numberOfItemsCreated++);
+        courseValidatingExecutor.getAll(school.getId(), "Get all records created so far", numberOfItemsCreated++);
     }
     
     //Negative test cases
@@ -82,12 +82,12 @@ public class CourseControllerIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createCourseNegativeProvider")
     public void createCourseNegativeTest(String msg, Course course, HttpStatus expectedStatus) {
-        courseServiceValidatingExecutor.createNegative(school.getId(), course, expectedStatus, msg);
+        courseValidatingExecutor.createNegative(school.getId(), course, expectedStatus, msg);
     }
     
     @Test(dataProvider = "createCourseNegativeProvider")
     public void replaceCourseNegativeTest(String msg, Course course, HttpStatus expectedStatus) {
-        Course created = courseServiceValidatingExecutor.create(school.getId(), new Course(), msg);
-        courseServiceValidatingExecutor.replaceNegative(school.getId(), created.getId(), course, expectedStatus, msg);
+        Course created = courseValidatingExecutor.create(school.getId(), new Course(), msg);
+        courseValidatingExecutor.replaceNegative(school.getId(), created.getId(), course, expectedStatus, msg);
     }
 }
