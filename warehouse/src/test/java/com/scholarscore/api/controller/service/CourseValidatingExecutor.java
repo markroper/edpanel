@@ -16,10 +16,10 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.factory.AssignmentFactory;
 
-public class CourseServiceValidatingExecutor {
+public class CourseValidatingExecutor {
     private final IntegrationBase serviceBase;
     
-    public CourseServiceValidatingExecutor(IntegrationBase sb) {
+    public CourseValidatingExecutor(IntegrationBase sb) {
         this.serviceBase = sb;
     }
     

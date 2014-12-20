@@ -28,7 +28,7 @@ import javax.validation.Valid;
  * @see com.scholarscore.models.Assignment
  */
 @Controller
-@RequestMapping("/api/v1/school/{schoolId}/course/{courseId}/assignment")
+@RequestMapping("/api/v1/schools/{schoolId}/courses/{courseId}/assignments")
 public class AssignmentController extends BaseController {
     @ApiOperation(
             value = "Get all assignments", 

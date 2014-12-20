@@ -12,10 +12,10 @@ import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.School;
 
-public class SchoolServiceValidatingExecutor {
+public class SchoolValidatingExecutor {
     private final IntegrationBase serviceBase;
     
-    public SchoolServiceValidatingExecutor(IntegrationBase sb) {
+    public SchoolValidatingExecutor(IntegrationBase sb) {
         this.serviceBase = sb;
     }
     

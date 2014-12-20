@@ -1,6 +1,8 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -16,38 +18,59 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Term 
-        extends ApiModel implements Serializable, IApiModel<Term>{
+public class Term extends ApiModel implements Serializable, IApiModel<Term>{
+    protected Date startDate;
+    protected Date endDate;
+    
     public Term() {
         
     }
     
     public Term(Term year) {
         super(year);
+        this.startDate = year.startDate;
+        this.endDate = year.endDate;
     }
     
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
     @Override
     public void mergePropertiesIfNull(Term mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);     
+        if(null ==  this.startDate) {
+            this.startDate = mergeFrom.startDate;
+        }
+        if(null == this.endDate) {
+            this.endDate = mergeFrom.endDate;
+        }
     }
     
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
         if(!super.equals(obj)) {
             return false;
         }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        return true;
+        final Term other = (Term) obj;
+        return Objects.equals(this.startDate, other.startDate) && Objects.equals(this.endDate, other.endDate);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode();
+        return 31 * super.hashCode() + Objects.hash(startDate, endDate);
     }
 
 }

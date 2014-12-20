@@ -20,7 +20,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Controller
-@RequestMapping("/api/v1/school")
+@RequestMapping("/api/v1/schools")
 public class SchoolController extends BaseController {
     @ApiOperation(
             value = "Get all schools within a district", 
@@ -61,7 +61,7 @@ public class SchoolController extends BaseController {
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity createSchool(@RequestBody @Valid School school) {
-        school.setId(schoolIdCounter.incrementAndGet());
+        school.setId(schoolCounter.incrementAndGet());
         schools.put(school.getId(), school);
         return respond(new EntityId(school.getId()));
     }

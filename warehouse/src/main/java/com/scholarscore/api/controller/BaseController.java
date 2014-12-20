@@ -14,6 +14,7 @@ import com.scholarscore.api.util.ErrorResponseFactory;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
+import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.SubjectArea;
 
 /**
@@ -32,9 +33,15 @@ public abstract class BaseController {
     protected static final String SCHOOL = "school";
     protected static final String ASSIGNMENT = "assignment";
     protected static final String COURSE = "course";
+    protected static final String SCHOOL_YEAR = "school year";
     
-    protected final AtomicLong schoolIdCounter = new AtomicLong();
+    protected final AtomicLong schoolCounter = new AtomicLong();
     protected static Map<Long, School> schools = Collections.synchronizedMap(new HashMap<Long, School>());
+    protected final AtomicLong schoolYearCounter = new AtomicLong();
+    protected final AtomicLong termCounter = new AtomicLong();
+    protected static Map<Long, Map<Long, SchoolYear>> schoolYears = 
+            Collections.synchronizedMap(new HashMap<Long, Map<Long, SchoolYear>>());
+    
     protected final AtomicLong subjectAreaCounter = new AtomicLong();
     protected static Map<Long, Map<Long, SubjectArea>> subjectAreas = Collections.synchronizedMap(new HashMap<Long, Map<Long, SubjectArea>>());
     protected final AtomicLong courseCounter = new AtomicLong();

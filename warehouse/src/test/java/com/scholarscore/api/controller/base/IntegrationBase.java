@@ -34,13 +34,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableMap;
-import com.scholarscore.api.controller.service.AssignmentServiceValidatingExecutor;
-import com.scholarscore.api.controller.service.CourseServiceValidatingExecutor;
+import com.scholarscore.api.controller.service.AssignmentValidatingExecutor;
+import com.scholarscore.api.controller.service.CourseValidatingExecutor;
 import com.scholarscore.api.controller.service.LocaleServiceUtil;
-import com.scholarscore.api.controller.service.SchoolServiceValidatingExecutor;
+import com.scholarscore.api.controller.service.SchoolValidatingExecutor;
+import com.scholarscore.api.controller.service.SchoolYearValidatingExecutor;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
+import com.scholarscore.models.SchoolYear;
 
 /**
  * Class that contains all common methods for servicing requests
@@ -59,17 +61,20 @@ public class IntegrationBase {
 //            MediaType.MULTIPART_FORM_DATA.getSubtype(), StandardCharsets.UTF_8);
 //    
     private static final String BASE_API_ENDPOINT = "/api/v1";
-    private static final String SCHOOL_ENDPOINT = "/school";
-    private static final String COURSE_ENDPOINT = "/course";
-    private static final String ASSIGNMENT_ENDPOINT = "/assignment";
+    private static final String SCHOOL_ENDPOINT = "/schools";
+    private static final String SCHOOL_YEAR_ENDPOINT = "/years";
+    private static final String COURSE_ENDPOINT = "/courses";
+    private static final String ASSIGNMENT_ENDPOINT = "/assignments";
 
     public LocaleServiceUtil localeServiceUtil;
-    public AssignmentServiceValidatingExecutor assignmentServiceValidatingExecutor;
-    public CourseServiceValidatingExecutor courseServiceValidatingExecutor;
-    public SchoolServiceValidatingExecutor schoolServiceValidatingExecutor;
+    public AssignmentValidatingExecutor assignmentValidatingExecutor;
+    public CourseValidatingExecutor courseValidatingExecutor;
+    public SchoolValidatingExecutor schoolValidatingExecutor;
+    public SchoolYearValidatingExecutor schoolYearValidatingExecutor;
     
     public ConcurrentHashMap<Long, Map<Long, List<Assignment>>> assignmentsCreated = new ConcurrentHashMap<>();
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
+    public ConcurrentHashMap<Long, List<SchoolYear>> schoolYearsCreated = new ConcurrentHashMap<>();
     public ConcurrentHashMap<Long, List<Course>> coursesCreated = new ConcurrentHashMap<>();
 
     // Locale used in testing. Supplied as command-line arguments to JVM: -Dlocale=de_DE
@@ -107,9 +112,10 @@ public class IntegrationBase {
     public void configureServices() {
         this.mockMvc = new NetMvc();
         localeServiceUtil = new LocaleServiceUtil(this);
-        assignmentServiceValidatingExecutor = new AssignmentServiceValidatingExecutor(this);
-        courseServiceValidatingExecutor = new CourseServiceValidatingExecutor(this);
-        schoolServiceValidatingExecutor = new SchoolServiceValidatingExecutor(this);
+        assignmentValidatingExecutor = new AssignmentValidatingExecutor(this);
+        courseValidatingExecutor = new CourseValidatingExecutor(this);
+        schoolValidatingExecutor = new SchoolValidatingExecutor(this);
+        schoolYearValidatingExecutor = new SchoolYearValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -121,9 +127,9 @@ public class IntegrationBase {
      * Test services initialization validated
      */
     private void validateServiceConfig() {
-        Assert.assertNotNull(assignmentServiceValidatingExecutor, "Unable to configure assignment service");
-        Assert.assertNotNull(courseServiceValidatingExecutor, "Unable to configure course service");
-        Assert.assertNotNull(schoolServiceValidatingExecutor, "Unable to configure school service");
+        Assert.assertNotNull(assignmentValidatingExecutor, "Unable to configure assignment service");
+        Assert.assertNotNull(courseValidatingExecutor, "Unable to configure course service");
+        Assert.assertNotNull(schoolValidatingExecutor, "Unable to configure school service");
     }
 
     /**
@@ -168,6 +174,12 @@ public class IntegrationBase {
                 cleanupCourse(courseEntry.getKey(), course);
             }
         }
+        
+        for(Map.Entry<Long, List<SchoolYear>> schoolYearEntry : schoolYearsCreated.entrySet()) {
+            for(SchoolYear schoolYear : schoolYearEntry.getValue()) {
+                cleanupSchoolYear(schoolYearEntry.getKey(), schoolYear);
+            }
+        }
 
         for(Iterator<School> it = schoolsCreated.iterator(); it.hasNext();) {
             cleanupSchool(it.next());
@@ -192,6 +204,10 @@ public class IntegrationBase {
     
     private void cleanupCourse(Long schoolId, Course course) {
         makeRequest(HttpMethod.DELETE, getCourseEndpoint(schoolId, course.getId()));
+    }
+    
+    private void cleanupSchoolYear(Long schoolId, SchoolYear schoolYear) {
+        makeRequest(HttpMethod.DELETE, getSchoolYearEndpoint(schoolId, schoolYear.getId()));
     }
     /**
      * Description:
@@ -241,8 +257,8 @@ public class IntegrationBase {
         }
     }
 
-    public AssignmentServiceValidatingExecutor getAssignmentServiceValidator() {
-        return assignmentServiceValidatingExecutor;
+    public AssignmentValidatingExecutor getAssignmentServiceValidator() {
+        return assignmentValidatingExecutor;
     }
     
     public LocaleServiceUtil getLocaleServiceValidator() {
@@ -495,6 +511,25 @@ public class IntegrationBase {
      */
     public String getSchoolEndpoint(Long schoolId) {
         return getSchoolEndpoint() + pathify(schoolId);
+    }
+    
+    /**
+     * return the school year endpoint without a school year ID
+     * @param schoolId
+     * @return
+     */
+    public String getSchoolYearEndpoint(Long schoolId) {
+        return getSchoolEndpoint(schoolId) + SCHOOL_YEAR_ENDPOINT;
+    }
+    
+    /**
+     * Return the school year endpoint with a school year ID appended
+     * @param schoolId
+     * @param schoolYearId
+     * @return
+     */
+    public String getSchoolYearEndpoint(Long schoolId, Long schoolYearId) {
+        return getSchoolYearEndpoint(schoolId) + pathify(schoolYearId); 
     }
     
     /**

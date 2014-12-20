@@ -21,11 +21,11 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Controller
-@RequestMapping("/api/v1/school/{schoolId}/course")
+@RequestMapping("/api/v1/schools/{schoolId}/courses")
 public class CourseController extends BaseController {
     @ApiOperation(
-            value = "Get all schools within a district", 
-            notes = "Retrieve all schools", 
+            value = "Get all courses within a school", 
+            notes = "Retrieve all courses", 
             response = List.class)
     @RequestMapping(
             method = RequestMethod.GET, 
