@@ -32,7 +32,7 @@ public class CourseController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAllCourses(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId) {
         return respond(new ArrayList<>(courses.get(schoolId).values()));
     }
@@ -47,9 +47,9 @@ public class CourseController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getCourse(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "courseId", required = true, value = "The course long ID")
+            @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId) {
         if(!schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
@@ -63,14 +63,14 @@ public class CourseController extends BaseController {
 
     @ApiOperation(
             value = "Create a course within a school", 
-            notes = "Creates, assigns an ID to, persists and returns a course",
+            notes = "Creates, assigns an ID, persists and returns the course ID",
             response = EntityId.class)
     @RequestMapping(
             method = RequestMethod.POST, 
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity createCourse(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid Course course) {
         if(!schools.containsKey(schoolId)) {
@@ -94,9 +94,9 @@ public class CourseController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity replaceCourse(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "courseId", required = true, value = "The course ID")
+            @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
             @RequestBody @Valid Course course) {
         if(!schools.containsKey(schoolId)) {
@@ -120,9 +120,9 @@ public class CourseController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity updateCourse(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "courseId", required = true, value = "The course ID")
+            @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
             @RequestBody @Valid Course course) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
@@ -147,9 +147,9 @@ public class CourseController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity deleteCourse(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "courseId", required = true, value = "The course ID")
+            @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL, schoolId });

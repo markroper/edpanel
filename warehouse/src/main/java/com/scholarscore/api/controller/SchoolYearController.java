@@ -26,7 +26,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping("/api/v1/schools/{schoolId}/years")
 public class SchoolYearController extends BaseController {
     @ApiOperation(
-            value = "Get all school years within a school", 
+            value = "Get all school years", 
             notes = "Retrieve all school years", 
             response = List.class)
     @RequestMapping(
@@ -34,7 +34,7 @@ public class SchoolYearController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAllSchoolYears(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId) {
         return respond(new ArrayList<>(schoolYears.get(schoolId).values()));
     }
@@ -49,9 +49,9 @@ public class SchoolYearController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getSchoolYear(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "schoolYearId", required = true, value = "The school year long ID")
+            @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId) {
         if(!schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
@@ -64,15 +64,15 @@ public class SchoolYearController extends BaseController {
     }
 
     @ApiOperation(
-            value = "Create a school year within a school", 
-            notes = "Creates, assigns an ID to, persists and returns a school year",
+            value = "Create a school year", 
+            notes = "Creates, assigns an ID, persists and returns a school year ID",
             response = EntityId.class)
     @RequestMapping(
             method = RequestMethod.POST, 
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity createSchoolYear(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid SchoolYear schoolYear) {
         if(!schools.containsKey(schoolId)) {
@@ -92,8 +92,8 @@ public class SchoolYearController extends BaseController {
     }
 
     @ApiOperation(
-            value = "Overwrite an existing school year within a district", 
-            notes = "Overwrites an existing school year entity within a district with the ID provided",
+            value = "Overwrite an existing school year", 
+            notes = "Overwrites an existing school year entity within a school with the ID provided",
             response = EntityId.class)
     @RequestMapping(
             value = "/{schoolYearId}", 
@@ -101,9 +101,9 @@ public class SchoolYearController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity replaceSchoolYear(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "schoolYearId", required = true, value = "The school year ID")
+            @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @RequestBody @Valid SchoolYear schoolYear) {
         if(!schools.containsKey(schoolId)) {
@@ -127,7 +127,7 @@ public class SchoolYearController extends BaseController {
     }
     
     @ApiOperation(
-            value = "Update an existing school year within a district", 
+            value = "Update an existing school year", 
             notes = "Updates an existing school year properties. Will not overwrite existing values with null.",
             response = EntityId.class)
     @RequestMapping(
@@ -136,9 +136,9 @@ public class SchoolYearController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity updateSchoolYear(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "schoolYearId", required = true, value = "The school year ID")
+            @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @RequestBody @Valid SchoolYear schoolYear) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
@@ -164,7 +164,7 @@ public class SchoolYearController extends BaseController {
     }
 
     @ApiOperation(
-            value = "Delete a school year from a school", 
+            value = "Delete a school year", 
             response = Void.class)
     @RequestMapping(
             value = "/{schoolYearId}", 
@@ -172,9 +172,9 @@ public class SchoolYearController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity deleteSchoolYear(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "schoolYearId", required = true, value = "The school year ID")
+            @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL, schoolId });
