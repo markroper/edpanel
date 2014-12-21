@@ -21,13 +21,13 @@ public class AttendanceAssignment extends Assignment implements Serializable {
 
     public AttendanceAssignment() {
         super();
-        this.type = ATTENDANCE;
+        this.type = AssignmentType.ATTENDANCE;
     }
     
     public AttendanceAssignment(AttendanceAssignment assignment) {
         super(assignment);
         this.date = assignment.date;
-        this.type = ATTENDANCE;
+        this.type = AssignmentType.ATTENDANCE;
     }
 
     @Override

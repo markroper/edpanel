@@ -21,7 +21,7 @@ import javax.validation.constraints.Size;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class Assignment 
         extends ApiModel implements Serializable, IApiModel<Assignment> {
-    protected String type;
+    protected AssignmentType type;
 
     /**
      * Default constructor used by the serializer
@@ -49,11 +49,11 @@ public abstract class Assignment
         }
     }
     
-    public String getType() {
+    public AssignmentType getType() {
         return this.type;
     }
     
-    public void setType(String type) {
+    public void setType(AssignmentType type) {
         this.type = type;
     }
 

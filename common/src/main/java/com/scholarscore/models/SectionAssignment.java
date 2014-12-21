@@ -21,6 +21,7 @@ public class SectionAssignment extends ApiModel implements Serializable, IApiMod
     private Long sectionId;
     private Date assignedDate;
     private Date dueDate;
+    private Long availablePoints;
     //TODO: Grade weight
     private transient Assignment assignment;
     private Long assignmentId;
@@ -36,6 +37,7 @@ public class SectionAssignment extends ApiModel implements Serializable, IApiMod
         this.dueDate = sa.dueDate;
         this.assignment = sa.assignment;
         this.assignmentId = sa.assignmentId;
+        this.availablePoints = sa.availablePoints;
     }
     
     public Date getAssignedDate() {
@@ -78,6 +80,14 @@ public class SectionAssignment extends ApiModel implements Serializable, IApiMod
         this.assignmentId = assignmentId;
     }
 
+    public Long getAvailablePoints() {
+        return availablePoints;
+    }
+
+    public void setAvailablePoints(Long availablePoints) {
+        this.availablePoints = availablePoints;
+    }
+
     @Override
     public void mergePropertiesIfNull(SectionAssignment mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);   
@@ -96,6 +106,9 @@ public class SectionAssignment extends ApiModel implements Serializable, IApiMod
         if(null == this.assignmentId) {
             this.assignmentId = mergeFrom.assignmentId;
         }
+        if(null == this.availablePoints) {
+            this.availablePoints = mergeFrom.availablePoints;
+        }
     }
     
     @Override
@@ -108,11 +121,12 @@ public class SectionAssignment extends ApiModel implements Serializable, IApiMod
                 Objects.equals(this.assignedDate, other.assignedDate) &&
                 Objects.equals(this.dueDate, other.dueDate) &&
                 Objects.equals(this.assignment, other.assignment) &&
-                Objects.equals(this.assignmentId, other.assignmentId);
+                Objects.equals(this.assignmentId, other.assignmentId) &&
+                Objects.equals(this.availablePoints, other.availablePoints);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(sectionId, assignedDate, dueDate, assignment, assignmentId);
+        return 31 * super.hashCode() + Objects.hash(sectionId, assignedDate, dueDate, assignment, assignmentId, availablePoints);
     }
 }
