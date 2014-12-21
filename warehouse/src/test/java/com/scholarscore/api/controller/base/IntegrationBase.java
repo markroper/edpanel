@@ -41,12 +41,14 @@ import com.scholarscore.api.controller.service.SchoolValidatingExecutor;
 import com.scholarscore.api.controller.service.SchoolYearValidatingExecutor;
 import com.scholarscore.api.controller.service.SectionAssignmentValidatingExecutor;
 import com.scholarscore.api.controller.service.SectionValidatingExecutor;
+import com.scholarscore.api.controller.service.StudentValidatingExecutor;
 import com.scholarscore.api.controller.service.TermValidatingExecutor;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
+import com.scholarscore.models.Student;
 
 /**
  * Class that contains all common methods for servicing requests
@@ -72,6 +74,7 @@ public class IntegrationBase {
     private static final String TERM_ENDPOINT = "/terms";
     private static final String SECTION_ENDPOINT = "/sections";
     private static final String SECTION_ASSIGNMENT_ENDPOINT = "/sectionassignments";
+    private static final String STUDENT_ENDPOINT = "/students";
 
     public LocaleServiceUtil localeServiceUtil;
     public AssignmentValidatingExecutor assignmentValidatingExecutor;
@@ -81,12 +84,14 @@ public class IntegrationBase {
     public TermValidatingExecutor termValidatingExecutor;
     public SectionValidatingExecutor sectionValidatingExecutor;
     public SectionAssignmentValidatingExecutor sectionAssignmentValidatingExecutor;
+    public StudentValidatingExecutor studentValidatingExecutor;
     
     public ConcurrentHashMap<Long, Map<Long, List<Assignment>>> assignmentsCreated = new ConcurrentHashMap<>();
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
     public ConcurrentHashMap<Long, List<SchoolYear>> schoolYearsCreated = new ConcurrentHashMap<>();
     public ConcurrentHashMap<Long, List<Course>> coursesCreated = new ConcurrentHashMap<>();
     public ConcurrentHashMap<Long, List<Section>> sectionsCreated = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Long, Student> studentsCreated = new ConcurrentHashMap<>();
 
     // Locale used in testing. Supplied as command-line arguments to JVM: -Dlocale=de_DE
     // Valid values include the following:
@@ -130,6 +135,7 @@ public class IntegrationBase {
         termValidatingExecutor = new TermValidatingExecutor(this);
         sectionValidatingExecutor = new SectionValidatingExecutor(this);
         sectionAssignmentValidatingExecutor = new SectionAssignmentValidatingExecutor(this);
+        studentValidatingExecutor = new StudentValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -148,6 +154,7 @@ public class IntegrationBase {
         Assert.assertNotNull(termValidatingExecutor, "Unable to configure term service");
         Assert.assertNotNull(sectionValidatingExecutor, "Unable to configure section service");
         Assert.assertNotNull(sectionAssignmentValidatingExecutor, "Unable to configure section assignment service");
+        Assert.assertNotNull(studentValidatingExecutor, "Unable to configure student service");
     }
 
     /**
@@ -205,6 +212,10 @@ public class IntegrationBase {
             }
         }
 
+        for(Map.Entry<Long, Student> studentEntry : studentsCreated.entrySet()) {
+            cleanupStudent(studentEntry.getKey());
+        }
+        
         for(Iterator<School> it = schoolsCreated.iterator(); it.hasNext();) {
             cleanupSchool(it.next());
         }
@@ -235,6 +246,9 @@ public class IntegrationBase {
     }
     private void cleanupSection(Long schoolId, Section section) {
         makeRequest(HttpMethod.DELETE, getSectionEndpoint(schoolId, section.getYearId(), section.getTermId(), section.getId()));
+    }
+    private void cleanupStudent(Long studentId) {
+        makeRequest(HttpMethod.DELETE, getStudentEndpoint(studentId));
     }
     
     /**
@@ -524,6 +538,13 @@ public class IntegrationBase {
         return "/" + o;
     }
 
+    public String getStudentEndpoint() {
+        return BASE_API_ENDPOINT + STUDENT_ENDPOINT;
+    }
+    
+    public String getStudentEndpoint(Long studentId) {
+        return getStudentEndpoint() + pathify(studentId);
+    }
     /**
      * returns the school endpoint
      * @return

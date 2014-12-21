@@ -20,6 +20,7 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.SectionAssignment;
+import com.scholarscore.models.Student;
 import com.scholarscore.models.SubjectArea;
 import com.scholarscore.models.Term;
 
@@ -43,6 +44,11 @@ public abstract class BaseController {
     protected static final String TERM = "term";
     protected static final String SECTION = "section";
     protected static final String SECTION_ASSIGNMENT = "section assignment";
+    protected static final String STUDENT = "student";
+    
+    //Student structure: Map<studentId, Student>
+    protected final AtomicLong studentCounter = new AtomicLong();
+    protected static Map<Long, Student> students = Collections.synchronizedMap(new HashMap<Long, Student>());
     
     //School structure: Map<schoolId, School>
     protected final AtomicLong schoolCounter = new AtomicLong();

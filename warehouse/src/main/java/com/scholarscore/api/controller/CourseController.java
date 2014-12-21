@@ -39,7 +39,7 @@ public class CourseController extends BaseController {
     
     @ApiOperation(
             value = "Get a course by ID", 
-            notes = "Given a course ID, the endpoint returns the course", 
+            notes = "Given a course ID, returns the course", 
             response = Course.class)
     @RequestMapping(
             value = "/{courseId}", 
@@ -85,8 +85,8 @@ public class CourseController extends BaseController {
     }
 
     @ApiOperation(
-            value = "Overwrite an existing course within a district", 
-            notes = "Overwrites an existing course entity within a district with the ID provided",
+            value = "Overwrite an existing course", 
+            notes = "Overwrites an existing course with the ID provided within a school",
             response = EntityId.class)
     @RequestMapping(
             value = "/{courseId}", 
@@ -111,8 +111,8 @@ public class CourseController extends BaseController {
     }
     
     @ApiOperation(
-            value = "Update an existing course within a district", 
-            notes = "Updates an existing course properties. Will not overwrite existing values with null.",
+            value = "Update an existing course", 
+            notes = "Updates an existing course. Will not overwrite existing values with null.",
             response = EntityId.class)
     @RequestMapping(
             value = "/{courseId}", 
