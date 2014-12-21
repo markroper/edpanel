@@ -51,7 +51,7 @@ public class SectionAssignmentControllerIntegrationTest extends IntegrationBase 
         namedSectionAssignment.setName(localeServiceUtil.generateName());
         namedSectionAssignment.setAssignedDate(new Date(1234567L));
         namedSectionAssignment.setDueDate(new Date(123456L));
-        namedSectionAssignment.setAssignmentId(2l);
+        namedSectionAssignment.setAssignmentId(2L);
         
         return new Object[][] {
                 { "Empty section assignment", emptySectionAssignment },
