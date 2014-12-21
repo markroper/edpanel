@@ -20,8 +20,8 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         
     }
     
-    public Student(Student year) {
-        super(year);
+    public Student(Student student) {
+        super(student);
     }
     
     @Override
@@ -37,7 +37,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         if(!super.equals(obj)) {
             return false;
         }
-        if (obj == null || getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
         return true;
