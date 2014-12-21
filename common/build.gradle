@@ -1,6 +1,9 @@
-
 ext {
 	jacksonVersion = "2.4.3"
+    springVersion = "4.0.3.RELEASE"
+    springSecurityVersion = "3.1.4.RELEASE"
+    jacksonVersion = "2.4.3"
+    apacheHttpVersion = "4.3.3"
 }
 
 dependencies {
@@ -19,5 +22,11 @@ dependencies {
             //Apache commons
             "commons-io:commons-io:2.4",
             "org.apache.commons:commons-lang3:3.3.2"
+
+	testCompile "org.testng:testng:6.8.8",
+            "org.apache.httpcomponents:httpclient:$apacheHttpVersion",
+            "org.apache.httpcomponents:httpcore:$apacheHttpVersion",
+            "org.apache.httpcomponents:httpmime:$apacheHttpVersion",
+            "org.springframework:spring-test:$springVersion"
 
 }
