@@ -42,23 +42,25 @@ public abstract class BaseController {
     protected static final String TERM = "term";
     protected static final String SECTION = "section";
     
+    //School structure: Map<schoolId, School>
     protected final AtomicLong schoolCounter = new AtomicLong();
     protected static Map<Long, School> schools = Collections.synchronizedMap(new HashMap<Long, School>());
+    //School year strcuture: Map<SchoolId, Map<SchoolYearId, SchoolYear>> note: schoolYears contain terms
     protected final AtomicLong schoolYearCounter = new AtomicLong();
     protected final AtomicLong termCounter = new AtomicLong();
-    protected static Map<Long, Map<Long, SchoolYear>> schoolYears = 
-            Collections.synchronizedMap(new HashMap<Long, Map<Long, SchoolYear>>());
-    
+    protected static Map<Long, Map<Long, SchoolYear>> schoolYears = Collections.synchronizedMap(new HashMap<Long, Map<Long, SchoolYear>>());
     //Map<termId, Map<sectionId, Section>>
     protected final AtomicLong sectionCounter = new AtomicLong();
     protected static Map<Long, Map<Long, Section>> sections = Collections.synchronizedMap(new HashMap<Long, Map<Long, Section>>());
-    
+    //Subject area structure Map<SchoolId, Map<subjectAreaId, SubjectArea>>
     protected final AtomicLong subjectAreaCounter = new AtomicLong();
     protected static Map<Long, Map<Long, SubjectArea>> subjectAreas = Collections.synchronizedMap(new HashMap<Long, Map<Long, SubjectArea>>());
+    //Course structure: Map<schoolId, Map<courseId, Course>>
     protected final AtomicLong courseCounter = new AtomicLong();
     protected static Map<Long, Map<Long, Course>> courses = Collections.synchronizedMap(new HashMap<Long, Map<Long, Course>>());
+    //Assignments structure: Map<courseId, Map<assignmentId, Assignment>>
     protected final AtomicLong assignmentCounter = new AtomicLong();
-    protected static Map<Long, Map<Long, Map<Long, Assignment>>> assignments = Collections.synchronizedMap(new HashMap<Long, Map<Long, Map<Long, Assignment>>>());
+    protected static Map<Long, Map<Long, Assignment>> assignments = Collections.synchronizedMap(new HashMap<Long, Map<Long, Assignment>>());
     
     @SuppressWarnings("unchecked")
     protected ResponseEntity respond(Object obj) {

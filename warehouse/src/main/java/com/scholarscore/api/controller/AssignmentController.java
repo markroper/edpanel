@@ -50,8 +50,8 @@ public class AssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
         }
         ArrayList<Assignment> returnAssignments = new ArrayList<Assignment>();
-        if(assignments.containsKey(schoolId) && assignments.get(schoolId).containsKey(courseId)) {
-            returnAssignments = new ArrayList<>(assignments.get(schoolId).get(courseId).values());
+        if(assignments.containsKey(courseId)) {
+            returnAssignments = new ArrayList<>(assignments.get(courseId).values());
         }
         return respond(returnAssignments);
     }
@@ -79,9 +79,8 @@ public class AssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
         }
         
-        if(assignments.containsKey(schoolId) && assignments.get(schoolId).containsKey(courseId) 
-                && assignments.get(schoolId).get(courseId).containsKey(assignmentId)) {
-            return respond(assignments.get(schoolId).get(courseId).get(assignmentId));
+        if(assignments.containsKey(courseId) && assignments.get(courseId).containsKey(assignmentId)) {
+            return respond(assignments.get(courseId).get(assignmentId));
         }
         return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { ASSIGNMENT, assignmentId });
     }
@@ -108,13 +107,10 @@ public class AssignmentController extends BaseController {
         }
         
         assignment.setId(assignmentCounter.getAndIncrement());
-        if(!assignments.containsKey(schoolId)) {
-            assignments.put(schoolId, new HashMap<Long, Map<Long, Assignment>>());
+        if(!assignments.containsKey(courseId)) {
+            assignments.put(courseId, new HashMap<Long, Assignment>());
         }
-        if(!assignments.get(schoolId).containsKey(courseId)) {
-            assignments.get(schoolId).put(courseId, new HashMap<Long, Assignment>());
-        }
-        assignments.get(schoolId).get(courseId).put(assignment.getId(), assignment);
+        assignments.get(courseId).put(assignment.getId(), assignment);
         return respond(new EntityId(assignment.getId()));
     }
 
@@ -142,9 +138,8 @@ public class AssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
         }
  
-        if(null != assignmentId && assignments.containsKey(schoolId) && assignments.get(schoolId).containsKey(courseId) 
-                && assignments.get(schoolId).get(courseId).containsKey(assignmentId)) {
-            assignments.get(schoolId).get(courseId).put(assignmentId, assignment);
+        if(null != assignmentId && assignments.containsKey(courseId) && assignments.get(courseId).containsKey(assignmentId)) {
+            assignments.get(courseId).put(assignmentId, assignment);
             return respond(new EntityId(assignmentId));
         } else {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ ASSIGNMENT, assignmentId });
@@ -175,10 +170,9 @@ public class AssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
         }
         
-        if(null != assignmentId && assignments.containsKey(schoolId) && assignments.get(schoolId).containsKey(courseId) 
-                && assignments.get(schoolId).get(courseId).containsKey(assignmentId)) {
-            assignment.mergePropertiesIfNull(assignments.get(schoolId).get(courseId).get(assignmentId));
-            assignments.get(schoolId).get(courseId).put(assignmentId, assignment);
+        if(null != assignmentId && assignments.containsKey(courseId) && assignments.get(courseId).containsKey(assignmentId)) {
+            assignment.mergePropertiesIfNull(assignments.get(courseId).get(assignmentId));
+            assignments.get(courseId).put(assignmentId, assignment);
             return respond(new EntityId(assignmentId));
         } else {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ ASSIGNMENT, assignmentId });
@@ -207,9 +201,8 @@ public class AssignmentController extends BaseController {
         if(null == courseId || !courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
         }
-        if(null != assignmentId && assignments.containsKey(schoolId) && assignments.get(schoolId).containsKey(courseId) 
-                && assignments.get(schoolId).get(courseId).containsKey(assignmentId)) {
-            assignments.get(schoolId).get(courseId).remove(assignmentId);
+        if(null != assignmentId && assignments.containsKey(courseId) && assignments.get(courseId).containsKey(assignmentId)) {
+            assignments.get(courseId).remove(assignmentId);
             return respond((Assignment) null);
         }
         return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { ASSIGNMENT, assignmentId });
