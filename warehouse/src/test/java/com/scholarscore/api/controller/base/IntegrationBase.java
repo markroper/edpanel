@@ -39,6 +39,7 @@ import com.scholarscore.api.controller.service.CourseValidatingExecutor;
 import com.scholarscore.api.controller.service.LocaleServiceUtil;
 import com.scholarscore.api.controller.service.SchoolValidatingExecutor;
 import com.scholarscore.api.controller.service.SchoolYearValidatingExecutor;
+import com.scholarscore.api.controller.service.SectionAssignmentValidatingExecutor;
 import com.scholarscore.api.controller.service.SectionValidatingExecutor;
 import com.scholarscore.api.controller.service.TermValidatingExecutor;
 import com.scholarscore.models.Assignment;
@@ -70,6 +71,7 @@ public class IntegrationBase {
     private static final String ASSIGNMENT_ENDPOINT = "/assignments";
     private static final String TERM_ENDPOINT = "/terms";
     private static final String SECTION_ENDPOINT = "/sections";
+    private static final String SECTION_ASSIGNMENT_ENDPOINT = "/sectionassignments";
 
     public LocaleServiceUtil localeServiceUtil;
     public AssignmentValidatingExecutor assignmentValidatingExecutor;
@@ -78,6 +80,7 @@ public class IntegrationBase {
     public SchoolYearValidatingExecutor schoolYearValidatingExecutor;
     public TermValidatingExecutor termValidatingExecutor;
     public SectionValidatingExecutor sectionValidatingExecutor;
+    public SectionAssignmentValidatingExecutor sectionAssignmentValidatingExecutor;
     
     public ConcurrentHashMap<Long, Map<Long, List<Assignment>>> assignmentsCreated = new ConcurrentHashMap<>();
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
@@ -126,6 +129,7 @@ public class IntegrationBase {
         schoolYearValidatingExecutor = new SchoolYearValidatingExecutor(this);
         termValidatingExecutor = new TermValidatingExecutor(this);
         sectionValidatingExecutor = new SectionValidatingExecutor(this);
+        sectionAssignmentValidatingExecutor = new SectionAssignmentValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -143,6 +147,7 @@ public class IntegrationBase {
         Assert.assertNotNull(schoolYearValidatingExecutor, "Unable to configure school year service");
         Assert.assertNotNull(termValidatingExecutor, "Unable to configure term service");
         Assert.assertNotNull(sectionValidatingExecutor, "Unable to configure section service");
+        Assert.assertNotNull(sectionAssignmentValidatingExecutor, "Unable to configure section assignment service");
     }
 
     /**
@@ -617,6 +622,32 @@ public class IntegrationBase {
     public String getSectionEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId) {
         return getSectionEndpoint(schoolId, schoolYearId, termId) + pathify(sectionId);
     }
+    
+    /**
+     * Generates and returns a section assignment endpoint without a section ID
+     * @param schoolId
+     * @param schoolYearId
+     * @param termId
+     * @param sectionId
+     * @return
+     */
+    public String getSectionAssignmentEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId) {
+        return getSectionEndpoint(schoolId, schoolYearId, termId, sectionId) + SECTION_ASSIGNMENT_ENDPOINT;
+    }
+    
+    /**
+     * Generates and returns a section assignment endpoint with a section ID
+     * @param schoolId
+     * @param schoolYearId
+     * @param termId
+     * @param sectionId
+     * @param sectionAssignmentId
+     * @return
+     */
+    public String getSectionAssignmentEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long sectionAssignmentId) {
+        return getSectionAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId) + pathify(sectionAssignmentId);
+    }
+    
     /**
      * Description:
      * Private helper method to get string to connect to application endpoint

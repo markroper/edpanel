@@ -22,7 +22,8 @@ public class SectionAssignment extends ApiModel implements Serializable, IApiMod
     private Date assignedDate;
     private Date dueDate;
     //TODO: Grade weight
-    private Assignment assignment;
+    private transient Assignment assignment;
+    private Long assignmentId;
     
     public SectionAssignment() {
         super();
@@ -34,6 +35,7 @@ public class SectionAssignment extends ApiModel implements Serializable, IApiMod
         this.assignedDate = sa.assignedDate;
         this.dueDate = sa.dueDate;
         this.assignment = sa.assignment;
+        this.assignmentId = sa.assignmentId;
     }
     
     public Date getAssignedDate() {
@@ -68,6 +70,14 @@ public class SectionAssignment extends ApiModel implements Serializable, IApiMod
         this.sectionId = sectionId;
     }
 
+    public Long getAssignmentId() {
+        return assignmentId;
+    }
+
+    public void setAssignmentId(Long assignmentId) {
+        this.assignmentId = assignmentId;
+    }
+
     @Override
     public void mergePropertiesIfNull(SectionAssignment mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);   
@@ -83,6 +93,9 @@ public class SectionAssignment extends ApiModel implements Serializable, IApiMod
         if(null == this.assignment) {
             this.assignment = mergeFrom.assignment;
         }
+        if(null == this.assignmentId) {
+            this.assignmentId = mergeFrom.assignmentId;
+        }
     }
     
     @Override
@@ -94,11 +107,12 @@ public class SectionAssignment extends ApiModel implements Serializable, IApiMod
         return Objects.equals(this.sectionId, other.sectionId) && 
                 Objects.equals(this.assignedDate, other.assignedDate) &&
                 Objects.equals(this.dueDate, other.dueDate) &&
-                Objects.equals(this.assignment, other.assignment);
+                Objects.equals(this.assignment, other.assignment) &&
+                Objects.equals(this.assignmentId, other.assignmentId);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(sectionId, assignedDate, dueDate, assignment);
+        return 31 * super.hashCode() + Objects.hash(sectionId, assignedDate, dueDate, assignment, assignmentId);
     }
 }
