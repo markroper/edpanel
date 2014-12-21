@@ -28,7 +28,7 @@ public class SectionValidatingExecutor {
                 serviceBase.getSectionEndpoint(schoolId, schoolYearId, termId, id),
                 null);
         Section section = serviceBase.validateResponse(response, new TypeReference<Section>(){});
-        Assert.assertNotNull(section, "Unexpected null term returned for case: " + msg);
+        Assert.assertNotNull(section, "Unexpected null section returned for case: " + msg);
         
         return section;
     }
@@ -39,7 +39,7 @@ public class SectionValidatingExecutor {
                 serviceBase.getSectionEndpoint(schoolId, schoolYearId, termId), 
                 null);
         ArrayList<Section> terms = serviceBase.validateResponse(response, new TypeReference<ArrayList<Section>>(){});
-        Assert.assertNotNull(terms, "Unexpected null term returned for case: " + msg);
+        Assert.assertNotNull(terms, "Unexpected null section returned for case: " + msg);
         Assert.assertEquals(terms.size(), numberOfItems, "Unexpected number of items returned for case: " + msg);
     }
     
@@ -49,7 +49,7 @@ public class SectionValidatingExecutor {
                 serviceBase.getSectionEndpoint(schoolId, schoolYearId, termId, id),
                 null);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
-                "Unexpected status code returned while retreiving term: " + msg);
+                "Unexpected status code returned while retreiving section: " + msg);
     }
     
     public Section create(Long schoolId, Long schoolYearId, Long termId, Section section, String msg) {
@@ -155,7 +155,7 @@ public class SectionValidatingExecutor {
         return createdSection;
     }
     /**
-     * Given a submitted term object and an term instance returned by the API after creation,
+     * Given a submitted Section object and a Section instance returned by the API after creation,
      * this method returns a new Section instance that represents the expected state of the submitted 
      * Section after creation.  The reason that there are differences in the submitted and expected 
      * instances is that there may be system assigned values not in the initially submitted object, for 

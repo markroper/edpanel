@@ -25,7 +25,7 @@ public class SectionAssignmentValidatingExecutor {
                 serviceBase.getSectionAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId, id), 
                 null);
         SectionAssignment section = serviceBase.validateResponse(response, new TypeReference<SectionAssignment>(){});
-        Assert.assertNotNull(section, "Unexpected null term returned for case: " + msg);
+        Assert.assertNotNull(section, "Unexpected null section assignment returned for case: " + msg);
         
         return section;
     }
@@ -53,7 +53,7 @@ public class SectionAssignmentValidatingExecutor {
         //Create the term
         ResultActions response = serviceBase.makeRequest(HttpMethod.POST, serviceBase.getSectionAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId), null, sectionAssignment);
         EntityId sectionAssignmentId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
-        Assert.assertNotNull(sectionAssignmentId, "unexpected null app returned from create call for case: " + msg);
+        Assert.assertNotNull(sectionAssignmentId, "unexpected null section assignment returned from create call for case: " + msg);
         return retrieveAndValidateCreatedSectionAssignment(schoolId, schoolYearId, termId, sectionId, sectionAssignmentId, sectionAssignment, HttpMethod.POST, msg);
     }
     
@@ -90,7 +90,7 @@ public class SectionAssignmentValidatingExecutor {
                 null, 
                 sectionAssignment);
         EntityId sectionAssignmentId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
-        Assert.assertNotNull(sectionAssignmentId, "unexpected null app returned from create call for case: " + msg);
+        Assert.assertNotNull(sectionAssignmentId, "unexpected null sction assignment ID returned from create call for case: " + msg);
         return retrieveAndValidateCreatedSectionAssignment(schoolId, schoolYearId, termId, sectionId, 
                 sectionAssignmentId, sectionAssignment, HttpMethod.PUT, msg);
     }
@@ -114,7 +114,7 @@ public class SectionAssignmentValidatingExecutor {
                 null, 
                 sectionAssignment);
         EntityId sectionAssignmentId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
-        Assert.assertNotNull(sectionAssignmentId, "unexpected null app returned from create call for case: " + msg);
+        Assert.assertNotNull(sectionAssignmentId, "unexpected null section assignment ID returned from create call for case: " + msg);
         return retrieveAndValidateCreatedSectionAssignment(schoolId, schoolYearId, termId, sectionId, 
                 sectionAssignmentId, sectionAssignment, HttpMethod.PATCH, msg);
     }
@@ -154,7 +154,7 @@ public class SectionAssignmentValidatingExecutor {
         return createdSectionAssignment;
     }
     /**
-     * Given a submitted term object and an term instance returned by the API after creation,
+     * Given a submitted section assignment object and a section assignment instance returned by the API after creation,
      * this method returns a new SectionAssignment instance that represents the expected state of the submitted 
      * SectionAssignment after creation.  The reason that there are differences in the submitted and expected 
      * instances is that there may be system assigned values not in the initially submitted object, for 
