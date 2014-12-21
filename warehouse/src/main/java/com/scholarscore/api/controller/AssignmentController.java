@@ -39,9 +39,9 @@ public class AssignmentController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAllAssignments(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "courseId", required = true, value = "The course long ID")
+            @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
@@ -66,11 +66,11 @@ public class AssignmentController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAssignment(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "courseId", required = true, value = "The course long ID")
+            @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
-            @ApiParam(name = "assignmentId", required = true, value = "The assignment long ID")
+            @ApiParam(name = "assignmentId", required = true, value = "Assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
@@ -94,9 +94,9 @@ public class AssignmentController extends BaseController {
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity createAssignment(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "courseId", required = true, value = "The course long ID")
+            @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
             @RequestBody @Valid Assignment assignment) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
@@ -124,11 +124,11 @@ public class AssignmentController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity replaceAssignment(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "courseId", required = true, value = "The course long ID")
+            @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
-            @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
+            @ApiParam(name = "assignmentId", required = true, value = "Assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
             @RequestBody @Valid Assignment assignment) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
@@ -156,11 +156,11 @@ public class AssignmentController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity updateAssignment(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "courseId", required = true, value = "The course long ID")
+            @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
-            @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
+            @ApiParam(name = "assignmentId", required = true, value = "Assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
             @RequestBody @Valid Assignment assignment) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
@@ -189,11 +189,11 @@ public class AssignmentController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity deleteAssignment(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "courseId", required = true, value = "The course long ID")
+            @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
-            @ApiParam(name = "assignmentId", required = true, value = "The assignment ID")
+            @ApiParam(name = "assignmentId", required = true, value = "Assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });

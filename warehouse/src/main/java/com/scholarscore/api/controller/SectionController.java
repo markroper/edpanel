@@ -28,7 +28,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping("/api/v1/schools/{schoolId}/years/{schoolYearId}/terms/{termId}/sections")
 public class SectionController extends BaseController {
     @ApiOperation(
-            value = "Get all sections in a term", 
+            value = "Get all sections", 
             notes = "Retrieve all sections in a term, school year, and school", 
             response = List.class)
     @RequestMapping(
@@ -36,11 +36,11 @@ public class SectionController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAllSections(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "schoolYearId", required = true, value = "The schoolYear long ID")
+            @ApiParam(name = "schoolYearId", required = true, value = "School year long ID")
             @PathVariable(value="schoolYearId") Long schoolYearId,
-            @ApiParam(name = "termId", required = true, value = "The term ID")
+            @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
@@ -60,8 +60,8 @@ public class SectionController extends BaseController {
     }
     
     @ApiOperation(
-            value = "Get an section", 
-            notes = "Given an section ID, return the section instance", 
+            value = "Get a section", 
+            notes = "Given a section ID, return the section instance", 
             response = Section.class)
     @RequestMapping(
             value = "/{sectionId}", 
@@ -69,13 +69,13 @@ public class SectionController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getSection(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "schoolYearId", required = true, value = "The schoolYear long ID")
+            @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId,
-            @ApiParam(name = "termId", required = true, value = "The term long ID")
+            @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
-            @ApiParam(name = "sectionId", required = true, value = "The section ID")
+            @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
@@ -94,18 +94,18 @@ public class SectionController extends BaseController {
 
     @ApiOperation(
             value = "Create a section", 
-            notes = "Creates, assigns and ID to, persists and returns a section",
+            notes = "Creates, assigns and ID to, persists and returns a section ID",
             response = EntityId.class)
     @RequestMapping(
             method = RequestMethod.POST, 
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity createTerm(
-            @ApiParam(name = "schoolId", required = true, value = "The school ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "schoolYearId", required = true, value = "The school year ID")
+            @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId,
-            @ApiParam(name = "termId", required = true, value = "The term ID")
+            @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
             @RequestBody @Valid Section section) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
@@ -138,13 +138,13 @@ public class SectionController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity replaceTerm(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "schoolYearId", required = true, value = "The school year long ID")
+            @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId,
-            @ApiParam(name = "termId", required = true, value = "The term ID")
+            @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
-            @ApiParam(name = "sectionId", required = true, value = "The section ID")
+            @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId,
             @RequestBody @Valid Section section) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
@@ -176,13 +176,13 @@ public class SectionController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity updateTerm(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "schoolYearId", required = true, value = "The schoolYear long ID")
+            @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId,
-            @ApiParam(name = "termId", required = true, value = "The term ID")
+            @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
-            @ApiParam(name = "sectionId", required = true, value = "The section ID")
+            @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId,
             @RequestBody @Valid Section section) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
@@ -215,13 +215,13 @@ public class SectionController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity deleteTerm(
-            @ApiParam(name = "schoolId", required = true, value = "The school long ID")
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "schoolYearId", required = true, value = "The schoolYear long ID")
+            @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId,
-            @ApiParam(name = "termId", required = true, value = "The term ID")
+            @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
-            @ApiParam(name = "sectionId", required = true, value = "The section ID")
+            @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
