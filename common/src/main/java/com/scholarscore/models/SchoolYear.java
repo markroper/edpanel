@@ -59,6 +59,19 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         this.terms = terms;
     }
 
+    public Term findTermById(Long id) {
+        Term termWithTermId = null;
+        if(null != terms) {
+            for(Term t : terms) {
+                if(t.getId().equals(id)) {
+                    termWithTermId = t;
+                    break;
+                }
+            }
+        }
+        return termWithTermId;
+    }
+    
     @Override
     public void mergePropertiesIfNull(SchoolYear mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);  
@@ -79,27 +92,7 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
             return false;
         }
         final SchoolYear other = (SchoolYear) obj;
-        return Objects.equals(this.startDate, other.startDate) && Objects.equals(this.endDate, other.endDate) && termsEqual(this.terms, other.terms);
-    }
-    
-    private boolean termsEqual(LinkedHashSet<Term> terms1, LinkedHashSet<Term> terms2) {
-        if(null == terms1 && null == terms2) {
-            return true;
-        }
-        if((null == terms1 && null != terms2) || (null != terms1 && null ==terms2)) {
-            return false;
-        }
-        if(terms1.size() != terms2.size()) {
-            return false;
-        }
-        Iterator<Term> it1 = terms1.iterator();
-        Iterator<Term> it2 = terms2.iterator();
-        while(it1.hasNext()) {
-            if(!it1.next().equals(it2.next())) {
-                return false;
-            }
-        }
-        return true;
+        return Objects.equals(this.startDate, other.startDate) && Objects.equals(this.endDate, other.endDate) && Objects.equals(this.terms, other.terms);
     }
     
     @Override
