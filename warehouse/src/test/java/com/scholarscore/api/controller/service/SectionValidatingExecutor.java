@@ -25,7 +25,7 @@ public class SectionValidatingExecutor {
     public Section get(Long schoolId, Long schoolYearId, Long termId, Long id, String msg) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.GET, 
-                serviceBase.getSectionEndpoint(schoolId, schoolYearId, termId, id),// + "/" + Long.toString(id), 
+                serviceBase.getSectionEndpoint(schoolId, schoolYearId, termId, id),
                 null);
         Section section = serviceBase.validateResponse(response, new TypeReference<Section>(){});
         Assert.assertNotNull(section, "Unexpected null term returned for case: " + msg);
@@ -91,7 +91,7 @@ public class SectionValidatingExecutor {
                 null, 
                 section);
         EntityId sectionId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
-        Assert.assertNotNull(termId, "unexpected null app returned from create call for case: " + msg);
+        Assert.assertNotNull(sectionId, "unexpected null app returned from create call for case: " + msg);
         return retrieveAndValidateCreatedSection(schoolId, schoolYearId, termId, sectionId, section, HttpMethod.PUT, msg);
     }
 
@@ -112,7 +112,7 @@ public class SectionValidatingExecutor {
                 null, 
                 section);
         EntityId sectionId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
-        Assert.assertNotNull(termId, "unexpected null app returned from create call for case: " + msg);
+        Assert.assertNotNull(sectionId, "unexpected null app returned from create call for case: " + msg);
         return retrieveAndValidateCreatedSection(schoolId, schoolYearId, termId, sectionId, section, HttpMethod.PATCH, msg);
     }
 
