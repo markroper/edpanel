@@ -86,6 +86,14 @@ task integrationLocal(type: Test) { task ->
     }
 }
 
+//Dependencies section:
+ext {
+    springVersion = "4.0.3.RELEASE"
+    springSecurityVersion = "3.1.4.RELEASE"
+    jacksonVersion = "2.4.3"
+    apacheHttpVersion = "4.3.3"
+}
+
 dependencies {
 
     compile project(':common'),
