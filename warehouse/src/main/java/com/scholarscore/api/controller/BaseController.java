@@ -3,7 +3,9 @@ package com.scholarscore.api.controller;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import com.scholarscore.models.Assignment;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
+import com.scholarscore.models.Section;
 import com.scholarscore.models.SubjectArea;
 import com.scholarscore.models.Term;
 
@@ -37,6 +40,7 @@ public abstract class BaseController {
     protected static final String COURSE = "course";
     protected static final String SCHOOL_YEAR = "school year";
     protected static final String TERM = "term";
+    protected static final String SECTION = "section";
     
     protected final AtomicLong schoolCounter = new AtomicLong();
     protected static Map<Long, School> schools = Collections.synchronizedMap(new HashMap<Long, School>());
@@ -44,6 +48,10 @@ public abstract class BaseController {
     protected final AtomicLong termCounter = new AtomicLong();
     protected static Map<Long, Map<Long, SchoolYear>> schoolYears = 
             Collections.synchronizedMap(new HashMap<Long, Map<Long, SchoolYear>>());
+    
+    //Map<termId, Map<sectionId, Section>>
+    protected final AtomicLong sectionCounter = new AtomicLong();
+    protected static Map<Long, Map<Long, Section>> sections = Collections.synchronizedMap(new HashMap<Long, Map<Long, Section>>());
     
     protected final AtomicLong subjectAreaCounter = new AtomicLong();
     protected static Map<Long, Map<Long, SubjectArea>> subjectAreas = Collections.synchronizedMap(new HashMap<Long, Map<Long, SubjectArea>>());
@@ -78,6 +86,19 @@ public abstract class BaseController {
             }
         }
         return termIds;
+    }
+    
+    protected Term getTermById(Set<Term> terms, Long termId) {
+        Term termWithTermId = null;
+        if(null != terms) {
+            for(Term t : terms) {
+                if(t.getId().equals(termId)) {
+                    termWithTermId = t;
+                    break;
+                }
+            }
+        }
+        return termWithTermId;
     }
 
 }

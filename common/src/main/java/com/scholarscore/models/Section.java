@@ -2,6 +2,7 @@ package com.scholarscore.models;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     Date startDate;
     Date endDate;
     String room;
-    Set<Student> enrolledStudents;
+    Map<Long, Student> enrolledStudents;
     //TODO: List<Teacher> teachers;
     //TODO: Set<SectionAssignment> assignments;
     //TODO: Schedule
@@ -47,6 +48,62 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         enrolledStudents = sect.enrolledStudents;
     }
     
+    public Long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
+
+    public Long getTermId() {
+        return termId;
+    }
+
+    public void setTermId(Long termId) {
+        this.termId = termId;
+    }
+
+    public Long getYearId() {
+        return yearId;
+    }
+
+    public void setYearId(Long yearId) {
+        this.yearId = yearId;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getRoom() {
+        return room;
+    }
+
+    public void setRoom(String room) {
+        this.room = room;
+    }
+
+    public Map<Long, Student> getEnrolledStudents() {
+        return enrolledStudents;
+    }
+
+    public void setEnrolledStudents(Map<Long, Student> enrolledStudents) {
+        this.enrolledStudents = enrolledStudents;
+    }
+
     @Override
     public void mergePropertiesIfNull(Section mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);

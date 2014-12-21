@@ -59,6 +59,19 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         this.terms = terms;
     }
 
+    public Term findTermById(Long id) {
+        Term termWithTermId = null;
+        if(null != terms) {
+            for(Term t : terms) {
+                if(t.getId().equals(id)) {
+                    termWithTermId = t;
+                    break;
+                }
+            }
+        }
+        return termWithTermId;
+    }
+    
     @Override
     public void mergePropertiesIfNull(SchoolYear mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);  

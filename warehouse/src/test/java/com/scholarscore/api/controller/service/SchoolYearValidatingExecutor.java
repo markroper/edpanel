@@ -15,7 +15,7 @@ import com.scholarscore.models.EntityId;
 import com.scholarscore.models.Term;
 
 public class SchoolYearValidatingExecutor {
-private final IntegrationBase serviceBase;
+    private final IntegrationBase serviceBase;
     
     public SchoolYearValidatingExecutor(IntegrationBase sb) {
         this.serviceBase = sb;
