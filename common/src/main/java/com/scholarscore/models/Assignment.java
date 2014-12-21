@@ -1,41 +1,80 @@
 package com.scholarscore.models;
 
+import com.scholarscore.models.serializers.*;
+
+import java.io.Serializable;
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import javax.validation.constraints.Size;
+
 /**
  * Base class for all assignment subclasses encapsulating shared attributes and behaviors.
  * 
  * @author markroper
  *
  */
-public class Assignment {
-	private long id;
-	private String name;
-	private long courseId;
-	
-	public Assignment() {
-		
-	}
+@SuppressWarnings("serial")
+@JsonDeserialize(using = AssignmentDeserializerFactory.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public abstract class Assignment 
+        extends ApiModel implements Serializable, IApiModel<Assignment> {
+    protected String type;
 
-	public long getId() {
-		return id;
-	}
+    /**
+     * Default constructor used by the serializer
+     */
+    public Assignment() {
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    }
+    
+    /**
+     * Copy constructor used to clone entities
+     * @param assignment
+     */
+    public Assignment(Assignment assignment) {
+        super(assignment);
+        this.type = assignment.type;
+    }
+    
+    public void mergePropertiesIfNull(Assignment assignment) {
+        super.mergePropertiesIfNull(assignment);
+        if(null == assignment) {
+            return;
+        }
+        if(null == this.type) {
+            this.type = assignment.type;
+        }
+    }
+    
+    public String getType() {
+        return this.type;
+    }
+    
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public long getCourseId() {
-		return courseId;
-	}
-
-	public void setCourseId(long courseId) {
-		this.courseId = courseId;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if(! super.equals(obj)) {
+            return false;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final Assignment other = (Assignment) obj;
+        return Objects.equals(this.type, other.type);
+    }
+    
+    @Override
+    public int hashCode() {
+        return 31 * super.hashCode() + Objects.hash(type);
+    }
+    
 }

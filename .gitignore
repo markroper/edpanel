@@ -1,8 +1,10 @@
 bin/
 out/
 build/
+test-output/
 .gradle
 *.iml
 .project
 .classpath
 .idea
+.settings

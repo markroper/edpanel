@@ -13,12 +13,34 @@
                      http://www.springframework.org/schema/context/spring-context.xsd
                      http://www.springframework.org/schema/util
                      http://www.springframework.org/schema/util/spring-util.xsd">
-
-    <mvc:annotation-driven/>
+    
     <mvc:default-servlet-handler/>
+    
     <context:mbean-export registration="replaceExisting"/>
+   
+    <!-- Handles GET requests for static resources from ${webapproot}/resources/, used by swagger -->
+   	<mvc:resources mapping="/resources/**" location="/resources/" />
+   	
+   	<!-- instructs spring on where to find JSP view templates -->
+   	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+   		<property name="prefix" value="/WEB-INF/view/" />
+   		<property name="suffix" value=".jsp" />
+   	</bean>
+ 
+    <bean id="validator"
+          class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+    
+    <mvc:annotation-driven validator="validator">
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="com.knappsack.swagger4springweb.util.ScalaObjectMapper"/>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
 
     <!-- <mvc:interceptors></mvc:interceptors> -->
-    <context:component-scan base-package="com.scholarscore.endpoints"/>
+    <context:component-scan base-package="com.scholarscore.api.controller, com.scholarscore.api.swagger"/>
 
 </beans>

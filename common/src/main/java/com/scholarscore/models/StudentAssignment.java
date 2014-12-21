@@ -1,43 +1,64 @@
 package com.scholarscore.models;
 
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 /**
  * Represents the students performance on an assignment in a specific course.
  * 
  * @author markroper
  *
  */
-public abstract class StudentAssignment {
-	private Assignment assignment;
-	private Boolean completed;
-	private IGrade grade;
-	
-	public StudentAssignment() {
-		
-	}
+@SuppressWarnings("serial")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class StudentAssignment implements Serializable, IApiModel<StudentAssignment> {
+    private Assignment assignment;
+    private Boolean completed;
+    private Double grade;
 
-	public Boolean getCompleted() {
-		return completed;
-	}
+    public StudentAssignment() {
 
-	public void setCompleted(Boolean completed) {
-		this.completed = completed;
-	}
+    }
 
-	public Assignment getAssignment() {
-		return assignment;
-	}
+    @Override
+    public void mergePropertiesIfNull(StudentAssignment mergeFrom) {
+        if(null == mergeFrom) {
+            return;
+        }
+        if(null == this.assignment) {
+            this.assignment = mergeFrom.assignment;
+        }
+        if(null == this.completed) {
+            this.completed = mergeFrom.completed;
+        }
+        if(null == this.grade) {
+            this.grade = mergeFrom.grade;
+        } 
+    }
+    
+    public Boolean getCompleted() {
+        return completed;
+    }
 
-	public void setAssignment(Assignment assignment) {
-		this.assignment = assignment;
-	}
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
+    }
 
-	public IGrade getGrade() {
-		return grade;
-	}
+    public Assignment getAssignment() {
+        return assignment;
+    }
 
-	public void setGrade(IGrade grade) {
-		this.grade = grade;
-	}
-	
-	
+    public void setAssignment(Assignment assignment) {
+        this.assignment = assignment;
+    }
+
+    public Double getGrade() {
+        return grade;
+    }
+
+    public void setGrade(Double grade) {
+        this.grade = grade;
+    }
 }
