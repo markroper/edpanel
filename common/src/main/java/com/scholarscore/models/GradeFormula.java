@@ -22,7 +22,7 @@ public class GradeFormula implements Serializable {
         if(null == assignmentTypeWeights) {
             return true;
         }
-        Integer totalWeights = 0;
+        int totalWeights = 0;
         for(Map.Entry<AssignmentType, Integer> entry : assignmentTypeWeights.entrySet()) {
             totalWeights += entry.getValue();
         }
@@ -33,10 +33,10 @@ public class GradeFormula implements Serializable {
         if(null == studentAssignments || !isValid()) {
             return null;
         }
-        Double calculatedGrade = 0D;
+        double calculatedGrade = 0D;
         if(null == assignmentTypeWeights) {
-            Long availablePoints = 0l;
-            Long awardedPoints = 0l;
+            long availablePoints = 0l;
+            long awardedPoints = 0l;
             for(StudentAssignment sa : studentAssignments) {
                 if(null != sa.getAwardedPoints()) {
                     awardedPoints += sa.getAwardedPoints();
