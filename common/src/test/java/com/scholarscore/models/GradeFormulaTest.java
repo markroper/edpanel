@@ -35,7 +35,7 @@ public class GradeFormulaTest {
             sect.setAssignment(attend);
             StudentAssignment stu = new StudentAssignment();
             stu.setAssignment(sect);
-            stu.setAwardedPoints(5l);
+            stu.setAwardedPoints(5L);
             stu.setId(i);
             
             studentAssignments.add(stu);
