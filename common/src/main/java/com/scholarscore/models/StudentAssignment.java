@@ -1,6 +1,7 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -13,13 +14,20 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StudentAssignment implements Serializable, IApiModel<StudentAssignment> {
-    private Assignment assignment;
+public class StudentAssignment extends ApiModel implements Serializable, IApiModel<StudentAssignment> {
+    private SectionAssignment sectionAssignment;
     private Boolean completed;
-    private Double grade;
+    private Long awardedPoints;
 
     public StudentAssignment() {
-
+        super();
+    }
+    
+    public StudentAssignment(StudentAssignment sa) {
+        super(sa);
+        this.sectionAssignment = sa.sectionAssignment;
+        this.completed = sa.completed;
+        this.awardedPoints = sa.awardedPoints;
     }
 
     @Override
@@ -27,14 +35,14 @@ public class StudentAssignment implements Serializable, IApiModel<StudentAssignm
         if(null == mergeFrom) {
             return;
         }
-        if(null == this.assignment) {
-            this.assignment = mergeFrom.assignment;
+        if(null == this.sectionAssignment) {
+            this.sectionAssignment = mergeFrom.sectionAssignment;
         }
         if(null == this.completed) {
             this.completed = mergeFrom.completed;
         }
-        if(null == this.grade) {
-            this.grade = mergeFrom.grade;
+        if(null == this.awardedPoints) {
+            this.awardedPoints = mergeFrom.awardedPoints;
         } 
     }
     
@@ -46,19 +54,35 @@ public class StudentAssignment implements Serializable, IApiModel<StudentAssignm
         this.completed = completed;
     }
 
-    public Assignment getAssignment() {
-        return assignment;
+    public SectionAssignment getSectionAssignment() {
+        return sectionAssignment;
     }
 
-    public void setAssignment(Assignment assignment) {
-        this.assignment = assignment;
+    public void setAssignment(SectionAssignment sectionAssignment) {
+        this.sectionAssignment = sectionAssignment;
     }
 
-    public Double getGrade() {
-        return grade;
+    public Long getAwardedPoints() {
+        return awardedPoints;
     }
 
-    public void setGrade(Double grade) {
-        this.grade = grade;
+    public void setAwardedPoints(Long awardedPoints) {
+        this.awardedPoints = awardedPoints;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if(!super.equals(obj)) {
+            return false;
+        }
+        final StudentAssignment other = (StudentAssignment) obj;
+        return Objects.equals(this.sectionAssignment, other.sectionAssignment) && 
+                Objects.equals(this.completed, other.completed) &&
+                Objects.equals(this.awardedPoints, other.awardedPoints);
+    }
+    
+    @Override
+    public int hashCode() {
+        return 31 * super.hashCode() + Objects.hash(sectionAssignment, completed, awardedPoints);
     }
 }

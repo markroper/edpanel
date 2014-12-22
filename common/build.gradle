@@ -1,21 +1,32 @@
-
 ext {
-	jacksonVersion = "2.4.3"
+    jacksonVersion = "2.4.3"
+    springVersion = "4.0.3.RELEASE"
+    springSecurityVersion = "3.1.4.RELEASE"
+    jacksonVersion = "2.4.3"
+    apacheHttpVersion = "4.3.3"
 }
 
 dependencies {
-	//Jackson for JSON & XML API model serialization
-	compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
+    //Jackson for JSON & XML API model serialization
+    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
             "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion",
             "com.fasterxml.jackson.core:jackson-core:$jacksonVersion",
             "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion",
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion",
-            "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion"
-
+            "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion",
             //Needed for hibernate bean validation which was added to support swagger
-    compile "javax.validation:validation-api:1.1.0.Final",
+            "javax.validation:validation-api:1.1.0.Final",
             "org.hibernate:hibernate-validator:5.1.0.Final",
             "org.hibernate:hibernate-validator-annotation-processor:5.1.0.Final",
-            "org.hibernate:hibernate-validator-cdi:5.1.0.Final"
+            "org.hibernate:hibernate-validator-cdi:5.1.0.Final",
+            //Apache commons
+            "commons-io:commons-io:2.4",
+            "org.apache.commons:commons-lang3:3.3.2"
+
+    testCompile "org.testng:testng:6.8.8",
+            "org.apache.httpcomponents:httpclient:$apacheHttpVersion",
+            "org.apache.httpcomponents:httpcore:$apacheHttpVersion",
+            "org.apache.httpcomponents:httpmime:$apacheHttpVersion",
+            "org.springframework:spring-test:$springVersion"
 
 }

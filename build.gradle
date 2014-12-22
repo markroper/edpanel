@@ -29,7 +29,7 @@ subprojects {
     test {
     	useTestNG() {
     		useDefaultListeners = true
-    		def suiteFile = "*-unit.xml"
+    		def suiteFile = "src/test/resources/${project.name}-unit.xml"
     		options.suites(suiteFile)
     		println "project.name: ${project.name} Test: useTestNg"
     	}
