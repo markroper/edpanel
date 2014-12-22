@@ -2,23 +2,23 @@ apply plugin: 'war'
 apply plugin: 'com.bmuschko.cargo'
 
 sourceSets {
-	main {
-		java {
-			srcDir 'src/main/java'
-		}
-		resources {
-			srcDir 'src/main/resources'
-		}
-	}
-	
-	test {
-		java {
-			srcDir 'src/test/java'
-		}
-		resources {
-			srcDir 'src/test/resources'
-		}
-	}
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+        resources {
+            srcDir 'src/test/resources'
+        }
+    }
 }
 
 //Cargo tomcat deploy
@@ -99,9 +99,6 @@ dependencies {
     compile project(':common'),
             "javax.servlet:javax.servlet-api:3.1.0",
             "javax.ws.rs:jsr311-api:1.1.1",
-            //Apache commons
-            "commons-io:commons-io:2.4",
-            "org.apache.commons:commons-lang3:3.3.2",
 
             //Spring dependencies
             "org.springframework:spring-aop:$springVersion",
@@ -142,7 +139,7 @@ dependencies {
             "org.hibernate:hibernate-validator-annotation-processor:5.1.0.Final",
             "org.hibernate:hibernate-validator-cdi:5.1.0.Final"
 
-    testCompile "org.testng:testng:6.8.8",
+	testCompile "org.testng:testng:6.8.8",
             "org.apache.httpcomponents:httpclient:$apacheHttpVersion",
             "org.apache.httpcomponents:httpcore:$apacheHttpVersion",
             "org.apache.httpcomponents:httpmime:$apacheHttpVersion",

@@ -1,0 +1,13 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="CommonUnitTests" verbose="2" parallel="classes" thread-count="1">
+	<test name="CommonUnitTests">
+		<groups>
+			<run>
+				<include name="unit"></include>
+			</run>
+		</groups>
+		<packages>
+			<package name="com.scholarscore.*"></package>
+		</packages>
+	</test>
+</suite>

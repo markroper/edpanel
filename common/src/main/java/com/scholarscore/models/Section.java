@@ -28,10 +28,10 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     String room;
     Map<Long, Student> enrolledStudents;
     Map<Long, SectionAssignment> sectionAssignments;
+    GradeFormula gradeFormula;
     //TODO: List<Teacher> teachers;
     //TODO: Set<SectionAssignment> assignments;
     //TODO: Schedule
-    //TODO: GradingScale
     //TODO: Gradebook - student -> SectionGrade { overallGrade, List<StudentAssignment>, homeworkGradeAvergae, quizGradeAvg }
     
     public Section() {
@@ -48,6 +48,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         room = sect.room;
         enrolledStudents = sect.enrolledStudents;
         sectionAssignments = sect.sectionAssignments;
+        gradeFormula = sect.gradeFormula;
     }
     
     public Long getCourseId() {
@@ -114,6 +115,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.sectionAssignments = sectionAssignments;
     }
 
+    public GradeFormula getGradeFormula() {
+        return gradeFormula;
+    }
+
+    public void setGradeFormula(GradeFormula gradeFormula) {
+        this.gradeFormula = gradeFormula;
+    }
+
     @Override
     public void mergePropertiesIfNull(Section mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
@@ -141,6 +150,9 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         if(null == sectionAssignments) {
             sectionAssignments = mergeFrom.sectionAssignments;
         }
+        if(null == gradeFormula) {
+            gradeFormula = mergeFrom.gradeFormula;
+        }
     }
     
     @Override
@@ -156,12 +168,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 Objects.equals(this.endDate, other.endDate) &&
                 Objects.equals(this.room, other.room) &&
                 Objects.equals(this.enrolledStudents, other.enrolledStudents) &&
-                Objects.equals(this.sectionAssignments, other.sectionAssignments);
+                Objects.equals(this.sectionAssignments, other.sectionAssignments) &&
+                Objects.equals(this.gradeFormula, other.gradeFormula);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(courseId, termId, yearId, startDate, endDate, room, enrolledStudents, sectionAssignments);
+        return 31 * super.hashCode() + Objects.hash(courseId, termId, yearId, startDate, endDate, 
+                room, enrolledStudents, sectionAssignments, gradeFormula);
     }
     
 }

@@ -23,10 +23,6 @@ public abstract class AssignmentDeserializer<T extends Assignment> extends BaseD
         if(null != node.get(JsonKeyConstants.ID)){
             assignment.setId(node.get(JsonKeyConstants.ID).asLong());
         }
-        
-        if(null != node.get(JsonKeyConstants.TYPE)){
-            assignment.setType(node.get(JsonKeyConstants.TYPE).asText());
-        }
         return assignment;
     }
 }

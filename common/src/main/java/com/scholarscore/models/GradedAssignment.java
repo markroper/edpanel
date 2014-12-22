@@ -22,14 +22,14 @@ public class GradedAssignment extends Assignment implements Serializable {
 
     public GradedAssignment() {
         super();
-        this.type = GRADED;
+        this.type = AssignmentType.GRADED;
     }
     
     public GradedAssignment(GradedAssignment assignment) {
         super(assignment);
         this.assignedDate = assignment.assignedDate;
         this.dueDate = assignment.dueDate;
-        this.type = GRADED;
+        this.type = AssignmentType.GRADED;
     }
 
     @Override
