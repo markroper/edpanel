@@ -63,9 +63,9 @@ public class GradeFormula implements Serializable {
                     calculatedGradeByType.get(type).right += sa.getSectionAssignment().getAvailablePoints();
                 }
             }
-            //Now we calculate the final score as the sum of AssignmentTypeAwardedPoints/AssignmentTypeAvailPoints / 100 * PercentOfGradeAsLong
+            //Now we calculate the final score as the sum of AssignmentTypeAwardedPoints/AssignmentTypeAvailPoints * PercentOfGradeAsLong
             for(Map.Entry<AssignmentType, MutablePair<Long, Long>> entry : calculatedGradeByType.entrySet()) {
-                calculatedGrade += (entry.getValue().left * 1.0 / entry.getValue().right / 1.0 * assignmentTypeWeights.get(entry.getKey()));
+                calculatedGrade += (entry.getValue().left * 1.0 / entry.getValue().right * assignmentTypeWeights.get(entry.getKey()));
             }
         }
         return calculatedGrade;
