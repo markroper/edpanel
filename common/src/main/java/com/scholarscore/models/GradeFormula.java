@@ -35,8 +35,8 @@ public class GradeFormula implements Serializable {
         }
         double calculatedGrade = 0D;
         if(null == assignmentTypeWeights) {
-            long availablePoints = 0l;
-            long awardedPoints = 0l;
+            long availablePoints = 0L;
+            long awardedPoints = 0L;
             for(StudentAssignment sa : studentAssignments) {
                 if(null != sa.getAwardedPoints()) {
                     awardedPoints += sa.getAwardedPoints();
