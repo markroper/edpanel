@@ -2,23 +2,23 @@ apply plugin: 'war'
 apply plugin: 'com.bmuschko.cargo'
 
 sourceSets {
-	main {
-		java {
-			srcDir 'src/main/java'
-		}
-		resources {
-			srcDir 'src/main/resources'
-		}
-	}
-	
-	test {
-		java {
-			srcDir 'src/test/java'
-		}
-		resources {
-			srcDir 'src/test/resources'
-		}
-	}
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+        resources {
+            srcDir 'src/test/resources'
+        }
+    }
 }
 
 //Cargo tomcat deploy
@@ -138,7 +138,7 @@ dependencies {
             "org.hibernate:hibernate-validator:5.1.0.Final",
             "org.hibernate:hibernate-validator-annotation-processor:5.1.0.Final",
             "org.hibernate:hibernate-validator-cdi:5.1.0.Final"
-            
+
 	testCompile "org.testng:testng:6.8.8",
             "org.apache.httpcomponents:httpclient:$apacheHttpVersion",
             "org.apache.httpcomponents:httpcore:$apacheHttpVersion",
