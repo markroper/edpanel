@@ -26,7 +26,6 @@ public class GradeFormulaTest {
             stu.setAwardedPoints(7L);
             stu.setAssignment(sect);
             stu.setId(i);
-            
             studentAssignments.add(stu);
         }
         for(long i = 11; i <= 25; i++) {
@@ -37,7 +36,6 @@ public class GradeFormulaTest {
             stu.setAssignment(sect);
             stu.setAwardedPoints(5L);
             stu.setId(i);
-            
             studentAssignments.add(stu);
         }
   
@@ -53,11 +51,18 @@ public class GradeFormulaTest {
         validFormula.setAssignmentTypeWeights(assignmentTypeWeights);
         //The formula is weighted to allow attendance to be 15% of the grade and graded work 85%:
         Double weightedFormulaGrade = (.7*85)+15;
+        
+        GradeFormula invalidFormula = new GradeFormula();
+        Map<AssignmentType, Integer> invalidAssignmentWeights = new HashMap<>();
+        invalidAssignmentWeights.put(AssignmentType.ATTENDANCE, 15);
+        invalidAssignmentWeights.put(AssignmentType.GRADED, 90);
+        invalidFormula.setAssignmentTypeWeights(invalidAssignmentWeights);
        
         
         return new Object[][] {
                 { "Null formula", emptyFormula, studentAssignments, noFormulaGrade },
-                { "Weighted formula", validFormula, studentAssignments, weightedFormulaGrade }
+                { "Weighted formula", validFormula, studentAssignments, weightedFormulaGrade },
+                { "Invalid formula", invalidFormula, studentAssignments, null }
         };
     }
     
