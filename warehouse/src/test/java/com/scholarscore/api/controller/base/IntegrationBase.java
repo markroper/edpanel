@@ -41,6 +41,8 @@ import com.scholarscore.api.controller.service.SchoolValidatingExecutor;
 import com.scholarscore.api.controller.service.SchoolYearValidatingExecutor;
 import com.scholarscore.api.controller.service.SectionAssignmentValidatingExecutor;
 import com.scholarscore.api.controller.service.SectionValidatingExecutor;
+import com.scholarscore.api.controller.service.StudentAssignmentValidatingExecutor;
+import com.scholarscore.api.controller.service.StudentSectionGradeValidatingExecutor;
 import com.scholarscore.api.controller.service.StudentValidatingExecutor;
 import com.scholarscore.api.controller.service.TermValidatingExecutor;
 import com.scholarscore.models.Assignment;
@@ -49,6 +51,7 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Student;
+import com.scholarscore.models.StudentAssignment;
 
 /**
  * Class that contains all common methods for servicing requests
@@ -73,8 +76,10 @@ public class IntegrationBase {
     private static final String ASSIGNMENT_ENDPOINT = "/assignments";
     private static final String TERM_ENDPOINT = "/terms";
     private static final String SECTION_ENDPOINT = "/sections";
-    private static final String SECTION_ASSIGNMENT_ENDPOINT = "/sectionassignments";
+    private static final String SECTION_ASSIGNMENT_ENDPOINT = "/sectassignments";
     private static final String STUDENT_ENDPOINT = "/students";
+    private static final String STUDENT_ASSIGNMENT_ENDPOINT = "/studentassignments";
+    private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/studentgrades";
 
     public LocaleServiceUtil localeServiceUtil;
     public AssignmentValidatingExecutor assignmentValidatingExecutor;
@@ -85,6 +90,8 @@ public class IntegrationBase {
     public SectionValidatingExecutor sectionValidatingExecutor;
     public SectionAssignmentValidatingExecutor sectionAssignmentValidatingExecutor;
     public StudentValidatingExecutor studentValidatingExecutor;
+    public StudentAssignmentValidatingExecutor studentAssignmentValidatingExecutor;
+    public StudentSectionGradeValidatingExecutor studentSectionGradeValidatingExecutor;
     
     public ConcurrentHashMap<Long, Map<Long, List<Assignment>>> assignmentsCreated = new ConcurrentHashMap<>();
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
@@ -92,6 +99,7 @@ public class IntegrationBase {
     public ConcurrentHashMap<Long, List<Course>> coursesCreated = new ConcurrentHashMap<>();
     public ConcurrentHashMap<Long, List<Section>> sectionsCreated = new ConcurrentHashMap<>();
     public ConcurrentHashMap<Long, Student> studentsCreated = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Long, StudentAssignment> studentAssignmentsCreated= new ConcurrentHashMap<>(); 
 
     // Locale used in testing. Supplied as command-line arguments to JVM: -Dlocale=de_DE
     // Valid values include the following:
@@ -136,6 +144,8 @@ public class IntegrationBase {
         sectionValidatingExecutor = new SectionValidatingExecutor(this);
         sectionAssignmentValidatingExecutor = new SectionAssignmentValidatingExecutor(this);
         studentValidatingExecutor = new StudentValidatingExecutor(this);
+        studentAssignmentValidatingExecutor = new StudentAssignmentValidatingExecutor(this);
+        studentSectionGradeValidatingExecutor = new StudentSectionGradeValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -155,6 +165,7 @@ public class IntegrationBase {
         Assert.assertNotNull(sectionValidatingExecutor, "Unable to configure section service");
         Assert.assertNotNull(sectionAssignmentValidatingExecutor, "Unable to configure section assignment service");
         Assert.assertNotNull(studentValidatingExecutor, "Unable to configure student service");
+        Assert.assertNotNull(studentAssignmentValidatingExecutor, "Unable to configure student assignment service");
     }
 
     /**
@@ -667,6 +678,25 @@ public class IntegrationBase {
      */
     public String getSectionAssignmentEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long sectionAssignmentId) {
         return getSectionAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId) + pathify(sectionAssignmentId);
+    }
+    
+    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long sectionAssignmentId) {
+        return getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId) + pathify(sectionAssignmentId);
+    }
+    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId) {
+        return getSectionEndpoint(schoolId, schoolYearId, termId, sectionId) + STUDENT_SECTION_GRADE_ENDPOINT;
+    }
+    
+    public String getStudentAssignmentEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, 
+            Long sectionAssignmentId, Long studentAssignmentId) {
+        return getStudentAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId, sectionAssignmentId) 
+                + pathify(studentAssignmentId);
+    }
+    
+    public String getStudentAssignmentEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, 
+            Long sectionAssignmentId) {
+        return getSectionAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId, sectionAssignmentId) 
+                + STUDENT_ASSIGNMENT_ENDPOINT;
     }
     
     /**
