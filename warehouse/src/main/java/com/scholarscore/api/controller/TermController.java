@@ -37,7 +37,7 @@ public class TermController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
@@ -66,7 +66,7 @@ public class TermController extends BaseController {
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
@@ -100,7 +100,7 @@ public class TermController extends BaseController {
             @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @RequestBody @Valid Term term) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
@@ -133,7 +133,7 @@ public class TermController extends BaseController {
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
             @RequestBody @Valid Term term) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
@@ -178,7 +178,7 @@ public class TermController extends BaseController {
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
             @RequestBody @Valid Term term) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
@@ -221,7 +221,7 @@ public class TermController extends BaseController {
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {

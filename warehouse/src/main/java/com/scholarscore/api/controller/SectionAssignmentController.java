@@ -42,7 +42,7 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
@@ -82,10 +82,10 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="sectionId") Long sectionId,
             @ApiParam(name = "sectAssignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="sectAssignmentId") Long sectAssignmentId) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
-        if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
+        if(null == schoolYearId || !schoolExists(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, schoolYearId });
         }
         if(null == schoolYears.get(schoolId).get(schoolYearId).findTermById(termId)) {
@@ -119,7 +119,7 @@ public class SectionAssignmentController extends BaseController {
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId,
             @RequestBody @Valid SectionAssignment sectionAssignment) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
@@ -161,7 +161,7 @@ public class SectionAssignmentController extends BaseController {
             @ApiParam(name = "sectAssignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="sectAssignmentId") Long sectAssignmentId,
             @RequestBody @Valid SectionAssignment sectionAssignment) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
@@ -204,7 +204,7 @@ public class SectionAssignmentController extends BaseController {
             @ApiParam(name = "sectAssignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="sectAssignmentId") Long sectAssignmentId,
             @RequestBody @Valid SectionAssignment sectionAssignment) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
@@ -247,7 +247,7 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="sectionId") Long sectionId,
             @ApiParam(name = "sectAssignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="sectAssignmentId") Long sectAssignmentId) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {

@@ -30,8 +30,8 @@ public class StudentController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity getAllStudents() {
-        return respond(new ArrayList<>(students.values()));
+    public @ResponseBody ResponseEntity getAll() {
+        return respond(new ArrayList<>(getAllStudents()));
     }
     
     @ApiOperation(
@@ -43,11 +43,11 @@ public class StudentController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity getStudent(
+    public @ResponseBody ResponseEntity get(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId) {
-        if(students.containsKey(studentId)) {
-            return respond(students.get(studentId));
+        if(studentExists(studentId)) {
+            return respond(getStudent(studentId));
         }
         return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, studentId });
     }
@@ -60,10 +60,9 @@ public class StudentController extends BaseController {
             method = RequestMethod.POST, 
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity createStudent(@RequestBody @Valid Student student) {
-        student.setId(studentCounter.incrementAndGet());
-        students.put(student.getId(), student);
-        return respond(new EntityId(student.getId()));
+    public @ResponseBody ResponseEntity create(@RequestBody @Valid Student student) {
+        long studentId = createStudent(student);
+        return respond(new EntityId(studentId));
     }
 
     @ApiOperation(
@@ -75,12 +74,13 @@ public class StudentController extends BaseController {
             method = RequestMethod.PUT, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity replaceStudent(
+    public @ResponseBody ResponseEntity replace(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
             @RequestBody @Valid Student student) {
-        if(null != studentId && students.containsKey(studentId)) {
-            students.put(studentId, student);
+        if(null != studentId && studentExists(studentId)) {
+            student.setId(studentId);
+            saveStudent(student);
             return respond(new EntityId(studentId));
         } else {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL, studentId });
@@ -96,13 +96,15 @@ public class StudentController extends BaseController {
             method = RequestMethod.PATCH, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity updateStudent(
+    public @ResponseBody ResponseEntity update(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
             @RequestBody @Valid Student student) {
-        if(null != student && null != studentId && students.containsKey(studentId)) {
-            student.mergePropertiesIfNull(students.get(studentId));
-            students.put(studentId, student);
+        if(null != student && null != studentId && studentExists(studentId)) {
+            // always use the Id from the path, not the object
+            student.setId(studentId);
+            student.mergePropertiesIfNull(getStudent(studentId));
+            saveStudent(student);
             return respond(new EntityId(studentId));
         } else {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL, studentId });
@@ -117,15 +119,15 @@ public class StudentController extends BaseController {
             method = RequestMethod.DELETE, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity deleteStudent(
+    public @ResponseBody ResponseEntity delete(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId) {
         if(null == studentId) {
             return respond(ErrorCodes.BAD_REQUEST_CANNOT_PARSE_BODY);
-        } else if (!students.containsKey(studentId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, studentId });
+        } else if (!studentExists(studentId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, studentId});
         }
-        students.remove(studentId);
+        deleteStudent(studentId);
         return respond((Student) null);
     }
 }

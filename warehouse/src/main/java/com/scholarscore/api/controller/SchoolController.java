@@ -30,8 +30,8 @@ public class SchoolController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity getAllSchools() {
-        return respond(new ArrayList<>(schools.values()));
+    public @ResponseBody ResponseEntity getAll() {
+        return respond(new ArrayList<>(getAllSchools()));
     }
     
     @ApiOperation(
@@ -43,13 +43,10 @@ public class SchoolController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity getSchool(
+    public @ResponseBody ResponseEntity get(
             @ApiParam(name = "schoolId", required = true, value = "The school long ID")
             @PathVariable(value="schoolId") Long schoolId) {
-        if(schools.containsKey(schoolId)) {
-            return respond(schools.get(schoolId));
-        }
-        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        return respond(getSchool(schoolId));
     }
 
     @ApiOperation(
@@ -60,10 +57,8 @@ public class SchoolController extends BaseController {
             method = RequestMethod.POST, 
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity createSchool(@RequestBody @Valid School school) {
-        school.setId(schoolCounter.incrementAndGet());
-        schools.put(school.getId(), school);
-        return respond(new EntityId(school.getId()));
+    public @ResponseBody ResponseEntity create(@RequestBody @Valid School school) {
+        return respond(new EntityId(createSchool(school)));
     }
 
     @ApiOperation(
@@ -75,12 +70,13 @@ public class SchoolController extends BaseController {
             method = RequestMethod.PUT, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity replaceSchool(
+    public @ResponseBody ResponseEntity replace(
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid School school) {
-        if(null != schoolId && schools.containsKey(schoolId)) {
-            schools.put(schoolId, school);
+        if(null != schoolId && schoolExists(schoolId)) {
+            school.setId(schoolId);
+            saveSchool(school);
             return respond(new EntityId(schoolId));
         } else {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL, schoolId });
@@ -96,13 +92,14 @@ public class SchoolController extends BaseController {
             method = RequestMethod.PATCH, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity updateSchool(
+    public @ResponseBody ResponseEntity update(
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid School school) {
-        if(null != school && null != schoolId && schools.containsKey(schoolId)) {
-            school.mergePropertiesIfNull(schools.get(schoolId));
-            schools.put(schoolId, school);
+        if(null != school && null != schoolId && schoolExists(schoolId)) {
+            school.setId(schoolId);
+            school.mergePropertiesIfNull(getSchool(schoolId));
+            saveSchool(school);
             return respond(new EntityId(schoolId));
         } else {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL, schoolId });
@@ -117,15 +114,15 @@ public class SchoolController extends BaseController {
             method = RequestMethod.DELETE, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity deleteSchool(
+    public @ResponseBody ResponseEntity delete(
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId) {
         if(null == schoolId) {
             return respond(ErrorCodes.BAD_REQUEST_CANNOT_PARSE_BODY);
-        } else if (!schools.containsKey(schoolId)) {
+        } else if (!schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
-        schools.remove(schoolId);
+        deleteSchool(schoolId);
         return respond((School) null);
     }
 }

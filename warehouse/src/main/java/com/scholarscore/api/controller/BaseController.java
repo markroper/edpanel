@@ -1,13 +1,10 @@
 package com.scholarscore.api.controller;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.scholarscore.api.controller.api.SchoolManager;
+import com.scholarscore.api.controller.api.StudentManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -33,7 +30,7 @@ import com.scholarscore.models.Term;
  *
  */
 @Validated
-public abstract class BaseController {
+public abstract class BaseController implements StudentManager, SchoolManager {
     //TODO: @mroper we need to add a real persistence layer that we call instead of manipulating this map
     public static final String JSON_ACCEPT_HEADER = "application/json";
     
@@ -45,32 +42,33 @@ public abstract class BaseController {
     protected static final String SECTION = "section";
     protected static final String SECTION_ASSIGNMENT = "section assignment";
     protected static final String STUDENT = "student";
-    
+
+    // Todo Jordan: everything from here to 75 should be private.
+
     //Student structure: Map<studentId, Student>
-    protected final AtomicLong studentCounter = new AtomicLong();
-    protected static Map<Long, Student> students = Collections.synchronizedMap(new HashMap<Long, Student>());
-    
+    private final static AtomicLong studentCounter = new AtomicLong();
+    private final static Map<Long, Student> students = Collections.synchronizedMap(new HashMap<Long, Student>());
     //School structure: Map<schoolId, School>
-    protected final AtomicLong schoolCounter = new AtomicLong();
-    protected static Map<Long, School> schools = Collections.synchronizedMap(new HashMap<Long, School>());
-    //School year strcuture: Map<SchoolId, Map<SchoolYearId, SchoolYear>> note: schoolYears contain terms
-    protected final AtomicLong schoolYearCounter = new AtomicLong();
-    protected final AtomicLong termCounter = new AtomicLong();
-    protected static Map<Long, Map<Long, SchoolYear>> schoolYears = Collections.synchronizedMap(new HashMap<Long, Map<Long, SchoolYear>>());
+    private final static AtomicLong schoolCounter = new AtomicLong();
+    private final static Map<Long, School> schools = Collections.synchronizedMap(new HashMap<Long, School>());
+    //School year structure: Map<SchoolId, Map<SchoolYearId, SchoolYear>> note: schoolYears contain terms
+    protected final static AtomicLong schoolYearCounter = new AtomicLong();
+    protected final static AtomicLong termCounter = new AtomicLong();
+    protected final static Map<Long, Map<Long, SchoolYear>> schoolYears = Collections.synchronizedMap(new HashMap<Long, Map<Long, SchoolYear>>());
     //Map<termId, Map<sectionId, Section>>
-    protected final AtomicLong sectionCounter = new AtomicLong();
-    protected static Map<Long, Map<Long, Section>> sections = Collections.synchronizedMap(new HashMap<Long, Map<Long, Section>>());
+    protected final static AtomicLong sectionCounter = new AtomicLong();
+    protected final static Map<Long, Map<Long, Section>> sections = Collections.synchronizedMap(new HashMap<Long, Map<Long, Section>>());
     //Map<SectionId, Map<sectionAssignmentId, SectionAssignment>>
-    protected final AtomicLong sectionAssignmentCounter = new AtomicLong();
+    protected final static AtomicLong sectionAssignmentCounter = new AtomicLong();
     //Subject area structure Map<SchoolId, Map<subjectAreaId, SubjectArea>>
-    protected final AtomicLong subjectAreaCounter = new AtomicLong();
-    protected static Map<Long, Map<Long, SubjectArea>> subjectAreas = Collections.synchronizedMap(new HashMap<Long, Map<Long, SubjectArea>>());
+    protected final static AtomicLong subjectAreaCounter = new AtomicLong();
+    protected final static Map<Long, Map<Long, SubjectArea>> subjectAreas = Collections.synchronizedMap(new HashMap<Long, Map<Long, SubjectArea>>());
     //Course structure: Map<schoolId, Map<courseId, Course>>
-    protected final AtomicLong courseCounter = new AtomicLong();
-    protected static Map<Long, Map<Long, Course>> courses = Collections.synchronizedMap(new HashMap<Long, Map<Long, Course>>());
+    protected final static AtomicLong courseCounter = new AtomicLong();
+    protected final static Map<Long, Map<Long, Course>> courses = Collections.synchronizedMap(new HashMap<Long, Map<Long, Course>>());
     //Assignments structure: Map<courseId, Map<assignmentId, Assignment>>
-    protected final AtomicLong assignmentCounter = new AtomicLong();
-    protected static Map<Long, Map<Long, Assignment>> assignments = Collections.synchronizedMap(new HashMap<Long, Map<Long, Assignment>>());
+    protected final static AtomicLong assignmentCounter = new AtomicLong();
+    protected final static Map<Long, Map<Long, Assignment>> assignments = Collections.synchronizedMap(new HashMap<Long, Map<Long, Assignment>>());
     
     @SuppressWarnings("unchecked")
     protected ResponseEntity respond(Object obj) {
@@ -112,5 +110,80 @@ public abstract class BaseController {
         }
         return termWithTermId;
     }
+
+    //// STUDENT MANAGER METHODS ////
+
+    @Override
+    public long createStudent(Student student) {
+        student.setId(studentCounter.incrementAndGet());
+        students.put(student.getId(), student);
+        return student.getId();
+    }
+
+    @Override
+    public boolean studentExists(long studentId) {
+        return students.containsKey(studentId);
+    }
+
+    @Override
+    public void deleteStudent(long studentId) {
+        students.remove(studentId);
+    }
+
+    @Override
+    public Collection<Student> getAllStudents() {
+        return students.values();
+    }
+
+    @Override
+    public Student getStudent(long studentId) {
+        return students.get(studentId);
+    }
+
+    @Override
+    public void saveStudent(Student student) {
+        if (student == null || student.getId() == null) { throw new NullPointerException("Student must not be null and have Id set."); }
+        students.put(student.getId(), student);
+    }
+
+    //// END STUDENT MANAGER METHODS ////
+
+    //// START SCHOOL MANAGER METHODS ////
+
+
+    @Override
+    public Collection<School> getAllSchools() {
+        return schools.values();
+    }
+
+    @Override
+    public boolean schoolExists(long schoolId) {
+        return schools.containsKey(schoolId);
+    }
+
+    @Override
+    public School getSchool(long schoolId) {
+        return schools.get(schoolId);
+    }
+
+    @Override
+    public long createSchool(School school) {
+        school.setId(schoolCounter.incrementAndGet());
+        schools.put(school.getId(), school);
+        return school.getId();
+    }
+
+    @Override
+    public void saveSchool(School school) {
+        if (school == null || school.getId() == null) { throw new NullPointerException("School must not be null and have Id set."); }
+        schools.put(school.getId(), school);
+    }
+
+    @Override
+    public void deleteSchool(long schoolId) {
+        schools.remove(schoolId);
+    }
+
+    //// END SCHOOL MANAGER METHODS
 
 }

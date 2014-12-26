@@ -51,7 +51,7 @@ public class CourseController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId) {
-        if(!schools.containsKey(schoolId)) {
+        if(!schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(!courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
@@ -73,7 +73,7 @@ public class CourseController extends BaseController {
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid Course course) {
-        if(!schools.containsKey(schoolId)) {
+        if(!schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         course.setId(courseCounter.incrementAndGet());
@@ -99,7 +99,7 @@ public class CourseController extends BaseController {
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
             @RequestBody @Valid Course course) {
-        if(!schools.containsKey(schoolId)) {
+        if(!schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null != courseId && courses.containsKey(schoolId) && courses.get(schoolId).containsKey(courseId)) {
@@ -125,7 +125,7 @@ public class CourseController extends BaseController {
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
             @RequestBody @Valid Course course) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL, schoolId });
         }
         if(null != course && null != courseId && courses.containsKey(schoolId) 
@@ -151,7 +151,7 @@ public class CourseController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL, schoolId });
         }
         if(null == courseId || !courses.containsKey(schoolId) 
