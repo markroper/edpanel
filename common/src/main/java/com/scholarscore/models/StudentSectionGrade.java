@@ -6,7 +6,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * Represents a single students grade in a specific course.  The complete boolean
+ * Represents a single student's grade in a specific course.  The complete boolean
  * indicates whether or not the grade is final or the course is still ongoing.
  * 
  * @author markroper
