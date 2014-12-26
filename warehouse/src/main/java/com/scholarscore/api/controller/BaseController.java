@@ -22,6 +22,7 @@ import com.scholarscore.models.Section;
 import com.scholarscore.models.SectionAssignment;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.SubjectArea;
 import com.scholarscore.models.Term;
 
@@ -47,10 +48,14 @@ public abstract class BaseController {
     protected static final String SECTION_ASSIGNMENT = "section assignment";
     protected static final String STUDENT_ASSIGNMENT = "student assignment";
     protected static final String STUDENT = "student";
+    protected static final String STUDENT_SECTION_GRADE = "student section grade";
     
     //Student structure: Map<studentId, Student>
     protected final AtomicLong studentCounter = new AtomicLong();
     protected static Map<Long, Student> students = Collections.synchronizedMap(new HashMap<Long, Student>());
+    //Student section grade structure: Map<studentId, Map<sectionId, StudentSectionGrade>>
+    protected static Map<Long, Map<Long, StudentSectionGrade>> studentSectionGrades = 
+            Collections.synchronizedMap(new HashMap<Long, Map<Long, StudentSectionGrade>>());
     
     //School structure: Map<schoolId, School>
     protected final AtomicLong schoolCounter = new AtomicLong();
@@ -68,7 +73,6 @@ public abstract class BaseController {
     protected final AtomicLong studentAssignmentCounter = new AtomicLong();
     protected static Map<Long, Map<Long, StudentAssignment>> studentAssignments = 
             Collections.synchronizedMap(new HashMap<Long, Map<Long, StudentAssignment>>());
-    
     //Subject area structure Map<SchoolId, Map<subjectAreaId, SubjectArea>>
     protected final AtomicLong subjectAreaCounter = new AtomicLong();
     protected static Map<Long, Map<Long, SubjectArea>> subjectAreas = Collections.synchronizedMap(new HashMap<Long, Map<Long, SubjectArea>>());

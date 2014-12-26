@@ -13,7 +13,7 @@ import com.scholarscore.models.EntityId;
 import com.scholarscore.models.StudentAssignment;
 
 public class StudentAssignmentValidatingExecutor {
-private final IntegrationBase serviceBase;
+    private final IntegrationBase serviceBase;
     
     public StudentAssignmentValidatingExecutor(IntegrationBase sb) {
         this.serviceBase = sb;

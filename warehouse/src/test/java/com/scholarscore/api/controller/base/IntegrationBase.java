@@ -42,6 +42,7 @@ import com.scholarscore.api.controller.service.SchoolYearValidatingExecutor;
 import com.scholarscore.api.controller.service.SectionAssignmentValidatingExecutor;
 import com.scholarscore.api.controller.service.SectionValidatingExecutor;
 import com.scholarscore.api.controller.service.StudentAssignmentValidatingExecutor;
+import com.scholarscore.api.controller.service.StudentSectionGradeValidatingExecutor;
 import com.scholarscore.api.controller.service.StudentValidatingExecutor;
 import com.scholarscore.api.controller.service.TermValidatingExecutor;
 import com.scholarscore.models.Assignment;
@@ -78,6 +79,7 @@ public class IntegrationBase {
     private static final String SECTION_ASSIGNMENT_ENDPOINT = "/sectassignments";
     private static final String STUDENT_ENDPOINT = "/students";
     private static final String STUDENT_ASSIGNMENT_ENDPOINT = "/studentassignments";
+    private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/studentgrades";
 
     public LocaleServiceUtil localeServiceUtil;
     public AssignmentValidatingExecutor assignmentValidatingExecutor;
@@ -89,6 +91,7 @@ public class IntegrationBase {
     public SectionAssignmentValidatingExecutor sectionAssignmentValidatingExecutor;
     public StudentValidatingExecutor studentValidatingExecutor;
     public StudentAssignmentValidatingExecutor studentAssignmentValidatingExecutor;
+    public StudentSectionGradeValidatingExecutor studentSectionGradeValidatingExecutor;
     
     public ConcurrentHashMap<Long, Map<Long, List<Assignment>>> assignmentsCreated = new ConcurrentHashMap<>();
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
@@ -142,6 +145,7 @@ public class IntegrationBase {
         sectionAssignmentValidatingExecutor = new SectionAssignmentValidatingExecutor(this);
         studentValidatingExecutor = new StudentValidatingExecutor(this);
         studentAssignmentValidatingExecutor = new StudentAssignmentValidatingExecutor(this);
+        studentSectionGradeValidatingExecutor = new StudentSectionGradeValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -674,6 +678,13 @@ public class IntegrationBase {
      */
     public String getSectionAssignmentEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long sectionAssignmentId) {
         return getSectionAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId) + pathify(sectionAssignmentId);
+    }
+    
+    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long sectionAssignmentId) {
+        return getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId) + pathify(sectionAssignmentId);
+    }
+    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId) {
+        return getSectionEndpoint(schoolId, schoolYearId, termId, sectionId) + STUDENT_SECTION_GRADE_ENDPOINT;
     }
     
     public String getStudentAssignmentEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, 
