@@ -8,6 +8,7 @@ public class ErrorCodes {
     public static final Integer JSON_PARSING_ERROR_CODE = 1001;
     public static final Integer ENTITY_NOT_FOUND_CODE = 2000;
     public static final Integer UNSUPPORTED_VALUE_CODE = 3000;
+    public static final Integer INVALID_ENTITY = 4000;
     
     public static final ErrorCode UNKNOWN_INTERNAL_SERVER_ERROR = 
             new ErrorCode(UNKNOWN_INTERNAL_ERROR_CODE, "warehouse.api.error.unknown", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -20,4 +21,7 @@ public class ErrorCodes {
     
     public static final ErrorCode UNSUPPORTED_ASSIGNMENT_TYPE = 
             new ErrorCode(UNSUPPORTED_VALUE_CODE, "", HttpStatus.BAD_REQUEST);
+    
+    public static final ErrorCode ENTITY_INVALID_IN_CONTEXT = 
+            new ErrorCode(INVALID_ENTITY, "warehouse.api.error.invalidcontext", HttpStatus.BAD_REQUEST);
 }
