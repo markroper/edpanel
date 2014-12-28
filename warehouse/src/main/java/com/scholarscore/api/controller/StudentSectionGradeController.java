@@ -42,7 +42,7 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
@@ -86,7 +86,7 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
@@ -122,7 +122,7 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
@@ -134,7 +134,7 @@ public class StudentSectionGradeController extends BaseController {
         if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }  
-        if(!students.containsKey(studentSectionGrade.getStudentId())) {
+        if(!studentExists(studentSectionGrade.getStudentId())) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentSectionGrade.getStudentId() });
         }
         if(null == sections.get(termId).get(sectId).getEnrolledStudents() ||
@@ -172,7 +172,7 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
@@ -184,7 +184,7 @@ public class StudentSectionGradeController extends BaseController {
         if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         } 
-        if(!students.containsKey(studentId)) {
+        if(!studentExists(studentId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentId });
         }
         if(null == studentSectionGrades.get(studentId) || 
@@ -218,7 +218,7 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
@@ -230,7 +230,7 @@ public class StudentSectionGradeController extends BaseController {
         if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }
-        if(!students.containsKey(studentId)) {
+        if(!studentExists(studentId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentId });
         }
         if(null == studentSectionGrades.get(studentId) || 
@@ -264,7 +264,7 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
+        if(null == schoolId || !schoolExists(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
@@ -276,7 +276,7 @@ public class StudentSectionGradeController extends BaseController {
         if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }
-        if(!students.containsKey(studentId)) {
+        if(!studentExists(studentId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentId });
         }
         if(null == studentSectionGrades.get(studentId) || 
