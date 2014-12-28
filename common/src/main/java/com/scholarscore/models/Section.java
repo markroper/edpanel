@@ -26,7 +26,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     Date startDate;
     Date endDate;
     String room;
-    Map<Long, Student> enrolledStudents;
+    Set<Long> enrolledStudents;
     Map<Long, SectionAssignment> sectionAssignments;
     GradeFormula gradeFormula;
     //TODO: List<Teacher> teachers;
@@ -99,11 +99,11 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.room = room;
     }
 
-    public Map<Long, Student> getEnrolledStudents() {
+    public Set<Long> getEnrolledStudents() {
         return enrolledStudents;
     }
 
-    public void setEnrolledStudents(Map<Long, Student> enrolledStudents) {
+    public void setEnrolledStudents(Set<Long> enrolledStudents) {
         this.enrolledStudents = enrolledStudents;
     }
 

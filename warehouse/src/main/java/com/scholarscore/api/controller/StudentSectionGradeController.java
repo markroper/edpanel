@@ -1,9 +1,10 @@
 package com.scholarscore.api.controller;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -17,23 +18,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scholarscore.api.util.ErrorCodes;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.Section;
-import com.scholarscore.models.SectionAssignment;
+import com.scholarscore.models.StudentSectionGrade;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Controller
-@RequestMapping("/api/v1/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/sectassignments")
-public class SectionAssignmentController extends BaseController {
+@RequestMapping("/api/v1/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/studentgrades")
+public class StudentSectionGradeController extends BaseController {
     @ApiOperation(
-            value = "Get all section assignments", 
-            notes = "Retrieve all section assignments within a section", 
+            value = "Get all student grades in a section", 
+            notes = "Retrieve all student grades in a section", 
             response = List.class)
     @RequestMapping(
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity getAllSectionAssignments(
+    public @ResponseBody ResponseEntity getAllStudentSectionGrades(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "yearId", required = true, value = "School year ID")
@@ -42,7 +42,7 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId) {
-        if(null == schoolId || !schoolExists(schoolId)) {
+        if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
@@ -55,23 +55,27 @@ public class SectionAssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }
         
-        Collection<SectionAssignment> returnSections = new ArrayList<>();
-        if(null != sections.get(termId).get(sectId).getSectionAssignments()) {
-            returnSections = sections.get(termId).get(sectId).getSectionAssignments().values();
+        Iterator<Map<Long, StudentSectionGrade>> it = studentSectionGrades.values().iterator();
+        ArrayList<StudentSectionGrade> stSectionGrades = new ArrayList<>();
+        while(it.hasNext()) {
+            Map<Long, StudentSectionGrade> sectionGrade = it.next();
+            if(sectionGrade.keySet().contains(sectId)) {
+                stSectionGrades.add(sectionGrade.get(sectId));
+            }
         }
-        return respond(returnSections);
+        return respond(stSectionGrades);
     }
     
     @ApiOperation(
-            value = "Get a section assignment", 
-            notes = "Given an section assignment ID, return the section assignment instance", 
-            response = SectionAssignment.class)
+            value = "Get a student's grade in an section", 
+            notes = "Get a student's grade in an section", 
+            response = StudentSectionGrade.class)
     @RequestMapping(
-            value = "/{assignmentId}", 
+            value = "/{studentId}", 
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity getSectionAssignment(
+    public @ResponseBody ResponseEntity getStudentSectionGrade(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "yearId", required = true, value = "School year ID")
@@ -80,9 +84,9 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
-            @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
-            @PathVariable(value="assignmentId") Long assignmentId) {
-        if(null == schoolId || !schoolExists(schoolId)) {
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId) {
+        if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
@@ -94,22 +98,21 @@ public class SectionAssignmentController extends BaseController {
         if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }     
-        if(null == sections.get(termId).get(sectId).getSectionAssignments() || 
-                !sections.get(termId).get(sectId).getSectionAssignments().containsKey(assignmentId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, assignmentId });
-        } 
-        return respond(sections.get(termId).get(sectId).getSectionAssignments().get(assignmentId));
+        if(!studentSectionGrades.containsKey(studentId) || !studentSectionGrades.get(studentId).containsKey(sectId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, studentId });
+        }
+        return respond(studentSectionGrades.get(studentId).get(sectId));
     }
 
     @ApiOperation(
-            value = "Create a section assignment", 
-            notes = "Creates, assigns and ID to, persists and returns a section assignment",
+            value = "Create a student grade in a section", 
+            notes = "Creates, assigns and ID to, persists and returns a student section grade",
             response = EntityId.class)
     @RequestMapping(
             method = RequestMethod.POST, 
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity createSectionAssignment(
+    public @ResponseBody ResponseEntity createStudentSectionGrade(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "yearId", required = true, value = "School year ID")
@@ -118,8 +121,8 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
-            @RequestBody @Valid SectionAssignment sectionAssignment) {
-        if(null == schoolId || !schoolExists(schoolId)) {
+            @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
+        if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
@@ -131,26 +134,33 @@ public class SectionAssignmentController extends BaseController {
         if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }  
-        if(null == sections.get(termId).get(sectId).getSectionAssignments()) {
-            sections.get(termId).get(sectId).setSectionAssignments(new HashMap<Long, SectionAssignment>());
+        if(!students.containsKey(studentSectionGrade.getStudentId())) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentSectionGrade.getStudentId() });
+        }
+        if(null == sections.get(termId).get(sectId).getEnrolledStudents() ||
+                !sections.get(termId).get(sectId).getEnrolledStudents().contains(studentSectionGrade.getStudentId())) {
+            return respond(ErrorCodes.ENTITY_INVALID_IN_CONTEXT, new Object[]{ 
+                    STUDENT_SECTION_GRADE, studentSectionGrade.getStudentId(), SECTION, studentSectionGrade.getSectionId() 
+                    });
+        }
+        if(null == studentSectionGrades.get(studentSectionGrade.getStudentId())) {
+            studentSectionGrades.put(studentSectionGrade.getStudentId(), new HashMap<Long, StudentSectionGrade>());
         } 
         //TODO: check for the student with id studentId
-        sectionAssignment.setId(sectionAssignmentCounter.getAndIncrement());
-        sectionAssignment.setSectionId(sectId);
-        sections.get(termId).get(sectId).getSectionAssignments().put(sectionAssignment.getId(), sectionAssignment);
-        return respond(new EntityId(sectionAssignment.getId()));
+        studentSectionGrades.get(studentSectionGrade.getStudentId()).put(studentSectionGrade.getSectionId(), studentSectionGrade);
+        return respond(new EntityId(studentSectionGrade.getStudentId()));
     }
 
     @ApiOperation(
-            value = "Overwrite an existing section assignment", 
-            notes = "Overwrites an existing section assignment with the ID provided",
+            value = "Overwrite an existing student section grade", 
+            notes = "Overwrites an existing student section grade",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{assignmentId}",
+            value = "/{studentId}",
             method = RequestMethod.PUT, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity replaceSectionAssignment(
+    public @ResponseBody ResponseEntity replaceStudentSectionGrade(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "yearId", required = true, value = "School year ID")
@@ -159,10 +169,10 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
-            @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
-            @PathVariable(value="assignmentId") Long assignmentId,
-            @RequestBody @Valid SectionAssignment sectionAssignment) {
-        if(null == schoolId || !schoolExists(schoolId)) {
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
+        if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
@@ -174,26 +184,29 @@ public class SectionAssignmentController extends BaseController {
         if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         } 
-        if(null == sections.get(termId).get(sectId).getSectionAssignments() || 
-                !sections.get(termId).get(sectId).getSectionAssignments().containsKey(assignmentId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, assignmentId });
+        if(!students.containsKey(studentId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentId });
         }
-        sectionAssignment.setId(assignmentId);
-        sectionAssignment.setSectionId(sectId);
-        sections.get(termId).get(sectId).getSectionAssignments().put(assignmentId, sectionAssignment);
-        return respond(new EntityId(assignmentId));
+        if(null == studentSectionGrades.get(studentId) || 
+                !studentSectionGrades.get(studentId).containsKey(sectId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, studentId });
+        } 
+        studentSectionGrade.setStudentId(studentId);
+        studentSectionGrade.setSectionId(sectId);
+        studentSectionGrades.get(studentId).put(sectId, studentSectionGrade);
+        return respond(new EntityId(studentId));
     }
     
     @ApiOperation(
-            value = "Update an existing section assignment", 
-            notes = "Updates an existing section assigmment. Will not overwrite existing values with null.",
+            value = "Update an existing student section grade", 
+            notes = "Updates an existing student section grade. Will not overwrite existing values with null.",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{assignmentId}", 
+            value = "/{studentId}", 
             method = RequestMethod.PATCH, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity updateTerm(
+    public @ResponseBody ResponseEntity updateGrade(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "yearId", required = true, value = "School year ID")
@@ -202,10 +215,10 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
-            @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
-            @PathVariable(value="assignmentId") Long assignmentId,
-            @RequestBody @Valid SectionAssignment sectionAssignment) {
-        if(null == schoolId || !schoolExists(schoolId)) {
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
+        if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
@@ -217,23 +230,26 @@ public class SectionAssignmentController extends BaseController {
         if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }
-        if(null == sections.get(termId).get(sectId).getSectionAssignments() || 
-                !sections.get(termId).get(sectId).getSectionAssignments().containsKey(assignmentId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, assignmentId });
+        if(!students.containsKey(studentId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentId });
         }
-        sectionAssignment.setId(assignmentId);
-        sectionAssignment.setSectionId(sectId);
-        sectionAssignment.mergePropertiesIfNull(sections.get(termId).get(sectId).getSectionAssignments().get(assignmentId));
-        sections.get(termId).get(sectId).getSectionAssignments().put(assignmentId, sectionAssignment);
-        return respond(new EntityId(assignmentId));
+        if(null == studentSectionGrades.get(studentId) || 
+                !studentSectionGrades.get(studentId).containsKey(sectId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, studentId });
+        } 
+        studentSectionGrade.setStudentId(studentId);
+        studentSectionGrade.setSectionId(sectId);
+        studentSectionGrade.mergePropertiesIfNull(studentSectionGrades.get(studentId).get(sectId));
+        studentSectionGrades.get(studentId).put(sectId, studentSectionGrade);
+        return respond(new EntityId(studentId));
     }
 
     @ApiOperation(
-            value = "Delete a section assignment", 
-            notes = "Deletes the section assignment with the ID provided",
+            value = "Delete a student section grade", 
+            notes = "Deletes the student section grade with the ID provided",
             response = Void.class)
     @RequestMapping(
-            value = "/{assignmentId}", 
+            value = "/{studentId}", 
             method = RequestMethod.DELETE, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -246,9 +262,9 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
-            @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
-            @PathVariable(value="assignmentId") Long assignmentId) {
-        if(null == schoolId || !schoolExists(schoolId)) {
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId) {
+        if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
         if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
@@ -260,11 +276,14 @@ public class SectionAssignmentController extends BaseController {
         if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }
-        if(null == sections.get(termId).get(sectId).getSectionAssignments() || 
-                !sections.get(termId).get(sectId).getSectionAssignments().containsKey(assignmentId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, assignmentId });
+        if(!students.containsKey(studentId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentId });
+        }
+        if(null == studentSectionGrades.get(studentId) || 
+                !studentSectionGrades.get(studentId).containsKey(sectId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, studentId });
         } 
-        sections.get(termId).get(sectId).getSectionAssignments().remove(assignmentId);
-        return respond((Section)null);
+        studentSectionGrades.get(studentId).remove(sectId);
+        return respond((StudentSectionGrade) null);
     }
 }

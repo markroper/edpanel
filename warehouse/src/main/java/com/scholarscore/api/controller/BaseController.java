@@ -18,6 +18,8 @@ import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.SectionAssignment;
 import com.scholarscore.models.Student;
+import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.SubjectArea;
 import com.scholarscore.models.Term;
 
@@ -41,29 +43,35 @@ public abstract class BaseController implements StudentManager, SchoolManager {
     protected static final String TERM = "term";
     protected static final String SECTION = "section";
     protected static final String SECTION_ASSIGNMENT = "section assignment";
+    protected static final String STUDENT_ASSIGNMENT = "student assignment";
     protected static final String STUDENT = "student";
+    protected static final String STUDENT_SECTION_GRADE = "student section grade";
 
     // Todo Jordan: everything from here to 75 should be private.
-
     //Student structure: Map<studentId, Student>
-    private final static AtomicLong studentCounter = new AtomicLong();
-    private final static Map<Long, Student> students = Collections.synchronizedMap(new HashMap<Long, Student>());
-
+    private final AtomicLong studentCounter = new AtomicLong();
+    private static Map<Long, Student> students = Collections.synchronizedMap(new HashMap<Long, Student>());
+    //Student section grade structure: Map<studentId, Map<sectionId, StudentSectionGrade>>
+    protected static Map<Long, Map<Long, StudentSectionGrade>> studentSectionGrades = 
+            Collections.synchronizedMap(new HashMap<Long, Map<Long, StudentSectionGrade>>());
+    
     //School structure: Map<schoolId, School>
-    private final static AtomicLong schoolCounter = new AtomicLong();
-    private final static Map<Long, School> schools = Collections.synchronizedMap(new HashMap<Long, School>());
-
+    private final AtomicLong schoolCounter = new AtomicLong();
+    private static Map<Long, School> schools = Collections.synchronizedMap(new HashMap<Long, School>());
     //School year structure: Map<SchoolId, Map<SchoolYearId, SchoolYear>> note: schoolYears contain terms
-    protected final static AtomicLong schoolYearCounter = new AtomicLong();
-    protected final static AtomicLong termCounter = new AtomicLong();
-    protected final static Map<Long, Map<Long, SchoolYear>> schoolYears = Collections.synchronizedMap(new HashMap<Long, Map<Long, SchoolYear>>());
-
+    protected final AtomicLong schoolYearCounter = new AtomicLong();
+    protected final AtomicLong termCounter = new AtomicLong();
+    protected static Map<Long, Map<Long, SchoolYear>> schoolYears = Collections.synchronizedMap(new HashMap<Long, Map<Long, SchoolYear>>());
     //Map<termId, Map<sectionId, Section>>
     protected final static AtomicLong sectionCounter = new AtomicLong();
     protected final static Map<Long, Map<Long, Section>> sections = Collections.synchronizedMap(new HashMap<Long, Map<Long, Section>>());
 
     //Map<SectionId, Map<sectionAssignmentId, SectionAssignment>>
-    protected final static AtomicLong sectionAssignmentCounter = new AtomicLong();
+    protected final AtomicLong sectionAssignmentCounter = new AtomicLong();
+    //Map<sectionAssignmentId, Map<studentAssignmentId, StudentAssignment>>
+    protected final AtomicLong studentAssignmentCounter = new AtomicLong();
+    protected static Map<Long, Map<Long, StudentAssignment>> studentAssignments = 
+            Collections.synchronizedMap(new HashMap<Long, Map<Long, StudentAssignment>>());
     //Subject area structure Map<SchoolId, Map<subjectAreaId, SubjectArea>>
     protected final static AtomicLong subjectAreaCounter = new AtomicLong();
     protected final static Map<Long, Map<Long, SubjectArea>> subjectAreas = Collections.synchronizedMap(new HashMap<Long, Map<Long, SubjectArea>>());
