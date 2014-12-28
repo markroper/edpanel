@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.scholarscore.api.controller.api.SchoolManager;
+import com.scholarscore.api.controller.api.SchoolYearManager;
 import com.scholarscore.api.controller.api.StudentManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ import com.scholarscore.models.Term;
  *
  */
 @Validated
-public abstract class BaseController implements StudentManager, SchoolManager {
+public abstract class BaseController implements StudentManager, SchoolManager, SchoolYearManager {
     //TODO: @mroper we need to add a real persistence layer that we call instead of manipulating this map
     public static final String JSON_ACCEPT_HEADER = "application/json";
     
@@ -197,5 +198,61 @@ public abstract class BaseController implements StudentManager, SchoolManager {
     }
 
     //// END SCHOOL MANAGER METHODS
+
+    //// BEGIN SCHOOL YEAR MANAGER METHODS
+
+    @Override
+    public Collection<SchoolYear> getAllSchoolYears(long schoolId) {
+        if (!schoolExists(schoolId)) {
+            // TODO Jordan: throw an exception instead? (applies to next 5 methods as well)
+            return null;
+        }
+        return schoolYears.get(schoolId).values();
+    }
+
+    @Override
+    public boolean schoolYearExists(long schoolId, long schoolYearId) {
+        if (!schoolExists(schoolId)) {
+            return false;
+        }
+        return schoolYears.get(schoolId).containsKey(schoolYearId);
+    }
+
+    @Override
+    public SchoolYear getSchoolYear(long schoolId, long schoolYearId) {
+        if (!schoolExists(schoolId)) {
+            return null;
+        }
+        return schoolYears.get(schoolId).get(schoolYearId);
+    }
+
+    @Override
+    public long createSchoolYear(long schoolId, SchoolYear schoolYear) {
+        if (!schoolExists(schoolId)) {
+            return -1;
+        }
+        schoolYear.setId(schoolYearCounter.incrementAndGet());
+        schoolYears.get(schoolId).put(schoolYear.getId(), schoolYear);
+        return schoolYear.getId();
+    }
+
+    @Override
+    public void saveSchoolYear(long schoolId, SchoolYear schoolYear) {
+        if (!schoolExists(schoolId)) {
+            return;
+        }
+        if (schoolYear == null || schoolYear.getId() == null) { throw new NullPointerException("Object must not be null and have Id set."); }
+        schoolYears.get(schoolId).put(schoolYear.getId(), schoolYear);
+    }
+
+    @Override
+    public void deleteSchoolYear(long schoolId, long schoolYearId) {
+        if (!schoolExists(schoolId)) {
+            return;
+        }
+        schoolYears.get(schoolId).remove(schoolYearId);
+    }
+
+//// END SCHOOL YEAR MANAGER METHODS
 
 }

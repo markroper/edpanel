@@ -11,23 +11,14 @@ import java.util.Collection;
  */
 public interface SchoolYearManager {
 
-    public SchoolYearManager buildSchoolYearManager(long schoolId);
+    public Collection<SchoolYear> getAllSchoolYears(long schoolId);
 
-    public Collection<SchoolYear> getAllSchoolYears(long schoolId, long schoolYearId);
+    public boolean schoolYearExists(long schoolId, long schoolYearId);
+    public SchoolYear getSchoolYear(long schoolId, long schoolYearId);
 
-    public SchoolYear getSchoolYear(long schoolYearId);
+    public long createSchoolYear(long schoolId, SchoolYear schoolYear);
 
-    /*
-    *
-    public Collection<School> getAllSchools();
+    public void saveSchoolYear(long schoolId, SchoolYear schoolYear);
 
-    public boolean schoolExists(long schoolId);
-    public School getSchool(long schoolId);
-
-    public long createSchool(School school);
-
-    public void saveSchool(School school);
-
-    public void deleteSchool(long schoolId);
-    * */
+    public void deleteSchoolYear(long schoolId, long schoolYearId);
 }
