@@ -103,7 +103,7 @@ public class StudentSectionGradeController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studId });
         }
         if(!studentSectionGrades.containsKey(studId) || !studentSectionGrades.get(studId).containsKey(sectId) ||
-                null != studentSectionGrades.get(studId).get(sectId).get(gradeId)) {
+                !studentSectionGrades.get(studId).get(sectId).containsKey(gradeId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, gradeId });
         }
         return respond(studentSectionGrades.get(studId).get(sectId).get(gradeId));
