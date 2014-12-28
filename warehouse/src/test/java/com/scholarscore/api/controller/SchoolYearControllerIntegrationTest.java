@@ -76,7 +76,7 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
         schoolYearValidatingExecutor.delete(school.getId(), createdSchoolYear.getId(), msg);
     }
     
-    @Test(dataProvider = "createSchoolYearProvider")
+    @Test(dataProvider = "createSchoolYearProvider", enabled = false)
     public void replaceSchoolYearTest(String msg, SchoolYear schoolYear) {
         SchoolYear createdSchoolYear = schoolYearValidatingExecutor.create(school.getId(), schoolYear, msg);
         schoolYearValidatingExecutor.replace(school.getId(), createdSchoolYear.getId(), new SchoolYear(), msg);

@@ -1,7 +1,6 @@
 package com.scholarscore.api.controller;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -83,7 +82,7 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
         numberOfItemsCreated++;
     }
 
-    @Test
+    @Test(enabled = false)
     public void deleteStudentSectionGradeTest() {
         StudentSectionGrade emptyStudentSectionGrade = new StudentSectionGrade();
         StudentSectionGrade createdSection = studentSectionGradeValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student3.getId(), emptyStudentSectionGrade, "delete");
@@ -91,12 +90,12 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
     }
     
     @Test(dataProvider = "createStudentSectionGradeProvider")
-    public void replaceStudentSectionGradeTest(String msg, StudentSectionGrade studentSectionGrade) {
+    public void replaceStudentSectionGradeTest(String msg, StudentSectionGrade studentSectionGrade, Student stud) {
         StudentSectionGrade createdSection = studentSectionGradeValidatingExecutor.create(
-                school.getId(), schoolYear.getId(), term.getId(), section.getId(), student.getId(), studentSectionGrade, msg);
+                school.getId(), schoolYear.getId(), term.getId(), section.getId(), stud.getId(), studentSectionGrade, msg);
         StudentSectionGrade replaceGrade = new StudentSectionGrade();
         studentSectionGradeValidatingExecutor.replace(
-                school.getId(), schoolYear.getId(), term.getId(), section.getId(), student.getId(), createdSection.getId(), replaceGrade, msg);
+                school.getId(), schoolYear.getId(), term.getId(), section.getId(), stud.getId(), createdSection.getId(), replaceGrade, msg);
     }
     
     @Test(dataProvider = "createStudentSectionGradeProvider")
