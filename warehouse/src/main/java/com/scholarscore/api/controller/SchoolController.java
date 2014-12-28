@@ -46,7 +46,10 @@ public class SchoolController extends BaseController {
     public @ResponseBody ResponseEntity get(
             @ApiParam(name = "schoolId", required = true, value = "The school long ID")
             @PathVariable(value="schoolId") Long schoolId) {
-        return respond(getSchool(schoolId));
+        if(schoolExists(schoolId)) {
+            return respond(getSchool(schoolId));
+        }
+        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
     }
 
     @ApiOperation(
