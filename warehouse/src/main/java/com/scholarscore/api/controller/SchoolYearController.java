@@ -110,7 +110,10 @@ public class SchoolYearController extends BaseController {
         }
         if(null != schoolYearId && schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
             SchoolYear originalSchoolYear = schoolYears.get(schoolId).get(schoolYearId);
-            HashSet<Long> termIds = new HashSet<>(originalSchoolYear.getTerms().keySet());
+            HashSet<Long> termIds = new HashSet<>();
+            if(null != originalSchoolYear.getTerms()) {
+                termIds.addAll(originalSchoolYear.getTerms().keySet());
+            }
             if(null != schoolYear.getTerms() && !schoolYear.getTerms().isEmpty()) {
                 for(Term t : schoolYear.getTerms().values()) {
                     if(null == t.getId() || !termIds.contains(t.getId())) {

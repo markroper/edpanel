@@ -3,7 +3,6 @@ package com.scholarscore.api.controller;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -76,7 +75,7 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
         schoolYearValidatingExecutor.delete(school.getId(), createdSchoolYear.getId(), msg);
     }
     
-    @Test(dataProvider = "createSchoolYearProvider", enabled = false)
+    @Test(dataProvider = "createSchoolYearProvider")
     public void replaceSchoolYearTest(String msg, SchoolYear schoolYear) {
         SchoolYear createdSchoolYear = schoolYearValidatingExecutor.create(school.getId(), schoolYear, msg);
         schoolYearValidatingExecutor.replace(school.getId(), createdSchoolYear.getId(), new SchoolYear(), msg);

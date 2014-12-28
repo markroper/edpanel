@@ -1,9 +1,7 @@
 package com.scholarscore.api.controller;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -105,7 +103,7 @@ public class StudentSectionGradeController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studId });
         }
         if(!studentSectionGrades.containsKey(studId) || !studentSectionGrades.get(studId).containsKey(sectId) ||
-                !studentSectionGrades.get(studId).get(sectId).containsKey(gradeId)) {
+                null != studentSectionGrades.get(studId).get(sectId).get(gradeId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, gradeId });
         }
         return respond(studentSectionGrades.get(studId).get(sectId).get(gradeId));
@@ -264,11 +262,11 @@ public class StudentSectionGradeController extends BaseController {
             notes = "Deletes the student section grade with the ID provided",
             response = Void.class)
     @RequestMapping(
-            value = "/{studentId}", 
+            value = "/{gradeId}", 
             method = RequestMethod.DELETE, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity deleteTerm(
+    public @ResponseBody ResponseEntity deleteSectionGrade(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "yearId", required = true, value = "School year ID")

@@ -42,7 +42,7 @@ cargo {
     containerId = 'tomcat7x'
 
     local {
-        jvmArgs = '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999'
+        //jvmArgs = '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999'
         installer {
             installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.zip'
             downloadDir = file("$buildDir/download")
