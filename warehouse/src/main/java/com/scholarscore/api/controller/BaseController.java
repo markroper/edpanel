@@ -48,16 +48,20 @@ public abstract class BaseController implements StudentManager, SchoolManager {
     //Student structure: Map<studentId, Student>
     private final static AtomicLong studentCounter = new AtomicLong();
     private final static Map<Long, Student> students = Collections.synchronizedMap(new HashMap<Long, Student>());
+
     //School structure: Map<schoolId, School>
     private final static AtomicLong schoolCounter = new AtomicLong();
     private final static Map<Long, School> schools = Collections.synchronizedMap(new HashMap<Long, School>());
+
     //School year structure: Map<SchoolId, Map<SchoolYearId, SchoolYear>> note: schoolYears contain terms
     protected final static AtomicLong schoolYearCounter = new AtomicLong();
     protected final static AtomicLong termCounter = new AtomicLong();
     protected final static Map<Long, Map<Long, SchoolYear>> schoolYears = Collections.synchronizedMap(new HashMap<Long, Map<Long, SchoolYear>>());
+
     //Map<termId, Map<sectionId, Section>>
     protected final static AtomicLong sectionCounter = new AtomicLong();
     protected final static Map<Long, Map<Long, Section>> sections = Collections.synchronizedMap(new HashMap<Long, Map<Long, Section>>());
+
     //Map<SectionId, Map<sectionAssignmentId, SectionAssignment>>
     protected final static AtomicLong sectionAssignmentCounter = new AtomicLong();
     //Subject area structure Map<SchoolId, Map<subjectAreaId, SubjectArea>>
