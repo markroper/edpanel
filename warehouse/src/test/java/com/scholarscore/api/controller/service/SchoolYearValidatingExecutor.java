@@ -1,7 +1,8 @@
 package com.scholarscore.api.controller.service;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -172,11 +173,11 @@ public class SchoolYearValidatingExecutor {
         }
         
         if(null != returnSchoolYear.getTerms() && !returnSchoolYear.getTerms().isEmpty()) {
-            LinkedHashSet<Term> termSetToReturn = new LinkedHashSet<>();
-            for (Term t : created.getTerms()) {
+            Map<Long, Term> termSetToReturn = new HashMap<>();
+            for (Term t : created.getTerms().values()) {
                 Term copiedTerm = new Term(t);
                 copiedTerm.setId(t.getId());
-                termSetToReturn.add(copiedTerm);
+                termSetToReturn.put(copiedTerm.getId(), copiedTerm);
             }
             returnSchoolYear.setTerms(termSetToReturn);
         }

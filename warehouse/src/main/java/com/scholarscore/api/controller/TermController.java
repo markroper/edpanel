@@ -1,8 +1,10 @@
 package com.scholarscore.api.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -45,7 +47,7 @@ public class TermController extends BaseController {
         }
         ArrayList<Term> returnTerms = new ArrayList<Term>();
         if(schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            returnTerms = new ArrayList<>(schoolYears.get(schoolId).get(schoolYearId).getTerms());
+            returnTerms = new ArrayList<>(schoolYears.get(schoolId).get(schoolYearId).getTerms().values());
         }
         return respond(returnTerms);
     }
@@ -75,12 +77,9 @@ public class TermController extends BaseController {
         
         if(schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
             SchoolYear year = schoolYears.get(schoolId).get(schoolYearId);
-            if(null != year.getTerms()) {
-                for(Term t : year.getTerms()) {
-                    if(t.getId() == termId) {
-                        return respond(t);
-                    }
-                }
+            Term t = year.getTerms().get(termId);
+            if(null != t) {
+                return respond(t);
             }
         }
         return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { TERM, termId });
@@ -110,9 +109,9 @@ public class TermController extends BaseController {
         term.setId(termCounter.getAndIncrement());
         SchoolYear originalYear = schoolYears.get(schoolId).get(schoolYearId);
         if(null == originalYear.getTerms()) {
-            originalYear.setTerms(new LinkedHashSet<Term>());
+            originalYear.setTerms(new HashMap<Long, Term>());
         }
-        originalYear.getTerms().add(term);
+        originalYear.getTerms().put(term.getId(), term);
         return respond(new EntityId(term.getId()));
     }
 
@@ -142,19 +141,10 @@ public class TermController extends BaseController {
  
         if(null != termId && schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
             SchoolYear originalYear = schoolYears.get(schoolId).get(schoolYearId);
-            Term termToReplace = null;
-            if(null != originalYear.getTerms()) {
-                for(Term t : originalYear.getTerms()) {
-                    if(t.getId() == termId) {
-                        termToReplace = t;
-                        break;
-                    }
-                }
-            }
+            Term termToReplace = originalYear.getTerms().get(termId);
             if(null != termToReplace) {
-                originalYear.getTerms().remove(termToReplace);
                 term.setId(termId);
-                originalYear.getTerms().add(term);
+                originalYear.getTerms().put(termId, term);
                 return respond(new EntityId(termId));
             }
         }
@@ -187,18 +177,10 @@ public class TermController extends BaseController {
         
         if(null != termId && schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
             SchoolYear originalYear = schoolYears.get(schoolId).get(schoolYearId);
-            Term termToReplace = null;
-            if(null != originalYear.getTerms()) {
-                for(Term t : originalYear.getTerms()) {
-                    if(t.getId() == termId) {
-                        term.mergePropertiesIfNull(t);
-                        termToReplace = t;
-                    }
-                }
-            }
+            Term termToReplace = originalYear.getTerms().get(termId);
             if(null != termToReplace) {
-                originalYear.getTerms().remove(termToReplace);
-                originalYear.getTerms().add(term);
+                term.setId(termId);
+                originalYear.getTerms().put(termId, term);
                 return respond(new EntityId(termId));   
             }
         }
@@ -229,17 +211,9 @@ public class TermController extends BaseController {
         }
         if(null != termId && schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
             SchoolYear originalYear =  schoolYears.get(schoolId).get(schoolYearId);
-            Term termToRemove = null;
-            if(null != originalYear.getTerms()) {
-                for(Term t : originalYear.getTerms()){
-                    if(t.getId() == termId) {
-                        termToRemove = t;
-                        break;
-                    }
-                }
-            }
+            Term termToRemove = originalYear.getTerms().get(termId);
             if(null != termToRemove) {
-                originalYear.getTerms().remove(termToRemove);
+                originalYear.getTerms().remove(termId);
                 return respond((Term) null);
             }
         }

@@ -1,10 +1,8 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -21,8 +19,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SchoolYear extends ApiModel implements Serializable, IApiModel<SchoolYear>{
     protected Date startDate;
-    protected Date endDate;
-    protected LinkedHashSet<Term> terms;
+    protected Date endDate;;
+    protected Map<Long, Term> terms;
     
     public SchoolYear() {
         
@@ -51,25 +49,16 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         this.endDate = endDate;
     }
 
-    public LinkedHashSet<Term> getTerms() {
+    public Map<Long, Term> getTerms() {
         return terms;
     }
 
-    public void setTerms(LinkedHashSet<Term> terms) {
+    public void setTerms(Map<Long, Term> terms) {
         this.terms = terms;
     }
 
     public Term findTermById(Long id) {
-        Term termWithTermId = null;
-        if(null != terms) {
-            for(Term t : terms) {
-                if(t.getId().equals(id)) {
-                    termWithTermId = t;
-                    break;
-                }
-            }
-        }
-        return termWithTermId;
+        return terms.get(id);
     }
     
     @Override

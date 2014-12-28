@@ -53,9 +53,10 @@ public abstract class BaseController {
     //Student structure: Map<studentId, Student>
     protected final AtomicLong studentCounter = new AtomicLong();
     protected static Map<Long, Student> students = Collections.synchronizedMap(new HashMap<Long, Student>());
-    //Student section grade structure: Map<studentId, Map<sectionId, StudentSectionGrade>>
-    protected static Map<Long, Map<Long, StudentSectionGrade>> studentSectionGrades = 
-            Collections.synchronizedMap(new HashMap<Long, Map<Long, StudentSectionGrade>>());
+    //Student section grade structure: Map<studentId, Map<sectionId, Map<gradeId, StudentSectionGrade>>
+    protected final AtomicLong studentSectGradeCounter = new AtomicLong();
+    protected static Map<Long, Map<Long, Map<Long, StudentSectionGrade>>> studentSectionGrades = 
+            Collections.synchronizedMap(new HashMap<Long, Map<Long, Map<Long, StudentSectionGrade>>>());
     
     //School structure: Map<schoolId, School>
     protected final AtomicLong schoolCounter = new AtomicLong();
@@ -100,28 +101,4 @@ public abstract class BaseController {
         returnError.setArguments(args);
         return new ResponseEntity<ErrorCode>(factory.localizeError(returnError), returnError.getHttpStatus());
     }
-    
-    protected HashSet<Long> resolveTermIds(SchoolYear year) {
-        HashSet<Long> termIds = new HashSet<>();
-        if(null != year.getTerms()) {
-            for(Term t : year.getTerms()) {
-                termIds.add(t.getId());
-            }
-        }
-        return termIds;
-    }
-    
-    protected Term getTermById(Set<Term> terms, Long termId) {
-        Term termWithTermId = null;
-        if(null != terms) {
-            for(Term t : terms) {
-                if(t.getId().equals(termId)) {
-                    termWithTermId = t;
-                    break;
-                }
-            }
-        }
-        return termWithTermId;
-    }
-
 }

@@ -178,7 +178,6 @@ public class StudentAssignmentValidatingExecutor {
             returnStudentAssignment.mergePropertiesIfNull(created);
         } 
         returnStudentAssignment.setId(created.getId());
-        returnStudentAssignment.setSectionAssignmentId(created.getSectionAssignmentId());
         return returnStudentAssignment;
     }
 }

@@ -122,8 +122,6 @@ public class SectionController extends BaseController {
         } 
         
         section.setId(sectionCounter.getAndIncrement());
-        section.setTermId(termId);
-        section.setYearId(schoolYearId);
         sections.get(termId).put(section.getId(), section);
         return respond(new EntityId(section.getId()));
     }
@@ -160,8 +158,6 @@ public class SectionController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectionId });
         } 
         section.setId(sectionId);
-        section.setTermId(termId);
-        section.setYearId(schoolYearId);
         sections.get(termId).put(sectionId, section);
         return respond(new EntityId(sectionId));
     }
@@ -198,8 +194,6 @@ public class SectionController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectionId });
         }
         section.setId(sectionId);
-        section.setTermId(termId);
-        section.setYearId(schoolYearId);
         section.mergePropertiesIfNull(sections.get(termId).get(sectionId));
         sections.get(termId).put(sectionId, section);
         return respond(new EntityId(sectionId));

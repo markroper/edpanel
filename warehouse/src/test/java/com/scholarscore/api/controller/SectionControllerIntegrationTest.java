@@ -54,11 +54,11 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
         
         Section fullSection = new Section(namedSection);
         fullSection.setRoom(localeServiceUtil.generateName());
-        Set<Long> students = new HashSet<>();
+        Map<Long, Student> students = new HashMap<>();
         Student s = new Student();
         s.setId(2L);
         s.setName(localeServiceUtil.generateName());
-        students.add(s.getId());
+        students.put(s.getId(), s);
         fullSection.setEnrolledStudents(students);
         
         return new Object[][] {

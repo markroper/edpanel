@@ -19,16 +19,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Section extends ApiModel implements Serializable, IApiModel<Section> {
-    Long courseId;
-    Long termId;
-    Long yearId;
-    
-    Date startDate;
-    Date endDate;
-    String room;
-    Set<Long> enrolledStudents;
-    Map<Long, SectionAssignment> sectionAssignments;
-    GradeFormula gradeFormula;
+    protected Date startDate;
+    protected Date endDate;
+    protected String room;
+    protected GradeFormula gradeFormula;
+    protected transient Course course;
+    protected transient Map<Long, Student> enrolledStudents;
+    protected transient Map<Long, SectionAssignment> sectionAssignments;
     //TODO: List<Teacher> teachers;
     //TODO: Set<SectionAssignment> assignments;
     //TODO: Schedule
@@ -40,9 +37,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     
     public Section(Section sect) {
         super(sect);
-        courseId = sect.courseId;
-        termId = sect.termId;
-        yearId = sect.yearId;
+        course = sect.course;
         startDate = sect.startDate;
         endDate = sect.endDate;
         room = sect.room;
@@ -50,29 +45,13 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         sectionAssignments = sect.sectionAssignments;
         gradeFormula = sect.gradeFormula;
     }
-    
-    public Long getCourseId() {
-        return courseId;
+
+    public Course getCourse() {
+        return course;
     }
 
-    public void setCourseId(Long courseId) {
-        this.courseId = courseId;
-    }
-
-    public Long getTermId() {
-        return termId;
-    }
-
-    public void setTermId(Long termId) {
-        this.termId = termId;
-    }
-
-    public Long getYearId() {
-        return yearId;
-    }
-
-    public void setYearId(Long yearId) {
-        this.yearId = yearId;
+    public void setCourse(Course course) {
+        this.course = course;
     }
 
     public Date getStartDate() {
@@ -99,11 +78,11 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.room = room;
     }
 
-    public Set<Long> getEnrolledStudents() {
+    public Map<Long, Student> getEnrolledStudents() {
         return enrolledStudents;
     }
 
-    public void setEnrolledStudents(Set<Long> enrolledStudents) {
+    public void setEnrolledStudents(Map<Long, Student> enrolledStudents) {
         this.enrolledStudents = enrolledStudents;
     }
 
@@ -126,14 +105,8 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     @Override
     public void mergePropertiesIfNull(Section mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
-        if(null == courseId) {
-            courseId = mergeFrom.courseId;
-        }
-        if(null == termId) {
-            termId = mergeFrom.termId;
-        }
-        if(null == yearId) {
-            yearId = mergeFrom.yearId;
+        if(null == course) {
+            course = mergeFrom.course;
         }
         if(null == startDate) {
             startDate = mergeFrom.startDate;
@@ -161,9 +134,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             return false;
         }
         final Section other = (Section) obj;
-        return Objects.equals(this.courseId, other.courseId) && 
-                Objects.equals(this.termId, other.termId) &&
-                Objects.equals(this.yearId, other.yearId) &&
+        return Objects.equals(this.course, other.course) && 
                 Objects.equals(this.startDate, other.startDate) && 
                 Objects.equals(this.endDate, other.endDate) &&
                 Objects.equals(this.room, other.room) &&
@@ -174,7 +145,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(courseId, termId, yearId, startDate, endDate, 
+        return 31 * super.hashCode() + Objects.hash(course, startDate, endDate, 
                 room, enrolledStudents, sectionAssignments, gradeFormula);
     }
     

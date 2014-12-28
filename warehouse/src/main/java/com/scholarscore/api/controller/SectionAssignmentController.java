@@ -136,7 +136,6 @@ public class SectionAssignmentController extends BaseController {
         } 
         //TODO: check for the student with id studentId
         sectionAssignment.setId(sectionAssignmentCounter.getAndIncrement());
-        sectionAssignment.setSectionId(sectId);
         sections.get(termId).get(sectId).getSectionAssignments().put(sectionAssignment.getId(), sectionAssignment);
         return respond(new EntityId(sectionAssignment.getId()));
     }
@@ -179,7 +178,6 @@ public class SectionAssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, assignmentId });
         }
         sectionAssignment.setId(assignmentId);
-        sectionAssignment.setSectionId(sectId);
         sections.get(termId).get(sectId).getSectionAssignments().put(assignmentId, sectionAssignment);
         return respond(new EntityId(assignmentId));
     }
@@ -222,7 +220,6 @@ public class SectionAssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, assignmentId });
         }
         sectionAssignment.setId(assignmentId);
-        sectionAssignment.setSectionId(sectId);
         sectionAssignment.mergePropertiesIfNull(sections.get(termId).get(sectId).getSectionAssignments().get(assignmentId));
         sections.get(termId).get(sectId).getSectionAssignments().put(assignmentId, sectionAssignment);
         return respond(new EntityId(assignmentId));
