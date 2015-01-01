@@ -31,13 +31,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
     
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
         if(!super.equals(obj)) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
             return false;
         }
         return true;
