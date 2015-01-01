@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Represents the student's performance on an assignment in a specific course.

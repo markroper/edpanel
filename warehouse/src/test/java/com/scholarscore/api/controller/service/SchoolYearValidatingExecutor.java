@@ -1,8 +1,7 @@
 package com.scholarscore.api.controller.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -173,11 +172,11 @@ public class SchoolYearValidatingExecutor {
         }
         
         if(null != returnSchoolYear.getTerms() && !returnSchoolYear.getTerms().isEmpty()) {
-            Map<Long, Term> termSetToReturn = new HashMap<>();
-            for (Term t : created.getTerms().values()) {
+            List<Term> termSetToReturn = new ArrayList<>();
+            for (Term t : created.getTerms()) {
                 Term copiedTerm = new Term(t);
                 copiedTerm.setId(t.getId());
-                termSetToReturn.put(copiedTerm.getId(), copiedTerm);
+                termSetToReturn.add(copiedTerm);
             }
             returnSchoolYear.setTerms(termSetToReturn);
         }

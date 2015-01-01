@@ -1,7 +1,7 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class School extends ApiModel implements Serializable, IApiModel<School>{
-    Map<Long, SchoolYear> years;
+    List<SchoolYear> years;
     
     public School() {
         super();
@@ -26,11 +26,11 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         this.years = clone.years;
     }
     
-    public Map<Long, SchoolYear> getYears() {
+    public List<SchoolYear> getYears() {
         return years;
     }
 
-    public void setYears(Map<Long, SchoolYear> years) {
+    public void setYears(List<SchoolYear> years) {
         this.years = years;
     }
 

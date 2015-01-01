@@ -40,10 +40,10 @@ public class StudentSectionGradeValidatingExecutor {
         Assert.assertEquals(studentSectionGrades.size(), numberOfItems, "Unexpected number of items returned for case: " + msg);
     }
     
-    public void getNegative(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long id, HttpStatus expectedCode, String msg) {
+    public void getNegative(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, Long id, HttpStatus expectedCode, String msg) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.GET, 
-                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, id),
+                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId,  id),
                 null);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
                 "Unexpected status code returned while retreiving term: " + msg);
@@ -74,7 +74,7 @@ public class StudentSectionGradeValidatingExecutor {
                 serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId, id));
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), HttpStatus.OK.value(),
                 "Non 200 HttpStatus returned on delete for case: " + msg);
-        getNegative(schoolId, schoolYearId, termId, sectionId, id, HttpStatus.NOT_FOUND, msg);
+        getNegative(schoolId, schoolYearId, termId, sectionId, studentId, id, HttpStatus.NOT_FOUND, msg);
     }
     
     public void deleteNegative(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, Long id, HttpStatus expectedCode, String msg) {

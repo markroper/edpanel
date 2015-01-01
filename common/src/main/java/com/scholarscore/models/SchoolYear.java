@@ -2,7 +2,7 @@ package com.scholarscore.models;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class SchoolYear extends ApiModel implements Serializable, IApiModel<SchoolYear>{
     protected Date startDate;
     protected Date endDate;;
-    protected Map<Long, Term> terms;
+    protected List<Term> terms;
     
     public SchoolYear() {
         
@@ -49,16 +49,25 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         this.endDate = endDate;
     }
 
-    public Map<Long, Term> getTerms() {
+    public List<Term> getTerms() {
         return terms;
     }
 
-    public void setTerms(Map<Long, Term> terms) {
+    public void setTerms(List<Term> terms) {
         this.terms = terms;
     }
 
     public Term findTermById(Long id) {
-        return terms.get(id);
+        Term termWithTermId = null;
+        if(null != terms) {
+            for(Term t : terms) {
+                if(t.getId().equals(id)) {
+                    termWithTermId = t;
+                    break;
+                }
+            }
+        }
+        return termWithTermId;
     }
     
     @Override

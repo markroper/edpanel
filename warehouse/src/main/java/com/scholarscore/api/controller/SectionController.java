@@ -3,7 +3,6 @@ package com.scholarscore.api.controller;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -18,9 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scholarscore.api.util.ErrorCodes;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.Term;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 

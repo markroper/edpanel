@@ -2,9 +2,8 @@ package com.scholarscore.models;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -24,8 +23,8 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected String room;
     protected GradeFormula gradeFormula;
     protected transient Course course;
-    protected transient Map<Long, Student> enrolledStudents;
-    protected transient Map<Long, SectionAssignment> sectionAssignments;
+    protected transient List<Student> enrolledStudents;
+    protected transient List<SectionAssignment> sectionAssignments;
     //TODO: List<Teacher> teachers;
     //TODO: Set<SectionAssignment> assignments;
     //TODO: Schedule
@@ -78,19 +77,45 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.room = room;
     }
 
-    public Map<Long, Student> getEnrolledStudents() {
+    public List<Student> getEnrolledStudents() {
         return enrolledStudents;
     }
 
-    public void setEnrolledStudents(Map<Long, Student> enrolledStudents) {
+    public void setEnrolledStudents(List<Student> enrolledStudents) {
         this.enrolledStudents = enrolledStudents;
     }
 
-    public Map<Long, SectionAssignment> getSectionAssignments() {
+    public Student findEnrolledStudentById(Long id) {
+        Student student = null;
+        if(null != id && null != enrolledStudents && !enrolledStudents.isEmpty()) {
+            for(Student s: enrolledStudents) {
+                if(s.getId().equals(id)) {
+                    student = s;
+                    break;
+                }
+            }
+        }
+        return student;
+    }
+    
+    public List<SectionAssignment> getSectionAssignments() {
         return sectionAssignments;
     }
+    
+    public SectionAssignment findAssignmentById(Long id) {
+        SectionAssignment assignment = null;
+        if(null != id && null != sectionAssignments && !sectionAssignments.isEmpty()) {
+            for(SectionAssignment s: sectionAssignments) {
+                if(s.getId().equals(id)) {
+                    assignment = s;
+                    break;
+                }
+            }
+        }
+        return assignment;
+    }
 
-    public void setSectionAssignments(Map<Long, SectionAssignment> sectionAssignments) {
+    public void setSectionAssignments(List<SectionAssignment> sectionAssignments) {
         this.sectionAssignments = sectionAssignments;
     }
 

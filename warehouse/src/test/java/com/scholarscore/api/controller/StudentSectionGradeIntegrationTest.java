@@ -1,6 +1,6 @@
 package com.scholarscore.api.controller;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -16,7 +16,6 @@ import com.scholarscore.models.Term;
 
 @Test(groups = { "integration" })
 public class StudentSectionGradeIntegrationTest extends IntegrationBase {
-    private int numberOfItemsCreated;
     private School school;
     private SchoolYear schoolYear;
     private Term term;
@@ -27,7 +26,6 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
     
     @BeforeClass
     public void init() {
-        numberOfItemsCreated = 0;
         school = new School();
         school.setName(localeServiceUtil.generateName());
         school = schoolValidatingExecutor.create(school, "Create base school");
@@ -54,10 +52,10 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
         
         section = new Section();
         section.setName(localeServiceUtil.generateName());
-        section.setEnrolledStudents(new HashMap<Long, Student>());
-        section.getEnrolledStudents().put(student.getId(), student);
-        section.getEnrolledStudents().put(student2.getId(), student2);
-        section.getEnrolledStudents().put(student3.getId(), student3);
+        section.setEnrolledStudents(new ArrayList<Student>());
+        section.getEnrolledStudents().add(student);
+        section.getEnrolledStudents().add(student2);
+        section.getEnrolledStudents().add(student3);
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
     }
     
@@ -79,10 +77,9 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createStudentSectionGradeProvider")
     public void createStudentSectionGradeTest(String msg, StudentSectionGrade studentSectionGrade, Student stud) {
         studentSectionGradeValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), stud.getId(), studentSectionGrade, msg);
-        numberOfItemsCreated++;
     }
 
-    @Test(enabled = false)
+    @Test
     public void deleteStudentSectionGradeTest() {
         StudentSectionGrade emptyStudentSectionGrade = new StudentSectionGrade();
         StudentSectionGrade createdSection = studentSectionGradeValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student3.getId(), emptyStudentSectionGrade, "delete");

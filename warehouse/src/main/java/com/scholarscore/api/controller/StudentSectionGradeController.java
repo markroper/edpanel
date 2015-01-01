@@ -145,7 +145,7 @@ public class StudentSectionGradeController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studId });
         }
         if(null == sections.get(termId).get(sectId).getEnrolledStudents() ||
-                !sections.get(termId).get(sectId).getEnrolledStudents().containsKey(studId)) {
+                null == sections.get(termId).get(sectId).findEnrolledStudentById(studId)) {
             return respond(ErrorCodes.ENTITY_INVALID_IN_CONTEXT, new Object[]{ 
                     STUDENT_SECTION_GRADE, studId, SECTION, studId 
                     });

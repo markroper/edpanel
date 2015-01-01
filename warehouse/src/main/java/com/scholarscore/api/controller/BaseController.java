@@ -2,10 +2,7 @@ package com.scholarscore.api.controller;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.http.HttpStatus;
@@ -19,12 +16,10 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.SectionAssignment;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.SubjectArea;
-import com.scholarscore.models.Term;
 
 /**
  * All SpringMVC controllers defined in the package subclass this base
@@ -84,7 +79,7 @@ public abstract class BaseController {
     protected final AtomicLong assignmentCounter = new AtomicLong();
     protected static Map<Long, Map<Long, Assignment>> assignments = Collections.synchronizedMap(new HashMap<Long, Map<Long, Assignment>>());
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected ResponseEntity respond(Object obj) {
         if(obj instanceof ErrorCode) {
             ErrorCode err = (ErrorCode) obj;

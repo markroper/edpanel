@@ -2,7 +2,6 @@ package com.scholarscore.api.controller;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -57,7 +56,7 @@ public class SectionAssignmentController extends BaseController {
         
         Collection<SectionAssignment> returnSections = new ArrayList<>();
         if(null != sections.get(termId).get(sectId).getSectionAssignments()) {
-            returnSections = sections.get(termId).get(sectId).getSectionAssignments().values();
+            returnSections = sections.get(termId).get(sectId).getSectionAssignments();
         }
         return respond(returnSections);
     }
@@ -95,10 +94,10 @@ public class SectionAssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }     
         if(null == sections.get(termId).get(sectId).getSectionAssignments() || 
-                !sections.get(termId).get(sectId).getSectionAssignments().containsKey(assignmentId)) {
+                null == sections.get(termId).get(sectId).findAssignmentById(assignmentId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, assignmentId });
         } 
-        return respond(sections.get(termId).get(sectId).getSectionAssignments().get(assignmentId));
+        return respond(sections.get(termId).get(sectId).findAssignmentById(assignmentId));
     }
 
     @ApiOperation(
@@ -132,11 +131,11 @@ public class SectionAssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }  
         if(null == sections.get(termId).get(sectId).getSectionAssignments()) {
-            sections.get(termId).get(sectId).setSectionAssignments(new HashMap<Long, SectionAssignment>());
+            sections.get(termId).get(sectId).setSectionAssignments(new ArrayList<SectionAssignment>());
         } 
         //TODO: check for the student with id studentId
         sectionAssignment.setId(sectionAssignmentCounter.getAndIncrement());
-        sections.get(termId).get(sectId).getSectionAssignments().put(sectionAssignment.getId(), sectionAssignment);
+        sections.get(termId).get(sectId).getSectionAssignments().add(sectionAssignment);
         return respond(new EntityId(sectionAssignment.getId()));
     }
 
@@ -174,11 +173,12 @@ public class SectionAssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         } 
         if(null == sections.get(termId).get(sectId).getSectionAssignments() || 
-                !sections.get(termId).get(sectId).getSectionAssignments().containsKey(assignmentId)) {
+                null == sections.get(termId).get(sectId).findAssignmentById(assignmentId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, assignmentId });
         }
         sectionAssignment.setId(assignmentId);
-        sections.get(termId).get(sectId).getSectionAssignments().put(assignmentId, sectionAssignment);
+        List<SectionAssignment> assignments = sections.get(termId).get(sectId).getSectionAssignments();
+        replaceSectionAssignment(assignments, sectionAssignment);
         return respond(new EntityId(assignmentId));
     }
     
@@ -216,12 +216,13 @@ public class SectionAssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }
         if(null == sections.get(termId).get(sectId).getSectionAssignments() || 
-                !sections.get(termId).get(sectId).getSectionAssignments().containsKey(assignmentId)) {
+                null == sections.get(termId).get(sectId).findAssignmentById(assignmentId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, assignmentId });
         }
         sectionAssignment.setId(assignmentId);
-        sectionAssignment.mergePropertiesIfNull(sections.get(termId).get(sectId).getSectionAssignments().get(assignmentId));
-        sections.get(termId).get(sectId).getSectionAssignments().put(assignmentId, sectionAssignment);
+        sectionAssignment.mergePropertiesIfNull(sections.get(termId).get(sectId).findAssignmentById(assignmentId));   
+        List<SectionAssignment> assignments = sections.get(termId).get(sectId).getSectionAssignments();
+        replaceSectionAssignment(assignments, sectionAssignment);
         return respond(new EntityId(assignmentId));
     }
 
@@ -258,10 +259,24 @@ public class SectionAssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }
         if(null == sections.get(termId).get(sectId).getSectionAssignments() || 
-                !sections.get(termId).get(sectId).getSectionAssignments().containsKey(assignmentId)) {
+                null == sections.get(termId).get(sectId).findAssignmentById(assignmentId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, assignmentId });
         } 
-        sections.get(termId).get(sectId).getSectionAssignments().remove(assignmentId);
+        SectionAssignment sectAssignment = sections.get(termId).get(sectId).findAssignmentById(assignmentId);;
+        sections.get(termId).get(sectId).getSectionAssignments().remove(sectAssignment);
         return respond((Section)null);
+    }
+    
+    private void replaceSectionAssignment(List<SectionAssignment> assignments, SectionAssignment assignment) {
+        int idx = -1;
+        for(int i = 0; i < assignments.size(); i++) {
+            if(assignments.get(i).getId().equals(assignment.getId())) {
+                idx = i;
+                break;
+            }
+        }
+        if(idx >= 0) {
+            assignments.set(idx, assignment);
+        }
     }
 }

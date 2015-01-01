@@ -10,11 +10,9 @@ import com.scholarscore.models.School;
 
 @Test(groups = { "integration" })
 public class SchoolControllerIntegrationTest extends IntegrationBase {
-    private int numberOfItemsCreated = 0;
     
     @BeforeClass
     public void init() {
-        numberOfItemsCreated = 0;
     }
     
     //Positive test cases
@@ -33,7 +31,6 @@ public class SchoolControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createSchoolProvider")
     public void createSchoolTest(String msg, School school) {
         schoolValidatingExecutor.create(school, msg);
-        numberOfItemsCreated++;
     }
     
     @Test(dataProvider = "createSchoolProvider")
@@ -46,7 +43,6 @@ public class SchoolControllerIntegrationTest extends IntegrationBase {
     public void replaceSchoolTest(String msg, School school) {
         School createdSchool = schoolValidatingExecutor.create(school, msg);
         schoolValidatingExecutor.replace(createdSchool.getId(), new School(), msg);
-        numberOfItemsCreated++;
     }
     
     @Test(dataProvider = "createSchoolProvider")
@@ -56,7 +52,6 @@ public class SchoolControllerIntegrationTest extends IntegrationBase {
         updatedSchool.setName(localeServiceUtil.generateName());
         //PATCH the existing record with a new name.
         schoolValidatingExecutor.update(createdSchool.getId(), updatedSchool, msg);
-        numberOfItemsCreated++;
     }
     
     @Test

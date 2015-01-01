@@ -56,7 +56,7 @@ public class StudentAssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sId });
         }
         if(null == sections.get(tId).get(sId).getSectionAssignments() || 
-                !sections.get(tId).get(sId).getSectionAssignments().containsKey(sAssignId)) {
+                null == sections.get(tId).get(sId).findAssignmentById(sAssignId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, sAssignId });
         }
         Collection<StudentAssignment> returnSections = new ArrayList<>();
@@ -101,7 +101,7 @@ public class StudentAssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sId });
         }     
         if(null == sections.get(tId).get(sId).getSectionAssignments() || 
-                !sections.get(tId).get(sId).getSectionAssignments().containsKey(sAssignId)) {
+                null == sections.get(tId).get(sId).findAssignmentById(sAssignId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, sAssignId });
         } 
         if(!studentAssignments.containsKey(sAssignId) || !studentAssignments.get(sAssignId).containsKey(studAssignId)) {
@@ -143,11 +143,11 @@ public class StudentAssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sId });
         }  
         if(null == sections.get(tId).get(sId).getSectionAssignments() || 
-                !sections.get(tId).get(sId).getSectionAssignments().containsKey(sAssignId)) {
+                null == sections.get(tId).get(sId).findAssignmentById(sAssignId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, sAssignId });
         }
         if(null == sections.get(tId).get(sId).getEnrolledStudents() || 
-                !sections.get(tId).get(sId).getEnrolledStudents().containsKey(studentAssignment.getStudent().getId())) {
+                null == sections.get(tId).get(sId).findEnrolledStudentById(studentAssignment.getStudent().getId())) {
             return respond(ErrorCodes.ENTITY_INVALID_IN_CONTEXT, new Object[]{ STUDENT, studentAssignment.getStudent().getId(), SECTION, sId });
         }
         if(null == studentAssignments.get(sAssignId)) {
@@ -194,7 +194,7 @@ public class StudentAssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sId });
         } 
         if(null == sections.get(tId).get(sId).getSectionAssignments() || 
-                !sections.get(tId).get(sId).getSectionAssignments().containsKey(sAssignId)) {
+                null == sections.get(tId).get(sId).findAssignmentById(sAssignId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, studAssignId });
         }
         if(!studentAssignments.containsKey(sAssignId) || !studentAssignments.get(sAssignId).containsKey(studAssignId)) {
@@ -241,7 +241,7 @@ public class StudentAssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sId });
         }
         if(null == sections.get(tId).get(sId).getSectionAssignments() || 
-                !sections.get(tId).get(sId).getSectionAssignments().containsKey(sAssignId)) {
+                null == sections.get(tId).get(sId).findAssignmentById(sAssignId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, sAssignId });
         }
         if(!studentAssignments.containsKey(sAssignId) || !studentAssignments.get(sAssignId).containsKey(studAssignId)) {
@@ -288,7 +288,7 @@ public class StudentAssignmentController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sId });
         }
         if(null == sections.get(tId).get(sId).getSectionAssignments() || 
-                !sections.get(tId).get(sId).getSectionAssignments().containsKey(sAssignId)) {
+                null == sections.get(tId).get(sId).findAssignmentById(sAssignId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, sAssignId });
         } 
         if(!studentAssignments.containsKey(sAssignId) || !studentAssignments.get(sAssignId).containsKey(studAssignId)) {

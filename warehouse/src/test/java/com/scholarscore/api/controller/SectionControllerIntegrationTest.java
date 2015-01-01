@@ -1,10 +1,8 @@
 package com.scholarscore.api.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
@@ -54,11 +52,11 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
         
         Section fullSection = new Section(namedSection);
         fullSection.setRoom(localeServiceUtil.generateName());
-        Map<Long, Student> students = new HashMap<>();
+        List<Student> students = new ArrayList<>();
         Student s = new Student();
         s.setId(2L);
         s.setName(localeServiceUtil.generateName());
-        students.put(s.getId(), s);
+        students.add(s);
         fullSection.setEnrolledStudents(students);
         
         return new Object[][] {

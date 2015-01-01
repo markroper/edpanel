@@ -1,8 +1,7 @@
 package com.scholarscore.api.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
@@ -50,8 +49,8 @@ public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase
         
         section = new Section();
         section.setName(localeServiceUtil.generateName());
-        section.setEnrolledStudents(new HashMap<Long, Student>());
-        section.getEnrolledStudents().put(student.getId(), student);
+        section.setEnrolledStudents(new ArrayList<Student>());
+        section.getEnrolledStudents().add(student);
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
         
         sectionAssignment = new SectionAssignment();

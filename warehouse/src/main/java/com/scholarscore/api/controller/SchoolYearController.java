@@ -112,10 +112,12 @@ public class SchoolYearController extends BaseController {
             SchoolYear originalSchoolYear = schoolYears.get(schoolId).get(schoolYearId);
             HashSet<Long> termIds = new HashSet<>();
             if(null != originalSchoolYear.getTerms()) {
-                termIds.addAll(originalSchoolYear.getTerms().keySet());
+                for(Term t : originalSchoolYear.getTerms()) {
+                    termIds.add(t.getId());
+                }
             }
             if(null != schoolYear.getTerms() && !schoolYear.getTerms().isEmpty()) {
-                for(Term t : schoolYear.getTerms().values()) {
+                for(Term t : schoolYear.getTerms()) {
                     if(null == t.getId() || !termIds.contains(t.getId())) {
                         t.setId(termCounter.incrementAndGet());
                     }
@@ -151,8 +153,11 @@ public class SchoolYearController extends BaseController {
             SchoolYear originalSchoolYear = schoolYears.get(schoolId).get(schoolYearId);
             schoolYear.mergePropertiesIfNull(originalSchoolYear);
             if(null != schoolYear.getTerms() && !schoolYear.getTerms().isEmpty()) {
-                HashSet<Long> termIds = new HashSet<>(originalSchoolYear.getTerms().keySet());
-                for(Term t : schoolYear.getTerms().values()) {
+                HashSet<Long> termIds = new HashSet<>();
+                for(Term t : originalSchoolYear.getTerms()) {
+                    termIds.add(t.getId());
+                }
+                for(Term t : schoolYear.getTerms()) {
                     if(null == t.getId() || !termIds.contains(t.getId())) {
                         t.setId(termCounter.getAndIncrement());
                     }
