@@ -80,9 +80,8 @@ public class SchoolYearController extends BaseController {
         }
         schoolYear.setId(schoolYearCounter.incrementAndGet());
         if(null != schoolYear.getTerms() && !schoolYear.getTerms().isEmpty()) {
-            for(Term t : schoolYear.getTerms()) {
-                t.setId(termCounter.incrementAndGet());
-            }
+            //Terms cannot be created as part of a create school call
+            schoolYear.setTerms(null);
         }
         if(!schoolYears.containsKey(schoolId)) {
             schoolYears.put(schoolId, new HashMap<Long, SchoolYear>());
@@ -111,7 +110,12 @@ public class SchoolYearController extends BaseController {
         }
         if(null != schoolYearId && schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
             SchoolYear originalSchoolYear = schoolYears.get(schoolId).get(schoolYearId);
-            HashSet<Long> termIds = resolveTermIds(originalSchoolYear);
+            HashSet<Long> termIds = new HashSet<>();
+            if(null != originalSchoolYear.getTerms()) {
+                for(Term t : originalSchoolYear.getTerms()) {
+                    termIds.add(t.getId());
+                }
+            }
             if(null != schoolYear.getTerms() && !schoolYear.getTerms().isEmpty()) {
                 for(Term t : schoolYear.getTerms()) {
                     if(null == t.getId() || !termIds.contains(t.getId())) {
@@ -149,7 +153,10 @@ public class SchoolYearController extends BaseController {
             SchoolYear originalSchoolYear = schoolYears.get(schoolId).get(schoolYearId);
             schoolYear.mergePropertiesIfNull(originalSchoolYear);
             if(null != schoolYear.getTerms() && !schoolYear.getTerms().isEmpty()) {
-                HashSet<Long> termIds = resolveTermIds(originalSchoolYear);
+                HashSet<Long> termIds = new HashSet<>();
+                for(Term t : originalSchoolYear.getTerms()) {
+                    termIds.add(t.getId());
+                }
                 for(Term t : schoolYear.getTerms()) {
                     if(null == t.getId() || !termIds.contains(t.getId())) {
                         t.setId(termCounter.getAndIncrement());

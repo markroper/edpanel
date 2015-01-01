@@ -18,13 +18,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SectionAssignment extends ApiModel implements Serializable, IApiModel<SectionAssignment> {
-    private Long sectionId;
     private Date assignedDate;
     private Date dueDate;
     private Long availablePoints;
     //TODO: Grade weight
     private transient Assignment assignment;
-    private Long assignmentId;
     
     public SectionAssignment() {
         super();
@@ -32,11 +30,9 @@ public class SectionAssignment extends ApiModel implements Serializable, IApiMod
     
     public SectionAssignment(SectionAssignment sa) {
         super(sa);
-        this.sectionId = sa.sectionId;
         this.assignedDate = sa.assignedDate;
         this.dueDate = sa.dueDate;
         this.assignment = sa.assignment;
-        this.assignmentId = sa.assignmentId;
         this.availablePoints = sa.availablePoints;
     }
     
@@ -64,22 +60,6 @@ public class SectionAssignment extends ApiModel implements Serializable, IApiMod
         this.assignment = assignment;
     }
 
-    public Long getSectionId() {
-        return sectionId;
-    }
-
-    public void setSectionId(Long sectionId) {
-        this.sectionId = sectionId;
-    }
-
-    public Long getAssignmentId() {
-        return assignmentId;
-    }
-
-    public void setAssignmentId(Long assignmentId) {
-        this.assignmentId = assignmentId;
-    }
-
     public Long getAvailablePoints() {
         return availablePoints;
     }
@@ -91,9 +71,6 @@ public class SectionAssignment extends ApiModel implements Serializable, IApiMod
     @Override
     public void mergePropertiesIfNull(SectionAssignment mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);   
-        if(null == this.sectionId) {
-            this.sectionId = mergeFrom.sectionId;
-        }
         if(null == this.assignedDate) {
             this.assignedDate = mergeFrom.assignedDate;
         }
@@ -102,9 +79,6 @@ public class SectionAssignment extends ApiModel implements Serializable, IApiMod
         }
         if(null == this.assignment) {
             this.assignment = mergeFrom.assignment;
-        }
-        if(null == this.assignmentId) {
-            this.assignmentId = mergeFrom.assignmentId;
         }
         if(null == this.availablePoints) {
             this.availablePoints = mergeFrom.availablePoints;
@@ -117,16 +91,14 @@ public class SectionAssignment extends ApiModel implements Serializable, IApiMod
             return false;
         }
         final SectionAssignment other = (SectionAssignment) obj;
-        return Objects.equals(this.sectionId, other.sectionId) && 
-                Objects.equals(this.assignedDate, other.assignedDate) &&
+        return  Objects.equals(this.assignedDate, other.assignedDate) &&
                 Objects.equals(this.dueDate, other.dueDate) &&
                 Objects.equals(this.assignment, other.assignment) &&
-                Objects.equals(this.assignmentId, other.assignmentId) &&
                 Objects.equals(this.availablePoints, other.availablePoints);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(sectionId, assignedDate, dueDate, assignment, assignmentId, availablePoints);
+        return 31 * super.hashCode() + Objects.hash(assignedDate, dueDate, assignment, availablePoints);
     }
 }

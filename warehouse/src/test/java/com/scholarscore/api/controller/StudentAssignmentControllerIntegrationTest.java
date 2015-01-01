@@ -1,7 +1,7 @@
 package com.scholarscore.api.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
@@ -9,6 +9,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.GradedAssignment;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
@@ -48,15 +49,17 @@ public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase
         
         section = new Section();
         section.setName(localeServiceUtil.generateName());
-        section.setEnrolledStudents(new HashSet<Long>());
-        section.getEnrolledStudents().add(student.getId());
+        section.setEnrolledStudents(new ArrayList<Student>());
+        section.getEnrolledStudents().add(student);
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
         
         sectionAssignment = new SectionAssignment();
         sectionAssignment.setName(localeServiceUtil.generateName());
         sectionAssignment.setAssignedDate(new Date(1234567L));
         sectionAssignment.setDueDate(new Date(123456L));
-        sectionAssignment.setAssignmentId(2L);
+        GradedAssignment assignment = new GradedAssignment();
+        assignment.setId(2l);
+        sectionAssignment.setAssignment(assignment);
         sectionAssignment = sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), 
                 term.getId(), section.getId(), sectionAssignment, "create test base term");
     }
@@ -64,16 +67,15 @@ public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase
     //Positive test cases
     @DataProvider
     public Object[][] createStudentAssignmentProvider() {
-        StudentAssignment emptyStudentAssignment = new StudentAssignment();
-        emptyStudentAssignment.setStudentId(student.getId());
+        //StudentAssignment emptyStudentAssignment = new StudentAssignment();
         
         StudentAssignment namedStudentAssignment = new StudentAssignment();
-        namedStudentAssignment.setSectionAssignmentId(sectionAssignment.getId());
-        namedStudentAssignment.setStudentId(student.getId());
+        namedStudentAssignment.setAssignment(sectionAssignment);
+        namedStudentAssignment.setStudent(student);
         
         return new Object[][] {
-                { "Empty section assignment", emptyStudentAssignment },
-                { "Names student assignment", namedStudentAssignment },
+                //{ "Empty section assignment", emptyStudentAssignment },
+                { "Named student assignment", namedStudentAssignment },
         };
     }
     
@@ -104,7 +106,7 @@ public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase
         StudentAssignment createdSection = studentAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), 
                 section.getId(), sectionAssignment.getId(), studentAssignment, msg);
         StudentAssignment updatedStudent = new StudentAssignment();
-        updatedStudent.setStudentId(createdSection.getStudentId());
+        updatedStudent.setStudent(createdSection.getStudent());
         updatedStudent.setName(localeServiceUtil.generateName());
         //PATCH the existing record with a new name.
         studentAssignmentValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), 
@@ -138,7 +140,7 @@ public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase
     @Test(dataProvider = "createStudentAssignmentNegativeProvider")
     public void replaceSectionNegativeTest(String msg, StudentAssignment studentAssignment, HttpStatus expectedStatus) {
         StudentAssignment st = new StudentAssignment();
-        st.setStudentId(student.getId());
+        st.setStudent(student);
         StudentAssignment created = studentAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), 
                 section.getId(), sectionAssignment.getId(), st, msg);
         studentAssignmentValidatingExecutor.replaceNegative(school.getId(), schoolYear.getId(), term.getId(), 

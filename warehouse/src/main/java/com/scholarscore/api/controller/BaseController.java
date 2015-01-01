@@ -2,10 +2,7 @@ package com.scholarscore.api.controller;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.http.HttpStatus;
@@ -19,12 +16,10 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.SectionAssignment;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.SubjectArea;
-import com.scholarscore.models.Term;
 
 /**
  * All SpringMVC controllers defined in the package subclass this base
@@ -53,9 +48,10 @@ public abstract class BaseController {
     //Student structure: Map<studentId, Student>
     protected final AtomicLong studentCounter = new AtomicLong();
     protected static Map<Long, Student> students = Collections.synchronizedMap(new HashMap<Long, Student>());
-    //Student section grade structure: Map<studentId, Map<sectionId, StudentSectionGrade>>
-    protected static Map<Long, Map<Long, StudentSectionGrade>> studentSectionGrades = 
-            Collections.synchronizedMap(new HashMap<Long, Map<Long, StudentSectionGrade>>());
+    //Student section grade structure: Map<studentId, Map<sectionId, Map<gradeId, StudentSectionGrade>>
+    protected final AtomicLong studentSectGradeCounter = new AtomicLong();
+    protected static Map<Long, Map<Long, Map<Long, StudentSectionGrade>>> studentSectionGrades = 
+            Collections.synchronizedMap(new HashMap<Long, Map<Long, Map<Long, StudentSectionGrade>>>());
     
     //School structure: Map<schoolId, School>
     protected final AtomicLong schoolCounter = new AtomicLong();
@@ -83,7 +79,7 @@ public abstract class BaseController {
     protected final AtomicLong assignmentCounter = new AtomicLong();
     protected static Map<Long, Map<Long, Assignment>> assignments = Collections.synchronizedMap(new HashMap<Long, Map<Long, Assignment>>());
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected ResponseEntity respond(Object obj) {
         if(obj instanceof ErrorCode) {
             ErrorCode err = (ErrorCode) obj;
@@ -100,28 +96,4 @@ public abstract class BaseController {
         returnError.setArguments(args);
         return new ResponseEntity<ErrorCode>(factory.localizeError(returnError), returnError.getHttpStatus());
     }
-    
-    protected HashSet<Long> resolveTermIds(SchoolYear year) {
-        HashSet<Long> termIds = new HashSet<>();
-        if(null != year.getTerms()) {
-            for(Term t : year.getTerms()) {
-                termIds.add(t.getId());
-            }
-        }
-        return termIds;
-    }
-    
-    protected Term getTermById(Set<Term> terms, Long termId) {
-        Term termWithTermId = null;
-        if(null != terms) {
-            for(Term t : terms) {
-                if(t.getId().equals(termId)) {
-                    termWithTermId = t;
-                    break;
-                }
-            }
-        }
-        return termWithTermId;
-    }
-
 }

@@ -8,8 +8,6 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import javax.validation.constraints.Size;
-
 /**
  * Base class for all assignment subclasses encapsulating shared attributes and behaviors.
  * 

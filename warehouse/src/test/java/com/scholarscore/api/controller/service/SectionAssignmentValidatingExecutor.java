@@ -171,7 +171,6 @@ public class SectionAssignmentValidatingExecutor {
         } else if(null != returnSectionAssignment && null == returnSectionAssignment.getId()) {
             returnSectionAssignment.setId(created.getId());
         }
-        returnSectionAssignment.setSectionId(created.getSectionId());
         return returnSectionAssignment;
     }
 }

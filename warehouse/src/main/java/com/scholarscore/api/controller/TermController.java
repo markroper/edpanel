@@ -1,7 +1,6 @@
 package com.scholarscore.api.controller;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -75,12 +74,9 @@ public class TermController extends BaseController {
         
         if(schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
             SchoolYear year = schoolYears.get(schoolId).get(schoolYearId);
-            if(null != year.getTerms()) {
-                for(Term t : year.getTerms()) {
-                    if(t.getId() == termId) {
-                        return respond(t);
-                    }
-                }
+            Term t = year.findTermById(termId);
+            if(null != t) {
+                return respond(t);
             }
         }
         return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { TERM, termId });
@@ -110,7 +106,7 @@ public class TermController extends BaseController {
         term.setId(termCounter.getAndIncrement());
         SchoolYear originalYear = schoolYears.get(schoolId).get(schoolYearId);
         if(null == originalYear.getTerms()) {
-            originalYear.setTerms(new LinkedHashSet<Term>());
+            originalYear.setTerms(new ArrayList<Term>());
         }
         originalYear.getTerms().add(term);
         return respond(new EntityId(term.getId()));
@@ -142,21 +138,9 @@ public class TermController extends BaseController {
  
         if(null != termId && schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
             SchoolYear originalYear = schoolYears.get(schoolId).get(schoolYearId);
-            Term termToReplace = null;
-            if(null != originalYear.getTerms()) {
-                for(Term t : originalYear.getTerms()) {
-                    if(t.getId() == termId) {
-                        termToReplace = t;
-                        break;
-                    }
-                }
-            }
-            if(null != termToReplace) {
-                originalYear.getTerms().remove(termToReplace);
-                term.setId(termId);
-                originalYear.getTerms().add(term);
-                return respond(new EntityId(termId));
-            }
+            term.setId(termId);
+            replaceTerm(originalYear.getTerms(), term);
+            return respond(new EntityId(termId));
         }
         return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ TERM, termId });
     }
@@ -187,20 +171,10 @@ public class TermController extends BaseController {
         
         if(null != termId && schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
             SchoolYear originalYear = schoolYears.get(schoolId).get(schoolYearId);
-            Term termToReplace = null;
-            if(null != originalYear.getTerms()) {
-                for(Term t : originalYear.getTerms()) {
-                    if(t.getId() == termId) {
-                        term.mergePropertiesIfNull(t);
-                        termToReplace = t;
-                    }
-                }
-            }
-            if(null != termToReplace) {
-                originalYear.getTerms().remove(termToReplace);
-                originalYear.getTerms().add(term);
-                return respond(new EntityId(termId));   
-            }
+            term.setId(termId);
+            term.mergePropertiesIfNull(originalYear.findTermById(termId));
+            replaceTerm(originalYear.getTerms(), term);
+            return respond(new EntityId(termId));
         }
         return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ ASSIGNMENT, termId });
     }
@@ -229,20 +203,25 @@ public class TermController extends BaseController {
         }
         if(null != termId && schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
             SchoolYear originalYear =  schoolYears.get(schoolId).get(schoolYearId);
-            Term termToRemove = null;
-            if(null != originalYear.getTerms()) {
-                for(Term t : originalYear.getTerms()){
-                    if(t.getId() == termId) {
-                        termToRemove = t;
-                        break;
-                    }
-                }
-            }
+            Term termToRemove = originalYear.findTermById(termId);
             if(null != termToRemove) {
                 originalYear.getTerms().remove(termToRemove);
                 return respond((Term) null);
             }
         }
         return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { ASSIGNMENT, termId });
+    }
+    
+    private void replaceTerm(List<Term> terms, Term term) {
+        int idx = -1;
+        for(int i = 0; i < terms.size(); i++) {
+            if(terms.get(i).getId().equals(term.getId())) {
+                idx = i;
+                break;
+            }
+        }
+        if(idx >= 0) {
+            terms.set(idx, term);
+        }
     }
 }

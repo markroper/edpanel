@@ -1,8 +1,7 @@
 package com.scholarscore.api.controller;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +22,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Controller
-@RequestMapping("/api/v1/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/studentgrades")
+@RequestMapping("/api/v1/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/students/{studId}/grades")
 public class StudentSectionGradeController extends BaseController {
     @ApiOperation(
             value = "Get all student grades in a section", 
@@ -41,7 +40,9 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
-            @PathVariable(value="sectId") Long sectId) {
+            @PathVariable(value="sectId") Long sectId,
+            @ApiParam(name = "studId", required = true, value = "Student ID")
+            @PathVariable(value="studId") Long studId) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
@@ -54,24 +55,22 @@ public class StudentSectionGradeController extends BaseController {
         if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }
-        
-        Iterator<Map<Long, StudentSectionGrade>> it = studentSectionGrades.values().iterator();
-        ArrayList<StudentSectionGrade> stSectionGrades = new ArrayList<>();
-        while(it.hasNext()) {
-            Map<Long, StudentSectionGrade> sectionGrade = it.next();
-            if(sectionGrade.keySet().contains(sectId)) {
-                stSectionGrades.add(sectionGrade.get(sectId));
-            }
+        if(!students.containsKey(studId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studId });
         }
-        return respond(stSectionGrades);
+        Collection<StudentSectionGrade> returnGrades = null;
+        if(studentSectionGrades.containsKey(studId) && studentSectionGrades.get(studId).containsKey(sectId)) {
+            returnGrades = studentSectionGrades.get(studId).get(sectId).values();
+        }
+        return respond(returnGrades);
     }
     
     @ApiOperation(
-            value = "Get a student's grade in an section", 
-            notes = "Get a student's grade in an section", 
+            value = "Get a student's grade in a section", 
+            notes = "Get a student's grade in a section", 
             response = StudentSectionGrade.class)
     @RequestMapping(
-            value = "/{studentId}", 
+            value = "/{gradeId}", 
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -84,8 +83,10 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
-            @ApiParam(name = "studentId", required = true, value = "Student ID")
-            @PathVariable(value="studentId") Long studentId) {
+            @ApiParam(name = "studId", required = true, value = "Student ID")
+            @PathVariable(value="studId") Long studId,
+            @ApiParam(name = "gradeId", required = true, value = "Grade ID")
+            @PathVariable(value="gradeId") Long gradeId) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
@@ -98,10 +99,14 @@ public class StudentSectionGradeController extends BaseController {
         if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }     
-        if(!studentSectionGrades.containsKey(studentId) || !studentSectionGrades.get(studentId).containsKey(sectId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, studentId });
+        if(!students.containsKey(studId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studId });
         }
-        return respond(studentSectionGrades.get(studentId).get(sectId));
+        if(!studentSectionGrades.containsKey(studId) || !studentSectionGrades.get(studId).containsKey(sectId) ||
+                !studentSectionGrades.get(studId).get(sectId).containsKey(gradeId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, gradeId });
+        }
+        return respond(studentSectionGrades.get(studId).get(sectId).get(gradeId));
     }
 
     @ApiOperation(
@@ -121,6 +126,8 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
+            @ApiParam(name = "studId", required = true, value = "Student ID")
+            @PathVariable(value="studId") Long studId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
@@ -134,21 +141,24 @@ public class StudentSectionGradeController extends BaseController {
         if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }  
-        if(!students.containsKey(studentSectionGrade.getStudentId())) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentSectionGrade.getStudentId() });
+        if(!students.containsKey(studId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studId });
         }
         if(null == sections.get(termId).get(sectId).getEnrolledStudents() ||
-                !sections.get(termId).get(sectId).getEnrolledStudents().contains(studentSectionGrade.getStudentId())) {
+                null == sections.get(termId).get(sectId).findEnrolledStudentById(studId)) {
             return respond(ErrorCodes.ENTITY_INVALID_IN_CONTEXT, new Object[]{ 
-                    STUDENT_SECTION_GRADE, studentSectionGrade.getStudentId(), SECTION, studentSectionGrade.getSectionId() 
+                    STUDENT_SECTION_GRADE, studId, SECTION, studId 
                     });
         }
-        if(null == studentSectionGrades.get(studentSectionGrade.getStudentId())) {
-            studentSectionGrades.put(studentSectionGrade.getStudentId(), new HashMap<Long, StudentSectionGrade>());
+        if(null == studentSectionGrades.get(studId)) {
+            studentSectionGrades.put(studId, new HashMap<Long, Map<Long, StudentSectionGrade>>());
         } 
-        //TODO: check for the student with id studentId
-        studentSectionGrades.get(studentSectionGrade.getStudentId()).put(studentSectionGrade.getSectionId(), studentSectionGrade);
-        return respond(new EntityId(studentSectionGrade.getStudentId()));
+        if(null == studentSectionGrades.get(studId).get(sectId)) {
+            studentSectionGrades.get(studId).put(sectId, new HashMap<Long, StudentSectionGrade>());
+        }
+        studentSectionGrade.setId(studentSectGradeCounter.incrementAndGet());
+        studentSectionGrades.get(studId).get(sectId).put(studentSectionGrade.getId(), studentSectionGrade);
+        return respond(new EntityId(studentSectionGrade.getId()));
     }
 
     @ApiOperation(
@@ -156,7 +166,7 @@ public class StudentSectionGradeController extends BaseController {
             notes = "Overwrites an existing student section grade",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{studentId}",
+            value = "/{gradeId}",
             method = RequestMethod.PUT, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -169,8 +179,10 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
-            @ApiParam(name = "studentId", required = true, value = "Student ID")
-            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "studId", required = true, value = "Student ID")
+            @PathVariable(value="studId") Long studId,
+            @ApiParam(name = "gradeId", required = true, value = "Grade ID")
+            @PathVariable(value="gradeId") Long gradeId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
@@ -184,17 +196,16 @@ public class StudentSectionGradeController extends BaseController {
         if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         } 
-        if(!students.containsKey(studentId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentId });
+        if(!students.containsKey(studId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studId });
         }
-        if(null == studentSectionGrades.get(studentId) || 
-                !studentSectionGrades.get(studentId).containsKey(sectId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, studentId });
-        } 
-        studentSectionGrade.setStudentId(studentId);
-        studentSectionGrade.setSectionId(sectId);
-        studentSectionGrades.get(studentId).put(sectId, studentSectionGrade);
-        return respond(new EntityId(studentId));
+        if(!studentSectionGrades.containsKey(studId) || !studentSectionGrades.get(studId).containsKey(sectId) ||
+                !studentSectionGrades.get(studId).get(sectId).containsKey(gradeId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, gradeId });
+        }
+        studentSectionGrade.setId(gradeId);
+        studentSectionGrades.get(studId).get(sectId).put(gradeId, studentSectionGrade);
+        return respond(new EntityId(gradeId));
     }
     
     @ApiOperation(
@@ -202,7 +213,7 @@ public class StudentSectionGradeController extends BaseController {
             notes = "Updates an existing student section grade. Will not overwrite existing values with null.",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{studentId}", 
+            value = "/{gradeId}", 
             method = RequestMethod.PATCH, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -215,8 +226,10 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
-            @ApiParam(name = "studentId", required = true, value = "Student ID")
-            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "studId", required = true, value = "Student ID")
+            @PathVariable(value="studId") Long studId,
+            @ApiParam(name = "gradeId", required = true, value = "Grade ID")
+            @PathVariable(value="gradeId") Long gradeId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
@@ -230,18 +243,18 @@ public class StudentSectionGradeController extends BaseController {
         if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }
-        if(!students.containsKey(studentId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentId });
+        if(!students.containsKey(studId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studId });
         }
-        if(null == studentSectionGrades.get(studentId) || 
-                !studentSectionGrades.get(studentId).containsKey(sectId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, studentId });
-        } 
-        studentSectionGrade.setStudentId(studentId);
-        studentSectionGrade.setSectionId(sectId);
-        studentSectionGrade.mergePropertiesIfNull(studentSectionGrades.get(studentId).get(sectId));
-        studentSectionGrades.get(studentId).put(sectId, studentSectionGrade);
-        return respond(new EntityId(studentId));
+        if(!studentSectionGrades.containsKey(studId) || !studentSectionGrades.get(studId).containsKey(sectId) ||
+                !studentSectionGrades.get(studId).get(sectId).containsKey(gradeId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, gradeId });
+        }
+        
+        studentSectionGrade.setId(gradeId);
+        studentSectionGrade.mergePropertiesIfNull(studentSectionGrades.get(studId).get(sectId).get(gradeId));
+        studentSectionGrades.get(studId).get(sectId).put(gradeId, studentSectionGrade);
+        return respond(new EntityId(gradeId));
     }
 
     @ApiOperation(
@@ -249,11 +262,11 @@ public class StudentSectionGradeController extends BaseController {
             notes = "Deletes the student section grade with the ID provided",
             response = Void.class)
     @RequestMapping(
-            value = "/{studentId}", 
+            value = "/{gradeId}", 
             method = RequestMethod.DELETE, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity deleteTerm(
+    public @ResponseBody ResponseEntity deleteSectionGrade(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "yearId", required = true, value = "School year ID")
@@ -262,8 +275,10 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
-            @ApiParam(name = "studentId", required = true, value = "Student ID")
-            @PathVariable(value="studentId") Long studentId) {
+            @ApiParam(name = "studId", required = true, value = "Student ID")
+            @PathVariable(value="studId") Long studId,
+            @ApiParam(name = "gradeId", required = true, value = "Grade ID")
+            @PathVariable(value="gradeId") Long gradeId) {
         if(null == schoolId || !schools.containsKey(schoolId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
         }
@@ -276,14 +291,14 @@ public class StudentSectionGradeController extends BaseController {
         if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
         }
-        if(!students.containsKey(studentId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentId });
+        if(!students.containsKey(studId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studId });
         }
-        if(null == studentSectionGrades.get(studentId) || 
-                !studentSectionGrades.get(studentId).containsKey(sectId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, studentId });
-        } 
-        studentSectionGrades.get(studentId).remove(sectId);
+        if(!studentSectionGrades.containsKey(studId) || !studentSectionGrades.get(studId).containsKey(sectId) ||
+                !studentSectionGrades.get(studId).get(sectId).containsKey(gradeId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, gradeId });
+        }
+        studentSectionGrades.get(studId).get(sectId).remove(gradeId);
         return respond((StudentSectionGrade) null);
     }
 }
