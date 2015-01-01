@@ -37,6 +37,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
     @Override
     public void mergePropertiesIfNull(School mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
+        if (mergeFrom == null) { return; }
         if(null == years) {
             this.years = mergeFrom.years;
         }
@@ -44,13 +45,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
     
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
         if(!super.equals(obj)) {
-            return false;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
         final School other = (School) obj;

@@ -57,13 +57,7 @@ public abstract class Assignment
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
         if(! super.equals(obj)) {
-            return false;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
         final Assignment other = (Assignment) obj;
