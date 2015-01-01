@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SchoolYear extends ApiModel implements Serializable, IApiModel<SchoolYear>{
     protected Date startDate;
-    protected Date endDate;;
+    protected Date endDate;
     protected List<Term> terms;
     
     public SchoolYear() {
