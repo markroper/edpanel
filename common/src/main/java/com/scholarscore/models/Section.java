@@ -130,6 +130,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     @Override
     public void mergePropertiesIfNull(Section mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
+        if (null == mergeFrom) { return; }
         if(null == course) {
             course = mergeFrom.course;
         }
