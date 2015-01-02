@@ -135,12 +135,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         students.put(student.getId(), student);
         return new ServiceResponse<Long>(studentId);
     }
-
-    //// END STUDENT MANAGER METHODS ////
-
-    //// START SCHOOL MANAGER METHODS ////
-
-
+    
     @Override
     public Collection<School> getAllSchools() {
         return schools.values();
@@ -200,11 +195,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         schools.remove(schoolId);
         return new ServiceResponse<Long>((Long) null);
     }
-
-    //// END SCHOOL MANAGER METHODS
-
-    //// BEGIN SCHOOL YEAR MANAGER METHODS
-
+    
     @Override
     public ServiceResponse<Collection<SchoolYear>> getAllSchoolYears(long schoolId) {
         ErrorCode code = schoolExists(schoolId);
@@ -295,8 +286,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         schoolYears.get(schoolId).remove(schoolYearId);
         return new ServiceResponse<Long>((Long) null);
     }
-    ////END SCHOOL YEAR MANAGER METHODS
-    
+  
     @Override
     public ServiceResponse<Collection<Term>> getAllTerms(long schoolId, long yearId) {
         ErrorCode code = schoolYearExists(schoolId, yearId);
@@ -992,5 +982,4 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         PersistenceManager.assignments.get(courseId).remove(assignmentId);
         return new ServiceResponse<>((Long) null);
     }
-
 }
