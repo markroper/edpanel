@@ -4,7 +4,6 @@ apply plugin: 'eclipse'
 apply plugin: 'jacoco'
 apply plugin: 'org.akhikhl.gretty'
 
-//Cargo tomcat deploy
 buildscript {
     repositories {
         jcenter()
@@ -12,7 +11,7 @@ buildscript {
 
     dependencies {
         classpath 'com.bmuschko:gradle-cargo-plugin:2.0.3'
-		classpath 'org.akhikhl.gretty:gretty:1.1.8'
+        classpath 'org.akhikhl.gretty:gretty:1.1.8'
     }
 
 }
@@ -47,32 +46,42 @@ cargo {
     }
 }
 
+// use gretty to start a container instrumented with jacoco for calculation of integration test coverage
+gretty {
+    port = local_portnum
+    // supported values:
+    // 'jetty7', 'jetty8', 'jetty9', 'tomcat7', 'tomcat8'
+//    servletContainer = 'tomcat7'
+
+    integrationTestTask = 'integrationLocal'
+
+    afterEvaluate {
+
+        tasks.appBeforeIntegrationTest.jacoco {
+            append = false
+            destinationFile = new File(project.buildDir, 'jacoco/integrationTests.exec')
+        }
+
+        tasks.appAfterIntegrationTest.finalizedBy tasks.integrationTestServerReport
+    }
+}
+
 //Integration test suite
 def getFileByPattern(File dir, String pat, String stripDir) {
     String path = ""
     if (dir.isDirectory()) {
-        dir?.eachFileRecurse { file -> if (file.path ==~ pat) { path = file.getAbsolutePath().toString() } }
+        dir?.eachFileRecurse { file ->
+            if (file.path ==~ pat) {
+                path = file.getAbsolutePath().toString()
+            }
+        }
         if (null != path && !path.isEmpty())
             path = path?.substring(stripDir.length(), path?.length())
     }
     path
 }
 
-gretty {
-  afterEvaluate {
-
-    tasks.appBeforeIntegrationTest.jacoco {
-      append = false
-      destinationFile = new File(project.buildDir, 'jacoco/integrationTest_server.exec')
-    }
-
-    tasks.appAfterIntegrationTest.finalizedBy tasks.integrationTestServerReport
-  }
-
-  integrationTestTask = 'integrationLocal'
-}
-
-task integrationLocal(type: Test) { task ->
+task integrationLocal(type: Test) {
     useTestNG() {
         useDefaultListeners = true
         def suiteFile = getFileByPattern(new File("$projectDir/src/test/resources/"), ".*-integration.xml", "$projectDir")
@@ -80,11 +89,9 @@ task integrationLocal(type: Test) { task ->
         println "project.name: ${project.name} Task: integrationLocal"
     }
     testLogging.showStandardStreams = true
-    //include '**/integration/**'
     beforeTest { descriptor ->
         logger.lifecycle("RUNNING INTEGRATION TEST LOCALLY: " + descriptor)
     }
-//	finalizedBy { tasks.integrationTestClientReport }
 }
 
 task('integrationTestServerReport', type: JacocoReport) {
