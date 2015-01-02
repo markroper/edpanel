@@ -6,7 +6,7 @@ import com.scholarscore.api.util.ErrorCode;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.Term;
 
-public interface SchoolTermManager {
+public interface TermManager {
 
     /**
      * Return all terms within a school year

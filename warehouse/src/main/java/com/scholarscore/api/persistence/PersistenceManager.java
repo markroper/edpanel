@@ -14,16 +14,19 @@ import com.scholarscore.api.util.ErrorCodes;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.Course;
+import com.scholarscore.models.EntityId;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
+import com.scholarscore.models.SectionAssignment;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.SubjectArea;
 import com.scholarscore.models.Term;
 
-public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, SchoolTermManager, SectionManager {
+public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
+        TermManager, SectionManager, SectionAssignmentManager {
     public static final String SCHOOL = "school";
     public static final String ASSIGNMENT = "assignment";
     public static final String COURSE = "course";
@@ -454,6 +457,116 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         }
         sections.get(termId).remove(sectionId);
         return new ServiceResponse<Long>((Long) null);
+    }
+
+    @Override
+    public ServiceResponse<Collection<SectionAssignment>> getAllSectionAssignments(
+            long schoolId, long yearId, long termId, long sectionId) {
+        ErrorCode code = sectionExists(schoolId, yearId, termId, sectionId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Collection<SectionAssignment>>(code, code.getArguments());
+        }
+        Collection<SectionAssignment> returnSections = new ArrayList<>();
+        if(null != sections.get(termId).get(sectionId).getSectionAssignments()) {
+            returnSections = sections.get(termId).get(sectionId).getSectionAssignments();
+        }
+        return new ServiceResponse<Collection<SectionAssignment>>(returnSections);
+    }
+
+    @Override
+    public ErrorCode sectionAssignmentExists(long schoolId, long yearId,
+            long termId, long sectionId, long sectionAssignmentId) {
+        ErrorCode code = sectionExists(schoolId, yearId, termId, sectionId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return code;
+        }
+        if(null == sections.get(termId).get(sectionId).getSectionAssignments() || 
+                null == sections.get(termId).get(sectionId).findAssignmentById(sectionAssignmentId)) {
+            return new ErrorCode(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION_ASSIGNMENT, sectionAssignmentId });
+        }
+        return ErrorCodes.OK;
+    }
+
+    @Override
+    public ServiceResponse<SectionAssignment> getSectionAssignment(
+            long schoolId, long yearId, long termId, long sectionId,
+            long sectionAssignmentId) {
+        ErrorCode code = sectionAssignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<SectionAssignment>(code, code.getArguments());
+        }
+        return new ServiceResponse<SectionAssignment>(
+                sections.get(termId).get(sectionId).findAssignmentById(sectionAssignmentId));
+    }
+
+    @Override
+    public ServiceResponse<Long> createSectionAssignment(long schoolId,
+            long yearId, long termId, long sectionId,
+            SectionAssignment sectionAssignment) {
+        ErrorCode code = sectionExists(schoolId, yearId, termId, sectionId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Long>(code, code.getArguments());
+        }
+        if(null == sections.get(termId).get(sectionId).getSectionAssignments()) {
+            sections.get(termId).get(sectionId).setSectionAssignments(new ArrayList<SectionAssignment>());
+        } 
+        sectionAssignment.setId(sectionAssignmentCounter.getAndIncrement());
+        sections.get(termId).get(sectionId).getSectionAssignments().add(sectionAssignment);
+        return new ServiceResponse<Long>(sectionAssignment.getId());
+    }
+
+    @Override
+    public ServiceResponse<Long> replaceSectionAssignment(long schoolId,
+            long yearId, long termId, long sectionId, long sectionAssignmentId,
+            SectionAssignment sectionAssignment) {
+        ErrorCode code = sectionAssignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Long>(code, code.getArguments());
+        }
+        sectionAssignment.setId(sectionAssignmentId);
+        List<SectionAssignment> assignments = sections.get(termId).get(sectionId).getSectionAssignments();
+        replaceSectAssignment(assignments, sectionAssignment);
+        return new ServiceResponse<Long>(sectionAssignment.getId());
+    }
+
+    @Override
+    public ServiceResponse<Long> updateSectionAssignment(long schoolId,
+            long yearId, long termId, long sectionId, long sectionAssignmentId,
+            SectionAssignment sectionAssignment) {
+        ErrorCode code = sectionAssignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Long>(code, code.getArguments());
+        }
+        sectionAssignment.setId(sectionAssignmentId);
+        sectionAssignment.mergePropertiesIfNull(sections.get(termId).get(sectionId).findAssignmentById(sectionAssignmentId));   
+        List<SectionAssignment> assignments = sections.get(termId).get(sectionId).getSectionAssignments();
+        replaceSectAssignment(assignments, sectionAssignment);
+        return new ServiceResponse<Long>(sectionAssignmentId);
+    }
+
+    @Override
+    public ServiceResponse<Long> deleteSectionAssignment(long schoolId,
+            long yearId, long termId, long sectionId, long sectionAssignmentId) {
+        ErrorCode code = sectionAssignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Long>(code, code.getArguments());
+        }
+        SectionAssignment sectAssignment = sections.get(termId).get(sectionId).findAssignmentById(sectionAssignmentId);;
+        sections.get(termId).get(sectionId).getSectionAssignments().remove(sectAssignment);
+        return new ServiceResponse<Long>((Long) null);
+    }
+    
+    private void replaceSectAssignment(List<SectionAssignment> assignments, SectionAssignment assignment) {
+        int idx = -1;
+        for(int i = 0; i < assignments.size(); i++) {
+            if(assignments.get(i).getId().equals(assignment.getId())) {
+                idx = i;
+                break;
+            }
+        }
+        if(idx >= 0) {
+            assignments.set(idx, assignment);
+        }
     }
 
 }
