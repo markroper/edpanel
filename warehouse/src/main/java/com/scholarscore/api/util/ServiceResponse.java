@@ -6,8 +6,8 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * The class encapsulated an instance of an object, an ErrorCode instance, and an 
- * Object array of parameters for the error message, which are used to support localization of
+ * The class encapsulates an instance of an object of type T, an ErrorCode instance, and an 
+ * Object array of parameters for the error message which are used to support localization of
  * error messages.  The intent is that a ServiceResponse instance can be used as a return type
  * for a method that needs to return an object of a particular type, or in degenerate cases,
  * to return a descriptive error code.
