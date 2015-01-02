@@ -46,6 +46,13 @@ public class ErrorCode {
 	    this.httpStatus = code.httpStatus;
 	    this.arguments = code.arguments;
 	}
+	
+   public ErrorCode(ErrorCode code, Object[] args) {
+        this.code = code.code;
+        this.message = code.message;
+        this.httpStatus = code.httpStatus;
+        this.arguments = args;
+    }
 
 	public long getCode() {
 		return code;

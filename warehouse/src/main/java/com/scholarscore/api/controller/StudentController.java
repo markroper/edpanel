@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.scholarscore.api.persistence.PersistenceManager;
 import com.scholarscore.api.util.ErrorCodes;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.Student;
@@ -31,7 +32,7 @@ public class StudentController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAll() {
-        return respond(new ArrayList<>(getAllStudents()));
+        return respond(new ArrayList<>(PM.getAllStudents()));
     }
     
     @ApiOperation(
@@ -46,10 +47,10 @@ public class StudentController extends BaseController {
     public @ResponseBody ResponseEntity get(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId) {
-        if(studentExists(studentId)) {
-            return respond(getStudent(studentId));
+        if(PM.studentExists(studentId)) {
+            return respond(PM.getStudent(studentId));
         }
-        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, studentId });
+        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, studentId });
     }
 
     @ApiOperation(
@@ -61,7 +62,7 @@ public class StudentController extends BaseController {
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity create(@RequestBody @Valid Student student) {
-        long studentId = createStudent(student);
+        long studentId = PM.createStudent(student);
         return respond(new EntityId(studentId));
     }
 
@@ -78,12 +79,12 @@ public class StudentController extends BaseController {
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
             @RequestBody @Valid Student student) {
-        if(null != studentId && studentExists(studentId)) {
+        if(null != studentId && PM.studentExists(studentId)) {
             student.setId(studentId);
-            saveStudent(student);
+            PM.saveStudent(student);
             return respond(new EntityId(studentId));
         } else {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL, studentId });
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.SCHOOL, studentId });
         }
     }
     
@@ -100,14 +101,14 @@ public class StudentController extends BaseController {
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
             @RequestBody @Valid Student student) {
-        if(null != student && null != studentId && studentExists(studentId)) {
+        if(null != student && null != studentId && PM.studentExists(studentId)) {
             // always use the Id from the path, not the object
             student.setId(studentId);
-            student.mergePropertiesIfNull(getStudent(studentId));
-            saveStudent(student);
+            student.mergePropertiesIfNull(PM.getStudent(studentId));
+            PM.saveStudent(student);
             return respond(new EntityId(studentId));
         } else {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL, studentId });
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.SCHOOL, studentId });
         }
     }
 
@@ -124,10 +125,10 @@ public class StudentController extends BaseController {
             @PathVariable(value="studentId") Long studentId) {
         if(null == studentId) {
             return respond(ErrorCodes.BAD_REQUEST_CANNOT_PARSE_BODY);
-        } else if (!studentExists(studentId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, studentId});
+        } else if (!PM.studentExists(studentId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, studentId});
         }
-        deleteStudent(studentId);
+        PM.deleteStudent(studentId);
         return respond((Student) null);
     }
 }

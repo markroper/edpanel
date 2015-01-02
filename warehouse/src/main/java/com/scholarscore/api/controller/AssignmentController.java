@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.EntityId;
+import com.scholarscore.api.persistence.PersistenceManager;
 import com.scholarscore.api.util.ErrorCodes;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -42,15 +43,16 @@ public class AssignmentController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        if(null == schoolId || !PM.schoolExists(schoolId).equals(ErrorCodes.OK)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, schoolId });
         }
-        if(null == courseId || !courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
+        if(null == courseId || !PersistenceManager.courses.containsKey(schoolId) || 
+                !PersistenceManager.courses.get(schoolId).containsKey(courseId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.COURSE, courseId });
         }
         ArrayList<Assignment> returnAssignments = new ArrayList<Assignment>();
-        if(assignments.containsKey(courseId)) {
-            returnAssignments = new ArrayList<>(assignments.get(courseId).values());
+        if(PersistenceManager.assignments.containsKey(courseId)) {
+            returnAssignments = new ArrayList<>(PersistenceManager.assignments.get(courseId).values());
         }
         return respond(returnAssignments);
     }
@@ -71,17 +73,19 @@ public class AssignmentController extends BaseController {
             @PathVariable(value="courseId") Long courseId,
             @ApiParam(name = "assignmentId", required = true, value = "Assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        if(null == schoolId || !PM.schoolExists(schoolId).equals(ErrorCodes.OK)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, schoolId });
         }
-        if(null == courseId || !courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
+        if(null == courseId || !PersistenceManager.courses.containsKey(schoolId) || 
+                !PersistenceManager.courses.get(schoolId).containsKey(courseId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.COURSE, courseId });
         }
         
-        if(assignments.containsKey(courseId) && assignments.get(courseId).containsKey(assignmentId)) {
-            return respond(assignments.get(courseId).get(assignmentId));
+        if(PersistenceManager.assignments.containsKey(courseId) && 
+                PersistenceManager.assignments.get(courseId).containsKey(assignmentId)) {
+            return respond(PersistenceManager.assignments.get(courseId).get(assignmentId));
         }
-        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { ASSIGNMENT, assignmentId });
+        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.ASSIGNMENT, assignmentId });
     }
 
     @ApiOperation(
@@ -98,18 +102,18 @@ public class AssignmentController extends BaseController {
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
             @RequestBody @Valid Assignment assignment) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        if(null == schoolId || !PM.schoolExists(schoolId).equals(ErrorCodes.OK)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, schoolId });
         }
-        if(null == courseId || !courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
+        if(null == courseId || !PersistenceManager.courses.containsKey(schoolId) || 
+                !PersistenceManager.courses.get(schoolId).containsKey(courseId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.COURSE, courseId });
+        }     
+        assignment.setId(PersistenceManager.assignmentCounter.getAndIncrement());
+        if(!PersistenceManager.assignments.containsKey(courseId)) {
+            PersistenceManager.assignments.put(courseId, new HashMap<Long, Assignment>());
         }
-        
-        assignment.setId(assignmentCounter.getAndIncrement());
-        if(!assignments.containsKey(courseId)) {
-            assignments.put(courseId, new HashMap<Long, Assignment>());
-        }
-        assignments.get(courseId).put(assignment.getId(), assignment);
+        PersistenceManager.assignments.get(courseId).put(assignment.getId(), assignment);
         return respond(new EntityId(assignment.getId()));
     }
 
@@ -130,18 +134,19 @@ public class AssignmentController extends BaseController {
             @ApiParam(name = "assignmentId", required = true, value = "Assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
             @RequestBody @Valid Assignment assignment) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        if(null == schoolId || !PM.schoolExists(schoolId).equals(ErrorCodes.OK)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, schoolId });
         }
-        if(null == courseId || !courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
+        if(null == courseId || !PersistenceManager.courses.containsKey(schoolId) || 
+                !PersistenceManager.courses.get(schoolId).containsKey(courseId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.COURSE, courseId });
         }
- 
-        if(null != assignmentId && assignments.containsKey(courseId) && assignments.get(courseId).containsKey(assignmentId)) {
-            assignments.get(courseId).put(assignmentId, assignment);
+        if(null != assignmentId && PersistenceManager.assignments.containsKey(courseId) && 
+                PersistenceManager.assignments.get(courseId).containsKey(assignmentId)) {
+            PersistenceManager.assignments.get(courseId).put(assignmentId, assignment);
             return respond(new EntityId(assignmentId));
         } else {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ ASSIGNMENT, assignmentId });
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.ASSIGNMENT, assignmentId });
         }
     }
     
@@ -162,19 +167,21 @@ public class AssignmentController extends BaseController {
             @ApiParam(name = "assignmentId", required = true, value = "Assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
             @RequestBody @Valid Assignment assignment) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        if(null == schoolId || !PM.schoolExists(schoolId).equals(ErrorCodes.OK)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, schoolId });
         }
-        if(null == courseId || !courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
+        if(null == courseId || !PersistenceManager.courses.containsKey(schoolId) || 
+                !PersistenceManager.courses.get(schoolId).containsKey(courseId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.COURSE, courseId });
         }
         
-        if(null != assignmentId && assignments.containsKey(courseId) && assignments.get(courseId).containsKey(assignmentId)) {
-            assignment.mergePropertiesIfNull(assignments.get(courseId).get(assignmentId));
-            assignments.get(courseId).put(assignmentId, assignment);
+        if(null != assignmentId && PersistenceManager.assignments.containsKey(courseId) && 
+                PersistenceManager.assignments.get(courseId).containsKey(assignmentId)) {
+            assignment.mergePropertiesIfNull(PersistenceManager.assignments.get(courseId).get(assignmentId));
+            PersistenceManager.assignments.get(courseId).put(assignmentId, assignment);
             return respond(new EntityId(assignmentId));
         } else {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ ASSIGNMENT, assignmentId });
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.ASSIGNMENT, assignmentId });
         }
     }
 
@@ -194,16 +201,18 @@ public class AssignmentController extends BaseController {
             @PathVariable(value="courseId") Long courseId,
             @ApiParam(name = "assignmentId", required = true, value = "Assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        if(null == schoolId || !PM.schoolExists(schoolId).equals(ErrorCodes.OK)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, schoolId });
         }
-        if(null == courseId || !courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
+        if(null == courseId || !PersistenceManager.courses.containsKey(schoolId) || 
+                !PersistenceManager.courses.get(schoolId).containsKey(courseId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.COURSE, courseId });
         }
-        if(null != assignmentId && assignments.containsKey(courseId) && assignments.get(courseId).containsKey(assignmentId)) {
-            assignments.get(courseId).remove(assignmentId);
+        if(null != assignmentId && PersistenceManager.assignments.containsKey(courseId) && 
+                PersistenceManager.assignments.get(courseId).containsKey(assignmentId)) {
+            PersistenceManager.assignments.get(courseId).remove(assignmentId);
             return respond((Assignment) null);
         }
-        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { ASSIGNMENT, assignmentId });
+        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.ASSIGNMENT, assignmentId });
     }
 }

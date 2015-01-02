@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.scholarscore.api.persistence.PersistenceManager;
 import com.scholarscore.api.util.ErrorCodes;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.StudentSectionGrade;
@@ -43,24 +44,24 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "studId", required = true, value = "Student ID")
             @PathVariable(value="studId") Long studId) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        if(null == schoolId || !PM.schoolExists(schoolId).equals(ErrorCodes.OK)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, schoolId });
         }
-        if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, yearId });
+        if(null == yearId || !PersistenceManager.schoolYears.containsKey(schoolId) || !PersistenceManager.schoolYears.get(schoolId).containsKey(yearId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL_YEAR, yearId });
         }
-        if(null == schoolYears.get(schoolId).get(yearId).findTermById(termId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ TERM, termId });
+        if(null == PersistenceManager.schoolYears.get(schoolId).get(yearId).findTermById(termId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.TERM, termId });
         }
-        if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
+        if(!PersistenceManager.sections.containsKey(termId) || !PersistenceManager.sections.get(termId).containsKey(sectId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.SECTION, sectId });
         }
-        if (!studentExists(studId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studId });
+        if (!PM.studentExists(studId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.STUDENT, studId });
         }
         Collection<StudentSectionGrade> returnGrades = null;
-        if(studentSectionGrades.containsKey(studId) && studentSectionGrades.get(studId).containsKey(sectId)) {
-            returnGrades = studentSectionGrades.get(studId).get(sectId).values();
+        if(PersistenceManager.studentSectionGrades.containsKey(studId) && PersistenceManager.studentSectionGrades.get(studId).containsKey(sectId)) {
+            returnGrades = PersistenceManager.studentSectionGrades.get(studId).get(sectId).values();
         }
         return respond(returnGrades);
     }
@@ -87,26 +88,26 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="studId") Long studId,
             @ApiParam(name = "gradeId", required = true, value = "Grade ID")
             @PathVariable(value="gradeId") Long gradeId) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        if(null == schoolId || !PM.schoolExists(schoolId).equals(ErrorCodes.OK)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, schoolId });
         }
-        if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, yearId });
+        if(null == yearId || !PersistenceManager.schoolYears.containsKey(schoolId) || !PersistenceManager.schoolYears.get(schoolId).containsKey(yearId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL_YEAR, yearId });
         }
-        if(null == schoolYears.get(schoolId).get(yearId).findTermById(termId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ TERM, termId });
+        if(null == PersistenceManager.schoolYears.get(schoolId).get(yearId).findTermById(termId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.TERM, termId });
         }
-        if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
+        if(!PersistenceManager.sections.containsKey(termId) || !PersistenceManager.sections.get(termId).containsKey(sectId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.SECTION, sectId });
         }     
-        if(!studentExists(studId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studId });
+        if(!PM.studentExists(studId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.STUDENT, studId });
         }
-        if(!studentSectionGrades.containsKey(studId) || !studentSectionGrades.get(studId).containsKey(sectId) ||
-                !studentSectionGrades.get(studId).get(sectId).containsKey(gradeId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, gradeId });
+        if(!PersistenceManager.studentSectionGrades.containsKey(studId) || !PersistenceManager.studentSectionGrades.get(studId).containsKey(sectId) ||
+                !PersistenceManager.studentSectionGrades.get(studId).get(sectId).containsKey(gradeId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.STUDENT_SECTION_GRADE, gradeId });
         }
-        return respond(studentSectionGrades.get(studId).get(sectId).get(gradeId));
+        return respond(PersistenceManager.studentSectionGrades.get(studId).get(sectId).get(gradeId));
     }
 
     @ApiOperation(
@@ -129,35 +130,35 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "studId", required = true, value = "Student ID")
             @PathVariable(value="studId") Long studId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        if(null == schoolId || !PM.schoolExists(schoolId).equals(ErrorCodes.OK)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, schoolId });
         }
-        if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, yearId });
+        if(null == yearId || !PersistenceManager.schoolYears.containsKey(schoolId) || !PersistenceManager.schoolYears.get(schoolId).containsKey(yearId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL_YEAR, yearId });
         }
-        if(null == schoolYears.get(schoolId).get(yearId).findTermById(termId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ TERM, termId });
+        if(null == PersistenceManager.schoolYears.get(schoolId).get(yearId).findTermById(termId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.TERM, termId });
         }
-        if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
+        if(!PersistenceManager.sections.containsKey(termId) || !PersistenceManager.sections.get(termId).containsKey(sectId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.SECTION, sectId });
         }  
-        if(!studentExists(studId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studId });
+        if(!PM.studentExists(studId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.STUDENT, studId });
         }
-        if(null == sections.get(termId).get(sectId).getEnrolledStudents() ||
-                null == sections.get(termId).get(sectId).findEnrolledStudentById(studId)) {
+        if(null == PersistenceManager.sections.get(termId).get(sectId).getEnrolledStudents() ||
+                null == PersistenceManager.sections.get(termId).get(sectId).findEnrolledStudentById(studId)) {
             return respond(ErrorCodes.ENTITY_INVALID_IN_CONTEXT, new Object[]{ 
-                    STUDENT_SECTION_GRADE, studId, SECTION, studId 
+                    PersistenceManager.STUDENT_SECTION_GRADE, studId, PersistenceManager.SECTION, studId 
                     });
         }
-        if(null == studentSectionGrades.get(studId)) {
-            studentSectionGrades.put(studId, new HashMap<Long, Map<Long, StudentSectionGrade>>());
+        if(null == PersistenceManager.studentSectionGrades.get(studId)) {
+            PersistenceManager.studentSectionGrades.put(studId, new HashMap<Long, Map<Long, StudentSectionGrade>>());
         } 
-        if(null == studentSectionGrades.get(studId).get(sectId)) {
-            studentSectionGrades.get(studId).put(sectId, new HashMap<Long, StudentSectionGrade>());
+        if(null == PersistenceManager.studentSectionGrades.get(studId).get(sectId)) {
+            PersistenceManager.studentSectionGrades.get(studId).put(sectId, new HashMap<Long, StudentSectionGrade>());
         }
-        studentSectionGrade.setId(studentSectGradeCounter.incrementAndGet());
-        studentSectionGrades.get(studId).get(sectId).put(studentSectionGrade.getId(), studentSectionGrade);
+        studentSectionGrade.setId(PersistenceManager.studentSectGradeCounter.incrementAndGet());
+        PersistenceManager.studentSectionGrades.get(studId).get(sectId).put(studentSectionGrade.getId(), studentSectionGrade);
         return respond(new EntityId(studentSectionGrade.getId()));
     }
 
@@ -184,27 +185,27 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "gradeId", required = true, value = "Grade ID")
             @PathVariable(value="gradeId") Long gradeId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        if(null == schoolId || !PM.schoolExists(schoolId).equals(ErrorCodes.OK)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, schoolId });
         }
-        if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, yearId });
+        if(null == yearId || !PersistenceManager.schoolYears.containsKey(schoolId) || !PersistenceManager.schoolYears.get(schoolId).containsKey(yearId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL_YEAR, yearId });
         }
-        if(null == schoolYears.get(schoolId).get(yearId).findTermById(termId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ TERM, termId });
+        if(null == PersistenceManager.schoolYears.get(schoolId).get(yearId).findTermById(termId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.TERM, termId });
         }
-        if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
+        if(!PersistenceManager.sections.containsKey(termId) || !PersistenceManager.sections.get(termId).containsKey(sectId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.SECTION, sectId });
         } 
-        if(!studentExists(studId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studId });
+        if(!PM.studentExists(studId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.STUDENT, studId });
         }
-        if(!studentSectionGrades.containsKey(studId) || !studentSectionGrades.get(studId).containsKey(sectId) ||
-                !studentSectionGrades.get(studId).get(sectId).containsKey(gradeId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, gradeId });
+        if(!PersistenceManager.studentSectionGrades.containsKey(studId) || !PersistenceManager.studentSectionGrades.get(studId).containsKey(sectId) ||
+                !PersistenceManager.studentSectionGrades.get(studId).get(sectId).containsKey(gradeId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.STUDENT_SECTION_GRADE, gradeId });
         }
         studentSectionGrade.setId(gradeId);
-        studentSectionGrades.get(studId).get(sectId).put(gradeId, studentSectionGrade);
+        PersistenceManager.studentSectionGrades.get(studId).get(sectId).put(gradeId, studentSectionGrade);
         return respond(new EntityId(gradeId));
     }
     
@@ -231,29 +232,29 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "gradeId", required = true, value = "Grade ID")
             @PathVariable(value="gradeId") Long gradeId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        if(null == schoolId || !PM.schoolExists(schoolId).equals(ErrorCodes.OK)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, schoolId });
         }
-        if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, yearId });
+        if(null == yearId || !PersistenceManager.schoolYears.containsKey(schoolId) || !PersistenceManager.schoolYears.get(schoolId).containsKey(yearId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL_YEAR, yearId });
         }
-        if(null == schoolYears.get(schoolId).get(yearId).findTermById(termId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ TERM, termId });
+        if(null == PersistenceManager.schoolYears.get(schoolId).get(yearId).findTermById(termId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.TERM, termId });
         }
-        if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
+        if(!PersistenceManager.sections.containsKey(termId) || !PersistenceManager.sections.get(termId).containsKey(sectId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.SECTION, sectId });
         }
-        if(!studentExists(studId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studId });
+        if(!PM.studentExists(studId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.STUDENT, studId });
         }
-        if(!studentSectionGrades.containsKey(studId) || !studentSectionGrades.get(studId).containsKey(sectId) ||
-                !studentSectionGrades.get(studId).get(sectId).containsKey(gradeId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, gradeId });
+        if(!PersistenceManager.studentSectionGrades.containsKey(studId) || !PersistenceManager.studentSectionGrades.get(studId).containsKey(sectId) ||
+                !PersistenceManager.studentSectionGrades.get(studId).get(sectId).containsKey(gradeId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.STUDENT_SECTION_GRADE, gradeId });
         }
         
         studentSectionGrade.setId(gradeId);
-        studentSectionGrade.mergePropertiesIfNull(studentSectionGrades.get(studId).get(sectId).get(gradeId));
-        studentSectionGrades.get(studId).get(sectId).put(gradeId, studentSectionGrade);
+        studentSectionGrade.mergePropertiesIfNull(PersistenceManager.studentSectionGrades.get(studId).get(sectId).get(gradeId));
+        PersistenceManager.studentSectionGrades.get(studId).get(sectId).put(gradeId, studentSectionGrade);
         return respond(new EntityId(gradeId));
     }
 
@@ -279,26 +280,26 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="studId") Long studId,
             @ApiParam(name = "gradeId", required = true, value = "Grade ID")
             @PathVariable(value="gradeId") Long gradeId) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        if(null == schoolId || !PM.schoolExists(schoolId).equals(ErrorCodes.OK)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, schoolId });
         }
-        if(null == yearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(yearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, yearId });
+        if(null == yearId || !PersistenceManager.schoolYears.containsKey(schoolId) || !PersistenceManager.schoolYears.get(schoolId).containsKey(yearId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL_YEAR, yearId });
         }
-        if(null == schoolYears.get(schoolId).get(yearId).findTermById(termId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ TERM, termId });
+        if(null == PersistenceManager.schoolYears.get(schoolId).get(yearId).findTermById(termId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.TERM, termId });
         }
-        if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectId });
+        if(!PersistenceManager.sections.containsKey(termId) || !PersistenceManager.sections.get(termId).containsKey(sectId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.SECTION, sectId });
         }
-        if(!studentExists(studId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT, studId });
+        if(!PM.studentExists(studId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.STUDENT, studId });
         }
-        if(!studentSectionGrades.containsKey(studId) || !studentSectionGrades.get(studId).containsKey(sectId) ||
-                !studentSectionGrades.get(studId).get(sectId).containsKey(gradeId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ STUDENT_SECTION_GRADE, gradeId });
+        if(!PersistenceManager.studentSectionGrades.containsKey(studId) || !PersistenceManager.studentSectionGrades.get(studId).containsKey(sectId) ||
+                !PersistenceManager.studentSectionGrades.get(studId).get(sectId).containsKey(gradeId)) {
+            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.STUDENT_SECTION_GRADE, gradeId });
         }
-        studentSectionGrades.get(studId).get(sectId).remove(gradeId);
+        PersistenceManager.studentSectionGrades.get(studId).get(sectId).remove(gradeId);
         return respond((StudentSectionGrade) null);
     }
 }

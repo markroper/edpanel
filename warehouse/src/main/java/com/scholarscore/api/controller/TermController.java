@@ -1,6 +1,5 @@
 package com.scholarscore.api.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.scholarscore.api.util.ErrorCodes;
-import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.EntityId;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -36,17 +33,7 @@ public class TermController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, schoolYearId });
-        }
-        ArrayList<Term> returnTerms = new ArrayList<Term>();
-        if(schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            returnTerms = new ArrayList<>(schoolYears.get(schoolId).get(schoolYearId).getTerms());
-        }
-        return respond(returnTerms);
+        return respond(PM.getAllTerms(schoolId, schoolYearId));
     }
     
     @ApiOperation(
@@ -65,21 +52,7 @@ public class TermController extends BaseController {
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, schoolYearId });
-        }
-        
-        if(schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            SchoolYear year = schoolYears.get(schoolId).get(schoolYearId);
-            Term t = year.findTermById(termId);
-            if(null != t) {
-                return respond(t);
-            }
-        }
-        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { TERM, termId });
+        return respond(PM.getTerm(schoolId, schoolYearId, termId));
     }
 
     @ApiOperation(
@@ -96,20 +69,7 @@ public class TermController extends BaseController {
             @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @RequestBody @Valid Term term) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, schoolYearId });
-        }
-        
-        term.setId(termCounter.getAndIncrement());
-        SchoolYear originalYear = schoolYears.get(schoolId).get(schoolYearId);
-        if(null == originalYear.getTerms()) {
-            originalYear.setTerms(new ArrayList<Term>());
-        }
-        originalYear.getTerms().add(term);
-        return respond(new EntityId(term.getId()));
+        return respond(PM.createTerm(schoolId, schoolYearId, term));
     }
 
     @ApiOperation(
@@ -129,20 +89,7 @@ public class TermController extends BaseController {
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
             @RequestBody @Valid Term term) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, schoolYearId });
-        }
- 
-        if(null != termId && schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            SchoolYear originalYear = schoolYears.get(schoolId).get(schoolYearId);
-            term.setId(termId);
-            replaceTerm(originalYear.getTerms(), term);
-            return respond(new EntityId(termId));
-        }
-        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ TERM, termId });
+        return respond(PM.replaceTerm(schoolId, schoolYearId, termId, term));
     }
     
     @ApiOperation(
@@ -162,21 +109,7 @@ public class TermController extends BaseController {
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
             @RequestBody @Valid Term term) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, schoolYearId });
-        }
-        
-        if(null != termId && schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            SchoolYear originalYear = schoolYears.get(schoolId).get(schoolYearId);
-            term.setId(termId);
-            term.mergePropertiesIfNull(originalYear.findTermById(termId));
-            replaceTerm(originalYear.getTerms(), term);
-            return respond(new EntityId(termId));
-        }
-        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ ASSIGNMENT, termId });
+        return respond(PM.updateTerm(schoolId, schoolYearId, termId, term));
     }
 
     @ApiOperation(
@@ -195,33 +128,7 @@ public class TermController extends BaseController {
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId) {
-        if(null == schoolId || !schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, schoolYearId });
-        }
-        if(null != termId && schoolYears.containsKey(schoolId) && schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            SchoolYear originalYear =  schoolYears.get(schoolId).get(schoolYearId);
-            Term termToRemove = originalYear.findTermById(termId);
-            if(null != termToRemove) {
-                originalYear.getTerms().remove(termToRemove);
-                return respond((Term) null);
-            }
-        }
-        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { ASSIGNMENT, termId });
+        return respond(PM.deleteTerm(schoolId, schoolYearId, termId));
     }
     
-    private void replaceTerm(List<Term> terms, Term term) {
-        int idx = -1;
-        for(int i = 0; i < terms.size(); i++) {
-            if(terms.get(i).getId().equals(term.getId())) {
-                idx = i;
-                break;
-            }
-        }
-        if(idx >= 0) {
-            terms.set(idx, term);
-        }
-    }
 }

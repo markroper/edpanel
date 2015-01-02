@@ -1,5 +1,7 @@
 package com.scholarscore.api.persistence;
 
+import com.scholarscore.api.util.ErrorCode;
+import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.SchoolYear;
 
 import java.util.Collection;
@@ -11,14 +13,17 @@ import java.util.Collection;
  */
 public interface SchoolYearManager {
 
-    public Collection<SchoolYear> getAllSchoolYears(long schoolId);
+    public ServiceResponse<Collection<SchoolYear>> getAllSchoolYears(long schoolId);
 
-    public boolean schoolYearExists(long schoolId, long schoolYearId);
-    public SchoolYear getSchoolYear(long schoolId, long schoolYearId);
+    public ErrorCode schoolYearExists(long schoolId, long schoolYearId);
+    
+    public ServiceResponse<SchoolYear> getSchoolYear(long schoolId, long schoolYearId);
 
-    public long createSchoolYear(long schoolId, SchoolYear schoolYear);
+    public ServiceResponse<Long> createSchoolYear(long schoolId, SchoolYear schoolYear);
 
-    public void saveSchoolYear(long schoolId, SchoolYear schoolYear);
+    public ServiceResponse<Long> replaceSchoolYear(long schoolId, long schoolYearId, SchoolYear schoolYear);
+    
+    public ServiceResponse<Long> updateSchoolYear(long schoolId, long schoolYearId, SchoolYear schoolYear);
 
-    public void deleteSchoolYear(long schoolId, long schoolYearId);
+    public ServiceResponse<Long> deleteSchoolYear(long schoolId, long schoolYearId);
 }
