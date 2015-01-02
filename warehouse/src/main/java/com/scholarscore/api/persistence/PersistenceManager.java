@@ -14,7 +14,6 @@ import com.scholarscore.api.util.ErrorCodes;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.Course;
-import com.scholarscore.models.EntityId;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
@@ -26,7 +25,7 @@ import com.scholarscore.models.SubjectArea;
 import com.scholarscore.models.Term;
 
 public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
-        TermManager, SectionManager, SectionAssignmentManager {
+        TermManager, SectionManager, SectionAssignmentManager, StudentAssignmentManager {
     public static final String SCHOOL = "school";
     public static final String ASSIGNMENT = "assignment";
     public static final String COURSE = "course";
@@ -567,6 +566,108 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(idx >= 0) {
             assignments.set(idx, assignment);
         }
+    }
+
+    @Override
+    public ServiceResponse<Collection<StudentAssignment>> getAllStudentAssignments(
+            long schoolId, long yearId, long termId, long sectionId,
+            long sectAssignmentId) {
+        ErrorCode code = sectionAssignmentExists(schoolId, yearId, termId, sectionId, sectAssignmentId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Collection<StudentAssignment>>(code, code.getArguments());
+        }
+        Collection<StudentAssignment> returnSections = new ArrayList<>();
+        if(null != PersistenceManager.studentAssignments.get(sectAssignmentId)) {
+            returnSections = PersistenceManager.studentAssignments.get(sectAssignmentId).values();
+        }
+        return new ServiceResponse<Collection<StudentAssignment>>(returnSections);
+    }
+
+    @Override
+    public ErrorCode studentAssignmentExists(long schoolId, long yearId,
+            long termId, long sectionId, long sectionAssignmentId,
+            long studentAssignmentId) {
+        ErrorCode code = sectionAssignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return code;
+        }
+        if(!studentAssignments.containsKey(sectionAssignmentId) || 
+                !studentAssignments.get(sectionAssignmentId).containsKey(studentAssignmentId)) {
+            return new ErrorCode(ErrorCodes.MODEL_NOT_FOUND, 
+                    new Object[]{ STUDENT_ASSIGNMENT, studentAssignmentId });
+        }
+        return ErrorCodes.OK;
+    }
+
+    @Override
+    public ServiceResponse<StudentAssignment> getStudentAssignment(
+            long schoolId, long yearId, long termId, long sectionId,
+            long sectionAssignmentId, long studentAssignmentId) {
+        ErrorCode code = studentAssignmentExists(schoolId, yearId, termId, sectionId, 
+                sectionAssignmentId, studentAssignmentId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<StudentAssignment>(code, code.getArguments());
+        }
+        return new ServiceResponse<StudentAssignment>(
+                studentAssignments.get(sectionAssignmentId).get(studentAssignmentId));
+    }
+
+    @Override
+    public ServiceResponse<Long> createStudentAssignment(long schoolId,
+            long yearId, long termId, long sectionId, long sectionAssignmentId,
+            StudentAssignment studentAssignment) {
+        ErrorCode code = sectionAssignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Long>(code, code.getArguments());
+        }
+        if(null == studentAssignments.get(sectionAssignmentId)) {
+            studentAssignments.put(sectionAssignmentId, new HashMap<Long, StudentAssignment>());
+        } 
+        studentAssignment.setId(studentAssignmentCounter.getAndIncrement());
+        studentAssignments.get(sectionAssignmentId).put(studentAssignment.getId(), studentAssignment);
+        return new ServiceResponse<Long>(studentAssignment.getId());
+    }
+
+    @Override
+    public ServiceResponse<Long> replaceStudentAssignment(long schoolId,
+            long yearId, long termId, long sectionId, long sectionAssignmentId,
+            long studentAssignmentId, StudentAssignment studentAssignment) {
+        ErrorCode code = studentAssignmentExists(schoolId, yearId, termId, sectionId, 
+                sectionAssignmentId, studentAssignmentId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Long>(code, code.getArguments());
+        }
+        studentAssignment.setId(studentAssignmentId);
+        PersistenceManager.studentAssignments.get(sectionAssignmentId).put(studentAssignmentId, studentAssignment);
+        return new ServiceResponse<Long>(studentAssignmentId);
+    }
+
+    @Override
+    public ServiceResponse<Long> updateStudentAssignment(long schoolId,
+            long yearId, long termId, long sectionId, long sectionAssignmentId,
+            long studentAssignmentId, StudentAssignment studentAssignment) {
+        ErrorCode code = studentAssignmentExists(schoolId, yearId, termId, sectionId, 
+                sectionAssignmentId, studentAssignmentId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Long>(code, code.getArguments());
+        }
+        studentAssignment.setId(studentAssignmentId);
+        studentAssignment.mergePropertiesIfNull(PersistenceManager.studentAssignments.get(sectionAssignmentId).get(studentAssignmentId));
+        studentAssignments.get(sectionAssignmentId).put(studentAssignmentId, studentAssignment);
+        return new ServiceResponse<Long>(studentAssignmentId);
+    }
+
+    @Override
+    public ServiceResponse<Long> deleteStudentAssignment(long schoolId,
+            long yearId, long termId, long sectionId, long sectionAssignmentId,
+            long studentAssignmentId) {
+        ErrorCode code = studentAssignmentExists(schoolId, yearId, termId, sectionId, 
+                sectionAssignmentId, studentAssignmentId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Long>(code, code.getArguments());
+        }
+        studentAssignments.get(sectionAssignmentId).remove(studentAssignmentId);
+        return new ServiceResponse<Long>((Long) null);
     }
 
 }
