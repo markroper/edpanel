@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import com.scholarscore.api.util.ErrorCode;
 import com.scholarscore.api.util.ServiceResponse;
-import com.scholarscore.models.SectionAssignment;
 import com.scholarscore.models.StudentAssignment;
 
 public interface StudentAssignmentManager {

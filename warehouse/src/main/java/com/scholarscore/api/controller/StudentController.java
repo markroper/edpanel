@@ -1,6 +1,5 @@
 package com.scholarscore.api.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.scholarscore.api.persistence.PersistenceManager;
-import com.scholarscore.api.util.ErrorCodes;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.Student;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -32,7 +29,7 @@ public class StudentController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAll() {
-        return respond(new ArrayList<>(PM.getAllStudents()));
+        return respond(PM.getAllStudents());
     }
     
     @ApiOperation(
@@ -47,10 +44,7 @@ public class StudentController extends BaseController {
     public @ResponseBody ResponseEntity get(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId) {
-        if(PM.studentExists(studentId)) {
-            return respond(PM.getStudent(studentId));
-        }
-        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, studentId });
+        return respond(PM.getStudent(studentId));
     }
 
     @ApiOperation(
@@ -62,8 +56,7 @@ public class StudentController extends BaseController {
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity create(@RequestBody @Valid Student student) {
-        long studentId = PM.createStudent(student);
-        return respond(new EntityId(studentId));
+        return respond(PM.createStudent(student));
     }
 
     @ApiOperation(
@@ -79,13 +72,7 @@ public class StudentController extends BaseController {
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
             @RequestBody @Valid Student student) {
-        if(null != studentId && PM.studentExists(studentId)) {
-            student.setId(studentId);
-            PM.saveStudent(student);
-            return respond(new EntityId(studentId));
-        } else {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.SCHOOL, studentId });
-        }
+        return respond(PM.replaceStudent(studentId, student));
     }
     
     @ApiOperation(
@@ -101,15 +88,7 @@ public class StudentController extends BaseController {
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
             @RequestBody @Valid Student student) {
-        if(null != student && null != studentId && PM.studentExists(studentId)) {
-            // always use the Id from the path, not the object
-            student.setId(studentId);
-            student.mergePropertiesIfNull(PM.getStudent(studentId));
-            PM.saveStudent(student);
-            return respond(new EntityId(studentId));
-        } else {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.SCHOOL, studentId });
-        }
+        return respond(PM.updateStudent(studentId, student));
     }
 
     @ApiOperation(
@@ -123,12 +102,6 @@ public class StudentController extends BaseController {
     public @ResponseBody ResponseEntity delete(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId) {
-        if(null == studentId) {
-            return respond(ErrorCodes.BAD_REQUEST_CANNOT_PARSE_BODY);
-        } else if (!PM.studentExists(studentId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { PersistenceManager.SCHOOL, studentId});
-        }
-        PM.deleteStudent(studentId);
-        return respond((Student) null);
+        return respond(PM.deleteStudent(studentId));
     }
 }
