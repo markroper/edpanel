@@ -1,26 +1,9 @@
+apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'com.bmuschko.cargo'
 apply plugin: 'eclipse'
-
-sourceSets {
-    main {
-        java {
-            srcDir 'src/main/java'
-        }
-        resources {
-            srcDir 'src/main/resources'
-        }
-    }
-
-    test {
-        java {
-            srcDir 'src/test/java'
-        }
-        resources {
-            srcDir 'src/test/resources'
-        }
-    }
-}
+apply plugin: 'jacoco'
+apply plugin: 'org.akhikhl.gretty'
 
 //Cargo tomcat deploy
 buildscript {
@@ -30,6 +13,7 @@ buildscript {
 
     dependencies {
         classpath 'com.bmuschko:gradle-cargo-plugin:2.0.3'
+		classpath 'org.akhikhl.gretty:gretty:1.1.8'
     }
 
 }
@@ -42,6 +26,7 @@ cargo {
     containerId = 'tomcat7x'
 
     local {
+        // this makes the local container debuggable but screws up the build machine. can we use --debug-jvm instead?
 //        jvmArgs = '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999'
         installer {
             installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.zip'
@@ -74,6 +59,20 @@ def getFileByPattern(File dir, String pat, String stripDir) {
     path
 }
 
+gretty {
+  afterEvaluate {
+
+    tasks.appBeforeIntegrationTest.jacoco {
+      append = false
+      destinationFile = new File(project.buildDir, 'jacoco/integrationTest_server.exec')
+    }
+
+    tasks.appAfterIntegrationTest.finalizedBy tasks.integrationTestServerReport
+  }
+
+  integrationTestTask = 'integrationLocal'
+}
+
 task integrationLocal(type: Test) { task ->
     useTestNG() {
         useDefaultListeners = true
@@ -85,6 +84,22 @@ task integrationLocal(type: Test) { task ->
     //include '**/integration/**'
     beforeTest { descriptor ->
         logger.lifecycle("RUNNING INTEGRATION TEST LOCALLY: " + descriptor)
+    }
+//	finalizedBy { tasks.integrationTestClientReport }
+}
+
+task('integrationTestServerReport', type: JacocoReport) {
+    executionData { tasks.appBeforeIntegrationTest.jacoco.destinationFile }
+
+    sourceDirectories = project.files(project.sourceSets.main.allSource.srcDirs)
+    classDirectories = project.sourceSets.main.output
+
+    def reportDir = project.reporting.file("jacoco/integrationTest_server/html")
+    reports {
+        html.destination = reportDir
+    }
+    doLast {
+        println "Jacoco report for server created: file://${reportDir.toURI().path}"
     }
 }
 
