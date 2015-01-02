@@ -8,6 +8,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.GradedAssignment;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
@@ -51,7 +52,9 @@ public class SectionAssignmentControllerIntegrationTest extends IntegrationBase 
         namedSectionAssignment.setName(localeServiceUtil.generateName());
         namedSectionAssignment.setAssignedDate(new Date(1234567L));
         namedSectionAssignment.setDueDate(new Date(123456L));
-        namedSectionAssignment.setAssignmentId(2L);
+        GradedAssignment assignment = new GradedAssignment();
+        assignment.setId(2l);
+        namedSectionAssignment.setAssignment(assignment);
         
         return new Object[][] {
                 { "Empty section assignment", emptySectionAssignment },

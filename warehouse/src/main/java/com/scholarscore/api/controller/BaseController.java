@@ -1,6 +1,9 @@
 package com.scholarscore.api.controller;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.scholarscore.api.controller.api.SchoolManager;
@@ -17,12 +20,10 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.SectionAssignment;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.SubjectArea;
-import com.scholarscore.models.Term;
 
 /**
  * All SpringMVC controllers defined in the package subclass this base
@@ -48,14 +49,15 @@ public abstract class BaseController implements StudentManager, SchoolManager, S
     protected static final String STUDENT = "student";
     protected static final String STUDENT_SECTION_GRADE = "student section grade";
 
-    // Todo Jordan: everything from here to 75 should be private.
+    // Todo refactor_persistence: everything from here to 75 should be private.
     //Student structure: Map<studentId, Student>
     private final AtomicLong studentCounter = new AtomicLong();
     private static Map<Long, Student> students = Collections.synchronizedMap(new HashMap<Long, Student>());
     //Student section grade structure: Map<studentId, Map<sectionId, StudentSectionGrade>>
-    protected static Map<Long, Map<Long, StudentSectionGrade>> studentSectionGrades = 
-            Collections.synchronizedMap(new HashMap<Long, Map<Long, StudentSectionGrade>>());
-    
+    protected final AtomicLong studentSectGradeCounter = new AtomicLong();
+    protected static Map<Long, Map<Long, Map<Long, StudentSectionGrade>>> studentSectionGrades =
+            Collections.synchronizedMap(new HashMap<Long, Map<Long, Map<Long, StudentSectionGrade>>>());
+
     //School structure: Map<schoolId, School>
     private final AtomicLong schoolCounter = new AtomicLong();
     private static Map<Long, School> schools = Collections.synchronizedMap(new HashMap<Long, School>());
@@ -83,7 +85,7 @@ public abstract class BaseController implements StudentManager, SchoolManager, S
     protected final static AtomicLong assignmentCounter = new AtomicLong();
     protected final static Map<Long, Map<Long, Assignment>> assignments = Collections.synchronizedMap(new HashMap<Long, Map<Long, Assignment>>());
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected ResponseEntity respond(Object obj) {
         if(obj instanceof ErrorCode) {
             ErrorCode err = (ErrorCode) obj;
@@ -99,29 +101,6 @@ public abstract class BaseController implements StudentManager, SchoolManager, S
         ErrorCode returnError = new ErrorCode(code);
         returnError.setArguments(args);
         return new ResponseEntity<ErrorCode>(factory.localizeError(returnError), returnError.getHttpStatus());
-    }
-    
-    protected HashSet<Long> resolveTermIds(SchoolYear year) {
-        HashSet<Long> termIds = new HashSet<>();
-        if(null != year.getTerms()) {
-            for(Term t : year.getTerms()) {
-                termIds.add(t.getId());
-            }
-        }
-        return termIds;
-    }
-    
-    protected Term getTermById(Set<Term> terms, Long termId) {
-        Term termWithTermId = null;
-        if(null != terms) {
-            for(Term t : terms) {
-                if(t.getId().equals(termId)) {
-                    termWithTermId = t;
-                    break;
-                }
-            }
-        }
-        return termWithTermId;
     }
 
     //// STUDENT MANAGER METHODS ////

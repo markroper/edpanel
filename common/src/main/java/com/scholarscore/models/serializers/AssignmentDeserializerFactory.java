@@ -17,7 +17,6 @@ import java.io.IOException;
  */
 public class AssignmentDeserializerFactory extends JsonDeserializer<Assignment> {
 
-    @SuppressWarnings("rawtypes")
     @Override
     public Assignment deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException {

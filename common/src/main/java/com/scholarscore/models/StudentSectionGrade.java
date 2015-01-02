@@ -15,29 +15,24 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentSectionGrade implements Serializable, IApiModel<StudentSectionGrade> {
-    Long studentId;
-    Long sectionId;
-    Boolean complete;
-    Double grade;
+    protected Long id;
+    protected Boolean complete;
+    protected Double grade;
     
     public StudentSectionGrade() {
         
     }
     
     public StudentSectionGrade(StudentSectionGrade grade) {
-        this.studentId = grade.studentId;
-        this.sectionId = grade.sectionId;
+        this.id = grade.id;
         this.complete = grade.complete;
         this.grade = grade.grade;
     }
     
     @Override
     public void mergePropertiesIfNull(StudentSectionGrade mergeFrom) {
-        if(null == studentId) {
-            studentId = mergeFrom.studentId;
-        }
-        if(null == sectionId) {
-            sectionId = mergeFrom.sectionId;
+        if(null == id) {
+            id = mergeFrom.id;
         }
         if(null == complete) {
             complete = mergeFrom.complete;
@@ -47,20 +42,12 @@ public class StudentSectionGrade implements Serializable, IApiModel<StudentSecti
         }
     }
 
-    public Long getStudentId() {
-        return studentId;
+    public Long getId() {
+        return id;
     }
 
-    public void setStudentId(Long studentId) {
-        this.studentId = studentId;
-    }
-
-    public Long getSectionId() {
-        return sectionId;
-    }
-
-    public void setSectionId(Long sectionId) {
-        this.sectionId = sectionId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Boolean getComplete() {
@@ -82,15 +69,14 @@ public class StudentSectionGrade implements Serializable, IApiModel<StudentSecti
     @Override
     public boolean equals(Object obj) {
         final StudentSectionGrade other = (StudentSectionGrade) obj;
-        return Objects.equals(this.studentId, other.studentId) && 
-                Objects.equals(this.sectionId, other.sectionId) &&
+        return Objects.equals(this.id, other.id) && 
                 Objects.equals(this.complete, other.complete) &&
                 Objects.equals(this.grade, other.grade);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(studentId, sectionId, complete, grade);
+        return 31 * super.hashCode() + Objects.hash(id, complete, grade);
     }
 
 }

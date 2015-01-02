@@ -79,7 +79,7 @@ public class IntegrationBase {
     private static final String SECTION_ASSIGNMENT_ENDPOINT = "/sectassignments";
     private static final String STUDENT_ENDPOINT = "/students";
     private static final String STUDENT_ASSIGNMENT_ENDPOINT = "/studentassignments";
-    private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/studentgrades";
+    private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
 
     public LocaleServiceUtil localeServiceUtil;
     public AssignmentValidatingExecutor assignmentValidatingExecutor;
@@ -193,73 +193,7 @@ public class IntegrationBase {
 
         localeServiceUtil.setLocale();
         contentType = System.getProperty("contentType", "json");
-
-        // Remove all assignments created during testing
-        for (Map.Entry<Long, Map<Long, List<Assignment>>> entry : assignmentsCreated.entrySet()) {
-            Long schoolId = entry.getKey();
-            Map<Long, List<Assignment>> courseMap = entry.getValue();
-            for(Map.Entry<Long, List<Assignment>> courseEntry : courseMap.entrySet()) {
-                for(Assignment assignment : courseEntry.getValue()) {
-                    cleanupAssignment(schoolId, courseEntry.getKey(), assignment);
-                }
-            }
-        }
-        
-        for(Map.Entry<Long, List<Section>> sectionEntry : sectionsCreated.entrySet()) {
-            for(Section section : sectionEntry.getValue()) {
-                cleanupSection(sectionEntry.getKey(), section);
-            }
-        }
-        
-        for(Map.Entry<Long, List<Course>> courseEntry : coursesCreated.entrySet()) {
-            for(Course course : courseEntry.getValue()) {
-                cleanupCourse(courseEntry.getKey(), course);
-            }
-        }
-        
-        for(Map.Entry<Long, List<SchoolYear>> schoolYearEntry : schoolYearsCreated.entrySet()) {
-            for(SchoolYear schoolYear : schoolYearEntry.getValue()) {
-                cleanupSchoolYear(schoolYearEntry.getKey(), schoolYear);
-            }
-        }
-
-        for(Map.Entry<Long, Student> studentEntry : studentsCreated.entrySet()) {
-            cleanupStudent(studentEntry.getKey());
-        }
-        
-        for(Iterator<School> it = schoolsCreated.iterator(); it.hasNext();) {
-            cleanupSchool(it.next());
-        }
         //Long completionTime = new Date().getTime();
-    }
-
-     /**
-     * Deletes an assignment without validating the response. Should only be called
-     * to cleanup test data after tests have finished running.
-     *
-     * @param Assignment the assignment to delete
-     */
-    private void cleanupAssignment(Long schoolId, Long courseId, Assignment assignment) {
-        // Make call to controller and do not validate the response
-        makeRequest(HttpMethod.DELETE, getAssignmentEndpoint(schoolId, courseId, assignment.getId()));
-    }
-
-    private void cleanupSchool(School school) {
-        makeRequest(HttpMethod.DELETE, getSchoolEndpoint(school.getId()));
-    }
-    
-    private void cleanupCourse(Long schoolId, Course course) {
-        makeRequest(HttpMethod.DELETE, getCourseEndpoint(schoolId, course.getId()));
-    }
-    
-    private void cleanupSchoolYear(Long schoolId, SchoolYear schoolYear) {
-        makeRequest(HttpMethod.DELETE, getSchoolYearEndpoint(schoolId, schoolYear.getId()));
-    }
-    private void cleanupSection(Long schoolId, Section section) {
-        makeRequest(HttpMethod.DELETE, getSectionEndpoint(schoolId, section.getYearId(), section.getTermId(), section.getId()));
-    }
-    private void cleanupStudent(Long studentId) {
-        makeRequest(HttpMethod.DELETE, getStudentEndpoint(studentId));
     }
     
     /**
@@ -680,11 +614,12 @@ public class IntegrationBase {
         return getSectionAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId) + pathify(sectionAssignmentId);
     }
     
-    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long sectionAssignmentId) {
-        return getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId) + pathify(sectionAssignmentId);
+    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, Long sectionGradeId) {
+        return getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId) + pathify(sectionGradeId);
     }
-    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId) {
-        return getSectionEndpoint(schoolId, schoolYearId, termId, sectionId) + STUDENT_SECTION_GRADE_ENDPOINT;
+    
+    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId) {
+        return getSectionEndpoint(schoolId, schoolYearId, termId, sectionId) + STUDENT_ENDPOINT + pathify(studentId) + STUDENT_SECTION_GRADE_ENDPOINT;
     }
     
     public String getStudentAssignmentEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, 

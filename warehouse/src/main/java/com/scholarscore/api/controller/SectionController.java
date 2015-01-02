@@ -3,7 +3,6 @@ package com.scholarscore.api.controller;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -18,9 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scholarscore.api.util.ErrorCodes;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.Term;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
@@ -122,8 +119,6 @@ public class SectionController extends BaseController {
         } 
         
         section.setId(sectionCounter.getAndIncrement());
-        section.setTermId(termId);
-        section.setYearId(schoolYearId);
         sections.get(termId).put(section.getId(), section);
         return respond(new EntityId(section.getId()));
     }
@@ -160,8 +155,6 @@ public class SectionController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectionId });
         } 
         section.setId(sectionId);
-        section.setTermId(termId);
-        section.setYearId(schoolYearId);
         sections.get(termId).put(sectionId, section);
         return respond(new EntityId(sectionId));
     }
@@ -198,8 +191,6 @@ public class SectionController extends BaseController {
             return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectionId });
         }
         section.setId(sectionId);
-        section.setTermId(termId);
-        section.setYearId(schoolYearId);
         section.mergePropertiesIfNull(sections.get(termId).get(sectionId));
         sections.get(termId).put(sectionId, section);
         return respond(new EntityId(sectionId));

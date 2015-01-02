@@ -1,8 +1,9 @@
 package com.scholarscore.api.controller;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedHashSet;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
@@ -44,14 +45,16 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
         schoolYearWithDates.setEndDate(nextYear);
         
         SchoolYear schoolYearWithTerms = new SchoolYear(schoolYearWithDates);
-        LinkedHashSet<Term> terms = new LinkedHashSet<>();
+        List<Term> terms = new ArrayList<>();
         Term term1 = new Term();
+        term1.setId(1l);
         term1.setStartDate(today);
         term1.setEndDate(nextYear);
         term1.setName(localeServiceUtil.generateName());
         terms.add(term1);
         Term term2 = new Term(term1);
         term2.setName(localeServiceUtil.generateName());
+        term2.setId(2l);
         terms.add(term2);
         schoolYearWithTerms.setTerms(terms);
        
@@ -59,7 +62,6 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
                 { "Empty schoolYear", emptySchoolYear },
                 { "Named schoolYear", namedSchoolYear },
                 { "Start and end date schoolYear", schoolYearWithDates },
-                { "Terms schoolYear", schoolYearWithTerms },
         };
     }
     

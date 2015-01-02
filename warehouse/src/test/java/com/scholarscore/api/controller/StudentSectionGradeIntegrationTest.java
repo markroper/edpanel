@@ -1,6 +1,6 @@
 package com.scholarscore.api.controller;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -16,7 +16,6 @@ import com.scholarscore.models.Term;
 
 @Test(groups = { "integration" })
 public class StudentSectionGradeIntegrationTest extends IntegrationBase {
-    private int numberOfItemsCreated;
     private School school;
     private SchoolYear schoolYear;
     private Term term;
@@ -27,7 +26,6 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
     
     @BeforeClass
     public void init() {
-        numberOfItemsCreated = 0;
         school = new School();
         school.setName(localeServiceUtil.generateName());
         school = schoolValidatingExecutor.create(school, "Create base school");
@@ -54,10 +52,10 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
         
         section = new Section();
         section.setName(localeServiceUtil.generateName());
-        section.setEnrolledStudents(new HashSet<Long>());
-        section.getEnrolledStudents().add(student.getId());
-        section.getEnrolledStudents().add(student2.getId());
-        section.getEnrolledStudents().add(student3.getId());
+        section.setEnrolledStudents(new ArrayList<Student>());
+        section.getEnrolledStudents().add(student);
+        section.getEnrolledStudents().add(student2);
+        section.getEnrolledStudents().add(student3);
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
     }
     
@@ -65,55 +63,50 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
     @DataProvider
     public Object[][] createStudentSectionGradeProvider() {
         StudentSectionGrade emptyStudentSectionGrade = new StudentSectionGrade();
-        emptyStudentSectionGrade.setStudentId(student.getId());
-        emptyStudentSectionGrade.setSectionId(section.getId());
         
         StudentSectionGrade namedStudentSectionGrade = new StudentSectionGrade(emptyStudentSectionGrade);
-        namedStudentSectionGrade.setStudentId(student2.getId());
         namedStudentSectionGrade.setGrade(5.3);
         namedStudentSectionGrade.setComplete(false);
         
         return new Object[][] {
-                { "Empty section assignment", emptyStudentSectionGrade },
-                { "Populated section assignment", namedStudentSectionGrade },
+                { "Empty section assignment", emptyStudentSectionGrade, student },
+                { "Populated section assignment", namedStudentSectionGrade, student2 },
         };
     }
     
     @Test(dataProvider = "createStudentSectionGradeProvider")
-    public void createStudentSectionGradeTest(String msg, StudentSectionGrade studentSectionGrade) {
-        studentSectionGradeValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), studentSectionGrade, msg);
-        numberOfItemsCreated++;
+    public void createStudentSectionGradeTest(String msg, StudentSectionGrade studentSectionGrade, Student stud) {
+        studentSectionGradeValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), stud.getId(), studentSectionGrade, msg);
     }
 
     @Test
     public void deleteStudentSectionGradeTest() {
         StudentSectionGrade emptyStudentSectionGrade = new StudentSectionGrade();
-        emptyStudentSectionGrade.setStudentId(student3.getId());
-        emptyStudentSectionGrade.setSectionId(section.getId());
-        StudentSectionGrade createdSection = studentSectionGradeValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), emptyStudentSectionGrade, "delete");
-        studentSectionGradeValidatingExecutor.delete(school.getId(), schoolYear.getId(), term.getId(), section.getId(), createdSection.getStudentId(), "delete");
+        StudentSectionGrade createdSection = studentSectionGradeValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student3.getId(), emptyStudentSectionGrade, "delete");
+        studentSectionGradeValidatingExecutor.delete(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student3.getId(), createdSection.getId(), "delete");
     }
     
     @Test(dataProvider = "createStudentSectionGradeProvider")
-    public void replaceStudentSectionGradeTest(String msg, StudentSectionGrade studentSectionGrade) {
-        StudentSectionGrade createdSection = studentSectionGradeValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), studentSectionGrade, msg);
+    public void replaceStudentSectionGradeTest(String msg, StudentSectionGrade studentSectionGrade, Student stud) {
+        StudentSectionGrade createdSection = studentSectionGradeValidatingExecutor.create(
+                school.getId(), schoolYear.getId(), term.getId(), section.getId(), stud.getId(), studentSectionGrade, msg);
         StudentSectionGrade replaceGrade = new StudentSectionGrade();
-        replaceGrade.setStudentId(student.getId());
-        replaceGrade.setSectionId(section.getId());
-        studentSectionGradeValidatingExecutor.replace(school.getId(), schoolYear.getId(), term.getId(), section.getId(), createdSection.getStudentId(), replaceGrade, msg);
+        studentSectionGradeValidatingExecutor.replace(
+                school.getId(), schoolYear.getId(), term.getId(), section.getId(), stud.getId(), createdSection.getId(), replaceGrade, msg);
     }
     
     @Test(dataProvider = "createStudentSectionGradeProvider")
-    public void updateStudentSectionGradeTest(String msg, StudentSectionGrade studentSectionGrade) {
-        StudentSectionGrade createdSection = studentSectionGradeValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), studentSectionGrade, msg);
+    public void updateStudentSectionGradeTest(String msg, StudentSectionGrade studentSectionGrade, Student stud) {
+        StudentSectionGrade createdSection = studentSectionGradeValidatingExecutor.create(
+                school.getId(), schoolYear.getId(), term.getId(), section.getId(), stud.getId(), studentSectionGrade, msg);
         StudentSectionGrade updatedSection = new StudentSectionGrade();
         updatedSection.setComplete(true);
         //PATCH the existing record with a new name.
-        studentSectionGradeValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), section.getId(), createdSection.getStudentId(), updatedSection, msg);
+        studentSectionGradeValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), section.getId(), stud.getId(), createdSection.getId(), updatedSection, msg);
     }
     
     @Test
     public void getAllItems() {
-        studentSectionGradeValidatingExecutor.getAll(school.getId(), schoolYear.getId(), term.getId(), section.getId(), "Get all records created so far", numberOfItemsCreated);
+        studentSectionGradeValidatingExecutor.getAll(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student.getId(), "Get all records created so far", 1);
     }
 }
