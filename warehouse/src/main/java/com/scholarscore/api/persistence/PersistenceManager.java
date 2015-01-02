@@ -14,6 +14,7 @@ import com.scholarscore.api.util.ErrorCodes;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.Course;
+import com.scholarscore.models.EntityId;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
@@ -26,7 +27,7 @@ import com.scholarscore.models.Term;
 
 public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
         TermManager, SectionManager, SectionAssignmentManager, StudentAssignmentManager,
-        StudentSectionGradeManager {
+        StudentSectionGradeManager, CourseManager {
     public static final String SCHOOL = "school";
     public static final String ASSIGNMENT = "assignment";
     public static final String COURSE = "course";
@@ -820,6 +821,86 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             return new ServiceResponse<>(code, code.getArguments());
         }
         PersistenceManager.studentSectionGrades.get(studentId).get(sectionId).remove(gradeId);
+        return new ServiceResponse<>((Long) null);
+    }
+
+    @Override
+    public ServiceResponse<Collection<Course>> getAllCourses(long schoolId) {
+        ErrorCode code = schoolExists(schoolId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<>(code, code.getArguments());
+        }
+        return new ServiceResponse<Collection<Course>>(
+                new ArrayList<>(courses.get(schoolId).values()));
+    }
+
+    @Override
+    public ErrorCode courseExists(long schoolId, long courseId) {
+        ErrorCode code = schoolExists(schoolId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return code;
+        }
+        if(!courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
+            return new ErrorCode(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
+        }
+        return ErrorCodes.OK;
+    }
+
+    @Override
+    public ServiceResponse<Course> getCourse(long schoolId, long courseId) {
+        ErrorCode code = courseExists(schoolId, courseId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<>(code);
+        }
+        return new ServiceResponse<>(courses.get(schoolId).get(courseId));
+    }
+
+    @Override
+    public ServiceResponse<Long> createCourse(long schoolId, Course course) {
+        ErrorCode code = schoolExists(schoolId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<>(code, code.getArguments());
+        }
+        course.setId(courseCounter.incrementAndGet());
+        if(!courses.containsKey(schoolId)) {
+            courses.put(schoolId, new HashMap<Long, Course>());
+        }
+        courses.get(schoolId).put(course.getId(), course);
+        return new ServiceResponse<>(course.getId());
+    }
+
+    @Override
+    public ServiceResponse<Long> replaceCourse(long schoolId, long courseId,
+            Course course) {
+        ErrorCode code = courseExists(schoolId, courseId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<>(code, code.getArguments());
+        }
+        course.setId(courseId);
+        courses.get(schoolId).put(courseId, course);
+        return new ServiceResponse<>(courseId);
+    }
+
+    @Override
+    public ServiceResponse<Long> updateCourse(long schoolId, long courseId,
+            Course course) {
+        ErrorCode code = courseExists(schoolId, courseId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<>(code, code.getArguments());
+        }
+        course.setId(courseId);
+        course.mergePropertiesIfNull(courses.get(schoolId).get(courseId));
+        courses.get(schoolId).put(courseId, course);
+        return new ServiceResponse<>(courseId);
+    }
+
+    @Override
+    public ServiceResponse<Long> deleteCourse(long schoolId, long courseId) {
+        ErrorCode code = courseExists(schoolId, courseId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<>(code, code.getArguments());
+        }
+        courses.get(schoolId).remove(courseId);
         return new ServiceResponse<>((Long) null);
     }
 
