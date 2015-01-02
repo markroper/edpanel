@@ -1,4 +1,4 @@
-package com.scholarscore.api.controller.api;
+package com.scholarscore.api.persistence;
 
 import com.scholarscore.models.Student;
 

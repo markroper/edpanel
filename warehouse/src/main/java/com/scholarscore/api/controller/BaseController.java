@@ -6,17 +6,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.scholarscore.api.controller.api.SchoolManager;
-import com.scholarscore.api.controller.api.SchoolYearManager;
-import com.scholarscore.api.controller.api.StudentManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
+import com.scholarscore.api.persistence.SchoolManager;
+import com.scholarscore.api.persistence.SchoolYearManager;
+import com.scholarscore.api.persistence.StudentManager;
 import com.scholarscore.api.util.ErrorCode;
+import com.scholarscore.api.util.ErrorCodes;
 import com.scholarscore.api.util.ErrorResponseFactory;
+import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.Course;
+import com.scholarscore.models.EntityId;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
@@ -88,12 +91,31 @@ public abstract class BaseController implements StudentManager, SchoolManager, S
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected ResponseEntity respond(Object obj) {
         if(obj instanceof ErrorCode) {
+            //If the object passed in is an error code, localize the error message to build the response
             ErrorCode err = (ErrorCode) obj;
             ErrorResponseFactory factory = new ErrorResponseFactory();
             return new ResponseEntity(factory.localizeError(err), err.getHttpStatus());
-        } else {
-            return new ResponseEntity(obj, HttpStatus.OK);
-        }
+        } else if(obj instanceof ServiceResponse){
+            //If the object is a ServiceResponse, resolve whether to return the ErrorCode or the value instance member
+            ServiceResponse sr = (ServiceResponse) obj;
+            if(null != sr.getValue()) {
+                if(sr.getValue() instanceof Long) {
+                    //For a long, return it as an EntityId so that serializaiton is of the form { id: <longval> }
+                    return new ResponseEntity(new EntityId((Long)sr.getValue()), HttpStatus.OK);
+                } else {
+                    //For all other cases, just return the value
+                    return new ResponseEntity(sr.getValue(), HttpStatus.OK);
+                }
+            } else if(null != sr.getError()){
+                //Handle the error code on the service response
+                return respond(sr.getError(), sr.getErrorParams());
+            } else {
+                //If both value and error code are null on the service response, we're dealing with a successful body-less response
+                return new ResponseEntity((Object) null, HttpStatus.OK);
+            }
+        } 
+        //If the object is neither a ServiceResponse nor an ErrorCode, respond with it directly
+        return new ResponseEntity(obj, HttpStatus.OK);
     }
     
     protected ResponseEntity<ErrorCode> respond(ErrorCode code, Object[] args) {
@@ -154,26 +176,47 @@ public abstract class BaseController implements StudentManager, SchoolManager, S
     }
 
     @Override
-    public School getSchool(long schoolId) {
-        return schools.get(schoolId);
+    public ServiceResponse<School> getSchool(long schoolId) {
+        if(!schoolExists(schoolId)) {
+            return new ServiceResponse<School>(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        }
+        return new ServiceResponse<School>(schools.get(schoolId));
     }
 
     @Override
-    public long createSchool(School school) {
+    public ServiceResponse<Long> createSchool(School school) {
         school.setId(schoolCounter.incrementAndGet());
         schools.put(school.getId(), school);
-        return school.getId();
+        return new ServiceResponse<Long>(school.getId());
     }
 
     @Override
-    public void saveSchool(School school) {
-        if (school == null || school.getId() == null) { throw new NullPointerException("School must not be null and have Id set."); }
+    public ServiceResponse<Long> replaceSchool(long schoolId, School school) {
+        if(null == schools.get(schoolId)) {
+            return new ServiceResponse<Long>(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        }
+        school.setId(schoolId);
         schools.put(school.getId(), school);
+        return new ServiceResponse<Long>(schoolId);
+    }
+    
+    @Override
+    public ServiceResponse<Long> updateSchool(long schoolId, School partialSchool) {
+        ServiceResponse<School> sr = getSchool(schoolId);
+        if(null == sr.getValue()) {
+            return new ServiceResponse<Long>(sr.getError(), sr.getErrorParams());
+        }
+        partialSchool.mergePropertiesIfNull(sr.getValue());
+        return replaceSchool(schoolId, partialSchool);
     }
 
     @Override
-    public void deleteSchool(long schoolId) {
+    public ServiceResponse<Long> deleteSchool(long schoolId) {
+        if(!schoolExists(schoolId)) {
+            return new ServiceResponse<Long>(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        }
         schools.remove(schoolId);
+        return new ServiceResponse<Long>((Long) null);
     }
 
     //// END SCHOOL MANAGER METHODS

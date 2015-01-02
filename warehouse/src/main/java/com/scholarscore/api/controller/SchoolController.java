@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.scholarscore.api.util.ErrorCodes;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.School;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -46,10 +45,7 @@ public class SchoolController extends BaseController {
     public @ResponseBody ResponseEntity get(
             @ApiParam(name = "schoolId", required = true, value = "The school long ID")
             @PathVariable(value="schoolId") Long schoolId) {
-        if(schoolExists(schoolId)) {
-            return respond(getSchool(schoolId));
-        }
-        return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
+        return respond(getSchool(schoolId));
     }
 
     @ApiOperation(
@@ -61,7 +57,7 @@ public class SchoolController extends BaseController {
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity create(@RequestBody @Valid School school) {
-        return respond(new EntityId(createSchool(school)));
+        return respond(createSchool(school));
     }
 
     @ApiOperation(
@@ -77,13 +73,7 @@ public class SchoolController extends BaseController {
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid School school) {
-        if(null != schoolId && schoolExists(schoolId)) {
-            school.setId(schoolId);
-            saveSchool(school);
-            return respond(new EntityId(schoolId));
-        } else {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL, schoolId });
-        }
+        return respond(replaceSchool(schoolId, school));
     }
     
     @ApiOperation(
@@ -99,14 +89,7 @@ public class SchoolController extends BaseController {
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid School school) {
-        if(null != school && null != schoolId && schoolExists(schoolId)) {
-            school.setId(schoolId);
-            school.mergePropertiesIfNull(getSchool(schoolId));
-            saveSchool(school);
-            return respond(new EntityId(schoolId));
-        } else {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL, schoolId });
-        }
+        return respond(updateSchool(schoolId, school));
     }
 
     @ApiOperation(
@@ -120,12 +103,6 @@ public class SchoolController extends BaseController {
     public @ResponseBody ResponseEntity delete(
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId) {
-        if(null == schoolId) {
-            return respond(ErrorCodes.BAD_REQUEST_CANNOT_PARSE_BODY);
-        } else if (!schoolExists(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        deleteSchool(schoolId);
-        return respond((School) null);
+        return respond(deleteSchool(schoolId));
     }
 }
