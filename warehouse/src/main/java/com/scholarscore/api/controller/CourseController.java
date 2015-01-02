@@ -1,7 +1,5 @@
 package com.scholarscore.api.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -14,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.scholarscore.api.persistence.PersistenceManager;
-import com.scholarscore.api.util.ErrorCodes;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.EntityId;
 import com.wordnik.swagger.annotations.ApiOperation;
