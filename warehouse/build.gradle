@@ -2,26 +2,6 @@ apply plugin: 'war'
 apply plugin: 'com.bmuschko.cargo'
 apply plugin: 'eclipse'
 
-sourceSets {
-    main {
-        java {
-            srcDir 'src/main/java'
-        }
-        resources {
-            srcDir 'src/main/resources'
-        }
-    }
-
-    test {
-        java {
-            srcDir 'src/test/java'
-        }
-        resources {
-            srcDir 'src/test/resources'
-        }
-    }
-}
-
 //Cargo tomcat deploy
 buildscript {
     repositories {
