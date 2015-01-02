@@ -100,12 +100,16 @@ task('integrationTestServerReport', type: JacocoReport) {
     sourceDirectories = project.files(project.sourceSets.main.allSource.srcDirs)
     classDirectories = project.sourceSets.main.output
 
-    def reportDir = project.reporting.file("jacoco/integrationTest_server/html")
+    def htmlReportDir = project.reporting.file("jacoco/integrationTests/html")
+    def xmlReportFile = project.reporting.file("jacoco/integrationTests/integrationTests.xml")
     reports {
-        html.destination = reportDir
+        xml.enabled true
+        xml.destination = xmlReportFile
+        html.destination = htmlReportDir
     }
     doLast {
-        println "Jacoco report for server created: file://${reportDir.toURI().path}"
+        println "Jacoco HTML report for integration tests created: file://${htmlReportDir.toURI().path}"
+        println "Jacoco XML report for integration tests created: file://${xmlReportFile.toURI().path}"
     }
 }
 
