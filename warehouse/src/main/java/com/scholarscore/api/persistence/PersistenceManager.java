@@ -371,52 +371,89 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     }
 
     @Override
-    public ServiceResponse<Collection<Section>> getAllSections(long schoolId,
-            long yearId, long termId) {
-        // TODO Auto-generated method stub
-        return null;
+    public ServiceResponse<Collection<Section>> getAllSections(long schoolId, long yearId, long termId) {
+        ErrorCode code = termExists(schoolId, yearId, termId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Collection<Section>>(code, code.getArguments());
+        }
+        Collection<Section> returnSections = new ArrayList<Section>();
+        if(sections.containsKey(termId)) {
+            returnSections = PersistenceManager.sections.get(termId).values();
+        }
+        return new ServiceResponse<Collection<Section>>(returnSections);
     }
 
     @Override
-    public ErrorCode sectionExists(long schoolId, long yearId, long termId,
-            long sectionId) {
-        // TODO Auto-generated method stub
-        return null;
+    public ErrorCode sectionExists(long schoolId, long yearId, long termId, long sectionId) {
+        ErrorCode code = termExists(schoolId, yearId, termId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return code;
+        }
+        if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectionId)) {
+            return new ErrorCode(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ PersistenceManager.SECTION, sectionId });
+        }
+        return ErrorCodes.OK;
     }
 
     @Override
     public ServiceResponse<Section> getSection(long schoolId, long yearId,
             long termId, long sectionId) {
-        // TODO Auto-generated method stub
-        return null;
+        ErrorCode code = sectionExists(schoolId, yearId, termId, sectionId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Section>(code, code.getArguments());
+        }
+        return new ServiceResponse<Section>(sections.get(termId).get(sectionId));
     }
 
     @Override
     public ServiceResponse<Long> createSection(long schoolId, long yearId,
             long termId, Section section) {
-        // TODO Auto-generated method stub
-        return null;
+        ErrorCode code = termExists(schoolId, yearId, termId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Long>(code, code.getArguments());
+        }
+        section.setId(sectionCounter.getAndIncrement());
+        if(null == sections.get(termId)) {
+            sections.put(termId, new HashMap<Long, Section>());
+        }
+        sections.get(termId).put(section.getId(), section);
+        return new ServiceResponse<Long>(section.getId());
     }
 
     @Override
     public ServiceResponse<Long> replaceSection(long schoolId, long yearId,
             long termId, long sectionId, Section section) {
-        // TODO Auto-generated method stub
-        return null;
+        ErrorCode code = sectionExists(schoolId, yearId, termId, sectionId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Long>(code, code.getArguments());
+        }
+        section.setId(sectionId);
+        sections.get(termId).put(sectionId, section);
+        return new ServiceResponse<Long>(sectionId);
     }
 
     @Override
     public ServiceResponse<Long> updateSection(long schoolId, long yearId,
             long termId, long sectionId, Section partialSection) {
-        // TODO Auto-generated method stub
-        return null;
+        ErrorCode code = sectionExists(schoolId, yearId, termId, sectionId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Long>(code, code.getArguments());
+        }
+        partialSection.setId(sectionId);
+        partialSection.mergePropertiesIfNull(sections.get(termId).get(sectionId));
+        sections.get(termId).put(sectionId, partialSection);
+        return new ServiceResponse<Long>(sectionId);
     }
 
     @Override
     public ServiceResponse<Long> deleteSection(long schoolId, long yearId,
             long termId, long sectionId) {
-        // TODO Auto-generated method stub
-        return null;
+        ErrorCode code = sectionExists(schoolId, yearId, termId, sectionId);
+        if(!code.equals(ErrorCodes.OK)) {
+            return new ServiceResponse<Long>(code, code.getArguments());
+        }
+        sections.get(termId).remove(sectionId);
+        return new ServiceResponse<Long>((Long) null);
     }
 
 }
