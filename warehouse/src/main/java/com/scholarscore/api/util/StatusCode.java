@@ -1,6 +1,7 @@
 package com.scholarscore.api.util;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.*;
 
@@ -78,5 +79,18 @@ public class StatusCode {
         }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final StatusCode other = (StatusCode) obj;
+        return Objects.equals(this.code, other.code)
+                && Objects.equals(this.message, other.message)
+                && Objects.equals(this.arguments, other.arguments);
+    }
 
 }
