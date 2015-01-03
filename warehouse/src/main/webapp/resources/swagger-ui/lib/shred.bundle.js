@@ -326,7 +326,6 @@ exports.dirname = function(path) {
 
 exports.basename = function(path, ext) {
   var f = splitPathRe.exec(path)[2] || '';
-  // TODO: make this comparison case-insensitive on windows?
   if (ext && f.substr(-1 * ext.length) === ext) {
     f = f.substr(0, f.length - ext.length);
   }
@@ -526,7 +525,6 @@ module.exports = Logger;
 });
 
 require.define("util", function (require, module, exports, __dirname, __filename) {
-    // todo
 
 });
 
@@ -1291,12 +1289,10 @@ module.exports = Request;
 });
 
 require.define("http", function (require, module, exports, __dirname, __filename) {
-    // todo
 
 });
 
 require.define("https", function (require, module, exports, __dirname, __filename) {
-    // todo
 
 });
 
