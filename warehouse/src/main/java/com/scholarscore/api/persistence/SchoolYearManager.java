@@ -1,6 +1,6 @@
 package com.scholarscore.api.persistence;
 
-import com.scholarscore.api.util.ErrorCode;
+import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.SchoolYear;
 
@@ -15,7 +15,7 @@ public interface SchoolYearManager {
 
     public ServiceResponse<Collection<SchoolYear>> getAllSchoolYears(long schoolId);
 
-    public ErrorCode schoolYearExists(long schoolId, long schoolYearId);
+    public StatusCode schoolYearExists(long schoolId, long schoolYearId);
     
     public ServiceResponse<SchoolYear> getSchoolYear(long schoolId, long schoolYearId);
 

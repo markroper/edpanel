@@ -2,7 +2,7 @@ package com.scholarscore.api.persistence;
 
 import java.util.Collection;
 
-import com.scholarscore.api.util.ErrorCode;
+import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.Course;
 
@@ -10,7 +10,7 @@ public interface CourseManager {
     
     public ServiceResponse<Collection<Course>> getAllCourses(long schoolId);
 
-    public ErrorCode courseExists(long schoolId, long courseId);
+    public StatusCode courseExists(long schoolId, long courseId);
     
     public ServiceResponse<Course> getCourse(long schoolId, long courseId);
 

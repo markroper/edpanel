@@ -2,7 +2,7 @@ package com.scholarscore.api.persistence;
 
 import java.util.Collection;
 
-import com.scholarscore.api.util.ErrorCode;
+import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.Assignment;
 
@@ -10,7 +10,7 @@ public interface AssignmentManager {
     
     public ServiceResponse<Collection<Assignment>> getAllAssignments(long schoolId, long courseId);
 
-    public ErrorCode assignmentExists(long schoolId, long courseId, long assignmentId);
+    public StatusCode assignmentExists(long schoolId, long courseId, long assignmentId);
     
     public ServiceResponse<Assignment> getAssignment(long schoolId, long courseId, long assignmentId);
 

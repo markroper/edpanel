@@ -1,6 +1,6 @@
 package com.scholarscore.api.persistence;
 
-import com.scholarscore.api.util.ErrorCode;
+import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.School;
 
@@ -28,7 +28,7 @@ public interface SchoolManager {
      * @param schoolId
      * @return
      */
-    public ErrorCode schoolExists(long schoolId);
+    public StatusCode schoolExists(long schoolId);
     
     /**
      * Returns the school with the ID provided, or in degenerate cases, a descriptive error 

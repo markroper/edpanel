@@ -1,6 +1,6 @@
 package com.scholarscore.api.persistence;
 
-import com.scholarscore.api.util.ErrorCode;
+import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.Student;
 
@@ -17,7 +17,7 @@ public interface StudentManager {
 
     public ServiceResponse<Collection<Student>> getAllStudents();
 
-    public ErrorCode studentExists(long studentId);
+    public StatusCode studentExists(long studentId);
     public ServiceResponse<Student> getStudent(long studentId);
 
     // Creates a student and populates the Id field (if ID is specified it will be ignored)

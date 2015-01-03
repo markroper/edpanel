@@ -2,7 +2,7 @@ package com.scholarscore.api.persistence;
 
 import java.util.Collection;
 
-import com.scholarscore.api.util.ErrorCode;
+import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.StudentSectionGrade;
 
@@ -30,7 +30,7 @@ public interface StudentSectionGradeManager {
      * @param gradeId the ID of the grade 
      * @return
      */
-    public ErrorCode studentSectionGradeExists(
+    public StatusCode studentSectionGradeExists(
             long schoolId, long yearId, long termId, long sectionId, long studentId, long gradeId);
     
     /**

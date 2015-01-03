@@ -2,7 +2,7 @@ package com.scholarscore.api.persistence;
 
 import java.util.Collection;
 
-import com.scholarscore.api.util.ErrorCode;
+import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.SectionAssignment;
 
@@ -28,7 +28,7 @@ public interface SectionAssignmentManager {
      * @param sectionAssignmentId the ID of the section assignment
      * @return
      */
-    public ErrorCode sectionAssignmentExists(long schoolId, long yearId, long termId, 
+    public StatusCode sectionAssignmentExists(long schoolId, long yearId, long termId, 
             long sectionId, long sectionAssignmentId);
     
     /**

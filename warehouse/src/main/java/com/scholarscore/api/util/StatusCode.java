@@ -23,31 +23,31 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties( {"httpStatus"} )
-public class ErrorCode {
+public class StatusCode {
 	private long code;
 	private String message;
 	private Object[] arguments;
 	@XmlTransient
 	HttpStatus httpStatus;
 	
-	public ErrorCode() {
+	public StatusCode() {
 		
 	}
 	
-	public ErrorCode(long code, String message, HttpStatus status) {
+	public StatusCode(long code, String message, HttpStatus status) {
 		this.code = code;
 		this.message = message;
 		this.httpStatus = status;
 	}
 	
-	public ErrorCode(ErrorCode code) {
+	public StatusCode(StatusCode code) {
 	    this.code = code.code;
 	    this.message = code.message;
 	    this.httpStatus = code.httpStatus;
 	    this.arguments = code.arguments;
 	}
 	
-   public ErrorCode(ErrorCode code, Object[] args) {
+   public StatusCode(StatusCode code, Object[] args) {
         this.code = code.code;
         this.message = code.message;
         this.httpStatus = code.httpStatus;
