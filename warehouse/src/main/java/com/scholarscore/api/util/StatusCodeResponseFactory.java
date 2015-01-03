@@ -13,7 +13,7 @@ public class StatusCodeResponseFactory {
     public StatusCode localizeError(StatusCode code) {
         Locale locale = LocaleContextHolder.getLocale();
         String localizedMessage = UTF8Control.getLocalizedString(code.getMessage(), locale, code.getArguments());
-        StatusCode returnCode = new StatusCode(code.getCode(), localizedMessage, code.getHttpStatus());
-        return returnCode;
+        code.setMessage(localizedMessage);
+        return code;
     }
 }

@@ -24,41 +24,36 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties( {"httpStatus"} )
 public class StatusCode {
-	private long code;
+	private int code;
 	private String message;
 	private Object[] arguments;
-	@XmlTransient
-	HttpStatus httpStatus;
 	
 	public StatusCode() {
 		
 	}
 	
-	public StatusCode(long code, String message, HttpStatus status) {
-		this.code = code;
-		this.message = message;
-		this.httpStatus = status;
+	public StatusCode(int code, String msg) {
+	    this.code = code;
+	    this.message = msg;
 	}
 	
 	public StatusCode(StatusCode code) {
 	    this.code = code.code;
 	    this.message = code.message;
-	    this.httpStatus = code.httpStatus;
 	    this.arguments = code.arguments;
 	}
 	
    public StatusCode(StatusCode code, Object[] args) {
         this.code = code.code;
         this.message = code.message;
-        this.httpStatus = code.httpStatus;
         this.arguments = args;
     }
 
-	public long getCode() {
+	public int getCode() {
 		return code;
 	}
 
-	public void setCode(long code) {
+	public void setCode(int code) {
 		this.code = code;
 	}
 
@@ -68,14 +63,6 @@ public class StatusCode {
 
 	public void setMessage(String message) {
 		this.message = message;
-	}
-
-	public HttpStatus getHttpStatus() {
-		return httpStatus;
-	}
-
-	public void setHttpStatus(HttpStatus httpStatus) {
-		this.httpStatus = httpStatus;
 	}
 
     public Object[] getArguments() {
