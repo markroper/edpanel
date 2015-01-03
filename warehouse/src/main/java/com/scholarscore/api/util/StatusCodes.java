@@ -1,7 +1,5 @@
 package com.scholarscore.api.util;
 
-import org.springframework.http.HttpStatus;
-
 public class StatusCodes {
     public static final int OK_ERROR_CODE = 0;
     public static final int UNKNOWN_INTERNAL_ERROR_CODE = 500;
