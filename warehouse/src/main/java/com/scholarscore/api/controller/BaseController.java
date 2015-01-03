@@ -1,10 +1,12 @@
 package com.scholarscore.api.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
 import com.scholarscore.api.persistence.PersistenceManager;
+import com.scholarscore.api.persistence.mysql.jdbc.SchoolJdbc;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeResponseFactory;
 import com.scholarscore.api.util.ServiceResponse;
@@ -22,9 +24,16 @@ import com.scholarscore.models.EntityId;
 @Validated
 public abstract class BaseController {
     public static final String JSON_ACCEPT_HEADER = "application/json";
-    
+
     protected final PersistenceManager PM = new PersistenceManager();
     
+    @Autowired
+    protected SchoolJdbc schoolPersistence;
+
+    public void setSchoolPersistence(SchoolJdbc schoolJdbc) {
+        this.schoolPersistence = schoolJdbc;
+    }
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected ResponseEntity respond(Object obj) {
         if(obj instanceof StatusCode) {
