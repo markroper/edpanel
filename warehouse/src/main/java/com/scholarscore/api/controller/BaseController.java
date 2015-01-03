@@ -20,7 +20,6 @@ import com.scholarscore.models.EntityId;
  */
 @Validated
 public abstract class BaseController {
-    //TODO: @mroper we need to add a real persistence layer that we call instead of manipulating this map
     public static final String JSON_ACCEPT_HEADER = "application/json";
     
     protected final PersistenceManager PM = new PersistenceManager();

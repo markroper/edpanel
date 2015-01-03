@@ -27,6 +27,7 @@ import com.scholarscore.models.Term;
 public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
         TermManager, SectionManager, SectionAssignmentManager, StudentAssignmentManager,
         StudentSectionGradeManager, CourseManager, AssignmentManager {
+    //TODO: @mroper we need to add a real persistence layer that we call instead of manipulating this map
     private static final String SCHOOL = "school";
     private static final String ASSIGNMENT = "assignment";
     private static final String COURSE = "course";
@@ -701,7 +702,6 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.OK)) {
             return new ServiceResponse<>(code, code.getArguments());
         }
-        // TODO Auto-generated method stub
         Collection<StudentSectionGrade> returnGrades = null;
         if(studentSectionGrades.containsKey(studentId) && studentSectionGrades.get(studentId).containsKey(sectionId)) {
             returnGrades = PersistenceManager.studentSectionGrades.get(studentId).get(sectionId).values();
