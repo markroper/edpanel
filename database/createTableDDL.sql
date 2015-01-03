@@ -1,3 +1,4 @@
+
 CREATE TABLE `scholar_warehouse`.`student` (
   `student_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
@@ -67,7 +68,7 @@ CREATE TABLE `scholar_warehouse`.`section` (
     ON UPDATE CASCADE,
   CONSTRAINT `fk_term&section`
     FOREIGN KEY (`term_fk`)
-    REFERENCES `scholar_warehouse`.`term`(`term_id`)
+    REFERENCES `scholar_warehouse`.`school_term`(`school_term_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
