@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class ServiceResponse<T> implements Serializable {
     protected StatusCode code;
     protected T value;
-    protected Object[] errorParams;
     
     public ServiceResponse(T val) {
         value = val;
@@ -29,11 +28,6 @@ public class ServiceResponse<T> implements Serializable {
     
     public ServiceResponse(StatusCode code) {
         this.code = code;
-    }
-    
-    public ServiceResponse(StatusCode code, Object[] params) {
-        this(code);
-        errorParams = params;
     }
 
     public StatusCode getCode() {
@@ -51,14 +45,6 @@ public class ServiceResponse<T> implements Serializable {
     public void setValue(T value) {
         this.value = value;
     }
-    
-    public Object[] getErrorParams() {
-        return errorParams;
-    }
-
-    public void setErrorParams(Object[] errorParams) {
-        this.errorParams = errorParams;
-    }
 
     @Override
     public boolean equals(Object obj) {
@@ -70,12 +56,11 @@ public class ServiceResponse<T> implements Serializable {
         }
         final ServiceResponse<?> other = (ServiceResponse<?>) obj;
         return Objects.equals(this.value, other.value) && 
-                Objects.equals(this.code, other.code) &&
-                Objects.equals(this.errorParams, other.errorParams);
+                Objects.equals(this.code, other.code);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(value, code, errorParams);
+        return 31 * super.hashCode() + Objects.hash(value, code);
     }
 }

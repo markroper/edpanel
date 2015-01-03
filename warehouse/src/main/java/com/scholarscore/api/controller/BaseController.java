@@ -8,6 +8,7 @@ import com.scholarscore.api.persistence.PersistenceManager;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeResponseFactory;
 import com.scholarscore.api.util.ServiceResponse;
+import com.scholarscore.api.util.StatusCodeToHttpCode;
 import com.scholarscore.models.EntityId;
 
 /**
@@ -29,14 +30,13 @@ public abstract class BaseController {
         if(obj instanceof StatusCode) {
             //If the object passed in is an error code, localize the error message to build the response
             StatusCode err = (StatusCode) obj;
-            StatusCodeResponseFactory factory = new StatusCodeResponseFactory();
-            return new ResponseEntity(factory.localizeError(err), err.getHttpStatus());
+            return respond(err);
         } else if(obj instanceof ServiceResponse){
             //If the object is a ServiceResponse, resolve whether to return the ErrorCode or the value instance member
             ServiceResponse sr = (ServiceResponse) obj;
             if(null != sr.getValue()) {
                 if(sr.getValue() instanceof Long) {
-                    //For a long, return it as an EntityId so that serializaiton is of the form { id: <longval> }
+                    //For a long, return it as an EntityId so that serialization is of the form { id: <longval> }
                     return new ResponseEntity(new EntityId((Long)sr.getValue()), HttpStatus.OK);
                 } else {
                     //For all other cases, just return the value
@@ -44,7 +44,7 @@ public abstract class BaseController {
                 }
             } else if(null != sr.getCode()){
                 //Handle the error code on the service response
-                return respond(sr.getCode(), sr.getErrorParams());
+                return respond(sr.getCode());
             } else {
                 //If both value and error code are null on the service response, we're dealing with a successful body-less response
                 return new ResponseEntity((Object) null, HttpStatus.OK);
@@ -54,10 +54,13 @@ public abstract class BaseController {
         return new ResponseEntity(obj, HttpStatus.OK);
     }
     
-    protected ResponseEntity<StatusCode> respond(StatusCode code, Object[] args) {
+    protected ResponseEntity<StatusCode> respond(StatusCode code) {
+        Object[] args = code.getArguments();
         StatusCodeResponseFactory factory = new StatusCodeResponseFactory();
         StatusCode returnError = new StatusCode(code);
         returnError.setArguments(args);
-        return new ResponseEntity<StatusCode>(factory.localizeError(returnError), returnError.getHttpStatus());
+        return new ResponseEntity<StatusCode>(
+                factory.localizeError(returnError), 
+                StatusCodeToHttpCode.resolveHttpStatus(returnError.getCode()));
     }
 }

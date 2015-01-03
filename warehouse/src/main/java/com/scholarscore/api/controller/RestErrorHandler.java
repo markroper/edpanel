@@ -18,7 +18,7 @@ import com.scholarscore.models.serializers.ObjectParsingException;
 
 /**
  * This class catches and handles exceptions thrown within or before entering
- * other controller endpoints methods.
+ * other controller end point methods.
  * 
  * @author markroper
  *
@@ -36,7 +36,7 @@ public class RestErrorHandler extends BaseController {
     @ResponseBody
     public ResponseEntity<StatusCode> processValidationError(MethodArgumentNotValidException ex) {
         BindingResult result = ex.getBindingResult();
-        StatusCode error = new StatusCode(StatusCodes.UNPARSABLE_REQUEST_CODE, result.getFieldError().getDefaultMessage(), HttpStatus.BAD_REQUEST);
+        StatusCode error = new StatusCode(StatusCodes.UNPARSABLE_REQUEST_CODE, result.getFieldError().getDefaultMessage());
         return new ResponseEntity<StatusCode>(error, HttpStatus.BAD_REQUEST);
     }
     
@@ -44,7 +44,7 @@ public class RestErrorHandler extends BaseController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ResponseEntity<StatusCode> processJsonMappingException(JsonMappingException ex) {
-        StatusCode error = new StatusCode(StatusCodes.JSON_PARSING_ERROR_CODE, ex.getMessage(), HttpStatus.BAD_REQUEST);
+        StatusCode error = new StatusCode(StatusCodes.JSON_PARSING_ERROR_CODE, ex.getMessage());
         return new ResponseEntity<StatusCode>(error, HttpStatus.BAD_REQUEST);
     }
     
@@ -52,15 +52,15 @@ public class RestErrorHandler extends BaseController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ResponseEntity<StatusCode> processAppJsonMappingException(ObjectParsingException ex) {
-        StatusCode returnCode = new StatusCode(StatusCodes.UNSUPPORTED_ASSIGNMENT_TYPE);
+        StatusCode returnCode = new StatusCode(StatusCodes.UNSUPPORTED_ASSIGNMENT_TYPE, ex.getArgs());
         returnCode.setMessage(ex.getMessage());
-        return respond(returnCode, ex.getArgs());
+        return respond(returnCode);
     }
     
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ResponseEntity<StatusCode> processGeneralException(Exception ex) {
-        return respond(StatusCodes.UNKNOWN_INTERNAL_SERVER_ERROR, new Object[]{});
+        return respond(StatusCodes.UNKNOWN_INTERNAL_SERVER_ERROR);
     }
 }
