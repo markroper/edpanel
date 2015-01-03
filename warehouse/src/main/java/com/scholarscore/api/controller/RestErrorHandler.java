@@ -52,15 +52,15 @@ public class RestErrorHandler extends BaseController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ResponseEntity<StatusCode> processAppJsonMappingException(ObjectParsingException ex) {
-        StatusCode returnCode = new StatusCode(StatusCodes.UNSUPPORTED_ASSIGNMENT_TYPE);
+        StatusCode returnCode = new StatusCode(StatusCodes.UNSUPPORTED_ASSIGNMENT_TYPE, ex.getArgs());
         returnCode.setMessage(ex.getMessage());
-        return respond(returnCode, ex.getArgs());
+        return respond(returnCode);
     }
     
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ResponseEntity<StatusCode> processGeneralException(Exception ex) {
-        return respond(StatusCodes.UNKNOWN_INTERNAL_SERVER_ERROR, new Object[]{});
+        return respond(StatusCodes.UNKNOWN_INTERNAL_SERVER_ERROR);
     }
 }

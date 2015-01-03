@@ -31,7 +31,7 @@ public abstract class BaseController {
         if(obj instanceof StatusCode) {
             //If the object passed in is an error code, localize the error message to build the response
             StatusCode err = (StatusCode) obj;
-            return respond(err, err.getArguments());
+            return respond(err);
         } else if(obj instanceof ServiceResponse){
             //If the object is a ServiceResponse, resolve whether to return the ErrorCode or the value instance member
             ServiceResponse sr = (ServiceResponse) obj;
@@ -45,7 +45,7 @@ public abstract class BaseController {
                 }
             } else if(null != sr.getCode()){
                 //Handle the error code on the service response
-                return respond(sr.getCode(), sr.getCode().getArguments());
+                return respond(sr.getCode());
             } else {
                 //If both value and error code are null on the service response, we're dealing with a successful body-less response
                 return new ResponseEntity((Object) null, HttpStatus.OK);
@@ -55,7 +55,8 @@ public abstract class BaseController {
         return new ResponseEntity(obj, HttpStatus.OK);
     }
     
-    protected ResponseEntity<StatusCode> respond(StatusCode code, Object[] args) {
+    protected ResponseEntity<StatusCode> respond(StatusCode code) {
+        Object[] args = code.getArguments();
         StatusCodeResponseFactory factory = new StatusCodeResponseFactory();
         StatusCode returnError = new StatusCode(code);
         returnError.setArguments(args);
