@@ -17,6 +17,7 @@ import com.scholarscore.api.persistence.mysql.DBConsts;
 import com.scholarscore.api.persistence.mysql.mapper.SchoolMapper;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
+import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.School;
 
@@ -61,15 +62,15 @@ public class SchoolJdbc implements SchoolManager {
                 params, 
                 new SchoolMapper());
         if(null == school || school.isEmpty()) {
-            return new StatusCode(StatusCodes.MODEL_NOT_FOUND, new Object[] { "school", schoolId }); 
+            return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { "school", schoolId }); 
         }
-        return StatusCodes.OK;
+        return StatusCodes.getStatusCode(StatusCodeType.OK);
     }
 
     @Override
     public ServiceResponse<School> getSchool(long schoolId) {
         StatusCode code = schoolExists(schoolId);
-        if(!code.equals(StatusCodes.OK)) {
+        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<School>(code);
         }
         Map<String, Object> params = new HashMap<>();     
@@ -93,7 +94,7 @@ public class SchoolJdbc implements SchoolManager {
     @Override
     public ServiceResponse<Long> replaceSchool(long schoolId, School school) {
         StatusCode code = schoolExists(schoolId);
-        if(!code.equals(StatusCodes.OK)) {
+        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
         Map<String, Object> params = new HashMap<>();     
@@ -122,7 +123,7 @@ public class SchoolJdbc implements SchoolManager {
     @Override
     public ServiceResponse<Long> deleteSchool(long schoolId) {
         StatusCode code = schoolExists(schoolId);
-        if(!code.equals(StatusCodes.OK)) {
+        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
         Map<String, Object> params = new HashMap<>();
