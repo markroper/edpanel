@@ -45,7 +45,7 @@ public class SchoolValidatingExecutor {
                 serviceBase.getSchoolEndpoint(schoolId),
                 null);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
-                "Unexpected status code returned while retreiving school: " + msg);
+                "Unexpected status code returned while retrieving school: " + msg);
     }
     
     
