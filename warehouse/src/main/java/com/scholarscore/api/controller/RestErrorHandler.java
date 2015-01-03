@@ -1,5 +1,6 @@
 package com.scholarscore.api.controller;
 
+import com.scholarscore.api.util.StatusCodeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -52,7 +53,7 @@ public class RestErrorHandler extends BaseController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ResponseEntity<StatusCode> processAppJsonMappingException(ObjectParsingException ex) {
-        StatusCode returnCode = new StatusCode(StatusCodes.UNSUPPORTED_ASSIGNMENT_TYPE, ex.getArgs());
+        StatusCode returnCode = StatusCodes.getStatusCode(StatusCodeType.UNSUPPORTED_ASSIGNMENT_TYPE, ex.getArgs());
         returnCode.setMessage(ex.getMessage());
         return respond(returnCode);
     }
@@ -61,6 +62,6 @@ public class RestErrorHandler extends BaseController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ResponseEntity<StatusCode> processGeneralException(Exception ex) {
-        return respond(StatusCodes.UNKNOWN_INTERNAL_SERVER_ERROR);
+        return respond(StatusCodes.getStatusCode(StatusCodeType.UNKNOWN_INTERNAL_SERVER_ERROR));
     }
 }
