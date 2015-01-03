@@ -27,52 +27,51 @@ import com.scholarscore.models.Term;
 public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
         TermManager, SectionManager, SectionAssignmentManager, StudentAssignmentManager,
         StudentSectionGradeManager, CourseManager, AssignmentManager {
-    public static final String SCHOOL = "school";
-    public static final String ASSIGNMENT = "assignment";
-    public static final String COURSE = "course";
-    public static final String SCHOOL_YEAR = "school year";
-    public static final String TERM = "term";
-    public static final String SECTION = "section";
-    public static final String SECTION_ASSIGNMENT = "section assignment";
-    public static final String STUDENT_ASSIGNMENT = "student assignment";
-    public static final String STUDENT = "student";
-    public static final String STUDENT_SECTION_GRADE = "student section grade";
+    private static final String SCHOOL = "school";
+    private static final String ASSIGNMENT = "assignment";
+    private static final String COURSE = "course";
+    private static final String SCHOOL_YEAR = "school year";
+    private static final String TERM = "term";
+    private static final String SECTION = "section";
+    private static final String SECTION_ASSIGNMENT = "section assignment";
+    private static final String STUDENT_ASSIGNMENT = "student assignment";
+    private static final String STUDENT = "student";
+    private static final String STUDENT_SECTION_GRADE = "student section grade";
 
-    // Todo refactor_persistence: everything from here to 75 should be private.
     //Student structure: Map<studentId, Student>
-    public final static AtomicLong studentCounter = new AtomicLong();
-    public static Map<Long, Student> students = Collections.synchronizedMap(new HashMap<Long, Student>());
+    private final static AtomicLong studentCounter = new AtomicLong();
+    private static Map<Long, Student> students = Collections.synchronizedMap(new HashMap<Long, Student>());
     //Student section grade structure: Map<studentId, Map<sectionId, StudentSectionGrade>>
-    public final static AtomicLong studentSectGradeCounter = new AtomicLong();
-    public static Map<Long, Map<Long, Map<Long, StudentSectionGrade>>> studentSectionGrades =
+    private final static AtomicLong studentSectGradeCounter = new AtomicLong();
+    private static Map<Long, Map<Long, Map<Long, StudentSectionGrade>>> studentSectionGrades =
             Collections.synchronizedMap(new HashMap<Long, Map<Long, Map<Long, StudentSectionGrade>>>());
 
     //School structure: Map<schoolId, School>
-    public final static AtomicLong schoolCounter = new AtomicLong();
-    public static Map<Long, School> schools = Collections.synchronizedMap(new HashMap<Long, School>());
+    private final static AtomicLong schoolCounter = new AtomicLong();
+    private static Map<Long, School> schools = Collections.synchronizedMap(new HashMap<Long, School>());
     //School year structure: Map<SchoolId, Map<SchoolYearId, SchoolYear>> note: schoolYears contain terms
-    public final static AtomicLong schoolYearCounter = new AtomicLong();
-    public final static AtomicLong termCounter = new AtomicLong();
-    public static Map<Long, Map<Long, SchoolYear>> schoolYears = Collections.synchronizedMap(new HashMap<Long, Map<Long, SchoolYear>>());
+    private final static AtomicLong schoolYearCounter = new AtomicLong();
+    private final static AtomicLong termCounter = new AtomicLong();
+    private static Map<Long, Map<Long, SchoolYear>> schoolYears = Collections.synchronizedMap(new HashMap<Long, Map<Long, SchoolYear>>());
     //Map<termId, Map<sectionId, Section>>
-    public final static AtomicLong sectionCounter = new AtomicLong();
-    public final static Map<Long, Map<Long, Section>> sections = Collections.synchronizedMap(new HashMap<Long, Map<Long, Section>>());
+    private final static AtomicLong sectionCounter = new AtomicLong();
+    private final static Map<Long, Map<Long, Section>> sections = Collections.synchronizedMap(new HashMap<Long, Map<Long, Section>>());
 
     //Map<SectionId, Map<sectionAssignmentId, SectionAssignment>>
-    public final static AtomicLong sectionAssignmentCounter = new AtomicLong();
+    private final static AtomicLong sectionAssignmentCounter = new AtomicLong();
     //Map<sectionAssignmentId, Map<studentAssignmentId, StudentAssignment>>
-    public final static AtomicLong studentAssignmentCounter = new AtomicLong();
-    public static Map<Long, Map<Long, StudentAssignment>> studentAssignments = 
+    private final static AtomicLong studentAssignmentCounter = new AtomicLong();
+    private static Map<Long, Map<Long, StudentAssignment>> studentAssignments =
             Collections.synchronizedMap(new HashMap<Long, Map<Long, StudentAssignment>>());
     //Subject area structure Map<SchoolId, Map<subjectAreaId, SubjectArea>>
-    public final static AtomicLong subjectAreaCounter = new AtomicLong();
-    public final static Map<Long, Map<Long, SubjectArea>> subjectAreas = Collections.synchronizedMap(new HashMap<Long, Map<Long, SubjectArea>>());
+    private final static AtomicLong subjectAreaCounter = new AtomicLong();
+    private final static Map<Long, Map<Long, SubjectArea>> subjectAreas = Collections.synchronizedMap(new HashMap<Long, Map<Long, SubjectArea>>());
     //Course structure: Map<schoolId, Map<courseId, Course>>
-    public final static AtomicLong courseCounter = new AtomicLong();
-    public final static Map<Long, Map<Long, Course>> courses = Collections.synchronizedMap(new HashMap<Long, Map<Long, Course>>());
+    private final static AtomicLong courseCounter = new AtomicLong();
+    private final static Map<Long, Map<Long, Course>> courses = Collections.synchronizedMap(new HashMap<Long, Map<Long, Course>>());
     //Assignments structure: Map<courseId, Map<assignmentId, Assignment>>
-    public final static AtomicLong assignmentCounter = new AtomicLong();
-    public final static Map<Long, Map<Long, Assignment>> assignments = Collections.synchronizedMap(new HashMap<Long, Map<Long, Assignment>>());
+    private final static AtomicLong assignmentCounter = new AtomicLong();
+    private final static Map<Long, Map<Long, Assignment>> assignments = Collections.synchronizedMap(new HashMap<Long, Map<Long, Assignment>>());
     
     @Override
     public ServiceResponse<Long> createStudent(Student student) {
