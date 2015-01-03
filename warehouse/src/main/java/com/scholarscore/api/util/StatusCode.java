@@ -4,8 +4,6 @@ import java.util.Arrays;
 
 import javax.xml.bind.annotation.*;
 
-import org.springframework.http.HttpStatus;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
