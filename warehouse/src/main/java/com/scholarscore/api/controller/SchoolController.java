@@ -29,7 +29,7 @@ public class SchoolController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity getAll() {
+    public @ResponseBody ResponseEntity getAllSchools() {
         return respond(new ArrayList<>(PM.getAllSchools()));
     }
     
@@ -42,7 +42,7 @@ public class SchoolController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity get(
+    public @ResponseBody ResponseEntity getSchool(
             @ApiParam(name = "schoolId", required = true, value = "The school long ID")
             @PathVariable(value="schoolId") Long schoolId) {
         return respond(PM.getSchool(schoolId));
@@ -56,7 +56,7 @@ public class SchoolController extends BaseController {
             method = RequestMethod.POST, 
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity create(@RequestBody @Valid School school) {
+    public @ResponseBody ResponseEntity createSchool(@RequestBody @Valid School school) {
         return respond(PM.createSchool(school));
     }
 
@@ -69,7 +69,7 @@ public class SchoolController extends BaseController {
             method = RequestMethod.PUT, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity replace(
+    public @ResponseBody ResponseEntity replaceSchool(
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid School school) {
@@ -85,7 +85,7 @@ public class SchoolController extends BaseController {
             method = RequestMethod.PATCH, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity update(
+    public @ResponseBody ResponseEntity updateSchool(
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid School school) {
@@ -100,7 +100,7 @@ public class SchoolController extends BaseController {
             method = RequestMethod.DELETE, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity delete(
+    public @ResponseBody ResponseEntity deleteSchool(
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId) {
         return respond(PM.deleteSchool(schoolId));
