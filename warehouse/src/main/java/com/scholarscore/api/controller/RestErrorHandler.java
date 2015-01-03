@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.scholarscore.api.util.ErrorCode;
-import com.scholarscore.api.util.ErrorCodes;
+import com.scholarscore.api.util.StatusCode;
+import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.serializers.ObjectParsingException;
 
 /**
@@ -34,25 +34,25 @@ public class RestErrorHandler extends BaseController {
     @ExceptionHandler(MethodArgumentNotValidException.class) 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ResponseEntity<ErrorCode> processValidationError(MethodArgumentNotValidException ex) {
+    public ResponseEntity<StatusCode> processValidationError(MethodArgumentNotValidException ex) {
         BindingResult result = ex.getBindingResult();
-        ErrorCode error = new ErrorCode(ErrorCodes.UNPARSABLE_REQUEST_CODE, result.getFieldError().getDefaultMessage(), HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<ErrorCode>(error, HttpStatus.BAD_REQUEST);
+        StatusCode error = new StatusCode(StatusCodes.UNPARSABLE_REQUEST_CODE, result.getFieldError().getDefaultMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<StatusCode>(error, HttpStatus.BAD_REQUEST);
     }
     
     @ExceptionHandler(JsonMappingException.class) 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ResponseEntity<ErrorCode> processJsonMappingException(JsonMappingException ex) {
-        ErrorCode error = new ErrorCode(ErrorCodes.JSON_PARSING_ERROR_CODE, ex.getMessage(), HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<ErrorCode>(error, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<StatusCode> processJsonMappingException(JsonMappingException ex) {
+        StatusCode error = new StatusCode(StatusCodes.JSON_PARSING_ERROR_CODE, ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<StatusCode>(error, HttpStatus.BAD_REQUEST);
     }
     
     @ExceptionHandler(ObjectParsingException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ResponseEntity<ErrorCode> processAppJsonMappingException(ObjectParsingException ex) {
-        ErrorCode returnCode = new ErrorCode(ErrorCodes.UNSUPPORTED_ASSIGNMENT_TYPE);
+    public ResponseEntity<StatusCode> processAppJsonMappingException(ObjectParsingException ex) {
+        StatusCode returnCode = new StatusCode(StatusCodes.UNSUPPORTED_ASSIGNMENT_TYPE);
         returnCode.setMessage(ex.getMessage());
         return respond(returnCode, ex.getArgs());
     }
@@ -60,7 +60,7 @@ public class RestErrorHandler extends BaseController {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    public ResponseEntity<ErrorCode> processGeneralException(Exception ex) {
-        return respond(ErrorCodes.UNKNOWN_INTERNAL_SERVER_ERROR, new Object[]{});
+    public ResponseEntity<StatusCode> processGeneralException(Exception ex) {
+        return respond(StatusCodes.UNKNOWN_INTERNAL_SERVER_ERROR, new Object[]{});
     }
 }

@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
 import com.scholarscore.api.persistence.PersistenceManager;
-import com.scholarscore.api.util.ErrorCode;
-import com.scholarscore.api.util.ErrorResponseFactory;
+import com.scholarscore.api.util.StatusCode;
+import com.scholarscore.api.util.StatusCodeResponseFactory;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.EntityId;
 
@@ -27,10 +27,10 @@ public abstract class BaseController {
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected ResponseEntity respond(Object obj) {
-        if(obj instanceof ErrorCode) {
+        if(obj instanceof StatusCode) {
             //If the object passed in is an error code, localize the error message to build the response
-            ErrorCode err = (ErrorCode) obj;
-            ErrorResponseFactory factory = new ErrorResponseFactory();
+            StatusCode err = (StatusCode) obj;
+            StatusCodeResponseFactory factory = new StatusCodeResponseFactory();
             return new ResponseEntity(factory.localizeError(err), err.getHttpStatus());
         } else if(obj instanceof ServiceResponse){
             //If the object is a ServiceResponse, resolve whether to return the ErrorCode or the value instance member
@@ -43,9 +43,9 @@ public abstract class BaseController {
                     //For all other cases, just return the value
                     return new ResponseEntity(sr.getValue(), HttpStatus.OK);
                 }
-            } else if(null != sr.getError()){
+            } else if(null != sr.getCode()){
                 //Handle the error code on the service response
-                return respond(sr.getError(), sr.getErrorParams());
+                return respond(sr.getCode(), sr.getErrorParams());
             } else {
                 //If both value and error code are null on the service response, we're dealing with a successful body-less response
                 return new ResponseEntity((Object) null, HttpStatus.OK);
@@ -55,10 +55,10 @@ public abstract class BaseController {
         return new ResponseEntity(obj, HttpStatus.OK);
     }
     
-    protected ResponseEntity<ErrorCode> respond(ErrorCode code, Object[] args) {
-        ErrorResponseFactory factory = new ErrorResponseFactory();
-        ErrorCode returnError = new ErrorCode(code);
+    protected ResponseEntity<StatusCode> respond(StatusCode code, Object[] args) {
+        StatusCodeResponseFactory factory = new StatusCodeResponseFactory();
+        StatusCode returnError = new StatusCode(code);
         returnError.setArguments(args);
-        return new ResponseEntity<ErrorCode>(factory.localizeError(returnError), returnError.getHttpStatus());
+        return new ResponseEntity<StatusCode>(factory.localizeError(returnError), returnError.getHttpStatus());
     }
 }

@@ -2,7 +2,7 @@ package com.scholarscore.api.persistence;
 
 import java.util.Collection;
 
-import com.scholarscore.api.util.ErrorCode;
+import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.Term;
 
@@ -24,7 +24,7 @@ public interface TermManager {
      * @param termId the ID of the term
      * @return
      */
-    public ErrorCode termExists(long schoolId, long yearId, long termId);
+    public StatusCode termExists(long schoolId, long yearId, long termId);
     
     /**
      * Returns the term with the ID provided, or in degenerate cases, a descriptive error 

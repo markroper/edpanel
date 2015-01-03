@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ServiceResponse<T> implements Serializable {
-    protected ErrorCode error;
+    protected StatusCode code;
     protected T value;
     protected Object[] errorParams;
     
@@ -27,21 +27,21 @@ public class ServiceResponse<T> implements Serializable {
         value = val;
     }
     
-    public ServiceResponse(ErrorCode code) {
-        error = code;
+    public ServiceResponse(StatusCode code) {
+        this.code = code;
     }
     
-    public ServiceResponse(ErrorCode code, Object[] params) {
+    public ServiceResponse(StatusCode code, Object[] params) {
         this(code);
         errorParams = params;
     }
 
-    public ErrorCode getError() {
-        return error;
+    public StatusCode getCode() {
+        return code;
     }
 
-    public void setError(ErrorCode error) {
-        this.error = error;
+    public void setCode(StatusCode code) {
+        this.code = code;
     }
 
     public T getValue() {
@@ -70,12 +70,12 @@ public class ServiceResponse<T> implements Serializable {
         }
         final ServiceResponse<?> other = (ServiceResponse<?>) obj;
         return Objects.equals(this.value, other.value) && 
-                Objects.equals(this.error, other.error) &&
+                Objects.equals(this.code, other.code) &&
                 Objects.equals(this.errorParams, other.errorParams);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(value, error, errorParams);
+        return 31 * super.hashCode() + Objects.hash(value, code, errorParams);
     }
 }

@@ -9,11 +9,11 @@ import org.springframework.context.i18n.LocaleContextHolder;
  * @author markroper
  *
  */
-public class ErrorResponseFactory {
-    public ErrorCode localizeError(ErrorCode code) {
+public class StatusCodeResponseFactory {
+    public StatusCode localizeError(StatusCode code) {
         Locale locale = LocaleContextHolder.getLocale();
         String localizedMessage = UTF8Control.getLocalizedString(code.getMessage(), locale, code.getArguments());
-        ErrorCode returnCode = new ErrorCode(code.getCode(), localizedMessage, code.getHttpStatus());
+        StatusCode returnCode = new StatusCode(code.getCode(), localizedMessage, code.getHttpStatus());
         return returnCode;
     }
 }

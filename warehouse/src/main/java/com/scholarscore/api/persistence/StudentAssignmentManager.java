@@ -2,7 +2,7 @@ package com.scholarscore.api.persistence;
 
 import java.util.Collection;
 
-import com.scholarscore.api.util.ErrorCode;
+import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.StudentAssignment;
 
@@ -30,7 +30,7 @@ public interface StudentAssignmentManager {
      * @param studentAssignmentId the ID of the student assignment
      * @return
      */
-    public ErrorCode studentAssignmentExists(long schoolId, long yearId, long termId, 
+    public StatusCode studentAssignmentExists(long schoolId, long yearId, long termId, 
             long sectionId, long sectionAssignmentId, long studentAssignmentId);
     
     /**
