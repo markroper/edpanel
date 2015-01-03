@@ -2,13 +2,13 @@ CREATE TABLE `scholar_warehouse`.`student` (
   `student_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   PRIMARY KEY (`student_id`))
-ENGINE = MyISAM;
+ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`school` (
   `school_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key column for the school table.',
   `name` VARCHAR(256) NULL COMMENT 'A human readable user-defined name',
   PRIMARY KEY (`school_id`))
-ENGINE = MyISAM;
+ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`school_year` (
   `school_year_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
@@ -22,7 +22,7 @@ CREATE TABLE `scholar_warehouse`.`school_year` (
     REFERENCES `scholar_warehouse`.`school`(`school_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-ENGINE = MyISAM;
+ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`school_term` (
   `school_term_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
@@ -36,7 +36,7 @@ CREATE TABLE `scholar_warehouse`.`school_term` (
     REFERENCES `scholar_warehouse`.`school_year`(`school_year_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-ENGINE = MyISAM;
+ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`course` (
   `course_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
@@ -48,7 +48,7 @@ CREATE TABLE `scholar_warehouse`.`course` (
     REFERENCES `scholar_warehouse`.`school`(`school_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-ENGINE = MyISAM;
+ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`section` (
   `section_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
@@ -70,7 +70,7 @@ CREATE TABLE `scholar_warehouse`.`section` (
     REFERENCES `scholar_warehouse`.`term`(`term_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-ENGINE = MyISAM;
+ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`assignment` (
   `assignment_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
@@ -86,7 +86,7 @@ CREATE TABLE `scholar_warehouse`.`assignment` (
     REFERENCES `scholar_warehouse`.`section`(`section_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-ENGINE = MyISAM;
+ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`student_assignment` (
   `student_assignment_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
@@ -107,7 +107,7 @@ CREATE TABLE `scholar_warehouse`.`student_assignment` (
     REFERENCES `scholar_warehouse`.`student`(`student_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-ENGINE = MyISAM;
+ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`student_section_grade` (
   `student_section_grade_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
@@ -126,4 +126,4 @@ CREATE TABLE `scholar_warehouse`.`student_section_grade` (
     REFERENCES `scholar_warehouse`.`student`(`student_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-ENGINE = MyISAM;
+ENGINE = InnoDB;
