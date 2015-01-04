@@ -51,17 +51,9 @@ gretty {
     // 'jetty7', 'jetty8', 'jetty9', 'tomcat7', 'tomcat8'
 //    servletContainer = 'tomcat7'
 
-    integrationTestTask = 'integrationLocal'
+//    integrationTestTask = 'integrationLocal'
+      integrationTestTask = 'integrationLocalWithContainer'
 
-    afterEvaluate {
-
-//        tasks.appBeforeIntegrationTest.jacoco {
-//            append = false
-//            destinationFile = new File(project.buildDir, 'jacoco/integrationTests.exec')
-//        }
-
-//        tasks.appAfterIntegrationTest.finalizedBy tasks.integrationTestServerReport
-    }
 }
 
 //Integration test suite
@@ -84,7 +76,6 @@ task integrationLocal(type: Test) {
         useDefaultListeners = true
         def suiteFile = getFileByPattern(new File("$projectDir/src/test/resources/"), ".*-integration.xml", "$projectDir")
         if (suiteFile) options.suites(suiteFile)
-//        println "project.name: ${project.name} Task: integrationLocal"
     }
     testLogging.showStandardStreams = true
     beforeTest { descriptor ->
@@ -92,6 +83,11 @@ task integrationLocal(type: Test) {
     }
 }
 
+task integrationLocalWithContainer(type: Test, dependsOn: integrationLocal) {
+    println("inside integrationLocalWithContainer")
+}
+
+/*
 task('integrationTestServerReport', type: JacocoReport) {
     executionData { tasks.appBeforeIntegrationTest.jacoco.destinationFile }
 
@@ -110,6 +106,7 @@ task('integrationTestServerReport', type: JacocoReport) {
         println "Jacoco XML report for integration tests created: file://${xmlReportFile.toURI().path}"
     }
 }
+*/
 
 //Dependencies section:
 ext {

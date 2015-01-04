@@ -30,7 +30,6 @@ subprojects {
             useDefaultListeners = true
             def suiteFile = "src/test/resources/${project.name}-unit.xml"
             options.suites(suiteFile)
-//            println "project.name: ${project.name} Test: useTestNg"
         }
 
         beforeTest { descriptor ->
@@ -39,7 +38,7 @@ subprojects {
     }
 }
 
-task codeCoverageReport(type: JacocoReport) {
+task integrationCodeCoverageReport(type: JacocoReport) {
 
     // Gather execution data from all subprojects
     // (change this if you e.g. want to calculate unit test/integration test coverage separately)
@@ -58,11 +57,10 @@ task codeCoverageReport(type: JacocoReport) {
     }
 }
 
-// always run the tests before generating the report
-codeCoverageReport.dependsOn {
-//    subprojects*.test
-//    subprojects.test
-      project(':warehouse').integrationLocal
+// always run the integration tests before generating the report
+integrationCodeCoverageReport.dependsOn {
+//      project(':warehouse').integrationLocal
+      project(':warehouse').integrationLocalWithContainer
 }
 
-configure([project(':common'), project(':warehouse')]) {}
+//configure([project(':common'), project(':warehouse')]) {}
