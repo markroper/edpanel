@@ -65,11 +65,16 @@
       class="com.scholarscore.api.persistence.mysql.jdbc.TermJdbc">
       <property name="dataSource"  ref="dataSource" />    
    </bean>
+   <bean id="studentPersistence" 
+      class="com.scholarscore.api.persistence.mysql.jdbc.StudentJdbc">
+      <property name="dataSource"  ref="dataSource" />    
+   </bean>
    
    <bean id="PM"
         class="com.scholarscore.api.persistence.PersistenceManager">
         <property name="schoolPersistence"  ref="schoolPersistence" /> 
         <property name="schoolYearPersistence"  ref="schoolYearPersistence" /> 
         <property name="termPersistence"  ref="termPersistence" /> 
+        <property name="studentPersistence"  ref="studentPersistence" />
    </bean>
 </beans>
