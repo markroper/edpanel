@@ -24,10 +24,6 @@ run the integration tests against the container, and then stop the container wit
 ./gradle clean build assemble integrationLocalWithContainer
 </code>
 
-<code>
-./gradle clean build assemble integrationLocalWithContainer
-</code>
-
 To execute the integration tests (WITHOUT starting a container) against the running local instance execute:
 
 <code>
