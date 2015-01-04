@@ -89,7 +89,7 @@ public class TermJdbc implements TermPersistence {
         params.put(DbConst.START_DATE_COL, DbConst.resolveTimestamp(term.getStartDate()));
         params.put(DbConst.END_DATE_COL, DbConst.resolveTimestamp(term.getEndDate()));
         jdbcTemplate.update(
-                UPDATE_TERM_SQL, 
+                INSERT_TERM_SQL, 
                 new MapSqlParameterSource(params), 
                 keyHolder);
         return keyHolder.getKey().longValue();
@@ -105,7 +105,7 @@ public class TermJdbc implements TermPersistence {
         params.put(DbConst.END_DATE_COL, DbConst.resolveTimestamp(term.getEndDate()));
         params.put(DbConst.TERM_ID_COL, new Long(termId));
         jdbcTemplate.update(
-                INSERT_TERM_SQL, 
+                UPDATE_TERM_SQL, 
                 new MapSqlParameterSource(params));
         return termId;
     }
