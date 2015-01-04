@@ -1,7 +1,5 @@
 apply plugin: 'war'
 apply plugin: 'com.bmuschko.cargo'
-apply plugin: 'eclipse'
-apply plugin: 'jacoco'
 apply plugin: 'org.akhikhl.gretty'
 
 buildscript {
@@ -57,12 +55,12 @@ gretty {
 
     afterEvaluate {
 
-        tasks.appBeforeIntegrationTest.jacoco {
-            append = false
-            destinationFile = new File(project.buildDir, 'jacoco/integrationTests.exec')
-        }
+//        tasks.appBeforeIntegrationTest.jacoco {
+//            append = false
+//            destinationFile = new File(project.buildDir, 'jacoco/integrationTests.exec')
+//        }
 
-        tasks.appAfterIntegrationTest.finalizedBy tasks.integrationTestServerReport
+//        tasks.appAfterIntegrationTest.finalizedBy tasks.integrationTestServerReport
     }
 }
 
@@ -86,7 +84,7 @@ task integrationLocal(type: Test) {
         useDefaultListeners = true
         def suiteFile = getFileByPattern(new File("$projectDir/src/test/resources/"), ".*-integration.xml", "$projectDir")
         if (suiteFile) options.suites(suiteFile)
-        println "project.name: ${project.name} Task: integrationLocal"
+//        println "project.name: ${project.name} Task: integrationLocal"
     }
     testLogging.showStandardStreams = true
     beforeTest { descriptor ->
