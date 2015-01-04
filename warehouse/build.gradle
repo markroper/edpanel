@@ -1,8 +1,7 @@
 apply plugin: 'war'
 apply plugin: 'com.bmuschko.cargo'
-apply plugin: 'eclipse'
+apply plugin: 'org.akhikhl.gretty'
 
-//Cargo tomcat deploy
 buildscript {
     repositories {
         jcenter()
@@ -10,6 +9,7 @@ buildscript {
 
     dependencies {
         classpath 'com.bmuschko:gradle-cargo-plugin:2.0.3'
+        classpath 'org.akhikhl.gretty:gretty:1.1.8'
     }
 
 }
@@ -21,8 +21,8 @@ def local_portnum = new URI(props.get("endpoint").toString()).port
 cargo {
     containerId = 'tomcat7x'
 
+    // Note: cargo local stuff will still work for now, but please prefer gretty ("gradle appRun") for local instances
     local {
-//        jvmArgs = '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999'
         installer {
             installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.zip'
             downloadDir = file("$buildDir/download")
@@ -43,30 +43,44 @@ cargo {
     }
 }
 
+// use gretty to start a container instrumented with jacoco for calculation of integration test coverage
+gretty {
+    port = local_portnum
+    // supported values:
+    // 'jetty7', 'jetty8', 'jetty9', 'tomcat7', 'tomcat8'
+//    servletContainer = 'tomcat7'
+
+      integrationTestTask = 'integrationLocalWithContainer'
+}
+
 //Integration test suite
 def getFileByPattern(File dir, String pat, String stripDir) {
     String path = ""
     if (dir.isDirectory()) {
-        dir?.eachFileRecurse { file -> if (file.path ==~ pat) { path = file.getAbsolutePath().toString() } }
+        dir?.eachFileRecurse { file ->
+            if (file.path ==~ pat) {
+                path = file.getAbsolutePath().toString()
+            }
+        }
         if (null != path && !path.isEmpty())
             path = path?.substring(stripDir.length(), path?.length())
     }
     path
 }
 
-task integrationLocal(type: Test) { task ->
+task integrationLocal(type: Test) {
     useTestNG() {
         useDefaultListeners = true
         def suiteFile = getFileByPattern(new File("$projectDir/src/test/resources/"), ".*-integration.xml", "$projectDir")
         if (suiteFile) options.suites(suiteFile)
-        println "project.name: ${project.name} Task: integrationLocal"
     }
     testLogging.showStandardStreams = true
-    //include '**/integration/**'
     beforeTest { descriptor ->
         logger.lifecycle("RUNNING INTEGRATION TEST LOCALLY: " + descriptor)
     }
 }
+
+task integrationLocalWithContainer(type: Test, dependsOn: integrationLocal) { }
 
 //Dependencies section:
 ext {
