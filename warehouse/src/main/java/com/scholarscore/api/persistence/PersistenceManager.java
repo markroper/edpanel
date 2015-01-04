@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.scholarscore.api.persistence.mysql.SchoolPersistence;
+import com.scholarscore.api.persistence.mysql.SchoolYearPersistence;
+import com.scholarscore.api.persistence.mysql.StudentPersistence;
+import com.scholarscore.api.persistence.mysql.TermPersistence;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
@@ -22,7 +26,6 @@ import com.scholarscore.models.SectionAssignment;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.StudentSectionGrade;
-import com.scholarscore.models.SubjectArea;
 import com.scholarscore.models.Term;
 
 public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
@@ -40,21 +43,11 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private static final String STUDENT = "student";
     private static final String STUDENT_SECTION_GRADE = "student section grade";
 
-    //Student structure: Map<studentId, Student>
-    private final static AtomicLong studentCounter = new AtomicLong();
-    private static Map<Long, Student> students = Collections.synchronizedMap(new HashMap<Long, Student>());
     //Student section grade structure: Map<studentId, Map<sectionId, StudentSectionGrade>>
     private final static AtomicLong studentSectGradeCounter = new AtomicLong();
     private static Map<Long, Map<Long, Map<Long, StudentSectionGrade>>> studentSectionGrades =
             Collections.synchronizedMap(new HashMap<Long, Map<Long, Map<Long, StudentSectionGrade>>>());
 
-    //School structure: Map<schoolId, School>
-    private final static AtomicLong schoolCounter = new AtomicLong();
-    private static Map<Long, School> schools = Collections.synchronizedMap(new HashMap<Long, School>());
-    //School year structure: Map<SchoolId, Map<SchoolYearId, SchoolYear>> note: schoolYears contain terms
-    private final static AtomicLong schoolYearCounter = new AtomicLong();
-    private final static AtomicLong termCounter = new AtomicLong();
-    private static Map<Long, Map<Long, SchoolYear>> schoolYears = Collections.synchronizedMap(new HashMap<Long, Map<Long, SchoolYear>>());
     //Map<termId, Map<sectionId, Section>>
     private final static AtomicLong sectionCounter = new AtomicLong();
     private final static Map<Long, Map<Long, Section>> sections = Collections.synchronizedMap(new HashMap<Long, Map<Long, Section>>());
@@ -65,9 +58,6 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private final static AtomicLong studentAssignmentCounter = new AtomicLong();
     private static Map<Long, Map<Long, StudentAssignment>> studentAssignments =
             Collections.synchronizedMap(new HashMap<Long, Map<Long, StudentAssignment>>());
-    //Subject area structure Map<SchoolId, Map<subjectAreaId, SubjectArea>>
-    private final static AtomicLong subjectAreaCounter = new AtomicLong();
-    private final static Map<Long, Map<Long, SubjectArea>> subjectAreas = Collections.synchronizedMap(new HashMap<Long, Map<Long, SubjectArea>>());
     //Course structure: Map<schoolId, Map<courseId, Course>>
     private final static AtomicLong courseCounter = new AtomicLong();
     private final static Map<Long, Map<Long, Course>> courses = Collections.synchronizedMap(new HashMap<Long, Map<Long, Course>>());
@@ -75,76 +65,48 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private final static AtomicLong assignmentCounter = new AtomicLong();
     private final static Map<Long, Map<Long, Assignment>> assignments = Collections.synchronizedMap(new HashMap<Long, Map<Long, Assignment>>());
     
-    @Override
-    public ServiceResponse<Long> createStudent(Student student) {
-        student.setId(studentCounter.incrementAndGet());
-        students.put(student.getId(), student);
-        return new ServiceResponse<Long>(student.getId());
-    }
+    private SchoolPersistence schoolPersistence;
+    private SchoolYearPersistence schoolYearPersistence;
+    private TermPersistence termPersistence;
+    private StudentPersistence studentPersistence;
 
-    @Override
-    public StatusCode studentExists(long studentId) {
-        if(!students.containsKey(studentId)){
-            return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentId });
-        }
-        return StatusCodes.getStatusCode(StatusCodeType.OK);
-    }
-
-    @Override
-    public ServiceResponse<Long> deleteStudent(long studentId) {
-        StatusCode code = studentExists(studentId);
-        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
-            return new ServiceResponse<Long>(code);
-        }
-        students.remove(studentId);
-        return new ServiceResponse<Long>((Long) null);
-    }
-
-    @Override
-    public ServiceResponse<Collection<Student>> getAllStudents() {
-        return new ServiceResponse<Collection<Student>>(students.values());
-    }
-
-    @Override
-    public ServiceResponse<Student> getStudent(long studentId) {
-        StatusCode code = studentExists(studentId);
-        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
-            return new ServiceResponse<Student>(code);
-        }
-        return new ServiceResponse<Student>(students.get(studentId));
-    }
-
-    @Override
-    public ServiceResponse<Long> replaceStudent(long studentId, Student student) {
-        StatusCode code = studentExists(studentId);
-        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
-            return new ServiceResponse<Long>(code);
-        }
-        student.setId(studentId);
-        students.put(student.getId(), student);
-        return new ServiceResponse<Long>(studentId);
+    public void setStudentPersistence(StudentPersistence studentPersistence) {
+        this.studentPersistence = studentPersistence;
     }
     
-    @Override
-    public ServiceResponse<Long> updateStudent(long studentId, Student student) {
-        StatusCode code = studentExists(studentId);
-        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
-            return new ServiceResponse<Long>(code);
-        }
-        student.setId(studentId);
-        student.mergePropertiesIfNull(students.get(studentId));
-        students.put(student.getId(), student);
-        return new ServiceResponse<Long>(studentId);
+    public void setSchoolPersistence(SchoolPersistence schoolPersistence) {
+        this.schoolPersistence = schoolPersistence;
     }
-    
+
+    public void setSchoolYearPersistence(SchoolYearPersistence schoolYearPersistence) {
+        this.schoolYearPersistence = schoolYearPersistence;
+    }
+
+    public void setTermPersistence(TermPersistence termPersistence) {
+        this.termPersistence = termPersistence;
+    }
+
+ 
+    //SCHOOLS
     @Override
     public Collection<School> getAllSchools() {
-        return schools.values();
+        Collection<School> schools = schoolPersistence.selectAllSchools();
+        if(null != schools) {
+            for(School s : schools) {
+                ServiceResponse<Collection<SchoolYear>> sr = 
+                        getAllSchoolYears(s.getId());
+                if(null != sr.getValue() && !sr.getValue().isEmpty()) {
+                    s.setYears(new ArrayList<SchoolYear>(sr.getValue()));
+                }    
+            }
+        }
+        return schools;
     }
 
     @Override
     public StatusCode schoolExists(long schoolId) {
-        if(!schools.containsKey(schoolId)) {
+        School school = schoolPersistence.selectSchool(schoolId);
+        if(null == school) {
             return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId});
         };
         return StatusCodes.getStatusCode(StatusCodeType.OK);
@@ -156,14 +118,23 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<School>(code);
         }
-        return new ServiceResponse<School>(schools.get(schoolId));
+        School school = schoolPersistence.selectSchool(schoolId);
+        ServiceResponse<Collection<SchoolYear>> years = getAllSchoolYears(schoolId);
+        if(null != years.getValue() && !years.getValue().isEmpty()) {
+            school.setYears(new ArrayList<SchoolYear>(years.getValue()));
+        }
+        return new ServiceResponse<School>(school);
     }
 
     @Override
     public ServiceResponse<Long> createSchool(School school) {
-        school.setId(schoolCounter.incrementAndGet());
-        schools.put(school.getId(), school);
-        return new ServiceResponse<Long>(school.getId());
+        Long schoolId = schoolPersistence.createSchool(school);
+        if(null != school.getYears()) {
+            for(SchoolYear year : school.getYears()) {
+                createSchoolYear(schoolId, year);
+            }
+        }
+        return new ServiceResponse<Long>(schoolId);
     }
 
     @Override
@@ -172,9 +143,32 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        school.setId(schoolId);
-        schools.put(school.getId(), school);
-        return new ServiceResponse<Long>(schoolId);
+        //Resolve the set of previously existing terms
+        Collection<SchoolYear> originalYears = schoolYearPersistence.selectAllSchoolYears(schoolId);
+        HashSet<Long> termIds = new HashSet<>();
+        if(null != originalYears) {
+            for(SchoolYear t : originalYears) {
+                termIds.add(t.getId());
+            }
+        }
+        if(null != school.getYears()) {
+            //Insert or update terms on the school year
+            for(SchoolYear t : school.getYears()) {
+                if(null == t.getId() || !termIds.contains(t.getId())) {
+                    createSchoolYear(schoolId, t);
+                } else  {
+                    termIds.remove(t.getId());
+                    replaceSchoolYear(schoolId, t.getId(), t);
+                }
+            }
+        }   
+        //Remove remaining terms
+        for(Long id : termIds) {
+            deleteSchoolYear(schoolId, id);
+        }
+        
+        return new ServiceResponse<Long>(
+                schoolPersistence.replaceSchool(schoolId, school));
     }
     
     @Override
@@ -183,8 +177,9 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(null == sr.getValue()) {
             return new ServiceResponse<Long>(sr.getCode());
         }
-        partialSchool.mergePropertiesIfNull(sr.getValue());
-        return replaceSchool(schoolId, partialSchool);
+        partialSchool.mergePropertiesIfNull(schoolPersistence.selectSchool(schoolId));
+        replaceSchool(schoolId, partialSchool);
+        return new ServiceResponse<Long>(schoolId);
     }
 
     @Override
@@ -193,17 +188,26 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        schools.remove(schoolId);
+        //Only need to delete the parent row, FK cascades deletes
+        schoolPersistence.deleteSchool(schoolId);
         return new ServiceResponse<Long>((Long) null);
     }
     
+    //SCHOOL YEARS
     @Override
     public ServiceResponse<Collection<SchoolYear>> getAllSchoolYears(long schoolId) {
         StatusCode code = schoolExists(schoolId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Collection<SchoolYear>>(code);
         }
-        return new ServiceResponse<Collection<SchoolYear>>(schoolYears.get(schoolId).values());
+        Collection<SchoolYear> schoolYears = schoolYearPersistence.selectAllSchoolYears(schoolId);
+        for(SchoolYear year : schoolYears) {
+            ServiceResponse<Collection<Term>> sr = getAllTerms(schoolId, year.getId());
+            if(null != sr.getValue() && !sr.getValue().isEmpty()) {
+                year.setTerms(new ArrayList<Term>(sr.getValue()));
+            }
+        }
+        return new ServiceResponse<Collection<SchoolYear>>(schoolYears);
     }
 
     @Override
@@ -212,8 +216,11 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return code;
         }
-        if(!schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, schoolYearId });
+        SchoolYear schoolYear =  schoolYearPersistence.selectSchoolYear(schoolId, schoolYearId);
+        if(null == schoolYear) {
+            return StatusCodes.getStatusCode(
+                    StatusCodeType.MODEL_NOT_FOUND, 
+                    new Object[] { SCHOOL_YEAR, schoolYearId });
         }
         return StatusCodes.getStatusCode(StatusCodeType.OK);
     }
@@ -224,7 +231,12 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<SchoolYear>(code);
         }
-        return new ServiceResponse<SchoolYear>(schoolYears.get(schoolId).get(schoolYearId));
+        SchoolYear year = schoolYearPersistence.selectSchoolYear(schoolId, schoolYearId);
+        ServiceResponse<Collection<Term>> terms = getAllTerms(schoolId, schoolYearId);
+        if(null != terms.getValue() && !terms.getValue().isEmpty()) {
+            year.setTerms(new ArrayList<Term>(terms.getValue()));
+        }
+        return new ServiceResponse<SchoolYear>(year);
     }
 
     @Override
@@ -233,12 +245,13 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        schoolYear.setId(schoolYearCounter.incrementAndGet());
-        if(!schoolYears.containsKey(schoolId)) {
-            schoolYears.put(schoolId, new HashMap<Long, SchoolYear>());
+        Long schoolYearId = schoolYearPersistence.insertSchoolYear(schoolId, schoolYear);
+        if(null != schoolYear.getTerms()) {
+            for(Term t: schoolYear.getTerms()) {
+                createTerm(schoolId, schoolYearId, t);
+            }
         }
-        schoolYears.get(schoolId).put(schoolYear.getId(), schoolYear);
-        return new ServiceResponse<Long>(schoolYear.getId());
+        return new ServiceResponse<Long>(schoolYearId);
     }
 
     @Override
@@ -247,23 +260,31 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        schoolYear.setId(schoolYearId);
-        //Set up new terms' ids
-        SchoolYear originalSchoolYear = schoolYears.get(schoolId).get(schoolYearId);
+        
+        //Resolve the set of previously existing terms
+        Collection<Term> originalTerms = termPersistence.selectAllTerms(schoolYearId);
         HashSet<Long> termIds = new HashSet<>();
-        if(null != originalSchoolYear.getTerms()) {
-            for(Term t : originalSchoolYear.getTerms()) {
+        if(null != originalTerms) {
+            for(Term t : originalTerms) {
                 termIds.add(t.getId());
             }
         }
-        if(null != schoolYear.getTerms() && !schoolYear.getTerms().isEmpty()) {
+        if(null != schoolYear.getTerms()) {
+            //Insert or update terms on the school year
             for(Term t : schoolYear.getTerms()) {
                 if(null == t.getId() || !termIds.contains(t.getId())) {
-                    t.setId(termCounter.incrementAndGet());
+                    createTerm(schoolId, schoolYearId, t);
+                } else  {
+                    termIds.remove(t.getId());
+                    replaceTerm(schoolId, schoolYearId, t.getId(), t);
                 }
             }
+        }   
+        //Remove remaining terms
+        for(Long id : termIds) {
+            deleteTerm(schoolId, schoolYearId, id);
         }
-        schoolYears.get(schoolId).put(schoolYearId, schoolYear);
+        schoolYearPersistence.updateSchoolYear(schoolId, schoolYearId, schoolYear);
         return new ServiceResponse<Long>(schoolYearId);
     }
     
@@ -274,7 +295,11 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             return new ServiceResponse<Long>(code);
         }
         schoolYear.setId(schoolYearId);
-        schoolYear.mergePropertiesIfNull(getSchoolYear(schoolId, schoolYearId).getValue());
+        SchoolYear originalYear = 
+                schoolYearPersistence.selectSchoolYear(schoolId, schoolYearId);
+        originalYear.setTerms(new ArrayList<Term>(
+                termPersistence.selectAllTerms(schoolYearId)));
+        schoolYear.mergePropertiesIfNull(originalYear);
         return replaceSchoolYear(schoolId, schoolYearId, schoolYear);
     }
 
@@ -284,18 +309,20 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        schoolYears.get(schoolId).remove(schoolYearId);
+        //Only need to delete the parent record, our deletes cascade
+        schoolYearPersistence.deleteSchoolYear(schoolYearId);
         return new ServiceResponse<Long>((Long) null);
     }
   
+    //TERMS
     @Override
     public ServiceResponse<Collection<Term>> getAllTerms(long schoolId, long yearId) {
         StatusCode code = schoolYearExists(schoolId, yearId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Collection<Term>>(code);
         }
-        return new ServiceResponse<Collection<Term>>(
-                new ArrayList<Term>(schoolYears.get(schoolId).get(yearId).getTerms()));
+        Collection<Term> terms = termPersistence.selectAllTerms(yearId);
+        return new ServiceResponse<Collection<Term>>(new ArrayList<Term>(terms));
     }
 
     @Override
@@ -304,13 +331,9 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return code;
         }
-        if(schoolYears.containsKey(schoolId) && 
-                schoolYears.get(schoolId).containsKey(yearId)) {
-            SchoolYear year = schoolYears.get(schoolId).get(yearId);
-            Term t = year.findTermById(termId);
-            if(null != t) {
-                return StatusCodes.getStatusCode(StatusCodeType.OK);
-            }
+        Term t = termPersistence.selectTerm(yearId, termId);
+        if(null != t) {
+            return StatusCodes.getStatusCode(StatusCodeType.OK);
         }
         return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { PersistenceManager.TERM, termId });
     }
@@ -321,9 +344,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Term>(code);
         }
-        SchoolYear year = PersistenceManager.schoolYears.get(schoolId).get(yearId);
-        Term t = year.findTermById(termId);
-        return new ServiceResponse<Term>(t);
+        return new ServiceResponse<Term>(termPersistence.selectTerm(yearId, termId));
     }
 
     @Override
@@ -332,13 +353,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        term.setId(termCounter.getAndIncrement());
-        SchoolYear originalYear = PersistenceManager.schoolYears.get(schoolId).get(yearId);
-        if(null == originalYear.getTerms()) {
-            originalYear.setTerms(new ArrayList<Term>());
-        }
-        originalYear.getTerms().add(term);
-        return new ServiceResponse<Long>(term.getId());
+        return new ServiceResponse<Long>(termPersistence.insertTerm(yearId, term));
     }
 
     @Override
@@ -347,23 +362,8 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        SchoolYear originalYear = PersistenceManager.schoolYears.get(schoolId).get(yearId);
-        term.setId(termId);
-        replaceTerm(originalYear.getTerms(), term);
+        termPersistence.updateTerm(yearId, termId, term);
         return new ServiceResponse<Long>(termId);
-    }
-
-    private void replaceTerm(List<Term> terms, Term term) {
-        int idx = -1;
-        for(int i = 0; i < terms.size(); i++) {
-            if(terms.get(i).getId().equals(term.getId())) {
-                idx = i;
-                break;
-            }
-        }
-        if(idx >= 0) {
-            terms.set(idx, term);
-        }
     }
     
     @Override
@@ -373,11 +373,8 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        SchoolYear originalYear = PersistenceManager.schoolYears.get(schoolId).get(yearId);
-        partialTerm.setId(termId);
-        partialTerm.mergePropertiesIfNull(originalYear.findTermById(termId));
-        replaceTerm(originalYear.getTerms(), partialTerm);
-        return new ServiceResponse<Long>(termId);
+        partialTerm.mergePropertiesIfNull(termPersistence.selectTerm(yearId, termId));
+        return replaceTerm(schoolId, yearId, termId, partialTerm);
     }
 
     @Override
@@ -387,12 +384,73 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        SchoolYear originalYear =  schoolYears.get(schoolId).get(yearId);
-        Term termToRemove = originalYear.findTermById(termId);
-        originalYear.getTerms().remove(termToRemove);
+        termPersistence.deleteTerm(termId);
         return new ServiceResponse<Long>((Long) null);
     }
 
+    //Student
+    @Override
+    public ServiceResponse<Long> createStudent(Student student) {
+        return new ServiceResponse<Long>(studentPersistence.createStudent(student));
+    }
+
+    @Override
+    public StatusCode studentExists(long studentId) {
+        Student stud = studentPersistence.selectStudent(studentId);
+        if(null == stud) {
+            return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentId });
+        }
+        return StatusCodes.getStatusCode(StatusCodeType.OK);
+    }
+
+    @Override
+    public ServiceResponse<Long> deleteStudent(long studentId) {
+        StatusCode code = studentExists(studentId);
+        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
+            return new ServiceResponse<Long>(code);
+        }
+        studentPersistence.deleteStudent(studentId);
+        return new ServiceResponse<Long>((Long) null);
+    }
+
+    @Override
+    public ServiceResponse<Collection<Student>> getAllStudents() {
+        return new ServiceResponse<Collection<Student>>(
+                studentPersistence.selectAllStudents());
+    }
+
+    @Override
+    public ServiceResponse<Student> getStudent(long studentId) {
+        StatusCode code = studentExists(studentId);
+        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
+            return new ServiceResponse<Student>(code);
+        }
+        return new ServiceResponse<Student>(studentPersistence.selectStudent(studentId));
+    }
+
+    @Override
+    public ServiceResponse<Long> replaceStudent(long studentId, Student student) {
+        StatusCode code = studentExists(studentId);
+        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
+            return new ServiceResponse<Long>(code);
+        }
+        studentPersistence.replaceStudent(studentId, student);
+        return new ServiceResponse<Long>(studentId);
+    }
+    
+    @Override
+    public ServiceResponse<Long> updateStudent(long studentId, Student student) {
+        StatusCode code = studentExists(studentId);
+        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
+            return new ServiceResponse<Long>(code);
+        }
+        student.setId(studentId);
+        student.mergePropertiesIfNull(studentPersistence.selectStudent(studentId));
+        replaceStudent(studentId, student);
+        return new ServiceResponse<Long>(studentId);
+    }
+    
+    //SECTION
     @Override
     public ServiceResponse<Collection<Section>> getAllSections(long schoolId, long yearId, long termId) {
         StatusCode code = termExists(schoolId, yearId, termId);

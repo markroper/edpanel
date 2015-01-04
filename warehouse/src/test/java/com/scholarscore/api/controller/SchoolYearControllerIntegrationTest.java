@@ -37,6 +37,7 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
         namedSchoolYear.setName(localeServiceUtil.generateName());
         
         Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
         Date today = cal.getTime();
         cal.add(Calendar.YEAR, 1); // to get previous year add -1
         Date nextYear = cal.getTime();

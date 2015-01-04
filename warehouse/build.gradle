@@ -96,6 +96,8 @@ dependencies {
             "javax.servlet:javax.servlet-api:3.1.0",
             "javax.ws.rs:jsr311-api:1.1.1",
 
+            //MySQL dependencies
+            'mysql:mysql-connector-java:5.1.6',
             //Spring dependencies
             "org.springframework:spring-aop:$springVersion",
             "org.springframework:spring-aspects:$springVersion",
