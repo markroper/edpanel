@@ -21,9 +21,8 @@ def local_portnum = new URI(props.get("endpoint").toString()).port
 cargo {
     containerId = 'tomcat7x'
 
+    // Note: cargo local stuff will still work for now, but please prefer gretty ("gradle appRun") for local instances
     local {
-        // this makes the local container debuggable but screws up the build machine. can we use --debug-jvm instead?
-//        jvmArgs = '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999'
         installer {
             installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.zip'
             downloadDir = file("$buildDir/download")
@@ -51,9 +50,7 @@ gretty {
     // 'jetty7', 'jetty8', 'jetty9', 'tomcat7', 'tomcat8'
 //    servletContainer = 'tomcat7'
 
-//    integrationTestTask = 'integrationLocal'
       integrationTestTask = 'integrationLocalWithContainer'
-
 }
 
 //Integration test suite
@@ -83,30 +80,7 @@ task integrationLocal(type: Test) {
     }
 }
 
-task integrationLocalWithContainer(type: Test, dependsOn: integrationLocal) {
-    println("inside integrationLocalWithContainer")
-}
-
-/*
-task('integrationTestServerReport', type: JacocoReport) {
-    executionData { tasks.appBeforeIntegrationTest.jacoco.destinationFile }
-
-    sourceDirectories = project.files(project.sourceSets.main.allSource.srcDirs)
-    classDirectories = project.sourceSets.main.output
-
-    def htmlReportDir = project.reporting.file("jacoco/integrationTests/html")
-    def xmlReportFile = project.reporting.file("jacoco/integrationTests/integrationTests.xml")
-    reports {
-        xml.enabled true
-        xml.destination = xmlReportFile
-        html.destination = htmlReportDir
-    }
-    doLast {
-        println "Jacoco HTML report for integration tests created: file://${htmlReportDir.toURI().path}"
-        println "Jacoco XML report for integration tests created: file://${xmlReportFile.toURI().path}"
-    }
-}
-*/
+task integrationLocalWithContainer(type: Test, dependsOn: integrationLocal) { }
 
 //Dependencies section:
 ext {

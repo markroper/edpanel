@@ -57,10 +57,7 @@ task integrationCodeCoverageReport(type: JacocoReport) {
     }
 }
 
-// always run the integration tests before generating the report
+// run the integration tests before generating the report
 integrationCodeCoverageReport.dependsOn {
-//      project(':warehouse').integrationLocal
       project(':warehouse').integrationLocalWithContainer
 }
-
-//configure([project(':common'), project(':warehouse')]) {}
