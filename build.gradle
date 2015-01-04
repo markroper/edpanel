@@ -57,6 +57,12 @@ task integrationCodeCoverageReport(type: JacocoReport) {
     }
 }
 
+task resetDatabase(type: Exec) {
+    executable "mysql"
+    args "-u warehouse", "-pt3achTh3Childr3n",  "< dropAndCreate.sql"
+    println "database cleaned."
+}
+
 // run the integration tests before generating the report
 integrationCodeCoverageReport.dependsOn {
       project(':warehouse').integrationLocalWithContainer
