@@ -66,7 +66,7 @@ CREATE TABLE `scholar_warehouse`.`section` (
     REFERENCES `scholar_warehouse`.`course`(`course_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `fk_term&section`
+  CONSTRAINT `fk_term$section`
     FOREIGN KEY (`term_fk`)
     REFERENCES `scholar_warehouse`.`school_term`(`school_term_id`)
     ON DELETE CASCADE
