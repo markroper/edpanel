@@ -60,7 +60,7 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
         schoolYearWithTerms.setTerms(terms);
        
         return new Object[][] {
-//                { "Empty schoolYear", emptySchoolYear },
+                { "Empty schoolYear", emptySchoolYear },
                 { "Named schoolYear", namedSchoolYear },
                 { "Start and end date schoolYear", schoolYearWithDates },
         };

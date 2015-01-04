@@ -21,6 +21,7 @@ public interface SchoolYearPersistence {
             long schoolYearId,
             SchoolYear schoolYear);
 
+    //Only need to delete the parent record, our deletes cascade
     public Long deleteSchoolYear(long schoolYearId);
 
 }
