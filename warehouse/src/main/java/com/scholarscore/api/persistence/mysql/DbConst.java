@@ -9,6 +9,7 @@ public class DbConst {
     public static final String SCHOOL_TABLE = "school";
     public static final String SCHOOL_YEAR_TABLE = "school_year";
     public static final String TERM_TABLE = "school_term";
+    public static final String STUDENT_TABLE = "student";
     //Columns
     public static final String SCHOOL_ID_COL = "school_id";
     public static final String NAME_COL = "name";
@@ -20,6 +21,8 @@ public class DbConst {
     
     public static final String TERM_ID_COL = "school_term_id";
     public static final String SCHOOL_YEAR_FK_COL = "school_year_fk";
+    
+    public static final String STUDENT_ID_COL = "student_id";
     
     public static Timestamp resolveTimestamp(Date input) {
         Timestamp returnVal = null;

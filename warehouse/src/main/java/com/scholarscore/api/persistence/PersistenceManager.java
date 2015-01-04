@@ -1,7 +1,6 @@
 package com.scholarscore.api.persistence;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,6 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.scholarscore.api.persistence.mysql.SchoolPersistence;
 import com.scholarscore.api.persistence.mysql.SchoolYearPersistence;
+import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.TermPersistence;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
@@ -26,7 +26,6 @@ import com.scholarscore.models.SectionAssignment;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.StudentSectionGrade;
-import com.scholarscore.models.SubjectArea;
 import com.scholarscore.models.Term;
 
 public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
@@ -44,9 +43,6 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private static final String STUDENT = "student";
     private static final String STUDENT_SECTION_GRADE = "student section grade";
 
-    //Student structure: Map<studentId, Student>
-    private final static AtomicLong studentCounter = new AtomicLong();
-    private static Map<Long, Student> students = Collections.synchronizedMap(new HashMap<Long, Student>());
     //Student section grade structure: Map<studentId, Map<sectionId, StudentSectionGrade>>
     private final static AtomicLong studentSectGradeCounter = new AtomicLong();
     private static Map<Long, Map<Long, Map<Long, StudentSectionGrade>>> studentSectionGrades =
@@ -72,7 +68,12 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private SchoolPersistence schoolPersistence;
     private SchoolYearPersistence schoolYearPersistence;
     private TermPersistence termPersistence;
+    private StudentPersistence studentPersistence;
 
+    public void setStudentPersistence(StudentPersistence studentPersistence) {
+        this.studentPersistence = studentPersistence;
+    }
+    
     public void setSchoolPersistence(SchoolPersistence schoolPersistence) {
         this.schoolPersistence = schoolPersistence;
     }
@@ -390,14 +391,13 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     //Student
     @Override
     public ServiceResponse<Long> createStudent(Student student) {
-        student.setId(studentCounter.incrementAndGet());
-        students.put(student.getId(), student);
-        return new ServiceResponse<Long>(student.getId());
+        return new ServiceResponse<Long>(studentPersistence.createStudent(student));
     }
 
     @Override
     public StatusCode studentExists(long studentId) {
-        if(!students.containsKey(studentId)){
+        Student stud = studentPersistence.selectStudent(studentId);
+        if(null == stud) {
             return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentId });
         }
         return StatusCodes.getStatusCode(StatusCodeType.OK);
@@ -409,13 +409,14 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        students.remove(studentId);
+        studentPersistence.deleteStudent(studentId);
         return new ServiceResponse<Long>((Long) null);
     }
 
     @Override
     public ServiceResponse<Collection<Student>> getAllStudents() {
-        return new ServiceResponse<Collection<Student>>(students.values());
+        return new ServiceResponse<Collection<Student>>(
+                studentPersistence.selectAllStudents());
     }
 
     @Override
@@ -424,7 +425,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Student>(code);
         }
-        return new ServiceResponse<Student>(students.get(studentId));
+        return new ServiceResponse<Student>(studentPersistence.selectStudent(studentId));
     }
 
     @Override
@@ -433,8 +434,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        student.setId(studentId);
-        students.put(student.getId(), student);
+        studentPersistence.replaceStudent(studentId, student);
         return new ServiceResponse<Long>(studentId);
     }
     
@@ -445,8 +445,8 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             return new ServiceResponse<Long>(code);
         }
         student.setId(studentId);
-        student.mergePropertiesIfNull(students.get(studentId));
-        students.put(student.getId(), student);
+        student.mergePropertiesIfNull(studentPersistence.selectStudent(studentId));
+        replaceStudent(studentId, student);
         return new ServiceResponse<Long>(studentId);
     }
     
