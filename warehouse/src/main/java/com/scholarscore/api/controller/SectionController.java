@@ -1,8 +1,5 @@
 package com.scholarscore.api.controller;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -15,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.scholarscore.api.util.ErrorCodes;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.Section;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -39,21 +35,7 @@ public class SectionController extends BaseController {
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, schoolYearId });
-        }
-        if(null == schoolYears.get(schoolId).get(schoolYearId).findTermById(termId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ TERM, termId });
-        }
-        
-        Collection<Section> returnSections = new ArrayList<Section>();
-        if(sections.containsKey(termId)) {
-            returnSections = sections.get(termId).values();
-        }
-        return respond(returnSections);
+        return respond(PM.getAllSections(schoolId, schoolYearId, termId));
     }
     
     @ApiOperation(
@@ -74,19 +56,7 @@ public class SectionController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, schoolYearId });
-        }
-        if(null == schoolYears.get(schoolId).get(schoolYearId).findTermById(termId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ TERM, termId });
-        }
-        if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectionId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectionId });
-        }        
-        return respond(sections.get(termId).get(sectionId));
+        return respond(PM.getSection(schoolId, schoolYearId, termId, sectionId));
     }
 
     @ApiOperation(
@@ -97,7 +67,7 @@ public class SectionController extends BaseController {
             method = RequestMethod.POST, 
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity createTerm(
+    public @ResponseBody ResponseEntity createSection(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
@@ -105,22 +75,7 @@ public class SectionController extends BaseController {
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
             @RequestBody @Valid Section section) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, schoolYearId });
-        }
-        if(null == schoolYears.get(schoolId).get(schoolYearId).findTermById(termId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ TERM, termId });
-        }
-        if(!sections.containsKey(termId)) {
-            sections.put(termId, new HashMap<Long, Section>());
-        } 
-        
-        section.setId(sectionCounter.getAndIncrement());
-        sections.get(termId).put(section.getId(), section);
-        return respond(new EntityId(section.getId()));
+        return respond(PM.createSection(schoolId, schoolYearId, termId, section));
     }
 
     @ApiOperation(
@@ -142,21 +97,7 @@ public class SectionController extends BaseController {
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId,
             @RequestBody @Valid Section section) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, schoolYearId });
-        }
-        if(null == schoolYears.get(schoolId).get(schoolYearId).findTermById(termId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ TERM, termId });
-        }
-        if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectionId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectionId });
-        } 
-        section.setId(sectionId);
-        sections.get(termId).put(sectionId, section);
-        return respond(new EntityId(sectionId));
+        return respond(PM.replaceSection(schoolId, schoolYearId, termId, sectionId, section));
     }
     
     @ApiOperation(
@@ -178,22 +119,7 @@ public class SectionController extends BaseController {
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId,
             @RequestBody @Valid Section section) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, schoolYearId });
-        }
-        if(null == schoolYears.get(schoolId).get(schoolYearId).findTermById(termId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ TERM, termId });
-        }
-        if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectionId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectionId });
-        }
-        section.setId(sectionId);
-        section.mergePropertiesIfNull(sections.get(termId).get(sectionId));
-        sections.get(termId).put(sectionId, section);
-        return respond(new EntityId(sectionId));
+        return respond(PM.updateSection(schoolId, schoolYearId, termId, sectionId, section));
     }
 
     @ApiOperation(
@@ -214,19 +140,6 @@ public class SectionController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        if(null == schoolYearId || !schoolYears.containsKey(schoolId) || !schoolYears.get(schoolId).containsKey(schoolYearId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL_YEAR, schoolYearId });
-        }
-        if(null == schoolYears.get(schoolId).get(schoolYearId).findTermById(termId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ TERM, termId });
-        }
-        if(!sections.containsKey(termId) || !sections.get(termId).containsKey(sectionId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SECTION, sectionId });
-        }
-        sections.get(termId).remove(sectionId);
-        return respond((Section)null);
+        return respond(PM.deleteSection(schoolId, schoolYearId, termId, sectionId));
     }
 }

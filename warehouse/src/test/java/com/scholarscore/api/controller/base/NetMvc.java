@@ -50,7 +50,7 @@ import static org.testng.Assert.fail;
  */
 public class NetMvc {
 
-    private static final String CHARSET_UTF8_NAME = "UTF-8";
+    //private static final String CHARSET_UTF8_NAME = "UTF-8";
 
     /**
      * Executes the HTTP request against the specified endpoint and returns the
@@ -185,7 +185,7 @@ public class NetMvc {
             // Add the content to the request
             if (null != content && content.length > 0) {
                 entityEnclosingRequest.setEntity(new ByteArrayEntity(content));
-                String body = new String(content, CHARSET_UTF8_NAME);
+                //String body = new String(content, CHARSET_UTF8_NAME);
                 //LOGGER.sys().info("Request BODY: " + body);
             }
         }

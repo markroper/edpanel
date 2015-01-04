@@ -1,7 +1,5 @@
 package com.scholarscore.api.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.scholarscore.api.util.ErrorCodes;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.EntityId;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -34,7 +31,7 @@ public class CourseController extends BaseController {
     public @ResponseBody ResponseEntity getAllCourses(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId) {
-        return respond(new ArrayList<>(courses.get(schoolId).values()));
+        return respond(PM.getAllCourses(schoolId));
     }
     
     @ApiOperation(
@@ -51,14 +48,7 @@ public class CourseController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId) {
-        if(!schools.containsKey(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        if(!courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
-        } else {
-            return respond(courses.get(schoolId).get(courseId));
-        }
+        return respond(PM.getCourse(schoolId, courseId));
     }
 
     @ApiOperation(
@@ -73,15 +63,7 @@ public class CourseController extends BaseController {
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid Course course) {
-        if(!schools.containsKey(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        course.setId(courseCounter.incrementAndGet());
-        if(!courses.containsKey(schoolId)) {
-            courses.put(schoolId, new HashMap<Long, Course>());
-        }
-        courses.get(schoolId).put(course.getId(), course);
-        return respond(new EntityId(course.getId()));
+        return respond(PM.createCourse(schoolId, course));
     }
 
     @ApiOperation(
@@ -99,15 +81,7 @@ public class CourseController extends BaseController {
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
             @RequestBody @Valid Course course) {
-        if(!schools.containsKey(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId });
-        }
-        if(null != courseId && courses.containsKey(schoolId) && courses.get(schoolId).containsKey(courseId)) {
-            courses.get(schoolId).put(courseId, course);
-            return respond(new EntityId(courseId));
-        } else {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ COURSE, courseId });
-        }
+        return respond(PM.replaceCourse(schoolId, courseId, course));
     }
     
     @ApiOperation(
@@ -125,17 +99,7 @@ public class CourseController extends BaseController {
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
             @RequestBody @Valid Course course) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL, schoolId });
-        }
-        if(null != course && null != courseId && courses.containsKey(schoolId) 
-                && courses.get(schoolId).containsKey(courseId)) {
-            course.mergePropertiesIfNull(courses.get(schoolId).get(courseId));
-            courses.get(schoolId).put(courseId, course);
-            return respond(new EntityId(courseId));
-        } else {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ COURSE, courseId });
-        }
+        return respond(PM.updateCourse(schoolId, courseId, course));
     }
 
     @ApiOperation(
@@ -151,14 +115,6 @@ public class CourseController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId) {
-        if(null == schoolId || !schools.containsKey(schoolId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ SCHOOL, schoolId });
-        }
-        if(null == courseId || !courses.containsKey(schoolId) 
-                || !courses.get(schoolId).containsKey(courseId)) {
-            return respond(ErrorCodes.MODEL_NOT_FOUND, new Object[]{ COURSE, courseId });
-        }
-        courses.get(schoolId).remove(courseId);
-        return respond((Course) null);
+        return respond(PM.deleteCourse(schoolId, courseId));
     }
 }
