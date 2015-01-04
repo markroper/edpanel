@@ -1,5 +1,6 @@
 package com.scholarscore.api.controller;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.http.HttpStatus;
@@ -35,10 +36,16 @@ public class TermControllerIntegrationTest extends IntegrationBase {
     public Object[][] createTermProvider() {
         Term emptyTerm = new Term();
         
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
+        Date today = cal.getTime();
+        cal.add(Calendar.YEAR, 1); // to get previous year add -1
+        Date nextYear = cal.getTime();
+        
         Term namedTerm = new Term();
         namedTerm.setName(localeServiceUtil.generateName());
-        namedTerm.setStartDate(new Date(1234567L));
-        namedTerm.setEndDate(new Date(123456L));
+        namedTerm.setStartDate(today);
+        namedTerm.setEndDate(nextYear);
         
         return new Object[][] {
                 { "Empty term", emptyTerm },

@@ -30,7 +30,7 @@ public class SchoolController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAllSchools() {
-        return respond(new ArrayList<>(schoolPersistence.getAllSchools()));
+        return respond(new ArrayList<>(PM.getAllSchools()));
     }
     
     @ApiOperation(
@@ -45,7 +45,7 @@ public class SchoolController extends BaseController {
     public @ResponseBody ResponseEntity getSchool(
             @ApiParam(name = "schoolId", required = true, value = "The school long ID")
             @PathVariable(value="schoolId") Long schoolId) {
-        return respond(schoolPersistence.getSchool(schoolId));
+        return respond(PM.getSchool(schoolId));
     }
 
     @ApiOperation(
@@ -57,7 +57,7 @@ public class SchoolController extends BaseController {
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity createSchool(@RequestBody @Valid School school) {
-        return respond(schoolPersistence.createSchool(school));
+        return respond(PM.createSchool(school));
     }
 
     @ApiOperation(
@@ -73,7 +73,7 @@ public class SchoolController extends BaseController {
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid School school) {
-        return respond(schoolPersistence.replaceSchool(schoolId, school));
+        return respond(PM.replaceSchool(schoolId, school));
     }
     
     @ApiOperation(
@@ -89,7 +89,7 @@ public class SchoolController extends BaseController {
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid School school) {
-        return respond(schoolPersistence.updateSchool(schoolId, school));
+        return respond(PM.updateSchool(schoolId, school));
     }
 
     @ApiOperation(
@@ -103,6 +103,6 @@ public class SchoolController extends BaseController {
     public @ResponseBody ResponseEntity deleteSchool(
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId) {
-        return respond(schoolPersistence.deleteSchool(schoolId));
+        return respond(PM.deleteSchool(schoolId));
     }
 }

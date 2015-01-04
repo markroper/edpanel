@@ -57,4 +57,19 @@
       class="com.scholarscore.api.persistence.mysql.jdbc.SchoolJdbc">
       <property name="dataSource"  ref="dataSource" />    
    </bean>
+   <bean id="schoolYearPersistence" 
+      class="com.scholarscore.api.persistence.mysql.jdbc.SchoolYearJdbc">
+      <property name="dataSource"  ref="dataSource" />    
+   </bean>
+   <bean id="termPersistence" 
+      class="com.scholarscore.api.persistence.mysql.jdbc.TermJdbc">
+      <property name="dataSource"  ref="dataSource" />    
+   </bean>
+   
+   <bean id="PM"
+        class="com.scholarscore.api.persistence.PersistenceManager">
+        <property name="schoolPersistence"  ref="schoolPersistence" /> 
+        <property name="schoolYearPersistence"  ref="schoolYearPersistence" /> 
+        <property name="termPersistence"  ref="termPersistence" /> 
+   </bean>
 </beans>
