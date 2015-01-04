@@ -1,5 +1,6 @@
 package com.scholarscore.models;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,10 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -16,6 +21,10 @@ public class GradeFormula implements Serializable {
     Map<AssignmentType, Integer> assignmentTypeWeights;
     
     public GradeFormula() { 
+    }
+    
+    public GradeFormula(String formulaString) throws JsonParseException, JsonMappingException, IOException {
+        new ObjectMapper().readValue(formulaString, new TypeReference<HashMap<AssignmentType, Integer>>(){});
     }
     
     public boolean isValid() {

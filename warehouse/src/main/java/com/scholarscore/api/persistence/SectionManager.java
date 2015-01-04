@@ -2,6 +2,7 @@ package com.scholarscore.api.persistence;
 
 import java.util.Collection;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.Section;
@@ -49,8 +50,9 @@ public interface SectionManager {
      * @param termId the ID of the term
      * @param section the Section to create
      * @return
+     * @throws JsonProcessingException 
      */
-    public ServiceResponse<Long> createSection(long schoolId, long yearId, long termId, Section section);
+    public ServiceResponse<Long> createSection(long schoolId, long yearId, long termId, Section section) throws JsonProcessingException;
 
     /**
      * Replaces an existing instance with the ID provided with the Section instance
@@ -63,8 +65,9 @@ public interface SectionManager {
      * @param sectionId the ID of the section
      * @param section The section to replace the existing section with
      * @return
+     * @throws JsonProcessingException 
      */
-    public ServiceResponse<Long> replaceSection(long schoolId, long yearId, long termId, long sectionId, Section section);
+    public ServiceResponse<Long> replaceSection(long schoolId, long yearId, long termId, long sectionId, Section section) throws JsonProcessingException;
     
     /**
      * Performs a partial update on an existing section with the ID provided using the partially
@@ -76,8 +79,9 @@ public interface SectionManager {
      * @param termId the ID of the term
      * @param partialTerm the partially populated term to update the existing term with
      * @return
+     * @throws JsonProcessingException 
      */
-    public ServiceResponse<Long> updateSection(long schoolId, long yearId, long termId, long sectionId, Section partialSection);
+    public ServiceResponse<Long> updateSection(long schoolId, long yearId, long termId, long sectionId, Section partialSection) throws JsonProcessingException;
 
     /**
      * Deletes a section with the id provided and returns an empty ServiceResponse instance 
