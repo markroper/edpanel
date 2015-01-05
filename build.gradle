@@ -59,13 +59,13 @@ task integrationCodeCoverageReport(type: JacocoReport) {
 
 task resetDatabase(type: Exec) {
     executable "mysql"
-    args "-u warehouse", "-pt3achTh3Childr3n",  "< dropAndCreate.sql"
+    args "-uwarehouse", "-pt3achTh3Childr3n",  "< dropAndCreate.sql"
     println "database emptied out."
 }
 
 task refillDatabase(type: Exec, dependsOn: resetDatabase) {
     executable "mysql"
-    args "-u warehouse", "-pt3achTh3Childr3n",  "< createTableDDL.sql"
+    args "-uwarehouse", "-pt3achTh3Childr3n",  "< createTableDDL.sql"
     println "new db filled in."
 }
 
