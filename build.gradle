@@ -58,11 +58,11 @@ task integrationCodeCoverageReport(type: JacocoReport) {
 }
 
 task resetDatabase(type: Exec) {
-    commandLine 'mysql', '-uwarehouse', '-pt3achTh3Childr3n', '<', 'dropAndCreate.sql'
+    commandLine 'mysql', '-uwarehouse', '-pt3achTh3Childr3n', '<', "${project.rootDir.absolutePath}/database/dropAndCreate.sql"
 }
 
 task refillDatabase(type: Exec, dependsOn: resetDatabase) {
-    commandLine 'mysql', '-uwarehouse', '-pt3achTh3Childr3n', '<', 'createTableDDL.sql'
+    commandLine 'mysql', '-uwarehouse', '-pt3achTh3Childr3n', '<', "${project.rootDir.absolutePath}/database/createTableDDL.sql"
 }
 
 // run the integration tests before generating the report
