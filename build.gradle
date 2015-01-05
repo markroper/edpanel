@@ -58,7 +58,7 @@ task integrationCodeCoverageReport(type: JacocoReport) {
 }
 
 task resetDatabase(type: Exec) {
-    commandLine 'mysql', "-uwarehouse -pt3achTh3Childr3n < ${project.rootDir.absolutePath}/database/dropAndCreate.sql"
+    commandLine 'mysql', "-uwarehouse -pt3achTh3Childr3n < ${project.rootDir.absolutePath}/database/cleanMySqlDatabase.sql"
 }
 
 task refillDatabase(type: Exec, dependsOn: resetDatabase) {

@@ -1,0 +1,1 @@
+DROP DATABASE scholar_warehouse;
