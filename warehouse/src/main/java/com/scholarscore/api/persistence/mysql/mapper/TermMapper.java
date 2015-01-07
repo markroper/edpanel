@@ -13,9 +13,9 @@ public class TermMapper implements RowMapper<Term> {
     public Term mapRow(ResultSet rs, int rowNum) throws SQLException {
         Term term = new Term();
         term.setId(rs.getLong(DbConst.TERM_ID_COL));
-        term.setName(rs.getString(DbConst.NAME_COL));
-        term.setStartDate(rs.getTimestamp(DbConst.START_DATE_COL));
-        term.setEndDate(rs.getTimestamp(DbConst.END_DATE_COL));
+        term.setName(rs.getString(DbConst.TERM_NAME_COL));
+        term.setStartDate(rs.getTimestamp(DbConst.TERM_START_DATE_COL));
+        term.setEndDate(rs.getTimestamp(DbConst.TERM_END_DATE_COL));
         return term;
     }
 }

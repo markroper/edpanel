@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.scholarscore.api.persistence.mysql.CoursePersistence;
 import com.scholarscore.api.persistence.mysql.SchoolPersistence;
 import com.scholarscore.api.persistence.mysql.SchoolYearPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
@@ -51,7 +52,6 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             Collections.synchronizedMap(new HashMap<Long, Map<Long, Map<Long, StudentSectionGrade>>>());
 
     //Map<termId, Map<sectionId, Section>>
-    private final static AtomicLong sectionCounter = new AtomicLong();
     private final static Map<Long, Map<Long, Section>> sections = Collections.synchronizedMap(new HashMap<Long, Map<Long, Section>>());
 
     //Map<SectionId, Map<sectionAssignmentId, SectionAssignment>>
@@ -60,9 +60,6 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private final static AtomicLong studentAssignmentCounter = new AtomicLong();
     private static Map<Long, Map<Long, StudentAssignment>> studentAssignments =
             Collections.synchronizedMap(new HashMap<Long, Map<Long, StudentAssignment>>());
-    //Course structure: Map<schoolId, Map<courseId, Course>>
-    private final static AtomicLong courseCounter = new AtomicLong();
-    private final static Map<Long, Map<Long, Course>> courses = Collections.synchronizedMap(new HashMap<Long, Map<Long, Course>>());
     //Assignments structure: Map<courseId, Map<assignmentId, Assignment>>
     private final static AtomicLong assignmentCounter = new AtomicLong();
     private final static Map<Long, Map<Long, Assignment>> assignments = Collections.synchronizedMap(new HashMap<Long, Map<Long, Assignment>>());
@@ -72,8 +69,13 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private TermPersistence termPersistence;
     private StudentPersistence studentPersistence;
     private SectionPersistence sectionPersistence;
+    private CoursePersistence coursePersistence;
 
-    public void setStudentPersistence(SectionPersistence sectionPersistence) {
+    public void setCoursePersistence(CoursePersistence cp) {
+        coursePersistence = cp;
+    }
+    
+    public void setSectionPersistence(SectionPersistence sectionPersistence) {
         this.sectionPersistence = sectionPersistence;
     }
     
@@ -877,7 +879,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             return new ServiceResponse<>(code);
         }
         return new ServiceResponse<Collection<Course>>(
-                new ArrayList<>(courses.get(schoolId).values()));
+                coursePersistence.selectAllCourses(schoolId));
     }
 
     @Override
@@ -886,7 +888,8 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return code;
         }
-        if(!courses.containsKey(schoolId) || !courses.get(schoolId).containsKey(courseId)) {
+        Course course = coursePersistence.selectCourse(schoolId, courseId);
+        if(null == course) {
             return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { COURSE, courseId });
         }
         return StatusCodes.getStatusCode(StatusCodeType.OK);
@@ -898,7 +901,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<>(code);
         }
-        return new ServiceResponse<>(courses.get(schoolId).get(courseId));
+        return new ServiceResponse<>(coursePersistence.selectCourse(schoolId, courseId));
     }
 
     @Override
@@ -907,12 +910,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<>(code);
         }
-        course.setId(courseCounter.incrementAndGet());
-        if(!courses.containsKey(schoolId)) {
-            courses.put(schoolId, new HashMap<Long, Course>());
-        }
-        courses.get(schoolId).put(course.getId(), course);
-        return new ServiceResponse<>(course.getId());
+        return new ServiceResponse<>(coursePersistence.insertCourse(schoolId, course));
     }
 
     @Override
@@ -922,8 +920,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<>(code);
         }
-        course.setId(courseId);
-        courses.get(schoolId).put(courseId, course);
+        coursePersistence.updateCourse(schoolId, courseId, course);
         return new ServiceResponse<>(courseId);
     }
 
@@ -934,9 +931,8 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<>(code);
         }
-        course.setId(courseId);
-        course.mergePropertiesIfNull(courses.get(schoolId).get(courseId));
-        courses.get(schoolId).put(courseId, course);
+        course.mergePropertiesIfNull(coursePersistence.selectCourse(schoolId, courseId));
+        coursePersistence.updateCourse(schoolId, courseId, course);
         return new ServiceResponse<>(courseId);
     }
 
@@ -946,8 +942,9 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<>(code);
         }
-        courses.get(schoolId).remove(courseId);
-        return new ServiceResponse<>((Long) null);
+        //Only need to delete the parent record, our deletes cascade
+        coursePersistence.deleteCourse(courseId);
+        return new ServiceResponse<Long>((Long) null);
     }
 
     @Override

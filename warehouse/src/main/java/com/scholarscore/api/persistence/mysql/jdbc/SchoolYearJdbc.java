@@ -1,16 +1,11 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
@@ -19,29 +14,20 @@ import com.scholarscore.api.persistence.mysql.SchoolYearPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.SchoolYearMapper;
 import com.scholarscore.models.SchoolYear;
 
-public class SchoolYearJdbc implements SchoolYearPersistence {
-    private DataSource dataSource;
-    private NamedParameterJdbcTemplate jdbcTemplate;
-    //private SchoolJdbc schoolPersistence;
-    
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-        this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-    }
-    
+public class SchoolYearJdbc extends BaseJdbc implements SchoolYearPersistence {
     private static String INSERT_SCHOOL_YEAR_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SCHOOL_YEAR_TABLE + "` " +
-            "(" + DbConst.NAME_COL + ", " + DbConst.SCHOOL_FK_COL + ", " + 
-            DbConst.START_DATE_COL + ", " + DbConst.END_DATE_COL + ")" +
-            " VALUES (:" + DbConst.NAME_COL + ", :" + DbConst.SCHOOL_FK_COL + 
-            ", :" + DbConst.START_DATE_COL + ", :" + DbConst.END_DATE_COL + ")";
+            "(" + DbConst.SCHOOL_YEAR_NAME_COL + ", " + DbConst.SCHOOL_FK_COL + ", " + 
+            DbConst.SCHOOL_YEAR_START_DATE_COL + ", " + DbConst.SCHOOL_YEAR_END_DATE_COL + ")" +
+            " VALUES (:" + DbConst.SCHOOL_YEAR_NAME_COL + ", :" + DbConst.SCHOOL_FK_COL + 
+            ", :" + DbConst.SCHOOL_YEAR_START_DATE_COL + ", :" + DbConst.SCHOOL_YEAR_END_DATE_COL + ")";
     
     private static String UPDATE_SCHOOL_YEAR_SQL = 
             "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.SCHOOL_YEAR_TABLE + "` " + 
-            "SET `" + DbConst.NAME_COL + "`= :" + DbConst.NAME_COL + ", `" +
+            "SET `" + DbConst.SCHOOL_YEAR_NAME_COL + "`= :" + DbConst.SCHOOL_YEAR_NAME_COL + ", `" +
             DbConst.SCHOOL_FK_COL + "`= :" + DbConst.SCHOOL_FK_COL + ", `" +
-            DbConst.START_DATE_COL + "`= :" + DbConst.START_DATE_COL + ", `" +
-            DbConst.END_DATE_COL + "`= :" + DbConst.END_DATE_COL + " " +
+            DbConst.SCHOOL_YEAR_START_DATE_COL + "`= :" + DbConst.SCHOOL_YEAR_START_DATE_COL + ", `" +
+            DbConst.SCHOOL_YEAR_END_DATE_COL + "`= :" + DbConst.SCHOOL_YEAR_END_DATE_COL + " " +
             "WHERE `" + DbConst.SCHOOL_YEAR_ID_COL + "`= :" + DbConst.SCHOOL_YEAR_ID_COL + "";
     
     private static String DELETE_SCHOOL_YEAR_SQL = "DELETE FROM `"+ 
@@ -96,11 +82,11 @@ public class SchoolYearJdbc implements SchoolYearPersistence {
     public Long insertSchoolYear(long schoolId, SchoolYear schoolYear) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.NAME_COL, schoolYear.getName());
+        params.put(DbConst.SCHOOL_YEAR_NAME_COL, schoolYear.getName());
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
-        params.put(DbConst.START_DATE_COL, DbConst.resolveTimestamp(schoolYear.getStartDate()));
-        params.put(DbConst.END_DATE_COL, DbConst.resolveTimestamp(schoolYear.getEndDate()));
-        params.put(DbConst.NAME_COL, schoolYear.getName());
+        params.put(DbConst.SCHOOL_YEAR_START_DATE_COL, DbConst.resolveTimestamp(schoolYear.getStartDate()));
+        params.put(DbConst.SCHOOL_YEAR_END_DATE_COL, DbConst.resolveTimestamp(schoolYear.getEndDate()));
+        params.put(DbConst.SCHOOL_YEAR_NAME_COL, schoolYear.getName());
         jdbcTemplate.update(
                 INSERT_SCHOOL_YEAR_SQL, 
                 new MapSqlParameterSource(params), 
@@ -115,10 +101,10 @@ public class SchoolYearJdbc implements SchoolYearPersistence {
     public Long updateSchoolYear(long schoolId,
             long schoolYearId, SchoolYear schoolYear) {
         Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.NAME_COL, schoolYear.getName());
+        params.put(DbConst.SCHOOL_YEAR_NAME_COL, schoolYear.getName());
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
-        params.put(DbConst.START_DATE_COL, DbConst.resolveTimestamp(schoolYear.getStartDate()));
-        params.put(DbConst.END_DATE_COL, DbConst.resolveTimestamp(schoolYear.getEndDate()));
+        params.put(DbConst.SCHOOL_YEAR_START_DATE_COL, DbConst.resolveTimestamp(schoolYear.getStartDate()));
+        params.put(DbConst.SCHOOL_YEAR_END_DATE_COL, DbConst.resolveTimestamp(schoolYear.getEndDate()));
         params.put(DbConst.SCHOOL_YEAR_ID_COL, schoolYearId);
         jdbcTemplate.update(
                 UPDATE_SCHOOL_YEAR_SQL, 

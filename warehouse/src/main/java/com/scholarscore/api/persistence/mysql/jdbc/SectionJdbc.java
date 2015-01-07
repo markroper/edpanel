@@ -5,10 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
@@ -19,35 +16,27 @@ import com.scholarscore.api.persistence.mysql.SectionPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.SectionMapper;
 import com.scholarscore.models.Section;
 
-public class SectionJdbc implements SectionPersistence {
-    private DataSource dataSource;
-    private NamedParameterJdbcTemplate jdbcTemplate;
-    
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-        this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-    }
-    
+public class SectionJdbc extends BaseJdbc implements SectionPersistence {
     private static String INSERT_SECTION_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SECTION_TABLE + "` " +
-            "(`" + DbConst.NAME_COL + "`, `" + DbConst.TERM_FK_COL + "`, `" + 
-            DbConst.COURSE_FK_COL + "`, " +
+            "(`" + DbConst.SECTION_NAME_COL + "`, `" + DbConst.TERM_FK_COL + "`, `" + 
+            DbConst.COURSE_FK_COL + "`, `" +
             DbConst.ROOM_COL + "`, `" + DbConst.GRADE_FORMULA_COL + "`, `" + 
-            DbConst.START_DATE_COL + "`, `" + DbConst.END_DATE_COL + "`)" +
-            " VALUES (:" + DbConst.NAME_COL + ", :" + DbConst.TERM_FK_COL + 
+            DbConst.SECTION_START_DATE_COL + "`, `" + DbConst.SECTION_END_DATE_COL + "`)" +
+            " VALUES (:" + DbConst.SECTION_NAME_COL + ", :" + DbConst.TERM_FK_COL + 
             ", :" + DbConst.COURSE_FK_COL +
             ", :" + DbConst.ROOM_COL + ", :" + DbConst.GRADE_FORMULA_COL +
-            ", :" + DbConst.START_DATE_COL + ", :" + DbConst.END_DATE_COL + ")";
+            ", :" + DbConst.SECTION_START_DATE_COL + ", :" + DbConst.SECTION_END_DATE_COL + ")";
     
     private static String UPDATE_SECTION_SQL = 
             "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.SECTION_TABLE + "` " + 
-            "SET `" + DbConst.NAME_COL + "`= :" + DbConst.NAME_COL + ", `" +
+            "SET `" + DbConst.SECTION_NAME_COL + "`= :" + DbConst.SECTION_NAME_COL + ", `" +
             DbConst.TERM_FK_COL + "`= :" + DbConst.TERM_FK_COL + ", `" +
             DbConst.COURSE_FK_COL + "`= :" + DbConst.COURSE_FK_COL + ", `" +
             DbConst.ROOM_COL + "`= :" + DbConst.ROOM_COL + ", `" +
             DbConst.GRADE_FORMULA_COL + "`= :" + DbConst.GRADE_FORMULA_COL + ", `" +
-            DbConst.START_DATE_COL + "`= :" + DbConst.START_DATE_COL + ", `" +
-            DbConst.END_DATE_COL + "`= :" + DbConst.END_DATE_COL + " " +
+            DbConst.SECTION_START_DATE_COL + "`= :" + DbConst.SECTION_START_DATE_COL + ", `" +
+            DbConst.SECTION_END_DATE_COL + "`= :" + DbConst.SECTION_END_DATE_COL + " " +
             "WHERE `" + DbConst.SECTION_ID_COL + "`= :" + DbConst.SECTION_ID_COL + "";
     
     private static String DELETE_SECTION_SQL = "DELETE FROM `"+ 
@@ -56,7 +45,9 @@ public class SectionJdbc implements SectionPersistence {
     
     private static String SELECT_ALL_SECTIONS_SQL = "SELECT * FROM `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SECTION_TABLE + "` " +
-            "WHERE `" + DbConst.TERM_FK_COL + "` = :" + DbConst.TERM_FK_COL;
+            "INNER JOIN `" + DbConst.DATABASE +"`.`" + DbConst.COURSE_TABLE + "` ON `" + 
+            DbConst.COURSE_ID_COL + "` = `" + DbConst.COURSE_FK_COL +
+            "` WHERE `" + DbConst.TERM_FK_COL + "` = :" + DbConst.TERM_FK_COL;
     
     private static String SELECT_SECTION_SQL = SELECT_ALL_SECTIONS_SQL + 
             " AND `" + DbConst.SECTION_ID_COL + "`= :" + DbConst.SECTION_ID_COL;
@@ -92,15 +83,15 @@ public class SectionJdbc implements SectionPersistence {
     public Long insertSection(long termId, Section term) throws JsonProcessingException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.NAME_COL, term.getName());
+        params.put(DbConst.SECTION_NAME_COL, term.getName());
         params.put(DbConst.TERM_FK_COL, new Long(termId));
         Long courseFk = null;
         if(null != term.getCourse()) {
             courseFk = new Long(term.getCourse().getId());
         }
         params.put(DbConst.COURSE_FK_COL, courseFk);
-        params.put(DbConst.START_DATE_COL, DbConst.resolveTimestamp(term.getStartDate()));
-        params.put(DbConst.END_DATE_COL, DbConst.resolveTimestamp(term.getEndDate()));
+        params.put(DbConst.SECTION_START_DATE_COL, DbConst.resolveTimestamp(term.getStartDate()));
+        params.put(DbConst.SECTION_END_DATE_COL, DbConst.resolveTimestamp(term.getEndDate()));
         params.put(DbConst.ROOM_COL, term.getRoom());
         params.put(DbConst.GRADE_FORMULA_COL, new ObjectMapper().writeValueAsString(term.getGradeFormula()));
         jdbcTemplate.update(
@@ -113,18 +104,18 @@ public class SectionJdbc implements SectionPersistence {
     @Override
     public Long updateSection(long termId, long sectionId, Section section) throws JsonProcessingException {
         Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.NAME_COL, section.getName());
+        params.put(DbConst.SECTION_NAME_COL, section.getName());
         params.put(DbConst.TERM_FK_COL, new Long(termId));
         Long courseFk = null;
         if(null != section.getCourse()) {
             courseFk = new Long(section.getCourse().getId());
         }
         params.put(DbConst.COURSE_FK_COL, courseFk);
-        params.put(DbConst.START_DATE_COL, DbConst.resolveTimestamp(section.getStartDate()));
-        params.put(DbConst.END_DATE_COL, DbConst.resolveTimestamp(section.getEndDate()));
+        params.put(DbConst.SECTION_START_DATE_COL, DbConst.resolveTimestamp(section.getStartDate()));
+        params.put(DbConst.SECTION_END_DATE_COL, DbConst.resolveTimestamp(section.getEndDate()));
         params.put(DbConst.ROOM_COL, section.getRoom());
         params.put(DbConst.GRADE_FORMULA_COL, new ObjectMapper().writeValueAsString(section.getGradeFormula()));
-        params.put(DbConst.SECTION_ID_COL, section.getId());
+        params.put(DbConst.SECTION_ID_COL, new Long(sectionId));
         jdbcTemplate.update(
                 UPDATE_SECTION_SQL, 
                 new MapSqlParameterSource(params));

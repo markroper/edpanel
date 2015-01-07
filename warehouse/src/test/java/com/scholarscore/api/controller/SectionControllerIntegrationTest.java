@@ -10,6 +10,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
@@ -22,6 +23,7 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
     private School school;
     private SchoolYear schoolYear;
     private Term term;
+    private Course course;
     
     @BeforeClass
     public void init() {
@@ -34,6 +36,10 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
         schoolYear.setName(localeServiceUtil.generateName());
         schoolYear = schoolYearValidatingExecutor.create(school.getId(), schoolYear, "create base schoolYear");
         
+        course = new Course();
+        course.setName(localeServiceUtil.generateName());
+        course = courseValidatingExecutor.create(school.getId(), course, "create base course");
+        
         term = new Term();
         term.setName(localeServiceUtil.generateName());
         term = termValidatingExecutor.create(school.getId(), schoolYear.getId(), term, "create test base term");
@@ -43,11 +49,13 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
     @DataProvider
     public Object[][] createSectionProvider() {
         Section emptySection = new Section();
+        emptySection.setCourse(course);
         
         Section namedSection = new Section();
         namedSection.setName(localeServiceUtil.generateName());
         namedSection.setStartDate(new Date(1234567L));
         namedSection.setEndDate(new Date(123456L));
+        namedSection.setCourse(course);
         
         
         Section fullSection = new Section(namedSection);

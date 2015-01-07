@@ -5,34 +5,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import com.scholarscore.api.persistence.SchoolManager;
 import com.scholarscore.api.persistence.mysql.DbConst;
 import com.scholarscore.api.persistence.mysql.SchoolPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.SchoolMapper;
-import com.scholarscore.api.util.ServiceResponse;
-import com.scholarscore.api.util.StatusCode;
-import com.scholarscore.api.util.StatusCodeType;
-import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.School;
 
-public class SchoolJdbc implements SchoolPersistence {
-    private DataSource dataSource;
-    private NamedParameterJdbcTemplate jdbcTemplate;
-    
+public class SchoolJdbc extends BaseJdbc implements SchoolPersistence {
     private static String INSERT_SCHOOL_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SCHOOL_TABLE + "` " +
-            "(" + DbConst.NAME_COL + ")" +
+            "(" + DbConst.SCHOOL_NAME_COL + ")" +
             " VALUES (:name)";   
     private static String UPDATE_SCHOOL_SQL = 
             "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.SCHOOL_TABLE + "` " + 
-            "SET `" + DbConst.NAME_COL + "`= :name " + 
+            "SET `" + DbConst.SCHOOL_NAME_COL + "`= :name " + 
             "WHERE `" + DbConst.SCHOOL_ID_COL + "`= :id";
     private static String DELETE_SCHOOL_SQL = "DELETE FROM `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SCHOOL_TABLE + "` " +
@@ -41,11 +30,6 @@ public class SchoolJdbc implements SchoolPersistence {
             DbConst.DATABASE +"`.`" + DbConst.SCHOOL_TABLE + "`";
     private static String SELECT_SCHOOL_SQL = SELECT_ALL_SCHOOLS_SQL + 
             "WHERE `" + DbConst.SCHOOL_ID_COL + "`= :id";
-    
-    public void setDataSource(DataSource dataSource) {
-       this.dataSource = dataSource;
-       this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-    }
     
     /* (non-Javadoc)
      * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolPersistence#getAllSchools()
