@@ -30,6 +30,12 @@ public class StudentJdbc extends BaseJdbc implements StudentPersistence {
             DbConst.DATABASE +"`.`" + DbConst.STUDENT_TABLE + "`";
     private static String SELECT_STUDENT_SQL = SELECT_ALL_STUDENTS_SQL + 
             "WHERE `" + DbConst.STUDENT_ID_COL + "`= :" + DbConst.STUDENT_ID_COL + "";
+    
+    private static String SELECT_STUDENTS_IN_SECTION_SQL = SELECT_ALL_STUDENTS_SQL + 
+            " INNER JOIN `" + DbConst.DATABASE +"`.`" + DbConst.STUDENT_SECTION_GRADE_TABLE + "`" + 
+            " ON `" + DbConst.STUDENT_SECTION_GRADE_TABLE + "`.`" + DbConst.STUD_FK_COL + "` = `" +
+            DbConst.STUDENT_TABLE + "`.`" + DbConst.STUDENT_ID_COL + "` " +
+            "WHERE `" + DbConst.SECTION_FK_COL + "`= :" + DbConst.SECTION_FK_COL + "";
 
     @Override
     public Collection<Student> selectAllStudents() {
@@ -37,6 +43,17 @@ public class StudentJdbc extends BaseJdbc implements StudentPersistence {
                 new StudentMapper());
         return students;
     }
+    @Override
+    public Collection<Student> selectAllStudentsInSection(long sectionId) {
+        Map<String, Object> params = new HashMap<>();     
+        params.put(DbConst.SECTION_FK_COL, new Long(sectionId));
+        List<Student> students = jdbcTemplate.query(
+                SELECT_STUDENTS_IN_SECTION_SQL, 
+                params,
+                new StudentMapper());
+        return students;
+    }
+    
     @Override
     public Student selectStudent(long studentId) {
         Map<String, Object> params = new HashMap<>();     
@@ -74,5 +91,4 @@ public class StudentJdbc extends BaseJdbc implements StudentPersistence {
         jdbcTemplate.update(DELETE_STUDENT_SQL, new MapSqlParameterSource(params));
         return studentId;
     }
-    
 }

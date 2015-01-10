@@ -13,6 +13,8 @@ public class DbConst {
     public static final String SECTION_TABLE = "section";
     public static final String COURSE_TABLE = "course";
     public static final String ASSIGNMENT_TABLE = "assignment";
+    public static final String STUDENT_ASSIGNMENT_TABLE = "student_assignment";
+    public static final String STUDENT_SECTION_GRADE_TABLE = "student_section_grade";
     //Columns
     public static final String SCHOOL_ID_COL = "school_id";
     public static final String SCHOOL_NAME_COL = "school_name";
@@ -51,6 +53,18 @@ public class DbConst {
     public static final String DUE_DATE_COL = "due_date";
     public static final String AVAILABLE_POINTS_COL = "available_points";
     public static final String SECTION_FK_COL = "section_fk";
+    
+    public static final String STUD_ASSIGNMENT_ID_COL = "student_assignment_id";
+    public static final String STUD_ASSIGNMENT_NAME_COL = "student_assignment_name";
+    public static final String STUD_COMPLETED_COL = "completed";
+    public static final String STUD_COMPLETION_DATE_COL = "completion_date";
+    public static final String STUD_AWARDED_POINTS = "awarded_points";
+    public static final String ASSIGNMENT_FK_COL = "assignment_fk";
+    public static final String STUD_FK_COL = "student_fk";
+    
+    public static final String STUD_SECTION_GRADE_ID_COL = "student_section_grade_id";
+    public static final String STUD_SECTION_GRADE_COMPLETE = "complete";
+    public static final String STUD_SECTION_GRADE_GRADE = "grade";
     
     public static Timestamp resolveTimestamp(Date input) {
         Timestamp returnVal = null;

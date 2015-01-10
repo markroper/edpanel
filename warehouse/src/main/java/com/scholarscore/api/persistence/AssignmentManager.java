@@ -28,7 +28,7 @@ public interface AssignmentManager {
      * @param sectionAssignmentId the ID of the section assignment
      * @return
      */
-    public StatusCode sectionAssignmentExists(long schoolId, long yearId, long termId, 
+    public StatusCode assignmentExists(long schoolId, long yearId, long termId, 
             long sectionId, long sectionAssignmentId);
     
     /**

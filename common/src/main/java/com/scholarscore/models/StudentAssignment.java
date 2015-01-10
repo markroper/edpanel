@@ -1,6 +1,7 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentAssignment extends ApiModel implements Serializable, IApiModel<StudentAssignment> {
     private Boolean completed;
+    private Date completionDate;
     private Long awardedPoints;
     private transient Assignment sectionAssignment;
     private transient Student student;
@@ -29,6 +31,7 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         this.completed = sa.completed;
         this.awardedPoints = sa.awardedPoints;
         this.student = sa.student;
+        this.completionDate = sa.completionDate;
     }
 
     @Override
@@ -47,6 +50,9 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         } 
         if(null == this.student) {
             this.student = mergeFrom.student;
+        }
+        if(null == this.completionDate) {
+            this.completionDate = mergeFrom.completionDate;
         }
     }
     
@@ -82,6 +88,14 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         this.student = student;
     }
 
+    public Date getCompletionDate() {
+        return completionDate;
+    }
+
+    public void setCompletionDate(Date completionDate) {
+        this.completionDate = completionDate;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(!super.equals(obj)) {
@@ -91,11 +105,12 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         return Objects.equals(this.sectionAssignment, other.sectionAssignment) && 
                 Objects.equals(this.completed, other.completed) &&
                 Objects.equals(this.awardedPoints, other.awardedPoints) &&
-                Objects.equals(this.student, other.student);
+                Objects.equals(this.student, other.student) &&
+                Objects.equals(this.completionDate, other.completionDate);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(sectionAssignment, completed, awardedPoints, student);
+        return 31 * super.hashCode() + Objects.hash(sectionAssignment, completed, awardedPoints, student, completionDate);
     }
 }

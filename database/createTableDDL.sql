@@ -117,6 +117,8 @@ CREATE TABLE `scholar_warehouse`.`student_section_grade` (
   `section_fk` INT UNSIGNED NOT NULL COMMENT 'The foreign key to the section table',
   `student_fk` INT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
   PRIMARY KEY (`student_section_grade_id`),
+  CONSTRAINT `uniq_section$student` 
+    UNIQUE (`section_fk`,`student_fk`),
   CONSTRAINT `fk_section$student_section_grade`
     FOREIGN KEY (`section_fk`)
     REFERENCES `scholar_warehouse`.`section`(`section_id`)

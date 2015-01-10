@@ -2,16 +2,13 @@ package com.scholarscore.api.persistence;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.SchoolPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
+import com.scholarscore.api.persistence.mysql.StudentSectionGradePersistence;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
@@ -29,7 +26,7 @@ import com.scholarscore.models.Term;
 public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
         TermManager, SectionManager, AssignmentManager, StudentAssignmentManager,
         StudentSectionGradeManager, CourseManager {
-    //TODO: @mroper we need to add a real persistence layer that we call instead of manipulating this map
+    
     private static final String SCHOOL = "school";
     private static final String COURSE = "course";
     private static final String SCHOOL_YEAR = "school year";
@@ -39,20 +36,8 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private static final String STUDENT_ASSIGNMENT = "student assignment";
     private static final String STUDENT = "student";
     private static final String STUDENT_SECTION_GRADE = "student section grade";
-
-    //Student section grade structure: Map<studentId, Map<sectionId, StudentSectionGrade>>
-    private final static AtomicLong studentSectGradeCounter = new AtomicLong();
-    private static Map<Long, Map<Long, Map<Long, StudentSectionGrade>>> studentSectionGrades =
-            Collections.synchronizedMap(new HashMap<Long, Map<Long, Map<Long, StudentSectionGrade>>>());
-
-    //Map<termId, Map<sectionId, Section>>
-    private final static Map<Long, Map<Long, Section>> sections = Collections.synchronizedMap(new HashMap<Long, Map<Long, Section>>());
-
-    //Map<sectionAssignmentId, Map<studentAssignmentId, StudentAssignment>>
-    private final static AtomicLong studentAssignmentCounter = new AtomicLong();
-    private static Map<Long, Map<Long, StudentAssignment>> studentAssignments =
-            Collections.synchronizedMap(new HashMap<Long, Map<Long, StudentAssignment>>());
  
+    //Persistence managers for each entity
     private SchoolPersistence schoolPersistence;
     private EntityPersistence<SchoolYear> schoolYearPersistence;
     private EntityPersistence<Term> termPersistence;
@@ -60,7 +45,18 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private EntityPersistence<Section> sectionPersistence;
     private EntityPersistence<Course> coursePersistence;
     private EntityPersistence<Assignment> assignmentPersistence;
-
+    private EntityPersistence<StudentAssignment> studentAssignmentPersistence;
+    private StudentSectionGradePersistence studentSectionGradePersistence;
+    
+    //Setters for the persistence layer for each entity
+    public void setStudentSectionGradePersistence(StudentSectionGradePersistence ap) {
+        this.studentSectionGradePersistence = ap;
+    }
+    
+    public void setStudentAssignmentPersistence(EntityPersistence<StudentAssignment> ap) {
+        this.studentAssignmentPersistence = ap;
+    }
+    
     public void setAssignmentPersistence(EntityPersistence<Assignment> ap) {
         this.assignmentPersistence = ap;
     }
@@ -460,7 +456,14 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Collection<Section>>(code);
         }
-        return new ServiceResponse<Collection<Section>>(sectionPersistence.selectAll(termId));
+        Collection<Section> sections = sectionPersistence.selectAll(termId);
+        for(Section s : sections) {
+            Collection<Student> students = studentPersistence.selectAllStudentsInSection(s.getId());
+            if(null != students && !students.isEmpty()) {
+                s.setEnrolledStudents(new ArrayList<Student>(students));
+            }
+        }
+        return new ServiceResponse<Collection<Section>>(sections);
     }
 
     @Override
@@ -483,7 +486,12 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Section>(code);
         }
-        return new ServiceResponse<Section>(sectionPersistence.select(termId, sectionId));
+        Section section = sectionPersistence.select(termId, sectionId);
+        Collection<Student> students = studentPersistence.selectAllStudentsInSection(sectionId);
+        if(null != students && !students.isEmpty()) {
+            section.setEnrolledStudents(new ArrayList<Student>(students));
+        }
+        return new ServiceResponse<Section>(section);
     }
 
     @Override
@@ -493,7 +501,21 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        return new ServiceResponse<Long>(sectionPersistence.insert(termId, section));
+        Long sectionId = sectionPersistence.insert(termId, section);     
+        if(null != section.getEnrolledStudents()) {
+            for(Student s : section.getEnrolledStudents()) {
+                if(null != s.getId() && 
+                        studentExists(s.getId()).equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
+                    StudentSectionGrade ssg = new StudentSectionGrade();
+                    studentSectionGradePersistence.insert(sectionId, s.getId(), ssg);
+                } else {
+                    sectionPersistence.delete(sectionId);
+                    throw new RuntimeException("Invalid section contained enrolled students that don't exist");
+                    //TODO: return error to user and remove this exception
+                }
+            }
+        }
+        return new ServiceResponse<Long>(sectionId);
     }
 
     @Override
@@ -503,7 +525,6 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        sectionPersistence.update(termId, sectionId, section);
         return new ServiceResponse<Long>(sectionId);
     }
 
@@ -541,8 +562,9 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         return new ServiceResponse<Collection<Assignment>>(assignmentPersistence.selectAll(sectionId));
     }
 
+    //SECTION ASSIGNMENTS
     @Override
-    public StatusCode sectionAssignmentExists(long schoolId, long yearId,
+    public StatusCode assignmentExists(long schoolId, long yearId,
             long termId, long sectionId, long sectionAssignmentId) {
         StatusCode code = sectionExists(schoolId, yearId, termId, sectionId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
@@ -560,7 +582,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     public ServiceResponse<Assignment> getAssignment(
             long schoolId, long yearId, long termId, long sectionId,
             long sectionAssignmentId) {
-        StatusCode code = sectionAssignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
+        StatusCode code = assignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Assignment>(code);
         }
@@ -582,7 +604,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     public ServiceResponse<Long> replaceAssignment(long schoolId,
             long yearId, long termId, long sectionId, long sectionAssignmentId,
             Assignment sectionAssignment) {
-        StatusCode code = sectionAssignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
+        StatusCode code = assignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
@@ -594,7 +616,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     public ServiceResponse<Long> updateAssignment(long schoolId,
             long yearId, long termId, long sectionId, long sectionAssignmentId,
             Assignment sectionAssignment) {
-        StatusCode code = sectionAssignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
+        StatusCode code = assignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
@@ -606,7 +628,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     @Override
     public ServiceResponse<Long> deleteAssignment(long schoolId,
             long yearId, long termId, long sectionId, long sectionAssignmentId) {
-        StatusCode code = sectionAssignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
+        StatusCode code = assignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
@@ -614,31 +636,29 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         return new ServiceResponse<Long>((Long) null);
     }
 
+    //STUDENT ASSIGNMENTS
     @Override
     public ServiceResponse<Collection<StudentAssignment>> getAllStudentAssignments(
             long schoolId, long yearId, long termId, long sectionId,
             long sectAssignmentId) {
-        StatusCode code = sectionAssignmentExists(schoolId, yearId, termId, sectionId, sectAssignmentId);
+        StatusCode code = assignmentExists(schoolId, yearId, termId, sectionId, sectAssignmentId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Collection<StudentAssignment>>(code);
         }
-        Collection<StudentAssignment> returnSections = new ArrayList<>();
-        if(null != PersistenceManager.studentAssignments.get(sectAssignmentId)) {
-            returnSections = PersistenceManager.studentAssignments.get(sectAssignmentId).values();
-        }
-        return new ServiceResponse<Collection<StudentAssignment>>(returnSections);
+        Collection<StudentAssignment> sas = studentAssignmentPersistence.selectAll(sectAssignmentId);
+        return new ServiceResponse<Collection<StudentAssignment>>(sas);
     }
 
     @Override
     public StatusCode studentAssignmentExists(long schoolId, long yearId,
             long termId, long sectionId, long sectionAssignmentId,
             long studentAssignmentId) {
-        StatusCode code = sectionAssignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
+        StatusCode code = assignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return code;
         }
-        if(!studentAssignments.containsKey(sectionAssignmentId) || 
-                !studentAssignments.get(sectionAssignmentId).containsKey(studentAssignmentId)) {
+        StudentAssignment sa = studentAssignmentPersistence.select(sectionAssignmentId, studentAssignmentId);
+        if(null == sa) {
             return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
                     new Object[]{ STUDENT_ASSIGNMENT, studentAssignmentId });
         }
@@ -654,24 +674,22 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<StudentAssignment>(code);
         }
-        return new ServiceResponse<StudentAssignment>(
-                studentAssignments.get(sectionAssignmentId).get(studentAssignmentId));
+        StudentAssignment sa = studentAssignmentPersistence.select(sectionAssignmentId, studentAssignmentId);
+//        Assignment a = assignmentPersistence.select(sectionId, sectionAssignmentId);
+//        sa.setSectionAssignment(a);
+        return new ServiceResponse<StudentAssignment>(sa);
     }
 
     @Override
     public ServiceResponse<Long> createStudentAssignment(long schoolId,
             long yearId, long termId, long sectionId, long sectionAssignmentId,
             StudentAssignment studentAssignment) {
-        StatusCode code = sectionAssignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
+        StatusCode code = assignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        if(null == studentAssignments.get(sectionAssignmentId)) {
-            studentAssignments.put(sectionAssignmentId, new HashMap<Long, StudentAssignment>());
-        } 
-        studentAssignment.setId(studentAssignmentCounter.getAndIncrement());
-        studentAssignments.get(sectionAssignmentId).put(studentAssignment.getId(), studentAssignment);
-        return new ServiceResponse<Long>(studentAssignment.getId());
+        return new ServiceResponse<Long>(
+                studentAssignmentPersistence.insert(sectionAssignmentId, studentAssignment));
     }
 
     @Override
@@ -683,9 +701,8 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        studentAssignment.setId(studentAssignmentId);
-        PersistenceManager.studentAssignments.get(sectionAssignmentId).put(studentAssignmentId, studentAssignment);
-        return new ServiceResponse<Long>(studentAssignmentId);
+        return new ServiceResponse<Long>(studentAssignmentPersistence.update(
+                sectionAssignmentId, studentAssignmentId, studentAssignment));
     }
 
     @Override
@@ -698,9 +715,10 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             return new ServiceResponse<Long>(code);
         }
         studentAssignment.setId(studentAssignmentId);
-        studentAssignment.mergePropertiesIfNull(PersistenceManager.studentAssignments.get(sectionAssignmentId).get(studentAssignmentId));
-        studentAssignments.get(sectionAssignmentId).put(studentAssignmentId, studentAssignment);
-        return new ServiceResponse<Long>(studentAssignmentId);
+        studentAssignment.mergePropertiesIfNull(
+                studentAssignmentPersistence.select(sectionAssignmentId, studentAssignmentId));
+        return new ServiceResponse<Long>(
+                studentAssignmentPersistence.update(sectionAssignmentId, studentAssignmentId, studentAssignment));
     }
 
     @Override
@@ -712,10 +730,11 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        studentAssignments.get(sectionAssignmentId).remove(studentAssignmentId);
+        studentAssignmentPersistence.delete(studentAssignmentId);
         return new ServiceResponse<Long>((Long) null);
     }
 
+    //STUDENT SECTION GRADE
     @Override
     public ServiceResponse<Collection<StudentSectionGrade>> getAllStudentSectionGrades(
             long schoolId, long yearId, long termId, long sectionId,
@@ -728,11 +747,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<>(code);
         }
-        Collection<StudentSectionGrade> returnGrades = null;
-        if(studentSectionGrades.containsKey(studentId) && studentSectionGrades.get(studentId).containsKey(sectionId)) {
-            returnGrades = PersistenceManager.studentSectionGrades.get(studentId).get(sectionId).values();
-        }
-        return new ServiceResponse<>(returnGrades);
+        return new ServiceResponse<>(studentSectionGradePersistence.selectAll(sectionId));
     }
 
     @Override
@@ -746,8 +761,8 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return code;
         }
-        if(!studentSectionGrades.containsKey(studentId) || !studentSectionGrades.get(studentId).containsKey(sectionId) ||
-                !studentSectionGrades.get(studentId).get(sectionId).containsKey(gradeId)) {
+        StudentSectionGrade ssg = studentSectionGradePersistence.select(sectionId, studentId);
+        if(null == ssg) {
             return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
                     new Object[]{ PersistenceManager.STUDENT_SECTION_GRADE, gradeId });
         }
@@ -763,8 +778,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<>(code);
         }
-        return new ServiceResponse<>(
-                studentSectionGrades.get(studentId).get(sectionId).get(gradeId));
+        return new ServiceResponse<>(studentSectionGradePersistence.select(sectionId, studentId));
     }
 
     @Override
@@ -779,22 +793,8 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<>(code);
         }
-        if(null == sections.get(termId).get(sectionId).getEnrolledStudents() ||
-                null == sections.get(termId).get(sectionId).findEnrolledStudentById(studentId)) {
-            StatusCode retCode = StatusCodes.getStatusCode(StatusCodeType.ENTITY_INVALID_IN_CONTEXT, new Object[]{
-                    STUDENT_SECTION_GRADE, studentId, SECTION, sectionId 
-                    });
-            return new ServiceResponse<Long>(retCode);
-        }
-        if(null == studentSectionGrades.get(studentId)) {
-            studentSectionGrades.put(studentId, new HashMap<Long, Map<Long, StudentSectionGrade>>());
-        } 
-        if(null == studentSectionGrades.get(studentId).get(sectionId)) {
-            studentSectionGrades.get(studentId).put(sectionId, new HashMap<Long, StudentSectionGrade>());
-        }
-        grade.setId(studentSectGradeCounter.incrementAndGet());
-        studentSectionGrades.get(studentId).get(sectionId).put(grade.getId(), grade);
-        return new ServiceResponse<>(grade.getId());
+        return new ServiceResponse<>(
+                studentSectionGradePersistence.insert(sectionId, studentId, grade));
     }
 
     @Override
@@ -806,9 +806,8 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<>(code);
         }
-        grade.setId(gradeId);
-        studentSectionGrades.get(studentId).get(sectionId).put(gradeId, grade);
-        return new ServiceResponse<>(gradeId);
+        return new ServiceResponse<>(
+                studentSectionGradePersistence.update(sectionId, studentId, gradeId, grade));
     }
 
     @Override
@@ -821,9 +820,9 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             return new ServiceResponse<>(code);
         }
         grade.setId(gradeId);
-        grade.mergePropertiesIfNull(studentSectionGrades.get(studentId).get(sectionId).get(gradeId));
-        studentSectionGrades.get(studentId).get(sectionId).put(gradeId, grade);
-        return new ServiceResponse<>(gradeId);
+        grade.mergePropertiesIfNull(studentSectionGradePersistence.select(sectionId, studentId));
+        return new ServiceResponse<>(
+                studentSectionGradePersistence.update(sectionId, studentId, gradeId, grade));
     }
 
     @Override
@@ -835,7 +834,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<>(code);
         }
-        PersistenceManager.studentSectionGrades.get(studentId).get(sectionId).remove(gradeId);
+        studentSectionGradePersistence.delete(gradeId);
         return new ServiceResponse<>((Long) null);
     }
 
