@@ -35,7 +35,7 @@ public class StudentJdbc extends BaseJdbc implements StudentPersistence {
             " INNER JOIN `" + DbConst.DATABASE +"`.`" + DbConst.STUDENT_SECTION_GRADE_TABLE + "`" + 
             " ON `" + DbConst.STUDENT_SECTION_GRADE_TABLE + "`.`" + DbConst.STUD_FK_COL + "` = `" +
             DbConst.STUDENT_TABLE + "`.`" + DbConst.STUDENT_ID_COL + "` " +
-            "WHERE `" + DbConst.SECTION_FK_COL + "`= :" + DbConst.SECTION_FK_COL + "";
+            "WHERE `" + DbConst.SECTION_FK_COL + "`= :" + DbConst.SECTION_FK_COL;
 
     @Override
     public Collection<Student> selectAllStudents() {

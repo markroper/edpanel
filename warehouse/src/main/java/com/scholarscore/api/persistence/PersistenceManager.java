@@ -525,6 +525,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
+        sectionPersistence.update(termId, sectionId, section);
         return new ServiceResponse<Long>(sectionId);
     }
 
