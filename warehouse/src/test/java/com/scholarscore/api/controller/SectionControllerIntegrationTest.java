@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -53,8 +54,13 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
         
         Section namedSection = new Section();
         namedSection.setName(localeServiceUtil.generateName());
-        namedSection.setStartDate(new Date(1234567L));
-        namedSection.setEndDate(new Date(123456L));
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
+        Date today = cal.getTime();
+        cal.add(Calendar.YEAR, 1); // to get previous year add -1
+        Date nextYear = cal.getTime();
+        namedSection.setStartDate(today);
+        namedSection.setEndDate(nextYear);
         namedSection.setCourse(course);
         
         
@@ -88,8 +94,10 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createSectionProvider")
     public void replaceSectionTest(String msg, Section section) {
+        Section replaceSection = new Section();
+        replaceSection.setCourse(section.getCourse());
         Section createdSection = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, msg);
-        sectionValidatingExecutor.replace(school.getId(), schoolYear.getId(), term.getId(), createdSection.getId(), new Section(), msg);
+        sectionValidatingExecutor.replace(school.getId(), schoolYear.getId(), term.getId(), createdSection.getId(), replaceSection, msg);
         numberOfItemsCreated++;
     }
     
@@ -126,7 +134,9 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createSectionNegativeProvider")
     public void replaceSectionNegativeTest(String msg, Section section, HttpStatus expectedStatus) {
-        Section created = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), new Section(), msg);
+        Section s = new Section();
+        s.setCourse(course);
+        Section created = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), s, msg);
         sectionValidatingExecutor.replaceNegative(school.getId(), schoolYear.getId(), term.getId(), created.getId(), section, expectedStatus, msg);
     }
 }

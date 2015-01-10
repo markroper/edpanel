@@ -10,11 +10,11 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import com.scholarscore.api.persistence.mysql.DbConst;
-import com.scholarscore.api.persistence.mysql.SchoolYearPersistence;
+import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.SchoolYearMapper;
 import com.scholarscore.models.SchoolYear;
 
-public class SchoolYearJdbc extends BaseJdbc implements SchoolYearPersistence {
+public class SchoolYearJdbc extends BaseJdbc implements EntityPersistence<SchoolYear> {
     private static String INSERT_SCHOOL_YEAR_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SCHOOL_YEAR_TABLE + "` " +
             "(" + DbConst.SCHOOL_YEAR_NAME_COL + ", " + DbConst.SCHOOL_FK_COL + ", " + 
@@ -45,7 +45,7 @@ public class SchoolYearJdbc extends BaseJdbc implements SchoolYearPersistence {
      * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolYearPersistence#selectAllSchoolYears(long)
      */
     @Override
-    public Collection<SchoolYear> selectAllSchoolYears(
+    public Collection<SchoolYear> selectAll(
             long schoolId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
@@ -60,7 +60,7 @@ public class SchoolYearJdbc extends BaseJdbc implements SchoolYearPersistence {
      * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolYearPersistence#selectSchoolYear(long, long)
      */
     @Override
-    public SchoolYear selectSchoolYear(long schoolId, long schoolYearId) {
+    public SchoolYear select(long schoolId, long schoolYearId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
         params.put(DbConst.SCHOOL_YEAR_ID_COL, new Long(schoolYearId));
@@ -79,7 +79,7 @@ public class SchoolYearJdbc extends BaseJdbc implements SchoolYearPersistence {
      * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolYearPersistence#insertSchoolYear(long, com.scholarscore.models.SchoolYear)
      */
     @Override
-    public Long insertSchoolYear(long schoolId, SchoolYear schoolYear) {
+    public Long insert(long schoolId, SchoolYear schoolYear) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_YEAR_NAME_COL, schoolYear.getName());
@@ -98,8 +98,7 @@ public class SchoolYearJdbc extends BaseJdbc implements SchoolYearPersistence {
      * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolYearPersistence#updateSchoolYear(long, long, com.scholarscore.models.SchoolYear)
      */
     @Override
-    public Long updateSchoolYear(long schoolId,
-            long schoolYearId, SchoolYear schoolYear) {
+    public Long update(long schoolId, long schoolYearId, SchoolYear schoolYear) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_YEAR_NAME_COL, schoolYear.getName());
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
@@ -116,7 +115,7 @@ public class SchoolYearJdbc extends BaseJdbc implements SchoolYearPersistence {
      * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolYearPersistence#deleteSchoolYear(long, long)
      */
     @Override
-    public Long deleteSchoolYear(long schoolYearId) {
+    public Long delete(long schoolYearId) {
         Map<String, Object> params = new HashMap<>();
         params.put(DbConst.SCHOOL_YEAR_ID_COL, new Long(schoolYearId));
         jdbcTemplate.update(DELETE_SCHOOL_YEAR_SQL, new MapSqlParameterSource(params));

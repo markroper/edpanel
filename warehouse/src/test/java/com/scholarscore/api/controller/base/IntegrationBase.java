@@ -33,12 +33,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableMap;
-import com.scholarscore.api.controller.service.AssignmentValidatingExecutor;
 import com.scholarscore.api.controller.service.CourseValidatingExecutor;
 import com.scholarscore.api.controller.service.LocaleServiceUtil;
 import com.scholarscore.api.controller.service.SchoolValidatingExecutor;
 import com.scholarscore.api.controller.service.SchoolYearValidatingExecutor;
-import com.scholarscore.api.controller.service.SectionAssignmentValidatingExecutor;
+import com.scholarscore.api.controller.service.AssignmentValidatingExecutor;
 import com.scholarscore.api.controller.service.SectionValidatingExecutor;
 import com.scholarscore.api.controller.service.StudentAssignmentValidatingExecutor;
 import com.scholarscore.api.controller.service.StudentSectionGradeValidatingExecutor;
@@ -81,13 +80,12 @@ public class IntegrationBase {
     private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
 
     public LocaleServiceUtil localeServiceUtil;
-    public AssignmentValidatingExecutor assignmentValidatingExecutor;
     public CourseValidatingExecutor courseValidatingExecutor;
     public SchoolValidatingExecutor schoolValidatingExecutor;
     public SchoolYearValidatingExecutor schoolYearValidatingExecutor;
     public TermValidatingExecutor termValidatingExecutor;
     public SectionValidatingExecutor sectionValidatingExecutor;
-    public SectionAssignmentValidatingExecutor sectionAssignmentValidatingExecutor;
+    public AssignmentValidatingExecutor sectionAssignmentValidatingExecutor;
     public StudentValidatingExecutor studentValidatingExecutor;
     public StudentAssignmentValidatingExecutor studentAssignmentValidatingExecutor;
     public StudentSectionGradeValidatingExecutor studentSectionGradeValidatingExecutor;
@@ -135,13 +133,12 @@ public class IntegrationBase {
     public void configureServices() {
         this.mockMvc = new NetMvc();
         localeServiceUtil = new LocaleServiceUtil(this);
-        assignmentValidatingExecutor = new AssignmentValidatingExecutor(this);
         courseValidatingExecutor = new CourseValidatingExecutor(this);
         schoolValidatingExecutor = new SchoolValidatingExecutor(this);
         schoolYearValidatingExecutor = new SchoolYearValidatingExecutor(this);
         termValidatingExecutor = new TermValidatingExecutor(this);
         sectionValidatingExecutor = new SectionValidatingExecutor(this);
-        sectionAssignmentValidatingExecutor = new SectionAssignmentValidatingExecutor(this);
+        sectionAssignmentValidatingExecutor = new AssignmentValidatingExecutor(this);
         studentValidatingExecutor = new StudentValidatingExecutor(this);
         studentAssignmentValidatingExecutor = new StudentAssignmentValidatingExecutor(this);
         studentSectionGradeValidatingExecutor = new StudentSectionGradeValidatingExecutor(this);
@@ -156,7 +153,6 @@ public class IntegrationBase {
      * Test services initialization validated
      */
     private void validateServiceConfig() {
-        Assert.assertNotNull(assignmentValidatingExecutor, "Unable to configure assignment service");
         Assert.assertNotNull(courseValidatingExecutor, "Unable to configure course service");
         Assert.assertNotNull(schoolValidatingExecutor, "Unable to configure school service");
         Assert.assertNotNull(schoolYearValidatingExecutor, "Unable to configure school year service");
@@ -241,10 +237,6 @@ public class IntegrationBase {
                 Assert.fail("TEST SETUP FAILED: Resource file '" + resourceName + "' not found on classpath.");
             }
         }
-    }
-
-    public AssignmentValidatingExecutor getAssignmentServiceValidator() {
-        return assignmentValidatingExecutor;
     }
     
     public LocaleServiceUtil getLocaleServiceValidator() {
@@ -631,26 +623,6 @@ public class IntegrationBase {
             Long sectionAssignmentId) {
         return getSectionAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId, sectionAssignmentId) 
                 + STUDENT_ASSIGNMENT_ENDPOINT;
-    }
-    
-    /**
-     * Description:
-     * Private helper method to get string to connect to application endpoint
-     * Expected Result:
-     * String for application endpoint
-     */
-    public String getAssignmentEndpoint(Long schoolId, Long courseId) {
-        return getCourseEndpoint(schoolId, courseId) + ASSIGNMENT_ENDPOINT;
-    }
-
-    /**
-     * Description:
-     * Private helper method to get string to connect to application endpoint
-     * Expected Result:
-     * String for application endpoint containing supplied appId
-     */
-    public String getAssignmentEndpoint(Long schoolId, Long courseId, Long assignmentId) {
-        return getAssignmentEndpoint(schoolId, courseId) + pathify(assignmentId);
     }
 
     /**

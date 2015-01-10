@@ -77,7 +77,11 @@
       class="com.scholarscore.api.persistence.mysql.jdbc.SectionJdbc">
       <property name="dataSource"  ref="dataSource" />    
    </bean>
-   
+    <bean id="assignmentPersistence" 
+      class="com.scholarscore.api.persistence.mysql.jdbc.AssignmentJdbc">
+      <property name="dataSource"  ref="dataSource" />    
+   </bean>
+     
    <bean id="PM"
         class="com.scholarscore.api.persistence.PersistenceManager">
         <property name="schoolPersistence"  ref="schoolPersistence" /> 
@@ -86,5 +90,6 @@
         <property name="studentPersistence"  ref="studentPersistence" />
         <property name="sectionPersistence"  ref="sectionPersistence" />
         <property name="coursePersistence"  ref="coursePersistence" />
+        <property name="assignmentPersistence"  ref="assignmentPersistence" />
    </bean>
 </beans>

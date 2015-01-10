@@ -12,11 +12,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.persistence.mysql.DbConst;
-import com.scholarscore.api.persistence.mysql.SectionPersistence;
+import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.SectionMapper;
 import com.scholarscore.models.Section;
 
-public class SectionJdbc extends BaseJdbc implements SectionPersistence {
+public class SectionJdbc extends BaseJdbc implements EntityPersistence<Section> {
     private static String INSERT_SECTION_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SECTION_TABLE + "` " +
             "(`" + DbConst.SECTION_NAME_COL + "`, `" + DbConst.TERM_FK_COL + "`, `" + 
@@ -53,7 +53,7 @@ public class SectionJdbc extends BaseJdbc implements SectionPersistence {
             " AND `" + DbConst.SECTION_ID_COL + "`= :" + DbConst.SECTION_ID_COL;
     
     @Override
-    public Collection<Section> selectAllSections(long termId) {
+    public Collection<Section> selectAll(long termId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.TERM_FK_COL, new Long(termId));
         Collection<Section> sections = jdbcTemplate.query(
@@ -64,7 +64,7 @@ public class SectionJdbc extends BaseJdbc implements SectionPersistence {
     }
 
     @Override
-    public Section selectSection(long termId, long sectionId) {
+    public Section select(long termId, long sectionId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.TERM_FK_COL, new Long(termId));
         params.put(DbConst.SECTION_ID_COL, new Long(sectionId));  
@@ -80,7 +80,7 @@ public class SectionJdbc extends BaseJdbc implements SectionPersistence {
     }
 
     @Override
-    public Long insertSection(long termId, Section term) throws JsonProcessingException {
+    public Long insert(long termId, Section term) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SECTION_NAME_COL, term.getName());
@@ -93,7 +93,11 @@ public class SectionJdbc extends BaseJdbc implements SectionPersistence {
         params.put(DbConst.SECTION_START_DATE_COL, DbConst.resolveTimestamp(term.getStartDate()));
         params.put(DbConst.SECTION_END_DATE_COL, DbConst.resolveTimestamp(term.getEndDate()));
         params.put(DbConst.ROOM_COL, term.getRoom());
-        params.put(DbConst.GRADE_FORMULA_COL, new ObjectMapper().writeValueAsString(term.getGradeFormula()));
+        try {
+            params.put(DbConst.GRADE_FORMULA_COL, new ObjectMapper().writeValueAsString(term.getGradeFormula()));
+        } catch(JsonProcessingException e) {
+            //no op
+        }
         jdbcTemplate.update(
                 INSERT_SECTION_SQL, 
                 new MapSqlParameterSource(params), 
@@ -102,7 +106,7 @@ public class SectionJdbc extends BaseJdbc implements SectionPersistence {
     }
 
     @Override
-    public Long updateSection(long termId, long sectionId, Section section) throws JsonProcessingException {
+    public Long update(long termId, long sectionId, Section section) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SECTION_NAME_COL, section.getName());
         params.put(DbConst.TERM_FK_COL, new Long(termId));
@@ -114,7 +118,11 @@ public class SectionJdbc extends BaseJdbc implements SectionPersistence {
         params.put(DbConst.SECTION_START_DATE_COL, DbConst.resolveTimestamp(section.getStartDate()));
         params.put(DbConst.SECTION_END_DATE_COL, DbConst.resolveTimestamp(section.getEndDate()));
         params.put(DbConst.ROOM_COL, section.getRoom());
-        params.put(DbConst.GRADE_FORMULA_COL, new ObjectMapper().writeValueAsString(section.getGradeFormula()));
+        try {
+            params.put(DbConst.GRADE_FORMULA_COL, new ObjectMapper().writeValueAsString(section.getGradeFormula()));
+        } catch(JsonProcessingException e) {
+            //No op
+        }
         params.put(DbConst.SECTION_ID_COL, new Long(sectionId));
         jdbcTemplate.update(
                 UPDATE_SECTION_SQL, 
@@ -123,7 +131,7 @@ public class SectionJdbc extends BaseJdbc implements SectionPersistence {
     }
 
     @Override
-    public Long deleteSection(long sectionId) {
+    public Long delete(long sectionId) {
         Map<String, Object> params = new HashMap<>();
         params.put(DbConst.SECTION_ID_COL, new Long(sectionId));
         jdbcTemplate.update(DELETE_SECTION_SQL, new MapSqlParameterSource(params));

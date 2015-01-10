@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.http.HttpStatus;
@@ -9,11 +10,11 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.Course;
 import com.scholarscore.models.GradedAssignment;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.SectionAssignment;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.Term;
@@ -24,8 +25,9 @@ public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase
     private School school;
     private SchoolYear schoolYear;
     private Term term;
+    private Course course;
     private Section section;
-    private SectionAssignment sectionAssignment;
+    private GradedAssignment sectionAssignment;
     private Student student;
     
     @BeforeClass
@@ -47,20 +49,27 @@ public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase
         term.setName(localeServiceUtil.generateName());
         term = termValidatingExecutor.create(school.getId(), schoolYear.getId(), term, "create test base term");
         
+        course = new Course();
+        course.setName(localeServiceUtil.generateName());
+        course = courseValidatingExecutor.create(school.getId(), course, "create base course");
+        
         section = new Section();
+        section.setCourse(course);
         section.setName(localeServiceUtil.generateName());
         section.setEnrolledStudents(new ArrayList<Student>());
         section.getEnrolledStudents().add(student);
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
         
-        sectionAssignment = new SectionAssignment();
+        sectionAssignment = new GradedAssignment();
         sectionAssignment.setName(localeServiceUtil.generateName());
-        sectionAssignment.setAssignedDate(new Date(1234567L));
-        sectionAssignment.setDueDate(new Date(123456L));
-        GradedAssignment assignment = new GradedAssignment();
-        assignment.setId(2l);
-        sectionAssignment.setAssignment(assignment);
-        sectionAssignment = sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), 
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
+        Date today = cal.getTime();
+        cal.add(Calendar.YEAR, 1); // to get previous year add -1
+        Date nextYear = cal.getTime();
+        sectionAssignment.setAssignedDate(today);
+        sectionAssignment.setDueDate(nextYear);
+        sectionAssignment = (GradedAssignment) sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), 
                 term.getId(), section.getId(), sectionAssignment, "create test base term");
     }
     
@@ -70,7 +79,7 @@ public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase
         //StudentAssignment emptyStudentAssignment = new StudentAssignment();
         
         StudentAssignment namedStudentAssignment = new StudentAssignment();
-        namedStudentAssignment.setAssignment(sectionAssignment);
+        namedStudentAssignment.setSectionAssignment(sectionAssignment);
         namedStudentAssignment.setStudent(student);
         
         return new Object[][] {

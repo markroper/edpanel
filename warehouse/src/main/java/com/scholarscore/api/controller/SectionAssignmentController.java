@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.scholarscore.models.Assignment;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.SectionAssignment;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
@@ -37,13 +37,13 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId) {
-        return respond(PM.getAllSectionAssignments(schoolId, yearId, termId, sectId));
+        return respond(PM.getAllAssignments(schoolId, yearId, termId, sectId));
     }
     
     @ApiOperation(
             value = "Get a section assignment", 
             notes = "Given an section assignment ID, return the section assignment instance", 
-            response = SectionAssignment.class)
+            response = Assignment.class)
     @RequestMapping(
             value = "/{assignmentId}", 
             method = RequestMethod.GET, 
@@ -60,7 +60,7 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
-        return respond(PM.getSectionAssignment(schoolId, yearId, termId, sectId, assignmentId));
+        return respond(PM.getAssignment(schoolId, yearId, termId, sectId, assignmentId));
     }
 
     @ApiOperation(
@@ -80,8 +80,8 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
-            @RequestBody @Valid SectionAssignment sectionAssignment) {
-        return respond(PM.createSectionAssignment(schoolId, yearId, termId, sectId, sectionAssignment));
+            @RequestBody @Valid Assignment sectionAssignment) {
+        return respond(PM.createAssignment(schoolId, yearId, termId, sectId, sectionAssignment));
     }
 
     @ApiOperation(
@@ -104,8 +104,8 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
-            @RequestBody @Valid SectionAssignment sectionAssignment) {
-        return respond(PM.replaceSectionAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
+            @RequestBody @Valid Assignment sectionAssignment) {
+        return respond(PM.replaceAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
     }
     
     @ApiOperation(
@@ -128,8 +128,8 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
-            @RequestBody @Valid SectionAssignment sectionAssignment) {
-        return respond(PM.updateSectionAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
+            @RequestBody @Valid Assignment sectionAssignment) {
+        return respond(PM.updateAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
     }
 
     @ApiOperation(
@@ -152,6 +152,6 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
-        return respond(PM.deleteSectionAssignment(schoolId, yearId, termId, sectId, assignmentId));
+        return respond(PM.deleteAssignment(schoolId, yearId, termId, sectId, assignmentId));
     }
 }

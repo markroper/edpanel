@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class StudentAssignment extends ApiModel implements Serializable, IApiModel<StudentAssignment> {
     private Boolean completed;
     private Long awardedPoints;
-    private transient SectionAssignment sectionAssignment;
+    private transient Assignment sectionAssignment;
     private transient Student student;
 
     public StudentAssignment() {
@@ -58,12 +58,8 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         this.completed = completed;
     }
 
-    public SectionAssignment getSectionAssignment() {
+    public Assignment getSectionAssignment() {
         return sectionAssignment;
-    }
-
-    public void setAssignment(SectionAssignment sectionAssignment) {
-        this.sectionAssignment = sectionAssignment;
     }
 
     public Long getAwardedPoints() {
@@ -74,7 +70,7 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         this.awardedPoints = awardedPoints;
     }
 
-    public void setSectionAssignment(SectionAssignment sectionAssignment) {
+    public void setSectionAssignment(Assignment sectionAssignment) {
         this.sectionAssignment = sectionAssignment;
     }
 

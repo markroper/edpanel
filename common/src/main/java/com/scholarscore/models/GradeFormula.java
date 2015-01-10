@@ -55,7 +55,7 @@ public class GradeFormula implements Serializable {
         } else {
             Map<AssignmentType, MutablePair<Long, Long>> calculatedGradeByType = new HashMap<>();
             for(StudentAssignment sa : studentAssignments) {
-                AssignmentType type = sa.getSectionAssignment().getAssignment().getType();
+                AssignmentType type = sa.getSectionAssignment().getType();
                 if(!assignmentTypeWeights.containsKey(type)) {
                     continue;
                 }

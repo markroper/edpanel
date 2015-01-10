@@ -12,6 +12,7 @@ public class DbConst {
     public static final String STUDENT_TABLE = "student";
     public static final String SECTION_TABLE = "section";
     public static final String COURSE_TABLE = "course";
+    public static final String ASSIGNMENT_TABLE = "assignment";
     //Columns
     public static final String SCHOOL_ID_COL = "school_id";
     public static final String SCHOOL_NAME_COL = "school_name";
@@ -42,6 +43,14 @@ public class DbConst {
     
     public static final String COURSE_ID_COL = "course_id";
     public static final String COURSE_NAME_COL = "course_name";
+    
+    public static final String ASSIGNMENT_ID_COL = "assignment_id";
+    public static final String ASSIGNMENT_NAME_COL = "assignment_name";
+    public static final String TYPE_FK_COL = "type_fk";
+    public static final String ASSIGNED_DATE_COL = "assigned_date";
+    public static final String DUE_DATE_COL = "due_date";
+    public static final String AVAILABLE_POINTS_COL = "available_points";
+    public static final String SECTION_FK_COL = "section_fk";
     
     public static Timestamp resolveTimestamp(Date input) {
         Timestamp returnVal = null;

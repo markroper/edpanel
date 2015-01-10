@@ -10,11 +10,11 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import com.scholarscore.api.persistence.mysql.DbConst;
-import com.scholarscore.api.persistence.mysql.TermPersistence;
+import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.TermMapper;
 import com.scholarscore.models.Term;
 
-public class TermJdbc extends BaseJdbc implements TermPersistence {
+public class TermJdbc extends BaseJdbc implements EntityPersistence<Term> {
     private static String INSERT_TERM_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.TERM_TABLE + "` " +
             "(" + DbConst.TERM_NAME_COL + ", " + DbConst.SCHOOL_YEAR_FK_COL + ", " + 
@@ -42,7 +42,7 @@ public class TermJdbc extends BaseJdbc implements TermPersistence {
             " AND `" + DbConst.TERM_ID_COL + "`= :" + DbConst.TERM_ID_COL;
     
     @Override
-    public Collection<Term> selectAllTerms(long schoolYearId) {
+    public Collection<Term> selectAll(long schoolYearId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_YEAR_FK_COL, new Long(schoolYearId));
         Collection<Term> terms = jdbcTemplate.query(
@@ -53,7 +53,7 @@ public class TermJdbc extends BaseJdbc implements TermPersistence {
     }
 
     @Override
-    public Term selectTerm(long schoolYearId, long termId) {
+    public Term select(long schoolYearId, long termId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_YEAR_FK_COL, new Long(schoolYearId));
         params.put(DbConst.TERM_ID_COL, new Long(termId));
@@ -70,7 +70,7 @@ public class TermJdbc extends BaseJdbc implements TermPersistence {
     }
 
     @Override
-    public Long insertTerm(long schoolYearId, Term term) {
+    public Long insert(long schoolYearId, Term term) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.TERM_NAME_COL, term.getName());
@@ -85,8 +85,7 @@ public class TermJdbc extends BaseJdbc implements TermPersistence {
     }
 
     @Override
-    public Long updateTerm(long schoolYearId, long termId,
-            Term term) {
+    public Long update(long schoolYearId, long termId, Term term) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.TERM_NAME_COL, term.getName());
         params.put(DbConst.SCHOOL_YEAR_FK_COL, new Long(schoolYearId));
@@ -100,7 +99,7 @@ public class TermJdbc extends BaseJdbc implements TermPersistence {
     }
 
     @Override
-    public Long deleteTerm(long termId) {
+    public Long delete(long termId) {
         Map<String, Object> params = new HashMap<>();
         params.put(DbConst.TERM_ID_COL, new Long(termId));
         jdbcTemplate.update(DELETE_TERM_SQL, new MapSqlParameterSource(params));

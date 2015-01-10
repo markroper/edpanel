@@ -15,9 +15,6 @@ public class GradedAssignmentDeserializer extends AssignmentDeserializer<GradedA
         if(null != node.get(JsonKeyConstants.ASSIGNED_DATE)) {
             assignment.setAssignedDate(new Date(node.get(JsonKeyConstants.ASSIGNED_DATE).asLong()));
         }
-        if(null != node.get(JsonKeyConstants.DUE_DATE)) {
-            assignment.setDueDate(new Date(node.get(JsonKeyConstants.DUE_DATE).asLong()));
-        }
         return super.deserializeAttributes(node);
     }
 

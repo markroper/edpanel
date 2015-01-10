@@ -9,12 +9,12 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import com.scholarscore.api.persistence.mysql.CoursePersistence;
 import com.scholarscore.api.persistence.mysql.DbConst;
+import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.CourseMapper;
 import com.scholarscore.models.Course;
 
-public class CourseJdbc extends BaseJdbc implements CoursePersistence {
+public class CourseJdbc extends BaseJdbc implements EntityPersistence<Course> {
     private static String INSERT_COURSE_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.COURSE_TABLE + "` " +
             "(" + DbConst.COURSE_NAME_COL + ", " + DbConst.SCHOOL_FK_COL + ")" +
@@ -38,7 +38,7 @@ public class CourseJdbc extends BaseJdbc implements CoursePersistence {
             " AND `" + DbConst.COURSE_ID_COL + "`= :" + DbConst.COURSE_ID_COL;
     
     @Override
-    public Collection<Course> selectAllCourses(long schoolId) {
+    public Collection<Course> selectAll(long schoolId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
         Collection<Course> courses = jdbcTemplate.query(
@@ -49,7 +49,7 @@ public class CourseJdbc extends BaseJdbc implements CoursePersistence {
     }
 
     @Override
-    public Course selectCourse(long schoolId, long courseId) {
+    public Course select(long schoolId, long courseId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
         params.put(DbConst.COURSE_ID_COL, new Long(courseId));
@@ -65,7 +65,7 @@ public class CourseJdbc extends BaseJdbc implements CoursePersistence {
     }
 
     @Override
-    public Long insertCourse(long schoolId, Course course) {
+    public Long insert(long schoolId, Course course) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.COURSE_NAME_COL, course.getName());
@@ -78,7 +78,7 @@ public class CourseJdbc extends BaseJdbc implements CoursePersistence {
     }
 
     @Override
-    public Long updateCourse(long schoolId, long courseId, Course course) {
+    public Long update(long schoolId, long courseId, Course course) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.COURSE_NAME_COL, course.getName());
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
@@ -90,7 +90,7 @@ public class CourseJdbc extends BaseJdbc implements CoursePersistence {
     }
 
     @Override
-    public Long deleteCourse(long courseId) {
+    public Long delete(long courseId) {
         Map<String, Object> params = new HashMap<>();
         params.put(DbConst.COURSE_ID_COL, new Long(courseId));
         jdbcTemplate.update(DELETE_COURSE_SQL, new MapSqlParameterSource(params));

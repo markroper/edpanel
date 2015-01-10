@@ -1,6 +1,7 @@
 package com.scholarscore.models.serializers;
 
 import java.io.IOException;
+import java.util.Date;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.scholarscore.models.Assignment;
@@ -22,6 +23,14 @@ public abstract class AssignmentDeserializer<T extends Assignment> extends BaseD
         
         if(null != node.get(JsonKeyConstants.ID)){
             assignment.setId(node.get(JsonKeyConstants.ID).asLong());
+        }
+        
+        if(null != node.get(JsonKeyConstants.DUE_DATE)) {
+            assignment.setDueDate(new Date(node.get(JsonKeyConstants.DUE_DATE).asLong()));
+        }
+        
+        if(null != node.get(JsonKeyConstants.AVAILABLE_POINTS)) {
+            assignment.setAvailablePoints(node.get(JsonKeyConstants.AVAILABLE_POINTS).asLong());
         }
         return assignment;
     }

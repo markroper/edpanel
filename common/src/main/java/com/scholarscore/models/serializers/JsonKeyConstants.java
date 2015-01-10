@@ -10,6 +10,7 @@ public class JsonKeyConstants {
     public static final String ASSIGNED_DATE = "assignedDate";
     public static final String DUE_DATE = "dueDate";
     public static final String GRADE = "grade";
+    public static final String AVAILABLE_POINTS = "availablePoints";
     //Attendance assignment properties
     public static final String DATE = "date";
 }
