@@ -79,7 +79,7 @@ public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase
         //StudentAssignment emptyStudentAssignment = new StudentAssignment();
         
         StudentAssignment namedStudentAssignment = new StudentAssignment();
-        namedStudentAssignment.setSectionAssignment(sectionAssignment);
+        namedStudentAssignment.setAssignment(sectionAssignment);
         namedStudentAssignment.setStudent(student);
         
         return new Object[][] {
@@ -107,7 +107,7 @@ public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase
                 section.getId(), sectionAssignment.getId(), studentAssignment, msg);
         StudentAssignment replacement = new StudentAssignment();
         replacement.setStudent(student);
-        replacement.setSectionAssignment(sectionAssignment);
+        replacement.setAssignment(sectionAssignment);
         studentAssignmentValidatingExecutor.replace(school.getId(), schoolYear.getId(), term.getId(), 
                 section.getId(), sectionAssignment.getId(), createdSection.getId(), replacement, msg);
         numberOfItemsCreated++;
@@ -153,7 +153,7 @@ public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase
     public void replaceAssignmentNegativeTest(String msg, StudentAssignment studentAssignment, HttpStatus expectedStatus) {
         StudentAssignment st = new StudentAssignment();
         st.setStudent(student);
-        st.setSectionAssignment(sectionAssignment);
+        st.setAssignment(sectionAssignment);
         StudentAssignment created = studentAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), 
                 section.getId(), sectionAssignment.getId(), st, msg);
         studentAssignmentValidatingExecutor.replaceNegative(school.getId(), schoolYear.getId(), term.getId(), 

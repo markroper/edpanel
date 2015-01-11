@@ -41,8 +41,8 @@ public class StudentSectionGradeController extends BaseController {
     }
     
     @ApiOperation(
-            value = "Get a student's grade in a section", 
-            notes = "Get a student's grade in a section", 
+            value = "Get a student grade in a section", 
+            notes = "Get a student grade in a section", 
             response = StudentSectionGrade.class)
     @RequestMapping(
             value = "/students/{studId}", 
