@@ -18,7 +18,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Controller
-@RequestMapping("/api/v1/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/sectassignments")
+@RequestMapping("/api/v1/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/assignments")
 public class SectionAssignmentController extends BaseController {
     @ApiOperation(
             value = "Get all section assignments", 

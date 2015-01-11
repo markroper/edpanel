@@ -73,7 +73,7 @@ public class IntegrationBase {
     private static final String COURSE_ENDPOINT = "/courses";
     private static final String TERM_ENDPOINT = "/terms";
     private static final String SECTION_ENDPOINT = "/sections";
-    private static final String SECTION_ASSIGNMENT_ENDPOINT = "/sectassignments";
+    private static final String SECTION_ASSIGNMENT_ENDPOINT = "/assignments";
     private static final String STUDENT_ENDPOINT = "/students";
     private static final String STUDENT_ASSIGNMENT_ENDPOINT = "/studentassignments";
     private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
