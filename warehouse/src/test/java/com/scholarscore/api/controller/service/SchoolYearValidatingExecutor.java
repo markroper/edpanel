@@ -141,11 +141,6 @@ public class SchoolYearValidatingExecutor {
     protected SchoolYear retrieveAndValidateCreatedSchoolYear( Long schoolId, Long schoolYearId, SchoolYear submittedSchoolYear, HttpMethod method, String msg) {
         //Retrieve and validate the created schoolYear
         SchoolYear createdSchoolYear = this.get(schoolId, schoolYearId, msg);
-        //Keep a reference to the created schoolYear for later cleanup
-        if(!serviceBase.schoolYearsCreated.containsKey(schoolId)) {
-            serviceBase.schoolYearsCreated.put(schoolId, new ArrayList<SchoolYear>());
-        }
-        serviceBase.schoolYearsCreated.get(schoolId).add(createdSchoolYear);
         SchoolYear expectedSchoolYear = generateExpectationSchoolYear(submittedSchoolYear, createdSchoolYear, method);
         Assert.assertEquals(createdSchoolYear, expectedSchoolYear, "Unexpected schoolYear created for case: " + msg);
         

@@ -142,11 +142,6 @@ public class SectionValidatingExecutor {
         
         //Retrieve and validate the created term
         Section createdSection = this.get(schoolId, schoolYearId, termId, sectionId.getId(), msg);
-      //Keep a reference to the created schoolYear for later cleanup
-        if(!serviceBase.sectionsCreated.containsKey(schoolId)) {
-            serviceBase.sectionsCreated.put(schoolId, new ArrayList<Section>());
-        }
-        serviceBase.sectionsCreated.get(schoolId).add(createdSection);
         Section expectedSection = generateExpectationSection(submittedSection, createdSection, method);
         Assert.assertEquals(createdSection, expectedSection, "Unexpected term created for case: " + msg);
         

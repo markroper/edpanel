@@ -140,10 +140,6 @@ public class CourseValidatingExecutor {
         //Retrieve and validate the created course
         Course createdCourse = this.get(schoolId, courseId, msg);
         //Keep a reference to the created course for later cleanup
-        if(!serviceBase.coursesCreated.containsKey(schoolId)) {
-            serviceBase.coursesCreated.put(schoolId, new ArrayList<Course>());
-        }
-        serviceBase.coursesCreated.get(schoolId).add(createdCourse);
         Course expectedCourse = generateExpectationCourse(submittedCourse, createdCourse, method);
         Assert.assertEquals(createdCourse, expectedCourse, "Unexpected course created for case: " + msg);
         

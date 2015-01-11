@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.StringUtils;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 
@@ -89,13 +90,9 @@ public class IntegrationBase {
     public StudentAssignmentValidatingExecutor studentAssignmentValidatingExecutor;
     public StudentSectionGradeValidatingExecutor studentSectionGradeValidatingExecutor;
     
-    public ConcurrentHashMap<Long, Map<Long, List<Assignment>>> assignmentsCreated = new ConcurrentHashMap<>();
+
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
-    public ConcurrentHashMap<Long, List<SchoolYear>> schoolYearsCreated = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<Long, List<Course>> coursesCreated = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<Long, List<Section>> sectionsCreated = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<Long, Student> studentsCreated = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<Long, StudentAssignment> studentAssignmentsCreated= new ConcurrentHashMap<>(); 
+    public CopyOnWriteArrayList<Student> studentsCreated = new CopyOnWriteArrayList<>();
 
     // Locale used in testing. Supplied as command-line arguments to JVM: -Dlocale=de_DE
     // Valid values include the following:
@@ -168,10 +165,9 @@ public class IntegrationBase {
      * Expected Result:
      * All test data associated with application is removed
      */
-    @AfterSuite(groups = { "integration" })
+    @AfterClass(alwaysRun = true)
     protected void removeTestData() {
         // Remove all Apps created during testing
-        //Long startTime = new Date().getTime();
         if (null == endpoint || null == endpoint.get()) {
             if (null != properties) {
                 try {
@@ -187,7 +183,12 @@ public class IntegrationBase {
 
         localeServiceUtil.setLocale();
         contentType = System.getProperty("contentType", "json");
-        //Long completionTime = new Date().getTime();
+        for(School s : schoolsCreated) {
+            makeRequest(HttpMethod.DELETE, getSchoolEndpoint(s.getId()));
+        }
+        for(Student s : studentsCreated) {
+            makeRequest(HttpMethod.DELETE, getStudentEndpoint(s.getId()));
+        }
     }
     
     /**
