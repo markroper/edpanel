@@ -66,6 +66,12 @@ public class DbConst {
     public static final String STUD_SECTION_GRADE_COMPLETE = "complete";
     public static final String STUD_SECTION_GRADE_GRADE = "grade";
     
+    /**
+     * Helper method converts a Java Date to a Timestamp for storage in the Database.
+     * 
+     * @param input
+     * @return
+     */
     public static Timestamp resolveTimestamp(Date input) {
         Timestamp returnVal = null;
         if(null!= input) {

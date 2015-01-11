@@ -450,6 +450,15 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     }
     
     //SECTION
+    /**
+     * Returns all sections in a given school term, with all section assignments
+     * and enrolled students populated on the instance.
+     * 
+     * @param schoolId
+     * @param yearId
+     * @param termId
+     * @return
+     */
     @Override
     public ServiceResponse<Collection<Section>> getAllSections(long schoolId, long yearId, long termId) {
         StatusCode code = termExists(schoolId, yearId, termId);
@@ -461,6 +470,10 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             Collection<Student> students = studentPersistence.selectAllStudentsInSection(s.getId());
             if(null != students && !students.isEmpty()) {
                 s.setEnrolledStudents(new ArrayList<Student>(students));
+            }
+            Collection<Assignment> assignments = assignmentPersistence.selectAll(s.getId());
+            if(null != assignments && !assignments.isEmpty()) {
+                s.setSectionAssignments(new ArrayList<Assignment>(assignments));
             }
         }
         return new ServiceResponse<Collection<Section>>(sections);
@@ -479,6 +492,15 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         return StatusCodes.getStatusCode(StatusCodeType.OK);
     }
 
+    /**
+     * Returns a section with its enrolled students and section assignments populated
+     * 
+     * @param schoolId
+     * @param yearId
+     * @param termId
+     * @param sectionId
+     * @return
+     */
     @Override
     public ServiceResponse<Section> getSection(long schoolId, long yearId,
             long termId, long sectionId) {
@@ -491,9 +513,26 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(null != students && !students.isEmpty()) {
             section.setEnrolledStudents(new ArrayList<Student>(students));
         }
+        Collection<Assignment> assignments = assignmentPersistence.selectAll(sectionId);
+        if(null != assignments && !assignments.isEmpty()) {
+            section.setSectionAssignments(new ArrayList<Assignment>(assignments));
+        }
         return new ServiceResponse<Section>(section);
     }
 
+    /**
+     * Creates a section including enrolling any students in the enrolled student 
+     * set provided as a member of the Section instance provided.  Adding 
+     *  section assignments via this endpoint is not supported by this method
+     *  at this time.  Any assignments on the instance provided will be ignored.
+     *  
+     * @param schoolId
+     * @param yearId
+     * @param termId
+     * @param section
+     * @return
+     * @throws JsonProcessingException
+     */
     @Override
     public ServiceResponse<Long> createSection(long schoolId, long yearId,
             long termId, Section section) throws JsonProcessingException {
@@ -518,6 +557,19 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         return new ServiceResponse<Long>(sectionId);
     }
 
+    /**
+     * When a section is updated, we are able to update the list of enrolled students, but we do
+     * support updaing the list of assignments in the secion via this method at this time. 
+     * For that ADD/UPDATE/DELETE assignment API's can be called.
+     * 
+     * @param schoolId
+     * @param yearId
+     * @param termId
+     * @param sectionId
+     * @param section
+     * @return
+     * @throws JsonProcessingException
+     */
     @Override
     public ServiceResponse<Long> replaceSection(long schoolId, long yearId,
             long termId, long sectionId, Section section) throws JsonProcessingException {
@@ -525,6 +577,29 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
+        Collection<Student> students = studentPersistence.selectAllStudentsInSection(sectionId);
+        HashSet<Long> studentsInSection = new HashSet<>();
+        for(Student s : students) {
+            studentsInSection.add(s.getId());
+        }
+        if(null != section.getEnrolledStudents()) {
+            for(Student s : section.getEnrolledStudents()) {
+                if(!studentsInSection.contains(s.getId())) { 
+                    if(studentExists(s.getId()).equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
+                        //Add existing student to the section
+                        studentSectionGradePersistence.insert(
+                                sectionId, s.getId(), new StudentSectionGrade());
+                    }
+                } else {
+                    //If the student was already in the section, remove it from the set and do nothing to the DB
+                    studentsInSection.remove(s.getId());
+                }
+            }
+        }
+        //Remove any students that are no longer in the section
+        for(Long id : studentsInSection) {
+            studentSectionGradePersistence.delete(sectionId, id);
+        }    
         sectionPersistence.update(termId, sectionId, section);
         return new ServiceResponse<Long>(sectionId);
     }
@@ -536,12 +611,26 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
         }
-        partialSection.setId(sectionId);
         partialSection.mergePropertiesIfNull(sectionPersistence.select(termId, sectionId));
-        replaceSection(schoolId, yearId, termId, sectionId, partialSection);
-        return new ServiceResponse<Long>(sectionId);
+        if(null == partialSection.getEnrolledStudents() || partialSection.getEnrolledStudents().isEmpty()) {
+            sectionPersistence.update(termId, sectionId, partialSection);
+            return new ServiceResponse<Long>(sectionId);
+        } else {
+            replaceSection(schoolId, yearId, termId, sectionId, partialSection);
+            return new ServiceResponse<Long>(sectionId);
+        }
     }
 
+    /**
+     * Deleting a section will remove it from the system along with the studentSectionGrade instances
+     * associated with the section and the assignments from the section.  This is accomplished in this 
+     * implementation via foreign key constraints with CASCADE DELETE turned on.
+     * @param schoolId
+     * @param yearId
+     * @param termId
+     * @param sectionId
+     * @return
+     */
     @Override
     public ServiceResponse<Long> deleteSection(long schoolId, long yearId,
             long termId, long sectionId) {
