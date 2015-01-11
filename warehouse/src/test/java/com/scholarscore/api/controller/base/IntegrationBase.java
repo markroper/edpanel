@@ -5,11 +5,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -25,7 +23,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -44,13 +41,8 @@ import com.scholarscore.api.controller.service.StudentAssignmentValidatingExecut
 import com.scholarscore.api.controller.service.StudentSectionGradeValidatingExecutor;
 import com.scholarscore.api.controller.service.StudentValidatingExecutor;
 import com.scholarscore.api.controller.service.TermValidatingExecutor;
-import com.scholarscore.models.Assignment;
-import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
-import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.Section;
 import com.scholarscore.models.Student;
-import com.scholarscore.models.StudentAssignment;
 
 /**
  * Class that contains all common methods for servicing requests
