@@ -16,7 +16,6 @@ public class AssignmentMapper implements RowMapper<Assignment>{
     @Override
     public Assignment mapRow(ResultSet rs, int rowNum)
             throws SQLException {
-        //TODO: remove this when we remove the distinction between Assignment and SectionAssignment
         AssignmentType type = AssignmentType.toAssignmentType(rs.getString(DbConst.TYPE_FK_COL));
         Assignment ass = null;
         switch(type) {
