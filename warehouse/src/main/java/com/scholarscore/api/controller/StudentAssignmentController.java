@@ -37,7 +37,7 @@ public class StudentAssignmentController extends BaseController {
             @PathVariable(value="tId") Long tId,
             @ApiParam(name = "sId", required = true, value = "Section ID")
             @PathVariable(value="sId") Long sId,
-            @ApiParam(name = "assignId", required = true, value = "Section assignment ID")
+            @ApiParam(name = "assignId", required = true, value = "Assignment ID")
             @PathVariable(value="assignId") Long assignId) {
         return respond(PM.getAllStudentAssignments(schoolId, yrId, tId, sId, assignId));
     }
