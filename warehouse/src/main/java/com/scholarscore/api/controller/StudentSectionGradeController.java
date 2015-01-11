@@ -18,7 +18,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Controller
-@RequestMapping("/api/v1/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/students/{studId}/grades")
+@RequestMapping("/api/v1/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/grades")///students/{studId}/grades")
 public class StudentSectionGradeController extends BaseController {
     @ApiOperation(
             value = "Get all student grades in a section", 
@@ -36,10 +36,8 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
-            @PathVariable(value="sectId") Long sectId,
-            @ApiParam(name = "studId", required = true, value = "Student ID")
-            @PathVariable(value="studId") Long studId) {
-        return respond(PM.getAllStudentSectionGrades(schoolId, yearId, termId, sectId, studId));
+            @PathVariable(value="sectId") Long sectId) {
+        return respond(PM.getAllStudentSectionGrades(schoolId, yearId, termId, sectId));
     }
     
     @ApiOperation(
@@ -47,7 +45,7 @@ public class StudentSectionGradeController extends BaseController {
             notes = "Get a student's grade in a section", 
             response = StudentSectionGrade.class)
     @RequestMapping(
-            value = "/{gradeId}", 
+            value = "/students/{studId}", 
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -61,10 +59,8 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "studId", required = true, value = "Student ID")
-            @PathVariable(value="studId") Long studId,
-            @ApiParam(name = "gradeId", required = true, value = "Grade ID")
-            @PathVariable(value="gradeId") Long gradeId) {
-        return respond(PM.getStudentSectionGrade(schoolId, yearId, termId, sectId, studId, gradeId));
+            @PathVariable(value="studId") Long studId) {
+        return respond(PM.getStudentSectionGrade(schoolId, yearId, termId, sectId, studId));
     }
 
     @ApiOperation(
@@ -72,6 +68,7 @@ public class StudentSectionGradeController extends BaseController {
             notes = "Creates, assigns and ID to, persists and returns a student section grade",
             response = EntityId.class)
     @RequestMapping(
+            value = "/students/{studId}", 
             method = RequestMethod.POST, 
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
@@ -95,7 +92,7 @@ public class StudentSectionGradeController extends BaseController {
             notes = "Overwrites an existing student section grade",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{gradeId}",
+            value = "/students/{studId}",
             method = RequestMethod.PUT, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -110,11 +107,9 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "studId", required = true, value = "Student ID")
             @PathVariable(value="studId") Long studId,
-            @ApiParam(name = "gradeId", required = true, value = "Grade ID")
-            @PathVariable(value="gradeId") Long gradeId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
         return respond(PM.replaceStudentSectionGrade(
-                schoolId, yearId, termId, sectId, studId, gradeId, studentSectionGrade));
+                schoolId, yearId, termId, sectId, studId, studentSectionGrade));
     }
     
     @ApiOperation(
@@ -122,7 +117,7 @@ public class StudentSectionGradeController extends BaseController {
             notes = "Updates an existing student section grade. Will not overwrite existing values with null.",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{gradeId}", 
+            value = "/students/{studId}", 
             method = RequestMethod.PATCH, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -137,11 +132,9 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "studId", required = true, value = "Student ID")
             @PathVariable(value="studId") Long studId,
-            @ApiParam(name = "gradeId", required = true, value = "Grade ID")
-            @PathVariable(value="gradeId") Long gradeId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
         return respond(PM.updateStudentSectionGrade(
-                schoolId, yearId, termId, sectId, studId, gradeId, studentSectionGrade));
+                schoolId, yearId, termId, sectId, studId, studentSectionGrade));
     }
 
     @ApiOperation(
@@ -149,7 +142,7 @@ public class StudentSectionGradeController extends BaseController {
             notes = "Deletes the student section grade with the ID provided",
             response = Void.class)
     @RequestMapping(
-            value = "/{gradeId}", 
+            value = "/students/{studId}", 
             method = RequestMethod.DELETE, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -163,9 +156,7 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "studId", required = true, value = "Student ID")
-            @PathVariable(value="studId") Long studId,
-            @ApiParam(name = "gradeId", required = true, value = "Grade ID")
-            @PathVariable(value="gradeId") Long gradeId) {
-        return respond(PM.deleteStudentSectionGrade(schoolId, yearId, termId, sectId, studId, gradeId));
+            @PathVariable(value="studId") Long studId) {
+        return respond(PM.deleteStudentSectionGrade(schoolId, yearId, termId, sectId, studId));
     }
 }

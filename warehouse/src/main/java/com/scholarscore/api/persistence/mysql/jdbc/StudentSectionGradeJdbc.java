@@ -32,12 +32,14 @@ public class StudentSectionGradeJdbc extends BaseJdbc implements StudentSectionG
             DbConst.STUD_SECTION_GRADE_COMPLETE + "`= :" + DbConst.STUD_SECTION_GRADE_COMPLETE + ", `" +
             DbConst.STUD_SECTION_GRADE_GRADE + "`= :" + DbConst.STUD_SECTION_GRADE_GRADE + ", `" +
             DbConst.STUD_FK_COL + "`= :" + DbConst.STUD_FK_COL + ", `" +
-            DbConst.SECTION_FK_COL + "`= :" + DbConst.SECTION_FK_COL +
-            " WHERE `" + DbConst.STUD_SECTION_GRADE_ID_COL + "`= :" + DbConst.STUD_SECTION_GRADE_ID_COL + "";
+            DbConst.SECTION_FK_COL + "`= :" + DbConst.SECTION_FK_COL + 
+            " WHERE `" + DbConst.STUD_FK_COL + "`= :" + DbConst.STUD_FK_COL + " " +
+            "AND `" + DbConst.SECTION_FK_COL + "`= :" + DbConst.SECTION_FK_COL;
     
     private static String DELETE_STUD_SECTION_GRADE_SQL = "DELETE FROM `"+ 
             DbConst.DATABASE +"`.`" + DbConst.STUDENT_SECTION_GRADE_TABLE + "` " +
-            "WHERE `" + DbConst.STUD_SECTION_GRADE_ID_COL + "`= :" + DbConst.STUD_SECTION_GRADE_ID_COL + "";
+            "WHERE `" + DbConst.STUD_FK_COL + "`= :" + DbConst.STUD_FK_COL + " " +
+            "AND `" + DbConst.SECTION_FK_COL + "`= :" + DbConst.SECTION_FK_COL;
     
     private static String SELECT_ALL_STUD_SECTION_GRADES_SQL = "SELECT * FROM `"+ 
             DbConst.DATABASE +"`.`" + DbConst.STUDENT_SECTION_GRADE_TABLE + "` " +
@@ -47,9 +49,9 @@ public class StudentSectionGradeJdbc extends BaseJdbc implements StudentSectionG
             " AND `" + DbConst.STUD_FK_COL + "`= :" + DbConst.STUD_FK_COL;
     
     @Override
-    public Collection<StudentSectionGrade> selectAll(long id) {
+    public Collection<StudentSectionGrade> selectAll(long sectionId) {
         Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.SECTION_FK_COL, new Long(id));
+        params.put(DbConst.SECTION_FK_COL, new Long(sectionId));
         Collection<StudentSectionGrade> grades = jdbcTemplate.query(
                 SELECT_ALL_STUD_SECTION_GRADES_SQL, 
                 params,
@@ -73,6 +75,7 @@ public class StudentSectionGradeJdbc extends BaseJdbc implements StudentSectionG
         return grade;
     }
 
+    @Override
     public Long insert(long sectionId, long studentId, StudentSectionGrade entity) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Map<String, Object> params = new HashMap<>();     
@@ -84,27 +87,28 @@ public class StudentSectionGradeJdbc extends BaseJdbc implements StudentSectionG
                 INSERT_STUD_SECTION_GRADE_SQL, 
                 new MapSqlParameterSource(params), 
                 keyHolder);
-        return keyHolder.getKey().longValue();
+        return null;
     }
 
-    public Long update(long sectionId, long studentId, long id, StudentSectionGrade entity) {
+    @Override
+    public Long update(long sectionId, long studentId, StudentSectionGrade entity) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SECTION_FK_COL, new Long(sectionId));
         params.put(DbConst.STUD_FK_COL, new Long(studentId));
         params.put(DbConst.STUD_SECTION_GRADE_COMPLETE, entity.getComplete());
         params.put(DbConst.STUD_SECTION_GRADE_GRADE, entity.getGrade());
-        params.put(DbConst.STUD_SECTION_GRADE_ID_COL, new Long(id));
         jdbcTemplate.update(
                 UPDATE_STUD_SECTION_GRADE_SQL, 
                 new MapSqlParameterSource(params));
-        return id;
+        return null;
     }
 
     @Override
-    public Long delete(long id) {
+    public Long delete(long sectionId, long studentId) {
         Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.STUD_SECTION_GRADE_ID_COL, new Long(id));
+        params.put(DbConst.SECTION_FK_COL, new Long(sectionId));
+        params.put(DbConst.STUD_FK_COL, new Long(studentId));
         jdbcTemplate.update(DELETE_STUD_SECTION_GRADE_SQL, new MapSqlParameterSource(params));
-        return id;
+        return null;
     }
 }

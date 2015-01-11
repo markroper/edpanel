@@ -738,13 +738,8 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     //STUDENT SECTION GRADE
     @Override
     public ServiceResponse<Collection<StudentSectionGrade>> getAllStudentSectionGrades(
-            long schoolId, long yearId, long termId, long sectionId,
-            long studentId) {
+            long schoolId, long yearId, long termId, long sectionId) {
         StatusCode code = sectionExists(schoolId, yearId, termId, sectionId);
-        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
-            return new ServiceResponse<>(code);
-        }
-        code = studentExists(studentId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<>(code);
         }
@@ -753,7 +748,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
 
     @Override
     public StatusCode studentSectionGradeExists(long schoolId, long yearId,
-            long termId, long sectionId, long studentId, long gradeId) {
+            long termId, long sectionId, long studentId) {
         StatusCode code = sectionExists(schoolId, yearId, termId, sectionId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return code;
@@ -765,7 +760,8 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         StudentSectionGrade ssg = studentSectionGradePersistence.select(sectionId, studentId);
         if(null == ssg) {
             return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
-                    new Object[]{ PersistenceManager.STUDENT_SECTION_GRADE, gradeId });
+                    new Object[]{ PersistenceManager.STUDENT_SECTION_GRADE, 
+                    "section id: " + sectionId + ", student id: " + studentId });
         }
         return StatusCodes.getStatusCode(StatusCodeType.OK);
     }
@@ -773,9 +769,9 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     @Override
     public ServiceResponse<StudentSectionGrade> getStudentSectionGrade(
             long schoolId, long yearId, long termId, long sectionId,
-            long studentId, long gradeId) {
+            long studentId) {
         StatusCode code = studentSectionGradeExists(
-                schoolId, yearId, termId, sectionId, studentId, gradeId);
+                schoolId, yearId, termId, sectionId, studentId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<>(code);
         }
@@ -800,42 +796,38 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
 
     @Override
     public ServiceResponse<Long> replaceStudentSectionGrade(long schoolId,
-            long yearId, long termId, long sectionId, long studentId,
-            long gradeId, StudentSectionGrade grade) {
+            long yearId, long termId, long sectionId, long studentId, StudentSectionGrade grade) {
         StatusCode code = studentSectionGradeExists(
-                schoolId, yearId, termId, sectionId, studentId, gradeId);
+                schoolId, yearId, termId, sectionId, studentId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<>(code);
         }
         return new ServiceResponse<>(
-                studentSectionGradePersistence.update(sectionId, studentId, gradeId, grade));
+                studentSectionGradePersistence.update(sectionId, studentId, grade));
     }
 
     @Override
     public ServiceResponse<Long> updateStudentSectionGrade(long schoolId,
-            long yearId, long termId, long sectionId, long studentId,
-            long gradeId, StudentSectionGrade grade) {
+            long yearId, long termId, long sectionId, long studentId, StudentSectionGrade grade) {
         StatusCode code = studentSectionGradeExists(
-                schoolId, yearId, termId, sectionId, studentId, gradeId);
+                schoolId, yearId, termId, sectionId, studentId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<>(code);
         }
-        grade.setId(gradeId);
         grade.mergePropertiesIfNull(studentSectionGradePersistence.select(sectionId, studentId));
         return new ServiceResponse<>(
-                studentSectionGradePersistence.update(sectionId, studentId, gradeId, grade));
+                studentSectionGradePersistence.update(sectionId, studentId, grade));
     }
 
     @Override
     public ServiceResponse<Long> deleteStudentSectionGrade(long schoolId,
-            long yearId, long termId, long sectionId, long studentId,
-            long gradeId) {
+            long yearId, long termId, long sectionId, long studentId) {
         StatusCode code = studentSectionGradeExists(
-                schoolId, yearId, termId, sectionId, studentId, gradeId);
+                schoolId, yearId, termId, sectionId, studentId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<>(code);
         }
-        studentSectionGradePersistence.delete(gradeId);
+        studentSectionGradePersistence.delete(sectionId, studentId);
         return new ServiceResponse<>((Long) null);
     }
 

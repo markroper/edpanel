@@ -85,8 +85,8 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
     @Test
     public void deleteStudentSectionGradeTest() {
         StudentSectionGrade emptyStudentSectionGrade = new StudentSectionGrade();
-        StudentSectionGrade createdSection = studentSectionGradeValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student3.getId(), emptyStudentSectionGrade, "delete");
-        studentSectionGradeValidatingExecutor.delete(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student3.getId(), createdSection.getId(), "delete");
+        studentSectionGradeValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student3.getId(), emptyStudentSectionGrade, "delete");
+        studentSectionGradeValidatingExecutor.delete(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student3.getId(), "delete");
     }
     
     @Test(dataProvider = "createStudentSectionGradeProvider")
@@ -94,11 +94,11 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
         Student student4 = new Student();
         student4.setName(localeServiceUtil.generateName());
         student4 = studentValidatingExecutor.create(student4, "create base student");
-        StudentSectionGrade createdSection = studentSectionGradeValidatingExecutor.create(
+        studentSectionGradeValidatingExecutor.create(
                 school.getId(), schoolYear.getId(), term.getId(), section.getId(), student4.getId(), studentSectionGrade, msg);
         StudentSectionGrade replaceGrade = new StudentSectionGrade();
         studentSectionGradeValidatingExecutor.replace(
-                school.getId(), schoolYear.getId(), term.getId(), section.getId(), student4.getId(), createdSection.getId(), replaceGrade, msg);
+                school.getId(), schoolYear.getId(), term.getId(), section.getId(), student4.getId(), replaceGrade, msg);
         numCreated++;
     }
     
@@ -107,12 +107,12 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
         Student student5 = new Student();
         student5.setName(localeServiceUtil.generateName());
         student5 = studentValidatingExecutor.create(student5, "create base student");
-        StudentSectionGrade createdSection = studentSectionGradeValidatingExecutor.create(
+        studentSectionGradeValidatingExecutor.create(
                 school.getId(), schoolYear.getId(), term.getId(), section.getId(), student5.getId(), studentSectionGrade, msg);
         StudentSectionGrade updatedSection = new StudentSectionGrade();
         updatedSection.setComplete(true);
         //PATCH the existing record with a new name.
-        studentSectionGradeValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student5.getId(), createdSection.getId(), updatedSection, msg);
+        studentSectionGradeValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student5.getId(), updatedSection, msg);
         numCreated++;
     }
     

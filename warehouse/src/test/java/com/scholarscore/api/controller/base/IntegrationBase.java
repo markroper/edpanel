@@ -71,7 +71,6 @@ public class IntegrationBase {
     private static final String SCHOOL_ENDPOINT = "/schools";
     private static final String SCHOOL_YEAR_ENDPOINT = "/years";
     private static final String COURSE_ENDPOINT = "/courses";
-    private static final String ASSIGNMENT_ENDPOINT = "/assignments";
     private static final String TERM_ENDPOINT = "/terms";
     private static final String SECTION_ENDPOINT = "/sections";
     private static final String SECTION_ASSIGNMENT_ENDPOINT = "/sectassignments";
@@ -605,12 +604,12 @@ public class IntegrationBase {
         return getSectionAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId) + pathify(sectionAssignmentId);
     }
     
-    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, Long sectionGradeId) {
-        return getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId) + pathify(sectionGradeId);
+    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId) {
+        return getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId) + STUDENT_ENDPOINT + pathify(studentId);
     }
     
-    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId) {
-        return getSectionEndpoint(schoolId, schoolYearId, termId, sectionId) + STUDENT_ENDPOINT + pathify(studentId) + STUDENT_SECTION_GRADE_ENDPOINT;
+    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId) {
+        return getSectionEndpoint(schoolId, schoolYearId, termId, sectionId) + STUDENT_SECTION_GRADE_ENDPOINT;
     }
     
     public String getStudentAssignmentEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, 

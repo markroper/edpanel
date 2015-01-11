@@ -20,8 +20,7 @@ public interface StudentSectionGradePersistence {
     public Long update(
             long sectionId,
             long studentId,
-            long gradeId,
             StudentSectionGrade entity);
 
-    public Long delete(long gradeId);
+    public Long delete(long sectionId, long studentId);
 }

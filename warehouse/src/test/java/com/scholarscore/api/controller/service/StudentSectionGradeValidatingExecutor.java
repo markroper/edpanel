@@ -19,10 +19,10 @@ public class StudentSectionGradeValidatingExecutor {
         this.serviceBase = sb;
     }
     
-    public StudentSectionGrade get(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, Long id, String msg) {
+    public StudentSectionGrade get(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, String msg) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.GET, 
-                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId, id), 
+                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId), 
                 null);
         StudentSectionGrade studentSection = serviceBase.validateResponse(response, new TypeReference<StudentSectionGrade>(){});
         Assert.assertNotNull(studentSection, "Unexpected null section assignment returned for case: " + msg);
@@ -33,17 +33,17 @@ public class StudentSectionGradeValidatingExecutor {
     public void getAll(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, String msg, int numberOfItems) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.GET, 
-                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId), 
+                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId), 
                 null);
         ArrayList<StudentSectionGrade> studentSectionGrades = serviceBase.validateResponse(response, new TypeReference<ArrayList<StudentSectionGrade>>(){});
         Assert.assertNotNull(studentSectionGrades, "Unexpected null term returned for case: " + msg);
         Assert.assertEquals(studentSectionGrades.size(), numberOfItems, "Unexpected number of items returned for case: " + msg);
     }
     
-    public void getNegative(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, Long id, HttpStatus expectedCode, String msg) {
+    public void getNegative(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, HttpStatus expectedCode, String msg) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.GET, 
-                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId,  id),
+                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId),
                 null);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
                 "Unexpected status code returned while retreiving term: " + msg);
@@ -54,7 +54,6 @@ public class StudentSectionGradeValidatingExecutor {
         //Create the term
         ResultActions response = serviceBase.makeRequest(HttpMethod.POST, serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId), null, studentSectionGrade);
         EntityId studentSectionGradeId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
-        Assert.assertNotNull(studentSectionGradeId, "unexpected null section assignment returned from create call for case: " + msg);
         return retrieveAndValidateCreatedStudentSectionGrade(
                 schoolId, schoolYearId, termId, sectionId, studentId, studentSectionGradeId, studentSectionGrade, HttpMethod.POST, msg);
     }
@@ -68,41 +67,41 @@ public class StudentSectionGradeValidatingExecutor {
                 "Unexpected status code returned for case: " + msg);
     }
     
-    public void delete(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, Long id, String msg) {
+    public void delete(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, String msg) {
         //Delete the term
         ResultActions response = serviceBase.makeRequest(HttpMethod.DELETE, 
-                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId, id));
+                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId));
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), HttpStatus.OK.value(),
                 "Non 200 HttpStatus returned on delete for case: " + msg);
-        getNegative(schoolId, schoolYearId, termId, sectionId, studentId, id, HttpStatus.NOT_FOUND, msg);
+        getNegative(schoolId, schoolYearId, termId, sectionId, studentId, HttpStatus.NOT_FOUND, msg);
     }
     
-    public void deleteNegative(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, Long id, HttpStatus expectedCode, String msg) {
+    public void deleteNegative(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, 
+            HttpStatus expectedCode, String msg) {
         //Attempt to delete the term
         ResultActions response = serviceBase.makeRequest(HttpMethod.DELETE, 
-                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId, id));
+                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId));
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(),
                 "Unexpected Http status code returned for negative test case for DELETE: " + msg);
     }
 
     public StudentSectionGrade replace(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId,
-            Long id, StudentSectionGrade studentSectionGrade, String msg) {
+            StudentSectionGrade studentSectionGrade, String msg) {
         //Create the term
         ResultActions response = serviceBase.makeRequest(HttpMethod.PUT, 
-                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId, id), 
+                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId), 
                 null, 
                 studentSectionGrade);
         EntityId studentSectionGradeId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
-        Assert.assertNotNull(studentSectionGradeId, "unexpected null sction assignment ID returned from create call for case: " + msg);
         return retrieveAndValidateCreatedStudentSectionGrade(schoolId, schoolYearId, termId, sectionId, studentId,
                 studentSectionGradeId, studentSectionGrade, HttpMethod.PUT, msg);
     }
 
-    public void replaceNegative(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, Long id, 
+    public void replaceNegative(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, 
             StudentSectionGrade studentSectionGrade, HttpStatus expectedCode, String msg) {
         //Create the term
         ResultActions response = serviceBase.makeRequest(HttpMethod.PUT, 
-                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId, id), 
+                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId), 
                 null, 
                 studentSectionGrade);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(),
@@ -110,23 +109,22 @@ public class StudentSectionGradeValidatingExecutor {
     }
 
     public StudentSectionGrade update(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId,
-            Long id, StudentSectionGrade studentSectionGrade, String msg) {
+            StudentSectionGrade studentSectionGrade, String msg) {
       //Create the term
         ResultActions response = serviceBase.makeRequest(HttpMethod.PATCH, 
-                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId, id), 
+                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId), 
                 null, 
                 studentSectionGrade);
         EntityId studentSectionGradeId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
-        Assert.assertNotNull(studentSectionGradeId, "unexpected null section assignment ID returned from create call for case: " + msg);
         return retrieveAndValidateCreatedStudentSectionGrade(schoolId, schoolYearId, termId, sectionId, studentId, 
                 studentSectionGradeId, studentSectionGrade, HttpMethod.PATCH, msg);
     }
 
     public void updateNegative(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId,
-            Long id, StudentSectionGrade studentSectionGrade, HttpStatus expectedCode, String msg) {
+            StudentSectionGrade studentSectionGrade, HttpStatus expectedCode, String msg) {
       //Create the term
         ResultActions response = serviceBase.makeRequest(HttpMethod.PATCH, 
-                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId, id), 
+                serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId), 
                 null, 
                 studentSectionGrade);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(),
@@ -150,7 +148,7 @@ public class StudentSectionGradeValidatingExecutor {
             Long sectionId, Long studentId, EntityId id, StudentSectionGrade submittedStudentSectionGrade, HttpMethod method, String msg) {
         
         //Retrieve and validate the created term
-        StudentSectionGrade createdStudentSectionGrade = this.get(schoolId, schoolYearId, termId, sectionId, studentId, id.getId(), msg);
+        StudentSectionGrade createdStudentSectionGrade = this.get(schoolId, schoolYearId, termId, sectionId, studentId, msg);
         StudentSectionGrade expectedStudentSectionGrade = generateExpectationStudentSectionGrade(submittedStudentSectionGrade, createdStudentSectionGrade, method);
         Assert.assertEquals(createdStudentSectionGrade, expectedStudentSectionGrade, "Unexpected term created for case: " + msg);
         
