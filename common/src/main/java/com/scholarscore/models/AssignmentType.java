@@ -26,41 +26,6 @@ public enum AssignmentType implements Serializable {
     USER_DEFINED;
     
     public static AssignmentType toAssignmentType(String input) {
-        AssignmentType returnType = null;
-        switch(input) {
-        case "GRADED":
-            returnType = GRADED;
-            break;
-        case "ATTENDENCE":
-            returnType = ATTENDANCE;
-            break;
-        case "HOMEWORK":
-            returnType = HOMEWORK;
-            break;
-        case "QUIZ":
-            returnType = QUIZ;
-            break;
-        case "TEST":
-            returnType = TEST;
-            break;
-        case "MIDTERM":
-            returnType = MIDTERM;
-            break;
-        case "FINAL":
-            returnType = FINAL;
-            break;
-        case "LAB":
-            returnType = LAB;
-            break;
-        case "CLASSWORK":
-            returnType = CLASSWORK;
-            break;
-        case "USER_DEFINED":
-            returnType = USER_DEFINED;
-            break;
-        default:
-            break;
-        }
-        return returnType;
+        return AssignmentType.valueOf(input);
     }
 }
