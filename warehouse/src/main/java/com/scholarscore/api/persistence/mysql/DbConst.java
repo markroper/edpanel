@@ -15,6 +15,7 @@ public class DbConst {
     public static final String ASSIGNMENT_TABLE = "assignment";
     public static final String STUDENT_ASSIGNMENT_TABLE = "student_assignment";
     public static final String STUDENT_SECTION_GRADE_TABLE = "student_section_grade";
+    public static final String TEACHER_TABLE = "teacher";
     //Columns
     public static final String SCHOOL_ID_COL = "school_id";
     public static final String SCHOOL_NAME_COL = "school_name";
@@ -66,6 +67,8 @@ public class DbConst {
     public static final String STUD_SECTION_GRADE_COMPLETE = "complete";
     public static final String STUD_SECTION_GRADE_GRADE = "grade";
     
+    public static final String TEACHER_ID_COL = "teacher_id";
+    public static final String TEACHER_NAME_COL = "teacher_name";
     /**
      * Helper method converts a Java Date to a Timestamp for storage in the Database.
      * 

@@ -1,8 +1,13 @@
-
 CREATE TABLE `scholar_warehouse`.`student` (
   `student_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `student_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   PRIMARY KEY (`student_id`))
+ENGINE = InnoDB;
+
+CREATE TABLE `scholar_warehouse`.`teacher` (
+  `teacher_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
+  `teacher_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
+  PRIMARY KEY (`teacher_id`))
 ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`school` (

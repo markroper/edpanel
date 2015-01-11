@@ -9,6 +9,7 @@ import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.SchoolPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.StudentSectionGradePersistence;
+import com.scholarscore.api.persistence.mysql.TeacherPersistence;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
@@ -21,11 +22,12 @@ import com.scholarscore.models.Section;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.Teacher;
 import com.scholarscore.models.Term;
 
 public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
         TermManager, SectionManager, AssignmentManager, StudentAssignmentManager,
-        StudentSectionGradeManager, CourseManager {
+        StudentSectionGradeManager, CourseManager, TeacherManager {
     
     private static final String SCHOOL = "school";
     private static final String COURSE = "course";
@@ -42,6 +44,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private EntityPersistence<SchoolYear> schoolYearPersistence;
     private EntityPersistence<Term> termPersistence;
     private StudentPersistence studentPersistence;
+    private TeacherPersistence teacherPersistence;
     private EntityPersistence<Section> sectionPersistence;
     private EntityPersistence<Course> coursePersistence;
     private EntityPersistence<Assignment> assignmentPersistence;
@@ -49,6 +52,10 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private StudentSectionGradePersistence studentSectionGradePersistence;
     
     //Setters for the persistence layer for each entity
+    public void setTeacherPersistence(TeacherPersistence ap) {
+        this.teacherPersistence = ap;
+    }
+    
     public void setStudentSectionGradePersistence(StudentSectionGradePersistence ap) {
         this.studentSectionGradePersistence = ap;
     }
@@ -560,7 +567,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
 
     /**
      * When a section is updated, we are able to update the list of enrolled students, but we do
-     * support updaing the list of assignments in the secion via this method at this time. 
+     * support updating the list of assignments in the section via this method at this time. 
      * For that ADD/UPDATE/DELETE assignment API's can be called.
      * 
      * @param schoolId
@@ -995,5 +1002,67 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         //Only need to delete the parent record, our deletes cascade
         coursePersistence.delete(courseId);
         return new ServiceResponse<Long>((Long) null);
+    }
+
+  //Teacher
+    @Override
+    public ServiceResponse<Long> createTeacher(Teacher teacher) {
+        return new ServiceResponse<Long>(teacherPersistence.createTeacher(teacher));
+    }
+
+    @Override
+    public StatusCode teacherExists(long teacherId) {
+        Teacher stud = teacherPersistence.selectTeacher(teacherId);
+        if(null == stud) {
+            return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{ STUDENT, teacherId });
+        }
+        return StatusCodes.getStatusCode(StatusCodeType.OK);
+    }
+
+    @Override
+    public ServiceResponse<Long> deleteTeacher(long teacherId) {
+        StatusCode code = teacherExists(teacherId);
+        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
+            return new ServiceResponse<Long>(code);
+        }
+        teacherPersistence.deleteTeacher(teacherId);
+        return new ServiceResponse<Long>((Long) null);
+    }
+
+    @Override
+    public ServiceResponse<Collection<Teacher>> getAllTeachers() {
+        return new ServiceResponse<Collection<Teacher>>(
+                teacherPersistence.selectAllTeachers());
+    }
+
+    @Override
+    public ServiceResponse<Teacher> getTeacher(long teacherId) {
+        StatusCode code = teacherExists(teacherId);
+        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
+            return new ServiceResponse<Teacher>(code);
+        }
+        return new ServiceResponse<Teacher>(teacherPersistence.selectTeacher(teacherId));
+    }
+
+    @Override
+    public ServiceResponse<Long> replaceTeacher(long teacherId, Teacher teacher) {
+        StatusCode code = teacherExists(teacherId);
+        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
+            return new ServiceResponse<Long>(code);
+        }
+        teacherPersistence.replaceTeacher(teacherId, teacher);
+        return new ServiceResponse<Long>(teacherId);
+    }
+    
+    @Override
+    public ServiceResponse<Long> updateTeacher(long teacherId, Teacher teacher) {
+        StatusCode code = teacherExists(teacherId);
+        if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
+            return new ServiceResponse<Long>(code);
+        }
+        teacher.setId(teacherId);
+        teacher.mergePropertiesIfNull(teacherPersistence.selectTeacher(teacherId));
+        replaceTeacher(teacherId, teacher);
+        return new ServiceResponse<Long>(teacherId);
     }
 }
