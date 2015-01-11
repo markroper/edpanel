@@ -14,14 +14,10 @@ public class GradeFormulaTest {
 
     @DataProvider
     public Object[][] formulasToTest() {
-        GradedAssignment graded = new GradedAssignment();
-        AttendanceAssignment attend = new AttendanceAssignment();
-        
         Set<StudentAssignment> studentAssignments = new HashSet<>();
         for(long i = 1; i <= 10; i++) {
-            SectionAssignment sect = new SectionAssignment();
+            GradedAssignment sect = new GradedAssignment();
             sect.setAvailablePoints(10L);
-            sect.setAssignment(graded);
             StudentAssignment stu = new StudentAssignment();
             stu.setAwardedPoints(7L);
             stu.setAssignment(sect);
@@ -29,9 +25,8 @@ public class GradeFormulaTest {
             studentAssignments.add(stu);
         }
         for(long i = 11; i <= 25; i++) {
-            SectionAssignment sect = new SectionAssignment();
+            AttendanceAssignment sect = new AttendanceAssignment();
             sect.setAvailablePoints(5L);
-            sect.setAssignment(attend);
             StudentAssignment stu = new StudentAssignment();
             stu.setAssignment(sect);
             stu.setAwardedPoints(5L);

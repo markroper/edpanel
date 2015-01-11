@@ -1,6 +1,7 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -15,8 +16,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentAssignment extends ApiModel implements Serializable, IApiModel<StudentAssignment> {
     private Boolean completed;
+    private Date completionDate;
     private Long awardedPoints;
-    private transient SectionAssignment sectionAssignment;
+    private transient Assignment assignment;
     private transient Student student;
 
     public StudentAssignment() {
@@ -25,10 +27,11 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
     
     public StudentAssignment(StudentAssignment sa) {
         super(sa);
-        this.sectionAssignment = sa.sectionAssignment;
+        this.assignment = sa.assignment;
         this.completed = sa.completed;
         this.awardedPoints = sa.awardedPoints;
         this.student = sa.student;
+        this.completionDate = sa.completionDate;
     }
 
     @Override
@@ -36,8 +39,8 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         if(null == mergeFrom) {
             return;
         }
-        if(null == this.sectionAssignment) {
-            this.sectionAssignment = mergeFrom.sectionAssignment;
+        if(null == this.assignment) {
+            this.assignment = mergeFrom.assignment;
         }
         if(null == this.completed) {
             this.completed = mergeFrom.completed;
@@ -47,6 +50,9 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         } 
         if(null == this.student) {
             this.student = mergeFrom.student;
+        }
+        if(null == this.completionDate) {
+            this.completionDate = mergeFrom.completionDate;
         }
     }
     
@@ -58,12 +64,8 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         this.completed = completed;
     }
 
-    public SectionAssignment getSectionAssignment() {
-        return sectionAssignment;
-    }
-
-    public void setAssignment(SectionAssignment sectionAssignment) {
-        this.sectionAssignment = sectionAssignment;
+    public Assignment getAssignment() {
+        return assignment;
     }
 
     public Long getAwardedPoints() {
@@ -74,8 +76,8 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         this.awardedPoints = awardedPoints;
     }
 
-    public void setSectionAssignment(SectionAssignment sectionAssignment) {
-        this.sectionAssignment = sectionAssignment;
+    public void setAssignment(Assignment assignment) {
+        this.assignment = assignment;
     }
 
     public Student getStudent() {
@@ -86,20 +88,29 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         this.student = student;
     }
 
+    public Date getCompletionDate() {
+        return completionDate;
+    }
+
+    public void setCompletionDate(Date completionDate) {
+        this.completionDate = completionDate;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(!super.equals(obj)) {
             return false;
         }
         final StudentAssignment other = (StudentAssignment) obj;
-        return Objects.equals(this.sectionAssignment, other.sectionAssignment) && 
+        return Objects.equals(this.assignment, other.assignment) && 
                 Objects.equals(this.completed, other.completed) &&
                 Objects.equals(this.awardedPoints, other.awardedPoints) &&
-                Objects.equals(this.student, other.student);
+                Objects.equals(this.student, other.student) &&
+                Objects.equals(this.completionDate, other.completionDate);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(sectionAssignment, completed, awardedPoints, student);
+        return 31 * super.hashCode() + Objects.hash(assignment, completed, awardedPoints, student, completionDate);
     }
 }

@@ -17,7 +17,7 @@ public interface StudentSectionGradeManager {
      * @return
      */
     public ServiceResponse<Collection<StudentSectionGrade>> getAllStudentSectionGrades(
-            long schoolId, long yearId, long termId, long sectionId, long studentId);
+            long schoolId, long yearId, long termId, long sectionId);
 
     /**
      * Returns ErrorCodes.OK if a section student grade exists and otherwise returns a descriptive error code
@@ -27,11 +27,10 @@ public interface StudentSectionGradeManager {
      * @param termId the ID of the term
      * @param sectionId the ID of the section
      * @param studentId the ID of the student
-     * @param gradeId the ID of the grade 
      * @return
      */
     public StatusCode studentSectionGradeExists(
-            long schoolId, long yearId, long termId, long sectionId, long studentId, long gradeId);
+            long schoolId, long yearId, long termId, long sectionId, long studentId);
     
     /**
      * Returns the student section grade with the ID provided, or in degenerate cases, a descriptive error 
@@ -42,11 +41,10 @@ public interface StudentSectionGradeManager {
      * @param termId the ID of the term
      * @param sectionId the ID of the section
      * @param studentId the ID of the student
-     * @param gradeId the ID of the grade
      * @return
      */
     public ServiceResponse<StudentSectionGrade> getStudentSectionGrade(
-            long schoolId, long yearId, long termId, long sectionId, long studentId, long gradeId);
+            long schoolId, long yearId, long termId, long sectionId, long studentId);
 
     /**
      * Stores a new student section grade instance in the system and returns the assigned ID populated on
@@ -74,12 +72,11 @@ public interface StudentSectionGradeManager {
      * @param termId the ID of the term
      * @param sectionId the ID of the section
      * @param studentId the ID of the student
-     * @param gradeId the ID of the grade
      * @param grade The student section grade to replace the existing section with
      * @return
      */
     public ServiceResponse<Long> replaceStudentSectionGrade(long schoolId, long yearId, long termId, 
-            long sectionId, long studentId, long gradeId, StudentSectionGrade grade);
+            long sectionId, long studentId, StudentSectionGrade grade);
     
     /**
      * Performs a partial update on an existing StudentSectionGrade with the ID provided using the partially
@@ -90,12 +87,11 @@ public interface StudentSectionGradeManager {
      * @param yearId the ID of the parent year
      * @param termId the ID of the term
      * @param studentId the ID of the student
-     * @param gradeId the ID of the grade
      * @param grade the partially populated StudentSectionGrade to update the existing term with
      * @return
      */
     public ServiceResponse<Long> updateStudentSectionGrade(long schoolId, long yearId, long termId, 
-            long sectionId, long studentId, long gradeId, StudentSectionGrade grade);
+            long sectionId, long studentId, StudentSectionGrade grade);
 
     /**
      * Deletes a StudentSectionGrade with the id provided and returns an empty ServiceResponse instance 
@@ -107,9 +103,8 @@ public interface StudentSectionGradeManager {
      * @param termId the ID of the term
      * @param sectionId the ID of the section
      * @param studentId the ID of the student
-     * @param gradeId the ID of the grade
      * @return
      */
     public ServiceResponse<Long> deleteStudentSectionGrade(
-            long schoolId, long yearId, long termId, long sectionId, long studentId, long gradeId);
+            long schoolId, long yearId, long termId, long sectionId, long studentId);
 }

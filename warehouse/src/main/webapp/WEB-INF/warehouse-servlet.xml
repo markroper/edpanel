@@ -69,12 +69,42 @@
       class="com.scholarscore.api.persistence.mysql.jdbc.StudentJdbc">
       <property name="dataSource"  ref="dataSource" />    
    </bean>
-   
+   <bean id="coursePersistence" 
+      class="com.scholarscore.api.persistence.mysql.jdbc.CourseJdbc">
+      <property name="dataSource"  ref="dataSource" />    
+   </bean>
+   <bean id="sectionPersistence" 
+      class="com.scholarscore.api.persistence.mysql.jdbc.SectionJdbc">
+      <property name="dataSource"  ref="dataSource" />    
+   </bean>
+    <bean id="assignmentPersistence" 
+      class="com.scholarscore.api.persistence.mysql.jdbc.AssignmentJdbc">
+      <property name="dataSource"  ref="dataSource" />    
+   </bean>
+   <bean id="studentAssignmentPersistence" 
+      class="com.scholarscore.api.persistence.mysql.jdbc.StudentAssignmentJdbc">
+      <property name="dataSource"  ref="dataSource" />    
+   </bean>
+   <bean id="studentSectionGradePersistence" 
+      class="com.scholarscore.api.persistence.mysql.jdbc.StudentSectionGradeJdbc">
+      <property name="dataSource"  ref="dataSource" />    
+   </bean>
+   <bean id="teacherPersistence" 
+      class="com.scholarscore.api.persistence.mysql.jdbc.TeacherJdbc">
+      <property name="dataSource"  ref="dataSource" />    
+   </bean>
+     
    <bean id="PM"
         class="com.scholarscore.api.persistence.PersistenceManager">
         <property name="schoolPersistence"  ref="schoolPersistence" /> 
         <property name="schoolYearPersistence"  ref="schoolYearPersistence" /> 
         <property name="termPersistence"  ref="termPersistence" /> 
         <property name="studentPersistence"  ref="studentPersistence" />
+        <property name="sectionPersistence"  ref="sectionPersistence" />
+        <property name="coursePersistence"  ref="coursePersistence" />
+        <property name="assignmentPersistence"  ref="assignmentPersistence" />
+        <property name="studentAssignmentPersistence"  ref="studentAssignmentPersistence" />
+        <property name="studentSectionGradePersistence"  ref="studentSectionGradePersistence" />
+        <property name="teacherPersistence"  ref="teacherPersistence" />
    </bean>
 </beans>

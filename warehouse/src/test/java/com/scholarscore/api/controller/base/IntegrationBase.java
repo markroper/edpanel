@@ -5,11 +5,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -24,7 +22,7 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.StringUtils;
 import org.testng.Assert;
-import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -33,24 +31,20 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableMap;
-import com.scholarscore.api.controller.service.AssignmentValidatingExecutor;
 import com.scholarscore.api.controller.service.CourseValidatingExecutor;
 import com.scholarscore.api.controller.service.LocaleServiceUtil;
 import com.scholarscore.api.controller.service.SchoolValidatingExecutor;
 import com.scholarscore.api.controller.service.SchoolYearValidatingExecutor;
-import com.scholarscore.api.controller.service.SectionAssignmentValidatingExecutor;
+import com.scholarscore.api.controller.service.AssignmentValidatingExecutor;
 import com.scholarscore.api.controller.service.SectionValidatingExecutor;
 import com.scholarscore.api.controller.service.StudentAssignmentValidatingExecutor;
 import com.scholarscore.api.controller.service.StudentSectionGradeValidatingExecutor;
 import com.scholarscore.api.controller.service.StudentValidatingExecutor;
+import com.scholarscore.api.controller.service.TeacherValidatingExecutor;
 import com.scholarscore.api.controller.service.TermValidatingExecutor;
-import com.scholarscore.models.Assignment;
-import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
-import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.Section;
 import com.scholarscore.models.Student;
-import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.Teacher;
 
 /**
  * Class that contains all common methods for servicing requests
@@ -72,33 +66,30 @@ public class IntegrationBase {
     private static final String SCHOOL_ENDPOINT = "/schools";
     private static final String SCHOOL_YEAR_ENDPOINT = "/years";
     private static final String COURSE_ENDPOINT = "/courses";
-    private static final String ASSIGNMENT_ENDPOINT = "/assignments";
     private static final String TERM_ENDPOINT = "/terms";
     private static final String SECTION_ENDPOINT = "/sections";
-    private static final String SECTION_ASSIGNMENT_ENDPOINT = "/sectassignments";
+    private static final String SECTION_ASSIGNMENT_ENDPOINT = "/assignments";
     private static final String STUDENT_ENDPOINT = "/students";
     private static final String STUDENT_ASSIGNMENT_ENDPOINT = "/studentassignments";
     private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
+    private static final String TEACHER_ENDPOINT = "/teachers";
 
     public LocaleServiceUtil localeServiceUtil;
-    public AssignmentValidatingExecutor assignmentValidatingExecutor;
     public CourseValidatingExecutor courseValidatingExecutor;
     public SchoolValidatingExecutor schoolValidatingExecutor;
     public SchoolYearValidatingExecutor schoolYearValidatingExecutor;
     public TermValidatingExecutor termValidatingExecutor;
     public SectionValidatingExecutor sectionValidatingExecutor;
-    public SectionAssignmentValidatingExecutor sectionAssignmentValidatingExecutor;
+    public AssignmentValidatingExecutor sectionAssignmentValidatingExecutor;
     public StudentValidatingExecutor studentValidatingExecutor;
     public StudentAssignmentValidatingExecutor studentAssignmentValidatingExecutor;
     public StudentSectionGradeValidatingExecutor studentSectionGradeValidatingExecutor;
+    public TeacherValidatingExecutor teacherValidatingExecutor;
     
-    public ConcurrentHashMap<Long, Map<Long, List<Assignment>>> assignmentsCreated = new ConcurrentHashMap<>();
+
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
-    public ConcurrentHashMap<Long, List<SchoolYear>> schoolYearsCreated = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<Long, List<Course>> coursesCreated = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<Long, List<Section>> sectionsCreated = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<Long, Student> studentsCreated = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<Long, StudentAssignment> studentAssignmentsCreated= new ConcurrentHashMap<>(); 
+    public CopyOnWriteArrayList<Student> studentsCreated = new CopyOnWriteArrayList<>();
+    public CopyOnWriteArrayList<Teacher> teachersCreated = new CopyOnWriteArrayList<>();
 
     // Locale used in testing. Supplied as command-line arguments to JVM: -Dlocale=de_DE
     // Valid values include the following:
@@ -135,16 +126,16 @@ public class IntegrationBase {
     public void configureServices() {
         this.mockMvc = new NetMvc();
         localeServiceUtil = new LocaleServiceUtil(this);
-        assignmentValidatingExecutor = new AssignmentValidatingExecutor(this);
         courseValidatingExecutor = new CourseValidatingExecutor(this);
         schoolValidatingExecutor = new SchoolValidatingExecutor(this);
         schoolYearValidatingExecutor = new SchoolYearValidatingExecutor(this);
         termValidatingExecutor = new TermValidatingExecutor(this);
         sectionValidatingExecutor = new SectionValidatingExecutor(this);
-        sectionAssignmentValidatingExecutor = new SectionAssignmentValidatingExecutor(this);
+        sectionAssignmentValidatingExecutor = new AssignmentValidatingExecutor(this);
         studentValidatingExecutor = new StudentValidatingExecutor(this);
         studentAssignmentValidatingExecutor = new StudentAssignmentValidatingExecutor(this);
         studentSectionGradeValidatingExecutor = new StudentSectionGradeValidatingExecutor(this);
+        teacherValidatingExecutor = new TeacherValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -156,7 +147,6 @@ public class IntegrationBase {
      * Test services initialization validated
      */
     private void validateServiceConfig() {
-        Assert.assertNotNull(assignmentValidatingExecutor, "Unable to configure assignment service");
         Assert.assertNotNull(courseValidatingExecutor, "Unable to configure course service");
         Assert.assertNotNull(schoolValidatingExecutor, "Unable to configure school service");
         Assert.assertNotNull(schoolYearValidatingExecutor, "Unable to configure school year service");
@@ -165,6 +155,7 @@ public class IntegrationBase {
         Assert.assertNotNull(sectionAssignmentValidatingExecutor, "Unable to configure section assignment service");
         Assert.assertNotNull(studentValidatingExecutor, "Unable to configure student service");
         Assert.assertNotNull(studentAssignmentValidatingExecutor, "Unable to configure student assignment service");
+        Assert.assertNotNull(teacherValidatingExecutor, "Unable to configure teacher service");
     }
 
     /**
@@ -173,10 +164,9 @@ public class IntegrationBase {
      * Expected Result:
      * All test data associated with application is removed
      */
-    @AfterSuite(groups = { "integration" })
+    @AfterClass(alwaysRun = true)
     protected void removeTestData() {
         // Remove all Apps created during testing
-        //Long startTime = new Date().getTime();
         if (null == endpoint || null == endpoint.get()) {
             if (null != properties) {
                 try {
@@ -192,7 +182,15 @@ public class IntegrationBase {
 
         localeServiceUtil.setLocale();
         contentType = System.getProperty("contentType", "json");
-        //Long completionTime = new Date().getTime();
+        for(School s : schoolsCreated) {
+            makeRequest(HttpMethod.DELETE, getSchoolEndpoint(s.getId()));
+        }
+        for(Student s : studentsCreated) {
+            makeRequest(HttpMethod.DELETE, getStudentEndpoint(s.getId()));
+        }
+        for(Teacher t : teachersCreated) {
+            makeRequest(HttpMethod.DELETE, getTeacherEndpoint(t.getId()));
+        }
     }
     
     /**
@@ -241,10 +239,6 @@ public class IntegrationBase {
                 Assert.fail("TEST SETUP FAILED: Resource file '" + resourceName + "' not found on classpath.");
             }
         }
-    }
-
-    public AssignmentValidatingExecutor getAssignmentServiceValidator() {
-        return assignmentValidatingExecutor;
     }
     
     public LocaleServiceUtil getLocaleServiceValidator() {
@@ -482,6 +476,13 @@ public class IntegrationBase {
         return "/" + o;
     }
 
+    public String getTeacherEndpoint() {
+        return BASE_API_ENDPOINT + TEACHER_ENDPOINT;
+    }
+    
+    public String getTeacherEndpoint(Long teacherId) {
+        return getTeacherEndpoint() + pathify(teacherId);
+    }
     public String getStudentEndpoint() {
         return BASE_API_ENDPOINT + STUDENT_ENDPOINT;
     }
@@ -613,12 +614,12 @@ public class IntegrationBase {
         return getSectionAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId) + pathify(sectionAssignmentId);
     }
     
-    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, Long sectionGradeId) {
-        return getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId) + pathify(sectionGradeId);
+    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId) {
+        return getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId) + STUDENT_ENDPOINT + pathify(studentId);
     }
     
-    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId) {
-        return getSectionEndpoint(schoolId, schoolYearId, termId, sectionId) + STUDENT_ENDPOINT + pathify(studentId) + STUDENT_SECTION_GRADE_ENDPOINT;
+    public String getStudentSectionGradeEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId) {
+        return getSectionEndpoint(schoolId, schoolYearId, termId, sectionId) + STUDENT_SECTION_GRADE_ENDPOINT;
     }
     
     public String getStudentAssignmentEndpoint(Long schoolId, Long schoolYearId, Long termId, Long sectionId, 
@@ -631,26 +632,6 @@ public class IntegrationBase {
             Long sectionAssignmentId) {
         return getSectionAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId, sectionAssignmentId) 
                 + STUDENT_ASSIGNMENT_ENDPOINT;
-    }
-    
-    /**
-     * Description:
-     * Private helper method to get string to connect to application endpoint
-     * Expected Result:
-     * String for application endpoint
-     */
-    public String getAssignmentEndpoint(Long schoolId, Long courseId) {
-        return getCourseEndpoint(schoolId, courseId) + ASSIGNMENT_ENDPOINT;
-    }
-
-    /**
-     * Description:
-     * Private helper method to get string to connect to application endpoint
-     * Expected Result:
-     * String for application endpoint containing supplied appId
-     */
-    public String getAssignmentEndpoint(Long schoolId, Long courseId, Long assignmentId) {
-        return getAssignmentEndpoint(schoolId, courseId) + pathify(assignmentId);
     }
 
     /**

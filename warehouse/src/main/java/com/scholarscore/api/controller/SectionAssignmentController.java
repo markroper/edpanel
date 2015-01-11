@@ -12,17 +12,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.scholarscore.models.Assignment;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.SectionAssignment;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Controller
-@RequestMapping("/api/v1/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/sectassignments")
+@RequestMapping("/api/v1/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/assignments")
 public class SectionAssignmentController extends BaseController {
     @ApiOperation(
-            value = "Get all section assignments", 
-            notes = "Retrieve all section assignments within a section", 
+            value = "Get all assignments", 
+            notes = "Get all assignments in a section", 
             response = List.class)
     @RequestMapping(
             method = RequestMethod.GET, 
@@ -37,13 +37,13 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId) {
-        return respond(PM.getAllSectionAssignments(schoolId, yearId, termId, sectId));
+        return respond(PM.getAllAssignments(schoolId, yearId, termId, sectId));
     }
     
     @ApiOperation(
-            value = "Get a section assignment", 
-            notes = "Given an section assignment ID, return the section assignment instance", 
-            response = SectionAssignment.class)
+            value = "Get an assignment", 
+            notes = "Given an assignment ID, return the assignment instance", 
+            response = Assignment.class)
     @RequestMapping(
             value = "/{assignmentId}", 
             method = RequestMethod.GET, 
@@ -60,11 +60,11 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
-        return respond(PM.getSectionAssignment(schoolId, yearId, termId, sectId, assignmentId));
+        return respond(PM.getAssignment(schoolId, yearId, termId, sectId, assignmentId));
     }
 
     @ApiOperation(
-            value = "Create a section assignment", 
+            value = "Create an assignment", 
             notes = "Creates, assigns and ID to, persists and returns a section assignment",
             response = EntityId.class)
     @RequestMapping(
@@ -80,13 +80,13 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
-            @RequestBody @Valid SectionAssignment sectionAssignment) {
-        return respond(PM.createSectionAssignment(schoolId, yearId, termId, sectId, sectionAssignment));
+            @RequestBody @Valid Assignment sectionAssignment) {
+        return respond(PM.createAssignment(schoolId, yearId, termId, sectId, sectionAssignment));
     }
 
     @ApiOperation(
-            value = "Overwrite an existing section assignment", 
-            notes = "Overwrites an existing section assignment with the ID provided",
+            value = "Overwrite an existing assignment", 
+            notes = "Overwrites an existing assignment with the ID provided",
             response = EntityId.class)
     @RequestMapping(
             value = "/{assignmentId}",
@@ -104,13 +104,13 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
-            @RequestBody @Valid SectionAssignment sectionAssignment) {
-        return respond(PM.replaceSectionAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
+            @RequestBody @Valid Assignment sectionAssignment) {
+        return respond(PM.replaceAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
     }
     
     @ApiOperation(
-            value = "Update an existing section assignment", 
-            notes = "Updates an existing section assigmment. Will not overwrite existing values with null.",
+            value = "Update an existing assignment", 
+            notes = "Updates an existing assigmment. Will not overwrite existing values with null.",
             response = EntityId.class)
     @RequestMapping(
             value = "/{assignmentId}", 
@@ -128,13 +128,13 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
-            @RequestBody @Valid SectionAssignment sectionAssignment) {
-        return respond(PM.updateSectionAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
+            @RequestBody @Valid Assignment sectionAssignment) {
+        return respond(PM.updateAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
     }
 
     @ApiOperation(
-            value = "Delete a section assignment", 
-            notes = "Deletes the section assignment with the ID provided",
+            value = "Delete an assignment", 
+            notes = "Deletes the assignment with the ID provided",
             response = Void.class)
     @RequestMapping(
             value = "/{assignmentId}", 
@@ -152,6 +152,6 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
-        return respond(PM.deleteSectionAssignment(schoolId, yearId, termId, sectId, assignmentId));
+        return respond(PM.deleteAssignment(schoolId, yearId, termId, sectId, assignmentId));
     }
 }

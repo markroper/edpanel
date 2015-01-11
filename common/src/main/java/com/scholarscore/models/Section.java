@@ -24,7 +24,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected GradeFormula gradeFormula;
     protected transient Course course;
     protected transient List<Student> enrolledStudents;
-    protected transient List<SectionAssignment> sectionAssignments;
+    protected transient List<Assignment> assignments;
     //TODO: List<Teacher> teachers;
     //TODO: Set<SectionAssignment> assignments;
     //TODO: Schedule
@@ -41,7 +41,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         endDate = sect.endDate;
         room = sect.room;
         enrolledStudents = sect.enrolledStudents;
-        sectionAssignments = sect.sectionAssignments;
+        assignments = sect.assignments;
         gradeFormula = sect.gradeFormula;
     }
 
@@ -98,14 +98,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         return student;
     }
     
-    public List<SectionAssignment> getSectionAssignments() {
-        return sectionAssignments;
+    public List<Assignment> getAssignments() {
+        return assignments;
     }
     
-    public SectionAssignment findAssignmentById(Long id) {
-        SectionAssignment assignment = null;
-        if(null != id && null != sectionAssignments && !sectionAssignments.isEmpty()) {
-            for(SectionAssignment s: sectionAssignments) {
+    public Assignment findAssignmentById(Long id) {
+        Assignment assignment = null;
+        if(null != id && null != assignments && !assignments.isEmpty()) {
+            for(Assignment s: assignments) {
                 if(s.getId().equals(id)) {
                     assignment = s;
                     break;
@@ -115,8 +115,8 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         return assignment;
     }
 
-    public void setSectionAssignments(List<SectionAssignment> sectionAssignments) {
-        this.sectionAssignments = sectionAssignments;
+    public void setAssignments(List<Assignment> assignments) {
+        this.assignments = assignments;
     }
 
     public GradeFormula getGradeFormula() {
@@ -146,8 +146,8 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         if(null == enrolledStudents) {
             enrolledStudents = mergeFrom.enrolledStudents;
         }
-        if(null == sectionAssignments) {
-            sectionAssignments = mergeFrom.sectionAssignments;
+        if(null == assignments) {
+            assignments = mergeFrom.assignments;
         }
         if(null == gradeFormula) {
             gradeFormula = mergeFrom.gradeFormula;
@@ -165,14 +165,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 Objects.equals(this.endDate, other.endDate) &&
                 Objects.equals(this.room, other.room) &&
                 Objects.equals(this.enrolledStudents, other.enrolledStudents) &&
-                Objects.equals(this.sectionAssignments, other.sectionAssignments) &&
+                Objects.equals(this.assignments, other.assignments) &&
                 Objects.equals(this.gradeFormula, other.gradeFormula);
     }
     
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(course, startDate, endDate, 
-                room, enrolledStudents, sectionAssignments, gradeFormula);
+                room, enrolledStudents, assignments, gradeFormula);
     }
     
 }

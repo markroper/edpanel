@@ -1,5 +1,6 @@
 package com.scholarscore.api.controller;
-    
+
+import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.http.HttpStatus;
@@ -8,17 +9,22 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.Assignment;
-import com.scholarscore.models.AttendanceAssignment;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.GradedAssignment;
 import com.scholarscore.models.School;
+import com.scholarscore.models.SchoolYear;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.Assignment;
+import com.scholarscore.models.Term;
 
 @Test(groups = { "integration" })
 public class AssignmentControllerIntegrationTest extends IntegrationBase {
     private int numberOfItemsCreated = 0;
     private School school;
-    private Course course;
+    private SchoolYear schoolYear;
+    private Term term;
+    private Section section;
+    private Course course; 
     
     @BeforeClass
     public void init() {
@@ -27,88 +33,100 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
         school.setName(localeServiceUtil.generateName());
         school = schoolValidatingExecutor.create(school, "Create base school");
         
+        schoolYear = new SchoolYear();
+        schoolYear.setName(localeServiceUtil.generateName());
+        schoolYear = schoolYearValidatingExecutor.create(school.getId(), schoolYear, "create base schoolYear");
+        
+        term = new Term();
+        term.setName(localeServiceUtil.generateName());
+        term = termValidatingExecutor.create(school.getId(), schoolYear.getId(), term, "create test base term");
+        
         course = new Course();
         course.setName(localeServiceUtil.generateName());
         course = courseValidatingExecutor.create(school.getId(), course, "create base course");
+        
+        section = new Section();
+        section.setCourse(course);
+        section.setName(localeServiceUtil.generateName());
+        section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
     }
     
     //Positive test cases
     @DataProvider
     public Object[][] createAssignmentProvider() {
-        GradedAssignment emptyGradedAssignment = new GradedAssignment();
+        GradedAssignment emptyAssignment = new GradedAssignment();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
+        Date today = cal.getTime();
+        cal.add(Calendar.YEAR, 1); // to get previous year add -1
+        Date nextYear = cal.getTime();
         
-        GradedAssignment gradedAssignment = new GradedAssignment();
-        gradedAssignment.setName(localeServiceUtil.generateName());
-        gradedAssignment.setDueDate(new Date(1234567L));
-        gradedAssignment.setAssignedDate(new Date(123456L));
-        
-        AttendanceAssignment emptyAttendanceAssignment = new AttendanceAssignment();
-        
-        AttendanceAssignment attendanceAssignment = new AttendanceAssignment();
-        attendanceAssignment.setName(localeServiceUtil.generateName());
-        attendanceAssignment.setDate(new Date());
+        GradedAssignment namedAssignment = new GradedAssignment();
+        namedAssignment.setName(localeServiceUtil.generateName());
+        namedAssignment.setAssignedDate(today);
+        namedAssignment.setDueDate(nextYear);
         
         return new Object[][] {
-                { "Empty graded assignment", emptyGradedAssignment },
-                { "Graded assignment", gradedAssignment },
-                { "Empty attendance assignment", emptyAttendanceAssignment },
-                { "Attendance assignment", attendanceAssignment }
+                { "Empty section assignment", emptyAssignment },
+                { "Populated section assignment", namedAssignment },
         };
     }
     
     @Test(dataProvider = "createAssignmentProvider")
-    public void createAssignmentTest(String msg, Assignment assignment) {
-        assignmentValidatingExecutor.create(school.getId(), course.getId(), assignment, msg);
+    public void createAssignmentTest(String msg, Assignment sectionAssignment) {
+        sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), sectionAssignment, msg);
         numberOfItemsCreated++;
     }
     
     @Test(dataProvider = "createAssignmentProvider")
-    public void deleteAssignmentTest(String msg, Assignment assignment) {
-        Assignment createdAssignment = assignmentValidatingExecutor.create(school.getId(), course.getId(), assignment, msg);
-        assignmentValidatingExecutor.delete(school.getId(), course.getId(), createdAssignment.getId(), msg);
+    public void deleteAssignmentTest(String msg, Assignment sectionAssignment) {
+        Assignment createdSection = sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), sectionAssignment, msg);
+        sectionAssignmentValidatingExecutor.delete(school.getId(), schoolYear.getId(), term.getId(), section.getId(), createdSection.getId(), msg);
     }
     
     @Test(dataProvider = "createAssignmentProvider")
-    public void replaceAssignmentTest(String msg, Assignment assignment) {
-        Assignment createdAssignment = assignmentValidatingExecutor.create(school.getId(), course.getId(), assignment, msg);
-        assignmentValidatingExecutor.replace(school.getId(), course.getId(), createdAssignment.getId(), new GradedAssignment(), msg);
+    public void replaceAssignmentTest(String msg, Assignment sectionAssignment) {
+        Assignment createdSection = sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), sectionAssignment, msg);
+        sectionAssignmentValidatingExecutor.replace(school.getId(), schoolYear.getId(), term.getId(), section.getId(), createdSection.getId(), new GradedAssignment(), msg);
         numberOfItemsCreated++;
     }
     
     @Test(dataProvider = "createAssignmentProvider")
-    public void updateAssignmentTest(String msg, Assignment assignment) {
-        Assignment createdAssignment = assignmentValidatingExecutor.create(school.getId(), course.getId(), assignment, msg);
-        GradedAssignment updatedAssignment = new GradedAssignment();
-        updatedAssignment.setName(localeServiceUtil.generateName());
+    public void updateAssignmentTest(String msg, Assignment sectionAssignment) {
+        Assignment createdSection = sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), sectionAssignment, msg);
+        Assignment updatedSection = new GradedAssignment();
+        updatedSection.setName(localeServiceUtil.generateName());
         //PATCH the existing record with a new name.
-        assignmentValidatingExecutor.update(school.getId(), course.getId(), createdAssignment.getId(), updatedAssignment, msg);
+        sectionAssignmentValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), section.getId(), createdSection.getId(), updatedSection, msg);
         numberOfItemsCreated++;
     }
     
     @Test
     public void getAllItems() {
-        assignmentValidatingExecutor.getAll(school.getId(), course.getId(), "Get all records created so far", numberOfItemsCreated++);
+        sectionAssignmentValidatingExecutor.getAll(school.getId(), schoolYear.getId(), term.getId(), section.getId(), "Get all records created so far", numberOfItemsCreated++);
     }
     
     //Negative test cases
     @DataProvider
-    public Object[][] createAssignmentNegativeProvider() {
-        GradedAssignment gradedAssignmentNameTooLong = new GradedAssignment();
-        gradedAssignmentNameTooLong.setName(localeServiceUtil.generateName(257));
+    public Object[][] createSectionNegativeProvider() {
+        Assignment gradedSectionNameTooLong = new GradedAssignment();
+        gradedSectionNameTooLong.setName(localeServiceUtil.generateName(257));
         
         return new Object[][] {
-                { "Assignment with name exceeding 256 char limit", gradedAssignmentNameTooLong, HttpStatus.BAD_REQUEST }
+                { "Section with name exceeding 256 char limit", gradedSectionNameTooLong, HttpStatus.BAD_REQUEST }
         };
     }
     
-    @Test(dataProvider = "createAssignmentNegativeProvider")
-    public void createAssignmentNegativeTest(String msg, Assignment assignment, HttpStatus expectedStatus) {
-        assignmentValidatingExecutor.createNegative(school.getId(), course.getId(), assignment, expectedStatus, msg);
+    @Test(dataProvider = "createSectionNegativeProvider")
+    public void createSectionNegativeTest(String msg, Assignment sectionAssignment, HttpStatus expectedStatus) {
+        sectionAssignmentValidatingExecutor.createNegative(school.getId(), schoolYear.getId(), term.getId(), 
+                section.getId(), sectionAssignment, expectedStatus, msg);
     }
     
-    @Test(dataProvider = "createAssignmentNegativeProvider")
-    public void replaceAssignmentNegativeTest(String msg, Assignment assignment, HttpStatus expectedStatus) {
-        Assignment created = assignmentValidatingExecutor.create(school.getId(), course.getId(), new GradedAssignment(), msg);
-        assignmentValidatingExecutor.replaceNegative(school.getId(), course.getId(), created.getId(), assignment, expectedStatus, msg);
+    @Test(dataProvider = "createSectionNegativeProvider")
+    public void replaceSectionNegativeTest(String msg, Assignment sectionAssignment, HttpStatus expectedStatus) {
+        Assignment created = sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), new GradedAssignment(), msg);
+        sectionAssignmentValidatingExecutor.replaceNegative(school.getId(), schoolYear.getId(), term.getId(), 
+                section.getId(), created.getId(), sectionAssignment, expectedStatus, msg);
     }
 }

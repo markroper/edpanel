@@ -6,6 +6,8 @@ import com.scholarscore.models.Student;
 
 public interface StudentPersistence {
     public Collection<Student> selectAllStudents();
+    
+    public Collection<Student> selectAllStudentsInSection(long sectionId);
 
     public Student selectStudent(long studentId);
 

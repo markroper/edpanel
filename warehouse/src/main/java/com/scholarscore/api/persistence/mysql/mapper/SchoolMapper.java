@@ -13,7 +13,7 @@ public class SchoolMapper implements RowMapper<School> {
     public School mapRow(ResultSet rs, int rowNum) throws SQLException {
         School school = new School();
         school.setId(rs.getLong(DbConst.SCHOOL_ID_COL));
-        school.setName(rs.getString(DbConst.NAME_COL));
+        school.setName(rs.getString(DbConst.SCHOOL_NAME_COL));
         return school;
     }
 

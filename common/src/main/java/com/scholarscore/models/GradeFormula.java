@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @SuppressWarnings("serial")
@@ -18,6 +19,11 @@ public class GradeFormula implements Serializable {
     public GradeFormula() { 
     }
     
+    public GradeFormula(Map<AssignmentType, Integer> weights) {
+        assignmentTypeWeights = weights;
+    }
+    
+    @JsonIgnore
     public boolean isValid() {
         if(null == assignmentTypeWeights) {
             return true;
@@ -41,15 +47,15 @@ public class GradeFormula implements Serializable {
                 if(null != sa.getAwardedPoints()) {
                     awardedPoints += sa.getAwardedPoints();
                 }
-                if(null != sa.getSectionAssignment() && null != sa.getSectionAssignment().getAvailablePoints()) {
-                    availablePoints += sa.getSectionAssignment().getAvailablePoints();
+                if(null != sa.getAssignment() && null != sa.getAssignment().getAvailablePoints()) {
+                    availablePoints += sa.getAssignment().getAvailablePoints();
                 }
             }
             calculatedGrade = awardedPoints * 1.0 / availablePoints;
         } else {
             Map<AssignmentType, MutablePair<Long, Long>> calculatedGradeByType = new HashMap<>();
             for(StudentAssignment sa : studentAssignments) {
-                AssignmentType type = sa.getSectionAssignment().getAssignment().getType();
+                AssignmentType type = sa.getAssignment().getType();
                 if(!assignmentTypeWeights.containsKey(type)) {
                     continue;
                 }
@@ -59,8 +65,8 @@ public class GradeFormula implements Serializable {
                 if(null != sa.getAwardedPoints()) {
                     calculatedGradeByType.get(type).left += sa.getAwardedPoints();
                 }
-                if(null != sa.getSectionAssignment() && null != sa.getSectionAssignment().getAvailablePoints()) {
-                    calculatedGradeByType.get(type).right += sa.getSectionAssignment().getAvailablePoints();
+                if(null != sa.getAssignment() && null != sa.getAssignment().getAvailablePoints()) {
+                    calculatedGradeByType.get(type).right += sa.getAssignment().getAvailablePoints();
                 }
             }
             //Now we calculate the final score as the sum of AssignmentTypeAwardedPoints/AssignmentTypeAvailPoints * PercentOfGradeAsLong

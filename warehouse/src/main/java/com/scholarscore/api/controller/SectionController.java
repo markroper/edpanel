@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.Section;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -74,7 +75,7 @@ public class SectionController extends BaseController {
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
-            @RequestBody @Valid Section section) {
+            @RequestBody @Valid Section section) throws JsonProcessingException {
         return respond(PM.createSection(schoolId, schoolYearId, termId, section));
     }
 
@@ -96,7 +97,7 @@ public class SectionController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId,
-            @RequestBody @Valid Section section) {
+            @RequestBody @Valid Section section) throws JsonProcessingException {
         return respond(PM.replaceSection(schoolId, schoolYearId, termId, sectionId, section));
     }
     
@@ -118,7 +119,7 @@ public class SectionController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId,
-            @RequestBody @Valid Section section) {
+            @RequestBody @Valid Section section) throws JsonProcessingException {
         return respond(PM.updateSection(schoolId, schoolYearId, termId, sectionId, section));
     }
 

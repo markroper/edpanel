@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
@@ -22,6 +24,7 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
     private School school;
     private SchoolYear schoolYear;
     private Term term;
+    private Course course;
     
     @BeforeClass
     public void init() {
@@ -34,6 +37,10 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
         schoolYear.setName(localeServiceUtil.generateName());
         schoolYear = schoolYearValidatingExecutor.create(school.getId(), schoolYear, "create base schoolYear");
         
+        course = new Course();
+        course.setName(localeServiceUtil.generateName());
+        course = courseValidatingExecutor.create(school.getId(), course, "create base course");
+        
         term = new Term();
         term.setName(localeServiceUtil.generateName());
         term = termValidatingExecutor.create(school.getId(), schoolYear.getId(), term, "create test base term");
@@ -43,11 +50,18 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
     @DataProvider
     public Object[][] createSectionProvider() {
         Section emptySection = new Section();
+        emptySection.setCourse(course);
         
         Section namedSection = new Section();
         namedSection.setName(localeServiceUtil.generateName());
-        namedSection.setStartDate(new Date(1234567L));
-        namedSection.setEndDate(new Date(123456L));
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
+        Date today = cal.getTime();
+        cal.add(Calendar.YEAR, 1); // to get previous year add -1
+        Date nextYear = cal.getTime();
+        namedSection.setStartDate(today);
+        namedSection.setEndDate(nextYear);
+        namedSection.setCourse(course);
         
         
         Section fullSection = new Section(namedSection);
@@ -80,8 +94,10 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createSectionProvider")
     public void replaceSectionTest(String msg, Section section) {
+        Section replaceSection = new Section();
+        replaceSection.setCourse(section.getCourse());
         Section createdSection = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, msg);
-        sectionValidatingExecutor.replace(school.getId(), schoolYear.getId(), term.getId(), createdSection.getId(), new Section(), msg);
+        sectionValidatingExecutor.replace(school.getId(), schoolYear.getId(), term.getId(), createdSection.getId(), replaceSection, msg);
         numberOfItemsCreated++;
     }
     
@@ -118,7 +134,9 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createSectionNegativeProvider")
     public void replaceSectionNegativeTest(String msg, Section section, HttpStatus expectedStatus) {
-        Section created = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), new Section(), msg);
+        Section s = new Section();
+        s.setCourse(course);
+        Section created = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), s, msg);
         sectionValidatingExecutor.replaceNegative(school.getId(), schoolYear.getId(), term.getId(), created.getId(), section, expectedStatus, msg);
     }
 }

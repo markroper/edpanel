@@ -13,9 +13,9 @@ public class SchoolYearMapper implements RowMapper<SchoolYear> {
     public SchoolYear mapRow(ResultSet rs, int rowNum) throws SQLException {
         SchoolYear year = new SchoolYear();
         year.setId(rs.getLong(DbConst.SCHOOL_YEAR_ID_COL));
-        year.setName(rs.getString(DbConst.NAME_COL));
-        year.setStartDate(rs.getTimestamp(DbConst.START_DATE_COL));
-        year.setEndDate(rs.getTimestamp(DbConst.END_DATE_COL));
+        year.setName(rs.getString(DbConst.SCHOOL_YEAR_NAME_COL));
+        year.setStartDate(rs.getTimestamp(DbConst.SCHOOL_YEAR_START_DATE_COL));
+        year.setEndDate(rs.getTimestamp(DbConst.SCHOOL_YEAR_END_DATE_COL));
         return year;
     }
 
