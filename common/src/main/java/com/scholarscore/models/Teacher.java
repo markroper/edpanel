@@ -11,6 +11,10 @@ public class Teacher extends ApiModel implements Serializable, IApiModel<Teacher
         
     }
     
+    public Teacher(Teacher t) {
+        super(t);
+    }
+    
     @Override
     public void mergePropertiesIfNull(Teacher mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);

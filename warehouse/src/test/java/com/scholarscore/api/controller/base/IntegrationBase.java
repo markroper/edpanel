@@ -40,9 +40,11 @@ import com.scholarscore.api.controller.service.SectionValidatingExecutor;
 import com.scholarscore.api.controller.service.StudentAssignmentValidatingExecutor;
 import com.scholarscore.api.controller.service.StudentSectionGradeValidatingExecutor;
 import com.scholarscore.api.controller.service.StudentValidatingExecutor;
+import com.scholarscore.api.controller.service.TeacherValidatingExecutor;
 import com.scholarscore.api.controller.service.TermValidatingExecutor;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Student;
+import com.scholarscore.models.Teacher;
 
 /**
  * Class that contains all common methods for servicing requests
@@ -70,6 +72,7 @@ public class IntegrationBase {
     private static final String STUDENT_ENDPOINT = "/students";
     private static final String STUDENT_ASSIGNMENT_ENDPOINT = "/studentassignments";
     private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
+    private static final String TEACHER_ENDPOINT = "/teachers";
 
     public LocaleServiceUtil localeServiceUtil;
     public CourseValidatingExecutor courseValidatingExecutor;
@@ -81,10 +84,12 @@ public class IntegrationBase {
     public StudentValidatingExecutor studentValidatingExecutor;
     public StudentAssignmentValidatingExecutor studentAssignmentValidatingExecutor;
     public StudentSectionGradeValidatingExecutor studentSectionGradeValidatingExecutor;
+    public TeacherValidatingExecutor teacherValidatingExecutor;
     
 
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Student> studentsCreated = new CopyOnWriteArrayList<>();
+    public CopyOnWriteArrayList<Teacher> teachersCreated = new CopyOnWriteArrayList<>();
 
     // Locale used in testing. Supplied as command-line arguments to JVM: -Dlocale=de_DE
     // Valid values include the following:
@@ -130,6 +135,7 @@ public class IntegrationBase {
         studentValidatingExecutor = new StudentValidatingExecutor(this);
         studentAssignmentValidatingExecutor = new StudentAssignmentValidatingExecutor(this);
         studentSectionGradeValidatingExecutor = new StudentSectionGradeValidatingExecutor(this);
+        teacherValidatingExecutor = new TeacherValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -149,6 +155,7 @@ public class IntegrationBase {
         Assert.assertNotNull(sectionAssignmentValidatingExecutor, "Unable to configure section assignment service");
         Assert.assertNotNull(studentValidatingExecutor, "Unable to configure student service");
         Assert.assertNotNull(studentAssignmentValidatingExecutor, "Unable to configure student assignment service");
+        Assert.assertNotNull(teacherValidatingExecutor, "Unable to configure teacher service");
     }
 
     /**
@@ -180,6 +187,9 @@ public class IntegrationBase {
         }
         for(Student s : studentsCreated) {
             makeRequest(HttpMethod.DELETE, getStudentEndpoint(s.getId()));
+        }
+        for(Teacher t : teachersCreated) {
+            makeRequest(HttpMethod.DELETE, getTeacherEndpoint(t.getId()));
         }
     }
     
@@ -466,6 +476,13 @@ public class IntegrationBase {
         return "/" + o;
     }
 
+    public String getTeacherEndpoint() {
+        return BASE_API_ENDPOINT + TEACHER_ENDPOINT;
+    }
+    
+    public String getTeacherEndpoint(Long teacherId) {
+        return getTeacherEndpoint() + pathify(teacherId);
+    }
     public String getStudentEndpoint() {
         return BASE_API_ENDPOINT + STUDENT_ENDPOINT;
     }
