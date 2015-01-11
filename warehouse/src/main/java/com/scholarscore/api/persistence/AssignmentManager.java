@@ -19,7 +19,7 @@ public interface AssignmentManager {
             long termId, long sectionId);
 
     /**
-     * Returns ErrorCodes.OK if a section assignment exists and otherwise returns a descriptive error code
+     * Returns a StatusCode with code StatusCodes.OK_ERROR_CODE if a section assignment exists and otherwise returns a descriptive error code
      * 
      * @param schoolId ID of parent school
      * @param yearId the ID of the parent year

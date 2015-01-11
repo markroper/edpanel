@@ -37,7 +37,7 @@ public class StudentAssignmentController extends BaseController {
             @PathVariable(value="tId") Long tId,
             @ApiParam(name = "sId", required = true, value = "Section ID")
             @PathVariable(value="sId") Long sId,
-            @ApiParam(name = "assignId", required = true, value = "Section assignment ID")
+            @ApiParam(name = "assignId", required = true, value = "Assignment ID")
             @PathVariable(value="assignId") Long assignId) {
         return respond(PM.getAllStudentAssignments(schoolId, yrId, tId, sId, assignId));
     }
@@ -60,7 +60,7 @@ public class StudentAssignmentController extends BaseController {
             @PathVariable(value="tId") Long tId,
             @ApiParam(name = "sId", required = true, value = "Section ID")
             @PathVariable(value="sId") Long sId,
-            @ApiParam(name = "assignId", required = true, value = "Section assignment ID")
+            @ApiParam(name = "assignId", required = true, value = "Assignment ID")
             @PathVariable(value="assignId") Long assignId,
             @ApiParam(name = "studAssignId", required = true, value = "Student assignment ID")
             @PathVariable(value="studAssignId") Long studAssignId) {
@@ -84,7 +84,7 @@ public class StudentAssignmentController extends BaseController {
             @PathVariable(value="tId") Long tId,
             @ApiParam(name = "sId", required = true, value = "Section ID")
             @PathVariable(value="sId") Long sId,
-            @ApiParam(name = "assignId", required = true, value = "Section assignment ID")
+            @ApiParam(name = "assignId", required = true, value = "Assignment ID")
             @PathVariable(value="assignId") Long assignId,
             @RequestBody @Valid StudentAssignment studentAssignment) {
          return respond(PM.createStudentAssignment(schoolId, yrId, tId, sId, assignId, studentAssignment));
@@ -108,7 +108,7 @@ public class StudentAssignmentController extends BaseController {
             @PathVariable(value="tId") Long tId,
             @ApiParam(name = "sId", required = true, value = "Section ID")
             @PathVariable(value="sId") Long sId,
-            @ApiParam(name = "assignId", required = true, value = "Section assignment ID")
+            @ApiParam(name = "assignId", required = true, value = "Assignment ID")
             @PathVariable(value="assignId") Long assignId,
             @ApiParam(name = "studAssignId", required = true, value = "Section assignment ID")
             @PathVariable(value="studAssignId") Long studAssignId,
@@ -134,7 +134,7 @@ public class StudentAssignmentController extends BaseController {
             @PathVariable(value="tId") Long tId,
             @ApiParam(name = "sId", required = true, value = "Section ID")
             @PathVariable(value="sId") Long sId,
-            @ApiParam(name = "assignId", required = true, value = "Section assignment ID")
+            @ApiParam(name = "assignId", required = true, value = "Assignment ID")
             @PathVariable(value="assignId") Long assignId,
             @ApiParam(name = "studAssignId", required = true, value = "Section assignment ID")
             @PathVariable(value="studAssignId") Long studAssignId,
@@ -160,7 +160,7 @@ public class StudentAssignmentController extends BaseController {
             @PathVariable(value="tId") Long tId,
             @ApiParam(name = "sId", required = true, value = "Section ID")
             @PathVariable(value="sId") Long sId,
-            @ApiParam(name = "assignId", required = true, value = "Section assignment ID")
+            @ApiParam(name = "assignId", required = true, value = "Assignment ID")
             @PathVariable(value="assignId") Long assignId,
             @ApiParam(name = "studAssignId", required = true, value = "Section assignment ID")
             @PathVariable(value="studAssignId") Long studAssignId) {

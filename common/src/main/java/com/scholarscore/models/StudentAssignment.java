@@ -18,7 +18,7 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
     private Boolean completed;
     private Date completionDate;
     private Long awardedPoints;
-    private transient Assignment sectionAssignment;
+    private transient Assignment assignment;
     private transient Student student;
 
     public StudentAssignment() {
@@ -27,7 +27,7 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
     
     public StudentAssignment(StudentAssignment sa) {
         super(sa);
-        this.sectionAssignment = sa.sectionAssignment;
+        this.assignment = sa.assignment;
         this.completed = sa.completed;
         this.awardedPoints = sa.awardedPoints;
         this.student = sa.student;
@@ -39,8 +39,8 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         if(null == mergeFrom) {
             return;
         }
-        if(null == this.sectionAssignment) {
-            this.sectionAssignment = mergeFrom.sectionAssignment;
+        if(null == this.assignment) {
+            this.assignment = mergeFrom.assignment;
         }
         if(null == this.completed) {
             this.completed = mergeFrom.completed;
@@ -64,8 +64,8 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         this.completed = completed;
     }
 
-    public Assignment getSectionAssignment() {
-        return sectionAssignment;
+    public Assignment getAssignment() {
+        return assignment;
     }
 
     public Long getAwardedPoints() {
@@ -76,8 +76,8 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         this.awardedPoints = awardedPoints;
     }
 
-    public void setSectionAssignment(Assignment sectionAssignment) {
-        this.sectionAssignment = sectionAssignment;
+    public void setAssignment(Assignment assignment) {
+        this.assignment = assignment;
     }
 
     public Student getStudent() {
@@ -102,7 +102,7 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
             return false;
         }
         final StudentAssignment other = (StudentAssignment) obj;
-        return Objects.equals(this.sectionAssignment, other.sectionAssignment) && 
+        return Objects.equals(this.assignment, other.assignment) && 
                 Objects.equals(this.completed, other.completed) &&
                 Objects.equals(this.awardedPoints, other.awardedPoints) &&
                 Objects.equals(this.student, other.student) &&
@@ -111,6 +111,6 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(sectionAssignment, completed, awardedPoints, student, completionDate);
+        return 31 * super.hashCode() + Objects.hash(assignment, completed, awardedPoints, student, completionDate);
     }
 }

@@ -18,7 +18,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Controller
-@RequestMapping("/api/v1/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/grades")///students/{studId}/grades")
+@RequestMapping("/api/v1/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/grades")
 public class StudentSectionGradeController extends BaseController {
     @ApiOperation(
             value = "Get all student grades in a section", 
@@ -41,8 +41,8 @@ public class StudentSectionGradeController extends BaseController {
     }
     
     @ApiOperation(
-            value = "Get a student's grade in a section", 
-            notes = "Get a student's grade in a section", 
+            value = "Get a student grade in a section", 
+            notes = "Get a student grade in a section", 
             response = StudentSectionGrade.class)
     @RequestMapping(
             value = "/students/{studId}", 

@@ -21,8 +21,8 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping("/api/v1/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/assignments")
 public class SectionAssignmentController extends BaseController {
     @ApiOperation(
-            value = "Get all section assignments", 
-            notes = "Retrieve all section assignments within a section", 
+            value = "Get all assignments", 
+            notes = "Get all assignments in a section", 
             response = List.class)
     @RequestMapping(
             method = RequestMethod.GET, 
@@ -41,8 +41,8 @@ public class SectionAssignmentController extends BaseController {
     }
     
     @ApiOperation(
-            value = "Get a section assignment", 
-            notes = "Given an section assignment ID, return the section assignment instance", 
+            value = "Get an assignment", 
+            notes = "Given an assignment ID, return the assignment instance", 
             response = Assignment.class)
     @RequestMapping(
             value = "/{assignmentId}", 
@@ -64,7 +64,7 @@ public class SectionAssignmentController extends BaseController {
     }
 
     @ApiOperation(
-            value = "Create a section assignment", 
+            value = "Create an assignment", 
             notes = "Creates, assigns and ID to, persists and returns a section assignment",
             response = EntityId.class)
     @RequestMapping(
@@ -85,8 +85,8 @@ public class SectionAssignmentController extends BaseController {
     }
 
     @ApiOperation(
-            value = "Overwrite an existing section assignment", 
-            notes = "Overwrites an existing section assignment with the ID provided",
+            value = "Overwrite an existing assignment", 
+            notes = "Overwrites an existing assignment with the ID provided",
             response = EntityId.class)
     @RequestMapping(
             value = "/{assignmentId}",
@@ -109,8 +109,8 @@ public class SectionAssignmentController extends BaseController {
     }
     
     @ApiOperation(
-            value = "Update an existing section assignment", 
-            notes = "Updates an existing section assigmment. Will not overwrite existing values with null.",
+            value = "Update an existing assignment", 
+            notes = "Updates an existing assigmment. Will not overwrite existing values with null.",
             response = EntityId.class)
     @RequestMapping(
             value = "/{assignmentId}", 
@@ -133,8 +133,8 @@ public class SectionAssignmentController extends BaseController {
     }
 
     @ApiOperation(
-            value = "Delete a section assignment", 
-            notes = "Deletes the section assignment with the ID provided",
+            value = "Delete an assignment", 
+            notes = "Deletes the assignment with the ID provided",
             response = Void.class)
     @RequestMapping(
             value = "/{assignmentId}", 

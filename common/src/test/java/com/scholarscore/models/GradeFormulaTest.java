@@ -20,7 +20,7 @@ public class GradeFormulaTest {
             sect.setAvailablePoints(10L);
             StudentAssignment stu = new StudentAssignment();
             stu.setAwardedPoints(7L);
-            stu.setSectionAssignment(sect);
+            stu.setAssignment(sect);
             stu.setId(i);
             studentAssignments.add(stu);
         }
@@ -28,7 +28,7 @@ public class GradeFormulaTest {
             AttendanceAssignment sect = new AttendanceAssignment();
             sect.setAvailablePoints(5L);
             StudentAssignment stu = new StudentAssignment();
-            stu.setSectionAssignment(sect);
+            stu.setAssignment(sect);
             stu.setAwardedPoints(5L);
             stu.setId(i);
             studentAssignments.add(stu);

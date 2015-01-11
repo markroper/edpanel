@@ -480,7 +480,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             }
             Collection<Assignment> assignments = assignmentPersistence.selectAll(s.getId());
             if(null != assignments && !assignments.isEmpty()) {
-                s.setSectionAssignments(new ArrayList<Assignment>(assignments));
+                s.setAssignments(new ArrayList<Assignment>(assignments));
             }
         }
         return new ServiceResponse<Collection<Section>>(sections);
@@ -522,7 +522,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         }
         Collection<Assignment> assignments = assignmentPersistence.selectAll(sectionId);
         if(null != assignments && !assignments.isEmpty()) {
-            section.setSectionAssignments(new ArrayList<Assignment>(assignments));
+            section.setAssignments(new ArrayList<Assignment>(assignments));
         }
         return new ServiceResponse<Section>(section);
     }

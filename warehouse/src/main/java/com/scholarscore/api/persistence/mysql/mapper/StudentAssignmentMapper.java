@@ -26,7 +26,7 @@ public class StudentAssignmentMapper implements RowMapper<StudentAssignment> {
             ass.setAwardedPoints(awardedPoints);
         }
         AssignmentMapper assMapper = new AssignmentMapper();
-        ass.setSectionAssignment(assMapper.mapRow(rs, rowNum));
+        ass.setAssignment(assMapper.mapRow(rs, rowNum));
         
         StudentMapper studMapper = new StudentMapper();
         ass.setStudent(studMapper.mapRow(rs, rowNum));
