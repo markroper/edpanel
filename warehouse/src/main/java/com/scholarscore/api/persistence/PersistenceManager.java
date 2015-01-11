@@ -536,6 +536,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     @Override
     public ServiceResponse<Long> createSection(long schoolId, long yearId,
             long termId, Section section) throws JsonProcessingException {
+        //TODO: add support for creating section assignments that are on the provided instance
         StatusCode code = termExists(schoolId, yearId, termId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
@@ -573,6 +574,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     @Override
     public ServiceResponse<Long> replaceSection(long schoolId, long yearId,
             long termId, long sectionId, Section section) throws JsonProcessingException {
+        //TODO: add support for replacing section assignments that are provided on the instance.
         StatusCode code = sectionExists(schoolId, yearId, termId, sectionId);
         if(!code.equals(StatusCodes.getStatusCode(StatusCodeType.OK))) {
             return new ServiceResponse<Long>(code);
