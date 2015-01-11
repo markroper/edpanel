@@ -774,8 +774,6 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             return new ServiceResponse<StudentAssignment>(code);
         }
         StudentAssignment sa = studentAssignmentPersistence.select(sectionAssignmentId, studentAssignmentId);
-//        Assignment a = assignmentPersistence.select(sectionId, sectionAssignmentId);
-//        sa.setSectionAssignment(a);
         return new ServiceResponse<StudentAssignment>(sa);
     }
 
