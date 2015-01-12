@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
 import com.scholarscore.api.persistence.PersistenceManager;
-import com.scholarscore.api.persistence.mysql.SchoolPersistence;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeResponseFactory;
 import com.scholarscore.api.util.ServiceResponse;

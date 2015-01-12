@@ -10,4 +10,4 @@ Domain objects and utility functionality are in the **common** module.  Other mo
 
 Database Entity Relationship Diagram
 ================
-![Alt text](./database/DatabaseModel.png)
+![Alt text](database/DatabaseModel.png)
