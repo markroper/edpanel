@@ -1,3 +1,4 @@
+
 CREATE TABLE `scholar_warehouse`.`student` (
   `student_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `student_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
@@ -135,3 +136,20 @@ CREATE TABLE `scholar_warehouse`.`student_section_grade` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
+
+CREATE TABLE `scholar_warehouse`.`user` (
+    `username` varchar(50) NOT NULL,
+    `password` varchar(50) CHARACTER SET UTF8 NOT NULL,
+    `enabled` BOOLEAN NOT NULL,
+    PRIMARY KEY (username))
+ENGINE = InnoDB;
+
+CREATE TABLE `scholar_warehouse`.`authorities` (
+    `username` varchar(50) not null COMMENT 'The associated user with this record',
+    `authority` varchar(50) not null COMMENT 'The Users Role',
+    CONSTRAINT `fk_authorities_users` 
+	FOREIGN KEY(`username`) 
+	REFERENCES `scholar_warehouse`.`users`(`username`)
+    create unique index `ix_auth_username` on `authorities` (`username`,`authority`))
+ENGINE = InnoDB;
+
