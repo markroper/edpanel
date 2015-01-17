@@ -39,7 +39,7 @@ import org.springframework.security.provisioning.JdbcUserDetailsManager;
  */
 @Configuration
 @ImportResource("classpath:/dataSource.xml")
-@EnableWebSecurity
+@EnableWebSecurity(debug=true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	// Example on how to override the UserDao:
@@ -48,24 +48,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private DataSource dataSource;
 	
-	private String usersQuery = "select username, password from users where username = ?";
-	private String authoritiesQuery = "select username, authority from authories " +
+	private String usersQuery = "select username, password, enabled from users where username = ?";
+	private String authoritiesQuery = "select username, authority from authorities " +
             "where username=?";
 		
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth//.inMemoryAuthentication()
         	.jdbcAuthentication()
         	.dataSource(dataSource)
         	.usersByUsernameQuery(getUsersQuery())
-        	.authoritiesByUsernameQuery(getAuthoritiesQuery())
+        	.authoritiesByUsernameQuery(getAuthoritiesQuery());
         	// create a backup user for administration in case the database is wiped and we can't login
         	// also useful for testing in the event JDBC isn't working - this will create a new record
         	// in the database as a side effect, seems to create duplicate entries for the same user via
         	// this approach
-        	.withUser("mroper").password("admin").roles("ADMIN")
-        	.and()
-        	.withUser("mattg").password("admin").roles("ADMIN");
+        	
+//        	.withUser("mroper").password("admin").roles("STUDENT", "TEACHER", "ADMIN")
+//        	.and()
+//        	.withUser("mattg").password("admin").roles("STUDENT", "TEACHER", "ADMIN");
     }
 
     //http://stackoverflow.com/questions/22749767/using-jdbcauthentication-in-spring-security-with-hibernate

@@ -155,3 +155,8 @@ CREATE TABLE `scholar_warehouse`.`authorities` (
 ENGINE = InnoDB;
 CREATE INDEX `ix_auth_username` on `scholar_warehouse`.`authorities`(`username`,`authority`);
 
+insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mroper', 'admin', 1);
+insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mattg', 'admin', 1);
+
+insert into `scholar_warehouse`.`authorities` (username, authority) values ('mroper', 'ADMIN');
+insert into `scholar_warehouse`.`authorities` (username, authority) values ('mattg', 'ADMIN');
