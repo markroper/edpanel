@@ -3,6 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 		  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+		  
          version="3.0">
 
     <display-name>Scholar Score Warehouse!</display-name>
@@ -27,16 +28,5 @@
     <welcome-file-list>
     	<welcome-file>documentation</welcome-file>
     </welcome-file-list>
-
-	<authentication-manager>
-		<authentication-provider>
-			<jdbc-user-service data-source-ref="dataSource" 
-			users-by-username-query="select username, password, enabled from users where username=?"
-			authorities-by-username-query="
-                  select u.username, ur.authority from users u, user_roles ur 
-                  where u.user_id = ur.user_id and u.username=?" 
-            />		
-		</authentication-provider>
-	</authentication-manager>
 
 </web-app>

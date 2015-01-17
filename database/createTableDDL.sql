@@ -137,7 +137,7 @@ CREATE TABLE `scholar_warehouse`.`student_section_grade` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`user` (
+CREATE TABLE `scholar_warehouse`.`users` (
     `username` varchar(50) NOT NULL,
     `password` varchar(50) CHARACTER SET UTF8 NOT NULL,
     `enabled` BOOLEAN NOT NULL,
@@ -150,6 +150,8 @@ CREATE TABLE `scholar_warehouse`.`authorities` (
     CONSTRAINT `fk_authorities_users` 
 	FOREIGN KEY(`username`) 
 	REFERENCES `scholar_warehouse`.`users`(`username`)
-    create unique index `ix_auth_username` on `authorities` (`username`,`authority`))
+    	ON DELETE CASCADE
+    	ON UPDATE CASCADE)
 ENGINE = InnoDB;
+CREATE INDEX `ix_auth_username` on `scholar_warehouse`.`authorities`(`username`,`authority`);
 
