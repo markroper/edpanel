@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class Assignment 
         extends ApiModel implements Serializable, IApiModel<Assignment> {
-    protected AssignmentType type;
+    private AssignmentType type;
     private Date dueDate;
     private Long availablePoints;
 
@@ -29,6 +29,10 @@ public abstract class Assignment
      */
     public Assignment() {
 
+    }
+    
+    public Assignment(AssignmentType assignmentType) { 
+        this.type = assignmentType;
     }
     
     /**

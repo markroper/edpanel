@@ -10,9 +10,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class ApiModel implements Serializable {
-    protected Long id;
+    private Long id;
     @Size(min=1, max=256)
-    protected String name;
+    private String name;
     
     public ApiModel() {
         
