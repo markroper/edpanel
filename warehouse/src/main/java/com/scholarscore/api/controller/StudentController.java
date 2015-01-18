@@ -29,7 +29,7 @@ public class StudentController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAll() {
-        return respond(PM.getAllStudents());
+        return respond(getStudentManager().getAllStudents());
     }
     
     @ApiOperation(
@@ -44,7 +44,7 @@ public class StudentController extends BaseController {
     public @ResponseBody ResponseEntity get(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId) {
-        return respond(PM.getStudent(studentId));
+        return respond(getStudentManager().getStudent(studentId));
     }
 
     @ApiOperation(
@@ -56,7 +56,7 @@ public class StudentController extends BaseController {
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity create(@RequestBody @Valid Student student) {
-        return respond(PM.createStudent(student));
+        return respond(getStudentManager().createStudent(student));
     }
 
     @ApiOperation(
@@ -72,7 +72,7 @@ public class StudentController extends BaseController {
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
             @RequestBody @Valid Student student) {
-        return respond(PM.replaceStudent(studentId, student));
+        return respond(getStudentManager().replaceStudent(studentId, student));
     }
     
     @ApiOperation(
@@ -88,7 +88,7 @@ public class StudentController extends BaseController {
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
             @RequestBody @Valid Student student) {
-        return respond(PM.updateStudent(studentId, student));
+        return respond(getStudentManager().updateStudent(studentId, student));
     }
 
     @ApiOperation(
@@ -102,6 +102,6 @@ public class StudentController extends BaseController {
     public @ResponseBody ResponseEntity delete(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId) {
-        return respond(PM.deleteStudent(studentId));
+        return respond(getStudentManager().deleteStudent(studentId));
     }
 }

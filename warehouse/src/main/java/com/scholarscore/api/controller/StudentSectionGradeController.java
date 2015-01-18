@@ -37,7 +37,7 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId) {
-        return respond(PM.getAllStudentSectionGrades(schoolId, yearId, termId, sectId));
+        return respond(getStudentSectionGradeManager().getAllStudentSectionGrades(schoolId, yearId, termId, sectId));
     }
     
     @ApiOperation(
@@ -60,7 +60,7 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "studId", required = true, value = "Student ID")
             @PathVariable(value="studId") Long studId) {
-        return respond(PM.getStudentSectionGrade(schoolId, yearId, termId, sectId, studId));
+        return respond(getStudentSectionGradeManager().getStudentSectionGrade(schoolId, yearId, termId, sectId, studId));
     }
 
     @ApiOperation(
@@ -84,7 +84,7 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "studId", required = true, value = "Student ID")
             @PathVariable(value="studId") Long studId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
-        return respond(PM.createStudentSectionGrade(schoolId, yearId, termId, sectId, studId, studentSectionGrade));
+        return respond(getStudentSectionGradeManager().createStudentSectionGrade(schoolId, yearId, termId, sectId, studId, studentSectionGrade));
     }
 
     @ApiOperation(
@@ -108,7 +108,7 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "studId", required = true, value = "Student ID")
             @PathVariable(value="studId") Long studId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
-        return respond(PM.replaceStudentSectionGrade(
+        return respond(getStudentSectionGradeManager().replaceStudentSectionGrade(
                 schoolId, yearId, termId, sectId, studId, studentSectionGrade));
     }
     
@@ -133,7 +133,7 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "studId", required = true, value = "Student ID")
             @PathVariable(value="studId") Long studId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
-        return respond(PM.updateStudentSectionGrade(
+        return respond(getStudentSectionGradeManager().updateStudentSectionGrade(
                 schoolId, yearId, termId, sectId, studId, studentSectionGrade));
     }
 
@@ -157,6 +157,6 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "studId", required = true, value = "Student ID")
             @PathVariable(value="studId") Long studId) {
-        return respond(PM.deleteStudentSectionGrade(schoolId, yearId, termId, sectId, studId));
+        return respond(getStudentSectionGradeManager().deleteStudentSectionGrade(schoolId, yearId, termId, sectId, studId));
     }
 }
