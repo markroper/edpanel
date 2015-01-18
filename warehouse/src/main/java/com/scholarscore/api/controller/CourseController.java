@@ -31,7 +31,7 @@ public class CourseController extends BaseController {
     public @ResponseBody ResponseEntity getAllCourses(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId) {
-        return respond(PM.getAllCourses(schoolId));
+        return respond(getCourseManager().getAllCourses(schoolId));
     }
     
     @ApiOperation(
@@ -48,7 +48,7 @@ public class CourseController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId) {
-        return respond(PM.getCourse(schoolId, courseId));
+        return respond(getCourseManager().getCourse(schoolId, courseId));
     }
 
     @ApiOperation(
@@ -63,7 +63,7 @@ public class CourseController extends BaseController {
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid Course course) {
-        return respond(PM.createCourse(schoolId, course));
+        return respond(getCourseManager().createCourse(schoolId, course));
     }
 
     @ApiOperation(
@@ -81,7 +81,7 @@ public class CourseController extends BaseController {
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
             @RequestBody @Valid Course course) {
-        return respond(PM.replaceCourse(schoolId, courseId, course));
+        return respond(getCourseManager().replaceCourse(schoolId, courseId, course));
     }
     
     @ApiOperation(
@@ -99,7 +99,7 @@ public class CourseController extends BaseController {
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
             @RequestBody @Valid Course course) {
-        return respond(PM.updateCourse(schoolId, courseId, course));
+        return respond(getCourseManager().updateCourse(schoolId, courseId, course));
     }
 
     @ApiOperation(
@@ -115,6 +115,6 @@ public class CourseController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId) {
-        return respond(PM.deleteCourse(schoolId, courseId));
+        return respond(getCourseManager().deleteCourse(schoolId, courseId));
     }
 }

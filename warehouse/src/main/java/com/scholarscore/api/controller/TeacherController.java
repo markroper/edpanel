@@ -29,7 +29,7 @@ public class TeacherController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAll() {
-        return respond(PM.getAllTeachers());
+        return respond(getTeacherManager().getAllTeachers());
     }
     
     @ApiOperation(
@@ -44,7 +44,7 @@ public class TeacherController extends BaseController {
     public @ResponseBody ResponseEntity get(
             @ApiParam(name = "teacherId", required = true, value = "Teacher ID")
             @PathVariable(value="teacherId") Long teacherId) {
-        return respond(PM.getTeacher(teacherId));
+        return respond(getTeacherManager().getTeacher(teacherId));
     }
 
     @ApiOperation(
@@ -56,7 +56,7 @@ public class TeacherController extends BaseController {
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity create(@RequestBody @Valid Teacher teacher) {
-        return respond(PM.createTeacher(teacher));
+        return respond(getTeacherManager().createTeacher(teacher));
     }
 
     @ApiOperation(
@@ -72,7 +72,7 @@ public class TeacherController extends BaseController {
             @ApiParam(name = "teacherId", required = true, value = "Teacher ID")
             @PathVariable(value="teacherId") Long teacherId,
             @RequestBody @Valid Teacher teacher) {
-        return respond(PM.replaceTeacher(teacherId, teacher));
+        return respond(getTeacherManager().replaceTeacher(teacherId, teacher));
     }
     
     @ApiOperation(
@@ -88,7 +88,7 @@ public class TeacherController extends BaseController {
             @ApiParam(name = "teacherId", required = true, value = "Teacher ID")
             @PathVariable(value="teacherId") Long teacherId,
             @RequestBody @Valid Teacher teacher) {
-        return respond(PM.updateTeacher(teacherId, teacher));
+        return respond(getTeacherManager().updateTeacher(teacherId, teacher));
     }
 
     @ApiOperation(
@@ -102,6 +102,6 @@ public class TeacherController extends BaseController {
     public @ResponseBody ResponseEntity delete(
             @ApiParam(name = "teacherId", required = true, value = "Teacher ID")
             @PathVariable(value="teacherId") Long teacherId) {
-        return respond(PM.deleteTeacher(teacherId));
+        return respond(getTeacherManager().deleteTeacher(teacherId));
     }
 }

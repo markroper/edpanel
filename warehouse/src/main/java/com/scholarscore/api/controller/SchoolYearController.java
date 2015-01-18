@@ -31,7 +31,7 @@ public class SchoolYearController extends BaseController {
     public @ResponseBody ResponseEntity getAllSchoolYears(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId) {
-        return respond(PM.getAllSchoolYears(schoolId));
+        return respond(getSchoolYearManager().getAllSchoolYears(schoolId));
     }
     
     @ApiOperation(
@@ -48,7 +48,7 @@ public class SchoolYearController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId) {
-        return respond(PM.getSchoolYear(schoolId, schoolYearId));
+        return respond(getSchoolYearManager().getSchoolYear(schoolId, schoolYearId));
     }
 
     @ApiOperation(
@@ -63,7 +63,7 @@ public class SchoolYearController extends BaseController {
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid SchoolYear schoolYear) {
-        return respond(PM.createSchoolYear(schoolId, schoolYear));
+        return respond(getSchoolYearManager().createSchoolYear(schoolId, schoolYear));
     }
 
     @ApiOperation(
@@ -81,7 +81,7 @@ public class SchoolYearController extends BaseController {
             @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @RequestBody @Valid SchoolYear schoolYear) {
-        return respond(PM.replaceSchoolYear(schoolId, schoolYearId, schoolYear));
+        return respond(getSchoolYearManager().replaceSchoolYear(schoolId, schoolYearId, schoolYear));
     }
     
     @ApiOperation(
@@ -99,7 +99,7 @@ public class SchoolYearController extends BaseController {
             @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @RequestBody @Valid SchoolYear schoolYear) {
-        return respond(PM.updateSchoolYear(schoolId, schoolYearId, schoolYear));
+        return respond(getSchoolYearManager().updateSchoolYear(schoolId, schoolYearId, schoolYear));
     }
 
     @ApiOperation(
@@ -115,6 +115,6 @@ public class SchoolYearController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId) {
-        return respond(PM.deleteSchoolYear(schoolId, schoolYearId));
+        return respond(getSchoolYearManager().deleteSchoolYear(schoolId, schoolYearId));
     }
 }

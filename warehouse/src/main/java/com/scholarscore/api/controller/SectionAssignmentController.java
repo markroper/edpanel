@@ -37,7 +37,7 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId) {
-        return respond(PM.getAllAssignments(schoolId, yearId, termId, sectId));
+        return respond(getAssignmentManager().getAllAssignments(schoolId, yearId, termId, sectId));
     }
     
     @ApiOperation(
@@ -60,7 +60,7 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
-        return respond(PM.getAssignment(schoolId, yearId, termId, sectId, assignmentId));
+        return respond(getAssignmentManager().getAssignment(schoolId, yearId, termId, sectId, assignmentId));
     }
 
     @ApiOperation(
@@ -81,7 +81,7 @@ public class SectionAssignmentController extends BaseController {
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
             @RequestBody @Valid Assignment sectionAssignment) {
-        return respond(PM.createAssignment(schoolId, yearId, termId, sectId, sectionAssignment));
+        return respond(getAssignmentManager().createAssignment(schoolId, yearId, termId, sectId, sectionAssignment));
     }
 
     @ApiOperation(
@@ -105,7 +105,7 @@ public class SectionAssignmentController extends BaseController {
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
             @RequestBody @Valid Assignment sectionAssignment) {
-        return respond(PM.replaceAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
+        return respond(getAssignmentManager().replaceAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
     }
     
     @ApiOperation(
@@ -129,7 +129,7 @@ public class SectionAssignmentController extends BaseController {
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
             @RequestBody @Valid Assignment sectionAssignment) {
-        return respond(PM.updateAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
+        return respond(getAssignmentManager().updateAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
     }
 
     @ApiOperation(
@@ -152,6 +152,6 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
-        return respond(PM.deleteAssignment(schoolId, yearId, termId, sectId, assignmentId));
+        return respond(getAssignmentManager().deleteAssignment(schoolId, yearId, termId, sectId, assignmentId));
     }
 }
