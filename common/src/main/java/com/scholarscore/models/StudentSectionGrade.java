@@ -68,6 +68,9 @@ public class StudentSectionGrade implements Serializable, IApiModel<StudentSecti
     
     @Override
     public boolean equals(Object obj) {
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
         final StudentSectionGrade other = (StudentSectionGrade) obj;
         return Objects.equals(this.id, other.id) && 
                 Objects.equals(this.complete, other.complete) &&
