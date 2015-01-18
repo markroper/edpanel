@@ -36,7 +36,7 @@ public class SectionController extends BaseController {
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId) {
-        return respond(PM.getAllSections(schoolId, schoolYearId, termId));
+        return respond(getSectionManager().getAllSections(schoolId, schoolYearId, termId));
     }
     
     @ApiOperation(
@@ -57,7 +57,7 @@ public class SectionController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId) {
-        return respond(PM.getSection(schoolId, schoolYearId, termId, sectionId));
+        return respond(getSectionManager().getSection(schoolId, schoolYearId, termId, sectionId));
     }
 
     @ApiOperation(
@@ -76,7 +76,7 @@ public class SectionController extends BaseController {
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
             @RequestBody @Valid Section section) throws JsonProcessingException {
-        return respond(PM.createSection(schoolId, schoolYearId, termId, section));
+        return respond(getSectionManager().createSection(schoolId, schoolYearId, termId, section));
     }
 
     @ApiOperation(
@@ -98,7 +98,7 @@ public class SectionController extends BaseController {
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId,
             @RequestBody @Valid Section section) throws JsonProcessingException {
-        return respond(PM.replaceSection(schoolId, schoolYearId, termId, sectionId, section));
+        return respond(getSectionManager().replaceSection(schoolId, schoolYearId, termId, sectionId, section));
     }
     
     @ApiOperation(
@@ -120,7 +120,7 @@ public class SectionController extends BaseController {
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId,
             @RequestBody @Valid Section section) throws JsonProcessingException {
-        return respond(PM.updateSection(schoolId, schoolYearId, termId, sectionId, section));
+        return respond(getSectionManager().updateSection(schoolId, schoolYearId, termId, sectionId, section));
     }
 
     @ApiOperation(
@@ -141,6 +141,6 @@ public class SectionController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId) {
-        return respond(PM.deleteSection(schoolId, schoolYearId, termId, sectionId));
+        return respond(getSectionManager().deleteSection(schoolId, schoolYearId, termId, sectionId));
     }
 }

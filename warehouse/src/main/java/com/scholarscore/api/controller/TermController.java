@@ -33,7 +33,7 @@ public class TermController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId) {
-        return respond(PM.getAllTerms(schoolId, schoolYearId));
+        return respond(getTermManager().getAllTerms(schoolId, schoolYearId));
     }
     
     @ApiOperation(
@@ -52,7 +52,7 @@ public class TermController extends BaseController {
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId) {
-        return respond(PM.getTerm(schoolId, schoolYearId, termId));
+        return respond(getTermManager().getTerm(schoolId, schoolYearId, termId));
     }
 
     @ApiOperation(
@@ -69,7 +69,7 @@ public class TermController extends BaseController {
             @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @RequestBody @Valid Term term) {
-        return respond(PM.createTerm(schoolId, schoolYearId, term));
+        return respond(getTermManager().createTerm(schoolId, schoolYearId, term));
     }
 
     @ApiOperation(
@@ -89,7 +89,7 @@ public class TermController extends BaseController {
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
             @RequestBody @Valid Term term) {
-        return respond(PM.replaceTerm(schoolId, schoolYearId, termId, term));
+        return respond(getTermManager().replaceTerm(schoolId, schoolYearId, termId, term));
     }
     
     @ApiOperation(
@@ -109,7 +109,7 @@ public class TermController extends BaseController {
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
             @RequestBody @Valid Term term) {
-        return respond(PM.updateTerm(schoolId, schoolYearId, termId, term));
+        return respond(getTermManager().updateTerm(schoolId, schoolYearId, termId, term));
     }
 
     @ApiOperation(
@@ -128,7 +128,7 @@ public class TermController extends BaseController {
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId) {
-        return respond(PM.deleteTerm(schoolId, schoolYearId, termId));
+        return respond(getTermManager().deleteTerm(schoolId, schoolYearId, termId));
     }
     
 }

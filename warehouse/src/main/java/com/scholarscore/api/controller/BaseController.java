@@ -1,5 +1,15 @@
 package com.scholarscore.api.controller;
 
+import com.scholarscore.api.persistence.AssignmentManager;
+import com.scholarscore.api.persistence.CourseManager;
+import com.scholarscore.api.persistence.SchoolManager;
+import com.scholarscore.api.persistence.SchoolYearManager;
+import com.scholarscore.api.persistence.SectionManager;
+import com.scholarscore.api.persistence.StudentAssignmentManager;
+import com.scholarscore.api.persistence.StudentManager;
+import com.scholarscore.api.persistence.StudentSectionGradeManager;
+import com.scholarscore.api.persistence.TeacherManager;
+import com.scholarscore.api.persistence.TermManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +35,7 @@ public abstract class BaseController {
     public static final String JSON_ACCEPT_HEADER = "application/json";
 
     @Autowired
-    protected PersistenceManager PM;
+    private PersistenceManager PM;
    
     public void setPM(PersistenceManager persistenceManager) {
         this.PM = persistenceManager;
@@ -69,4 +79,16 @@ public abstract class BaseController {
                 factory.localizeError(returnError), 
                 StatusCodeToHttpCode.resolveHttpStatus(returnError.getCode()));
     }
+    
+    // TODO: incremental refactoring towards a decomposed PersistenceManager
+    protected StudentManager getStudentManager() { return PM; }
+    protected CourseManager getCourseManager() { return PM; }
+    protected SchoolManager getSchoolManager() { return PM; }
+    protected SchoolYearManager getSchoolYearManager() { return PM; }
+    protected AssignmentManager getAssignmentManager() { return PM; }
+    protected TermManager getTermManager() { return PM; }
+    protected TeacherManager getTeacherManager() { return PM; }
+    protected SectionManager getSectionManager() { return PM; }
+    protected StudentAssignmentManager getStudentAssignmentManager() { return PM; }
+    protected StudentSectionGradeManager getStudentSectionGradeManager() { return PM; }
 }
