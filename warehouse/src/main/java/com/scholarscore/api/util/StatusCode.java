@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -77,6 +78,11 @@ public class StatusCode {
         } else {
             this.arguments = Arrays.copyOf(args, args.length);
         }
+    }
+
+    @JsonIgnore
+    public boolean isOK() {
+        return equals(StatusCodes.getStatusCode(StatusCodeType.OK));
     }
 
     @Override
