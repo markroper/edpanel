@@ -69,6 +69,17 @@ public class DbConst {
     
     public static final String TEACHER_ID_COL = "teacher_id";
     public static final String TEACHER_NAME_COL = "teacher_name";
+	
+    public static final String USER_TABLE = "users";
+    public static final String USER_USERNAME_COL = "username";
+	public static final String USER_PASSWORD_COL = "password";
+	public static final String USER_ENABLED_COL = "enabled";
+	
+	public static final String AUTHORITY_TABLE = "authorities";
+	public static final String AUTHORITY_USERNAME_COL = "username";
+	public static final String AUTHORITY_AUTHORITY_COL = "authority";
+	
+	
     /**
      * Helper method converts a Java Date to a Timestamp for storage in the Database.
      * 

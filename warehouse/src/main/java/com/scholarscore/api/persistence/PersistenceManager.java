@@ -5,15 +5,17 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.scholarscore.api.persistence.mysql.AuthorityPersistence;
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.SchoolPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.StudentSectionGradePersistence;
 import com.scholarscore.api.persistence.mysql.TeacherPersistence;
+import com.scholarscore.api.persistence.mysql.UserPersistence;
+import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
@@ -24,10 +26,11 @@ import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Teacher;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.User;
 
 public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
         TermManager, SectionManager, AssignmentManager, StudentAssignmentManager,
-        StudentSectionGradeManager, CourseManager, TeacherManager {
+        StudentSectionGradeManager, CourseManager, TeacherManager, UserManager {
     
     private static final String SCHOOL = "school";
     private static final String COURSE = "course";
@@ -38,6 +41,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private static final String STUDENT_ASSIGNMENT = "student assignment";
     private static final String STUDENT = "student";
     private static final String STUDENT_SECTION_GRADE = "student section grade";
+    private static final String USER = "user";
  
     //Persistence managers for each entity
     private SchoolPersistence schoolPersistence;
@@ -50,6 +54,8 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private EntityPersistence<Assignment> assignmentPersistence;
     private EntityPersistence<StudentAssignment> studentAssignmentPersistence;
     private StudentSectionGradePersistence studentSectionGradePersistence;
+    private UserPersistence userPersistence;
+    private AuthorityPersistence authorityPersistence;
     
     //Setters for the persistence layer for each entity
     public void setTeacherPersistence(TeacherPersistence ap) {
@@ -1063,4 +1069,65 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         replaceTeacher(teacherId, teacher);
         return new ServiceResponse<Long>(teacherId);
     }
+    
+	public UserPersistence getUserPersistence() {
+		return userPersistence;
+	}
+
+	public void setUserPersistence(UserPersistence userPersistence) {
+		this.userPersistence = userPersistence;
+	}
+
+	public AuthorityPersistence getAuthorityPersistence() {
+		return authorityPersistence;
+	}
+
+	public void setAuthorityPersistence(AuthorityPersistence authorityPersistence) {
+		this.authorityPersistence = authorityPersistence;
+	}
+
+    @Override
+    public ServiceResponse<Collection<User>> getAllUsers() {
+        return new ServiceResponse<Collection<User>>(
+                userPersistence.selectAllUsers());
+
+    }
+
+	@Override
+	public StatusCode userExists(String username) {
+		User user = userPersistence.selectUser(username);
+        if(null == user) {
+            return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { USER, username});
+        };
+        return StatusCodes.getStatusCode(StatusCodeType.OK);
+	}
+
+	@Override
+	public ServiceResponse<User> getUser(String username) {
+		User user = userPersistence.selectUser(username);
+		if (null != user) {
+			return new ServiceResponse<User>(user);
+		}
+		return new ServiceResponse<User>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { USER, username } ));
+	}
+
+	@Override
+	public ServiceResponse<String> createUser(User value) {
+		return new ServiceResponse<String>(userPersistence.createUser(value));
+	}
+
+	@Override
+	public ServiceResponse<String> replaceUser(String username, User user) {
+		return new ServiceResponse<String>(userPersistence.replaceUser(username, user));
+	}
+
+	@Override
+	public ServiceResponse<String> updateUser(String username, User user) {
+		return new ServiceResponse<String>(userPersistence.replaceUser(username, user));
+	}
+
+	@Override
+	public ServiceResponse<String> deleteUser(String username) {
+		return new ServiceResponse<String>(userPersistence.deleteUser(username));
+	}
 }

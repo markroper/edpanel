@@ -17,6 +17,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 
+import com.scholarscore.api.persistence.mysql.UserPersistence;
+
 /**
  * Use MVC Security with JDBC Authentication as oppose to static authentication using username/password
  * entries. 
@@ -39,34 +41,45 @@ import org.springframework.security.provisioning.JdbcUserDetailsManager;
  */
 @Configuration
 @ImportResource("classpath:/dataSource.xml")
-@EnableWebSecurity(debug=true)
+@EnableWebSecurity(debug=false)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-	// Example on how to override the UserDao:
-	//https://github.com/intrade/inventory/blob/master/src/main/java/com/springapp/mvc/InitApp/SecurityConfig.java
 	
 	@Autowired
 	private DataSource dataSource;
 	
-	private String usersQuery = "select username, password, enabled from users where username = ?";
-	private String authoritiesQuery = "select username, authority from authorities " +
-            "where username=?";
+	@Autowired
+	private UserDetailsService customUserDetailService;
 		
     @Autowired
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth//.inMemoryAuthentication()
         	.jdbcAuthentication()
         	.dataSource(dataSource)
-        	.usersByUsernameQuery(getUsersQuery())
-        	.authoritiesByUsernameQuery(getAuthoritiesQuery());
-        	// create a backup user for administration in case the database is wiped and we can't login
-        	// also useful for testing in the event JDBC isn't working - this will create a new record
-        	// in the database as a side effect, seems to create duplicate entries for the same user via
-        	// this approach
-        	
-//        	.withUser("mroper").password("admin").roles("STUDENT", "TEACHER", "ADMIN")
-//        	.and()
-//        	.withUser("mattg").password("admin").roles("STUDENT", "TEACHER", "ADMIN");
+        	.and()
+        	.userDetailsService(customUserDetailService);
+    }
+    
+    public void configure(HttpSecurity http) throws Exception {
+    	super.configure(http);
+    	// at the moment this will cause POST/PATCH failures via swagger and just POST generally - disable csrf
+    	// until a csrf token is generated
+    	http.csrf().disable();
+//    	http
+//    		.csrf().disable()
+//    		.authorizeRequests().anyRequest().authenticated()
+//    		.and()
+//    	.formLogin()
+//            .loginPage("/spring/index").permitAll()
+//            .loginProcessingUrl("/spring/login").permitAll()
+//            .usernameParameter("login")
+//            .passwordParameter("password")
+//            .successHandler(new CustomAuthenticationSuccessHandler())
+//            .failureHandler(new CustomAuthenticationFailureHandler())
+//            .and()
+//        .logout()
+//            .logoutUrl("/spring/logout")
+//            .logoutSuccessUrl("/spring/index").permitAll();
+    		
     }
 
     //http://stackoverflow.com/questions/22749767/using-jdbcauthentication-in-spring-security-with-hibernate
@@ -77,12 +90,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     			.antMatchers("/swagger/*");
     }
     */
-
-	private String getAuthoritiesQuery() {
-		return authoritiesQuery;
-	}
-
-	private String getUsersQuery() {
-		return usersQuery;
-	}
 }
