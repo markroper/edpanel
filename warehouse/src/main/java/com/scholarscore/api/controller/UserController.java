@@ -29,7 +29,7 @@ public class UserController extends BaseController {
 	        produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity getAll() {
-	    return respond(PM.getAllUsers());
+	    return respond(getUserManager().getAllUsers());
 	}
 	
 	@ApiOperation(
@@ -44,7 +44,7 @@ public class UserController extends BaseController {
 	public @ResponseBody ResponseEntity get(
 	        @ApiParam(name = "username", required = true, value = "User login name")
 	        @PathVariable(value="username") String username) {
-	    return respond(PM.getUser(username));
+	    return respond(getUserManager().getUser(username));
 	}
 	
 	@ApiOperation(
@@ -56,7 +56,7 @@ public class UserController extends BaseController {
 	        produces = {JSON_ACCEPT_HEADER})
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity create(@RequestBody @Valid User user) {
-	    return respond(PM.createUser(user));
+	    return respond(getUserManager().createUser(user));
 	}
 	
 	@ApiOperation(
@@ -72,7 +72,7 @@ public class UserController extends BaseController {
 	        @ApiParam(name = "username", required = true, value = "User login name")
 	        @PathVariable(value="username") String username,
 	        @RequestBody @Valid User user) {
-	    return respond(PM.replaceUser(username, user));
+	    return respond(getUserManager().replaceUser(username, user));
 	}
 	
 	@ApiOperation(
@@ -88,7 +88,7 @@ public class UserController extends BaseController {
 	        @ApiParam(name = "username", required = true, value = "User login name")
 	        @PathVariable(value="username") String username,
 	        @RequestBody @Valid User user) {
-	    return respond(PM.updateUser(username, user));
+	    return respond(getUserManager().updateUser(username, user));
 	}
 	
 	@ApiOperation(
@@ -102,7 +102,7 @@ public class UserController extends BaseController {
 	public @ResponseBody ResponseEntity delete(
 	        @ApiParam(name = "username", required = true, value = "User login name")
 	        @PathVariable(value="username") String username) {
-	    return respond(PM.deleteUser(username));
+	    return respond(getUserManager().deleteUser(username));
 	}
 	
 
