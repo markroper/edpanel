@@ -13,6 +13,30 @@
                      http://www.springframework.org/schema/context/spring-context.xsd
                      http://www.springframework.org/schema/util
                      http://www.springframework.org/schema/util/spring-util.xsd">
+	
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="locations">
+        <list>
+          <value>classpath:api.properties</value>
+        </list>
+      </property>
+      <property name="properties">  
+        <value>
+        auth.encryption.enabled=true
+        auth.encryption.seed=%DU)FöfI8/°
+        auth.encryption.maxAge=2m
+        </value> 
+      </property>
+    </bean>
+    
+    <bean id="headerUtil"
+        class="com.scholarscore.api.security.HeaderUtil">
+      <constructor-arg index="0" value="${auth.encryption.enabled}"/>
+      <constructor-arg index="1" value="${auth.encryption.seed}"/>
+      <constructor-arg index="2" value="${auth.encryption.maxAge}"/>
+    </bean>
+    
+    <context:component-scan base-package="com.scholarscore.api.controller, com.scholarscore.api.swagger, com.scholarscore.api.security"/>
     
     <mvc:default-servlet-handler/>
     
@@ -39,9 +63,6 @@
             </bean>
         </mvc:message-converters>
     </mvc:annotation-driven>
-
-    <!-- <mvc:interceptors></mvc:interceptors> -->
-    <context:component-scan base-package="com.scholarscore.api.controller, com.scholarscore.api.swagger"/>
 
     <!-- Initialization for data source -->
    <bean id="dataSource" 
