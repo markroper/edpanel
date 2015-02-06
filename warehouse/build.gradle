@@ -17,6 +17,7 @@ buildscript {
 Properties props = new Properties()
 props.load(new FileInputStream(projectDir.toString() + "/src/test/resources/localhost.config.properties"))
 def local_portnum = new URI(props.get("endpoint").toString()).port
+def local_https_portnum = new URI(props.get("httpsEndpoint").toString()).port
 
 cargo {
     containerId = 'tomcat7x'
@@ -46,6 +47,8 @@ cargo {
 // use gretty to start a container instrumented with jacoco for calculation of integration test coverage
 gretty {
     port = local_portnum
+    httpsPort = local_https_portnum
+    httpsEnabled = true
     // supported values:
     // 'jetty7', 'jetty8', 'jetty9', 'tomcat7', 'tomcat8'
     servletContainer = 'tomcat7'

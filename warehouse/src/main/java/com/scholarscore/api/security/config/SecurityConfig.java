@@ -1,10 +1,5 @@
 package com.scholarscore.api.security.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.scholarscore.api.security.HeaderAuthenticationFilter;
-import com.scholarscore.api.security.HeaderUtil;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,13 +11,10 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 
-import javax.servlet.Filter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,9 +39,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             + " \"access-denied\":true,\"cause\":\"NOT AUTHENTICATED\"}";
 
     @Autowired
-    private HeaderUtil headerUtil;
-
-    @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication().
                 withUser("user").password("password").roles("USER").
@@ -59,16 +48,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * Let’s examine the configure method step by step.
-     *
-     *      addFilterBefore(authenticationFilter(), LogoutFilter.class)
-     * 
-     * This adds our new HeaderAuthenticationFilter to the chain of filters that process each request 
-     * to the application. We add it before the LogoutFilter so it will be the first filter in the chain.
      * 
      *      csrf().disable().
      * 
-     * This disables the built in Cross Site Request Forgery support. This is used in a html login form 
-     * but since we don’t have that we need to disable this support.
+     * This disables the built in Cross Site Request Forgery support. Needs to be enabled later.
      * 
      *      formLogin().successHandler(successHandler).
      *      loginProcessingUrl("/login").
@@ -78,7 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * 
      * Adds our success handler and maps the login and logout filters to their respective endpoints.
      * 
-     *      sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
+     *      sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).
      * 
      * This tells the application not to create sessions in keeping with our stateless application.
      * 
@@ -108,17 +91,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         CustomAuthenticationSuccessHandler successHandler = new CustomAuthenticationSuccessHandler();
-        successHandler.headerUtil(headerUtil);
         http.
-            addFilterBefore(authenticationFilter(), LogoutFilter.class).
+            //Require https:
+            requiresChannel().
+            anyRequest().
+            requiresSecure().
+            and().
+            //TODO: we need to enable CSRF, but need to add support for the token to the angular app, swagger, and the integration tests
             csrf().disable().
-            formLogin().successHandler(successHandler).
+            formLogin().
+            successHandler(successHandler).
             loginProcessingUrl("/api/v1/login").
             and().
             logout().
             logoutSuccessUrl("/api/v1/logout").
             and().
-            sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
+            sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).
             and().
             exceptionHandling().
             accessDeniedHandler(new CustomAccessDeniedHandler()).
@@ -133,13 +121,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             antMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN").
             antMatchers(HttpMethod.PATCH, "/**").hasRole("ADMIN").
             anyRequest().authenticated();
-    }
-
-    private Filter authenticationFilter() {
-        HeaderAuthenticationFilter headerAuthenticationFilter = new HeaderAuthenticationFilter();
-        headerAuthenticationFilter.userDetailsService(userDetailsService());
-        headerAuthenticationFilter.headerUtil(headerUtil);
-        return headerAuthenticationFilter;
     }
 
     /**
@@ -190,34 +171,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * The authentication success handler is only called when the client successfully authenticates. 
-     * In plain language that means when the client logs in.
+     * In plain language that means when the client logs in. This is here to prevent the Spring default
+     * behavior doesn't forward us to the root page of the webapp (swagger.)
      * 
      * @author markroper
      *
      */
     private static class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-        private HeaderUtil headerUtil;
-
         @Override
         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                             Authentication authentication) throws ServletException, IOException {
-            try {
-                String token = headerUtil.createAuthToken(((User) authentication.getPrincipal()).getUsername());
-                ObjectMapper mapper = new ObjectMapper();
-                ObjectNode node = mapper.createObjectNode().put("token", token);
-                PrintWriter out = response.getWriter();
-                out.print(node.toString());
-                out.flush();
-                out.close();
-            } catch (GeneralSecurityException e) {
-                throw new ServletException("Unable to create the auth token", e);
-            }
+            PrintWriter out = response.getWriter();
+            out.print("");
+            out.flush();
+            out.close(); 
             clearAuthenticationAttributes(request);
-        }
-
-        private void headerUtil(HeaderUtil headerUtil) {
-            this.headerUtil = headerUtil;
         }
     }
 
