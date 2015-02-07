@@ -22,6 +22,7 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
     
     @BeforeClass
     public void init() {
+        authenticate();
         numberOfItemsCreated = 0;
         school = new School();
         school.setName(localeServiceUtil.generateName());

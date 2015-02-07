@@ -27,6 +27,7 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
     private int numCreated = 0;
     @BeforeClass
     public void init() {
+        authenticate();
         school = new School();
         school.setName(localeServiceUtil.generateName());
         school = schoolValidatingExecutor.create(school, "Create base school");

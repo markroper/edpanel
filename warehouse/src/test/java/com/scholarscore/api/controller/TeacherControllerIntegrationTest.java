@@ -12,6 +12,7 @@ import com.scholarscore.models.Teacher;
 public class TeacherControllerIntegrationTest extends IntegrationBase {
     @BeforeClass
     public void init() {
+        authenticate();
     }
     
     //Positive test cases

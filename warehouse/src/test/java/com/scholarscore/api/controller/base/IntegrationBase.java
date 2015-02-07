@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -52,17 +53,14 @@ import com.scholarscore.models.Teacher;
 public class IntegrationBase {
 
     private NetMvc mockMvc;
-
+    private static final String BASE_URI_KEY = "httpsEndpoint";
     private final static String CHARSET_UTF8_NAME = "UTF-8";
 
     private final static MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
-//    private final static MediaType APPLICATION_XML_UTF8 = new MediaType(MediaType.APPLICATION_XML.getType(),
-//            MediaType.APPLICATION_XML.getSubtype(), StandardCharsets.UTF_8);
-//    private final static MediaType MULTIPART_FORM_DATA = new MediaType(MediaType.MULTIPART_FORM_DATA.getType(),
-//            MediaType.MULTIPART_FORM_DATA.getSubtype(), StandardCharsets.UTF_8);
-//    
+    
     private static final String BASE_API_ENDPOINT = "/api/v1";
+    private static final String LOGIN_ENDPOINT = "/login";
     private static final String SCHOOL_ENDPOINT = "/schools";
     private static final String SCHOOL_YEAR_ENDPOINT = "/years";
     private static final String COURSE_ENDPOINT = "/courses";
@@ -141,6 +139,24 @@ public class IntegrationBase {
     }
 
     /**
+     * A method to authenticate a user and store the returned auth cookie for subsequent requests.
+     * Called by all integration test classes that are testing protected endpoints.
+     */
+    protected void authenticate() { 
+        Map<String, String> params = new HashMap<>();
+        //TODO: change this to use a real user after integrating @mgreenwood's change
+        params.put("username", "admin");
+        params.put("password", "password");
+        makeRequest(
+                HttpMethod.POST, 
+                BASE_API_ENDPOINT + LOGIN_ENDPOINT,
+                null,
+                params,
+                null,
+                MediaType.APPLICATION_FORM_URLENCODED);
+    }
+    
+    /**
      * Description:
      * Helper method used to validate all services created before using them
      * Expected Result:
@@ -170,7 +186,7 @@ public class IntegrationBase {
         if (null == endpoint || null == endpoint.get()) {
             if (null != properties) {
                 try {
-                    defaultEndpoint = new URL(properties.getProperty("endpoint"));
+                    defaultEndpoint = new URL(properties.getProperty(BASE_URI_KEY));
                 } catch (MalformedURLException e) {
                     Assert.fail("IntegrationBase.removeTestData failed: config property 'endpoint' is not a well-formed URL", e);
                 }
@@ -225,7 +241,7 @@ public class IntegrationBase {
                     }
                 }
                 try {
-                    defaultEndpoint = new URL(properties.getProperty("endpoint"));
+                    defaultEndpoint = new URL(properties.getProperty(BASE_URI_KEY));
                 } catch (MalformedURLException e) {
                     Assert.fail("TEST SETUP FAILED: config property 'endpoint' is not a well-formed URL", e);
                 }
@@ -273,7 +289,7 @@ public class IntegrationBase {
      * Generic Results object returned from request
      */
     public ResultActions makeRequest(HttpMethod method, String url, Map<String, String> params, Object content) {
-        return makeRequest(method, url, null, params, content);
+        return makeRequest(method, url, null, params, content, null);
     }
 
     /**
@@ -288,7 +304,10 @@ public class IntegrationBase {
      * and optionally DELETE requests
      * @return server response
      */
-    ResultActions makeRequest(HttpMethod method, String url, Map<String, String> headers, Map<String, String> params, Object content) {
+    ResultActions makeRequest(HttpMethod method, String url, Map<String, String> headers, Map<String, String> params, Object content, MediaType reqType) {
+        if(null == reqType) {
+            reqType = APPLICATION_JSON_UTF8;
+        }
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(method, endpoint.get().toString() + url, "");
         addHeadersAndParamsToRequest(request, headers, params);
 
@@ -297,7 +316,7 @@ public class IntegrationBase {
         byte[] contentBytes = null;
         if ("json".equalsIgnoreCase(contentType)) {
             request.header("Accept", "application/json");
-            request.contentType(APPLICATION_JSON_UTF8);
+            request.contentType(reqType);
             contentBytes = convertObjectToJsonBytes(content);
         } else {
             Assert.fail("Invalid contentType supplied in request: " + contentType);

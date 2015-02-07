@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.security.GeneralSecurityException;
 
 /**
  * https://github.com/jensalm/spring-rest-server/blob/master/src/main/java/com/captechconsulting/config/SecurityConfig.java
@@ -97,6 +96,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             anyRequest().
             requiresSecure().
             and().
+            portMapper().
+            http(80).mapsTo(443).
+            http(8085).mapsTo(8443).
+            and(). 
             //TODO: we need to enable CSRF, but need to add support for the token to the angular app, swagger, and the integration tests
             csrf().disable().
             formLogin().
@@ -172,7 +175,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * The authentication success handler is only called when the client successfully authenticates. 
      * In plain language that means when the client logs in. This is here to prevent the Spring default
-     * behavior doesn't forward us to the root page of the webapp (swagger.)
+     * behavior doesn't forward us to the root page of the webapp (swagger).
      * 
      * @author markroper
      *

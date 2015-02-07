@@ -1,5 +1,6 @@
 package com.scholarscore.api.controller.base;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -49,7 +50,11 @@ import static org.testng.Assert.fail;
  *
  */
 public class NetMvc {
-
+    public static final String SET_COOKIE_RESPONSE_HEADER_KEY = "Set-Cookie";
+    public static final String COOKIE_HEADER_KEY = "Cookie";
+    public static final String JSESSIONID_KEY = "JSESSIONID";
+    private String jSessionId;
+    
     //private static final String CHARSET_UTF8_NAME = "UTF-8";
 
     /**
@@ -110,6 +115,17 @@ public class NetMvc {
             // Execute the request
             HttpClient defaultHttpClient = getHttpClient();
             HttpResponse httpResponse = defaultHttpClient.execute(httpRequest);
+            Header[] headers = httpResponse.getHeaders(SET_COOKIE_RESPONSE_HEADER_KEY);
+            if(null != headers) {
+                for(Header header : headers) {
+                    String value = header.getValue();
+                    if(null != value) {
+                    String[] values = value.split(";");
+                        String[] jSessionId = values[0].split("=");
+                        setjSessionId(jSessionId[1]);
+                    }
+                }
+            }
 
             // Return the results
             resultActions = new NetResultActions(mockRequest, httpResponse);
@@ -164,6 +180,10 @@ public class NetMvc {
                 String name = names.nextElement();
                 httpRequest.setHeader(name, mockRequest.getHeader(name));
             }
+        }
+        //Set the authentication cookie if there is one
+        if(null != getjSessionId()) {
+            httpRequest.setHeader(COOKIE_HEADER_KEY, JSESSIONID_KEY + "=" + getjSessionId());
         }
     }
 
@@ -288,4 +308,13 @@ public class NetMvc {
         }
         return builder.build();
     }
+
+    public String getjSessionId() {
+        return jSessionId;
+    }
+
+    public void setjSessionId(String jSessionId) {
+        this.jSessionId = jSessionId;
+    }
+    
 }
