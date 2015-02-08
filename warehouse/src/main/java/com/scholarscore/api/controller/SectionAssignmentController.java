@@ -12,13 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.scholarscore.api.ApiConsts;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.EntityId;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Controller
-@RequestMapping("/api/v1/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/assignments")
+@RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/assignments")
 public class SectionAssignmentController extends BaseController {
     @ApiOperation(
             value = "Get all assignments", 

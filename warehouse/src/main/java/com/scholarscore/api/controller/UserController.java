@@ -12,12 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.scholarscore.api.ApiConsts;
 import com.scholarscore.models.User;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Controller
-@RequestMapping("/api/v1/users")
+@RequestMapping(ApiConsts.API_V1_ENDPOINT + "/users")
 public class UserController extends BaseController {
 
 	@ApiOperation(

@@ -12,13 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.scholarscore.api.ApiConsts;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.Teacher;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Controller
-@RequestMapping("/api/v1/teachers")
+@RequestMapping(ApiConsts.API_V1_ENDPOINT + "/teachers")
 public class TeacherController extends BaseController {
     @ApiOperation(
             value = "Get all teachers", 

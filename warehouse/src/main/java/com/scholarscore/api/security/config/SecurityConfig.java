@@ -18,6 +18,8 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.scholarscore.api.ApiConsts;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,10 +59,8 @@ import java.io.PrintWriter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String USER_ROLE = "USER";
     private static final String ADMIN_ROLE = "ROLE";
-    private static final String APPLICATION_JSON = "application/json";
-    private static final String LOGIN_ENDPOINT = "/api/v1/login";
-    private static final String LOGOUT_ENDPOINT = "/api/v1/logout";
-    
+    private static final String LOGIN_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/login";
+    private static final String LOGOUT_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/logout";
     private static final String ACCESS_DENIED_JSON = "{\"message\":\"You are not privileged to request this resource.\","
             + " \"access-denied\":true,\"cause\":\"AUTHORIZATION_FAILURE\"}";
     private static final String UNAUTHORIZED_JSON = "{\"message\":\"Full authentication is required to access this resource.\","
@@ -134,7 +134,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.apply(formLogin);
         
         http.
-            //authenticationProvider().
             addFilterBefore(new CustomUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class).
             //Require https:
             requiresChannel().
@@ -145,7 +144,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             http(80).mapsTo(443).
             http(8085).mapsTo(8443).
             and(). 
-            //TODO: we need to enable CSRF, but need to add support for the token to the angular app, swagger, and the integration tests
             csrf().disable().
             logout().
             logoutSuccessUrl(LOGOUT_ENDPOINT).
@@ -178,13 +176,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         public void handle(HttpServletRequest request, 
                 HttpServletResponse response, 
                 AccessDeniedException accessDeniedException) throws IOException, ServletException {
-            response.setContentType(APPLICATION_JSON);
+            response.setContentType(ApiConsts.APPLICATION_JSON);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             PrintWriter out = response.getWriter();
             out.print(ACCESS_DENIED_JSON);
             out.flush();
             out.close();
-
         }
     }
 
@@ -204,7 +201,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         public void commence(HttpServletRequest request, 
                 HttpServletResponse response, 
                 AuthenticationException authException) throws IOException, ServletException {
-            response.setContentType(APPLICATION_JSON);
+            response.setContentType(ApiConsts.APPLICATION_JSON);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             PrintWriter out = response.getWriter();
             out.print(UNAUTHORIZED_JSON);
@@ -233,14 +230,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             clearAuthenticationAttributes(request);
         }
     }
-
-    //http://stackoverflow.com/questions/22749767/using-jdbcauthentication-in-spring-security-with-hibernate
-    /*
-    protected void configure(HttpSecurity http) throws Exception {
-    	http.csrf().disable()
-    		.authorizeRequests()
-    			.antMatchers("/swagger/*");
-    }
-    */
-
 }

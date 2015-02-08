@@ -7,6 +7,8 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageGenera
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import com.scholarscore.api.ApiConsts;
+
 /**
  * Form login defaults to only support form submissions, not JSON.  We're overriding this behavior to parse
  * JSON username/password submissions as well.  This approach to overriding the form behavior is courtesy of:
@@ -19,7 +21,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 public class FormLoginConfigurer<H extends HttpSecurityBuilder<H>> extends AbstractAuthenticationFilterConfigurer<H,FormLoginConfigurer<H>,UsernamePasswordAuthenticationFilter> {
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
-    private static final String HTTP_VERB = "POST";
     
     public FormLoginConfigurer() {
         super(new CustomUsernamePasswordAuthenticationFilter(),null);
@@ -50,7 +51,7 @@ public class FormLoginConfigurer<H extends HttpSecurityBuilder<H>> extends Abstr
     @Override
     protected RequestMatcher createLoginProcessingUrlMatcher(
             String loginProcessingUrl) {
-        return new AntPathRequestMatcher(loginProcessingUrl, HTTP_VERB);
+        return new AntPathRequestMatcher(loginProcessingUrl, ApiConsts.HTTP_POST);
     }
     
     private String getUsernameParameter() {

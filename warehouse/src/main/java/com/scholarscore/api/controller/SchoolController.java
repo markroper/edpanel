@@ -13,13 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.scholarscore.api.ApiConsts;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.School;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Controller
-@RequestMapping("/api/v1/schools")
+@RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools")
 public class SchoolController extends BaseController {
     @ApiOperation(
             value = "Get all schools within a district", 
