@@ -2,6 +2,7 @@ package com.scholarscore.api.security.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -19,17 +21,38 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * https://github.com/jensalm/spring-rest-server/blob/master/src/main/java/com/captechconsulting/config/SecurityConfig.java
+ * Use MVC Security with JDBC Authentication as oppose to static authentication using username/password
+ * entries. 
+ *
+ * The persistence of users is maintained in the JdbcUserDetailsManager class
+ * which statically defines its update/create DML statements within the class itself and while it can be
+ * extends to override the values for the DML, there appears to be a fair bit of rewriting injection required
+ * in order to get an extended instance within the stack.
+ *
+ * There are comments on stack overflow indicating this is a Jira defect and might be revisited.  Regardless, 
+ * what this means is if the DB schema name (scholar_warehouse) isn't declared as part of the datasource connection
+ * it will expect that the default connection contains the tables (which it won't without specifying the database 
+ * name in the connect string).  Additionally it means that the table names and columns must be the same as expected 
+ * via JdbcUserDetailsManager
+ *
+ * @see org.springframework.security.provisioning.JdbcUserDetailsManager
+ *
+ * @author mattg
+ * @since 2015-01-16
  * 
+ * https://github.com/jensalm/spring-rest-server/blob/master/src/main/java/com/captechconsulting/config/SecurityConfig.java
+ *
  * @author markroper
  *
  */
 @Configuration
+@ImportResource("classpath:/dataSource.xml")
 @EnableWebMvcSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String USER_ROLE = "USER";
@@ -44,11 +67,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             + " \"access-denied\":true,\"cause\":\"NOT AUTHENTICATED\"}";
 
     @Autowired
+    private DataSource dataSource;
+
+    @Autowired
+    private UserDetailsService customUserDetailService;
+
+    @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication().
-                withUser("user").password("password").roles(USER_ROLE).
-                and().
-                withUser("admin").password("password").roles(USER_ROLE, ADMIN_ROLE);
+        auth.jdbcAuthentication()
+                .dataSource(dataSource)
+                .and()
+                .userDetailsService(customUserDetailService);
     }
 
     /**
@@ -93,9 +122,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * method. As a user you only get view permissions using GET and as admin you get all the update 
      * methods POST, PUT, PATCH and DELETE.
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        super.configure(http);
         CustomAuthenticationSuccessHandler successHandler = new CustomAuthenticationSuccessHandler();
         FormLoginConfigurer formLogin = new FormLoginConfigurer();
         formLogin.
@@ -203,5 +233,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             clearAuthenticationAttributes(request);
         }
     }
+
+    //http://stackoverflow.com/questions/22749767/using-jdbcauthentication-in-spring-security-with-hibernate
+    /*
+    protected void configure(HttpSecurity http) throws Exception {
+    	http.csrf().disable()
+    		.authorizeRequests()
+    			.antMatchers("/swagger/*");
+    }
+    */
 
 }

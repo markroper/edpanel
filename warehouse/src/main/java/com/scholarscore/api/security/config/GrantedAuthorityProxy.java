@@ -1,4 +1,4 @@
-package com.scholarscore.api.controller.security;
+package com.scholarscore.api.security.config;
 
 import org.springframework.security.core.GrantedAuthority;
 

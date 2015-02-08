@@ -32,7 +32,7 @@
    </bean>
    
    <bean id="userDetailService"
-    	class="com.scholarscore.api.controller.security.WarehouseUserDetailService">
+    	class="com.scholarscore.api.security.config.WarehouseUserDetailService">
     	<constructor-arg index="0" ref="userPersistence"/>
     	<constructor-arg index="1" ref="authorityPersistence"/>
     </bean>

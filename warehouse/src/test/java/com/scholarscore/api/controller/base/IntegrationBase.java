@@ -144,11 +144,10 @@ public class IntegrationBase {
      * Called by all integration test classes that are testing protected endpoints.
      */
     protected void authenticate() { 
-        Map<String, String> params = new HashMap<>();
-        //TODO: change this to use a real user after integrating @mgreenwood's change
+        //TODO: still a temporary solution for test user but no worse than before
         LoginRequest loginReq = new LoginRequest();
-        loginReq.setUsername("admin");
-        loginReq.setPassword("password");
+        loginReq.setUsername("mroper");
+        loginReq.setPassword("admin");
         makeRequest(
                 HttpMethod.POST, 
                 BASE_API_ENDPOINT + LOGIN_ENDPOINT,
@@ -414,15 +413,17 @@ public class IntegrationBase {
     public <T> T validateResponse(ResultActions response, 
             final TypeReference<T> type) {
         try {
+            int status = response.andReturn().getResponse().getStatus();
             // Validate Http status and handler info
             // If Https status isn't 200, then determine ErrorCode and return
-            if (response.andReturn().getResponse().getStatus() != HttpStatus.OK.value()) {
+            if (status != HttpStatus.OK.value()) {
                 String content = response.andReturn().getResponse().getContentAsString();
                 if (content.contains("<html>")) {
                     Assert.fail("Unexpected HTML error page returned attempting to validate response: \n"
                         + content);
                 } else {
-                    Assert.fail("Unexpected error code returned attempting to validate response");
+                    Assert.fail("Unexpected error code returned attempting to validate response \n"
+                    + "Expected 200 but got " + status);
                 }
             }
         } catch (Exception e) {
