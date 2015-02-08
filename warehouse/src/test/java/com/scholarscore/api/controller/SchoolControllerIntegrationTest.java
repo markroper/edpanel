@@ -13,6 +13,7 @@ public class SchoolControllerIntegrationTest extends IntegrationBase {
     
     @BeforeClass
     public void init() {
+        authenticate();
     }
     
     //Positive test cases

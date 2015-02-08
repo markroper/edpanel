@@ -4,9 +4,18 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 		  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
+	
+	<context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/warehouse-servlet.xml</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
 
     <display-name>Scholar Score Warehouse!</display-name>
-
+    
     <servlet>
         <servlet-name>warehouse</servlet-name>
         <servlet-class>
@@ -27,5 +36,4 @@
     <welcome-file-list>
     	<welcome-file>documentation</welcome-file>
     </welcome-file-list>
-
 </web-app>

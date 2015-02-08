@@ -7,13 +7,9 @@ import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.ResultMatcher;
 
 public class NetResultActions implements ResultActions {
-
-    private final MockHttpServletRequest request;
-    private final HttpResponse response;
     private final NetMvcResult result;
+    
     public NetResultActions(MockHttpServletRequest request, HttpResponse response) {
-        this.request = request;
-        this.response = response;
         result = new NetMvcResult(request, response);
         result.getResponse();
     }

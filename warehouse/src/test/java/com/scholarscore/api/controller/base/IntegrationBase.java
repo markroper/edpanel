@@ -42,6 +42,7 @@ import com.scholarscore.api.controller.service.StudentSectionGradeValidatingExec
 import com.scholarscore.api.controller.service.StudentValidatingExecutor;
 import com.scholarscore.api.controller.service.TeacherValidatingExecutor;
 import com.scholarscore.api.controller.service.TermValidatingExecutor;
+import com.scholarscore.models.LoginRequest;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.Teacher;
@@ -52,17 +53,14 @@ import com.scholarscore.models.Teacher;
 public class IntegrationBase {
 
     private NetMvc mockMvc;
-
+    private static final String BASE_URI_KEY = "httpsEndpoint";
     private final static String CHARSET_UTF8_NAME = "UTF-8";
 
     private final static MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
-//    private final static MediaType APPLICATION_XML_UTF8 = new MediaType(MediaType.APPLICATION_XML.getType(),
-//            MediaType.APPLICATION_XML.getSubtype(), StandardCharsets.UTF_8);
-//    private final static MediaType MULTIPART_FORM_DATA = new MediaType(MediaType.MULTIPART_FORM_DATA.getType(),
-//            MediaType.MULTIPART_FORM_DATA.getSubtype(), StandardCharsets.UTF_8);
-//    
+    
     private static final String BASE_API_ENDPOINT = "/api/v1";
+    private static final String LOGIN_ENDPOINT = "/login";
     private static final String SCHOOL_ENDPOINT = "/schools";
     private static final String SCHOOL_YEAR_ENDPOINT = "/years";
     private static final String COURSE_ENDPOINT = "/courses";
@@ -141,6 +139,24 @@ public class IntegrationBase {
     }
 
     /**
+     * A method to authenticate a user and store the returned auth cookie for subsequent requests.
+     * Called by all integration test classes that are testing protected endpoints.
+     */
+    protected void authenticate() { 
+        //TODO: still a temporary solution for test user but no worse than before
+        LoginRequest loginReq = new LoginRequest();
+        loginReq.setUsername("mroper");
+        loginReq.setPassword("admin");
+        makeRequest(
+                HttpMethod.POST, 
+                BASE_API_ENDPOINT + LOGIN_ENDPOINT,
+                null,
+                null,
+                loginReq,
+                null);
+    }
+    
+    /**
      * Description:
      * Helper method used to validate all services created before using them
      * Expected Result:
@@ -170,7 +186,7 @@ public class IntegrationBase {
         if (null == endpoint || null == endpoint.get()) {
             if (null != properties) {
                 try {
-                    defaultEndpoint = new URL(properties.getProperty("endpoint"));
+                    defaultEndpoint = new URL(properties.getProperty(BASE_URI_KEY));
                 } catch (MalformedURLException e) {
                     Assert.fail("IntegrationBase.removeTestData failed: config property 'endpoint' is not a well-formed URL", e);
                 }
@@ -225,7 +241,7 @@ public class IntegrationBase {
                     }
                 }
                 try {
-                    defaultEndpoint = new URL(properties.getProperty("endpoint"));
+                    defaultEndpoint = new URL(properties.getProperty(BASE_URI_KEY));
                 } catch (MalformedURLException e) {
                     Assert.fail("TEST SETUP FAILED: config property 'endpoint' is not a well-formed URL", e);
                 }
@@ -273,7 +289,7 @@ public class IntegrationBase {
      * Generic Results object returned from request
      */
     public ResultActions makeRequest(HttpMethod method, String url, Map<String, String> params, Object content) {
-        return makeRequest(method, url, null, params, content);
+        return makeRequest(method, url, null, params, content, null);
     }
 
     /**
@@ -288,7 +304,10 @@ public class IntegrationBase {
      * and optionally DELETE requests
      * @return server response
      */
-    ResultActions makeRequest(HttpMethod method, String url, Map<String, String> headers, Map<String, String> params, Object content) {
+    ResultActions makeRequest(HttpMethod method, String url, Map<String, String> headers, Map<String, String> params, Object content, MediaType reqType) {
+        if(null == reqType) {
+            reqType = APPLICATION_JSON_UTF8;
+        }
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(method, endpoint.get().toString() + url, "");
         addHeadersAndParamsToRequest(request, headers, params);
 
@@ -297,7 +316,7 @@ public class IntegrationBase {
         byte[] contentBytes = null;
         if ("json".equalsIgnoreCase(contentType)) {
             request.header("Accept", "application/json");
-            request.contentType(APPLICATION_JSON_UTF8);
+            request.contentType(reqType);
             contentBytes = convertObjectToJsonBytes(content);
         } else {
             Assert.fail("Invalid contentType supplied in request: " + contentType);
@@ -393,15 +412,17 @@ public class IntegrationBase {
     public <T> T validateResponse(ResultActions response, 
             final TypeReference<T> type) {
         try {
+            int status = response.andReturn().getResponse().getStatus();
             // Validate Http status and handler info
             // If Https status isn't 200, then determine ErrorCode and return
-            if (response.andReturn().getResponse().getStatus() != HttpStatus.OK.value()) {
+            if (status != HttpStatus.OK.value()) {
                 String content = response.andReturn().getResponse().getContentAsString();
                 if (content.contains("<html>")) {
                     Assert.fail("Unexpected HTML error page returned attempting to validate response: \n"
                         + content);
                 } else {
-                    Assert.fail("Unexpected error code returned attempting to validate response");
+                    Assert.fail("Unexpected error code returned attempting to validate response \n"
+                    + "Expected 200 but got " + status);
                 }
             }
         } catch (Exception e) {

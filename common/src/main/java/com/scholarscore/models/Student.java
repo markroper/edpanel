@@ -2,6 +2,7 @@ package com.scholarscore.models;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
@@ -24,21 +25,70 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         super(student);
     }
     
+    // FK to the Users table, this is optional as a 1:1 relationship does not need to exist between
+    // a user and a student.  A student can exist without a login.  Currently spring security requires
+    // this as the PK of the table, this should be changed to an id column as usernames may be able to
+    // change in the future? This should be hidden from the exported model
+    @JsonIgnore
+    private String username;
+    
+    // A loaded version of the user identity
+    @JsonInclude
+    private transient User login;
+    
     @Override
     public void mergePropertiesIfNull(Student mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);     
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if(!super.equals(obj)) {
-            return false;
+        if (null == getUsername()) {
+        	setUsername(mergeFrom.getUsername());
         }
-        return true;
     }
-    
-    @Override
-    public int hashCode() {
-        return 31 * super.hashCode();
-    }
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public User getLogin() {
+		return login;
+	}
+
+	public void setLogin(User login) {
+		this.login = login;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((login == null) ? 0 : login.hashCode());
+		result = prime * result
+				+ ((username == null) ? 0 : username.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Student other = (Student) obj;
+		if (login == null) {
+			if (other.login != null)
+				return false;
+		} else if (!login.equals(other.login))
+			return false;
+		if (username == null) {
+			if (other.username != null)
+				return false;
+		} else if (!username.equals(other.username))
+			return false;
+		return true;
+	}
 }
