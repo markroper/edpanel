@@ -14,6 +14,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -87,10 +88,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * method. As a user you only get view permissions using GET and as admin you get all the update 
      * methods POST, PUT, PATCH and DELETE.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         CustomAuthenticationSuccessHandler successHandler = new CustomAuthenticationSuccessHandler();
+        FormLoginConfigurer formLogin = new FormLoginConfigurer();
+        formLogin.
+            successHandler(successHandler).
+            loginProcessingUrl("/api/v1/login");
+        http.apply(formLogin);
+        
         http.
+            //authenticationProvider().
+            addFilterBefore(new CustomUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class).
             //Require https:
             requiresChannel().
             anyRequest().
@@ -102,10 +112,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             and(). 
             //TODO: we need to enable CSRF, but need to add support for the token to the angular app, swagger, and the integration tests
             csrf().disable().
-            formLogin().
-            successHandler(successHandler).
-            loginProcessingUrl("/api/v1/login").
-            and().
             logout().
             logoutSuccessUrl("/api/v1/logout").
             and().
