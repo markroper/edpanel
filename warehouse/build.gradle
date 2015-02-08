@@ -53,6 +53,7 @@ gretty {
     // 'jetty7', 'jetty8', 'jetty9', 'tomcat7', 'tomcat8'
     servletContainer = 'tomcat7'
 
+    // automatically start up the container before the following task, and shut it down afterwards
     integrationTestTask = 'integrationLocalWithContainer'
 }
 
@@ -72,6 +73,9 @@ def getFileByPattern(File dir, String pat, String stripDir) {
 }
 
 task integrationLocal(type: Test) {
+    group 'Verification'
+    description 'runs the integration tests against a local container'
+    
     useTestNG() {
         useDefaultListeners = true
         def suiteFile = getFileByPattern(new File("$projectDir/src/test/resources/"), ".*-integration.xml", "$projectDir")
@@ -83,7 +87,11 @@ task integrationLocal(type: Test) {
     }
 }
 
-task integrationLocalWithContainer(type: Test, dependsOn: integrationLocal) { }
+task integrationLocalWithContainer(type: Test, dependsOn: integrationLocal) {
+    group 'Verification'
+    description 'use gretty to start a local container, then run the integrationLocal task, then stop container'
+
+}
 
 //Dependencies section:
 ext {

@@ -39,7 +39,9 @@ subprojects {
 }
 
 task integrationCodeCoverageReport(type: JacocoReport) {
-
+    group 'Verification'
+    description 'runs the integration tests against a local container with code coverage'
+    
     // Gather execution data from all subprojects
     // (change this if you e.g. want to calculate unit test/integration test coverage separately)
     executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
@@ -58,11 +60,17 @@ task integrationCodeCoverageReport(type: JacocoReport) {
 }
 
 task resetDatabase(type: Exec) {
+    group 'Database'
+    description 'drops the database and re-adds an empty one'
+
     commandLine 'mysql', '-uwarehouse', '-pt3achTh3Childr3n'
     standardInput file("${project.rootDir.absolutePath}/database/cleanMySqlDatabase.sql").newInputStream()
 }
 
 task refillDatabase(type: Exec, dependsOn: resetDatabase) {
+    group 'Database'
+    description 'creates everything needed within the database'
+
     commandLine 'mysql', '-uwarehouse', '-pt3achTh3Childr3n'
     standardInput file("${project.rootDir.absolutePath}/database/createTableDDL.sql").newInputStream()
 }
