@@ -20,14 +20,12 @@ public class AttendanceAssignment extends Assignment implements Serializable {
     private Date date;
 
     public AttendanceAssignment() {
-        super();
-        this.type = AssignmentType.ATTENDANCE;
+        super(AssignmentType.ATTENDANCE);
     }
     
     public AttendanceAssignment(AttendanceAssignment assignment) {
         super(assignment);
         this.date = assignment.date;
-        this.type = AssignmentType.ATTENDANCE;
     }
 
     @Override
