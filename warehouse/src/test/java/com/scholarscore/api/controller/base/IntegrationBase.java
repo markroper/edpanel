@@ -43,6 +43,7 @@ import com.scholarscore.api.controller.service.StudentSectionGradeValidatingExec
 import com.scholarscore.api.controller.service.StudentValidatingExecutor;
 import com.scholarscore.api.controller.service.TeacherValidatingExecutor;
 import com.scholarscore.api.controller.service.TermValidatingExecutor;
+import com.scholarscore.models.LoginRequest;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.Teacher;
@@ -145,15 +146,16 @@ public class IntegrationBase {
     protected void authenticate() { 
         Map<String, String> params = new HashMap<>();
         //TODO: change this to use a real user after integrating @mgreenwood's change
-        params.put("username", "admin");
-        params.put("password", "password");
+        LoginRequest loginReq = new LoginRequest();
+        loginReq.setUsername("admin");
+        loginReq.setPassword("password");
         makeRequest(
                 HttpMethod.POST, 
                 BASE_API_ENDPOINT + LOGIN_ENDPOINT,
                 null,
-                params,
                 null,
-                MediaType.APPLICATION_FORM_URLENCODED);
+                loginReq,
+                null);
     }
     
     /**
