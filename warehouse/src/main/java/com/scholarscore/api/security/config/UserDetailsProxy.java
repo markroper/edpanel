@@ -15,6 +15,7 @@ import com.scholarscore.models.User;
  * 
  * @author mattg
  */
+@SuppressWarnings("serial")
 public class UserDetailsProxy implements UserDetails {
 
 	private User user;

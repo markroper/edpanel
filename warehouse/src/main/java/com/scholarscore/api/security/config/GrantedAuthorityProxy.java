@@ -4,6 +4,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import com.scholarscore.models.Authority;
 
+@SuppressWarnings("serial")
 public class GrantedAuthorityProxy implements GrantedAuthority {
 	public GrantedAuthorityProxy(Authority auth) {
 		this.auth = auth;

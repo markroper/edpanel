@@ -122,7 +122,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * method. As a user you only get view permissions using GET and as admin you get all the update 
      * methods POST, PUT, PATCH and DELETE.
      */
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
