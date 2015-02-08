@@ -59,8 +59,6 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
 
-    <context:component-scan base-package="com.scholarscore.api.controller, com.scholarscore.api.swagger"/>
-
     <!-- Initialization for data source -->
     <bean id="dataSource"
           class="org.springframework.jdbc.datasource.DriverManagerDataSource">
