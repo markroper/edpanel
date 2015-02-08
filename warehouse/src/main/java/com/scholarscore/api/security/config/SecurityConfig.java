@@ -32,7 +32,12 @@ import java.io.PrintWriter;
 @Configuration
 @EnableWebMvcSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
+    private static final String USER_ROLE = "USER";
+    private static final String ADMIN_ROLE = "ROLE";
+    private static final String APPLICATION_JSON = "application/json";
+    private static final String LOGIN_ENDPOINT = "/api/v1/login";
+    private static final String LOGOUT_ENDPOINT = "/api/v1/logout";
+    
     private static final String ACCESS_DENIED_JSON = "{\"message\":\"You are not privileged to request this resource.\","
             + " \"access-denied\":true,\"cause\":\"AUTHORIZATION_FAILURE\"}";
     private static final String UNAUTHORIZED_JSON = "{\"message\":\"Full authentication is required to access this resource.\","
@@ -41,9 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication().
-                withUser("user").password("password").roles("USER").
+                withUser("user").password("password").roles(USER_ROLE).
                 and().
-                withUser("admin").password("password").roles("USER", "ADMIN");
+                withUser("admin").password("password").roles(USER_ROLE, ADMIN_ROLE);
     }
 
     /**
@@ -95,7 +100,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         FormLoginConfigurer formLogin = new FormLoginConfigurer();
         formLogin.
             successHandler(successHandler).
-            loginProcessingUrl("/api/v1/login");
+            loginProcessingUrl(LOGIN_ENDPOINT);
         http.apply(formLogin);
         
         http.
@@ -113,7 +118,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             //TODO: we need to enable CSRF, but need to add support for the token to the angular app, swagger, and the integration tests
             csrf().disable().
             logout().
-            logoutSuccessUrl("/api/v1/logout").
+            logoutSuccessUrl(LOGOUT_ENDPOINT).
             and().
             sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).
             and().
@@ -122,13 +127,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             authenticationEntryPoint(new CustomAuthenticationEntryPoint()).
             and().
             authorizeRequests().
-            antMatchers(HttpMethod.POST, "/api/v1/login").permitAll().
-            antMatchers(HttpMethod.POST, "/api/v1/logout").authenticated().
-            antMatchers(HttpMethod.GET, "/**").hasRole("USER").
-            antMatchers(HttpMethod.POST, "/**").hasRole("ADMIN").
-            antMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN").
-            antMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN").
-            antMatchers(HttpMethod.PATCH, "/**").hasRole("ADMIN").
+            antMatchers(HttpMethod.POST, LOGIN_ENDPOINT).permitAll().
+            antMatchers(HttpMethod.POST, LOGOUT_ENDPOINT).authenticated().
+            antMatchers(HttpMethod.GET, "/**").hasRole(USER_ROLE).
+            antMatchers(HttpMethod.POST, "/**").hasRole(ADMIN_ROLE).
+            antMatchers(HttpMethod.DELETE, "/**").hasRole(ADMIN_ROLE).
+            antMatchers(HttpMethod.PUT, "/**").hasRole(ADMIN_ROLE).
+            antMatchers(HttpMethod.PATCH, "/**").hasRole(ADMIN_ROLE).
             anyRequest().authenticated();
     }
 
@@ -143,7 +148,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         public void handle(HttpServletRequest request, 
                 HttpServletResponse response, 
                 AccessDeniedException accessDeniedException) throws IOException, ServletException {
-            response.setContentType("applicaiton/json");
+            response.setContentType(APPLICATION_JSON);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             PrintWriter out = response.getWriter();
             out.print(ACCESS_DENIED_JSON);
@@ -169,7 +174,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         public void commence(HttpServletRequest request, 
                 HttpServletResponse response, 
                 AuthenticationException authException) throws IOException, ServletException {
-            response.setContentType("application/json");
+            response.setContentType(APPLICATION_JSON);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             PrintWriter out = response.getWriter();
             out.print(UNAUTHORIZED_JSON);
