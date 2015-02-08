@@ -13,40 +13,42 @@
                      http://www.springframework.org/schema/context/spring-context.xsd
                      http://www.springframework.org/schema/util
                      http://www.springframework.org/schema/util/spring-util.xsd">
-	
+
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
       <property name="locations">
         <list>
           <value>classpath:api.properties</value>
         </list>
       </property>
-      <property name="properties">  
+      <property name="properties">
         <value>
         auth.encryption.enabled=true
         auth.encryption.seed=%DU)FöfI8/°
         auth.encryption.maxAge=2m
-        </value> 
+        </value>
       </property>
     </bean>
-    
+
     <context:component-scan base-package="com.scholarscore.api.controller, com.scholarscore.api.swagger, com.scholarscore.api.security"/>
-    
+
     <mvc:default-servlet-handler/>
-    
+
+    <import resource="classpath:/dataSource.xml"/>
+
     <context:mbean-export registration="replaceExisting"/>
-   
+
     <!-- Handles GET requests for static resources from ${webapproot}/resources/, used by swagger -->
-   	<mvc:resources mapping="/resources/**" location="/resources/" />
-   	
-   	<!-- instructs spring on where to find JSP view templates -->
-   	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-   		<property name="prefix" value="/WEB-INF/view/" />
-   		<property name="suffix" value=".jsp" />
-   	</bean>
- 
+    <mvc:resources mapping="/resources/**" location="/resources/"/>
+
+    <!-- instructs spring on where to find JSP view templates -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/view/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
     <bean id="validator"
           class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
-    
+
     <mvc:annotation-driven validator="validator">
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
@@ -57,68 +59,71 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
 
-    <!-- Initialization for data source -->
-   <bean id="dataSource" 
-      class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-      <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-      <property name="url" value="jdbc:mysql://localhost:3306"/>
-      <property name="username" value="warehouse"/>
-      <property name="password" value="t3achTh3Childr3n"/>
-   </bean>
+    <context:component-scan base-package="com.scholarscore.api.controller, com.scholarscore.api.swagger"/>
 
-   <!-- Definition for School JDBC templ bean -->
-   <bean id="schoolPersistence" 
-      class="com.scholarscore.api.persistence.mysql.jdbc.SchoolJdbc">
-      <property name="dataSource"  ref="dataSource" />    
-   </bean>
-   <bean id="schoolYearPersistence" 
-      class="com.scholarscore.api.persistence.mysql.jdbc.SchoolYearJdbc">
-      <property name="dataSource"  ref="dataSource" />    
-   </bean>
-   <bean id="termPersistence" 
-      class="com.scholarscore.api.persistence.mysql.jdbc.TermJdbc">
-      <property name="dataSource"  ref="dataSource" />    
-   </bean>
-   <bean id="studentPersistence" 
-      class="com.scholarscore.api.persistence.mysql.jdbc.StudentJdbc">
-      <property name="dataSource"  ref="dataSource" />    
-   </bean>
-   <bean id="coursePersistence" 
-      class="com.scholarscore.api.persistence.mysql.jdbc.CourseJdbc">
-      <property name="dataSource"  ref="dataSource" />    
-   </bean>
-   <bean id="sectionPersistence" 
-      class="com.scholarscore.api.persistence.mysql.jdbc.SectionJdbc">
-      <property name="dataSource"  ref="dataSource" />    
-   </bean>
-    <bean id="assignmentPersistence" 
-      class="com.scholarscore.api.persistence.mysql.jdbc.AssignmentJdbc">
-      <property name="dataSource"  ref="dataSource" />    
-   </bean>
-   <bean id="studentAssignmentPersistence" 
-      class="com.scholarscore.api.persistence.mysql.jdbc.StudentAssignmentJdbc">
-      <property name="dataSource"  ref="dataSource" />    
-   </bean>
-   <bean id="studentSectionGradePersistence" 
-      class="com.scholarscore.api.persistence.mysql.jdbc.StudentSectionGradeJdbc">
-      <property name="dataSource"  ref="dataSource" />    
-   </bean>
-   <bean id="teacherPersistence" 
-      class="com.scholarscore.api.persistence.mysql.jdbc.TeacherJdbc">
-      <property name="dataSource"  ref="dataSource" />    
-   </bean>
-     
-   <bean id="PM"
-        class="com.scholarscore.api.persistence.PersistenceManager">
-        <property name="schoolPersistence"  ref="schoolPersistence" /> 
-        <property name="schoolYearPersistence"  ref="schoolYearPersistence" /> 
-        <property name="termPersistence"  ref="termPersistence" /> 
-        <property name="studentPersistence"  ref="studentPersistence" />
-        <property name="sectionPersistence"  ref="sectionPersistence" />
-        <property name="coursePersistence"  ref="coursePersistence" />
-        <property name="assignmentPersistence"  ref="assignmentPersistence" />
-        <property name="studentAssignmentPersistence"  ref="studentAssignmentPersistence" />
-        <property name="studentSectionGradePersistence"  ref="studentSectionGradePersistence" />
-        <property name="teacherPersistence"  ref="teacherPersistence" />
-   </bean>
+    <!-- Initialization for data source -->
+    <bean id="dataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306"/>
+        <property name="username" value="warehouse"/>
+        <property name="password" value="t3achTh3Childr3n"/>
+    </bean>
+
+    <!-- Definition for School JDBC templ bean -->
+    <bean id="schoolPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.SchoolJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="schoolYearPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.SchoolYearJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="termPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.TermJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="studentPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.StudentJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="coursePersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.CourseJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="sectionPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.SectionJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="assignmentPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.AssignmentJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="studentAssignmentPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.StudentAssignmentJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="studentSectionGradePersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.StudentSectionGradeJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="teacherPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.TeacherJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="PM"
+          class="com.scholarscore.api.persistence.PersistenceManager">
+        <property name="schoolPersistence" ref="schoolPersistence"/>
+        <property name="schoolYearPersistence" ref="schoolYearPersistence"/>
+        <property name="termPersistence" ref="termPersistence"/>
+        <property name="studentPersistence" ref="studentPersistence"/>
+        <property name="sectionPersistence" ref="sectionPersistence"/>
+        <property name="coursePersistence" ref="coursePersistence"/>
+        <property name="assignmentPersistence" ref="assignmentPersistence"/>
+        <property name="studentAssignmentPersistence" ref="studentAssignmentPersistence"/>
+        <property name="studentSectionGradePersistence" ref="studentSectionGradePersistence"/>
+        <property name="teacherPersistence" ref="teacherPersistence"/>
+        <property name="userPersistence" ref="userPersistence"/>
+    </bean>
 </beans>

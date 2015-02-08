@@ -2,6 +2,7 @@ package com.scholarscore.models;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @SuppressWarnings("serial")
@@ -14,6 +15,13 @@ public class Teacher extends ApiModel implements Serializable, IApiModel<Teacher
     public Teacher(Teacher t) {
         super(t);
     }
+    
+    // FK to the Users table entry
+    @JsonIgnore
+    private String username;
+    
+    @JsonInclude
+    private transient User login;
     
     @Override
     public void mergePropertiesIfNull(Teacher mergeFrom) {
