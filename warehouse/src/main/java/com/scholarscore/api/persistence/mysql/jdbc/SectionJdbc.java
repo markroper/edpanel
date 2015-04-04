@@ -40,24 +40,20 @@ public class SectionJdbc extends EnhancedBaseJdbc<Section> implements EntityPers
             DbConst.SECTION_END_DATE_COL + "`= :" + DbConst.SECTION_END_DATE_COL + " " +
             "WHERE `" + DbConst.SECTION_ID_COL + "`= :" + DbConst.SECTION_ID_COL + "";
     
-    private static String SELECT_ALL_SECTIONS_SQL = "SELECT * FROM `"+
+    private static final String SELECT_ALL_SECTIONS_SQL = "SELECT * FROM `"+
             DbConst.DATABASE +"`.`" + DbConst.SECTION_TABLE + "` " +
             "INNER JOIN `" + DbConst.DATABASE +"`.`" + DbConst.COURSE_TABLE + "` ON `" + 
             DbConst.COURSE_ID_COL + "` = `" + DbConst.COURSE_FK_COL +
             "` WHERE `" + DbConst.TERM_FK_COL + "` = :" + DbConst.TERM_FK_COL;
     
-    private static String SELECT_SECTION_SQL = SELECT_ALL_SECTIONS_SQL + 
+    private final String SELECT_SECTION_SQL = getSelectAllSQL() +
             " AND `" + DbConst.SECTION_ID_COL + "`= :" + DbConst.SECTION_ID_COL;
     
     @Override
     public Collection<Section> selectAll(long termId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.TERM_FK_COL, new Long(termId));
-        Collection<Section> sections = jdbcTemplate.query(
-                SELECT_ALL_SECTIONS_SQL, 
-                params,
-                new SectionMapper());
-        return sections;
+        return super.selectAll(params);
     }
 
     @Override

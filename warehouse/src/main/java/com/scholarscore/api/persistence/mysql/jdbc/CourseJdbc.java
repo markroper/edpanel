@@ -16,37 +16,33 @@ import com.scholarscore.api.persistence.mysql.mapper.CourseMapper;
 import com.scholarscore.models.Course;
 
 public class CourseJdbc extends EnhancedBaseJdbc<Course> implements EntityPersistence<Course> {
-    private static String INSERT_COURSE_SQL = "INSERT INTO `"+ 
+    private static final String INSERT_COURSE_SQL = "INSERT INTO `"+
             DbConst.DATABASE +"`.`" + DbConst.COURSE_TABLE + "` " +
             "(" + DbConst.COURSE_NAME_COL + ", " + DbConst.SCHOOL_FK_COL + ")" +
             " VALUES (:" + DbConst.COURSE_NAME_COL + ", :" + DbConst.SCHOOL_FK_COL + ")";
     
-    private static String UPDATE_COURSE_SQL = 
+    private static final String UPDATE_COURSE_SQL =
             "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.COURSE_TABLE + "` " + 
             "SET `" + DbConst.COURSE_NAME_COL + "`= :" + DbConst.COURSE_NAME_COL + ", `" +
             DbConst.SCHOOL_FK_COL + "`= :" + DbConst.SCHOOL_FK_COL + " " +
             "WHERE `" + DbConst.COURSE_ID_COL + "`= :" + DbConst.COURSE_ID_COL + "";
     
-    private static String DELETE_COURSE_SQL = "DELETE FROM `"+ 
+    private static final String DELETE_COURSE_SQL = "DELETE FROM `"+
             DbConst.DATABASE +"`.`" + DbConst.COURSE_TABLE + "` " +
             "WHERE `" + DbConst.COURSE_ID_COL + "`= :" + DbConst.COURSE_ID_COL + "";
     
-    private static String SELECT_ALL_COURSES_SQL = "SELECT * FROM `"+ 
+    private static final String SELECT_ALL_COURSES_SQL = "SELECT * FROM `"+
             DbConst.DATABASE +"`.`" + DbConst.COURSE_TABLE + "` " +
             "WHERE `" + DbConst.SCHOOL_FK_COL + "` = :" + DbConst.SCHOOL_FK_COL;
     
-    private static String SELECT_COURSE_SQL = SELECT_ALL_COURSES_SQL + 
+    private static final String SELECT_COURSE_SQL = SELECT_ALL_COURSES_SQL +
             " AND `" + DbConst.COURSE_ID_COL + "`= :" + DbConst.COURSE_ID_COL;
     
     @Override
     public Collection<Course> selectAll(long schoolId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
-        Collection<Course> courses = jdbcTemplate.query(
-                SELECT_ALL_COURSES_SQL, 
-                params,
-                new CourseMapper());
-        return courses;
+        return super.selectAll(params);
     }
 
     @Override
@@ -96,6 +92,11 @@ public class CourseJdbc extends EnhancedBaseJdbc<Course> implements EntityPersis
         params.put(DbConst.COURSE_ID_COL, new Long(courseId));
         jdbcTemplate.update(DELETE_COURSE_SQL, new MapSqlParameterSource(params));
         return courseId;
+    }
+
+    @Override
+    protected String getSelectAllSQL() {
+        return SELECT_ALL_COURSES_SQL;
     }
 
     @Override

@@ -36,11 +36,6 @@ public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPer
             "WHERE `" + DbConst.SECTION_FK_COL + "`= :" + DbConst.SECTION_FK_COL;
 
     @Override
-    public Collection<Student> selectAllStudents() {
-        return super.selectAll();
-    }
-    
-    @Override
     public Collection<Student> selectAllStudentsInSection(long sectionId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SECTION_FK_COL, new Long(sectionId));
@@ -80,11 +75,6 @@ public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPer
         params.put(DbConst.STUDENT_ID_COL, new Long(studentId));
         jdbcTemplate.update(UPDATE_STUDENT_SQL, new MapSqlParameterSource(params));
         return studentId;
-    }
-
-    @Override
-    public Long deleteStudent(long studentId) {
-        return super.delete(studentId);
     }
 
     @Override

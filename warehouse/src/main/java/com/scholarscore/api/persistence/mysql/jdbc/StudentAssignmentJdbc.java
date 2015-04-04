@@ -55,15 +55,12 @@ public class StudentAssignmentJdbc extends EnhancedBaseJdbc<StudentAssignment>
     
     private static String SELECT_STUD_ASSIGNMENT_SQL = SELECT_ALL_STUD_ASSIGNMENTS_SQL + 
             " AND `" + DbConst.STUD_ASSIGNMENT_ID_COL + "`= :" + DbConst.STUD_ASSIGNMENT_ID_COL;
+
     @Override
     public Collection<StudentAssignment> selectAll(long id) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.ASSIGNMENT_FK_COL, new Long(id));
-        Collection<StudentAssignment> assignments = jdbcTemplate.query(
-                SELECT_ALL_STUD_ASSIGNMENTS_SQL, 
-                params,
-                new StudentAssignmentMapper());
-        return assignments;
+        return super.selectAll(params);
     }
 
     @Override
@@ -116,9 +113,12 @@ public class StudentAssignmentJdbc extends EnhancedBaseJdbc<StudentAssignment>
     }
 
     @Override
+    protected String getSelectAllSQL() {
+        return SELECT_ALL_STUD_ASSIGNMENTS_SQL;
+    }
+
+    @Override
     public RowMapper<StudentAssignment> getMapper() {
-        // TODO: revisit during refactoring... this actually isn't used because 
-        // of custom selectAllSQL above
         return new StudentAssignmentMapper();
     }
 

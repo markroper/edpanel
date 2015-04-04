@@ -30,11 +30,6 @@ public class TeacherJdbc extends EnhancedBaseJdbc<Teacher> implements TeacherPer
             "WHERE `" + DbConst.TEACHER_ID_COL + "`= :" + DbConst.TEACHER_ID_COL + "";
     
     @Override
-    public Collection<Teacher> selectAllTeachers() {
-        return super.selectAll();
-    }
-    
-    @Override
     public Teacher selectTeacher(long teacherId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.TEACHER_ID_COL, new Long(teacherId));

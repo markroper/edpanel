@@ -25,12 +25,18 @@ public abstract class EnhancedBaseJdbc<T> extends BaseJdbc {
             "WHERE `" + getIdColName() + "`= :" + getIdColName() + "";
     
     public Collection<T> selectAll() {
-        return jdbcTemplate.query(getSelectAllSQL(), getMapper());
+        return this.selectAll(null);
+    }
+    
+    protected Collection<T> selectAll(Map<String, Object> params) {
+        return jdbcTemplate.query(getSelectAllSQL(),
+                params,
+                getMapper());
     }
     
     // -- SELECT --
     protected String getSelectAllSQL() { return SELECT_ALL_SQL; }
-    
+
     // -- END SELECT --
     
     // -- DELETE --

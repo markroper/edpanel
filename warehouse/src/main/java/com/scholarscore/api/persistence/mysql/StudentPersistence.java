@@ -5,7 +5,7 @@ import java.util.Collection;
 import com.scholarscore.models.Student;
 
 public interface StudentPersistence {
-    public Collection<Student> selectAllStudents();
+    public Collection<Student> selectAll();
     
     public Collection<Student> selectAllStudentsInSection(long sectionId);
 
@@ -15,5 +15,5 @@ public interface StudentPersistence {
 
     public Long replaceStudent(long studentId, Student student);
 
-    public Long deleteStudent(long studentId);
+    public Long delete(long studentId);
 }

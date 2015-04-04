@@ -5,7 +5,7 @@ import java.util.Collection;
 import com.scholarscore.models.Teacher;
 
 public interface TeacherPersistence {
-    public Collection<Teacher> selectAllTeachers();
+    public Collection<Teacher> selectAll();
     
     public Teacher selectTeacher(long teacherId);
 

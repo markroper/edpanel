@@ -421,14 +421,14 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.isOK()) {
             return new ServiceResponse<Long>(code);
         }
-        studentPersistence.deleteStudent(studentId);
+        studentPersistence.delete(studentId);
         return new ServiceResponse<Long>((Long) null);
     }
 
     @Override
     public ServiceResponse<Collection<Student>> getAllStudents() {
         return new ServiceResponse<Collection<Student>>(
-                studentPersistence.selectAllStudents());
+                studentPersistence.selectAll());
     }
 
     @Override
@@ -1036,7 +1036,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     @Override
     public ServiceResponse<Collection<Teacher>> getAllTeachers() {
         return new ServiceResponse<Collection<Teacher>>(
-                teacherPersistence.selectAllTeachers());
+                teacherPersistence.selectAll());
     }
 
     @Override
