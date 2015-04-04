@@ -14,7 +14,7 @@ import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.CourseMapper;
 import com.scholarscore.models.Course;
 
-public class CourseJdbc extends BaseJdbc implements EntityPersistence<Course> {
+public class CourseJdbc extends EnhancedBaseJdbc implements EntityPersistence<Course> {
     private static String INSERT_COURSE_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.COURSE_TABLE + "` " +
             "(" + DbConst.COURSE_NAME_COL + ", " + DbConst.SCHOOL_FK_COL + ")" +
@@ -95,6 +95,11 @@ public class CourseJdbc extends BaseJdbc implements EntityPersistence<Course> {
         params.put(DbConst.COURSE_ID_COL, new Long(courseId));
         jdbcTemplate.update(DELETE_COURSE_SQL, new MapSqlParameterSource(params));
         return courseId;
+    }
+
+    @Override
+    public String getTableName() {
+        return DbConst.COURSE_TABLE;
     }
 
 }

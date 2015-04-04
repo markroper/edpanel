@@ -14,7 +14,7 @@ import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.SchoolYearMapper;
 import com.scholarscore.models.SchoolYear;
 
-public class SchoolYearJdbc extends BaseJdbc implements EntityPersistence<SchoolYear> {
+public class SchoolYearJdbc extends EnhancedBaseJdbc implements EntityPersistence<SchoolYear> {
     private static String INSERT_SCHOOL_YEAR_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SCHOOL_YEAR_TABLE + "` " +
             "(" + DbConst.SCHOOL_YEAR_NAME_COL + ", " + DbConst.SCHOOL_FK_COL + ", " + 
@@ -30,11 +30,7 @@ public class SchoolYearJdbc extends BaseJdbc implements EntityPersistence<School
             DbConst.SCHOOL_YEAR_END_DATE_COL + "`= :" + DbConst.SCHOOL_YEAR_END_DATE_COL + " " +
             "WHERE `" + DbConst.SCHOOL_YEAR_ID_COL + "`= :" + DbConst.SCHOOL_YEAR_ID_COL + "";
     
-    private static String DELETE_SCHOOL_YEAR_SQL = "DELETE FROM `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.SCHOOL_YEAR_TABLE + "` " +
-            "WHERE `" + DbConst.SCHOOL_YEAR_ID_COL + "`= :" + DbConst.SCHOOL_YEAR_ID_COL + "";
-    
-    private static String SELECT_ALL_SCHOOL_YEARS_SQL = "SELECT * FROM `"+ 
+    private static String SELECT_ALL_SCHOOL_YEARS_SQL = "SELECT * FROM `"+
             DbConst.DATABASE +"`.`" + DbConst.SCHOOL_YEAR_TABLE + "` " +
             "WHERE `" + DbConst.SCHOOL_FK_COL + "` = :" + DbConst.SCHOOL_FK_COL;
     
@@ -111,15 +107,9 @@ public class SchoolYearJdbc extends BaseJdbc implements EntityPersistence<School
         return schoolId;
     }
 
-    /** 
-     * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolYearPersistence#deleteSchoolYear(long, long)
-     */
     @Override
-    public Long delete(long schoolYearId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.SCHOOL_YEAR_ID_COL, new Long(schoolYearId));
-        jdbcTemplate.update(DELETE_SCHOOL_YEAR_SQL, new MapSqlParameterSource(params));
-        return schoolYearId;
+    public String getTableName() {
+        return DbConst.SCHOOL_YEAR_TABLE;
     }
 
 }

@@ -16,7 +16,7 @@ import com.scholarscore.api.persistence.mysql.mapper.AssignmentMapper;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.GradedAssignment;
 
-public class AssignmentJdbc extends BaseJdbc implements EntityPersistence<Assignment> {
+public class AssignmentJdbc extends EnhancedBaseJdbc implements EntityPersistence<Assignment> {
     private static String INSERT_ASSIGNMENT_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.ASSIGNMENT_TABLE + "` " +
             "(`" + DbConst.ASSIGNMENT_NAME_COL + 
@@ -43,11 +43,7 @@ public class AssignmentJdbc extends BaseJdbc implements EntityPersistence<Assign
             DbConst.AVAILABLE_POINTS_COL + "`= :" + DbConst.AVAILABLE_POINTS_COL + " " +
             "WHERE `" + DbConst.ASSIGNMENT_ID_COL + "`= :" + DbConst.ASSIGNMENT_ID_COL + "";
     
-    private static String DELETE_ASSIGNMENT_SQL = "DELETE FROM `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.ASSIGNMENT_TABLE + "` " +
-            "WHERE `" + DbConst.ASSIGNMENT_ID_COL + "`= :" + DbConst.ASSIGNMENT_ID_COL + "";
-    
-    private static String SELECT_ALL_ASSIGNMENTS_SQL = "SELECT * FROM `"+ 
+    private static String SELECT_ALL_ASSIGNMENTS_SQL = "SELECT * FROM `"+
             DbConst.DATABASE +"`.`" + DbConst.ASSIGNMENT_TABLE + "` " +
             "WHERE `" + DbConst.SECTION_FK_COL + "` = :" + DbConst.SECTION_FK_COL;
     
@@ -123,11 +119,8 @@ public class AssignmentJdbc extends BaseJdbc implements EntityPersistence<Assign
     }
 
     @Override
-    public Long delete(long id) {
-        Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.ASSIGNMENT_ID_COL, new Long(id));
-        jdbcTemplate.update(DELETE_ASSIGNMENT_SQL, new MapSqlParameterSource(params));
-        return id;
+    public String getTableName() {
+        return DbConst.ASSIGNMENT_TABLE;
     }
 
 }

@@ -14,7 +14,7 @@ import com.scholarscore.api.persistence.mysql.TeacherPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.TeacherMapper;
 import com.scholarscore.models.Teacher;
 
-public class TeacherJdbc extends BaseJdbc implements TeacherPersistence {
+public class TeacherJdbc extends EnhancedBaseJdbc implements TeacherPersistence {
     private static String INSERT_TEACHER_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.TEACHER_TABLE + "` " +
             "(" + DbConst.TEACHER_NAME_COL + ")" +
@@ -23,10 +23,7 @@ public class TeacherJdbc extends BaseJdbc implements TeacherPersistence {
             "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.TEACHER_TABLE + "` " + 
             "SET `" + DbConst.TEACHER_NAME_COL + "`= :" + DbConst.TEACHER_NAME_COL + " " + 
             "WHERE `" + DbConst.TEACHER_ID_COL + "`= :" + DbConst.TEACHER_ID_COL + "";
-    private static String DELETE_TEACHER_SQL = "DELETE FROM `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.TEACHER_TABLE + "` " +
-            "WHERE `" + DbConst.TEACHER_ID_COL + "`= :" + DbConst.TEACHER_ID_COL + "";
-    private static String SELECT_ALL_TEACHERS_SQL = "SELECT * FROM `"+ 
+    private static String SELECT_ALL_TEACHERS_SQL = "SELECT * FROM `"+
             DbConst.DATABASE +"`.`" + DbConst.TEACHER_TABLE + "`";
     private static String SELECT_TEACHER_SQL = SELECT_ALL_TEACHERS_SQL + 
             "WHERE `" + DbConst.TEACHER_ID_COL + "`= :" + DbConst.TEACHER_ID_COL + "";
@@ -70,9 +67,11 @@ public class TeacherJdbc extends BaseJdbc implements TeacherPersistence {
     }
     @Override
     public Long deleteTeacher(long teacherId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.TEACHER_ID_COL, new Long(teacherId));
-        jdbcTemplate.update(DELETE_TEACHER_SQL, new MapSqlParameterSource(params));
-        return teacherId;
+        return super.delete(teacherId);
+    }
+
+    @Override
+    public String getTableName() {
+        return DbConst.TEACHER_TABLE;
     }
 }

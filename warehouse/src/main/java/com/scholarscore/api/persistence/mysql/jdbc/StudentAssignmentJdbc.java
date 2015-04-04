@@ -14,7 +14,7 @@ import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.StudentAssignmentMapper;
 import com.scholarscore.models.StudentAssignment;
 
-public class StudentAssignmentJdbc extends BaseJdbc implements EntityPersistence<StudentAssignment>{
+public class StudentAssignmentJdbc extends EnhancedBaseJdbc implements EntityPersistence<StudentAssignment>{
     private static String INSERT_STUD_ASSIGNMENT_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.STUDENT_ASSIGNMENT_TABLE + "` " +
             "(`" + DbConst.STUD_ASSIGNMENT_NAME_COL + 
@@ -40,11 +40,7 @@ public class StudentAssignmentJdbc extends BaseJdbc implements EntityPersistence
             DbConst.STUD_AWARDED_POINTS + "`= :" + DbConst.STUD_AWARDED_POINTS + ", `" +
             DbConst.STUD_FK_COL + "`= :" + DbConst.STUD_FK_COL + " " +
             "WHERE `" + DbConst.STUD_ASSIGNMENT_ID_COL + "`= :" + DbConst.STUD_ASSIGNMENT_ID_COL + "";
-    
-    private static String DELETE_STUD_ASSIGNMENT_SQL = "DELETE FROM `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.STUDENT_ASSIGNMENT_TABLE + "` " +
-            "WHERE `" + DbConst.STUD_ASSIGNMENT_ID_COL + "`= :" + DbConst.STUD_ASSIGNMENT_ID_COL + "";
-    
+
     private static String SELECT_ALL_STUD_ASSIGNMENTS_SQL = "SELECT * FROM `"+ 
             DbConst.DATABASE +"`.`" + DbConst.STUDENT_ASSIGNMENT_TABLE + "` " +
             "INNER JOIN `" + DbConst.DATABASE +"`.`" + DbConst.ASSIGNMENT_TABLE + "` " +
@@ -118,11 +114,8 @@ public class StudentAssignmentJdbc extends BaseJdbc implements EntityPersistence
     }
 
     @Override
-    public Long delete(long id) {
-        Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.STUD_ASSIGNMENT_ID_COL, new Long(id));
-        jdbcTemplate.update(DELETE_STUD_ASSIGNMENT_SQL, new MapSqlParameterSource(params));
-        return id;
+    public String getTableName() {
+        return DbConst.STUDENT_ASSIGNMENT_TABLE;
     }
 
 }

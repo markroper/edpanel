@@ -14,7 +14,7 @@ import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.TermMapper;
 import com.scholarscore.models.Term;
 
-public class TermJdbc extends BaseJdbc implements EntityPersistence<Term> {
+public class TermJdbc extends EnhancedBaseJdbc implements EntityPersistence<Term> {
     private static String INSERT_TERM_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.TERM_TABLE + "` " +
             "(" + DbConst.TERM_NAME_COL + ", " + DbConst.SCHOOL_YEAR_FK_COL + ", " + 
@@ -29,11 +29,7 @@ public class TermJdbc extends BaseJdbc implements EntityPersistence<Term> {
             DbConst.TERM_START_DATE_COL + "`= :" + DbConst.TERM_START_DATE_COL + ", `" +
             DbConst.TERM_END_DATE_COL + "`= :" + DbConst.TERM_END_DATE_COL + " " +
             "WHERE `" + DbConst.TERM_ID_COL + "`= :" + DbConst.TERM_ID_COL + "";
-    
-    private static String DELETE_TERM_SQL = "DELETE FROM `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.TERM_TABLE + "` " +
-            "WHERE `" + DbConst.TERM_ID_COL + "`= :" + DbConst.TERM_ID_COL + "";
-    
+
     private static String SELECT_ALL_TERMS_SQL = "SELECT * FROM `"+ 
             DbConst.DATABASE +"`.`" + DbConst.TERM_TABLE + "` " +
             "WHERE `" + DbConst.SCHOOL_YEAR_FK_COL + "` = :" + DbConst.SCHOOL_YEAR_FK_COL;
@@ -100,10 +96,12 @@ public class TermJdbc extends BaseJdbc implements EntityPersistence<Term> {
 
     @Override
     public Long delete(long termId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.TERM_ID_COL, new Long(termId));
-        jdbcTemplate.update(DELETE_TERM_SQL, new MapSqlParameterSource(params));
-        return termId;
+        return super.delete(termId);
+    }
+
+    @Override
+    public String getTableName() {
+        return DbConst.TERM_TABLE;
     }
 
 }

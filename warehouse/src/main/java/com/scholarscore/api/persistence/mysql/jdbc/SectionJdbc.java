@@ -16,7 +16,7 @@ import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.SectionMapper;
 import com.scholarscore.models.Section;
 
-public class SectionJdbc extends BaseJdbc implements EntityPersistence<Section> {
+public class SectionJdbc extends EnhancedBaseJdbc implements EntityPersistence<Section> {
     private static String INSERT_SECTION_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SECTION_TABLE + "` " +
             "(`" + DbConst.SECTION_NAME_COL + "`, `" + DbConst.TERM_FK_COL + "`, `" + 
@@ -39,11 +39,7 @@ public class SectionJdbc extends BaseJdbc implements EntityPersistence<Section> 
             DbConst.SECTION_END_DATE_COL + "`= :" + DbConst.SECTION_END_DATE_COL + " " +
             "WHERE `" + DbConst.SECTION_ID_COL + "`= :" + DbConst.SECTION_ID_COL + "";
     
-    private static String DELETE_SECTION_SQL = "DELETE FROM `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.SECTION_TABLE + "` " +
-            "WHERE `" + DbConst.SECTION_ID_COL + "`= :" + DbConst.SECTION_ID_COL + "";
-    
-    private static String SELECT_ALL_SECTIONS_SQL = "SELECT * FROM `"+ 
+    private static String SELECT_ALL_SECTIONS_SQL = "SELECT * FROM `"+
             DbConst.DATABASE +"`.`" + DbConst.SECTION_TABLE + "` " +
             "INNER JOIN `" + DbConst.DATABASE +"`.`" + DbConst.COURSE_TABLE + "` ON `" + 
             DbConst.COURSE_ID_COL + "` = `" + DbConst.COURSE_FK_COL +
@@ -131,11 +127,8 @@ public class SectionJdbc extends BaseJdbc implements EntityPersistence<Section> 
     }
 
     @Override
-    public Long delete(long sectionId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.SECTION_ID_COL, new Long(sectionId));
-        jdbcTemplate.update(DELETE_SECTION_SQL, new MapSqlParameterSource(params));
-        return sectionId;
+    public String getTableName() {
+        return DbConst.SECTION_TABLE;
     }
 
 }
