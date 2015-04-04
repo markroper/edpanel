@@ -1070,6 +1070,8 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         return new ServiceResponse<Long>(teacherId);
     }
     
+    
+    
 	public UserPersistence getUserPersistence() {
 		return userPersistence;
 	}
