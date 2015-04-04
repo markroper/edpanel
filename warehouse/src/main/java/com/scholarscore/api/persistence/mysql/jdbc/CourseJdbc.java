@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -14,7 +15,7 @@ import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.CourseMapper;
 import com.scholarscore.models.Course;
 
-public class CourseJdbc extends EnhancedBaseJdbc implements EntityPersistence<Course> {
+public class CourseJdbc extends EnhancedBaseJdbc<Course> implements EntityPersistence<Course> {
     private static String INSERT_COURSE_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.COURSE_TABLE + "` " +
             "(" + DbConst.COURSE_NAME_COL + ", " + DbConst.SCHOOL_FK_COL + ")" +
@@ -95,6 +96,11 @@ public class CourseJdbc extends EnhancedBaseJdbc implements EntityPersistence<Co
         params.put(DbConst.COURSE_ID_COL, new Long(courseId));
         jdbcTemplate.update(DELETE_COURSE_SQL, new MapSqlParameterSource(params));
         return courseId;
+    }
+
+    @Override
+    public RowMapper<Course> getMapper() {
+        return new CourseMapper();
     }
 
     @Override

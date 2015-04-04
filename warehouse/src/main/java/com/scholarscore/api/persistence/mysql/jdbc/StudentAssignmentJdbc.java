@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -14,7 +15,8 @@ import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.StudentAssignmentMapper;
 import com.scholarscore.models.StudentAssignment;
 
-public class StudentAssignmentJdbc extends EnhancedBaseJdbc implements EntityPersistence<StudentAssignment>{
+public class StudentAssignmentJdbc extends EnhancedBaseJdbc<StudentAssignment> 
+        implements EntityPersistence<StudentAssignment>{
     private static String INSERT_STUD_ASSIGNMENT_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.STUDENT_ASSIGNMENT_TABLE + "` " +
             "(`" + DbConst.STUD_ASSIGNMENT_NAME_COL + 
@@ -111,6 +113,13 @@ public class StudentAssignmentJdbc extends EnhancedBaseJdbc implements EntityPer
                 UPDATE_STUD_ASSIGNMENT_SQL, 
                 new MapSqlParameterSource(params));
         return id;
+    }
+
+    @Override
+    public RowMapper<StudentAssignment> getMapper() {
+        // TODO: revisit during refactoring... this actually isn't used because 
+        // of custom selectAllSQL above
+        return new StudentAssignmentMapper();
     }
 
     @Override

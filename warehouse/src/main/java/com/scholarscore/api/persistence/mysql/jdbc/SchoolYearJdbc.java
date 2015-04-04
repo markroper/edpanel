@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -14,7 +15,7 @@ import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.SchoolYearMapper;
 import com.scholarscore.models.SchoolYear;
 
-public class SchoolYearJdbc extends EnhancedBaseJdbc implements EntityPersistence<SchoolYear> {
+public class SchoolYearJdbc extends EnhancedBaseJdbc<SchoolYear> implements EntityPersistence<SchoolYear> {
     private static String INSERT_SCHOOL_YEAR_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SCHOOL_YEAR_TABLE + "` " +
             "(" + DbConst.SCHOOL_YEAR_NAME_COL + ", " + DbConst.SCHOOL_FK_COL + ", " + 
@@ -43,6 +44,7 @@ public class SchoolYearJdbc extends EnhancedBaseJdbc implements EntityPersistenc
     @Override
     public Collection<SchoolYear> selectAll(
             long schoolId) {
+//        return super.selectAll();
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
         Collection<SchoolYear> schoolYears = jdbcTemplate.query(
@@ -105,6 +107,11 @@ public class SchoolYearJdbc extends EnhancedBaseJdbc implements EntityPersistenc
                 UPDATE_SCHOOL_YEAR_SQL, 
                 new MapSqlParameterSource(params));
         return schoolId;
+    }
+
+    @Override
+    public RowMapper<SchoolYear> getMapper() {
+        return new SchoolYearMapper();
     }
 
     @Override

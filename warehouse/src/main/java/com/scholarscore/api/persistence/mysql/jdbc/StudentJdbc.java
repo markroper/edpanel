@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -14,21 +15,21 @@ import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.StudentMapper;
 import com.scholarscore.models.Student;
 
-public class StudentJdbc extends EnhancedBaseJdbc implements StudentPersistence {
+public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPersistence {
     private static String INSERT_STUDENT_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.STUDENT_TABLE + "` " +
             "(" + DbConst.STUDENT_NAME_COL + ")" +
             " VALUES (:" + DbConst.STUDENT_NAME_COL + ")";   
+
     private static String UPDATE_STUDENT_SQL = 
             "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.STUDENT_TABLE + "` " + 
             "SET `" + DbConst.STUDENT_NAME_COL + "`= :" + DbConst.STUDENT_NAME_COL + " " + 
             "WHERE `" + DbConst.STUDENT_ID_COL + "`= :" + DbConst.STUDENT_ID_COL + "";
-    private static String SELECT_ALL_STUDENTS_SQL = "SELECT * FROM `"+
-            DbConst.DATABASE +"`.`" + DbConst.STUDENT_TABLE + "`";
-    private static String SELECT_STUDENT_SQL = SELECT_ALL_STUDENTS_SQL + 
+
+    private String SELECT_STUDENT_SQL = getSelectAllSQL() +
             "WHERE `" + DbConst.STUDENT_ID_COL + "`= :" + DbConst.STUDENT_ID_COL + "";
     
-    private static String SELECT_STUDENTS_IN_SECTION_SQL = SELECT_ALL_STUDENTS_SQL + 
+    private String SELECT_STUDENTS_IN_SECTION_SQL = getSelectAllSQL() +
             " INNER JOIN `" + DbConst.DATABASE +"`.`" + DbConst.STUDENT_SECTION_GRADE_TABLE + "`" + 
             " ON `" + DbConst.STUDENT_SECTION_GRADE_TABLE + "`.`" + DbConst.STUD_FK_COL + "` = `" +
             DbConst.STUDENT_TABLE + "`.`" + DbConst.STUDENT_ID_COL + "` " +
@@ -36,10 +37,9 @@ public class StudentJdbc extends EnhancedBaseJdbc implements StudentPersistence 
 
     @Override
     public Collection<Student> selectAllStudents() {
-        Collection<Student> students = jdbcTemplate.query(SELECT_ALL_STUDENTS_SQL, 
-                new StudentMapper());
-        return students;
+        return super.selectAll();
     }
+    
     @Override
     public Collection<Student> selectAllStudentsInSection(long sectionId) {
         Map<String, Object> params = new HashMap<>();     
@@ -81,9 +81,15 @@ public class StudentJdbc extends EnhancedBaseJdbc implements StudentPersistence 
         jdbcTemplate.update(UPDATE_STUDENT_SQL, new MapSqlParameterSource(params));
         return studentId;
     }
+
     @Override
     public Long deleteStudent(long studentId) {
         return super.delete(studentId);
+    }
+
+    @Override
+    public RowMapper<Student> getMapper() {
+        return new StudentMapper();
     }
 
     @Override

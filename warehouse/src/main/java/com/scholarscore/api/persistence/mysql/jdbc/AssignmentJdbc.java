@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -16,7 +17,7 @@ import com.scholarscore.api.persistence.mysql.mapper.AssignmentMapper;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.GradedAssignment;
 
-public class AssignmentJdbc extends EnhancedBaseJdbc implements EntityPersistence<Assignment> {
+public class AssignmentJdbc extends EnhancedBaseJdbc<Assignment> implements EntityPersistence<Assignment> {
     private static String INSERT_ASSIGNMENT_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.ASSIGNMENT_TABLE + "` " +
             "(`" + DbConst.ASSIGNMENT_NAME_COL + 
@@ -116,6 +117,11 @@ public class AssignmentJdbc extends EnhancedBaseJdbc implements EntityPersistenc
                 UPDATE_ASSIGNMENT_SQL, 
                 new MapSqlParameterSource(params));
         return id;
+    }
+
+    @Override
+    public RowMapper<Assignment> getMapper() {
+        return new AssignmentMapper();
     }
 
     @Override

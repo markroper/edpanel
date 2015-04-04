@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -14,25 +15,23 @@ import com.scholarscore.api.persistence.mysql.TeacherPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.TeacherMapper;
 import com.scholarscore.models.Teacher;
 
-public class TeacherJdbc extends EnhancedBaseJdbc implements TeacherPersistence {
+public class TeacherJdbc extends EnhancedBaseJdbc<Teacher> implements TeacherPersistence {
     private static String INSERT_TEACHER_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.TEACHER_TABLE + "` " +
             "(" + DbConst.TEACHER_NAME_COL + ")" +
             " VALUES (:" + DbConst.TEACHER_NAME_COL + ")"; 
+    
     private static String UPDATE_TEACHER_SQL = 
             "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.TEACHER_TABLE + "` " + 
             "SET `" + DbConst.TEACHER_NAME_COL + "`= :" + DbConst.TEACHER_NAME_COL + " " + 
             "WHERE `" + DbConst.TEACHER_ID_COL + "`= :" + DbConst.TEACHER_ID_COL + "";
-    private static String SELECT_ALL_TEACHERS_SQL = "SELECT * FROM `"+
-            DbConst.DATABASE +"`.`" + DbConst.TEACHER_TABLE + "`";
-    private static String SELECT_TEACHER_SQL = SELECT_ALL_TEACHERS_SQL + 
+    
+    private final String SELECT_TEACHER_SQL = getSelectAllSQL() +
             "WHERE `" + DbConst.TEACHER_ID_COL + "`= :" + DbConst.TEACHER_ID_COL + "";
     
     @Override
     public Collection<Teacher> selectAllTeachers() {
-        Collection<Teacher> teachers = jdbcTemplate.query(SELECT_ALL_TEACHERS_SQL, 
-                new TeacherMapper());
-        return teachers;
+        return super.selectAll();
     }
     
     @Override
@@ -68,6 +67,11 @@ public class TeacherJdbc extends EnhancedBaseJdbc implements TeacherPersistence 
     @Override
     public Long deleteTeacher(long teacherId) {
         return super.delete(teacherId);
+    }
+
+    @Override
+    public RowMapper<Teacher> getMapper() {
+        return new TeacherMapper();
     }
 
     @Override

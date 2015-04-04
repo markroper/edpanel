@@ -1,8 +1,10 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
 import com.scholarscore.api.persistence.mysql.DbConst;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,12 +15,25 @@ import java.util.Map;
  * 
  * This class is an exploration of refactoring common operations one step closer to BaseJdbc
  */
-public abstract class EnhancedBaseJdbc extends BaseJdbc {
+public abstract class EnhancedBaseJdbc<T> extends BaseJdbc {
 
-    private String DELETE_SQL = "DELETE FROM `"+
+    private final String SELECT_ALL_SQL = "SELECT * FROM `" +
+            DbConst.DATABASE +"`.`" + getTableName() + "`";
+
+    private final String DELETE_SQL = "DELETE FROM `"+
             DbConst.DATABASE +"`.`" + getTableName() + "` " +
             "WHERE `" + getIdColName() + "`= :" + getIdColName() + "";
     
+    public Collection<T> selectAll() {
+        return jdbcTemplate.query(getSelectAllSQL(), getMapper());
+    }
+    
+    // -- SELECT --
+    protected String getSelectAllSQL() { return SELECT_ALL_SQL; }
+    
+    // -- END SELECT --
+    
+    // -- DELETE --
     public Long delete(long id) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(getIdColName(), new Long(id));
@@ -27,15 +42,19 @@ public abstract class EnhancedBaseJdbc extends BaseJdbc {
     }
 
     // subclasses can override if using bespoke delete SQL
-    protected String getDeleteSQL() {
-        return DELETE_SQL;
-    }
-    
+    protected String getDeleteSQL() { return DELETE_SQL; }
+    // -- END DELETE --
+
+    // -- GENERAL --
     // subclasses must override if id column does not match pattern (tablename_id)
     protected String getIdColName() {
         return getTableName() + "_id";
     }
+
+    // These are needed for all subclasses
+    public abstract RowMapper<T> getMapper();
     
     public abstract String getTableName();
+    // -- END GENERAL --
 
 }

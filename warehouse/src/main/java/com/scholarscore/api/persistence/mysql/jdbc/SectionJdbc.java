@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -16,7 +17,7 @@ import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.SectionMapper;
 import com.scholarscore.models.Section;
 
-public class SectionJdbc extends EnhancedBaseJdbc implements EntityPersistence<Section> {
+public class SectionJdbc extends EnhancedBaseJdbc<Section> implements EntityPersistence<Section> {
     private static String INSERT_SECTION_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SECTION_TABLE + "` " +
             "(`" + DbConst.SECTION_NAME_COL + "`, `" + DbConst.TERM_FK_COL + "`, `" + 
@@ -124,6 +125,16 @@ public class SectionJdbc extends EnhancedBaseJdbc implements EntityPersistence<S
                 UPDATE_SECTION_SQL, 
                 new MapSqlParameterSource(params));
         return sectionId;
+    }
+
+    @Override
+    protected String getSelectAllSQL() {
+        return SELECT_ALL_SECTIONS_SQL;
+    }
+
+    @Override
+    public RowMapper<Section> getMapper() {
+        return new SectionMapper();
     }
 
     @Override

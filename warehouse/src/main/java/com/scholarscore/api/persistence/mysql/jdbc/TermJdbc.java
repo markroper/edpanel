@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -14,7 +15,7 @@ import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.TermMapper;
 import com.scholarscore.models.Term;
 
-public class TermJdbc extends EnhancedBaseJdbc implements EntityPersistence<Term> {
+public class TermJdbc extends EnhancedBaseJdbc<Term> implements EntityPersistence<Term> {
     private static String INSERT_TERM_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.TERM_TABLE + "` " +
             "(" + DbConst.TERM_NAME_COL + ", " + DbConst.SCHOOL_YEAR_FK_COL + ", " + 
@@ -97,6 +98,11 @@ public class TermJdbc extends EnhancedBaseJdbc implements EntityPersistence<Term
     @Override
     public Long delete(long termId) {
         return super.delete(termId);
+    }
+
+    @Override
+    public RowMapper<Term> getMapper() {
+        return new TermMapper();
     }
 
     @Override
