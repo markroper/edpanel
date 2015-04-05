@@ -50,16 +50,7 @@ public class TermJdbc extends EnhancedBaseJdbc<Term> implements EntityPersistenc
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_YEAR_FK_COL, new Long(schoolYearId));
         params.put(DbConst.TERM_ID_COL, new Long(termId));
-        
-        List<Term> terms = jdbcTemplate.query(
-                SELECT_TERM_SQL, 
-                params, 
-                new TermMapper());
-        Term term = null;
-        if(null != terms && !terms.isEmpty()) {
-            term = terms.get(0);
-        }
-        return term;
+        return super.select(params, SELECT_TERM_SQL);
     }
 
     @Override

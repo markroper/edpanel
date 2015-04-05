@@ -9,7 +9,7 @@ public interface StudentPersistence {
     
     public Collection<Student> selectAllStudentsInSection(long sectionId);
 
-    public Student selectStudent(long studentId);
+    public Student select(long studentId);
 
     public Long createStudent(Student student);
 

@@ -63,15 +63,7 @@ public class AssignmentJdbc extends EnhancedBaseJdbc<Assignment> implements Enti
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SECTION_FK_COL, new Long(parentId));
         params.put(DbConst.ASSIGNMENT_ID_COL, new Long(id));
-        List<Assignment> assignments = jdbcTemplate.query(
-                SELECT_ASSIGNMENT_SQL, 
-                params, 
-                new AssignmentMapper());
-        Assignment assignment = null;
-        if(null != assignments && !assignments.isEmpty()) {
-            assignment = assignments.get(0);
-        }
-        return assignment;
+        return super.select(params, SELECT_ASSIGNMENT_SQL);
     }
 
     @Override

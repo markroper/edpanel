@@ -53,11 +53,7 @@ public class StudentSectionGradeJdbc extends EnhancedBaseJdbc<StudentSectionGrad
     public Collection<StudentSectionGrade> selectAll(long sectionId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SECTION_FK_COL, new Long(sectionId));
-        Collection<StudentSectionGrade> grades = jdbcTemplate.query(
-                SELECT_ALL_STUD_SECTION_GRADES_SQL, 
-                params,
-                new StudentSectionGradeMapper());
-        return grades;
+        return super.selectAll(params, SELECT_ALL_STUD_SECTION_GRADES_SQL);
     }
 
     @Override
@@ -65,15 +61,7 @@ public class StudentSectionGradeJdbc extends EnhancedBaseJdbc<StudentSectionGrad
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SECTION_FK_COL, new Long(sectionId));
         params.put(DbConst.STUD_FK_COL, new Long(studentId));
-        List<StudentSectionGrade> grades = jdbcTemplate.query(
-                SELECT_STUD_SECTION_GRADE_SQL, 
-                params, 
-                new StudentSectionGradeMapper());
-        StudentSectionGrade grade = null;
-        if(null != grades && !grades.isEmpty()) {
-            grade = grades.get(0);
-        }
-        return grade;
+        return super.select(params, SELECT_STUD_SECTION_GRADE_SQL);
     }
 
     @Override

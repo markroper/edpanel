@@ -15,6 +15,7 @@ import com.scholarscore.api.persistence.mysql.mapper.SchoolMapper;
 import com.scholarscore.models.School;
 
 public class SchoolJdbc extends EnhancedBaseJdbc<School> implements SchoolPersistence {
+    
     private static String INSERT_SCHOOL_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SCHOOL_TABLE + "` " +
             "(" + DbConst.SCHOOL_NAME_COL + ")" +
@@ -25,27 +26,12 @@ public class SchoolJdbc extends EnhancedBaseJdbc<School> implements SchoolPersis
             "SET `" + DbConst.SCHOOL_NAME_COL + "`= :name " + 
             "WHERE `" + DbConst.SCHOOL_ID_COL + "`= :id";
 
-    private static String SELECT_ALL_SCHOOLS_SQL = "SELECT * FROM `"+
-            DbConst.DATABASE +"`.`" + DbConst.SCHOOL_TABLE + "`";
-    private final String SELECT_SCHOOL_SQL = SELECT_ALL_SCHOOLS_SQL + " " +
-            "WHERE `" + DbConst.SCHOOL_ID_COL + "`= :id";
-
     /* (non-Javadoc)
      * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolPersistence#getSchool(long)
      */
     @Override
     public School selectSchool(long schoolId) {
-        Map<String, Object> params = new HashMap<>();     
-        params.put("id", new Long(schoolId));
-        List<School> schools = jdbcTemplate.query(
-                SELECT_SCHOOL_SQL, 
-                params, 
-                new SchoolMapper());
-        School school = null;
-        if(null != schools && !schools.isEmpty()) {
-            school = schools.get(0);
-        }
-        return school;
+        return super.select(schoolId);
     }
 
     /* (non-Javadoc)

@@ -60,16 +60,8 @@ public class SectionJdbc extends EnhancedBaseJdbc<Section> implements EntityPers
     public Section select(long termId, long sectionId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.TERM_FK_COL, new Long(termId));
-        params.put(DbConst.SECTION_ID_COL, new Long(sectionId));  
-        List<Section> sections = jdbcTemplate.query(
-                SELECT_SECTION_SQL, 
-                params, 
-                new SectionMapper());
-        Section section = null;
-        if(null != sections && !sections.isEmpty()) {
-            section = sections.get(0);
-        }
-        return section;
+        params.put(DbConst.SECTION_ID_COL, new Long(sectionId));
+        return super.select(params, SELECT_SECTION_SQL);
     }
 
     @Override

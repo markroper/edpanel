@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,11 +21,14 @@ public abstract class EnhancedBaseJdbc<T> extends BaseJdbc {
     private final String SELECT_ALL_SQL = "SELECT * FROM `" +
             DbConst.DATABASE +"`.`" + getTableName() + "`";
 
+    private final String SELECT_SQL = SELECT_ALL_SQL + " " + 
+            "WHERE `" + getIdColName() + "`= :" + getIdColName();
+
     private final String DELETE_SQL = "DELETE FROM `"+
             DbConst.DATABASE +"`.`" + getTableName() + "` " +
-            "WHERE `" + getIdColName() + "`= :" + getIdColName() + "";
+            "WHERE `" + getIdColName() + "`= :" + getIdColName();
     
-    // -- SELECT --
+    // -- SELECT ALL --
     public Collection<T> selectAll() {
         return this.selectAll(null, SELECT_ALL_SQL);
     }
@@ -33,6 +37,26 @@ public abstract class EnhancedBaseJdbc<T> extends BaseJdbc {
         return jdbcTemplate.query(selectAllSql,
                 params,
                 getMapper());
+    }
+    // -- END SELECT ALL --
+
+    // -- SELECT --
+    public T select(long id) { 
+        Map<String, Object> params = new HashMap<>();
+        params.put(getIdColName(), new Long(id));
+        return this.select(params, SELECT_SQL);
+    }
+    
+    protected T select(Map<String, Object> params, String selectSql) {
+        List<T> results = jdbcTemplate.query(
+                selectSql,
+                params,
+                getMapper());
+        T result = null;
+        if (null != results && !results.isEmpty()) {
+            result = results.get(0);
+        }
+        return result;
     }
     // -- END SELECT --
     

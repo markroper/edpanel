@@ -50,15 +50,7 @@ public class CourseJdbc extends EnhancedBaseJdbc<Course> implements EntityPersis
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
         params.put(DbConst.COURSE_ID_COL, new Long(courseId));
-        List<Course> courses = jdbcTemplate.query(
-                SELECT_COURSE_SQL, 
-                params, 
-                new CourseMapper());
-        Course course = null;
-        if(null != courses && !courses.isEmpty()) {
-            course = courses.get(0);
-        }
-        return course;
+        return super.select(params, SELECT_COURSE_SQL);
     }
 
     @Override

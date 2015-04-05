@@ -7,11 +7,11 @@ import com.scholarscore.models.Teacher;
 public interface TeacherPersistence {
     public Collection<Teacher> selectAll();
     
-    public Teacher selectTeacher(long teacherId);
+    public Teacher select(long teacherId);
 
     public Long createTeacher(Teacher teacher);
 
     public Long replaceTeacher(long teacherId, Teacher teacher);
 
-    public Long deleteTeacher(long teacherId);
+    public Long delete(long teacherId);
 }

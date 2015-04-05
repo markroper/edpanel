@@ -42,8 +42,7 @@ public class SchoolYearJdbc extends EnhancedBaseJdbc<SchoolYear> implements Enti
      * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolYearPersistence#selectAllSchoolYears(long)
      */
     @Override
-    public Collection<SchoolYear> selectAll(
-            long schoolId) {
+    public Collection<SchoolYear> selectAll(long schoolId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
         return super.selectAll(params, SELECT_ALL_SCHOOL_YEARS_SQL);
@@ -57,15 +56,7 @@ public class SchoolYearJdbc extends EnhancedBaseJdbc<SchoolYear> implements Enti
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
         params.put(DbConst.SCHOOL_YEAR_ID_COL, new Long(schoolYearId));
-        List<SchoolYear> schoolYears = jdbcTemplate.query(
-                SELECT_SCHOOL_YEAR_SQL, 
-                params, 
-                new SchoolYearMapper());
-        SchoolYear year = null;
-        if(null != schoolYears && !schoolYears.isEmpty()) {
-            year = schoolYears.get(0);
-        }
-        return year;
+        return super.select(params, SELECT_SCHOOL_YEAR_SQL);
     }
 
     /**

@@ -29,9 +29,6 @@ public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPer
     private static String SELECT_ALL_STUDENTS_SQL = "SELECT * FROM `"+
             DbConst.DATABASE +"`.`" + DbConst.STUDENT_TABLE + "`";
     
-    private String SELECT_STUDENT_SQL = SELECT_ALL_STUDENTS_SQL +
-            "WHERE `" + DbConst.STUDENT_ID_COL + "`= :" + DbConst.STUDENT_ID_COL + "";
-    
     private String SELECT_STUDENTS_IN_SECTION_SQL = SELECT_ALL_STUDENTS_SQL +
             " INNER JOIN `" + DbConst.DATABASE +"`.`" + DbConst.STUDENT_SECTION_GRADE_TABLE + "`" + 
             " ON `" + DbConst.STUDENT_SECTION_GRADE_TABLE + "`.`" + DbConst.STUD_FK_COL + "` = `" +
@@ -49,20 +46,6 @@ public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPer
         return students;
     }
     
-    @Override
-    public Student selectStudent(long studentId) {
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.STUDENT_ID_COL, new Long(studentId));
-        List<Student> students = jdbcTemplate.query(
-                SELECT_STUDENT_SQL, 
-                params,
-                new StudentMapper());
-        Student student = null;
-        if(null != students && !students.isEmpty()) {
-            student = students.get(0);
-        }
-        return student;
-    }
     @Override
     public Long createStudent(Student student) {
         KeyHolder keyHolder = new GeneratedKeyHolder();

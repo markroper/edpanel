@@ -68,15 +68,7 @@ public class StudentAssignmentJdbc extends EnhancedBaseJdbc<StudentAssignment>
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.ASSIGNMENT_FK_COL, new Long(parentId));
         params.put(DbConst.STUD_ASSIGNMENT_ID_COL, new Long(id));
-        List<StudentAssignment> assignments = jdbcTemplate.query(
-                SELECT_STUD_ASSIGNMENT_SQL, 
-                params, 
-                new StudentAssignmentMapper());
-        StudentAssignment assignment = null;
-        if(null != assignments && !assignments.isEmpty()) {
-            assignment = assignments.get(0);
-        }
-        return assignment;
+        return super.select(params, SELECT_STUD_ASSIGNMENT_SQL);
     }
 
     @Override
