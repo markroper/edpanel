@@ -102,7 +102,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     //SCHOOLS
     @Override
     public Collection<School> getAllSchools() {
-        Collection<School> schools = schoolPersistence.selectAllSchools();
+        Collection<School> schools = schoolPersistence.selectAll();
         if(null != schools) {
             for(School s : schools) {
                 ServiceResponse<Collection<SchoolYear>> sr = 
@@ -201,7 +201,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             return new ServiceResponse<Long>(code);
         }
         //Only need to delete the parent row, FK cascades deletes
-        schoolPersistence.deleteSchool(schoolId);
+        schoolPersistence.delete(schoolId);
         return new ServiceResponse<Long>((Long) null);
     }
     

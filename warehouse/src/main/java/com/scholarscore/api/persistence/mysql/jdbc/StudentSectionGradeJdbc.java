@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -14,9 +15,9 @@ import com.scholarscore.api.persistence.mysql.StudentSectionGradePersistence;
 import com.scholarscore.api.persistence.mysql.mapper.StudentSectionGradeMapper;
 import com.scholarscore.models.StudentSectionGrade;
 
-public class StudentSectionGradeJdbc extends BaseJdbc implements StudentSectionGradePersistence {
-    private static String INSERT_STUD_SECTION_GRADE_SQL = "INSERT INTO `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.STUDENT_SECTION_GRADE_TABLE + "` " +
+public class StudentSectionGradeJdbc extends EnhancedBaseJdbc<StudentSectionGrade> implements StudentSectionGradePersistence {
+    private final String INSERT_STUD_SECTION_GRADE_SQL = "INSERT INTO `"+
+            DbConst.DATABASE +"`.`" + getTableName() + "` " +
             "(`" + DbConst.STUD_SECTION_GRADE_COMPLETE + 
             "`, `" + DbConst.STUD_SECTION_GRADE_GRADE + 
             "`, `" + DbConst.STUD_FK_COL + 
@@ -26,8 +27,8 @@ public class StudentSectionGradeJdbc extends BaseJdbc implements StudentSectionG
             ", :" +  DbConst.STUD_FK_COL + 
             ", :" + DbConst.SECTION_FK_COL + ")";
     
-    private static String UPDATE_STUD_SECTION_GRADE_SQL = 
-            "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.STUDENT_SECTION_GRADE_TABLE + "` " + 
+    private final String UPDATE_STUD_SECTION_GRADE_SQL =
+            "UPDATE `" + DbConst.DATABASE + "`.`" + getTableName() + "` " +
             "SET `" + 
             DbConst.STUD_SECTION_GRADE_COMPLETE + "`= :" + DbConst.STUD_SECTION_GRADE_COMPLETE + ", `" +
             DbConst.STUD_SECTION_GRADE_GRADE + "`= :" + DbConst.STUD_SECTION_GRADE_GRADE + ", `" +
@@ -36,16 +37,16 @@ public class StudentSectionGradeJdbc extends BaseJdbc implements StudentSectionG
             " WHERE `" + DbConst.STUD_FK_COL + "`= :" + DbConst.STUD_FK_COL + " " +
             "AND `" + DbConst.SECTION_FK_COL + "`= :" + DbConst.SECTION_FK_COL;
     
-    private static String DELETE_STUD_SECTION_GRADE_SQL = "DELETE FROM `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.STUDENT_SECTION_GRADE_TABLE + "` " +
+    private final String DELETE_STUD_SECTION_GRADE_SQL = "DELETE FROM `"+
+            DbConst.DATABASE +"`.`" + getTableName() + "` " +
             "WHERE `" + DbConst.STUD_FK_COL + "`= :" + DbConst.STUD_FK_COL + " " +
             "AND `" + DbConst.SECTION_FK_COL + "`= :" + DbConst.SECTION_FK_COL;
     
-    private static String SELECT_ALL_STUD_SECTION_GRADES_SQL = "SELECT * FROM `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.STUDENT_SECTION_GRADE_TABLE + "` " +
+    private final String SELECT_ALL_STUD_SECTION_GRADES_SQL = "SELECT * FROM `"+
+            DbConst.DATABASE +"`.`" + getTableName() + "` " +
             "WHERE `" + DbConst.SECTION_FK_COL + "` = :" + DbConst.SECTION_FK_COL;
     
-    private static String SELECT_STUD_SECTION_GRADE_SQL = SELECT_ALL_STUD_SECTION_GRADES_SQL + 
+    private final String SELECT_STUD_SECTION_GRADE_SQL = SELECT_ALL_STUD_SECTION_GRADES_SQL +
             " AND `" + DbConst.STUD_FK_COL + "`= :" + DbConst.STUD_FK_COL;
     
     @Override
@@ -108,7 +109,16 @@ public class StudentSectionGradeJdbc extends BaseJdbc implements StudentSectionG
         Map<String, Object> params = new HashMap<>();
         params.put(DbConst.SECTION_FK_COL, new Long(sectionId));
         params.put(DbConst.STUD_FK_COL, new Long(studentId));
-        jdbcTemplate.update(DELETE_STUD_SECTION_GRADE_SQL, new MapSqlParameterSource(params));
-        return null;
+        return super.delete(params, DELETE_STUD_SECTION_GRADE_SQL);
+    }
+    
+    @Override
+    public RowMapper<StudentSectionGrade> getMapper() {
+        return new StudentSectionGradeMapper();
+    }
+
+    @Override
+    public String getTableName() {
+        return DbConst.STUDENT_SECTION_GRADE_TABLE;
     }
 }

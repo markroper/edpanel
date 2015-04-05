@@ -10,5 +10,4 @@ public abstract class BaseJdbc {
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
-    
 }

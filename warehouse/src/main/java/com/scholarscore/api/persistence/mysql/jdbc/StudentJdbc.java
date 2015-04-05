@@ -26,10 +26,13 @@ public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPer
             "SET `" + DbConst.STUDENT_NAME_COL + "`= :" + DbConst.STUDENT_NAME_COL + " " + 
             "WHERE `" + DbConst.STUDENT_ID_COL + "`= :" + DbConst.STUDENT_ID_COL + "";
 
-    private String SELECT_STUDENT_SQL = getSelectAllSQL() +
+    private static String SELECT_ALL_STUDENTS_SQL = "SELECT * FROM `"+
+            DbConst.DATABASE +"`.`" + DbConst.STUDENT_TABLE + "`";
+    
+    private String SELECT_STUDENT_SQL = SELECT_ALL_STUDENTS_SQL +
             "WHERE `" + DbConst.STUDENT_ID_COL + "`= :" + DbConst.STUDENT_ID_COL + "";
     
-    private String SELECT_STUDENTS_IN_SECTION_SQL = getSelectAllSQL() +
+    private String SELECT_STUDENTS_IN_SECTION_SQL = SELECT_ALL_STUDENTS_SQL +
             " INNER JOIN `" + DbConst.DATABASE +"`.`" + DbConst.STUDENT_SECTION_GRADE_TABLE + "`" + 
             " ON `" + DbConst.STUDENT_SECTION_GRADE_TABLE + "`.`" + DbConst.STUD_FK_COL + "` = `" +
             DbConst.STUDENT_TABLE + "`.`" + DbConst.STUDENT_ID_COL + "` " +

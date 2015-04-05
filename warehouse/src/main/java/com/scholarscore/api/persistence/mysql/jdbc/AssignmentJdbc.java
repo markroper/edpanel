@@ -48,14 +48,14 @@ public class AssignmentJdbc extends EnhancedBaseJdbc<Assignment> implements Enti
             DbConst.DATABASE +"`.`" + DbConst.ASSIGNMENT_TABLE + "` " +
             "WHERE `" + DbConst.SECTION_FK_COL + "` = :" + DbConst.SECTION_FK_COL;
     
-    private final String SELECT_ASSIGNMENT_SQL = getSelectAllSQL() +
+    private final String SELECT_ASSIGNMENT_SQL = SELECT_ALL_ASSIGNMENTS_SQL +
             " AND `" + DbConst.ASSIGNMENT_ID_COL + "`= :" + DbConst.ASSIGNMENT_ID_COL;
     
     @Override
     public Collection<Assignment> selectAll(long id) {
         Map<String, Object> params = new HashMap<>();
         params.put(DbConst.SECTION_FK_COL, new Long(id));
-        return super.selectAll(params);
+        return super.selectAll(params, SELECT_ALL_ASSIGNMENTS_SQL);
     }
 
     @Override
@@ -113,11 +113,6 @@ public class AssignmentJdbc extends EnhancedBaseJdbc<Assignment> implements Enti
                 UPDATE_ASSIGNMENT_SQL, 
                 new MapSqlParameterSource(params));
         return id;
-    }
-
-    @Override
-    protected String getSelectAllSQL() {
-        return SELECT_ALL_ASSIGNMENTS_SQL;
     }
 
     @Override

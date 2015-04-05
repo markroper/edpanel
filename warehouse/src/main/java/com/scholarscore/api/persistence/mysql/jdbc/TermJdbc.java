@@ -42,7 +42,7 @@ public class TermJdbc extends EnhancedBaseJdbc<Term> implements EntityPersistenc
     public Collection<Term> selectAll(long schoolYearId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_YEAR_FK_COL, new Long(schoolYearId));
-        return super.selectAll(params);
+        return super.selectAll(params, SELECT_ALL_TERMS_SQL);
     }
 
     @Override
@@ -89,11 +89,6 @@ public class TermJdbc extends EnhancedBaseJdbc<Term> implements EntityPersistenc
                 UPDATE_TERM_SQL, 
                 new MapSqlParameterSource(params));
         return termId;
-    }
-
-    @Override
-    protected String getSelectAllSQL() {
-        return SELECT_ALL_TERMS_SQL;
     }
 
     @Override

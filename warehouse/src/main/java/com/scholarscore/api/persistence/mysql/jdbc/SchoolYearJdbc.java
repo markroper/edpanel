@@ -46,7 +46,7 @@ public class SchoolYearJdbc extends EnhancedBaseJdbc<SchoolYear> implements Enti
             long schoolId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
-        return super.selectAll(params);
+        return super.selectAll(params, SELECT_ALL_SCHOOL_YEARS_SQL);
     }
 
     /**
@@ -102,11 +102,6 @@ public class SchoolYearJdbc extends EnhancedBaseJdbc<SchoolYear> implements Enti
                 UPDATE_SCHOOL_YEAR_SQL, 
                 new MapSqlParameterSource(params));
         return schoolId;
-    }
-
-    @Override
-    protected String getSelectAllSQL() {
-        return SELECT_ALL_SCHOOL_YEARS_SQL;
     }
 
     @Override

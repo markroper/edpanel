@@ -24,31 +24,30 @@ public abstract class EnhancedBaseJdbc<T> extends BaseJdbc {
             DbConst.DATABASE +"`.`" + getTableName() + "` " +
             "WHERE `" + getIdColName() + "`= :" + getIdColName() + "";
     
+    // -- SELECT --
     public Collection<T> selectAll() {
-        return this.selectAll(null);
+        return this.selectAll(null, SELECT_ALL_SQL);
     }
-    
-    protected Collection<T> selectAll(Map<String, Object> params) {
-        return jdbcTemplate.query(getSelectAllSQL(),
+
+    protected Collection<T> selectAll(Map<String, Object> params, String selectAllSql) {
+        return jdbcTemplate.query(selectAllSql,
                 params,
                 getMapper());
     }
-    
-    // -- SELECT --
-    protected String getSelectAllSQL() { return SELECT_ALL_SQL; }
-
     // -- END SELECT --
     
     // -- DELETE --
     public Long delete(long id) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put(getIdColName(), new Long(id));
-        jdbcTemplate.update(getDeleteSQL(), new MapSqlParameterSource(params));
-        return id;
+        return this.delete(params, DELETE_SQL);
     }
 
-    // subclasses can override if using bespoke delete SQL
-    protected String getDeleteSQL() { return DELETE_SQL; }
+    // override delete if need to pass in different params (this will always require custom SQL)
+    protected Long delete(Map<String, Object> params, String deleteSql) {
+        jdbcTemplate.update(deleteSql, new MapSqlParameterSource(params));
+        return null;
+    }
     // -- END DELETE --
 
     // -- GENERAL --

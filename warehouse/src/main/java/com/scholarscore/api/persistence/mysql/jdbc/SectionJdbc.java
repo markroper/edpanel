@@ -46,14 +46,14 @@ public class SectionJdbc extends EnhancedBaseJdbc<Section> implements EntityPers
             DbConst.COURSE_ID_COL + "` = `" + DbConst.COURSE_FK_COL +
             "` WHERE `" + DbConst.TERM_FK_COL + "` = :" + DbConst.TERM_FK_COL;
     
-    private final String SELECT_SECTION_SQL = getSelectAllSQL() +
+    private final String SELECT_SECTION_SQL = SELECT_ALL_SECTIONS_SQL +
             " AND `" + DbConst.SECTION_ID_COL + "`= :" + DbConst.SECTION_ID_COL;
     
     @Override
     public Collection<Section> selectAll(long termId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.TERM_FK_COL, new Long(termId));
-        return super.selectAll(params);
+        return super.selectAll(params, SELECT_ALL_SECTIONS_SQL);
     }
 
     @Override
@@ -121,11 +121,6 @@ public class SectionJdbc extends EnhancedBaseJdbc<Section> implements EntityPers
                 UPDATE_SECTION_SQL, 
                 new MapSqlParameterSource(params));
         return sectionId;
-    }
-
-    @Override
-    protected String getSelectAllSQL() {
-        return SELECT_ALL_SECTIONS_SQL;
     }
 
     @Override

@@ -25,8 +25,9 @@ public class TeacherJdbc extends EnhancedBaseJdbc<Teacher> implements TeacherPer
             "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.TEACHER_TABLE + "` " + 
             "SET `" + DbConst.TEACHER_NAME_COL + "`= :" + DbConst.TEACHER_NAME_COL + " " + 
             "WHERE `" + DbConst.TEACHER_ID_COL + "`= :" + DbConst.TEACHER_ID_COL + "";
-    
-    private final String SELECT_TEACHER_SQL = getSelectAllSQL() +
+
+    private final String SELECT_TEACHER_SQL = "SELECT * FROM `"+
+            DbConst.DATABASE +"`.`" + DbConst.TEACHER_TABLE + "`" +
             "WHERE `" + DbConst.TEACHER_ID_COL + "`= :" + DbConst.TEACHER_ID_COL + "";
     
     @Override

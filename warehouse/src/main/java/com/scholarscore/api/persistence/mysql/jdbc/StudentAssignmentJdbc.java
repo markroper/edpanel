@@ -60,7 +60,7 @@ public class StudentAssignmentJdbc extends EnhancedBaseJdbc<StudentAssignment>
     public Collection<StudentAssignment> selectAll(long id) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.ASSIGNMENT_FK_COL, new Long(id));
-        return super.selectAll(params);
+        return super.selectAll(params, SELECT_ALL_STUD_ASSIGNMENTS_SQL);
     }
 
     @Override
@@ -110,11 +110,6 @@ public class StudentAssignmentJdbc extends EnhancedBaseJdbc<StudentAssignment>
                 UPDATE_STUD_ASSIGNMENT_SQL, 
                 new MapSqlParameterSource(params));
         return id;
-    }
-
-    @Override
-    protected String getSelectAllSQL() {
-        return SELECT_ALL_STUD_ASSIGNMENTS_SQL;
     }
 
     @Override

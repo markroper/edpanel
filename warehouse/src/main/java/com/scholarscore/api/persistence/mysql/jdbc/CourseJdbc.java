@@ -42,7 +42,7 @@ public class CourseJdbc extends EnhancedBaseJdbc<Course> implements EntityPersis
     public Collection<Course> selectAll(long schoolId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
-        return super.selectAll(params);
+        return super.selectAll(params, SELECT_ALL_COURSES_SQL);
     }
 
     @Override
@@ -84,19 +84,6 @@ public class CourseJdbc extends EnhancedBaseJdbc<Course> implements EntityPersis
                 UPDATE_COURSE_SQL, 
                 new MapSqlParameterSource(params));
         return courseId;
-    }
-
-    @Override
-    public Long delete(long courseId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.COURSE_ID_COL, new Long(courseId));
-        jdbcTemplate.update(DELETE_COURSE_SQL, new MapSqlParameterSource(params));
-        return courseId;
-    }
-
-    @Override
-    protected String getSelectAllSQL() {
-        return SELECT_ALL_COURSES_SQL;
     }
 
     @Override

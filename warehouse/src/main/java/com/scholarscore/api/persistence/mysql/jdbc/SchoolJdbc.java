@@ -1,6 +1,5 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,16 +25,10 @@ public class SchoolJdbc extends EnhancedBaseJdbc<School> implements SchoolPersis
             "SET `" + DbConst.SCHOOL_NAME_COL + "`= :name " + 
             "WHERE `" + DbConst.SCHOOL_ID_COL + "`= :id";
 
-    private final String SELECT_SCHOOL_SQL = getSelectAllSQL() + " " +
+    private static String SELECT_ALL_SCHOOLS_SQL = "SELECT * FROM `"+
+            DbConst.DATABASE +"`.`" + DbConst.SCHOOL_TABLE + "`";
+    private final String SELECT_SCHOOL_SQL = SELECT_ALL_SCHOOLS_SQL + " " +
             "WHERE `" + DbConst.SCHOOL_ID_COL + "`= :id";
-    
-    /* (non-Javadoc)
-     * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolPersistence#getAllSchools()
-     */
-    @Override
-    public Collection<School> selectAllSchools() {
-        return super.selectAll();
-    }
 
     /* (non-Javadoc)
      * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolPersistence#getSchool(long)
@@ -78,15 +71,7 @@ public class SchoolJdbc extends EnhancedBaseJdbc<School> implements SchoolPersis
         jdbcTemplate.update(UPDATE_SCHOOL_SQL, new MapSqlParameterSource(params));
         return schoolId;
     }
-
-    /* (non-Javadoc)
-     * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolPersistence#deleteSchool(long)
-     */
-    @Override
-    public Long deleteSchool(long schoolId) {
-        return super.delete(schoolId);
-    }
-
+    
     @Override
     public RowMapper<School> getMapper() {
         return new SchoolMapper();
