@@ -2,7 +2,7 @@ package com.scholarscore.models.query;
 
 /**
  * Enumerates the supported dimensions of the warehouse report and querying model.
- * Think of dimensions as those attributes you might GROUP BY in in an aggregate SELECT
+ * Think of dimensions as those attributes you might GROUP BY in an aggregate SELECT
  * statement in SQL.
  * 
  * @author markroper
