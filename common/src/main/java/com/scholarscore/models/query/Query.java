@@ -13,7 +13,7 @@ import com.scholarscore.models.query.expressions.Expression;
  * data, which may be used in various types of reports. A query is made of
  * aggregate measures, dimensions, and filter criteria. The warehouse module is
  * capable of converting a query defined into this manner into an actual
- * database query and returning table result sets.
+ * SQL query and returning table result sets.
  * 
  * @author markroper
  *
