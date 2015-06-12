@@ -9,7 +9,6 @@ package com.scholarscore.models.query;
  *
  */
 public enum Dimension {
-    DATE,
     COURSE,
     SECTION,
     SUBJECT_AREA,

@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.IApiModel;
+import com.scholarscore.models.query.expressions.DateDimension;
 import com.scholarscore.models.query.expressions.Expression;
 
 /**
@@ -23,11 +24,13 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     // In SQL terms, this collection defines the columns that are being SUM'd,
     // AVG'd, or otherwise aggregated
     LinkedHashSet<AggregateMeasure> aggregateMeasures;
-    // In SQL terms, this collection defines the GROUP BY clause and the SELECT
-    // column list
-    // TODO: only certain combinations of group by columns really make sense,
-    // how should we handle this?
-    LinkedHashSet<Dimension> dimensions;
+    // In SQL terms, the Dimension represents those columns in the GROUP BY clause.
+    // In our model, a dimension may be a complex object leading to multiple columns in a returned
+    // SQL result set, but a dimension can generally be thought of correlating to a single table
+    Dimension dimension;
+    // A date dimension can be used in conjunction with other dimensions (e.g. GROUP BY teacher, week)
+    // Or can be used in a stand alone fashion for example to group all detentions by week.
+    DateDimension dateDimension;
     // In SQL terms, this defines the WHERE clause of a query
     Expression filter;
 
@@ -41,11 +44,14 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         if (null == this.aggregateMeasures) {
             this.aggregateMeasures = query.aggregateMeasures;
         }
-        if (null == this.dimensions) {
-            this.dimensions = query.dimensions;
+        if (null == this.dimension) {
+            this.dimension = query.dimension;
         }
         if (null == this.filter) {
             this.filter = query.filter;
+        }
+        if (null == this.dateDimension) {
+            this.dateDimension = query.dateDimension;
         }
 
     }
@@ -60,12 +66,12 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         this.aggregateMeasures = aggregateMeasures;
     }
 
-    public LinkedHashSet<Dimension> getDimensions() {
-        return dimensions;
+    public Dimension getDimension() {
+        return dimension;
     }
 
-    public void setDimensions(LinkedHashSet<Dimension> dimensions) {
-        this.dimensions = dimensions;
+    public void setDimension(Dimension dimension) {
+        this.dimension = dimension;
     }
 
     public Expression getFilter() {
@@ -76,6 +82,14 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         this.filter = filter;
     }
 
+    public DateDimension getDateDimension() {
+        return dateDimension;
+    }
+
+    public void setDateDimension(DateDimension dateDimension) {
+        this.dateDimension = dateDimension;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!super.equals(obj)) {
@@ -83,14 +97,15 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         }
         final Query other = (Query) obj;
         return Objects.equals(this.aggregateMeasures, other.aggregateMeasures)
-                && Objects.equals(this.dimensions, other.dimensions)
-                && Objects.equals(this.filter, other.filter);
+                && Objects.equals(this.dimension, other.dimension)
+                && Objects.equals(this.filter, other.filter)
+                && Objects.equals(this.dateDimension, other.dateDimension);
     }
 
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(aggregateMeasures, dimensions, filter);
+                + Objects.hash(aggregateMeasures, dimension, filter, dateDimension);
     }
 
 }
