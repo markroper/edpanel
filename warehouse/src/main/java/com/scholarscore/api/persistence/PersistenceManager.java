@@ -102,7 +102,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     //SCHOOLS
     @Override
     public Collection<School> getAllSchools() {
-        Collection<School> schools = schoolPersistence.selectAllSchools();
+        Collection<School> schools = schoolPersistence.selectAll();
         if(null != schools) {
             for(School s : schools) {
                 ServiceResponse<Collection<SchoolYear>> sr = 
@@ -201,7 +201,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             return new ServiceResponse<Long>(code);
         }
         //Only need to delete the parent row, FK cascades deletes
-        schoolPersistence.deleteSchool(schoolId);
+        schoolPersistence.delete(schoolId);
         return new ServiceResponse<Long>((Long) null);
     }
     
@@ -408,7 +408,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
 
     @Override
     public StatusCode studentExists(long studentId) {
-        Student stud = studentPersistence.selectStudent(studentId);
+        Student stud = studentPersistence.select(studentId);
         if(null == stud) {
             return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{ STUDENT, studentId });
         }
@@ -421,14 +421,14 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.isOK()) {
             return new ServiceResponse<Long>(code);
         }
-        studentPersistence.deleteStudent(studentId);
+        studentPersistence.delete(studentId);
         return new ServiceResponse<Long>((Long) null);
     }
 
     @Override
     public ServiceResponse<Collection<Student>> getAllStudents() {
         return new ServiceResponse<Collection<Student>>(
-                studentPersistence.selectAllStudents());
+                studentPersistence.selectAll());
     }
 
     @Override
@@ -437,7 +437,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.isOK()) {
             return new ServiceResponse<Student>(code);
         }
-        return new ServiceResponse<Student>(studentPersistence.selectStudent(studentId));
+        return new ServiceResponse<Student>(studentPersistence.select(studentId));
     }
 
     @Override
@@ -457,7 +457,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             return new ServiceResponse<Long>(code);
         }
         student.setId(studentId);
-        student.mergePropertiesIfNull(studentPersistence.selectStudent(studentId));
+        student.mergePropertiesIfNull(studentPersistence.select(studentId));
         replaceStudent(studentId, student);
         return new ServiceResponse<Long>(studentId);
     }
@@ -1016,7 +1016,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
 
     @Override
     public StatusCode teacherExists(long teacherId) {
-        Teacher stud = teacherPersistence.selectTeacher(teacherId);
+        Teacher stud = teacherPersistence.select(teacherId);
         if(null == stud) {
             return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{ STUDENT, teacherId });
         }
@@ -1029,14 +1029,14 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.isOK()) {
             return new ServiceResponse<Long>(code);
         }
-        teacherPersistence.deleteTeacher(teacherId);
+        teacherPersistence.delete(teacherId);
         return new ServiceResponse<Long>((Long) null);
     }
 
     @Override
     public ServiceResponse<Collection<Teacher>> getAllTeachers() {
         return new ServiceResponse<Collection<Teacher>>(
-                teacherPersistence.selectAllTeachers());
+                teacherPersistence.selectAll());
     }
 
     @Override
@@ -1045,7 +1045,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.isOK()) {
             return new ServiceResponse<Teacher>(code);
         }
-        return new ServiceResponse<Teacher>(teacherPersistence.selectTeacher(teacherId));
+        return new ServiceResponse<Teacher>(teacherPersistence.select(teacherId));
     }
 
     @Override
@@ -1065,7 +1065,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             return new ServiceResponse<Long>(code);
         }
         teacher.setId(teacherId);
-        teacher.mergePropertiesIfNull(teacherPersistence.selectTeacher(teacherId));
+        teacher.mergePropertiesIfNull(teacherPersistence.select(teacherId));
         replaceTeacher(teacherId, teacher);
         return new ServiceResponse<Long>(teacherId);
     }

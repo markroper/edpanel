@@ -6,7 +6,7 @@ import com.scholarscore.models.School;
 
 public interface SchoolPersistence {
 
-    public Collection<School> selectAllSchools();
+    public Collection<School> selectAll();
 
     public School selectSchool(long schoolId);
 
@@ -17,6 +17,6 @@ public interface SchoolPersistence {
     /**
      * Only need to delete the parent row, FK cascades deletes
      */
-    public Long deleteSchool(long schoolId);
+    public Long delete(long schoolId);
 
 }

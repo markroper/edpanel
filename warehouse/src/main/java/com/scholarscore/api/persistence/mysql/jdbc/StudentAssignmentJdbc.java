@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -14,7 +15,8 @@ import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.StudentAssignmentMapper;
 import com.scholarscore.models.StudentAssignment;
 
-public class StudentAssignmentJdbc extends BaseJdbc implements EntityPersistence<StudentAssignment>{
+public class StudentAssignmentJdbc extends EnhancedBaseJdbc<StudentAssignment> 
+        implements EntityPersistence<StudentAssignment>{
     private static String INSERT_STUD_ASSIGNMENT_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.STUDENT_ASSIGNMENT_TABLE + "` " +
             "(`" + DbConst.STUD_ASSIGNMENT_NAME_COL + 
@@ -40,11 +42,7 @@ public class StudentAssignmentJdbc extends BaseJdbc implements EntityPersistence
             DbConst.STUD_AWARDED_POINTS + "`= :" + DbConst.STUD_AWARDED_POINTS + ", `" +
             DbConst.STUD_FK_COL + "`= :" + DbConst.STUD_FK_COL + " " +
             "WHERE `" + DbConst.STUD_ASSIGNMENT_ID_COL + "`= :" + DbConst.STUD_ASSIGNMENT_ID_COL + "";
-    
-    private static String DELETE_STUD_ASSIGNMENT_SQL = "DELETE FROM `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.STUDENT_ASSIGNMENT_TABLE + "` " +
-            "WHERE `" + DbConst.STUD_ASSIGNMENT_ID_COL + "`= :" + DbConst.STUD_ASSIGNMENT_ID_COL + "";
-    
+
     private static String SELECT_ALL_STUD_ASSIGNMENTS_SQL = "SELECT * FROM `"+ 
             DbConst.DATABASE +"`.`" + DbConst.STUDENT_ASSIGNMENT_TABLE + "` " +
             "INNER JOIN `" + DbConst.DATABASE +"`.`" + DbConst.ASSIGNMENT_TABLE + "` " +
@@ -57,15 +55,12 @@ public class StudentAssignmentJdbc extends BaseJdbc implements EntityPersistence
     
     private static String SELECT_STUD_ASSIGNMENT_SQL = SELECT_ALL_STUD_ASSIGNMENTS_SQL + 
             " AND `" + DbConst.STUD_ASSIGNMENT_ID_COL + "`= :" + DbConst.STUD_ASSIGNMENT_ID_COL;
+
     @Override
     public Collection<StudentAssignment> selectAll(long id) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.ASSIGNMENT_FK_COL, new Long(id));
-        Collection<StudentAssignment> assignments = jdbcTemplate.query(
-                SELECT_ALL_STUD_ASSIGNMENTS_SQL, 
-                params,
-                new StudentAssignmentMapper());
-        return assignments;
+        return super.selectAll(params, SELECT_ALL_STUD_ASSIGNMENTS_SQL);
     }
 
     @Override
@@ -73,15 +68,7 @@ public class StudentAssignmentJdbc extends BaseJdbc implements EntityPersistence
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.ASSIGNMENT_FK_COL, new Long(parentId));
         params.put(DbConst.STUD_ASSIGNMENT_ID_COL, new Long(id));
-        List<StudentAssignment> assignments = jdbcTemplate.query(
-                SELECT_STUD_ASSIGNMENT_SQL, 
-                params, 
-                new StudentAssignmentMapper());
-        StudentAssignment assignment = null;
-        if(null != assignments && !assignments.isEmpty()) {
-            assignment = assignments.get(0);
-        }
-        return assignment;
+        return super.select(params, SELECT_STUD_ASSIGNMENT_SQL);
     }
 
     @Override
@@ -118,11 +105,13 @@ public class StudentAssignmentJdbc extends BaseJdbc implements EntityPersistence
     }
 
     @Override
-    public Long delete(long id) {
-        Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.STUD_ASSIGNMENT_ID_COL, new Long(id));
-        jdbcTemplate.update(DELETE_STUD_ASSIGNMENT_SQL, new MapSqlParameterSource(params));
-        return id;
+    public RowMapper<StudentAssignment> getMapper() {
+        return new StudentAssignmentMapper();
+    }
+
+    @Override
+    public String getTableName() {
+        return DbConst.STUDENT_ASSIGNMENT_TABLE;
     }
 
 }
