@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -16,7 +17,7 @@ import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.SectionMapper;
 import com.scholarscore.models.Section;
 
-public class SectionJdbc extends BaseJdbc implements EntityPersistence<Section> {
+public class SectionJdbc extends EnhancedBaseJdbc<Section> implements EntityPersistence<Section> {
     private static String INSERT_SECTION_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SECTION_TABLE + "` " +
             "(`" + DbConst.SECTION_NAME_COL + "`, `" + DbConst.TERM_FK_COL + "`, `" + 
@@ -39,44 +40,28 @@ public class SectionJdbc extends BaseJdbc implements EntityPersistence<Section> 
             DbConst.SECTION_END_DATE_COL + "`= :" + DbConst.SECTION_END_DATE_COL + " " +
             "WHERE `" + DbConst.SECTION_ID_COL + "`= :" + DbConst.SECTION_ID_COL + "";
     
-    private static String DELETE_SECTION_SQL = "DELETE FROM `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.SECTION_TABLE + "` " +
-            "WHERE `" + DbConst.SECTION_ID_COL + "`= :" + DbConst.SECTION_ID_COL + "";
-    
-    private static String SELECT_ALL_SECTIONS_SQL = "SELECT * FROM `"+ 
+    private static final String SELECT_ALL_SECTIONS_SQL = "SELECT * FROM `"+
             DbConst.DATABASE +"`.`" + DbConst.SECTION_TABLE + "` " +
             "INNER JOIN `" + DbConst.DATABASE +"`.`" + DbConst.COURSE_TABLE + "` ON `" + 
             DbConst.COURSE_ID_COL + "` = `" + DbConst.COURSE_FK_COL +
             "` WHERE `" + DbConst.TERM_FK_COL + "` = :" + DbConst.TERM_FK_COL;
     
-    private static String SELECT_SECTION_SQL = SELECT_ALL_SECTIONS_SQL + 
+    private final String SELECT_SECTION_SQL = SELECT_ALL_SECTIONS_SQL +
             " AND `" + DbConst.SECTION_ID_COL + "`= :" + DbConst.SECTION_ID_COL;
     
     @Override
     public Collection<Section> selectAll(long termId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.TERM_FK_COL, new Long(termId));
-        Collection<Section> sections = jdbcTemplate.query(
-                SELECT_ALL_SECTIONS_SQL, 
-                params,
-                new SectionMapper());
-        return sections;
+        return super.selectAll(params, SELECT_ALL_SECTIONS_SQL);
     }
 
     @Override
     public Section select(long termId, long sectionId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.TERM_FK_COL, new Long(termId));
-        params.put(DbConst.SECTION_ID_COL, new Long(sectionId));  
-        List<Section> sections = jdbcTemplate.query(
-                SELECT_SECTION_SQL, 
-                params, 
-                new SectionMapper());
-        Section section = null;
-        if(null != sections && !sections.isEmpty()) {
-            section = sections.get(0);
-        }
-        return section;
+        params.put(DbConst.SECTION_ID_COL, new Long(sectionId));
+        return super.select(params, SELECT_SECTION_SQL);
     }
 
     @Override
@@ -131,11 +116,13 @@ public class SectionJdbc extends BaseJdbc implements EntityPersistence<Section> 
     }
 
     @Override
-    public Long delete(long sectionId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.SECTION_ID_COL, new Long(sectionId));
-        jdbcTemplate.update(DELETE_SECTION_SQL, new MapSqlParameterSource(params));
-        return sectionId;
+    public RowMapper<Section> getMapper() {
+        return new SectionMapper();
+    }
+
+    @Override
+    public String getTableName() {
+        return DbConst.SECTION_TABLE;
     }
 
 }

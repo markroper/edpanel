@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -14,7 +15,7 @@ import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.SchoolYearMapper;
 import com.scholarscore.models.SchoolYear;
 
-public class SchoolYearJdbc extends BaseJdbc implements EntityPersistence<SchoolYear> {
+public class SchoolYearJdbc extends EnhancedBaseJdbc<SchoolYear> implements EntityPersistence<SchoolYear> {
     private static String INSERT_SCHOOL_YEAR_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SCHOOL_YEAR_TABLE + "` " +
             "(" + DbConst.SCHOOL_YEAR_NAME_COL + ", " + DbConst.SCHOOL_FK_COL + ", " + 
@@ -30,11 +31,7 @@ public class SchoolYearJdbc extends BaseJdbc implements EntityPersistence<School
             DbConst.SCHOOL_YEAR_END_DATE_COL + "`= :" + DbConst.SCHOOL_YEAR_END_DATE_COL + " " +
             "WHERE `" + DbConst.SCHOOL_YEAR_ID_COL + "`= :" + DbConst.SCHOOL_YEAR_ID_COL + "";
     
-    private static String DELETE_SCHOOL_YEAR_SQL = "DELETE FROM `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.SCHOOL_YEAR_TABLE + "` " +
-            "WHERE `" + DbConst.SCHOOL_YEAR_ID_COL + "`= :" + DbConst.SCHOOL_YEAR_ID_COL + "";
-    
-    private static String SELECT_ALL_SCHOOL_YEARS_SQL = "SELECT * FROM `"+ 
+    private static String SELECT_ALL_SCHOOL_YEARS_SQL = "SELECT * FROM `"+
             DbConst.DATABASE +"`.`" + DbConst.SCHOOL_YEAR_TABLE + "` " +
             "WHERE `" + DbConst.SCHOOL_FK_COL + "` = :" + DbConst.SCHOOL_FK_COL;
     
@@ -45,15 +42,10 @@ public class SchoolYearJdbc extends BaseJdbc implements EntityPersistence<School
      * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolYearPersistence#selectAllSchoolYears(long)
      */
     @Override
-    public Collection<SchoolYear> selectAll(
-            long schoolId) {
+    public Collection<SchoolYear> selectAll(long schoolId) {
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
-        Collection<SchoolYear> schoolYears = jdbcTemplate.query(
-                SELECT_ALL_SCHOOL_YEARS_SQL, 
-                params,
-                new SchoolYearMapper());
-        return schoolYears;
+        return super.selectAll(params, SELECT_ALL_SCHOOL_YEARS_SQL);
     }
 
     /**
@@ -64,15 +56,7 @@ public class SchoolYearJdbc extends BaseJdbc implements EntityPersistence<School
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
         params.put(DbConst.SCHOOL_YEAR_ID_COL, new Long(schoolYearId));
-        List<SchoolYear> schoolYears = jdbcTemplate.query(
-                SELECT_SCHOOL_YEAR_SQL, 
-                params, 
-                new SchoolYearMapper());
-        SchoolYear year = null;
-        if(null != schoolYears && !schoolYears.isEmpty()) {
-            year = schoolYears.get(0);
-        }
-        return year;
+        return super.select(params, SELECT_SCHOOL_YEAR_SQL);
     }
 
     /**
@@ -111,15 +95,14 @@ public class SchoolYearJdbc extends BaseJdbc implements EntityPersistence<School
         return schoolId;
     }
 
-    /** 
-     * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolYearPersistence#deleteSchoolYear(long, long)
-     */
     @Override
-    public Long delete(long schoolYearId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.SCHOOL_YEAR_ID_COL, new Long(schoolYearId));
-        jdbcTemplate.update(DELETE_SCHOOL_YEAR_SQL, new MapSqlParameterSource(params));
-        return schoolYearId;
+    public RowMapper<SchoolYear> getMapper() {
+        return new SchoolYearMapper();
+    }
+
+    @Override
+    public String getTableName() {
+        return DbConst.SCHOOL_YEAR_TABLE;
     }
 
 }
