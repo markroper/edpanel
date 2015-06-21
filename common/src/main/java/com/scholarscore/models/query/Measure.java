@@ -35,14 +35,17 @@ public enum Measure {
     ASSIGNMENT_GRADE( new Class[]{ GradedAssignment.class }, new Dimension[]{} ), //Could be test, HW, report, presentation, & so on
     HW_COMPLETION( new Class[]{}, new Dimension[]{} );
     
+    @SuppressWarnings("rawtypes")
     private Class[] availableClasses;
     private Dimension[] invalidDimensions;
     
+    @SuppressWarnings("rawtypes")
     private Measure(Class[] availableFields, Dimension[] invalidDimensions) {
         this.availableClasses = availableFields;
         this.invalidDimensions = invalidDimensions;
     }
 
+    @SuppressWarnings("rawtypes")
     public Class[] getAvailableFields() {
         return availableClasses;
     }

@@ -37,11 +37,20 @@ public enum Dimension {
     RACE(new Class[]{}),
     ELL(new Class[]{}), //true if the student is designated an english language learner, otherwise false
     SPECIAL_ED(new Class[]{}), //true if the student has an Individual Education Plan (IEP), otherwise false
-    CITY_OF_RESIDENCE(new Class[]{});
+    CITY_OF_RESIDENCE(new Class[]{}),
+    //Date is a special dimension
+    DATE(new Class[]{});
     
-    private Class[] availableClasses;
+    @SuppressWarnings("rawtypes")
+    private Class[] availableObjects;
     
-    private Dimension(Class[] availableFields) {
-        this.availableClasses = availableFields;
+    @SuppressWarnings("rawtypes")
+    private Dimension(Class[] availableObjects) {
+        this.availableObjects = availableObjects;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public Class[] getAvailableObjects() {
+        return availableObjects;
     }
 }

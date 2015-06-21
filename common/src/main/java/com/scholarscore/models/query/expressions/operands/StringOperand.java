@@ -6,11 +6,14 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 public class StringOperand implements Serializable, IOperand {
     protected String value;
+    protected OperandType type;
 
     public StringOperand() {
+        this.type = OperandType.STRING;
     }
 
     public StringOperand(String value) {
+        this();
         this.value = value;
     }
 
@@ -20,6 +23,11 @@ public class StringOperand implements Serializable, IOperand {
 
     public void setValue(String value) {
         this.value = value;
+    }
+    
+    @Override
+    public OperandType getType() {
+        return type;
     }
 
     @Override

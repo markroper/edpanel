@@ -8,9 +8,15 @@ import com.scholarscore.models.query.Dimension;
 @SuppressWarnings("serial")
 public class DimensionOperand implements Serializable, IOperand {
     protected Dimension value;
+    protected OperandType type;
 
     public DimensionOperand() {
-
+        this.type = OperandType.DIMENSION;
+    }
+    
+    public DimensionOperand(Dimension dimension) {
+        this();
+        this.value = dimension;
     }
 
     public Dimension getValue() {
@@ -19,6 +25,11 @@ public class DimensionOperand implements Serializable, IOperand {
 
     public void setValue(Dimension value) {
         this.value = value;
+    }
+    
+    @Override
+    public OperandType getType() {
+        return type;
     }
 
     @Override

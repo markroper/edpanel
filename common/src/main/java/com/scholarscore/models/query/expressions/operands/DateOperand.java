@@ -7,9 +7,15 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 public class DateOperand implements Serializable, IOperand {
     Date value;
+    OperandType type;
 
     public DateOperand() {
-
+        this.type = OperandType.DATE;
+    }
+    
+    public DateOperand(Date date) {
+        this();
+        this.value = date;
     }
 
     public Date getValue() {
@@ -18,6 +24,11 @@ public class DateOperand implements Serializable, IOperand {
 
     public void setValue(Date value) {
         this.value = value;
+    }
+    
+    @Override
+    public OperandType getType() {
+        return type;
     }
 
     @Override
@@ -33,5 +44,4 @@ public class DateOperand implements Serializable, IOperand {
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(value);
     }
-
 }

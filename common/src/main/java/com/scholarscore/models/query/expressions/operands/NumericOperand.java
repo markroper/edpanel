@@ -6,11 +6,14 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 public class NumericOperand implements Serializable, IOperand {
     protected Number value;
+    protected OperandType type;
 
     public NumericOperand() {
+        this.type = OperandType.NUMERIC;
     }
 
     public NumericOperand(Number value) {
+        this();
         this.value = value;
     }
 
@@ -22,6 +25,11 @@ public class NumericOperand implements Serializable, IOperand {
         this.value = value;
     }
 
+    @Override
+    public OperandType getType() {
+        return type;
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (!super.equals(obj)) {

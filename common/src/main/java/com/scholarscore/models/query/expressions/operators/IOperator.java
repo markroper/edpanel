@@ -8,5 +8,4 @@ package com.scholarscore.models.query.expressions.operators;
  *
  */
 public interface IOperator {
-
 }

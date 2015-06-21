@@ -1,5 +1,7 @@
 package com.scholarscore.models.query.expressions.operators;
 
+import java.io.Serializable;
+
 /**
  * Enumeration of the supported comparison operators in the warehouse
  * reporting model.
@@ -7,7 +9,7 @@ package com.scholarscore.models.query.expressions.operators;
  * @author markroper
  *
  */
-public enum ComparisonOperator implements IOperator {
+public enum ComparisonOperator implements IOperator, Serializable {
     EQUAL,
     NOT_EQUAL,
     GREATER_THAN,

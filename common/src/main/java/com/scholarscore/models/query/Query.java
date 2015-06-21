@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.IApiModel;
 import com.scholarscore.models.query.expressions.DateDimension;
@@ -20,16 +21,16 @@ import com.scholarscore.models.query.expressions.Expression;
  *
  */
 @SuppressWarnings("serial")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Query extends ApiModel implements Serializable, IApiModel<Query> {
-    // In SQL terms, this collection defines the columns that are being SUM'd,
-    // AVG'd, or otherwise aggregated
+    // In SQL terms, this collection defines the columns that are being SUM'd, AVG'd, or otherwise aggregated
     LinkedHashSet<AggregateMeasure> aggregateMeasures;
     // In SQL terms, the Dimension represents those columns in the GROUP BY clause.
     // In our model, a dimension may be a complex object leading to multiple columns in a returned
     // SQL result set, but a dimension can generally be thought of correlating to a single table
     Dimension dimension;
     // A date dimension can be used in conjunction with other dimensions (e.g. GROUP BY teacher, week)
-    // Or can be used in a stand alone fashion for example to group all detentions by week.
+    // Or can be used in a stand alone fashion for example to group all detensions by week.
     DateDimension dateDimension;
     // In SQL terms, this defines the WHERE clause of a query
     Expression filter;
