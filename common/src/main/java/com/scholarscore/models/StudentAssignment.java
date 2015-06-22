@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StudentAssignment extends ApiModel implements Serializable, IApiModel<StudentAssignment> {
+public class StudentAssignment extends ApiModel implements Serializable, WeightedGradable, IApiModel<StudentAssignment> {
     private Boolean completed;
     private Date completionDate;
     private Long awardedPoints;
@@ -68,8 +68,14 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         return assignment;
     }
 
+    @Override
     public Long getAwardedPoints() {
         return awardedPoints;
+    }
+
+    @Override
+    public Long getAvailablePoints() {
+        return (assignment != null ? assignment.getAvailablePoints() : null );
     }
 
     public void setAwardedPoints(Long awardedPoints) {

@@ -16,17 +16,7 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.Assignment;
-import com.scholarscore.models.Course;
-import com.scholarscore.models.School;
-import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.Section;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.StudentAssignment;
-import com.scholarscore.models.StudentSectionGrade;
-import com.scholarscore.models.Teacher;
-import com.scholarscore.models.Term;
-import com.scholarscore.models.User;
+import com.scholarscore.models.*;
 
 public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
         TermManager, SectionManager, AssignmentManager, StudentAssignmentManager,
@@ -848,6 +838,26 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         return new ServiceResponse<>(studentSectionGradePersistence.selectAll(sectionId));
     }
 
+    @Override
+    public ServiceResponse<Collection<StudentSectionGrade>> getSectionGradesForStudent(long studentId) {
+        StatusCode code = studentExists(studentId);
+        if(!code.isOK()) {
+            return new ServiceResponse<>(code);
+        }
+        Collection<StudentSectionGrade> grades = studentSectionGradePersistence.selectAllByStudent(studentId);
+        return new ServiceResponse<>(grades);
+    }
+
+    // TODO: move this somewhere.
+    public void calculateGPAForStudent(long studentId) {
+        StatusCode code = studentExists(studentId);
+//        if(!code.isOK()) {
+//            return new ServiceResponse<>(code);
+//        }
+        Collection<StudentSectionGrade> grades = studentSectionGradePersistence.selectAllByStudent(studentId);
+        GradeFormula.calculateAverageGrade(grades);
+    }
+    
     @Override
     public StatusCode studentSectionGradeExists(long schoolId, long yearId,
             long termId, long sectionId, long studentId) {

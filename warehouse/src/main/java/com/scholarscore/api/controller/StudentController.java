@@ -105,4 +105,20 @@ public class StudentController extends BaseController {
             @PathVariable(value="studentId") Long studentId) {
         return respond(getStudentManager().deleteStudent(studentId));
     }
+
+    @ApiOperation(
+            value = "Get a student by ID",
+            notes = "Given a student ID, the endpoint returns the student",
+            response = Double.class)
+    @RequestMapping(
+            value = "/{studentId}/GPA",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getGPA(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId) {
+        return respond(getStudentManager().getStudent(studentId));
+    }
+
 }
