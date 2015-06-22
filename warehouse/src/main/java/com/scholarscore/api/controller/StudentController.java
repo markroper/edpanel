@@ -109,7 +109,7 @@ public class StudentController extends BaseController {
     @ApiOperation(
             value = "Get a student by ID",
             notes = "Given a student ID, the endpoint returns the student",
-            response = Double.class)
+            response = List.class)
     @RequestMapping(
             value = "/{studentId}/GPA",
             method = RequestMethod.GET,
@@ -118,7 +118,9 @@ public class StudentController extends BaseController {
     public @ResponseBody ResponseEntity getGPA(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId) {
-        return respond(getStudentManager().getStudent(studentId));
+        // TODO: this is not done. right now it's returning a full list of grades, but it 
+        // actually needs to use these as input to calculate the GPA.
+        return respond(getStudentSectionGradeManager().getSectionGradesForStudent(studentId));
     }
 
 }

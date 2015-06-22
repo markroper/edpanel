@@ -42,20 +42,6 @@ public class StudentSectionGradeController extends BaseController {
     }
 
     @ApiOperation(
-            value = "Get all grades for student",
-            notes = "Retrieve all of section grades for a student ",
-            response = List.class)
-    @RequestMapping(
-            method = RequestMethod.GET,
-            produces = { JSON_ACCEPT_HEADER })
-    @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity getAllGradesForStudent(
-            @ApiParam(name = "studId", required = true, value = "Student ID")
-            @PathVariable(value="studId") Long studId) {
-        return respond(getStudentSectionGradeManager().getSectionGradesForStudent(studId));
-    }
-
-    @ApiOperation(
             value = "Get a student grade in a section", 
             notes = "Get a student grade in a section", 
             response = StudentSectionGrade.class)
