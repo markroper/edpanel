@@ -34,7 +34,7 @@ public class QuerySerializationTest {
         fullyPopulatedQuery.setDimension(Dimension.STUDENT);
         
         //No date dimension for this query
-        fullyPopulatedQuery.setDateDimension(null);
+        fullyPopulatedQuery.setFields(null);
         
         //Create expression
         Expression whereClause = new Expression();

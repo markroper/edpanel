@@ -2,12 +2,12 @@ package com.scholarscore.models.query;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.IApiModel;
-import com.scholarscore.models.query.expressions.DateDimension;
 import com.scholarscore.models.query.expressions.Expression;
 
 /**
@@ -29,9 +29,8 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     // In our model, a dimension may be a complex object leading to multiple columns in a returned
     // SQL result set, but a dimension can generally be thought of correlating to a single table
     Dimension dimension;
-    // A date dimension can be used in conjunction with other dimensions (e.g. GROUP BY teacher, week)
-    // Or can be used in a stand alone fashion for example to group all detensions by week.
-    DateDimension dateDimension;
+    //Which fields from the dimension, and its parents, to show in the report.
+    List<String> fields;
     // In SQL terms, this defines the WHERE clause of a query
     Expression filter;
 
@@ -51,8 +50,8 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         if (null == this.filter) {
             this.filter = query.filter;
         }
-        if (null == this.dateDimension) {
-            this.dateDimension = query.dateDimension;
+        if (null == this.fields) {
+            this.fields = query.fields;
         }
 
     }
@@ -83,12 +82,12 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         this.filter = filter;
     }
 
-    public DateDimension getDateDimension() {
-        return dateDimension;
+    public List<String> getFields() {
+        return fields;
     }
 
-    public void setDateDimension(DateDimension dateDimension) {
-        this.dateDimension = dateDimension;
+    public void setFields(List<String> fields) {
+        this.fields = fields;
     }
 
     @Override
@@ -100,13 +99,13 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         return Objects.equals(this.aggregateMeasures, other.aggregateMeasures)
                 && Objects.equals(this.dimension, other.dimension)
                 && Objects.equals(this.filter, other.filter)
-                && Objects.equals(this.dateDimension, other.dateDimension);
+                && Objects.equals(this.fields, other.fields);
     }
 
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(aggregateMeasures, dimension, filter, dateDimension);
+                + Objects.hash(aggregateMeasures, dimension, filter, fields);
     }
 
 }

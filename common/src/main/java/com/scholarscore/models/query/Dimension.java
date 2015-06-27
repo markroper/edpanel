@@ -1,12 +1,9 @@
 package com.scholarscore.models.query;
 
-import com.scholarscore.models.Course;
-import com.scholarscore.models.GradeLevel;
-import com.scholarscore.models.School;
-import com.scholarscore.models.Section;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.SubjectArea;
-import com.scholarscore.models.Teacher;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Enumerates the supported dimensions of the warehouse report and querying model.
@@ -18,39 +15,50 @@ import com.scholarscore.models.Teacher;
  * 
  * @author markroper
  */
+@SuppressWarnings("serial")
 public enum Dimension {
-    COURSE(new Class[]{ Course.class, SubjectArea.class, GradeLevel.class, School.class }),
-    SECTION(new Class[]{ Section.class, Course.class, SubjectArea.class, GradeLevel.class, School.class }),
-    SUBJECT_AREA(new Class[]{ SubjectArea.class, School.class }),
-    GRADE_LEVEL(new Class[]{ GradeLevel.class, School.class }),
-    SCHOOL(new Class[]{ School.class }),
-    DISTRICT(new Class[]{}), //TODO: populate with SchoolDistrict class, when created
-    TEACHER(new Class[]{ Teacher.class }),
-    //Student dimensions
-    STUDENT(new Class[]{ Student.class }),
-    //TODO: figure out how we want to model the sub-attributes for a student like:
-    GENDER(new Class[]{}),
-    FREE_LUNCH(new Class[]{}), //true if the student's family qualifies for free or reduce priced lunch, otherwise false
-    AGE(new Class[]{}),
-    GRADE_REPEATER(new Class[]{}), //true if the student is presently repeating a grade, otherwise false
-    ETHNICITY(new Class[]{}),
-    RACE(new Class[]{}),
-    ELL(new Class[]{}), //true if the student is designated an english language learner, otherwise false
-    SPECIAL_ED(new Class[]{}), //true if the student has an Individual Education Plan (IEP), otherwise false
-    CITY_OF_RESIDENCE(new Class[]{}),
-    //Date is a special dimension
-    DATE(new Class[]{});
+    //TODO: return sets of field strings from the POJO static map
+    COURSE (new HashSet<String>(){{ add("course.name"); add("course.id"); add("course.teacher"); }}, 
+            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); add(Dimension.SUBJECT_AREA); }}),
+    SECTION (new HashSet<String>(){{ add("section.name"); add("section.enddate"); add("section.startdate"); 
+                add("section.room"); add("section.gradeformula"); }}, 
+            new HashSet<Dimension>(){{ add(Dimension.COURSE); add(Dimension.TERM); }}),
+    TERM (new HashSet<String>(){{ add("term.name"); add("term.enddate"); add("term.startdate"); }}, 
+            new HashSet<Dimension>(){{ add(Dimension.YEAR); }}),
+    YEAR (new HashSet<String>(){{ add("year.name"); add("year.startdate"); add("year.enddate"); }}, 
+            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); }}),
+    SUBJECT_AREA (new HashSet<String>(){{ add("subject.name"); add("subject.id"); }}, 
+            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); }}),
+    GRADE_LEVEL (new HashSet<String>(){{ add("grade.name"); add("grade.id"); }}, 
+            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); }}),
+    SCHOOL (new HashSet<String>(){{ add("school.name"); add("school.id"); }}, 
+            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); add(Dimension.DISTRICT); }}),
+    DISTRICT (new HashSet<String>(){{ add("district.name"); add("district.id"); }}, 
+            new HashSet<Dimension>()),
+    TEACHER (new HashSet<String>(){{ add("teacher.name"); }}, 
+            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); }}),
+    STUDENT (new HashSet<String>(){{ add("student.name"); add("student.gender"); add("student.freelunch"); 
+                add("student.age"); add("student.graderepeater"); add("student.ethnicity"); add("student.race"); 
+                add("student.ell"); add("student.specialed"); add("student.cityofresidence");  }}, 
+            new HashSet<Dimension>(){{ add(Dimension.DISTRICT); add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL); }}),
+    DATE (new HashSet<String>(){{ add("date.date");  add("date.quarter");  add("date.week");  add("date.month");  add("date.year"); }}, 
+            new HashSet<Dimension>());
     
-    @SuppressWarnings("rawtypes")
-    private Class[] availableObjects;
+    private Set<Dimension> parentDimensions;
+    private Set<String> availableFields;
     
-    @SuppressWarnings("rawtypes")
-    private Dimension(Class[] availableObjects) {
-        this.availableObjects = availableObjects;
+    private Dimension(HashSet<String> fields, HashSet<Dimension> parents) {
+        this.availableFields = fields;
+        this.parentDimensions = parents;
     }
     
-    @SuppressWarnings("rawtypes")
-    public Class[] getAvailableObjects() {
-        return availableObjects;
+    @JsonIgnore
+    public Set<String> getAvailableFields() {
+        return availableFields;
+    }
+    
+    @JsonIgnore
+    public Set<Dimension> getParentDimensions() {
+        return parentDimensions;
     }
 }
