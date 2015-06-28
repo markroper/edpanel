@@ -121,8 +121,6 @@ public class StudentController extends BaseController {
     public @ResponseBody ResponseEntity getGPA(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId) {
-        // TODO: this is not done. right now it's returning a full list of grades, but it 
-        // actually needs to use these as input to calculate the GPA.
         Collection<? extends WeightedGradable> courseGrades = getStudentSectionGradeManager().getSectionGradesForStudent(studentId).getValue();
         Double gpa = GradeFormula.calculateAverageGrade(courseGrades);
         return respond(gpa * 4.0);
