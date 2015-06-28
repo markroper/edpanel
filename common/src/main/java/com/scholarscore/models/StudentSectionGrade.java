@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StudentSectionGrade implements Serializable, IApiModel<StudentSectionGrade> {
+public class StudentSectionGrade implements Serializable, WeightedGradable, IApiModel<StudentSectionGrade> {
     protected Long id;
     protected Boolean complete;
     protected Double grade;
@@ -82,4 +82,14 @@ public class StudentSectionGrade implements Serializable, IApiModel<StudentSecti
         return 31 * super.hashCode() + Objects.hash(id, complete, grade);
     }
 
+    @Override
+    public Long getAwardedPoints() {
+        return Math.round(grade);
+    }
+
+    @Override
+    public Long getAvailablePoints() {
+        // TODO: not implemented for real yet, need to decide approach
+        return 100L;
+    }
 }

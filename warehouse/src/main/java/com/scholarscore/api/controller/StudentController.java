@@ -1,9 +1,12 @@
 package com.scholarscore.api.controller;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.validation.Valid;
 
+import com.scholarscore.models.GradeFormula;
+import com.scholarscore.models.WeightedGradable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -120,7 +123,9 @@ public class StudentController extends BaseController {
             @PathVariable(value="studentId") Long studentId) {
         // TODO: this is not done. right now it's returning a full list of grades, but it 
         // actually needs to use these as input to calculate the GPA.
-        return respond(getStudentSectionGradeManager().getSectionGradesForStudent(studentId));
+        Collection<? extends WeightedGradable> courseGrades = getStudentSectionGradeManager().getSectionGradesForStudent(studentId).getValue();
+        Double gpa = GradeFormula.calculateAverageGrade(courseGrades);
+        return respond(gpa * 4.0);
     }
 
 }
