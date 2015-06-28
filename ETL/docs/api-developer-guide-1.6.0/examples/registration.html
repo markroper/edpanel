@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PowerSchool API Developer Guide</title>
+    <link href="../screen.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="../google-code-prettify/prettify.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="../google-code-prettify/prettify.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body class="psDocs" onLoad="prettyPrint()">
+
+<div id="outer-frame">
+    <div id="page-content">
+        <div id="nav">
+            <ul>
+                <li><a href="../index.html">API Home</a></li>
+                <li><a href="../data-access/index.html">REST API</a></li>
+                <li class="sub1"><a href="../data-access/basic-read-and-write/index.html">Read/Write Access</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/usage.html">General Usage</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/data-dictionary.html">Data Dictionary</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/resources.html">Available Resources</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../data-access/oauth/index.html">Authentication</a></li>
+                <li class="sub2"><a href="../data-access/oauth/reference.html">Reference</a></li>
+                <li class="sub1"><a href="../data-access/notification/index.html">Notification</a></li>
+                <li class="sub2"><a href="../data-access/notification/subscribe.html">Subscription</a></li>                     
+                <li class="sub2"><a href="../data-access/notification/resource-notifications.html">Resource Notifications</a></li>
+                <li><a href="../sso/index.html">Single Sign-On</a></li>
+                <li class="sub1"><a href="../sso/openid-single-sign-on.html">OpenID</a></li>
+                <li class="sub1"><a href="../sso/saml-single-sign-on.html">SAML</a></li>
+                <li class="sub1"><a href="../sso/identity-attribute.html">Identity Attribute</a></li>
+                <li><a href="../linking/index.html">Linking</a></li>
+                <li><a href="../plugin/index.html">Plugin</a></li>
+                <li class="sub1"><a href="../plugin/pluginXML.html">Plugin XML</a></li>
+                <li class="sub1"><a href="../plugin/pluginZIP.html">Plugin Package</a></li>
+                <li><a href="../registration/index.html">Registration</a></li>
+                <li><a href="../examples/index.html">Examples</a></li>
+				<li class="sub1"><a href="../examples/oauth.html">Authentication</a></li>  
+				<li class="sub1"><a href="../examples/data-access.html">Data Access</a></li>
+                <li class="sub1"><a href="../examples/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../examples/enroll-students.html">Enroll Students</a></li>
+                <li class="sub1 selected"><a href="../examples/registration.html">Registration</a></li>
+            	<li class="sub1"><a href="../examples/sso.html">OpenID Relying Party</a></li>                
+            	<li class="sub1"><a href="../examples/sso-data-access.html">SSO with Data Access</a></li>
+				<li class="sub1"><a href="../examples/open-saml-sample-app.html">SAML Service Provider</a></li>
+                <li class="sub1"><a href="../examples/events.html">Event Listener</a></li>
+				<li class="sub1"><a href="../examples/sample-code.html">Environment Setup</a></li>		
+                <li><a href="../toc.html">Terms of Use</a></li>
+            </ul>
+        </div>
+        <div id="right-content">
+
+<h1>PowerSchool Plugin Registration Example</h1>
+<div class="box-round">
+    <h2>Overview</h2>
+    <p>The goal of this example is to demonstrate how to create a Webhook Receiver. A Webhook Receiver is a 
+        web service that accepts <a href="../registration/index.html#request">Registration Requests</a> from
+        PowerSchool and returns a <a href="../registration/index.html#response">Registration Response</a> to
+        notify PowerSchool about the result of registration.</p>
+    <p>A Webhook Receiver is not mandatory for Plugin Registration, but is required to facilitate
+        Automatic Registration.
+    </p>
+
+    <h2>Getting Started</h2>
+    <p>Before running the application:</p>
+    <ul>
+      <li><a href="sample-code.html#sample-code-package"> Download the example code package</a>.</li>
+      <li><a href="sample-code.html#install-nodejs">Install Node.js</a>.</li>
+      <li><a href="sample-code.html#certificates">Obtain a valid SSL certificate</a>.</li>
+    </ul>
+    <h2>Run the Application        </h2>
+    <ol><li>Open a Terminal Window. 
+        <li>Change the current directory to the <span class="bold"><strong>registration</strong></span> directory of the example code package.</li>
+        <li>Enter  the following command to install <a href="http://expressjs.com/" target="_blank">Express</a>:
+            <pre class="prettyprint lang-xhtml">npm install express@2.5.9</pre>
+        </li>
+        <li>Start the Node.js server. The script corresponding to this example is called <b>registration.example.js</b>.
+            <pre class="prettyprint lang-sh">node registration.example.js "ssl_key_file" "ssl_certificate_file"</pre>
+            
+            This example program takes two arguments:
+          <table>
+                <colgroup>
+                    <col style="width: 100px;"/>
+                    <col style="width: 400px;"/>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>Argument</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>ssl_key_file</td>
+                    <td>The key file that comes from the <a href="sample-code.html#certificates">SSL Certificate</a>.</td>
+                </tr>
+                <tr>
+                    <td>ssl_certificate_file</td>
+                    <td>The certificate file that comes from the <a href="sample-code.html#certificates">SSL Certificate</a>.</td>
+                </tr>
+                </tbody>
+            </table>
+            For example, you can enter:
+            <pre class="prettyprint lang-sh">node registration.example.js "ssl-certificate.key" "ssl-certificate.crt"</pre>
+			<strong>Note:</strong> The operating system may reserve the use of certain ports.  If this is the case, you will need to run the script while in administrative mode.
+				If another application is already listening to the port you wish to use, then you must shut down the other application before running the script.        </li>
+        <li>Navigate to the <strong class="bold">registration</strong> directory in the example code package.</li>
+        <li>Locate the plugin install file called <strong>plugin.xml</strong>. </li>
+        <li>Modify the plugin to use
+            Automatic Registration by adding <a href="../registration/index.html#metadata">Registration Metadata</a>.
+            The registration URL specified in the plugin.xml should point to the server running Node.js
+            for this example with the path "/registration" and the port 7443.
+            <pre class="prettyprint lang-xhtml">https://this.servers.address:7443/registration</pre>
+        </li>
+        <li>Install
+          the plugin <a href="sample-code.html#install-plugin">with these instructions</a>. The name of this plugin is<span class="bold"> registration-example</span>.
+        <li>If Automatic Registration is set up correctly, you should be prompted to register the plugin from PowerSchool.</li>
+        <li>PowerSchool will communicate with the server in this example and will provide information about
+            the <a href="../registration/index.html#request">Registration Request</a>. The Node.js script will
+            attempt to communicate with PowerSchool and will return the results of that communication test.        </li>
+    </ol>
+
+    <h2>A Closer Look at the Application</h2>
+    <ol>
+        <li>The application script <b>registration.example.js</b> starts out by parsing the arguments that are passed in when starting the server.
+<pre class="prettyprint">
+...
+var args = process.argv.splice(2);
+var keyfile = args[0];
+var certfile = args[1];
+...
+var app = express.createServer({
+    key: fs.readFileSync(keyfile || ''),
+    cert: fs.readFileSync(certfile || '')
+});
+</pre>
+        </li>
+
+        <li>Further down you will see where we tell the server to listen to incoming requests one the path "/registration".
+<pre class="prettyprint">
+...
+    app.post('/registration', function(req, res) {
+...
+</pre>
+        </li>
+
+        <li>And finally the server will listen on the port specified in this code.
+<pre class="prettyprint">
+...
+app.listen(7443, function() {
+...
+</pre>
+        </li>
+
+        <li>When the registration request comes in from PowerSchool, we check the incoming data and handle it as
+            necessary. In this first block we handle the callback_data.
+<pre class="prettyprint">
+...
+    // PowerSchool sent callback data.
+    if (req.body.callback_data) {
+        var callbackData = req.body.callback_data;
+        console.log("\tcallback_data = " + callbackData);
+
+        // Insert optional code to handle callbackData.
+    }
+...
+</pre>
+            The callback_data can be used for anything. For instance, it could be used to identify
+            the PowerSchool server that is making the registration request.        </li>
+
+        <li>This section retrieves the client credentials that are sent from PowerSchool.
+            For more information about how to use
+            these credentials to obtain an access token, see <a href="oauth.html"><em>Authentication Example</em></a>.         
+            <pre class="prettyprint">
+...
+    // PowerSchool sent authentication credentials.
+    if (req.body.credentials) {
+        var clientId = req.body.credentials.client_id;
+        var clientSecret = req.body.credentials.client_secret;
+        console.log("\tcredentials.client_id = " + clientId);
+        console.log("\tcredentials.client_secret = " + clientSecret);
+
+        // Insert optional code to persist your client credentials or
+        // to request an authentication token from PowerSchool using
+        // these client credentials.
+    }
+...
+</pre>
+        </li>
+
+        <li>PowerSchool will send a URL that can be used to test the connection from this server back to PowerSchool.
+            The URL will be an <a href="../data-access/basic-read-and-write/resources.html#time_resource">unauthenticated
+                resource that returns the current time of the PowerSchool server</a>.
+<pre class="prettyprint">
+...
+    // PowerSchool sent a test url.
+    if (req.body.verify_url) {
+        var verifyUrl = req.body.verify_url;
+        console.log("\tverify_url = " + verifyUrl);
+
+        // Verify the connection to PowerSchool.
+        verifyPowerSchoolConnection(res, verifyUrl);
+    }
+...
+function verifyPowerSchoolConnection(resp, verifyUrl) {
+    console.log("\nVerifying connection to PowerSchool");
+
+    var url = require('url');
+    var reqOpts = url.parse(verifyUrl);
+    reqOpts.headers = {
+        'Accept': 'application/json'
+    };
+
+    var request = https.get(reqOpts, function(res) {
+        responseObj.callback_result = res.statusCode;
+
+        res.on('data', function(chunk) {
+            console.log("\tServer time received from PowerSchool = " + chunk);
+            register(resp);
+        });
+    });
+
+    request.on('error', function(e) {
+        console.log("ERROR: " + e.message);
+        responseObj.callback_result = 500;
+        register(resp);
+    });
+
+    request.setTimeout(1);
+}
+</pre>
+        </li>
+
+        <li>If you would like to perform any additional actions during registration, you can do that in
+            the "register" function. The success or failure of the registration will be returned to PowerSchool
+            in the <a href="../registration/index.html#response">Registration Response</a>.
+<pre class="prettyprint">
+...
+function register(resp) {
+    // Insert optional code to perform registration.
+    // If the registration was successful you can return
+    // the status code: 200. If the registration failed
+    // you can return the status code: 500.
+    var registrationSuccess = true;
+    if (registrationSuccess) {
+        registrationResult = 200;
+    }
+    else {
+        registrationResult = 500;
+    }
+
+    sendCallbackResponse(resp);
+}
+...
+</pre>
+        </li>
+
+        <li>Finally, all of the data that was gathered during registration is returned in the
+            <a href="../registration/index.html#response">Registration Response</a> back to PowerSchool.
+<pre class="prettyprint">
+...
+function sendCallbackResponse(resp) {
+    console.log("\nSending registration response back to PowerSchool");
+
+    if (responseObj.callback_result == 200) {
+        responseObj.message = 'SUCCESS';
+    }
+    else {
+        // You can add a more specific error message such as
+        // INVALID_CERTIFICATE or HOST_UNKNOWN to help in
+        // troubleshooting.
+        responseObj.message = 'FAILURE';
+    }
+
+    // Send the current server time to PowerSchool.
+    responseObj.time = (new Date()).toJSON();
+    console.log("\tresponse = " + JSON.stringify(responseObj));
+    resp.send(responseObj, registrationResult);
+
+    console.log("\n---------------------------------------------------------");
+}
+...
+</pre>
+        </li>
+    </ol>
+
+    <h2>What's Next</h2>
+    <p>Now that you have Automatic Registration set up, you can <a href="index.html">explore the other examples</a> provided in this guide.</p>
+</div>
+
+        </div>
+
+        <footer id="footer">
+            <p><small>Copyright © 2014 Pearson Education, Inc. or its affiliates. All rights reserved. All trademarks are either owned or licensed by Pearson Education, Inc. or its affiliates. Other brands and names are the property of their respective owners.</small></p>
+            <p><small>PowerSchool is a trademark, in the U.S. and/or other countries, of Pearson Education, Inc. or its affiliate(s).</small></p>
+            <p><small>The data and names used to illustrate the reports, screen images, and examples may include names of individuals, companies, brands, and products. All of the data and names are fictitious; any similarities to actual names are entirely coincidental.</small></p>
+        </footer>
+    </div>
+</div>
+
+</body>
+</html>

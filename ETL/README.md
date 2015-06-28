@@ -1,0 +1,1 @@
+Documentation on the API is located in the documentation directory

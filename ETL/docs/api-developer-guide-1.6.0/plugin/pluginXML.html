@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PowerSchool API Developer Guide</title>
+    <link href="../screen.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="../google-code-prettify/prettify.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="../google-code-prettify/prettify.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body class="psDocs" onLoad="prettyPrint()">
+
+<div id="outer-frame">
+    <div id="page-content">
+        <div id="nav">
+            <ul>
+                <li><a href="../index.html">API Home</a></li>
+                <li><a href="../data-access/index.html">REST API</a></li>
+                <li class="sub1"><a href="../data-access/basic-read-and-write/index.html">Read/Write Access</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/usage.html">General Usage</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/data-dictionary.html">Data Dictionary</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/resources.html">Available Resources</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../data-access/oauth/index.html">Authentication</a></li>
+                <li class="sub2"><a href="../data-access/oauth/reference.html">Reference</a></li>
+                <li class="sub1"><a href="../data-access/notification/index.html">Notification</a></li>
+                <li class="sub2"><a href="../data-access/notification/subscribe.html">Subscription</a></li>                     
+                <li class="sub2"><a href="../data-access/notification/resource-notifications.html">Resource Notifications</a></li>
+                <li><a href="../sso/index.html">Single Sign-On</a></li>
+                <li class="sub1"><a href="../sso/openid-single-sign-on.html">OpenID</a></li>
+                <li class="sub1"><a href="../sso/saml-single-sign-on.html">SAML</a></li>
+                <li class="sub1"><a href="../sso/identity-attribute.html">Identity Attribute</a></li>
+                <li><a href="../linking/index.html">Linking</a></li>
+                <li><a href="../plugin/index.html">Plugin</a></li>
+                <li class="sub1 selected"><a href="../plugin/pluginXML.html">Plugin XML</a></li>
+                <li class="sub1"><a href="../plugin/pluginZIP.html">Plugin Package</a></li>
+                <li><a href="../registration/index.html">Registration</a></li>
+                <li><a href="../examples/index.html">Examples</a></li>
+				<li class="sub1"><a href="../examples/oauth.html">Authentication </a></li>  
+				<li class="sub1"><a href="../examples/data-access.html">Data Access</a></li>
+                <li class="sub1"><a href="../examples/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../examples/enroll-students.html">Enroll Students</a></li>
+                <li class="sub1"><a href="../examples/registration.html">Registration </a></li>
+            	<li class="sub1"><a href="../examples/sso.html">OpenID Relying Party </a></li>                
+            	<li class="sub1"><a href="../examples/sso-data-access.html">SSO with Data Access</a></li>
+				<li class="sub1"><a href="../examples/open-saml-sample-app.html">SAML Service Provider</a></li>
+                <li class="sub1"><a href="../examples/events.html">Event Listener</a></li>
+				<li class="sub1"><a href="../examples/sample-code.html">Environment Setup</a></li>                
+                <li><a href="../toc.html">Terms of Use</a></li>
+            </ul>
+        </div>
+        <div id="right-content">
+<h1>Plugin XML</h1>
+
+<div class="box-round">
+<h2 id="introduction">Introduction</h2>
+
+<p>Plugin XML is a file for third-party application developers to use to declare and configure PowerSchool API services
+    used by the third-party&#8217;s application. Plugins have a number of other functions not related to PowerSchool API
+    services such as the ability to create extended schema and include custom pages and page fragments. Please see the
+    PowerSchool Database Extension and Page Customization Developer Guide for more information on these capabilities.</p>
+
+<p>
+    This document assumes a general knowledge of XML document structure
+    and syntax. </p>
+
+<h2 id="contents">Contents</h2>
+<dl>
+    <dt>
+        <a href="#services">Available Services</a></dt>
+    <dd>A list of available PowerSchool API services.</dd>
+    <dt>
+        <a href="#tags">Tag Dictionary</a></dt>
+    <dd>Information about all Plugin XML tags.</dd>
+    <dt>
+        <a href="#ui_context">UI Contexts</a></dt>
+    <dd>Information about locations available for injecting
+        <a href="../linking/index.html">navigation links</a> and
+        <a href="../sso/index.html">single sign-on links</a>.
+    </dd>
+    <dt>
+        <a href="#schema">XML Schema</a></dt>
+    <dd>XML Schema file for Plugin XML.</dd>
+</dl>
+
+<h2 id="services">Available Services</h2>
+<dl>
+    <dt>
+        <a href="../data-access/index.html">Data Access</a></dt>
+    <dd>
+        Third-party application can request generation of OAuth client
+        credential for provisioning data by adding an <a href="#tag_oauth">&lt;oauth&gt;</a>
+        element under &lt;plugin&gt;.        </dd>
+    <dt>
+        <a href="../linking/index.html">Linking</a></dt>
+    <dd>
+        Plugin can create links to third-party application by adding a
+        <a href="#tag_openid_links">&lt;links&gt;</a> element under &lt;plugin&gt;.        </dd>
+    <dt>
+        <a href="../sso/index.html">OpenID Single Sign-On</a></dt>
+    <dd>
+        Plugin can create <a href="http://openid.net/" target="_blank">OpenID</a> single sign-on links
+        to third-party applications by adding a <a href="#tag_openid">&lt;openid&gt;</a>
+        element under &lt;plugin&gt;.        </dd>
+    <dt>
+        <a href="../sso/saml-single-sign-on.html">SAML Single Sign-On</a></dt>
+    <dd>
+        Plugin can create <a href="http://saml.xml.org/" target="_blank">SAML</a> single sign-on links
+        to third-party applications by adding a <a href="#tag_saml">&lt;saml&gt;</a>
+        element under &lt;plugin&gt;.        </dd>
+    <dt>
+        <a href="../registration/index.html">Registration</a>        </dt>
+    <dd>
+        Plugin can ask PowerSchool to register itself by adding a
+        <a href="#tag_registration">&lt;registration&gt;</a> element under &lt;plugin&gt;.        </dd>
+</dl>
+<h2 id="tags">Tag Dictionary</h2>
+
+<p>
+    <strong>Note:</strong> Tag and attribute names are case sensitive, and must be lowercase when used in an XML document.
+</p>
+
+<h3>Reference</h3>
+<ul id="tocTagDictionary">
+    <li><a href="#tag_plugin">&lt;plugin&gt;</a></li>
+    <li class="no-disc">
+        <ul>
+            <li><a href="#tag_registration">&lt;registration&gt;</a></li>
+            <li class="no-disc">
+                <ul>
+                    <li><a href="#tag_callback-data">&lt;callback-data&gt;</a></li>
+                </ul>
+            </li>
+
+            <li><a href="#tag_oauth">&lt;oauth&gt;</a></li>
+
+            <li><a href="#tag_access_request">&lt;access_request&gt;</a></li>
+            <li class="no-disc">
+                <ul>
+                    <li><a href="#tag_field_request">&lt;field&gt;</a></li>
+                </ul>
+            </li>
+
+            <li><a href="#tag_links">&lt;links&gt;</a></li>
+            <li class="no-disc">
+                <ul>
+                    <li><a href="#tag_link">&lt;link&gt;</a></li>
+                    <li class="no-disc">
+                        <ul>
+                            <li><a href="#tag_ui_contexts">&lt;ui_contexts&gt;</a></li>
+                            <li class="no-disc">
+                                <ul>
+                                    <li><a href="#tag_ui_context">&lt;ui_context&gt;</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+
+            <li><a href="#tag_openid">&lt;openid&gt;</a></li>
+            <li class="no-disc">
+                <ul>
+                    <li><a href="#tag_openid_links">&lt;links&gt;</a></li>
+                    <li class="no-disc">
+                        <ul>
+                            <li><a href="#tag_openid_link">&lt;link&gt;</a></li>
+                            <li class="no-disc">
+                                <ul>
+                                    <li><a href="#tag_openid_ui_contexts">&lt;ui_contexts&gt;</a></li>
+                                    <li class="no-disc">
+                                        <ul>
+                                            <li><a href="#tag_openid_ui_context">&lt;ui_context&gt;</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+
+
+            <li><a href="#tag_saml">&lt;saml&gt;</a></li>
+            <li class="no-disc">
+                <ul>
+                    <li><a href="#tag_saml_links">&lt;links&gt;</a></li>
+                    <li class="no-disc">
+                        <ul>
+                            <li><a href="#tag_saml_link">&lt;link&gt;</a></li>
+                            <li class="no-disc">
+                                <ul>
+                                    <li><a href="#tag_saml_ui_contexts">&lt;ui_contexts&gt;</a></li>
+                                    <li class="no-disc">
+                                        <ul>
+                                            <li><a href="#tag_saml_ui_context">&lt;ui_context&gt;</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#tag_saml_attributes">&lt;attributes&gt;</a></li>
+                    <li class="no-disc">
+                        <ul>
+                            <li><a href="#tag_saml_user">&lt;user&gt;</a></li>
+                            <li class="no-disc">
+                                <ul>
+                                    <li><a href="#tag_saml_attribute">&lt;attribute&gt;</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#tag_saml_permissions">&lt;permissions&gt;</a></li>
+                    <li class="no-disc">
+                        <ul>
+                            <li><a href="#tag_saml_permission">&lt;permission&gt;</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+
+            <li><a href="#tag_publisher">&lt;publisher&gt;</a></li>
+            <li class="no-disc">
+                <ul>
+                    <li><a href="#tag_contact">&lt;contact&gt;</a></li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<h3>Details</h3>
+<dl id="tagDictionaryStructure">
+<dt id="tag_plugin"><b>&lt;plugin&gt;</b></dt>
+<dd>
+    <ul>
+        <li>The outermost, or root element.</li>
+        <li>Only one &lt;plugin&gt; element per XML configuration file is allowed.</li>
+    </ul>
+    <p><b>Namespace Attributes:</b> (These
+        attributes define the namespaces for the tags used in the XML
+        document.)</p>
+    <table>
+        <colgroup>
+            <col style="width: 140px;"/>
+            <col style="width: 500px;"/>
+            <col style="width: 100px;"/>
+            <col style="width: 500px;"/>
+            <col/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>xmlns</td>
+            <td>This attribute specifies that the XML document is using
+                tags that exist in the <i>http://plugin.powerschool.pearson.com</i>
+                namespace.                    </td>
+            <td>Text String</td>
+            <td>value = "http://plugin.powerschool.pearson.com"</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>xmlns:xsi</td>
+            <td>This attribute instructs the XML parser that this XML
+                document is to be validated against a schema adhering to the W3C
+                schema standards.
+                <br/>
+                <br/>
+                This attribute defines the <i>xsi</i> namespace and <i>schemaLocation</i>
+                attribute used for the next attribute.                    </td>
+            <td>Text String</td>
+            <td>value = "http://www.w3.org/2001/XMLSchema-instance"</td>
+            <td>No
+                <br/>
+                <br/>
+                The XML will validate in PowerSchool without this attribute.
+                However, it is required if validating the XML outside of PowerSchool.                    </td>
+        </tr>
+        <tr>
+            <td>xsi:schemaLocation</td>
+            <td>This attribute shows the location of the schema document,
+                <i>plugin.xsd</i>, against which to validate the XML document for
+                the target namespace <i>http://plugin.powerschool.pearson.com</i>.
+                <br/>
+                <br/>
+                The location of the file can be any valid Uniform
+                Resource Identifier (URI).                    </td>
+            <td>Text String</td>
+            <td>value = "http://plugin.powerschool.pearson.com
+                <i>&lt;location of the plugin.xsd schema file&gt;</i>"                    </td>
+            <td>No
+                <br/>
+                <br/>
+                The XML will validate in PowerSchool without this attribute.
+                However, it is required if validating the XML outside of PowerSchool.                    </td>
+        </tr>
+        </tbody>
+    </table>
+    <p><b>Other Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 140px;"/>
+            <col/>
+            <col style="width: 100px;"/>
+            <col style="width: 170px;"/>
+            <col style="width: 100px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>name</td>
+            <td>Name of the PowerSchool third-party plugin as it will
+                appear in Plugin Management Configuration in PowerSchool. <br/> Must be
+                unique from already installed plugins.                    </td>
+            <td>Text String</td>
+            <td>Max 40 characters.<br/>
+                Cannot be an empty string.                    </td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>version</td>
+            <td>Identifies the version of the third-party plugin.</td>
+            <td>Text String</td>
+            <td>Max 20 characters.</td>
+            <td>No</td>
+        </tr>
+        <tr>
+            <td>description</td>
+            <td>Description of the third-party plugin as it will appear in
+                Plugin Management Configuration in PowerSchool.                    </td>
+            <td>Text String</td>
+            <td>Max 256 characters.</td>
+            <td>No</td>
+        </tr>
+        </tbody>
+    </table>
+    <p><b>Optional Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_registration">&lt;registration&gt;</a></li>
+        <li><a href="#tag_oauth">&lt;oauth&gt;</a></li>
+        <li><a href="#tag_access_request">&lt;access_request&gt;</a></li>
+        <li><a href="#tag_links">&lt;links&gt;</a></li>
+        <li><a href="#tag_openid">&lt;openid&gt;</a></li>
+        <li><a href="#tag_saml">&lt;saml&gt;</a></li>
+    </ul>
+    <p><b>Mandatory Sub-element:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_publisher">&lt;publisher&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_registration"><b>&lt;registration&gt;</b></dt>
+<dd>
+    <ul>
+        <li>This element triggered PowerSchool to
+            <a href="../registration/index.html">register</a> itself to a third-party application.                </li>
+        <li>An optional element.</li>
+        <li>Maximum of one occurrence.</li>
+    </ul>
+    <p><b>Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 80px;"/>
+            <col/>
+            <col style="width: 80px;"/>
+            <col style="width: 200px;"/>
+            <col style="width: 80px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>url</td>
+            <td>The URL of the registration web service provided by third-party application.</td>
+            <td>URL</td>
+            <td>
+                Must be prefixed with "https://".<br/>
+                Max 1000 characters.<br/>
+                Cannot be an empty string.</td>
+            <td>Yes</td>
+        </tr>
+        </tbody>
+    </table>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_callback-data">&lt;callback-data&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_callback-data"><b>&lt;callback-data&gt;</b></dt>
+<dd>
+    <ul>
+        <li>A node containing arbitrary data that will be included in
+            <a href="../registration/index.html#request">Registration Request</a>. It can contain the license key associated with a particular instance of plugin.
+            <span class="bold"></span></li>
+        <li>A optional element.</li>
+        <li>Maximum of one occurrence.</li>
+        <li>The length is unlimited.</li>
+        <li>The type is xs:string.</li>
+    </ul>
+    <p><b>Attributes:</b> none</p>
+    <p><b>Sub-elements:</b> none</p>
+</dd>
+
+<dt id="tag_oauth"><b>&lt;oauth&gt;</b></dt>
+<dd>
+    <ul>
+        <li>This element
+            triggers PowerSchool to generate OAuth credentials for the plugin.                </li>
+        <li>An optional element.</li>
+        <li>Maximum of one occurrence.</li>
+    </ul>
+    <p><b>Attributes:</b> none</p>
+    <p><b>Sub-elements:</b> none</p>
+</dd>
+
+<dt id="tag_access_request"><b>&lt;access_request&gt;</b></dt>
+<dd>
+    <ul>
+        <li>This element
+            is used to define access request fields for the plugin.</li>
+        <li>An optional element.</li>
+        <li>Maximum of one occurrence.</li>
+    </ul>
+    <p><b>Attributes:</b> none</p>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#field_link">&lt;field&gt;</a></li>
+    </ul>
+
+    <p><b>Example:</b>
+    <pre class="prettyprint">&lt;access_request&gt;
+	&lt;field table="STUDENTS" field="DCID" access="ViewOnly" /&gt;
+	&lt;field table="STUDENTS" field="SSN" access="ViewOnly" /&gt;
+	&lt;field table="STUDENTS" field="LAST_NAME" access="FullAccess" /&gt;
+	&lt;field table="STUDENTS" field="FIRST_NAME" access="FullAccess" /&gt;
+	&lt;field table="STUDENTCOREFIELDS" field="ACT_DATE" access="FullAccess" /&gt;
+	&lt;field table="STUDENTCOREFIELDS" field="ACT_COMPOSITE" access="FullAccess" /&gt;
+&lt;/access_request&gt;</pre>
+    </p>
+
+</dd>
+<dt id="tag_field_request"><b>&lt;field&gt;</b></dt>
+<dd>
+    <ul>
+        <li>This element defines individual fields in the access request</li>
+        <li>A optional element.</li>
+        <li>No limit on maximum occurrences.</li>
+    </ul>
+    <p><b>Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 100px;"/>
+            <col/>
+            <col style="width: 100px;"/>
+            <col style="width: 180px;"/>
+            <col style="width: 100px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>table</td>
+            <td>The name of a valid PowerSchool table.</td>
+            <td>Text String</td>
+            <td>Max 30 characters.<br/>
+                Cannot be an empty string.                    </td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>field</td>
+            <td>The name of a valid field in the PowerSchool table</td>
+            <td>Text String</td>
+            <td>Max 30 characters. <br/>
+                Cannot be an empty
+                string.                    </td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>access</td>
+            <td>The requested access for the field in the PowerSchool table.        </td>
+            <td>Text String</td>
+            <td>Cannot be an empty string. Value must be either ViewOnly or FullAccess</td>
+            <td>Yes</td>
+        </tr>
+        </tbody>
+    </table>
+</dd>
+<dt id="tag_links"><b>&lt;links&gt;</b></dt>
+<dd>
+    <ul>
+        <li>Element for
+            adding navigational link. It is the container for individual
+            &lt;link&gt; elements.                </li>
+        <li>An optional element.</li>
+        <li>Maximum of one occurrence.</li>
+    </ul>
+    <p><b>Attributes:</b> none</p>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_link">&lt;link&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_link"><b>&lt;link&gt;</b></dt>
+<dd>
+    <ul>
+        <li>This element defines the metadata
+            for a single third-party navigation link in PowerSchool.                </li>
+        <li>A mandatory element.</li>
+        <li>Minimum of one occurrence.</li>
+        <li>No limit on maximum occurrences.</li>
+    </ul>
+    <p><b>Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 100px;"/>
+            <col/>
+            <col style="width: 100px;"/>
+            <col style="width: 180px;"/>
+            <col style="width: 100px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>display-text</td>
+            <td>The text of the physical link to the third-party
+                application, as it appears in PowerSchool.                    </td>
+            <td>Text String</td>
+            <td>Max 100 characters.<br/>
+                Cannot be an empty string.                    </td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>path</td>
+            <td>URI of the link to third-party application. Clicking
+                the link within PowerSchool will locate the URI.                    </td>
+            <td>URI</td>
+            <td>Max 1000 characters. <br/>
+                Cannot be an empty
+                string.                    </td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>title</td>
+            <td>Information about the link. For example, the text to
+                display on a tooltip.                    </td>
+            <td>Text String</td>
+            <td>Max 256 characters.</td>
+            <td>No</td>
+        </tr>
+        </tbody>
+    </table>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_ui_contexts">&lt;ui_contexts&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_ui_contexts"><b>&lt;ui_contexts&gt;</b></dt>
+<dd>
+    <ul>
+        <li>Element for adding user interface location contexts to links. It is the container for individual &lt;ui_context&gt; elements.</li>
+        <li>A mandatory element.</li>
+        <li>Maximum of one occurrence.</li>
+    </ul>
+    <p><b>Attributes:</b> none</p>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_ui_context">&lt;ui_context&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_ui_context"><b>&lt;ui_context&gt;</b></dt>
+<dd>
+    <ul>
+        <li>This element defines the user interface location
+            for a single third-party navigation link in PowerSchool.                </li>
+        <li>A mandatory element.</li>
+        <li>Minimum of one occurrence.</li>
+        <li>No limit on maximum occurrences.</li>
+    </ul>
+    <p><b>Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 80px;"/>
+            <col/>
+            <col style="width: 80px;"/>
+            <col style="width: 250px;"/>
+            <col style="width: 100px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>id</td>
+            <td>The user interface location of the physical link to the third-party
+                application.                    </td>
+            <td>Text String</td>
+            <td>Must be one of the available
+                <a href="#ui_context">UI Contexts</a>.                   </td>
+            <td>Yes</td>
+        </tr>
+        </tbody>
+    </table>
+    <p>
+        The 'id' attribute is specified with '.' delimited logical locations.
+        <br/>
+        For example, &lt;ui_context id="admin.left_nav"/&gt; specifies
+        that the link is to appear in the main menu (left navigation) of the PowerSchool admin portal.
+        <br/>
+        Duplicate &lt;ui_context&gt; tags will validate during the
+        installation of the plugin, but the duplicates will be ignored.            </p>
+    <p><b>Sub-elements:</b> none</p>
+</dd>
+
+<dt id="tag_openid"><b>&lt;openid&gt;</b></dt>
+<dd>
+    <ul>
+        <li>Element for
+            adding <a href="http://openid.net/" target="_blank">OpenID</a> relying party host and port
+            and configuring <a href="../sso/index.html">single sign-on</a> links. Note
+            that the relying party is the third-party application.                </li>
+        <li>An optional element.</li>
+        <li>Maximum of one occurrence.</li>
+    </ul>
+    <p><b>Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 80px;"/>
+            <col/>
+            <col style="width: 100px;"/>
+            <col style="width: 170px;"/>
+            <col style="width: 80px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>host</td>
+            <td>This is the host name of the OpenID relying party. Specify only the host name, without any protocol or scheme, such as https.</td>
+            <td>Text String</td>
+            <td>Max 256 characters. <br/>
+                Cannot be an empty string.                    </td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>port</td>
+            <td>This is the port number of the OpenID relying party.</td>
+            <td>Unsigned Short</td>
+            <td>The default value is 443.</td>
+            <td>No</td>
+        </tr>
+        </tbody>
+    </table>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_openid_links">&lt;links&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_openid_links"><b>&lt;links&gt;</b></dt>
+<dd>
+    <ul>
+        <li>Container element for
+            single sign-on &lt;link&gt; elements.                </li>
+        <li>A mandatory element.</li>
+        <li>Maximum of one occurrence.</li>
+    </ul>
+    <p><b>Attributes:</b> none</p>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_openid_link">&lt;link&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_openid_link"><b>&lt;link&gt;</b></dt>
+<dd>
+    <ul>
+        <li>This element defines the
+            metadata for a single OpenID single sign-on link in PowerSchool.                </li>
+        <li>A mandatory element.</li>
+        <li>Minimum of one occurrence.</li>
+        <li>No limit on maximum occurrences.</li>
+    </ul>
+    <p><b>Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 100px;"/>
+            <col/>
+            <col style="width: 100px;"/>
+            <col style="width: 170px;"/>
+            <col style="width: 100px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>display-text</td>
+            <td>The text of the OpenID single sign-on link to the
+                third-party application, as it appears in PowerSchool.                    </td>
+            <td>Text String</td>
+            <td>Max 100 characters. <br/>
+                Cannot be an empty
+                string.                    </td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>path</td>
+            <td>Path to a resource in the third-party
+                application. This is the part of URL without host.                    </td>
+            <td>Text String</td>
+            <td>Max 1000 characters. <br/>
+                The default value is
+                "/". <br/>
+                Cannot be an empty string.                    </td>
+            <td>No</td>
+        </tr>
+        <tr>
+            <td>title</td>
+            <td>Information about the link. For example, the text
+                to display on a tooltip.                    </td>
+            <td>Text String</td>
+            <td>Max 256 characters.</td>
+            <td>No</td>
+        </tr>
+        </tbody>
+    </table>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_openid_ui_contexts">&lt;ui_contexts&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_openid_ui_contexts"><b>&lt;ui_contexts&gt;</b></dt>
+<dd>
+    <ul>
+        <li>Element for adding user interface location contexts to links. It is the container for individual &lt;ui_context> elements.                </li>
+        <li>A mandatory element.</li>
+        <li>Maximum of one occurrence.</li>
+    </ul>
+    <p><b>Attributes:</b> none</p>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_openid_ui_context">&lt;ui_context&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_openid_ui_context"><b>&lt;ui_context&gt;</b></dt>
+<dd>
+    <ul>
+        <li>This element defines the user interface location
+            for a single third-party navigation link in PowerSchool.                </li>
+        <li>A mandatory element.</li>
+        <li>Minimum of one occurrence.</li>
+        <li>No limit on maximum occurrences.</li>
+    </ul>
+    <p><b>Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 80px;"/>
+            <col/>
+            <col style="width: 100px;"/>
+            <col style="width: 250px;"/>
+            <col style="width: 100px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>id</td>
+            <td>The user interface location of the physical link to the third-party
+                application.                    </td>
+            <td>Text String</td>
+            <td>Must be one of the available
+                <a href="#ui_context">UI Contexts</a>.                   </td>
+            <td>Yes</td>
+        </tr>
+        </tbody>
+    </table>
+    <p>
+        The 'id' attribute is specified with '.' delimited logical locations.
+        <br/>
+        For example, &lt;ui_context id="admin.left_nav"/&gt; specifies
+        that the link is to appear in the main menu (left navigation) of the PowerSchool admin portal.
+        <br/>
+        Duplicate &lt;ui_context&gt; tags will validate during
+        the installation of the plugin, but the duplicates will be ignored.            </p>
+    <p><b>Sub-elements:</b> none</p>
+</dd>
+
+<dt id="tag_saml"><b>&lt;saml&gt;</b></dt>
+<dd>
+    <ul>
+        <li>Element for adding a <a href="http://saml.xml.org/" target="_blank">SAML</a> service provider.                </li>
+        <li>An optional element.</li>
+        <li>Maximum of one occurrence.</li>
+    </ul>
+    <p><b>Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 80px;"/>
+            <col/>
+            <col style="width: 100px;"/>
+            <col style="width: 250px;"/>
+            <col style="width: 100px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>name</td>
+            <td>The name of the service provider.                    </td>
+            <td>Text String</td>
+            <td>Max 256 characters.</br>
+                The name must be unique; there can be no other service provider configured with the same name in the same PowerSchool installation.                    </td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>entity-id</td>
+            <td>The entity-ID of the service provider.                    </td>
+            <td>Text String</td>
+            <td>Max 1000 characters.</br>
+                This value must be supplied by the service provider and must match the service provider value exactly.</br>
+                It will be used to identify the service provider when the service provider initiates a single sign-on.                    </td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>base-url</td>
+            <td>The root-URL of the service provider application.                    </td>
+            <td>Text String</td>
+            <td>Max 1000 characters.                    </td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>metadata-url</td>
+            <td>The URL from which the PowerSchool SAML identity provider</br>
+                can obtain a copy of the service provider <a href="http://en.wikipedia.org/wiki/SAML_2.0#SAML_2.0_Metadata" target="_blank">metadata</a>.                    </td>
+            <td>Text String</td>
+            <td>Max 1000 characters.                    </td>
+            <td>No</td>
+        </tr>
+        </tbody>
+    </table>
+    <p>            </p>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_saml_links">&lt;links&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_saml_links"><b>&lt;links&gt;</b></dt>
+<dd>
+    <ul>
+        <li>Container element for
+            single sign-on &lt;link&gt; elements.                </li>
+        <li>A mandatory element.</li>
+        <li>Maximum of one occurrence.</li>
+    </ul>
+    <p><b>Attributes:</b> none</p>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_saml_link">&lt;link&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_saml_link"><b>&lt;link&gt;</b></dt>
+<dd>
+    <ul>
+        <li>This element defines the
+            metadata for a single SAML single sign-on link in PowerSchool.                </li>
+        <li>A mandatory element.</li>
+        <li>Minimum of one occurrence.</li>
+        <li>No limit on maximum occurrences.</li>
+    </ul>
+    <p><b>Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 100px;"/>
+            <col/>
+            <col style="width: 100px;"/>
+            <col style="width: 170px;"/>
+            <col style="width: 100px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>display-text</td>
+            <td>The text of the SAML single sign-on link to the
+                third-party application, as it appears in PowerSchool.                    </td>
+            <td>Text String</td>
+            <td>Max 100 characters. <br/>
+                Cannot be an empty
+                string.                    </td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>path</td>
+            <td>Path to a resource in the third-party
+                application. The complete URL is constructed by prepending the <a href="#tag_saml">&lt;saml&gt;</a>
+                base-URL value to the path.                    </td>
+            <td>Text String</td>
+            <td>Max 1000 characters. <br/>
+                The default value is
+                "/". <br/>
+                Cannot be an empty string.                    </td>
+            <td>No</td>
+        </tr>
+        <tr>
+            <td>title</td>
+            <td>Information about the link. For example, the text
+                to display on a tooltip.                    </td>
+            <td>Text String</td>
+            <td>Max 256 characters.</td>
+            <td>No</td>
+        </tr>
+        </tbody>
+    </table>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_saml_ui_contexts">&lt;ui_contexts&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_saml_ui_contexts"><b>&lt;ui_contexts&gt;</b></dt>
+<dd>
+    <ul>
+        <li>Element for adding user interface location contexts to links. It is the container for individual &lt;ui_context> elements.                </li>
+        <li>A mandatory element.</li>
+        <li>Maximum of one occurrence.</li>
+    </ul>
+    <p><b>Attributes:</b> none</p>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_saml_ui_context">&lt;ui_context&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_saml_ui_context"><b>&lt;ui_context&gt;</b></dt>
+<dd>
+    <ul>
+        <li>This element defines the user interface location
+            for a single third-party navigation link in PowerSchool.                </li>
+        <li>A mandatory element.</li>
+        <li>Minimum of one occurrence.</li>
+        <li>No limit on maximum occurrences.</li>
+    </ul>
+    <p><b>Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 80px;"/>
+            <col/>
+            <col style="width: 100px;"/>
+            <col style="width: 250px;"/>
+            <col style="width: 100px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>id</td>
+            <td>The user interface location of the physical link to the third-party
+                application.                    </td>
+            <td>Text String</td>
+            <td>Must be one of the available
+                <a href="#ui_context">UI Contexts</a>.                   </td>
+            <td>Yes</td>
+        </tr>
+        </tbody>
+    </table>
+    <p>
+        The 'id' attribute is specified with '.' delimited logical locations.
+        <br/>
+        For example, &lt;ui_context id="admin.left_nav"/&gt; specifies
+        that the link is to appear in the main menu (left navigation) of the PowerSchool admin portal.
+        <br/>
+        Duplicate &lt;ui_context&gt; tags will validate during
+        the installation of the plugin, but the duplicates will be ignored.            </p>
+    <p><b>Sub-elements:</b> none</p>
+</dd>
+
+<dt id="tag_saml_attributes"><b>&lt;attributes&gt;</b></dt>
+<dd>
+    <ul>
+        <li>Container element for
+            single sign-on &lt;user&gt; elements.                </li>
+        <li>Not a mandatory element.</li>
+        <li>Maximum of one occurrence.</li>
+    </ul>
+    <p><b>Attributes:</b> none</p>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_saml_user">&lt;user&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_saml_user"><b>&lt;user&gt;</b></dt>
+<dd>
+    <ul>
+        <li>This element defines the type of
+            users in PowerSchool.                </li>
+        <li>A mandatory element.</li>
+        <li>Minimum of one occurrence.</li>
+        <li>No limit on maximum occurrences.</li>
+    </ul>
+    <p><b>Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 80px;"/>
+            <col/>
+            <col style="width: 100px;"/>
+            <col style="width: 250px;"/>
+            <col style="width: 100px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>type</td>
+            <td>The type of users in PowerSchool.                    </td>
+            <td>Text String</td>
+            <td>Max 256 characters. <br/>
+                Cannot be an empty
+                string. Must be one of the available <a href="#users">Users</a>.  </td>
+            <td>Yes</td>
+        </tr>
+        </tbody>
+    </table>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_saml_attribute">&lt;attribute&gt;</a></li>
+    </ul>
+</dd>
+<dt id="tag_saml_attribute"><b>&lt;attribute&gt;</b></dt>
+<dd>
+    <ul>
+        <li>Container element for attributes.</li>
+        <li>A mandatory element.</li>
+        <li>No limit on maximum occurrences.</li>
+    </ul>
+    <p><b>Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 80px;"/>
+            <col/>
+            <col style="width: 100px;"/>
+            <col style="width: 250px;"/>
+            <col style="width: 100px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>name</td>
+            <td>This element defines the name of the attribute in PowerSchool.</td>
+            <td>Text String</td>
+            <td>Max 256 characters. The attribute names should be one of the column names in the following table names - STUDENTS,TEACHERS,GUARDIAN from this <a href="https://powersource.pearsonschoolsystems.com/article/63456">data dictionary</a>.</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>attribute-name</td>
+            <td>An alias used in the SAML response being sent back to the service provider.</td>
+            <td>Text String</td>
+            <td>Max 256 characters.</td>
+            <td>No</td>
+        </tr>
+        <tr>
+            <td>attribute-value</td>
+            <td>A custom value, to be used by the SAML SSO services to pass through a constant value for this<br>
+                attribute or provide a custom parameter to be used to fetch dynamic values for this attribute from<br>
+                the database, to be delivered in the SAML response.<br>
+                This is only valid for certain <a href="#tag_special_saml_attributes"/>special SAML attributes.</td>
+            <td>Text String</td>
+            <td>Max 256 characters.</td>
+            <td>No</td>
+        </tr>
+        </tbody>
+    </table>
+    <p><b>Sub-elements: none</b></dd>
+
+<dt id="tag_saml_permissions"><b>&lt;permissions&gt;</b></dt>
+<dd>
+    <ul>
+        <li>Container element for
+            single sign-on &lt;permission&gt; elements.</li>
+        <li>An optional element.</li>
+        <li>Maximum of one occurrence.</li>
+    </ul>
+    <p><b>Attributes:</b>&nbsp;none</p>
+
+
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_saml_permission">&lt;permission&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_saml_permission"><b>&lt;permission&gt;</b></dt>
+<dd>
+    <ul>
+        <li>Defines the metadata for a single SAML single sign-on link in PowerSchool.</li>
+        <li>A mandatory element.</li>
+        <li>Minimum of one occurrence.</li>
+        <li>No limit on maximum occurrences.</li>
+    </ul>
+    <p><b>Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 100px;"/>
+            <col/>
+            <col style="width: 100px;"/>
+            <col style="width: 170px;"/>
+            <col style="width: 100px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>name</td>
+            <td>The name of the permission to be returned to the Service Provider (SP) with the SAML response.</td>
+            <td>Text String</td>
+            <td>Max 100 characters. <br/>
+                Cannot be an empty
+                string.</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>description</td>
+            <td>A user-friendly description of the permission which shows up in the roles configuration page.</td>
+            <td>Text String</td>
+            <td>Max 1000 characters.<br/>
+                Cannot be an empty string.</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>value</td>
+            <td>The value to be returned with this permission.  This value will be returned with the name attribute
+                as a name-value pair.</td>
+            <td>Text String</td>
+            <td>Max 100 characters. <br/>
+                Cannot be an empty string.</td>
+            <td>Yes</td>
+        </tr>
+        </tbody>
+    </table>
+    <p><b>Sub-elements: None</b></p>
+</dd>
+
+<dt id="tag_publisher"><b>&lt;publisher&gt;</b></dt>
+<dd>
+    <ul>
+        <li>Element for adding publisher information.</li>
+        <li>A mandatory element.</li>
+        <li>Maximum of one occurrence.</li>
+    </ul>
+    <p><b>Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 80px;"/>
+            <col/>
+            <col style="width: 100px;"/>
+            <col style="width: 175px;"/>
+            <col style="width: 100px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>name</td>
+            <td>PowerSchool third-party plugin publisher name.</td>
+            <td>Text String</td>
+            <td>Max 100 characters. <br /> Cannot be an empty string.</td>
+            <td>Yes</td>
+        </tr>
+        </tbody>
+    </table>
+    <p><b>Sub-elements:</b></p>
+    <ul class="subElementList">
+        <li><a href="#tag_contact">&lt;contact&gt;</a></li>
+    </ul>
+</dd>
+
+<dt id="tag_contact"><b>&lt;contact&gt;</b></dt>
+<dd>
+    <ul>
+        <li>Element to add publisher contact details.                </li>
+        <li>A mandatory element.</li>
+        <li>Maximum of one occurrence.</li>
+    </ul>
+    <p><b>Attributes:</b></p>
+    <table>
+        <colgroup>
+            <col style="width: 80px;"/>
+            <col/>
+            <col style="width: 100px;"/>
+            <col style="width: 175px;"/>
+            <col style="width: 100px;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Value Type</th>
+            <th>Restrictions</th>
+            <th>Required?</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>phone</td>
+            <td>Phone number of the publisher.</td>
+            <td>Text String</td>
+            <td>Max 20 characters. </td>
+            <td>No</td>
+        </tr>
+        <tr>
+            <td>email</td>
+            <td>Email address of the publisher.</td>
+            <td>Text String</td>
+            <td>Max 40 characters. <br /> Cannot be an empty string.</td>
+            <td>Yes</td>
+        </tr>
+        </tbody>
+    </table>
+    <p><b>Sub-elements:</b> none</p>
+</dd>
+</dl>
+
+<h2 id="users">Users</h2>
+
+<p> The available users are: </p>
+<dl>
+    <dt class="bold">admin</dt>
+    <dt class="bold">teacher</dt>
+    <dt class="bold">student</dt>
+    <dt class="bold">guardian</dt>
+</dl>
+<h2 id="ui_context">UI Contexts</h2>
+
+<p> UI contexts are locations on PowerSchool pages that are available for plugins to
+    inject <a href="../linking/index.html">navigation links</a> and
+    <a href="../sso/index.html">single sign-on links</a>. The available UI contexts are:</p>
+<dl>
+    <dt class="bold">admin.left_nav</dt>
+    <dd>This is the list of links under Applications headings in the main menu of
+        the PowerSchool admin portal.
+    </dd>
+    <dt class="bold">admin.header</dt>
+    <dd>This is the list of links in the dialog triggered by clicking the Applications
+        icon
+        <img src="../images/icon-plug.png"/> in the navigation toolbar (header bar) of the PowerSchool admin portal.
+    </dd>
+    <dt class="bold">teacher.header</dt>
+    <dd>This is the list of links in the dialog triggered by clicking the Applications icon
+        <img src="../images/icon-plug.png"/> in the navigation toolbar (header bar) of the PowerSchool teacher portal.
+    </dd>
+    <dt class="bold">guardian.header</dt>
+    <dd>This is the list of links in the dialog triggered by clicking the Applications icon
+        <img src="../images/icon-plug.png"/> in the navigation toolbar (header bar) of the PowerSchool guardian portal.
+    </dd>
+    <dt class="bold">student.header</dt>
+    <dd>This is the list of links in the dialog triggered by clicking the Applications icon
+        <img src="../images/icon-plug.png"/> in the navigation toolbar (header bar) bar of the PowerSchool student portal.
+    </dd>
+</dl>
+<h2 id="tag_special_saml_attributes">Special SAML Attributes</h2>
+
+<p> These are SAML response attributes which cannot be resolved by a simple SQL select, or which offer some special configuration options in the plugin XML.</p>
+<dl>
+    <dt class="bold">role</dt>
+    <dd>The role attribute contains the list of plugin-specific authorizations assigned to the user in PowerSchool. Currently PowerSchool only supports configurable authorization
+        for teachers and staff. In the case of  student and guardian single sign-on the role attribute for these user types can be specified as a constant <a href="#tag_saml_attribute">attribute-value</a> in the plugin XML file used for import. The <a href = "../sso/saml-single-sign-on.html">SAML single sign-on</a> example shows the student user- type with a role attribute.        </dd>
+    <dt class="bold">institutions</dt>
+    <dd>The institutions attribute provides a list of institutions to which the authenticated user is associated. The attribute will be filtered by the access list associated with
+        the specific single sign-on plugin currently in use. <a href = "../sso/saml-single-sign-on.html">SAML single sign-on</a> provides details on which School table columns can be requested
+        for inclusion in the single sign-on response. Also shown is a plugin XML example describing how institutions can be requested for the admin context, returning the data from the "name"
+        column in the response.        </dd>
+    <dt class="bold">students</dt>
+    <dd>The students attribute provides a list of students to which the authenticated guardian user is associated. <a href = "../sso/saml-single-sign-on.html">SAML single sign-on</a> provides details on
+        which Student table columns can be requested for inclusion in the single sign-on response. Also shown is a plugin XML example describing how students can be requested for the guardian context,
+        returning the data from the "name" column in the response.        </dd>
+</dl>
+
+<h2 id="schema">XML Schema</h2>
+
+<p>The <a href="plugin.xsd">plugin.xsd</a> is the schema file for the Plugin XML. PowerSchool uses this
+    schema to validate the Plugin XML during import.</p>
+
+</div>
+        </div>
+
+        <footer id="footer">
+            <p><small>Copyright &copy; 2013 Pearson Education, Inc. or its affiliates. All rights reserved. All trademarks are either owned or licensed by Pearson Education, Inc. or its affiliates. Other brands and names are the property of their respective owners.</small></p>
+            <p><small>PowerSchool is a trademark, in the U.S. and/or other countries, of Pearson Education, Inc. or its affiliate(s).</small></p>
+            <p><small>The data and names used to illustrate the reports, screen images, and examples may include names of individuals, companies, brands, and products. All of the data and names are fictitious; any similarities to actual names are entirely coincidental.</small></p>
+        </footer>
+    </div>
+</div>
+
+</body>
+</html>

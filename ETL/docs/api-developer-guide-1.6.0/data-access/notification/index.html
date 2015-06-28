@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PowerSchool API Developer Guide</title>
+    <link href="../../screen.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="../../google-code-prettify/prettify.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="../../google-code-prettify/prettify.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body class="psDocs" onLoad="prettyPrint()">
+
+<div id="outer-frame">
+    <div id="page-content">
+        <div id="nav">
+            <ul>
+                <li><a href="../../index.html">API Home</a></li>
+                <li><a href="../../data-access/index.html">REST API</a></li>
+                <li class="sub1"><a href="../../data-access/basic-read-and-write/index.html">Read/Write Access</a></li>
+                <li class="sub2"><a href="../../data-access/basic-read-and-write/usage.html">General Usage</a></li>
+                <li class="sub2"><a href="../../data-access/basic-read-and-write/data-dictionary.html">Data Dictionary</a></li>
+                <li class="sub2"><a href="../../data-access/basic-read-and-write/resources.html">Available Resources</a></li>
+                <li class="sub2"><a href="../../data-access/basic-read-and-write/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../../data-access/oauth/index.html">Authentication</a></li>
+                <li class="sub2"><a href="../../data-access/oauth/reference.html">Reference</a></li>
+                <li class="sub1 selected"><a href="../../data-access/notification/index.html">Notification</a></li>
+                <li class="sub2"><a href="../../data-access/notification/subscribe.html">Subscription</a></li>
+                <li class="sub2"><a href="../../data-access/notification/resource-notifications.html">Resource Notifications</a></li>
+                <li><a href="../../sso/index.html">Single Sign-On</a></li>
+                <li class="sub1"><a href="../../sso/openid-single-sign-on.html">OpenID</a></li>
+                <li class="sub1"><a href="../../sso/saml-single-sign-on.html">SAML</a></li>
+                <li class="sub1"><a href="../../sso/identity-attribute.html">Identity Attribute</a></li>
+                <li><a href="../../linking/index.html">Linking</a></li>
+                <li><a href="../../plugin/index.html">Plugin</a></li>
+                <li class="sub1"><a href="../../plugin/pluginXML.html">Plugin XML</a></li>
+                <li class="sub1"><a href="../../plugin/pluginZIP.html">Plugin Package</a></li>
+                <li><a href="../../registration/index.html">Registration</a></li>
+                <li><a href="../../examples/index.html">Examples</a></li>
+				<li class="sub1"><a href="../../examples/oauth.html">Authentication </a></li>  
+				<li class="sub1"><a href="../../examples/data-access.html">Data Access</a></li>
+                <li class="sub1"><a href="../../examples/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../../examples/enroll-students.html">Enroll Students</a></li>
+                <li class="sub1"><a href="../../examples/registration.html">Registration </a></li>
+            	<li class="sub1"><a href="../../examples/sso.html">OpenID Relying Party </a></li>                
+            	<li class="sub1"><a href="../../examples/sso-data-access.html">SSO with Data Access</a></li>
+				<li class="sub1"><a href="../../examples/open-saml-sample-app.html">SAML Service Provider</a></li>
+                <li class="sub1"><a href="../../examples/events.html">Event Listener</a></li>
+				<li class="sub1"><a href="../../examples/sample-code.html">Environment Setup</a></li>                
+                <li><a href="../../toc.html">Terms of Use</a></li>
+            </ul>
+        </div>
+        <div id="right-content">
+<h1>Notification</h1>
+
+<div class="box-round">
+    <h2 id="introduction">Introduction</h2>
+
+    <p>
+       You may want to be notified when the data you read with the REST API has been changed in PowerSchool. You can subscribe to data 
+       change and business events that you are interested in and build a webhook server to receive notifications from PowerSchool. Data Change events 
+	   are inserts, deletes, and updates on specific tables in the database.  Business events are activities such as school enrollments.  
+	   Business events may or may not be associated with specific tables in the database.  These events may be triggered by transactions performed through PowerSchool or through the REST API resources. PowerSchool will securely post a message to your webhook server when a subscribed data change and business event has been triggered. 
+    </p>
+
+    <h2 id="contents">Contents</h2>
+    <dl>
+        <dt><a href="subscribe.html">Subscribe to Data Change and Business Events</a></dt>
+        <dd>Instructions for subscribing to data change and business events so that PowerSchool can send notifications to your webhook server.</dd>
+    </dl>
+	<dl>
+        <dt><a href="resource-notifications.html">Available Resource Notifications</a></dt>
+        <dd>Listing of supported resources available for data change event notifications.</dd>
+    </dl>
+
+	<h2>Data Change and Business Event Notification</h2>
+	<p>
+		When the event notification system is enabled and a plugin has subscribed to data change and business events, PowerSchool will send messages 
+		when data is inserted, updated, or deleted, or when a business event occurs. This is an example of the message:	</p>
+<pre class="prettyprint lang-js">
+{ "events": [
+		{
+			"timestamp":"2012-09-12T23:31:17.334Z",
+			"id":"1070",
+			"ref":"https://example.powerschool.com:7443/ws/v1/student/1070",
+			"event_type":"INSERT",
+			"entity":"STUDENTS",
+			"key":"SECRET"
+		},
+		{
+			"timestamp":"2012-09-12T23:31:17.334Z",
+			"id":"1071",
+			"ref":"https://example.powerschool.com:7443/ws/v1/student/1071",
+			"event_type":"INSERT",
+			"entity":"STUDENTS",
+			"key":"SECRET"
+		},
+		{
+			"timestamp":"2012-09-12T23:31:17.334Z",
+			"id":"1071",
+			"ref":"https://example.powerschool.com:7443/ws/v1/student/1071",
+			"event_type":"SCHOOL_ENROLLMENT",
+			"entity":"STUDENTS",
+			"key":"SECRET"
+		}
+	]
+}
+</pre>
+Note that some business events may also have corresponding data change events.  For example, when a new student is enrolled it would generate a school enrollment
+business event as well as an insert to STUDENTS data change event.
+    <h2>Resync Notification</h2>
+    <p>
+        There may be times in PowerSchool when the event notification system is disabled. During this time notifications will not
+        be sent. This can happen automatically during certain processes that are known to make large amounts of changes in a short
+        time. It can also happen manually at the discretion of the PowerSchool system administrator.
+    </p>
+
+    <p>
+        When the event notification system is enabled again, PowerSchool will send out a "RESYNC" event message. This is an example
+        of the message:
+    </p>
+
+<pre class="prettyprint lang-js">
+{ "events": [
+        {
+            "key": "SECRET",
+            "event_type": "RESYNC",
+            "timestamp": "2012-04-20T17:15:08.488Z"
+        }
+    ]
+}
+</pre>
+    <br/>
+    <p>
+        When you receive this message, it is strongly recommended that you synchronize your data with PowerSchool. This will ensure
+        that your data is up-to-date and accurate. To find out more about how to receive messages from PowerSchool,
+        take a look at the <a href="../../examples/events.html">Event Listener example</a>.    </p>
+</div>
+        </div>
+
+        <footer id="footer">
+            <p><small>Copyright © 2014 Pearson Education, Inc. or its affiliates. All rights reserved. All trademarks are either owned or licensed by Pearson Education, Inc. or its affiliates. Other brands and names are the property of their respective owners.</small></p>
+            <p><small>PowerSchool is a trademark, in the U.S. and/or other countries, of Pearson Education, Inc. or its affiliate(s).</small></p>
+            <p><small>The data and names used to illustrate the reports, screen images, and examples may include names of individuals, companies, brands, and products. All of the data and names are fictitious; any similarities to actual names are entirely coincidental.</small></p>
+        </footer>
+        </div>
+        </div>
+
+    </body>
+</html>

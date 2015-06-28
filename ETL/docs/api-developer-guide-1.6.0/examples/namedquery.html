@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PowerSchool API Developer Guide</title>
+<link href="../screen.css" rel="stylesheet" type="text/css"
+	media="screen" />
+<link href="../google-code-prettify/prettify.css" type="text/css"
+	rel="stylesheet" />
+<script type="text/javascript" src="../google-code-prettify/prettify.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body class="psDocs" onLoad="prettyPrint()">
+
+	<div id="outer-frame">
+		<div id="page-content">
+			<div id="nav">
+			<ul>
+                <li><a href="../index.html">API Home</a></li>
+                <li><a href="../data-access/index.html">REST API</a></li>
+                <li class="sub1"><a href="../data-access/basic-read-and-write/index.html">Read/Write Access</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/usage.html">General Usage</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/data-dictionary.html">Data Dictionary</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/resources.html">Available Resources</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../data-access/oauth/index.html">Authentication</a></li>
+                <li class="sub2"><a href="../data-access/oauth/reference.html">Reference</a></li>
+                <li class="sub1"><a href="../data-access/notification/index.html">Notification</a></li>
+                <li class="sub2"><a href="../data-access/notification/subscribe.html">Subscription</a></li>                     
+                <li class="sub2"><a href="../data-access/notification/resource-notifications.html">Resource Notifications</a></li>
+                <li><a href="../sso/index.html">Single Sign-On</a></li>
+                <li class="sub1"><a href="../sso/openid-single-sign-on.html">OpenID</a></li>
+                <li class="sub1"><a href="../sso/saml-single-sign-on.html">SAML</a></li>
+                <li class="sub1"><a href="../sso/identity-attribute.html">Identity Attribute</a></li>
+                <li><a href="../linking/index.html">Linking</a></li>
+                <li><a href="../plugin/index.html">Plugin</a></li>
+                <li class="sub1"><a href="../plugin/pluginXML.html">Plugin XML</a></li>
+                <li class="sub1"><a href="../plugin/pluginZIP.html">Plugin Package</a></li>
+                <li><a href="../registration/index.html">Registration</a></li>
+                <li><a href="../examples/index.html">Examples</a></li>
+				<li class="sub1"><a href="../examples/oauth.html">Authentication</a></li>  
+				<li class="sub1"><a href="../examples/data-access.html">Data Access</a></li>
+                <li class="sub1 selected"><a href="../examples/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../examples/enroll-students.html">Enroll Students</a></li>
+                <li class="sub1"><a href="../examples/registration.html">Registration</a></li>
+            	<li class="sub1"><a href="../examples/sso.html">OpenID Relying Party</a></li>                
+            	<li class="sub1"><a href="../examples/sso-data-access.html">SSO with Data Access</a></li>
+				<li class="sub1"><a href="../examples/open-saml-sample-app.html">SAML Service Provider</a></li>
+                <li class="sub1"><a href="../examples/events.html">Event Listener</a></li>
+				<li class="sub1"><a href="../examples/sample-code.html">Environment Setup</a></li>                
+                <li><a href="../toc.html">Terms of Use</a></li>
+            </ul>
+			</div>
+
+<div id="right-content">
+
+<h1>Named Query Example</h1>
+
+<div class="box-round">
+
+<h2 id="overview">Overview</h2>
+
+    <p>The goal of this example is to construct, package, deploy, and invoke a named query that will return the full school calendar
+    for a given school and year.</p>
+
+<h2>Getting Started</h2>
+    <p>Before working on the example code:</p>
+    <ul>
+        <li><a href="examples.zip">Download the example code package</a>.</li>
+    </ul>
+
+<h2>Construct Named Query</h2>
+<p>
+    In these steps you will construct a functional named query. A named query template is provided in the examples folder.
+    You will be filling in the missing pieces in the template.
+</p>
+<ol>
+      <li>Locate the example.named_queries.xml file in examples/namedquery/plugin/queries_root directory and open it in a text editor.</li>
+      <li>Most of the data in this example is derived from the CALENDAR_DAY table. Define the coreTable attribute
+          of the &lt;query&gt; element as shown below:
+          <pre class="prettyprint">
+&lt;query name="com.company.product.school.school_calendar" coreTable="CALENDAR_DAY" flattened="false"&gt;
+</pre>
+      <li>Inspect the &lt;sql&gt; element in the named query and note the where clause uses two parameters: schoolid and schoolyear. </li>
+        <li>Declare these
+          parameters as &lt;arg&gt; elements as shown below:
+          
+          <pre class="prettyprint">
+&lt;arg&gt;
+    &lt;arg name="schoolid" type="primitive" required="true" /&gt;
+    &lt;arg name="schoolyear" description="SchoolYear is equivalent to YearID + 1990" type="primitive" required="true" /&gt;
+&lt;/args&gt;
+        </pre>
+        </li>
+        <li>Inspect the &lt;sql&gt; element in the named query and note all the fields being returned by the query. </li>
+        <li>Declare all of these
+            fields as &lt;column&gt; elements as shown below:
+
+            <pre class="prettyprint">
+&lt;columns&gt;
+    &lt;column column="CALENDAR_DAY.DATE_VALUE"&gt;CALENDAR_DATE&lt;/column&gt;
+    &lt;column column="CALENDAR_DAY.DATE_VALUE"&gt;DAY_OF_WEEK&lt;/column&gt;
+    &lt;column column="CYCLE_DAY.LETTER"&gt;CYCLE_DAY_LETTER&lt;/column&gt;
+    &lt;column column="CALENDAR_DAY.A"&gt;TRACK_A&lt;/column&gt;
+    &lt;column column="CALENDAR_DAY.B"&gt;TRACK_B&lt;/column&gt;
+    &lt;column column="CALENDAR_DAY.C"&gt;TRACK_C&lt;/column&gt;
+    &lt;column column="CALENDAR_DAY.D"&gt;TRACK_D&lt;/column&gt;
+    &lt;column column="CALENDAR_DAY.E"&gt;TRACK_E&lt;/column&gt;
+    &lt;column column="CALENDAR_DAY.F"&gt;TRACK_F&lt;/column&gt;
+    &lt;column column="CALENDAR_DAY.INSESSION"&gt;INSESSION&lt;/column&gt;
+    &lt;column column="CALENDAR_DAY.SCHOOLID"&gt;SCHOOLID&lt;/column&gt;
+    &lt;column column="TERMS.YEARID"&gt;SCHOOLYEAR&lt;/column&gt;
+&lt;/columns&gt;</pre>
+        </li>
+        <li>Save your changes to example.named_queries.xml.</li>
+</ol>
+
+<h2>Declare Access Request</h2>
+    <p>
+        In these steps you will define the necessary access requests in the plugin definition. Without the access requests
+        the named query will not be able to return data. Access requests for fields used in the select columns, joins,
+        where clause, and order clause must all be included.
+    </p>
+    <ol>
+        <li>Locate the plugin.xml file in examples/namedquery directory and open it in a text editor.</li>
+        <li>Every field that is used in the named query must be declared in an &lt;access_request&gt; element in the plugin.
+            Note that this includes fields used in the select statement columns, joins, and where clause. The sample below
+            declares all of the fields:
+<pre class="prettyprint">
+&lt;access_request&gt;
+    &lt;field table="CYCLE_DAY" field="ID" access="ViewOnly" /&gt;
+    &lt;field table="CYCLE_DAY" field="LETTER" access="ViewOnly" /&gt;
+    &lt;field table="CALENDAR_DAY" field="DATE_VALUE" access="ViewOnly" /&gt;
+    &lt;field table="CALENDAR_DAY" field="A" access="ViewOnly" /&gt;
+    &lt;field table="CALENDAR_DAY" field="B" access="ViewOnly" /&gt;
+    &lt;field table="CALENDAR_DAY" field="C" access="ViewOnly" /&gt;
+    &lt;field table="CALENDAR_DAY" field="D" access="ViewOnly" /&gt;
+    &lt;field table="CALENDAR_DAY" field="E" access="ViewOnly" /&gt;
+    &lt;field table="CALENDAR_DAY" field="F" access="ViewOnly" /&gt;
+    &lt;field table="CALENDAR_DAY" field="INSESSION" access="ViewOnly" /&gt;
+    &lt;field table="CALENDAR_DAY" field="SCHOOLID" access="ViewOnly" /&gt;
+    &lt;field table="CALENDAR_DAY" field="CYCLE_DAY_ID" access="ViewOnly" /&gt;
+    &lt;field table="SCHOOLS" field="ID" access="ViewOnly" /&gt;
+    &lt;field table="SCHOOLS" field="SCHOOL_NUMBER" access="ViewOnly" /&gt;
+    &lt;field table="TERMS" field="ID" access="ViewOnly" /&gt;
+    &lt;field table="TERMS" field="SCHOOLID" access="ViewOnly" /&gt;
+    &lt;field table="TERMS" field="YEARID" access="ViewOnly" /&gt;
+    &lt;field table="TERMS" field="ISYEARREC" access="ViewOnly" /&gt;
+    &lt;field table="TERMS" field="FIRSTDAY" access="ViewOnly" /&gt;
+    &lt;field table="TERMS" field="LASTDAY" access="ViewOnly" /&gt;
+&lt;/access_request&gt;
+</pre>
+        <li>Save your changes to plugin.xml.</li>
+
+    </ol>
+
+<h2>Create Plugin Package</h2>
+    <p>
+        In these steps you will create a plugin package that includes the named query definition. A plugin package is simply
+        a ZIP file.
+    </p>
+
+    <ol>
+        <li>Locate examples/namedquery folder where you have edited the plugin.xml file:
+          <ul>
+            <li>If you are in Windows, shift-select both the plugin.xml file and the queries_root folder, then right-click >
+              Send To > Compressed (zipped) folder. A plugin.zip file will be generated.</li>
+            <li>If you have a separate compression or archiving application, use that application but make sure that
+              the plugin.xml is at the top level of the zip file. It should not be within another folder.</li>
+          </ul>
+        </li>
+        </ol>
+
+    <h2>Deploy Plugin Package</h2>
+    <p>
+        In these steps you will install and enable the plugin so that the named query becomes available as resource.
+    </p>
+
+    <ol>
+        <li>Sign in to the PowerSchool Administrator Portal.</li>
+        <li>Navigate to <strong>System > System Settings > Plugin Management Configuration</strong>.</li>
+        <li>Click the <strong>Install</strong> button, which will take you to the Plugin Install page. </li>
+        <li>Click the <strong>Choose File</strong>          button and select the plugin.zip that you created.</li>
+        <li>Click the <strong>Install</strong> button again. You should get a successful installation message.</li>
+        <li>Select the <strong>Enable/Disable</strong> checkbox. This will present a drawer asking you confirmation to enable the plugin.
+        The drawer will specify that a Named Query is part of the plugin and will itemize the access requests.</li>
+    </ol>
+
+<h2>Invoke the Named Query</h2>
+    <p>In these steps you will invoke your new named query using your favorite REST client.</p>
+
+    <ol>
+    <li>Generate an <a href="..\data-access\oauth\reference.html">access token</a> for your newly installed plugin.</li>
+    <li>Open your preferred REST client and specify the request details below. </li>
+    <li>Note that the payload includes example values for schoolid and schoolyear parameters.      </li>
+    <li>Replace these example values with values that makes sense in your own data.
+      <pre class="prettyprint">
+Method:
+    POST
+
+URL:
+    https://[your_server]/ws/schema/query/com.company.product.school.school_calendar
+
+Headers:
+   Authorization: Bearer [access_token]
+   Content-Type: application/json
+
+Payload:
+    { schoolid: 123, schoolyear: 2005 }</pre>
+    </li>
+    <li>
+        Send the request. If it is successful you will get a response like below:
+        <pre class="prettyprint">
+{
+    "name": "CALENDAR_DAY",
+    "record": [
+        {
+            "name": "CALENDAR_DAY",
+            "tables": {
+                "calendar_day": {
+                    "schoolid": "2101055",
+                    "day_of_week": "MONDAY   ",
+                    "calendar_date": "1999-08-30",
+                    "schoolyear": "1999",
+                    "track_d": "1",
+                    "track_e": "1",
+                    "track_f": "1",
+                    "track_a": "1",
+                    "track_c": "1",
+                    "insession": "1",
+                    "track_b": "1",
+                    "cycle_day_letter": "A"
+                }
+            }
+        }
+    ],
+    "@extensions": ""
+}</pre>
+    </li>
+    </ol>
+
+</div>
+</div>
+</div>
+
+    <footer id="footer">
+        <p>
+            <small>Copyright &copy; 2014 Pearson Education, Inc. or its
+                affiliates. All rights reserved. All trademarks are either owned
+                or licensed by Pearson Education, Inc. or its affiliates. Other
+                brands and names are the property of their respective owners.</small>
+        </p>
+        <p>
+            <small>PowerSchool is a trademark, in the U.S. and/or other
+                countries, of Pearson Education, Inc. or its affiliate(s).</small>
+        </p>
+        <p>
+            <small>The data and names used to illustrate the reports,
+                screen images, and examples may include names of individuals,
+                companies, brands, and products. All of the data and names are
+                fictitious; any similarities to actual names are entirely
+                coincidental.</small>
+        </p>
+    </footer>
+</div>
+
+
+</body>
+</html>
+
+
+

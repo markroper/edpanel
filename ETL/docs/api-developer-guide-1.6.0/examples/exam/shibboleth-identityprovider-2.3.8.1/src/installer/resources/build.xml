@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Shibboleth Identity Provider" basedir="../../.." default="install">
+
+    <property name="installer.dir" value="${basedir}/src/installer"/>
+    <property name="resources.dir" value="${installer.dir}/resources"/>
+    <property name="tools.dir" value="${basedir}/src/tools"/>
+    <property name="webapp.dir" value="${basedir}/src/main/webapp"/>
+    <property name="war.name" value="idp"/>
+	
+    <!-- Load property from the environment -->
+    <property environment="env"/>
+
+    <!-- Installation specific property file -->
+    <property file="${resources.dir}/install.properties"/>
+	
+    <!-- Load ant-contrib tasks -->
+    <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+
+    <!-- Load Internet2 ant extensions -->
+    <taskdef resource="edu/internet2/middleware/ant/antlib.xml"/>
+
+
+  <path id="login.module.class.path">
+        <fileset dir="lib">
+            <include name="**/*.jar"/>
+        </fileset>
+  </path>
+  <target name="login-module-compile">
+		<mkdir dir="SimpleLoginModule/classes" />
+		<javac srcdir="SimpleLoginModule/src" destdir="SimpleLoginModule/classes" classpath=".">
+		      <classpath refid="login.module.class.path"/>
+	    </javac>
+	</target>
+	
+	<target name="login-module-jar" depends="login-module-compile">
+		<jar destfile="lib/simpleLogin.jar" basedir="SimpleLoginModule/classes" /> 
+	</target>
+	
+    <target name="install" description="Installs the identity provider software." depends="login-module-jar">
+    	
+    	<echo message="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"/>
+    	<echo message="Be sure you have read the installation/upgrade instructions on the Shibboleth website before proceeding."/>
+    	<echo message="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"/>
+        
+        <input message="Where should the Shibboleth Identity Provider software be installed?" addproperty="idp.home.input" defaultvalue="${idp.home}"/>
+        <var name="idp.home" value="${idp.home.input}"/>
+
+        <pathToAbsolutePath path="${idp.home}" addproperty="idp.home.path"/>
+        <pathToUrl path="${idp.home}" addproperty="idp.home.url"/>
+        
+        <if>
+            <available file="${idp.home.path}" property="idp.home.exists"/>
+            <then>
+                <input message="The directory '${idp.home.path}' already exists.  Would you like to overwrite this Shibboleth configuration?" addproperty="install.config" validargs="yes,no" defaultvalue="no"/>
+            </then>
+            <else>
+                <var name="install.config" value="yes"/>
+            </else>
+        </if>
+
+        <if>
+            <equals arg1="${install.config}" arg2="yes"/>
+            <then>
+                <input message="What is the fully qualified hostname of the Shibboleth Identity Provider server?" addproperty="idp.hostname.input" defaultvalue="${idp.hostname}"/>
+                <var name="idp.hostname" value="${idp.hostname.input}"/>
+
+                <input message="A keystore is about to be generated for you. Please enter a password that will be used to protect it." addproperty="idp.keystore.pass"/>
+
+                <propertyfile file="${resources.dir}/install.properties">
+                    <entry key="idp.home" value="${idp.home.input}"/>
+                    <entry key="idp.hostname" value="${idp.hostname.input}"/>
+                </propertyfile>
+
+                <mkdir dir="${idp.home.path}"/>
+                <mkdir dir="${idp.home.path}/bin"/>
+                <mkdir dir="${idp.home.path}/conf"/>
+                <mkdir dir="${idp.home.path}/credentials"/>
+                <mkdir dir="${idp.home.path}/lib"/>
+                <mkdir dir="${idp.home.path}/logs"/>
+                <mkdir dir="${idp.home.path}/metadata"/>
+				<mkdir dir="${idp.home.path}/war"/>
+                <mkdir dir="${idp.home.path}/apache-tomcat-7"/>
+				<mkdir dir="${idp.home.path}/apache-tomcat-7/endorsed"/>
+                <mkdir dir="${idp.home.path}/apache-tomcat-7/conf"/>
+                <mkdir dir="${idp.home.path}/apache-tomcat-7/conf/Catalina"/>
+                <mkdir dir="${idp.home.path}/apache-tomcat-7/conf/Catalina/localhost"/>
+
+                <var name="idp.entity.id" value="https://${idp.hostname}:8443/idp/shibboleth"/>
+                <var name="idp.web.xml.name" value="${webapp.dir}/WEB-INF/web.xml"/>
+
+                <regexSplit input="${idp.hostname}:8443" regex="^.*\.(.*\..*$)" addproperty="idp.scope"/>
+
+                <echo message="Generating signing and encryption key, certificate, and keystore. "/>
+            	
+            	<if>
+            	    <isset property="env.IdPCertLifetime"/>
+            		<then>
+            			<var name="idp.cert.lifetime" value="${env.IdPCertLifetime}"/>
+            		</then>
+            		<else>
+            			<var name="idp.cert.lifetime" value="20"/>
+            		</else>
+            	</if>
+            		
+                <selfSignedCert hostname="${idp.hostname}:8443" uriSubjectAltNames="${idp.entity.id}" certificateLifetime="${idp.cert.lifetime}"
+                	            privateKeyFile="${idp.home.path}/credentials/idp.key" certificateFile="${idp.home.path}/credentials/idp.crt" 
+                	            keystoreFile="${idp.home.path}/credentials/idp.jks" keystorePassword="${idp.keystore.pass}" />
+
+				
+				<echo message=" "/>
+				<echo message=" "/>
+				<input message="Service Provider info: What is the PowerSchool Service Provider OID host?" addproperty="sp.oid.host.input" defaultvalue="${sp.oid.host}"/>
+                <var name="sp.oid.host" value="${sp.oid.host.input}"/>
+				
+				<echo message=" "/>
+				<echo message=" "/>
+				<input message="Metadata Provider setup: What is the PowerSchool Service Provider entity ID?" addproperty="sp.entity.id.input" defaultvalue="${sp.entity.id}"/>
+                <var name="sp.entity.id" value="${sp.entity.id.input}"/>
+				
+				<echo message=" "/>
+				<echo message=" "/>
+				<input message="Metadata Provider setup: What is the PowerSchool Service Provider metadata URL?" addproperty="sp.metadata.url.input" defaultvalue="${sp.metadata.url}"/>
+                <var name="sp.metadata.url" value="${sp.metadata.url.input}"/>
+				
+				<echo message=" "/>
+				<echo message=" "/>
+				<input message="IDP Authentication setup: Enter the admin credentials to be used for authentication [username;password]:" addproperty="admin.cred.input" defaultvalue="${admin.cred}"/>
+                <var name="admin.cred" value="${admin.cred.input}"/>
+
+				<echo message=" "/>
+				<echo message=" "/>
+				<input message="IDP Authentication setup: Enter the teacher credentials to be used for authentication [username;password]:" addproperty="teacher.cred.input" defaultvalue="${teacher.cred}"/>
+                <var name="teacher.cred" value="${teacher.cred.input}"/>
+
+				<echo message=" "/>
+				<echo message=" "/>
+				<input message="IDP Authentication setup: Enter the student credentials to be used for authentication [username;password]:" addproperty="student.cred.input" defaultvalue="${student.cred}"/>
+                <var name="student.cred" value="${student.cred.input}"/>
+
+				<echo message=" "/>
+				<echo message=" "/>
+				<input message="IDP Authentication setup: Enter the guardian credentials to be used for authentication [username;password]:" addproperty="guardian.cred.input" defaultvalue="${guardian.cred}"/>
+                <var name="guardian.cred" value="${guardian.cred.input}"/>
+				
+                <copy todir="${idp.home.path}/bin" preservelastmodified="true" overwrite="true">
+                    <fileset dir="${tools.dir}/bash"/>
+                    <fileset dir="${tools.dir}/bat"/>
+                    <filterset begintoken="$" endtoken="$">
+                        <filter token="IDP_HOME" value="${idp.home.path}"/>
+                        <filter token="IDP_VERSION" value="${version}"/>
+                    </filterset>
+                </copy>
+
+                <copy todir="${idp.home.path}/conf" preservelastmodified="true" overwrite="true">
+                    <fileset dir="${resources.dir}/conf-tmpl"/>
+                    <filterset begintoken="$" endtoken="$">
+                        <filter token="IDP_HOME" value="${idp.home.path}"/>
+                        <filter token="IDP_VERSION" value="${version}"/>
+                        <filter token="IDP_ENTITY_ID" value="${idp.entity.id}"/>
+                        <filter token="IDP_SCOPE" value="${idp.scope}"/>
+                        <filter token="IDP_CERTIFICATE" value="${idp.cert}"/>
+                        <filter token="IDP_HOSTNAME" value="${idp.hostname}:8443"/>
+                        <filter token="SP_OID_HOST" value="${sp.oid.host}"/>
+                        <filter token="SP_ENTITY_ID" value="${sp.entity.id}"/>
+                        <filter token="SP_METADATA_URL" value="${sp.metadata.url}"/>
+                        <filter token="ADMIN_CRED" value="${admin.cred}"/>
+                        <filter token="TEACHER_CRED" value="${teacher.cred}"/>
+                        <filter token="STU_CRED" value="${student.cred}"/>
+                        <filter token="GUARD_CRED" value="${guardian.cred}"/>
+                    </filterset>
+                </copy>
+
+                <copy todir="${idp.home.path}/apache-tomcat-7/conf" preservelastmodified="true" overwrite="true">
+                    <fileset dir="${resources.dir}/apache-tmpl/conf"/>
+                    <filterset begintoken="$" endtoken="$">
+                        <filter token="IDP_CRT_PATH" value="${idp.home.path}\credentials\idp.crt"/>
+                        <filter token="IDP_KEY_PATH" value="${idp.home.path}\credentials\idp.key"/>
+                        <filter token="IDP_JKS_PATH" value="${idp.home.path}\credentials\idp.jks"/>
+                        <filter token="IDP_KEYSTORE_PASS" value="${idp.keystore.pass}"/>
+						<filter token="IDP_HOME" value="${idp.home.path}"/>
+                    </filterset>
+                </copy>
+
+                <stringFromFile input="${idp.home.path}/credentials/idp.crt" addProperty="idp.cert"/>
+                <regexSplit input="${idp.cert}" regex="\A.*-----\s((?:.*\s)*)-----END.*\Z" addproperty="idp.metadata.cert"/>
+                <copy todir="${idp.home.path}/metadata" preservelastmodified="true" overwrite="true">
+                    <fileset dir="${resources.dir}/metadata-tmpl"/>
+                    <filterset begintoken="$" endtoken="$">
+                        <filter token="IDP_ENTITY_ID" value="${idp.entity.id}"/>
+                        <filter token="IDP_SCOPE" value="${idp.scope}"/>
+                        <filter token="IDP_CERTIFICATE" value="${idp.metadata.cert}"/>
+                        <filter token="IDP_HOSTNAME" value="${idp.hostname}:8443"/>
+                    </filterset>
+                </copy>
+            </then>
+            <else>
+                <propertyfile file="${resources.dir}/install.properties">
+                    <entry key="idp.home" value="${idp.home.input}"/>
+                </propertyfile>
+            	
+                <if> 
+                    <available file="${idp.home.path}/conf/web.xml" property="idp.web.xml.exists"/>
+                    <then>
+                        <echo message="Using ${idp.home.path}/conf/web.xml rather than default web.xml"/>
+                        <var name="idp.web.xml.name" value="${idp.home.path}/conf/web.xml"/>
+                    </then>
+                    <else>
+                        <var name="idp.web.xml.name" value="${webapp.dir}/WEB-INF/web.xml"/>
+                    </else>
+                </if>
+
+                <!-- 
+                    Even if we're not overwritting the config we should still add new files, for example, files added
+                    in a new release.
+                -->
+                <var name="idp.entity.id" value="https://${idp.hostname}:8443/idp/shibboleth"/>
+                <regexSplit input="${idp.hostname}:8443" regex="^.*\.(.*\..*$)" addproperty="idp.scope"/>
+                <stringFromFile input="${idp.home.path}/credentials/idp.crt" addProperty="idp.cert"/>
+                    
+                <copy todir="${idp.home.path}/bin" preservelastmodified="true" overwrite="false">
+                    <fileset dir="${tools.dir}/bash">
+                        <present present="srconly" targetdir="${idp.home.path}/bin"/>
+                	</fileset>
+                    <fileset dir="${tools.dir}/bat">
+                    	<present present="srconly" targetdir="${idp.home.path}/bin"/>
+                	</fileset>
+                    <filterset begintoken="$" endtoken="$">
+                        <filter token="IDP_HOME" value="${idp.home.path}"/>
+                        <filter token="IDP_VERSION" value="${version}"/>
+                    </filterset>
+                </copy>
+
+                <copy todir="${idp.home.path}/conf" preservelastmodified="true" overwrite="false">
+                    <fileset dir="${resources.dir}/conf-tmpl">
+                    	<present present="srconly" targetdir="${idp.home.path}/conf"/>
+                	</fileset>
+                    <filterset begintoken="$" endtoken="$">
+                        <filter token="IDP_HOME" value="${idp.home.path}"/>
+                        <filter token="IDP_VERSION" value="${version}"/>
+                        <filter token="IDP_ENTITY_ID" value="${idp.entity.id}"/>
+                        <filter token="IDP_SCOPE" value="${idp.scope}"/>
+                        <filter token="IDP_CERTIFICATE" value="${idp.cert}"/>
+                        <filter token="IDP_HOSTNAME" value="${idp.hostname}:8443"/>
+						<filter token="SP_OID_HOST" value="${sp.oid.host}"/>
+						<filter token="SP_ENTITY_ID" value="${sp.entity.id}"/>
+                        <filter token="SP_METADATA_URL" value="${sp.metadata.url}"/>
+                        <filter token="ADMIN_CRED" value="${admin.cred}"/>
+                        <filter token="TEACHER_CRED" value="${teacher.cred}"/>
+                        <filter token="STU_CRED" value="${student.cred}"/>
+                        <filter token="GUARD_CRED" value="${guardian.cred}"/>
+                    </filterset>
+                </copy>
+            </else>
+        </if>
+                            
+        <chmod file="${idp.home.path}/bin/*.sh" perm="+x"/>
+
+    	<delete>
+    	    <fileset dir="${idp.home.path}/lib" includes="**/*.jar"/>
+        </delete>
+        <copy todir="${idp.home.path}/lib" preservelastmodified="true" overwrite="true">
+            <fileset dir="${basedir}/lib"/>
+        </copy>
+		
+		<!-- create the apache setup -->
+        <copy todir="${idp.home.path}/apache-tomcat-7/endorsed" preservelastmodified="true" failonerror="false" overwrite="true">
+            <fileset dir="src/installer/resources/apache-tmpl/endorsed"/>
+        </copy>
+		
+        <!-- create web.xml -->
+        <copy file="${idp.web.xml.name}" todir="${installer.dir}" preservelastmodified="true" overwrite="true">
+            <filterset begintoken="$" endtoken="$">
+                <filter token="IDP_HOME" value="${idp.home.url}"/>
+            </filterset>
+        </copy>
+
+        <!-- build the war file -->
+        <war warfile="${installer.dir}/${war.name}.war" webxml="${installer.dir}/web.xml">
+            <lib dir="${basedir}/lib" excludes="servlet-api*.jar,jsp-api*.jar"/>
+            <webinf dir="${webapp.dir}/WEB-INF" excludes="web.xml"/>
+            <fileset dir="${webapp.dir}" excludes="WEB-INF/**"/>
+        </war>
+    	<copy file="${installer.dir}/${war.name}.war" todir="${idp.home.path}/war" preservelastmodified="true" overwrite="true"/>
+
+        <!-- Remove generated files -->
+        <delete file="${installer.dir}/web.xml"/>
+    	<delete file="${installer.dir}/${war.name}.war"/>
+    	
+    </target>
+
+    <target name="renew-cert" description="Create a new certificate/key pair."> 
+        <input message="This will create a new set of credentials for your IdP.  If you ran this command previously and still have '*.new' files, they will be overwritten.  Do you wish to proceed?" 
+        	   addproperty="renew.cert.do" validargs="yes,no" defaultvalue="no"/> 
+        <if> 
+        	<equals arg1="${renew.cert.do}" arg2="yes"/> 
+            <then> 
+            	
+                <input message="Where is the Shibboleth Identity Provider installed?" addproperty="idp.home.input" defaultvalue="${idp.home}"/>
+                <var name="idp.home" value="${idp.home.input}"/>
+              
+                <pathToAbsolutePath path="${idp.home}" addproperty="idp.home.path"/> 
+            
+                <input message="What is the fully qualified hostname of the Shibboleth Identity Provider server?" addproperty="idp.hostname.input" defaultvalue="${idp.hostname}"/> 
+                <var name="idp.hostname" value="${idp.hostname.input}"/> 
+                <var name="idp.entity.id" value="https://${idp.hostname}:8443/idp/shibboleth"/> 
+
+                <input message="A keystore is about to be generated for you. Please enter a password that will be used to protect it." addproperty="idp.keystore.pass"/> 
+
+                <if>
+                    <isset property="env.IdPCertLifetime"/>
+                    <then>
+                        <var name="idp.cert.lifetime" value="${env.IdPCertLifetime}"/>
+                    </then>
+                    <else>
+                        <var name="idp.cert.lifetime" value="20"/>
+                    </else>
+                </if>
+        
+                <echo message="Generating new signing and encryption key, certificate, and keystore. "/> 
+                <echo message="hostname: ${idp.hostname}:8443"/>
+                <echo message="certificateLifetime: ${idp.cert.lifetime}"/>
+                <echo message="uriSubjectAltNames: ${idp.entity.id}"/>
+                <echo message="privateKeyFile: ${idp.home.path}/credentials/idp.key.new"/>
+                <echo message="certificateFile: ${idp.home.path}/credentials/idp.crt.new"/>
+                <echo message="keystoreFile: ${idp.home.path}/credentials/idp.jks.new"/>
+                <echo message="keystorePassword: ${idp.keystore.pass}"/>
+                <selfSignedCert hostname="${idp.hostname}:8443" certificateLifetime="${idp.cert.lifetime}" uriSubjectAltNames="${idp.entity.id}"
+                	            privateKeyFile="${idp.home.path}/credentials/idp.key.new" certificateFile="${idp.home.path}/credentials/idp.crt.new"  
+                	            keystoreFile="${idp.home.path}/credentials/idp.jks.new"  keystorePassword="${idp.keystore.pass}" /> 
+            </then>
+        </if>
+    </target>
+</project>

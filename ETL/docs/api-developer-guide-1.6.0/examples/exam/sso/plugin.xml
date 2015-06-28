@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://plugin.powerschool.pearson.com"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation='http://plugin.powerschool.pearson.com plugin.xsd'
+        name="node-js-relying-party"
+        version="1.0"
+        description="A relying party example">
+
+  <openid host="{ip hostname}" port="{port}">
+    <links>
+      <link title="An OPENID relying party implemented in JavaScript" display-text="node-js-relying-party" path="/authenticate">
+        <ui_contexts>
+          <ui_context id="admin.header" />
+          <ui_context id="teacher.header" />
+          <ui_context id="guardian.header" />
+          <ui_context id="student.header" />
+        </ui_contexts>
+      </link>
+    </links>
+  </openid>  
+  
+  <oauth/>
+  
+  <publisher name="Example Publisher">
+    <contact email="publisher@example.com" />
+  </publisher>  
+  
+</plugin>

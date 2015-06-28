@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PowerSchool API Developer Guide</title>
+<link href="../screen.css" rel="stylesheet" type="text/css"
+	media="screen" />
+<link href="../google-code-prettify/prettify.css" type="text/css"
+	rel="stylesheet" />
+<script type="text/javascript" src="../google-code-prettify/prettify.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body class="psDocs" onLoad="prettyPrint()">
+
+	<div id="outer-frame">
+		<div id="page-content">
+			<div id="nav">
+			<ul>
+                <li><a href="../index.html">API Home</a></li>
+                <li><a href="../data-access/index.html">REST API</a></li>
+                <li class="sub1"><a href="../data-access/basic-read-and-write/index.html">Read/Write Access</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/usage.html">General Usage</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/data-dictionary.html">Data Dictionary</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/resources.html">Available Resources</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../data-access/oauth/index.html">Authentication</a></li>
+                <li class="sub2"><a href="../data-access/oauth/reference.html">Reference</a></li>
+                <li class="sub1"><a href="../data-access/notification/index.html">Notification</a></li>
+                <li class="sub2"><a href="../data-access/notification/subscribe.html">Subscription</a></li>                     
+                <li class="sub2"><a href="../data-access/notification/resource-notifications.html">Resource Notifications</a></li>
+                <li><a href="../sso/index.html">Single Sign-On</a></li>
+                <li class="sub1"><a href="../sso/openid-single-sign-on.html">OpenID</a></li>
+                <li class="sub1"><a href="../sso/saml-single-sign-on.html">SAML</a></li>
+                <li class="sub1"><a href="../sso/identity-attribute.html">Identity Attribute</a></li>
+                <li><a href="../linking/index.html">Linking</a></li>
+                <li><a href="../plugin/index.html">Plugin</a></li>
+                <li class="sub1"><a href="../plugin/pluginXML.html">Plugin XML</a></li>
+                <li class="sub1"><a href="../plugin/pluginZIP.html">Plugin Package</a></li>
+                <li><a href="../registration/index.html">Registration</a></li>
+                <li><a href="../examples/index.html">Examples</a></li>
+				<li class="sub1"><a href="../examples/oauth.html">Authentication</a></li>  
+				<li class="sub1"><a href="../examples/data-access.html">Data Access</a></li>
+                <li class="sub1"><a href="../examples/namedquery.html">Named Query</a></li>
+                <li class="sub1 selected"><a href="../examples/enroll-students.html">Enroll Students</a></li>
+                <li class="sub1"><a href="../examples/registration.html">Registration</a></li>
+            	<li class="sub1"><a href="../examples/sso.html">OpenID Relying Party</a></li>                
+            	<li class="sub1"><a href="../examples/sso-data-access.html">SSO with Data Access</a></li>
+				<li class="sub1"><a href="../examples/open-saml-sample-app.html">SAML Service Provider</a></li>
+                <li class="sub1"><a href="../examples/events.html">Event Listener</a></li>
+				<li class="sub1"><a href="../examples/sample-code.html">Environment Setup</a></li>                
+                <li><a href="../toc.html">Terms of Use</a></li>
+            </ul>
+			</div>
+			<div id="right-content">
+				<h1>Enroll Students Example</h1>
+				<div class="box-round">
+					<h2 id="overview">Overview</h2>
+
+					<p>The goal of this example is to demonstrate how to enroll students
+						into PowerSchool using the PowerSchool REST API.</p>
+					<h2>Getting Started</h2>
+					<p>Before running the application:</p>
+					<ul>
+					  <li><a href="examples.zip">Download the example code
+					    package</a>.</li>
+					  <li><a href="sample-code.html#install-nodejs">Install
+					    Node.js</a>.</li>
+					  <li><a href="oauth.html">Walk through the REST API
+					    Authentication Example</a>.</li>
+				  </ul>
+				  <h2>Run the Application</h2>
+					<ol>
+					  <li>Navigate to the <strong>rest-api</strong> directory in the  example code package.</li>
+					    <li>Locate the plugin install file called <span class="bold"><strong>plugin.xml </strong></span>in the rest-api directory. This file contains an <a href="../data-access/oauth/index.html#generation">&lt;oauth&gt;</a> tag for enabling data access.</li>
+					    <li>Install
+								the plugin <a href="sample-code.html#install-plugin">with these instructions</a>. The name of this plugin is <span class="bold">rest-api-example</span>.
+				      <li>Enable the installed plugin <a href="sample-code.html#enable-plugin">with these instructions</a>.                        
+				      <li>Use the client credentials to request an access token. For
+							more information, see <a href="oauth.html"><em>REST API
+								Authentication Example</em></a>.</li>
+					  <li>Open a Terminal Window.</li>
+					  <li>Change the current directory to the rest-api directory.</li>
+                      <li>Modify the <span class="bold">enroll.payload.xml</span> file also found in the rest-api
+                          directory. This sample payload must be modified so that the enrollment grade, entry date,
+                          exit date, and school number are valid in the PowerSchool server that you will be using.
+                      <pre class="prettyprint lang-sh">
+&lt;students&gt;
+	&lt;student&gt;
+		&lt;client_uid&gt;123&lt;/client_uid&gt;
+		&lt;action&gt;INSERT&lt;/action&gt;
+		&lt;name&gt;
+			&lt;first_name&gt;Test1-Firstname&lt;/first_name&gt;
+			&lt;last_name&gt;Test1-Lastname&lt;/last_name&gt;
+		&lt;/name&gt;
+		&lt;school_enrollment&gt;
+			&lt;grade_level&gt;9&lt;/grade_level&gt;
+			&lt;enroll_status&gt;A&lt;/enroll_status&gt;
+			&lt;entry_date&gt;2005-08-25&lt;/entry_date&gt;
+			&lt;exit_date&gt;2006-05-27&lt;/exit_date&gt;
+			&lt;school_number&gt;123456&lt;/school_number&gt;
+		&lt;/school_enrollment&gt;
+	&lt;/student&gt;
+	&lt;student&gt;
+		&lt;client_uid&gt;124&lt;/client_uid&gt;
+		&lt;action&gt;INSERT&lt;/action&gt;
+		&lt;name&gt;
+			&lt;first_name&gt;Test2-Firstname&lt;/first_name&gt;
+			&lt;last_name&gt;Test2-Lastname&lt;/last_name&gt;
+		&lt;/name&gt;
+		&lt;school_enrollment&gt;
+			&lt;grade_level&gt;10&lt;/grade_level&gt;
+			&lt;enroll_status&gt;A&lt;/enroll_status&gt;
+			&lt;entry_date&gt;2005-08-25&lt;/entry_date&gt;
+			&lt;exit_date&gt;2006-05-27&lt;/exit_date&gt;
+			&lt;school_number&gt;123456&lt;/school_number&gt;
+		&lt;/school_enrollment&gt;
+	&lt;/student&gt;
+&lt;/students&gt;</pre>
+                      </li>
+					  <li>Now that you have an access token and a valid enrollment payload, you can run
+					    the program. The script corresponding
+					    to this example is called <span class="bold">enroll.example.js</span>.
+					    <pre class="prettyprint lang-sh">node enroll.example.js "url_of_test_server" "access_token"</pre>
+					    This example program takes three arguments:
+					    <table>
+					      <thead>
+					        <tr>
+					          <th>Arguments</th>
+						        <th>Description</th>
+                              </tr>
+					        </thead>
+					      <tr>
+					        <td>url_of_test_server</td>
+							  <td>The URL of your PowerSchool API Test Server.</td>
+						    </tr>
+					      <tr>
+					        <td>access_token</td>
+							  <td>The credentials used to access the PowerSchool REST API
+							      resources.</td>
+						    </tr>
+                        </table>
+					    For example, you can enter:
+					    <pre class="prettyprint lang-sh">node enroll.example.js "https://example.powerschool.com:7443"  "bdd3904f-d3b2-4f1a-a5bd-a82db8bf0972"</pre>
+						<strong>Note:</strong> The operating system may reserve the use of certain ports.  If this is the case, you will need to run the script while in administrative mode.
+						If another application is already listening to the port you wish to use, then you must shut down the other application before running the script.
+				      </li>
+					  <li>After running the program, the output appears showing the header and body of the response.
+					  The example below has been formatted for clarity. The actual output will not have the same format.
+<pre class="prettyprint">Status Code:  200
+Header:  { server: 'Apache-Coyote/1.1',
+  ...
+  'content-type': 'application/xml',
+  'content-length': '548' }
+Body:
+</pre>
+<pre class="prettyprint">
+&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+&lt;results&gt;
+    &lt;insert_count&gt;2&lt;/insert_count&gt;
+    &lt;update_count&gt;0&lt;/update_count&gt;
+    &lt;delete_count&gt;0&lt;/delete_count&gt;
+    &lt;result&gt;
+        &lt;client_uid&gt;123&lt;/client_uid&gt;
+        &lt;status&gt;SUCCESS&lt;/status&gt;
+        &lt;action&gt;INSERT&lt;/action&gt;
+        &lt;success_message&gt;
+            &lt;id&gt;35673&lt;/id&gt;
+            &lt;ref&gt;https://example.powerschool.com:7443/ws/v1/student/35673&lt;/ref&gt;
+        &lt;/success_message&gt;
+    &lt;/result&gt;
+    &lt;result&gt;
+        &lt;client_uid&gt;124&lt;/client_uid&gt;
+        &lt;status&gt;SUCCESS&lt;/status&gt;
+        &lt;action&gt;INSERT&lt;/action&gt;
+        &lt;success_message&gt;
+            &lt;id&gt;35674&lt;/id&gt;
+            &lt;ref&gt;https://example.powerschool.com:7443/ws/v1/student/35674&lt;/ref&gt;
+        &lt;/success_message&gt;
+    &lt;/result&gt;
+&lt;/results&gt;</pre></li>
+						<li>The output has three sections: <br /> <pre
+								class="prettyprint lang-xhtml">Status Code:  200</pre>
+						  The HTTP status code
+							returned by PowerSchool. 200 indicates the request has <a
+							href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1" target="_blank">
+                                succeeded</a>.
+                            These are <a href="http://en.wikipedia.org/wiki/List_of_HTTP_header_fields" target="_blank">HTTP
+                                header fields</a> included in the response from PowerSchool. <br />
+<pre class="prettyprint">
+Header:  {
+  ...
+  'content-type':'application/xml',
+  'content-length':'548'
+}</pre>
+The body of the HTTP response is a <a href="../data-access/basic-read-and-write/data-dictionary.html#results">Results</a>
+                            structure as shown below. The body example has been formatted for clarity, the actual body will
+							be a single line that wraps.
+<pre class="prettyprint">
+&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+&lt;results&gt;
+    &lt;insert_count&gt;2&lt;/insert_count&gt;
+    &lt;update_count&gt;0&lt;/update_count&gt;
+    &lt;delete_count&gt;0&lt;/delete_count&gt;
+    &lt;result&gt;
+        &lt;client_uid&gt;123&lt;/client_uid&gt;
+        &lt;status&gt;SUCCESS&lt;/status&gt;
+        &lt;action&gt;INSERT&lt;/action&gt;
+        &lt;success_message&gt;
+            &lt;id&gt;35673&lt;/id&gt;
+            &lt;ref&gt;https://example.powerschool.com:7443/ws/v1/student/35673&lt;/ref&gt;
+        &lt;/success_message&gt;
+    &lt;/result&gt;
+    &lt;result&gt;
+        &lt;client_uid&gt;124&lt;/client_uid&gt;
+        &lt;status&gt;SUCCESS&lt;/status&gt;
+        &lt;action&gt;INSERT&lt;/action&gt;
+        &lt;success_message&gt;
+            &lt;id&gt;35674&lt;/id&gt;
+            &lt;ref&gt;https://example.powerschool.com:7443/ws/v1/student/35674&lt;/ref&gt;
+        &lt;/success_message&gt;
+    &lt;/result&gt;
+&lt;/results&gt;</pre>
+</li>
+					</ol>
+				  <h2>A Closer Look at the Application</h2>
+					<ol>
+					<li>
+						The script <span class="bold">resource.example.js</span> starts with setting up parameters for <a href="../data-access/oauth/reference.html#authenticate">Authenticated Request</a> by placing the command line arguments into the <span class="bold">options</span> object.
+
+<pre class="prettyprint">
+var https = require('https');
+var url = require('url');
+var fs = require('fs');
+
+var args = process.argv.splice(2);
+var powerschoolServerUrl = args[0];
+var accessToken = args[1];
+
+var options = url.parse(powerschoolServerUrl);
+options.path = '/ws/v1/student';
+options.method = 'POST';
+options.headers = {
+    'Accept' : 'application/xml',
+    'Authorization' : 'Bearer ' + accessToken
+};
+</pre>
+</li>
+<li>
+Then the script reads the <span class="bold">enroll.payload.xml</span> file and defines a callback method to process
+    the payload.
+<pre class="prettyprint">
+fs.readFile('enroll.payload.xml', 'utf8', function(err,payload) {
+...
+}
+</pre>
+</li>
+<li>
+The callback method for the readFile first checks if there was an error reading the file and logs the
+    error to the console.
+<pre class="prettyprint">
+	if (err) {
+		return console.log(err);
+	}
+</pre>
+</li>
+<li>
+Then the callback method defines the request object that will perform the POST. This also defines another callback
+    method that will log the response to the console:
+<pre class="prettyprint">
+	var req = https.request(options, function(res) {
+		var data = '';
+		console.log('Status Code: ', res.statusCode);
+		console.log('Header: ', res.headers);
+		res.on('data', function(d) {
+			data += d;
+		});
+		res.on('end',function(){
+			if(data !== '') {
+				try {
+					console.log('Body:');
+					console.log(data);
+				} catch ( exception ) {
+					if (exception instanceof SyntaxError ) {
+						console.log(data);
+					} else {
+						throw exception;
+					}
+				}
+			}
+		});
+	});
+</pre>
+</li>
+<li>
+Finally, the following lines perform the request with the payload, end the request, and specify a handler when an
+    error occurs.
+<pre class="prettyprint">
+	req.write(payload);
+
+	req.end();
+
+	req.on('error', function(e) {
+		console.error('Powerschool test server not found, please check the PowerSchool URL and try again\n' + e);
+	});
+</pre>
+</li>
+</ol>
+<h2>What's Next</h2>
+<p>
+When a successful enrollment occurs, the response includes a <a
+href="../data-access/basic-read-and-write/data-dictionary.html#success_message">success_message</a> which
+contains the URI for the newly created student. For more information on how to use the URI, see <a
+href="../data-access/index.html"><em>PowerSchool REST API Reference</em></a>.
+</div>
+</div>
+
+			<footer id="footer">
+				<p>
+					<small>Copyright © 2014 Pearson Education, Inc. or its affiliates. All rights reserved. All trademarks are either owned
+						or licensed by Pearson Education, Inc. or its affiliates. Other
+						brands and names are the property of their respective owners.</small>
+				</p>
+				<p>
+					<small>PowerSchool is a trademark, in the U.S. and/or other
+						countries, of Pearson Education, Inc. or its affiliate(s).</small>
+				</p>
+				<p>
+					<small>The data and names used to illustrate the reports,
+						screen images, and examples may include names of individuals,
+						companies, brands, and products. All of the data and names are
+						fictitious; any similarities to actual names are entirely
+						coincidental.</small>
+				</p>
+			</footer>
+		</div>
+	</div>
+
+</body>
+</html>
+
+
+

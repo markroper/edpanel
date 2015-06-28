@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PowerSchool API Developer Guide</title>
+    <link href="../../screen.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="../../google-code-prettify/prettify.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="../../google-code-prettify/prettify.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body class="psDocs" onLoad="prettyPrint()">
+
+<div id="outer-frame">
+    <div id="page-content">
+        <div id="nav">
+            <ul>
+                <li><a href="../../index.html">API Home</a></li>
+                <li><a href="../../data-access/index.html">REST API</a></li>
+                <li class="sub1"><a href="../../data-access/basic-read-and-write/index.html">Read/Write Access</a></li>
+                <li class="sub2"><a href="../../data-access/basic-read-and-write/usage.html">General Usage</a></li>
+                <li class="sub2"><a href="../../data-access/basic-read-and-write/data-dictionary.html">Data Dictionary</a></li>
+                <li class="sub2"><a href="../../data-access/basic-read-and-write/resources.html">Available Resources</a></li>
+                <li class="sub2"><a href="../../data-access/basic-read-and-write/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../../data-access/oauth/index.html">Authentication</a></li>
+                <li class="sub2"><a href="../../data-access/oauth/reference.html">Reference</a></li>
+                <li class="sub1"><a href="../../data-access/notification/index.html">Notification</a></li>
+                <li class="sub2 selected"><a href="../../data-access/notification/subscribe.html">Subscription</a></li>                
+                <li class="sub2"><a href="../../data-access/notification/resource-notifications.html">Resource Notifications</a></li>
+                <li><a href="../../sso/index.html">Single Sign-On</a></li>
+                <li class="sub1"><a href="../../sso/openid-single-sign-on.html">OpenID</a></li>
+                <li class="sub1"><a href="../../sso/saml-single-sign-on.html">SAML</a></li>
+                <li class="sub1"><a href="../../sso/identity-attribute.html">Identity Attribute</a></li>
+                <li><a href="../../linking/index.html">Linking</a></li>
+                <li><a href="../../plugin/index.html">Plugin</a></li>
+                <li class="sub1"><a href="../../plugin/pluginXML.html">Plugin XML</a></li>
+                <li class="sub1"><a href="../../plugin/pluginZIP.html">Plugin Package</a></li>
+                <li><a href="../../registration/index.html">Registration</a></li>
+                <li><a href="../../examples/index.html">Examples</a></li>
+				<li class="sub1"><a href="../../examples/oauth.html">Authentication </a></li>  
+				<li class="sub1"><a href="../../examples/data-access.html">Data Access</a></li>
+                <li class="sub1"><a href="../../examples/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../../examples/enroll-students.html">Enroll Students</a></li>
+                <li class="sub1"><a href="../../examples/registration.html">Registration </a></li>
+            	<li class="sub1"><a href="../../examples/sso.html">OpenID Relying Party </a></li>                
+            	<li class="sub1"><a href="../../examples/sso-data-access.html">SSO with Data Access</a></li>
+				<li class="sub1"><a href="../../examples/open-saml-sample-app.html">SAML Service Provider</a></li>
+                <li class="sub1"><a href="../../examples/events.html">Event Listener</a></li>
+				<li class="sub1"><a href="../../examples/sample-code.html">Environment Setup</a></li>         
+                <li><a href="../../toc.html">Terms of Use</a></li>
+            </ul>
+        </div>
+        <div id="right-content">
+<h1>Subscribe to Data Change and Business Events</h1>
+
+<div class="box-round">
+<h2>Introduction</h2>
+<p>You can manage your event subscriptions via the event subscription resource (<b>/ws/v1/event_subscription</b>), which is also a REST service. For general usage information about REST service, see <a href="../basic-read-and-write/usage.html"><em>General Usage</em></a>.</p>
+<h2 id="subscribe">Subscribe to Events</h2>
+<p>To subscribe to data change and business events, send an <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6" target="_blank">HTTP PUT request</a> to <a href="../basic-read-and-write/resources.html#put_event_subscriptions">the event subscription resource</a> with an <a href="../basic-read-and-write/data-dictionary.html#event_subscriptions">Event Subscriptions Entity</a> in the request body. By default, events triggered by your own usage of the REST API resources will not be sent to your webhook server. You can change this behavior by including the element <strong>include_self_notification</strong> in your subscription.
+</p>
+
+<p>Example:</p>
+<pre class="prettyprint lang-xhtml">
+PUT /ws/v1/event_subscription HTTP/1.1
+Host: server.example.com
+Authorization: Bearer 119628ce-1734-45c8-9ac1-cf91e51f85e2
+Content-Type: application/json
+
+{
+    event_subscriptions: {
+        callback_url: 'https://www.example.com/webhook',
+        event_subscription: [
+            {
+                resource: '/ws/v1/student/*',
+                event_type: 'INSERT'
+            },
+            {
+                resource: '/ws/v1/student/*',
+                event_type: 'DELETE'
+            },
+            {
+                resource: '/ws/v1/student/*',
+                event_type: 'SCHOOL_ENROLLMENT'
+            }
+        ],
+        include_self_notification: true
+    }
+}
+</pre>
+
+<h2 id="review">Review Current Subscriptions</h2>
+<p>To review your current subscriptions, send an <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3" target="_blank">HTTP GET request</a> to <a href="../basic-read-and-write/resources.html#get_event_subscriptions">the event subscription resource</a>.</p>
+<p>Example:</p>
+<pre class="prettyprint lang-xhtml">
+GET /ws/v1/event_subscription HTTP/1.1
+Host: server.example.com
+Authorization: Bearer 119628ce-1734-45c8-9ac1-cf91e51f85e2
+Accept: application/json
+</pre>
+
+<h2 id="update">Update Subscriptions to Events</h2>
+<p>To update existing subscriptions to events, send an <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6" target="_blank">HTTP PUT request</a> to <a href="../basic-read-and-write/resources.html#put_event_subscriptions">the event subscription resource</a> with an <a href="../basic-read-and-write/data-dictionary.html#event_subscriptions">Event Subscriptions Entity</a> in the request body.</p>
+<p>Any update to the subscriptions will overwrite all existing subscriptions.</p> 
+
+<h2 id="unsubscribe">Unsubscribe to All Events</h2>
+<p>To unsubscribe to all events, send an <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3" target="_blank">HTTP DELETE request</a> to <a href="../basic-read-and-write/resources.html#delete_event_subscriptions">the event subscription resource</a>.</p>
+<p>Example:</p>
+<pre class="prettyprint lang-xhtml">
+DELETE /ws/v1/event_subscription HTTP/1.1
+Host: server.example.com
+Authorization: Bearer 119628ce-1734-45c8-9ac1-cf91e51f85e2
+</pre>
+</div>
+    </div>
+
+    <footer id="footer">
+        <p><small>Copyright © 2014 Pearson Education, Inc. or its affiliates. All rights reserved. All trademarks are either owned or licensed by Pearson Education, Inc. or its affiliates. Other brands and names are the property of their respective owners.</small></p>
+        <p><small>PowerSchool is a trademark, in the U.S. and/or other countries, of Pearson Education, Inc. or its affiliate(s).</small></p>
+        <p><small>The data and names used to illustrate the reports, screen images, and examples may include names of individuals, companies, brands, and products. All of the data and names are fictitious; any similarities to actual names are entirely coincidental.</small></p>
+    </footer>
+    </div>
+    </div>
+
+  </body>
+</html>

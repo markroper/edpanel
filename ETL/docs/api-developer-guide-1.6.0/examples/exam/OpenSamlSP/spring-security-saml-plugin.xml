@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://plugin.powerschool.pearson.com"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation='http://plugin.powerschool.pearson.com plugin.xsd'
+        name="springsecuritysaml"
+        version="1.0"
+        description="spring security saml integration">
+
+  <saml
+		name="springsecuritysaml" 
+		entity-id="springsecuritysaml"
+		base-url="http://localhost:8080/"
+		metadata-url="http://localhost:8080/spring-security-saml2-sp/saml/metadata/alias/defaultAlias" >
+
+	
+    <links>	   
+      <link title="OpenSaml SP" display-text="SpringSecurity SAML" path="http://localhost:8080/spring-security-saml2-sp/saml/login/alias/defaultAlias?disco=true">
+        <ui_contexts>
+          <ui_context id="admin.header" />
+		  <ui_context id="admin.left_nav"/>
+		  <ui_context id="teacher.header" />
+          <ui_context id="student.header" />
+          <ui_context id="guardian.header" />
+        </ui_contexts>
+      </link>
+    </links>
+	
+	<attributes>
+		<user type="admin">
+			<attribute name="role"/>
+			<attribute name="FIRST_NAME"/>
+			<attribute name="LAST_NAME" />
+			<attribute name="LASTFIRST" />
+			<attribute name="SCHOOLID" />
+
+		</user>	
+		<user type="teacher">
+			<attribute name="FIRST_NAME" />
+			<attribute name="LAST_NAME" />
+			<attribute name="LASTFIRST" />
+			<attribute name="SCHOOLID" />
+			<attribute name="institutions" attribute-value="name" />			
+		</user>			
+		<user type="student">
+			<attribute name="FIRST_NAME" />
+			<attribute name="institutions" attribute-value="name" />			
+		</user>
+		<user type="guardian">
+			<attribute name="FIRSTNAME" />
+			<attribute name="LASTNAME" />
+			<attribute name="institutions" attribute-value="alternate_school_number" />	
+			<attribute name="students" attribute-value="dcid" />				
+
+		</user>
+    </attributes>
+		<permissions group-name="AGroup">
+			<permission name="P1" description="Permission 1" value="PERM_1" />
+			<permission name="P2" description="Permission 2" value="PERM_2" />
+			<permission name="P3" description="Permission 3" value="PERM_3" />
+		</permissions>
+
+  </saml>  
+  
+  <publisher name="Pearson PowerSchool">
+    <contact email="publisher@example.com" />
+  </publisher>  
+  
+</plugin>

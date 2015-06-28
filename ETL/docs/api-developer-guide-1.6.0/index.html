@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PowerSchool API Developer Guide</title>
+    <link href="screen.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="google-code-prettify/prettify.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="google-code-prettify/prettify.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body class="psDocs" onLoad="prettyPrint()">
+
+<div id="outer-frame">
+    <div id="page-content">
+        <div id="nav">
+            <ul>
+                <li class="selected"><a href="index.html">API Home</a></li>
+                <li><a href="data-access/index.html">REST API</a></li>
+                <li class="sub1"><a href="data-access/basic-read-and-write/index.html">Read/Write Access</a></li>
+                <li class="sub2"><a href="data-access/basic-read-and-write/usage.html">General Usage</a></li>
+                <li class="sub2"><a href="data-access/basic-read-and-write/data-dictionary.html">Data Dictionary</a></li>
+                <li class="sub2"><a href="data-access/basic-read-and-write/resources.html">Available Resources</a></li>
+                <li class="sub2"><a href="data-access/basic-read-and-write/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="data-access/oauth/index.html">Authentication</a></li>
+                <li class="sub2"><a href="data-access/oauth/reference.html">Reference</a></li>
+                <li class="sub1"><a href="data-access/notification/index.html">Notification</a></li>
+                <li class="sub2"><a href="data-access/notification/subscribe.html">Subscription</a></li>
+                <li class="sub2"><a href="data-access/notification/resource-notifications.html">Resource Notifications</a></li>
+                <li><a href="sso/index.html">Single Sign-On</a></li>
+                <li class="sub1"><a href="sso/openid-single-sign-on.html">OpenID</a></li>
+                <li class="sub1"><a href="sso/saml-single-sign-on.html">SAML</a></li>
+                <li class="sub1"><a href="sso/identity-attribute.html">Identity Attribute</a></li>
+                <li><a href="linking/index.html">Linking</a></li>
+                <li><a href="plugin/index.html">Plugin</a></li>
+                <li class="sub1"><a href="plugin/pluginXML.html">Plugin XML</a></li>
+                <li class="sub1"><a href="plugin/pluginZIP.html">Plugin Package</a></li>
+                <li><a href="registration/index.html">Registration</a></li>
+                <li><a href="examples/index.html">Examples</a></li>
+				<li class="sub1"><a href="examples/oauth.html">Authentication </a></li>
+				<li class="sub1"><a href="examples/data-access.html">Data Access</a></li>
+                <li class="sub1"><a href="examples/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="examples/enroll-students.html">Enroll Students</a></li>
+                <li class="sub1"><a href="examples/registration.html">Registration </a></li>
+            	<li class="sub1"><a href="examples/sso.html">OpenID Relying Party </a></li>
+            	<li class="sub1"><a href="examples/sso-data-access.html">SSO with Data Access</a></li>
+				<li class="sub1"><a href="examples/open-saml-sample-app.html">SAML Service Provider</a></li>
+            	<li class="sub1"><a href="examples/events.html">Event Listener</a></li>
+				<li class="sub1"><a href="examples/sample-code.html">Environment Setup</a></li>
+                <li><a href="toc.html">Terms of Use</a></li>
+            </ul>
+        </div>
+        <div id="right-content">
+            <h1>PowerSchool API Developer Guide</h1>
+
+<div class="box-round">
+    <h2 id="version">Version</h2>
+
+    <p>PowerSchool API version 1.6.0 - PowerTeacher Gradebook API version 2.0.0 - Released December 2014</p>
+
+    <p>
+        This edition applies to Release 8.2 of the PowerSchool software and to all subsequent releases and modifications until otherwise indicated in new editions or updates.
+    </p>
+
+    <h2 id="preface">Preface</h2>
+
+    <p>
+        Use the PowerSchool API to develop integrations between your application and PowerSchool. This guide is intended for use by software developers with application and web services development experience.
+    </p>
+
+    <p>
+        <b>Note:</b> Use of the PowerSchool API is subject to license agreement with Pearson Education, Inc.. Depending upon your licensing level, some or all of the features described in this guide may be unavailable to you.
+    </p>
+
+    <h2 id="introduction">Introduction</h2>
+
+    <p>
+        The PowerSchool API is a set of web services that enable developers to deliver application integrations with PowerSchool.
+    </p>
+
+    <p>
+        The PowerSchool API supports all of the features necessary for developers to deliver rich, seamless, excellent quality application integrations with PowerSchool, including:
+    </p>
+    <ul>
+        <li>
+            <b>Data Access</b> so that you can read your users' PowerSchool data into your application, write their changes back, and receive data change notifications from PowerSchool.
+        </li>
+
+        <li>
+            <b>Linking</b> so that your users can easily access your application from PowerSchool and can take advantage of simple to advanced integrated workflows.
+        </li>
+
+        <li>
+            <b>Single Sign-On</b> so that your users can seamlessly navigate between PowerSchool and your application without reauthentication.
+        </li>
+        <li>
+            <b>Registration</b> so that you can identify PowerSchool instance integrated with your application.
+        </li>
+
+    </ul>
+		<p>This documentation also includes a set of example applications to help get you started with using the PowerSchool API.</p>
+
+    <h2 id="changes">Changes in Version 1.6</h2>
+    <dl>
+        <dt>Named Query</dt>
+        <dd>A <a href="data-access/basic-read-and-write/namedquery.html">Named Query</a> is a new data resource that can be
+            defined by the plugin developer and deployed with the <a href="plugin/pluginZIP.html">Plugin Package.</a></dd>
+        <dt>All Table Access</dt>
+        <dd>All tables in the PowerSchool schema, except for a small list of blacklisted tables, are now accessible
+        using the <a href="data-access/basic-read-and-write/namedquery.html">Named Query</a> and
+        <a href="data-access/basic-read-and-write/resources.html#table_resource">Table Resource.</a></dd>
+		<dt>Access Request</dt>
+        <dd>Plugins must now declare an <a href="plugin/pluginXML.html#tag_access_request">Access Request</a> for all fields
+            that they intend to access using the API.</dd>
+        <dt>Student SSN and Lunch Status Security</dt>
+        <dd>The student SSN and LUNCHSTATUS fields must be requested in the <a href="plugin/pluginXML.html#tag_access_request">Access Request</a>
+        to access them through the <a href="data-access/basic-read-and-write/resources.html#student_resource">Student Resource.</a></dd>
+        <dt>Identity Attribute</dt>
+        <dd>SAML single sign-on can be enhanced using <a href="sso/identity-attribute.html">Identity Attribute</a>
+            to include a variety of user type specific identifiers in the SAML Response.</dd>
+        <dt>Extension Fields as SAML Attributes</dt>
+        <dd>Extension fields to the STUDENTS, USERS, and GUARDIAN tables can now be sent as SAML
+            <a href="sso/saml-single-sign-on.html#extended-schema-support">Extended Schema Attributes.</a></dd>
+    </dl>
+
+	<h2 id="known_issues">Known Issues in Version 1.6</h2>
+    <dl>
+		<dt>Plugin declared named queries are not available for internal requests</dt>
+		<dd><a href="data-access/basic-read-and-write/namedquery.html">Named Queries</a> that are declared and deployed through a plugin package are only accessible through an external or plugin request.
+		These are requests that include an OAuth access token. They are not accessible through an internal request. This means that
+		plugin defined named queries cannot be invoked through customizations in the PowerSchool portal pages.</dd> <dd><b>Workaround:</b> 
+		There is currently no workaround for this issue. Internal access support for named queries is planned for a later release.
+		</dd>
+		<dt>Table resource queries to core tables are not available for internal requests</dt>
+		<dd><a href="data-access/basic-read-and-write/resources.html#table_resource">Table Resource</a> external requests support
+		both core and extension tables. But for internal requests, only extension tables can be requested.</dd>
+		<dd><b>Workaround:</b> There is currently no workaround for this issue. Internal access to core tables for the table resource is 
+		planned for a later release.
+        <dt>Extended schema declaration and access request validation</dt>
+        <dd>When a plugin package contains both extended schema declaration and access request to fields in the new extended schema, the
+		PowerSchool administrator will not be able to enable the plugin because the access request validation is not able to see the new
+		extended schema fields.</dd> <dd><b>Workaround:</b> Create two separate plugins, one that declares the extended schema, another that
+		declares the access request to the fields in the extended schema. The PowerSchool administrator must enable the plugin with the 
+		extended schema declaration first, then enable the plugin with the access request.</dd>
+		<dt>Invalid extended schema declaration in plugins</dt>
+		<dd>Invalid extended schema declarations in plugins, such as those with invalid characters in field and table names,
+		will not generate a visible error message through the plugin installation page and will cause the plugin installation to suspend.</dd>
+		<dd><b>Workaround:</b> The problems with the extended schema definition will be logged in the psj-runtime log. Review the log file
+		and correct the problems, then re-install the plugin.
+ 	</dl>
+	
+    <h2 id="versioning">Versioning Policy</h2>
+
+    <p>
+        In order to provide assurance to our partners, Pearson uses a versioning policy that defines how we maintain the
+		API. Specifically, there are two kinds of endpoints defined in the API:
+    </p>
+	<ul>
+	  <li><b>Versioned endpoints</b>, which have a version number associated with them and which conform to the versioning policy.</li>
+	  <li><b>Unversioned endpoints</b>, which do not have a version number and which do not conform to the versioning policy.</li>
+	</ul>
+    <p>
+		Pearson has defined these two types of endpoints in an effort to have a middle ground that provides backward compatibility guarantees
+		where they are practical, but allows flexibility for certain parts of the API that are thought to be changeable.
+    </p>
+    <p>
+		The versioning policy is a variation of <a href="http://semver.org/">semantic versioning.</a> Read that document for further information. To summarize the document contents:    </p>
+	<ul>
+	  <li>Version numbers are given as X.Y.Z, where X denotes the major version number, Y denotes the minor version number, and Z is the patch version.</li>
+	  <li>Changes that break backward compatibility result in increase of major version number.</li>
+	  <li>New functionality that is backward compatibility results in increase of minor version number.</li>
+	  <li>Bug fixes only result in increase of patch version number.</li>
+	</ul>
+    <p>
+		In addition to the semantic versioning guarantees, Pearson's versioning policy also attempts (on a "best effort" basis) to make no
+		fewer changes to the API than necessary. That is,  a major version change is not seen as an opportunity to change everything.    </p>
+    <p>
+		Since API clients can depend on only backward-compatible changes being made within a major version, only the version number is present
+		on the endpoint URI. For example, /ws/v1/school is used rather than /ws/v1.0.0/school. This is because all sub-versions of 1 are
+		backward compatible and thus should be usable by clients using the same URI.
+    </p>
+    <p>
+		Finally, the API guide indicates, for each resource and data dictionary element, the first version in which that element was available.
+		Unversioned endpoints will indicate their lack of versioning.
+    </p>
+
+	<h2 id="contents">Contents</h2>
+    <dl>
+        <dt><a href="data-access/index.html">PowerSchool REST API</a></dt>
+        <dd>Reading and writing PowerSchool and PowerTeacher data. Includes basic read and write access, as well as the data model and mapping references.</dd>
+        <dt><a href="linking/index.html">Linking</a></dt>
+        <dd>Adding navigation links from PowerSchool to integrated applications.</dd>
+        <dt><a href="sso/index.html">Single Sign-On</a></dt>
+        <dd>Developing a single sign-on integration with PowerSchool.</dd>
+        <dt><a href="registration/index.html">Registration</a></dt>
+        <dd>Registering PowerSchool instance to your application.</dd>
+        <dt><a href="plugin/index.html">Plugin XML Reference</a></dt>
+        <dd>Including information about Plugin XML file.</dd>
+		<dt><a href="examples/index.html">Examples</a></dt>
+		<dd>Demonstrating how to use the PowerSchool API.</dd>
+        <dt><a href="toc.html">Terms of Use</a></dt>
+		<dd>Terms of Use for the PowerSchool API.</dd>
+    </dl>
+
+</div>
+        </div>
+
+        <footer id="footer">
+            <p><small>Copyright &copy; 2014 Pearson Education, Inc. or its affiliates. All rights reserved. All trademarks are either owned or licensed by Pearson Education, Inc. or its affiliates. Other brands and names are the property of their respective owners.</small></p>
+            <p><small>PowerSchool is a trademark, in the U.S. and/or other countries, of Pearson Education, Inc. or its affiliate(s).</small></p>
+            <p><small>The data and names used to illustrate the reports, screen images, and examples may include names of individuals, companies, brands, and products. All of the data and names are fictitious; any similarities to actual names are entirely coincidental.</small></p>
+        </footer>
+    </div>
+</div>
+
+</body>
+</html>

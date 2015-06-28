@@ -1,0 +1,33 @@
+html, body {
+	height: 100%;
+}
+
+body {
+	font-family: Arial, sans-Serif;
+	font-size: 14px;
+	line-height: 1.5em;
+	color: #333333;
+	background-color: #F5F5F5;
+}
+
+h2 {
+	margin: 20px;
+	color: #002850;
+	word-wrap: break-word;
+	font-size: 128%;
+	font-weight: bold;
+	position: relative;
+}
+
+#container {
+	margin: 200px auto;
+	width: 450px;
+	padding: 20px;	
+	background: white;
+	-moz-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4);
+	-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
+	box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4);
+	position: relative;
+}
+
+/* @end */

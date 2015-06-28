@@ -1,2 +1,1 @@
-include 'common',
-		'warehouse'
+include 'common', 'warehouse', 'ETL'

@@ -1,0 +1,63 @@
+div.loginbox {
+    background-color: #FFFFFF;
+    position: relative;
+    width: 840px;
+    height: 300px;
+}
+
+div.loginbox div.leftpane {
+    border: 2px #A40000 solid;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 47%;
+    height: 90%;
+}
+
+div.loginbox div.rightpane {
+	border: 2px #A40000 solid;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 47%;
+    height: 90%;
+    overflow: hidden;
+    text-align: center;
+}
+
+div.loginbox div.content{
+    padding-top: 5px;
+    padding-left: 7px;
+    padding-right: 7px;
+    margin:auto;
+}
+
+div.loginbox #splogo{
+}
+
+
+div.loginbox #clippedsplogoX {
+    width: 350px;
+}
+
+div.loginbox #clippedsplogoY {
+    height: 147px;
+}
+
+div.loginbox #spName{
+    padding-top:5px;
+    padding-bottom:5px;
+    font-size:1.2em;
+}
+
+div.loginbox #spDescription{
+    padding-top:15px;
+    text-align:left;
+}
+
+/*
+div.loginbox button, div {
+	height: 46px;
+	width: 80%;
+}
+*/

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<Server port="8885" shutdown="SHUTDOWN">
+	<Listener SSLEngine="on" className="org.apache.catalina.core.AprLifecycleListener"/>
+	<Listener className="org.apache.catalina.core.JasperListener"/>
+	<Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener"/>
+	<Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener"/>
+	<Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener"/>
+
+    <GlobalNamingResources>
+		<Resource auth="Container" description="User database that can be updated and saved" factory="org.apache.catalina.users.MemoryUserDatabaseFactory" name="UserDatabase" pathname="conf/tomcat-users.xml" type="org.apache.catalina.UserDatabase"/>
+    </GlobalNamingResources>
+
+    <Service name="Catalina">
+
+    <!-- Connector connectionTimeout="20000" port="8080" protocol="HTTP/1.1" redirectPort="8443"/  -->
+	
+	<!-- Insert additional existing connectors here, or copy the SSL connector (below) to your apache installation server.xml file -->
+	<!-- NOTE: This apache installation MUST run outside of PowerSchool. Since PowerSchool will most likely be using ports 80 and 443, this configuration is provided so IdP hosting can occur on the 
+		 same machine as your development PowerSchool installation. -->
+
+	<Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true" maxThreads="150" 
+        scheme="https" secure="true" clientAuth="false" sslProtocol="TLS"
+        SSLCertificateFile="$IDP_CRT_PATH$"
+        SSLCertificateKeyFile="$IDP_KEY_PATH$"
+        keystoreFile="$IDP_JKS_PATH$"
+        keystorePass="$IDP_KEYSTORE_PASS$"
+    />
+	
+    <!-- Define an AJP 1.3 Connector on port 8999 -->
+	<Connector port="8999" protocol="AJP/1.3" tomcatAuthentication="false" scheme="https" redirectPort="8443" address="127.0.0.1" />
+
+    <Engine defaultHost="localhost" name="Catalina">
+		<Realm className="org.apache.catalina.realm.LockOutRealm">
+			<Realm className="org.apache.catalina.realm.UserDatabaseRealm" resourceName="UserDatabase"/>
+		</Realm>
+		<Host appBase="webapps" autoDeploy="false" name="localhost" unpackWARs="true" xmlNamespaceAware="false" xmlValidation="false">
+			<Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs" pattern="%h %l %u %t &quot;%r&quot; %s %b" prefix="localhost_access_log." suffix=".txt"/>
+		</Host>
+    </Engine>
+  </Service>
+</Server>

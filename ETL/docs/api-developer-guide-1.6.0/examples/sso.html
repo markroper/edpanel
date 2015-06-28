@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PowerSchool API Developer Guide</title>
+    <link href="../screen.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="../google-code-prettify/prettify.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="../google-code-prettify/prettify.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body class="psDocs" onLoad="prettyPrint()">
+
+<div id="outer-frame">
+    <div id="page-content">
+        <div id="nav">
+            <ul>
+                <li><a href="../index.html">API Home</a></li>
+                <li><a href="../data-access/index.html">REST API</a></li>
+                <li class="sub1"><a href="../data-access/basic-read-and-write/index.html">Read/Write Access</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/usage.html">General Usage</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/data-dictionary.html">Data Dictionary</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/resources.html">Available Resources</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../data-access/oauth/index.html">Authentication</a></li>
+                <li class="sub2"><a href="../data-access/oauth/reference.html">Reference</a></li>
+                <li class="sub1"><a href="../data-access/notification/index.html">Notification</a></li>
+                <li class="sub2"><a href="../data-access/notification/subscribe.html">Subscription</a></li>                     
+                <li class="sub2"><a href="../data-access/notification/resource-notifications.html">Resource Notifications</a></li>
+                <li><a href="../sso/index.html">Single Sign-On</a></li>
+                <li class="sub1"><a href="../sso/openid-single-sign-on.html">OpenID</a></li>
+                <li class="sub1"><a href="../sso/saml-single-sign-on.html">SAML</a></li>
+                <li class="sub1"><a href="../sso/identity-attribute.html">Identity Attribute</a></li>
+                <li><a href="../linking/index.html">Linking</a></li>
+                <li><a href="../plugin/index.html">Plugin</a></li>
+                <li class="sub1"><a href="../plugin/pluginXML.html">Plugin XML</a></li>
+                <li class="sub1"><a href="../plugin/pluginZIP.html">Plugin Package</a></li>
+                <li><a href="../registration/index.html">Registration</a></li>
+                <li><a href="../examples/index.html">Examples</a></li>
+                <li class="sub1"><a href="../examples/oauth.html">Authentication</a></li>
+				<li class="sub1"><a href="../examples/data-access.html">Data Access</a></li>
+                <li class="sub1"><a href="../examples/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../examples/enroll-students.html">Enroll Students</a></li>
+                <li class="sub1"><a href="../examples/registration.html">Registration</a></li>
+				<li class="sub1 selected"><a href="../examples/sso.html">OpenID Relying Party</a></li>
+				<li class="sub1"><a href="../examples/sso-data-access.html">SSO with Data Access</a></li>
+				<li class="sub1"><a href="../examples/open-saml-sample-app.html">SAML Service Provider</a></li>
+                <li class="sub1"><a href="../examples/events.html">Event Listener</a></li>
+                <li class="sub1"><a href="../examples/sample-code.html">Environment Setup</a></li>
+                <li><a href="../toc.html">Terms of Use</a></li>
+            </ul>
+        </div>
+        <div id="right-content">
+
+<h1>OpenID Relying Party  Example</h1>
+<div class="box-round">
+    <h2>Overview</h2>
+    <p>The goal of this example is to demonstrate how to build an OpenID relying party that allows PowerSchool users to sign in. </p>
+
+    <h2>Getting Started</h2>
+    <p>Before running the application:</p>
+    <ul>
+      <li><a href="sample-code.html#sample-code-package">Download the example code package</a>.</li>
+      <li><a href="sample-code.html#install-nodejs">Install Node.js</a>.</li>
+      <li><a href="sample-code.html#certificates">Obtain a valid SSL certificate</a>.</li>
+    </ul>
+    <h2>Run the Application</h2>
+    <ol>
+		<li>Navigate to the <strong>sso</strong> directory in the  example code package.</li>
+		<li>Open <span class="bold">plugin.xml</span>. This file contains an <a href="../sso/index.html#declare">&lt;openid&gt;</a> tag for enabling single sign-on integration.</li>
+		<li>Replace <span class="bold">{ip_hostname}</span> with the IP or hostname of your computer and <span class="bold">{port}</span> with any available port number. The example code is going to listen on the selected port.
+		  <pre class="prettyprint">&lt;openid host="{ip_hostname}" port="{port}"&gt;</pre>
+        </li>
+        <li>Install
+          the plugin <a href="sample-code.html#install-plugin">with these instructions</a>. The name of this plugin is<span class="bold"> node-js-relying-party</span>.
+        <li>Enable the installed plugin <a href="sample-code.html#enable-plugin">with these instructions</a>.  The Applications icon <img src="../images/icon-plug.png"> appears in the navigation toolbar (header bar).        
+        <li>Open a Terminal Window.</li>
+		<li>Change the current directory to the <strong class="bold">sso</strong> directory of the example code package.</li>
+		<li>Enter the following command to install <a href="http://expressjs.com/" target="_blank">Express</a>:
+              <pre class="prettyprint lang-xhtml">npm install express@2.5.9</pre>
+		</li>  
+		<li>Enter the following command to install <a href="http://ox.no/software/node-openid" target="_blank">OpenID For Node.js</a>:
+              <pre class="prettyprint lang-xhtml">npm install openid@0.4.2</pre>
+		</li>  
+		<li>Enter the following command to install <a href="https://github.com/kof/node-jqtpl" target="_blank">JQTPL</a>:
+              <pre class="prettyprint lang-xhtml">npm install jqtpl@1.1.0</pre>
+		</li>  				
+        <li>Start the relying party server. The script for this example is called <b>relyingparty.js</b>.
+            <pre class="prettyprint lang-sh">node relyingparty.js "ip_hostname" "port" "key_file" "cert_file"</pre>
+            This example program takes four arguments:
+            <table>
+                <colgroup>
+                    <col style="width: 100px;"/>
+                    <col style="width: 400px;"/>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>Argument</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>ip_hostname</td>
+                    <td>The IP or hostname of the machine running this example relying party. It must be the same as the value that replaced <span class="bold">{ip_hostname}</span> in plugin.xml.</td>
+                </tr>
+                <tr>
+                    <td>port</td>
+                    <td>The port number that this example relying party is listening on. It must be the same as the value that replaced <span class="bold">{port}</span> in plugin.xml.</td>
+                </tr>
+                <tr>
+                    <td>key_file</td>
+                    <td>The path to the key file that comes from the <a href="sample-code.html#certificates">SSL Certificate</a>.</td>
+                </tr>
+                <tr>
+                    <td>cert_file</td>
+                    <td>The path to the certificate file that comes from the <a href="sample-code.html#certificates">SSL Certificate</a>.</td>
+                </tr>                
+                </tbody>
+            </table>
+            For example, you can enter:
+            <pre class="prettyprint lang-sh">node relyingparty.js "this.server.hostname" "443" "ssl-certificate.key" "ssl-certificate.crt"</pre>
+			<strong>Note:</strong> The operating system may reserve the use of certain ports.  If this is the case, you will need to run the script while in administrative mode.
+				If another application is already listening to the port you wish to use, then you must shut down the other application before running the script.       </li>
+		<li>Go back to the PowerSchool admin portal. </li>		
+		<li>Click the <strong>Applications</strong> icon <img src="../images/icon-plug.png"> in the navigation toolbar (header bar).	The Applications drawer slides      into view.</li>
+		<li>Click the <span class="bold">node-js-relying-party</span> link. You should see a page with the message "Authentication succeeded!" and the PowerSchool ID of the current user.</li>
+        </ol>
+
+    <h2 id="closer">A Closer Look at the Application</h2>
+    <ol>
+        <li>The application script <b>relyingparty.js</b> starts with parsing the command line arguments.
+<pre class="prettyprint">
+  var args = process.argv.splice(2);
+  if (args.length != 4 ){
+    console.log("Usage: node relyingparty.js ip_hostname port key_file cert_file");
+    process.exit(1);
+  }
+  var ip_hostname = args[0];
+  var port = args[1]; 
+  var key_file = args[2];
+  var cert_file = args[3];
+...
+</pre>
+        </li>
+
+      <li>Then the script creates an object representing a HTTPS web server.
+        <pre class="prettyprint">
+...
+  var app = require('express').createServer({
+    key: require('fs').readFileSync(key_file),
+    cert: require('fs').readFileSync(cert_file)
+  });
+...
+</pre>
+</li>
+<li>It then configures the <a href="http://expressjs.com/guide.html#view-rendering" target="_blank">view rendering engine</a> (like asking the web server to use <a href="https://github.com/kof/node-jqtpl" target="_blank">JQTPL</a> as the rendering engine and find templates in a sub-directory called "views" and static web pages in a sub-directory called  "public"). You can disregard this as it is for rendering web pages only.
+  <pre class="prettyprint">
+...
+  app.register(".html", require("jqtpl").express);
+  app.set('views', __dirname + '/views');
+  app.use(require('express').static(__dirname + '/public'));
+...
+</pre>
+</li>
+      <li>After that, the script creates an <a href="http://openid.net/specs/openid-attribute-exchange-1_0.html" target="_blank">OpenID Attribute Exchange</a> extension object ("attribute_exchange_ext") and specifies <a href="../sso/index.html#ax">the additional user attributes</a> it needs from PowerSchool. In this case, the example requests <a href="../data-access/basic-read-and-write/resources.html#get_staff_by_id">the PowerSchool ID</a> ("'openid.ax.type.dcid'") of the user.   
+<pre class="prettyprint">
+...
+  var openid = require('openid');
+  var attribute_exchange_ext = new openid.AttributeExchange();
+  attribute_exchange_ext.requestParams['openid.ax.type.dcid'] = "http://powerschool.com/entity/id";
+  attribute_exchange_ext.requestParams['openid.ax.type.email'] = "http://powerschool.com/entity/email";
+  attribute_exchange_ext.requestParams['openid.ax.type.firstName'] = "http://powerschool.com/entity/firstName";
+  attribute_exchange_ext.requestParams['openid.ax.type.lastName'] = "http://powerschool.com/entity/lastName";
+  attribute_exchange_ext.requestParams['openid.ax.required'] = "dcid,email,firstName,lastName";
+...
+</pre>
+<li>Then the script creates a relying party object. The URL "https://ip_hostname:port/verify" points to the web service for <a href="http://openid.net/specs/openid-authentication-2_0.html#responding_to_authentication" target="_blank">accepting authentication response</a> and <a href="http://openid.net/specs/openid-authentication-2_0.html#verification" target="_blank">verifying assertions</a>, and will be the value of <a href="http://openid.net/specs/openid-authentication-2_0.html#rfc.section.9.1" target="_blank">openid.return_to</a>. Please also note that the attribute exchange extension object ("attribute_exchange_ext") is passed as an argument.    
+  <pre class="prettyprint">
+...
+  var relyingParty = new openid.RelyingParty(
+    'https://' + ip_hostname + ':'+ port + '/verify', 
+    null, 
+    false, 
+    false, 
+    [attribute_exchange_ext]); 
+...
+</pre>
+        </li>
+<li>Now the script creates a web service for accepting PowerSchool OpenID and initiating OpenID Authentication ("relyingParty.authenticate()"). If there are any issues, the script will print the result to web page by calling <a href="http://expressjs.com/guide.html#view-rendering" target="_blank">the render method</a> ("res.render('failure.html', error.message);"). 
+  <pre class="prettyprint">
+...
+  app.get('/authenticate', function(req, res){
+    console.log("--------------------------------------------------------------------------------");    
+    console.log('Accepting authentication request ...');
+    console.log("Query params ...\n" + require('util').inspect(req.query, false));
+    var identifier = req.param('openid_identifier');
+    relyingParty.authenticate(identifier, false, function(error, authUrl){
+      if (error){
+        res.render('failure.html', error.message);
+      } else if (!authUrl){
+        res.render('failure.html', {'message': "Authorization URL isn't available"});
+      } else {
+        res.writeHead(302, { Location: authUrl });
+        res.end();
+      }
+    });
+  });
+...
+</pre>
+</li>
+<li>Then, the script creates a web service for <a href="http://openid.net/specs/openid-authentication-2_0.html#responding_to_authentication" target="_blank">accepting authentication response</a> and <a href="http://openid.net/specs/openid-authentication-2_0.html#verification" target="_blank">verifying assertions</a>.
+<pre class="prettyprint">
+...
+  app.get('/verify', function(req,res){
+    relyingParty.verifyAssertion(req, function(error, result){
+      console.log("--------------------------------------------------------------------------------");  
+      console.log('Verification Result: \n' + require('util').inspect(result, false));		
+      if (error || result.authenticated != true) {
+        res.render('failure.html', error.message);
+        return;
+      } 
+      value = {};
+      value.id = result.dcid;
+      if (result.email) {
+        value.email = result.email;
+      }
+      if (result.firstName) {
+        value.email = result.firstName;
+      }
+      if (result.lastName) {
+        value.email = result.lastName;
+      }
+      res.render('success.html', value);  
+    });
+  });
+...
+</pre>
+</li>
+  <li>Lastly, the script sets the listening port and starts the web server. 
+<pre class="prettyprint">
+...
+  app.listen(port, function() {
+    console.log("Server started.");
+  });
+...
+</pre>
+</li>
+</ol>
+
+    <h2>What's Next</h2>
+    <p>Now that you tried the Simple Single Sign-On example, you may want to check out our <a href="sso-data-access.html">Single Sign-On with Data Access Example</a>.</p>
+</div>
+
+        </div>
+
+        <footer id="footer">
+            <p><small>Copyright © 2014 Pearson Education, Inc. or its affiliates. All rights reserved. All trademarks are either owned or licensed by Pearson Education, Inc. or its affiliates. Other brands and names are the property of their respective owners.</small></p>
+            <p><small>PowerSchool is a trademark, in the U.S. and/or other countries, of Pearson Education, Inc. or its affiliate(s).</small></p>
+            <p><small>The data and names used to illustrate the reports, screen images, and examples may include names of individuals, companies, brands, and products. All of the data and names are fictitious; any similarities to actual names are entirely coincidental.</small></p>
+        </footer>
+    </div>
+</div>
+
+</body>
+</html>

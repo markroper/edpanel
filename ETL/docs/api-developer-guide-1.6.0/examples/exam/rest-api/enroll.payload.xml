@@ -1,0 +1,32 @@
+<students>
+	<student>
+		<client_uid>123</client_uid>
+		<action>INSERT</action>
+		<name>
+			<first_name>Test1-Firstname</first_name>
+			<last_name>Test1-Lastname</last_name>
+		</name>
+		<school_enrollment>
+			<grade_level>9</grade_level>
+			<enroll_status>A</enroll_status>
+			<entry_date>2005-08-25</entry_date>
+			<exit_date>2006-05-27</exit_date>
+			<school_number>123456</school_number>
+		</school_enrollment>
+	</student>
+	<student>
+		<client_uid>124</client_uid>
+		<action>INSERT</action>
+		<name>
+			<first_name>Test2-Firstname</first_name>
+			<last_name>Test2-Lastname</last_name>
+		</name>
+		<school_enrollment>
+			<grade_level>10</grade_level>
+			<enroll_status>A</enroll_status>
+			<entry_date>2005-08-25</entry_date>
+			<exit_date>2006-05-27</exit_date>
+			<school_number>123456</school_number>
+		</school_enrollment>
+	</student>
+</students>

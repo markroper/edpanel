@@ -1,0 +1,242 @@
+Changes in Release 2.3.8.1 (PowerSchool Specific IdP sample app)
+- One default FileBackedHTTPMetadataProvider is provided during setup. This should point the IdP at the PowerSchool installation to be used as a service provider. 
+- The default enabled handler has been changed from RemoteUser to UsernamePassword, and a new login module is provided that stores valid authentication credentials directly from the login.config.
+- An apache tomcat 7 server.xml and idp.xml file is provided for easy tomcat setup.
+
+Changes in Release 2.3.8
+=============================================
+- Pick up shib-common lib 1.3.7 that contains a fix for SC-183
+
+Changes in Release 2.3.7
+=============================================
+[SIDP-543] - No support for data URI in combination with MDUI Logo but for mailto?
+[SIDP-547] - VelocityEngine initialization was not effectively using UTF-8 input and output encoding
+[SIDP-549] - Incorrect handling of returned authn error in SSO profile handlers
+[SIDP-550] - Default IdP metadata provider uses an undocumented plugin
+[SIDP-552] - IdP-Metadata containing german umlauts shows encoding-problems on Microsoft Windows
+
+Changes in Release 2.3.6
+=============================================
+[SIDP-532] - ExternalAuthnSystemLoginHandler incorrectly logs as RemoteUserLoginHandler
+[SIDP-536] - LoginContext added to storage service twice but only cleared once
+[SIDP-538] - Response does not contain Status when assertion assigning is enabled but signing credential is improperly configured
+[SIDP-539] - Update dependencies
+
+Changes in Release 2.3.5
+=============================================
+[SIDP-529] - NPE with isPassive
+[SIDP-530] - Spring mistakenly updated to v3 in IdP 2.3.4 build
+
+Changes in Release 2.3.4
+=============================================
+[SIDP-508] - NullPointerException in AuthenticationEngine
+[SIDP-510] - Error with stack trace when passive cannot be honored
+[SIDP-511] - ExternalAuthnSystemLoginHandler does not support forceAuthn/isPassive
+[SIDP-512] - idpui taglib should iterate over all browser aproved languages
+[SIDP-513] - idpui taglib could look for more languages matches
+[SIDP-514] - Alt text for IdP Logos is not esapiEncoder.encodeForHTMLAttribute
+[SIDP-516] - Example login.jsp / Usage of label tag
+[SIDP-519] - Switching between multiple login handlers cause first context to be sticky in Shib-Authentication-Method
+[SIDP-520] - Ipad/iOS devices will auto capitalize text entered into the IdP login screen, which can cause errors. Adding an HTML element will prevent that
+[SIDP-521] - Allow specificying file location of renewed key and certificate
+[SIDP-522] - supplied examples shouldn't promote federation URIs as relying parties
+[SIDP-523] - Add access to inbound AuthnRequest
+
+Changes in Release 2.3.3
+=============================================
+[SIDP-504] - Alt text generate for logo has mismatched quoting
+
+Changes in Release 2.3.2
+=============================================
+[SIDP-500] - shibboleth-identityprovider-2.3.1 installer broken on Windows 7 (64-bit) and Windows XP
+ - Update version of Shib Common library
+
+Changes in Release 2.3.1
+=============================================
+[SIDP-490] - REMOTE_USER handler not detecting empty value
+[SIDP-491] - Stylesheet link in login.jsp is not inside the head tag
+[SIDP-492] - bin/version causes exception
+[SIDP-494] - login.config sample needs updating
+[SIDP-497] - Queries should return the same NameID supplied by the caller
+
+Changes in Release 2.3.0
+=============================================
+[SIDP-272] - Regenerate self-signed certificate with installer task
+[SIDP-404] - Add an install-time setting for the path to web.xml
+[SIDP-429] - Limit metadata SP credential resolution for encryption to RSA keys only
+[SIDP-442] - Add JSESSIONID and ClientIP to MDC
+[SIDP-448] - Create a login handler that provides authn "state" data to an external authentication 
+             system and has that system authenticate the user.
+[SIDP-461] - Add legacy Shib SSO protocol as binding for IdP-initiated SSO for SAML 2.0
+[SIDP-464] - An SPNameQualifier in NameIDPolicy always treated as an affiliation
+[SIDP-468] - Add taglib to simplify rendering login pages.
+[SIDP-469] - eduPersonTargetedID Could Be Separately Commented
+[SIDP-471] - Taglibs appear to be caching SP information
+[SIDP-401] - Quick installer no longer does special things to the Tomcat installation for the "administrator" login
+[SIDP-474] - NPE in taglib processing (bug never released).
+[SIDP-475] - Better login page for IdP
+[SIDP-478] - ECP profile support
+[SIDP-480] - Update POM to add plugin versions, use / publish to Shib.net Repo, and attach generated source and Javadocs
+[SIDP-482] - JSP pages should HTML-encode any strings they handle
+[SIDP-483] - Log Completed, Unencrypted SAML Assertion
+[SIDP-484] - Login stops at AuthnEngine with an empty page
+[SIDP-485] - <img> inside HTML pages must have alt attribute.[SIDP-486] - login.jsp page contains old wiki link
+[SIDP-487] - More login.jsp changes (CR/LF issues, missing period)
+[SIDP-488] - PeerEntityId property not set on SAML queries
+[SIDP-489] - Typos in idpui.tld
+
+Changes in Release 2.2.1
+=============================================
+[SIDP-286] - Configurable validity period for self signed certificate
+[SIDP-417] - Shib deployed to root web context, SSOProfileHandler forwards to "/null/AuthnEngine"
+[SIDP-421] - Error logging SOAP queries
+[SIDP-422] - aacli.sh Exception in thread "main" 
+[SIDP-426] - Forced authentication does not reset the AuthnInstant 
+[SIDP-427] - Incorrect handling of returned authn error in SSO profile handlers
+[SIDP-428] - Address lifecycle issues around use of MetadataCredentialResolverFactory
+[SIDP-431] - Typo in default attribute-resolver.xml
+[SIDP-433] - Update libs for 2.2.1
+[SIDP-434] - More Typos in Default attribute-resolver.xml
+[SIDP-432] - Set explicit caching headers on redirects
+[SIDP-435] - Different principal used for index into session storage and transient ID
+[SIDP-436] - Null AuthnContextClassRef causes NPE
+[SIDP-438] - Improve user experience when switching versions of SAML
+[SIDP-443] - Profile handlers override encoder nameQualifier setting
+[SIDP-447] - Fix for SIDP-417 missed RemoteUserLoginHandler
+[SIDP-450] - NPE with AttributeQueryProfile when there are errors resolving attributes
+[SIDP-452] - Facilitate replay detection to Shibboleth SSO
+[SIDP-453] - Session inactivity timeout being treated as a hard expiration time
+[SIDP-457] - would be nice to include displayName in default attribute resolver
+
+Changes in Release 2.2.0
+=============================================
+[SIDP-416] - MetadataProviderObserver leak, new one added on every login
+[SIDP-415] - SAML name identifier value not logged in audit log
+[SIDP-413] - Change link of example login page
+[SIDP-411] - Check for loginContext != null at login.jsp
+[SIDP-409] - Pass IdP w/o authenticating
+[SIDP-407] - Shibboleth SSO profile handler sets incorrect protocol string in outbound message context
+[SIDP-403] - Use text/xml as the media type for returned metadata unless user agent request metadata media type
+[SIDP-402] - Update 3rd party libraries for 2.2 release
+[SIDP-397] - Remove any unit test that won't be fixed in the 2.X branch, fix the rest
+[SIDP-396] - Previous session LoginHandler used even if authentication method has expired
+[SIDP-392] - NullPointerException in LoginContext when authentication method information is null
+[SIDP-388] - Add eduPersonAssurance attribute to attribute-resolver.xml config example
+[SIDP-386] - Session indexes not cleared when session is destroyed
+[SIDP-384] - Incorrect error message set for expired request in Shibboleth SSO Profile Handler
+[SIDP-382] - Less verbose logging for failed attribute queries due to missing name-id
+[SIDP-381] - Use duration notation for assertion lifetime in example config files
+[SIDP-380] - Use of forwards between profile handlers and authentication engine causes problems for uApprove
+[SIDP-379] - Usage of general AuthenticationException in UsernamePasswordLoginHandler
+[SIDP-374] - Switch to use StaticBasicParserPool instead of BasicParserPool
+[SIDP-373] - The SLF4J MDC state is not being properly cleared when request processing is done.
+[SIDP-368] - Provide more acurate login error to servlet when Username/Password login authentication has failed.
+[SIDP-369] - Allow to have cookie Domain set for login context cookie
+[SIDP-365] - Expose uptime of IdP web application with status handler
+[SIDP-362] - Only log exception message without stack trace for expired SAML messages
+[SIDP-360] - Session isn't being set within the attribute request context during a SAML1 attribute query
+[SIDP-359] - HttpServletHelper.getRelyingPartyConfirmationManager misnamed
+[SIDP-355] - Idp reinstall from source overwrite some config files even when "no overwrite" is specified
+[SIDP-301] - Remove use of events in SessionManager so that different StorageService implementations may be more easily used
+[SIDP-288] - Improve consistency of XML configuration defaults/examples
+[SIDP-275] - Using standard JAAS LoginException in UP LoginHandler servlet
+[SC-63] - Use XML Schema duration syntax instead of integers for duration configuration options
+
+Changes in Release 2.1.5
+=============================================
+[SIDP-353] - Default login.jsp crashes on anonymous RPs
+
+Changes in Release 2.1.4
+=============================================
+[SIDP-340] - Default tc-config.xml causes TCNonPortableObjectError
+[SIDP-342] - NameIdentifier encoder mix-up when the SP doesn't support the first NameIdentifier format
+[SIDP-343] - AuthnInstant is updated even when authentication doesn't happen
+[SIDP-348] - Remove Terracotta Configuration from IdP Install
+[SIDP-249] - LoginContext is not removed from StorageService after Authentication Completes
+[SIDP-350] - Installer does not remember installation directory when upgrading
+[SIDP-351] - Attribute resolution errors shouldn't prevent valid authn statement being returned
+
+Changes in Release 2.1.3
+=============================================
+[SIDP-244] - Error message on invalid ACS could be improved
+[SIDP-247] - Log Exception in UP LoginHandler Servlet
+[SIDP-258] - Authentication Engine does not check to ensure returned authenticaiton mechanism from Login Handler is acceptable to the SP
+[SIDP-263] - Suggest adding defaultSigningCredentialRef to the AnonymousRelyingParty element in the default config
+[SIDP-261] - IPAddressLoginHandler addresses comparison fails
+[SIDP-265] - Distinguish requested AuthMethod and default AuthMethod
+[SIDP-266] - General errors triggers error-404.jsp instead of error.jsp
+[SIDP-271] - AuthenticationEngine doesn't correctly handle passive return from login servlet
+[SIDP-276] - Example RDB Connector, quote principal
+[SIDP-277] - Incorrect null check for request context in UsernamePasswordServlet
+[SIDP-279] - IdP should log NameID for auditing
+[SIDP-281] - Customize login.jsp appearance based on relying party
+[SIDP-285] - Use $IDP_SCOPE$ to populate IdP scope in conf-tmpl\attribute-resolver.xml
+[SIDP-291] - Update libs for 2.1.3 release
+[SIDP-292] - login.jsp: wrong using of the attribute rowspan within the tag <td>
+[SIDP-295] - If no cookies are supported/enabled in user agent (browser), display better error message
+[SIDP-296] - Make LoginContext / IdP Session availabe through the public API
+[SIDP-306] - Remove ClientCertAuth rule from SAML 2 SSO SecurityPolicy in relying-party.xml
+[SIDP-310] - Change default relying-party.xml settings for SAML 2 profiles' encryptNameIds parameter from "conditional" to "never"
+[SIDP-315] - Credential provided by UsernamePasswordLogin handler as attribute
+[SIDP-318] - IdP erroneously logs many normal events as errors
+[SIDP-322] - Exception thrown when SP requests a particular authentication method that is not configured
+[SIDP-324] - Add additional information to Status handler
+
+Changes in Release 2.1.2
+=============================================
+* Significant memory optimizations
+[SIDP-260] - NPE in login-err.jsp
+[SIDP-262] - MIME type on metadata profile handler is incorrect
+[SIDP-267] - check if cookies are set on error.jsp
+[SIDP-268] - Expose Metadata on entityID URL
+
+
+Changes in Release 2.1.1
+=============================================
+[SIDP-248] - Signing code in profile handlers and encoders should not just check that a signing credential is supplied, but that a signing key is available in that credential.
+[SIDP-249] - PreviousSession INFO message printed as ERROR message
+[SIDP-250] - AuthenticationEngine::returnToAuthenticationEngine() static method called before servlet init() when clustered.
+[SIDP-251[ - NPE when SAML1 Attribute Query Handler hit with GET request
+[SIDP-252] - IdPSessionFilter throws ArrayIndexOutOfBoundsException on validation of unexpected cookie
+[SIDP-257] - Previous session is used if the user has an existing session but the SP requests an authentication method that is not currently active.
+[SIDP-259] - Installer does not remove old library versions from IDP_HOME/lib
+
+Changes in Release 2.1.0
+=============================================
+[SIDP-20] - Cannot deploy on Windows. Spring and DOS device names?
+[SIDP-164] - Option to make session cookie secure
+[SIDP-165] - Support for SessionNotOnOrAfter
+[SIDP-167] - Missing tags and incomplete login.jsp
+[SIDP-170] - Attribute Filter refresh won't work with "resource:FileBackedHttpResource"
+[SIDP-171] - Cannot deploy to directories in spaces in the names
+[SIDP-172] - AACLI.BAT should check whether IDP_HOME is defined before testing whether it exists
+[SIDP-175] - Security role name missing in web.xml
+[SIDP-176] - useKeyTab should be set to true
+[SIDP-181] - Released Attributes not logged when using SAML2
+[SIDP-183] - make IdP session available to logging system
+[SIDP-185] - NullPointerException after AttributeQuery when Security Rule fails
+[SIDP-189] - NPE in AbstractSAML2ProfileHandler
+[SIDP-194] - Installer can remember the wrong thing
+[SIDP-196] - IdP continues to use old principal name after forced reauthentication
+[SIDP-197] - Misleading error message for ValidationInfo element in relying-party.xml
+[SIDP-199] - loss of login context when deploying the IdP to tomcat's ROOT context
+[SIDP-201] - IdP sends SAML 1 authentication responses without audience conditions
+[SIDP-202] - Saml2LoginContext unable to deserialize serialized AuthnRequest
+[SIDP-203] - Insufficient information logged to track down errant users
+[SIDP-206] - SessionManagerEntry's back reference to the SessionManager object interferes with clustering
+[SIDP-209] - Enforce SAML 2 metadata SPSSODescriptor/@AuthnRequestsSigned
+[SIDP-212] - Wrong confirmation method used with SAML 1.x artifact profile
+[SIDP-214] - Installer needs to put (at least) bcprov onto the calsspath before it runs ant
+[SIDP-215] - SHIB-JCE.jar missing from 2.1.0 kit
+[SIDP-216] - Second of two signed sources of metadata fail after cache expiration
+[SIDP-222] - Template engine used by LDAP and database connectors throw an NPE on startup
+[SIDP-224] - Add version information in library JAR manifest and provide command line tool to view it
+[SIDP-225] - Credential theft vulnerability in login.jsp
+[SIDP-226] - Cross site scripting vulnerability
+[SIDP-227] - Default relying-party.xml has SAML2-specific security policy rules included in SAML 1 security policies
+[SIDP-228] - Improve error reporting in SAML 2 profile handlers when no encryption key is resolveable for the peer entity ID
+[SIDP-229] - IdP Metadata changes to KeyDescriptor not fully flushed from IdP cache
+[SIDP-230] - sanity check provided credentials
+[SIDP-233] - Typo on operation name - public void setAuthenticationDurection(long duration)
+[SIDP-237] - Re-run of install.sh does not create war again
+[SIDP-242] - Cleanup StorageService entry classes

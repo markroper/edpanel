@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PowerSchool API Developer Guide</title>
+    <link href="../screen.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="../google-code-prettify/prettify.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="../google-code-prettify/prettify.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body class="psDocs" onLoad="prettyPrint()">
+
+<div id="outer-frame">
+    <div id="page-content">
+        <div id="nav">
+            <ul>
+                <li><a href="../index.html">API Home</a></li>
+                <li><a href="../data-access/index.html">REST API</a></li>
+                <li class="sub1"><a href="../data-access/basic-read-and-write/index.html">Read/Write Access</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/usage.html">General Usage</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/data-dictionary.html">Data Dictionary</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/resources.html">Available Resources</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../data-access/oauth/index.html">Authentication</a></li>
+                <li class="sub2"><a href="../data-access/oauth/reference.html">Reference</a></li>
+                <li class="sub1"><a href="../data-access/notification/index.html">Notification</a></li>
+                <li class="sub2"><a href="../data-access/notification/subscribe.html">Subscription</a></li>                     
+                <li class="sub2"><a href="../data-access/notification/resource-notifications.html">Resource Notifications</a></li>
+                <li><a href="../sso/index.html">Single Sign-On</a></li>
+                <li class="sub1"><a href="../sso/openid-single-sign-on.html">OpenID</a></li>
+                <li class="sub1"><a href="../sso/saml-single-sign-on.html">SAML</a></li>
+                <li class="sub1"><a href="../sso/identity-attribute.html">Identity Attribute</a></li>
+                <li class="selected"><a href="../linking/index.html">Linking</a></li>
+                <li><a href="../plugin/index.html">Plugin</a></li>
+                <li class="sub1"><a href="../plugin/pluginXML.html">Plugin XML</a></li>
+                <li class="sub1"><a href="../plugin/pluginZIP.html">Plugin Package</a></li>
+                <li><a href="../registration/index.html">Registration</a></li>
+                <li><a href="../examples/index.html">Examples</a></li>
+				<li class="sub1"><a href="../examples/oauth.html">Authentication </a></li>  
+				<li class="sub1"><a href="../examples/data-access.html">Data Access</a></li>
+                <li class="sub1"><a href="../examples/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../examples/enroll-students.html">Enroll Students</a></li>
+                <li class="sub1"><a href="../examples/registration.html">Registration </a></li>
+            	<li class="sub1"><a href="../examples/sso.html">OpenID Relying Party </a></li>                
+            	<li class="sub1"><a href="../examples/sso-data-access.html">SSO with Data Access</a></li>
+				<li class="sub1"><a href="../examples/open-saml-sample-app.html">SAML Service Provider</a></li>
+                <li class="sub1"><a href="../examples/events.html">Event Listener</a></li>
+				<li class="sub1"><a href="../examples/sample-code.html">Environment Setup</a></li>                
+                <li><a href="../toc.html">Terms of Use</a></li>
+            </ul>
+        </div>
+        <div id="right-content">
+
+<h1>Linking</h1>
+<div class="box-round">
+    <h2 id="introduction">Introduction</h2>
+
+    <p>Linking allows PowerSchool users to quickly and easily access your application from
+        PowerSchool.</p>
+
+    <p>
+        This document assumes a general knowledge of XML document structure
+        and syntax.
+    </p>
+
+    <h2 id="contents">Contents</h2>
+    <dl>
+        <dt>
+            <a href="#declare">Declare Navigation Links</a></dt>
+        <dd>Adding navigation links to the PowerSchool user interface.</dd>
+    </dl>
+
+    <h2 id="declare">Declare Navigation Links</h2>
+
+    <p>
+        Adding navigation links to the PowerSchool user interface is very easy. You simply
+        need to supply a <a href="../plugin/index.html#tag_openid_links">&lt;links&gt;</a>
+        element to the &lt;plugin&gt; tag.
+    </p>
+
+    <p>
+        This sample XML defines a plugin for <i>MyApp</i> with two
+        separate link definitions, each with their own locations on the user interface
+        specified. These links will appear in PowerSchool and
+        allow the user to navigate to the <i>MyApp</i> application. The first link will
+        appear in both the navigation toolbar and the main menu (left navigation) of the PowerSchool admin portal. The second link will only appear in the navigation toolbar of the PowerSchool admin portal.
+    </p>
+<pre class="prettyprint">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;plugin xmlns="http://plugin.powerschool.pearson.com"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation='http://plugin.powerschool.pearson.com plugin.xsd'
+        name="MyApp"
+        version="1.2.3"
+        description="Link to my third-party application"&gt;
+
+  &lt;links&gt;
+    &lt;link title="MyApp Login" display-text="MyApp" path="http://mycompany.com:443/login.aspx"&gt;
+      &lt;ui_contexts&gt;
+        &lt;ui_context id="admin.header" /&gt;
+        &lt;ui_context id="admin.left_nav" /&gt;
+      &lt;/ui_contexts&gt;
+    &lt;/link&gt;
+    &lt;link title="MyApp Information" display-text="MyApp Info" path="http://mycompany.com:443/info.aspx"&gt;
+      &lt;ui_contexts&gt;
+        &lt;ui_context id="admin.header" /&gt;
+      &lt;/ui_contexts&gt;
+    &lt;/link&gt;
+  &lt;/links&gt;
+
+  &lt;publisher name="Example Publisher"&gt;
+    &lt;contact email="publisher@example.com" /&gt;
+  &lt;/publisher&gt;
+
+&lt;/plugin&gt;
+</pre>
+</div>
+    </div>
+
+    <footer id="footer">
+        <p><small>Copyright © 2014 Pearson Education, Inc. or its affiliates. All rights reserved. All trademarks are either owned or licensed by Pearson Education, Inc. or its affiliates. Other brands and names are the property of their respective owners.</small></p>
+        <p><small>PowerSchool is a trademark, in the U.S. and/or other countries, of Pearson Education, Inc. or its affiliate(s).</small></p>
+        <p><small>The data and names used to illustrate the reports, screen images, and examples may include names of individuals, companies, brands, and products. All of the data and names are fictitious; any similarities to actual names are entirely coincidental.</small></p>
+    </footer>
+    </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PowerSchool API Developer Guide</title>
+<link href="../screen.css" rel="stylesheet" type="text/css"
+	media="screen" />
+<link href="../google-code-prettify/prettify.css" type="text/css"
+	rel="stylesheet" />
+<script type="text/javascript" src="../google-code-prettify/prettify.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body class="psDocs" onLoad="prettyPrint()">
+
+	<div id="outer-frame">
+		<div id="page-content">
+			<div id="nav">
+<ul>
+                <li><a href="../index.html">API Home</a></li>
+                <li><a href="../data-access/index.html">REST API</a></li>
+                <li class="sub1"><a href="../data-access/basic-read-and-write/index.html">Read/Write Access</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/usage.html">General Usage</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/data-dictionary.html">Data Dictionary</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/resources.html">Available Resources</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../data-access/oauth/index.html">Authentication</a></li>
+                <li class="sub2"><a href="../data-access/oauth/reference.html">Reference</a></li>
+                <li class="sub1"><a href="../data-access/notification/index.html">Notification</a></li>
+                <li class="sub2"><a href="../data-access/notification/subscribe.html">Subscription</a></li>                     
+                <li class="sub2"><a href="../data-access/notification/resource-notifications.html">Resource Notifications</a></li>
+                <li><a href="../sso/index.html">Single Sign-On</a></li>
+                <li class="sub1"><a href="../sso/openid-single-sign-on.html">OpenID</a></li>
+                <li class="sub1"><a href="../sso/saml-single-sign-on.html">SAML</a></li>
+                <li class="sub1"><a href="../sso/identity-attribute.html">Identity Attribute</a></li>
+                <li><a href="../linking/index.html">Linking</a></li>
+                <li><a href="../plugin/index.html">Plugin</a></li>
+                <li class="sub1"><a href="../plugin/pluginXML.html">Plugin XML</a></li>
+                <li class="sub1"><a href="../plugin/pluginZIP.html">Plugin Package</a></li>
+                <li><a href="../registration/index.html">Registration</a></li>
+                <li><a href="../examples/index.html">Examples</a></li>
+				<li class="sub1"><a href="../examples/oauth.html">Authentication</a></li>  
+				<li class="sub1"><a href="../examples/data-access.html">Data Access</a></li>
+                <li class="sub1"><a href="../examples/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../examples/enroll-students.html">Enroll Students</a></li>
+                <li class="sub1"><a href="../examples/registration.html">Registration</a></li>
+            	<li class="sub1"><a href="../examples/sso.html">OpenID Relying Party</a></li>                
+            	<li class="sub1"><a href="../examples/sso-data-access.html">SSO with Data Access</a></li>
+				<li class="sub1"><a href="../examples/open-saml-sample-app.html">SAML Service Provider</a></li>
+                <li class="sub1"><a href="../examples/events.html">Event Listener</a></li>
+				<li class="sub1 selected"><a href="../examples/sample-code.html">Environment Setup</a></li>		            
+                <li><a href="../toc.html">Terms of Use</a></li>
+            </ul>
+			</div>
+			<div id="right-content">
+				<h1>Example Code and Environment Setup</h1>
+				<div class="box-round">
+			<h2 id="contents">Contents</h2>
+
+				<dl>
+
+					<dt><a href="#sample-code-package">Download Example Code Package</a></dt>
+					<dd>Experiment with the code used in our examples.</dd>
+
+					<dt><a href="#install-nodejs">Install Node.js</a></dt>
+					<dd>Node.js is required for running example code.</dd>
+
+					<dt><a href="#certificates">Create a Self-Signed Certificate</a></dt>
+                    <dd>Used when setting up a secure server for some example code.</dd>
+
+				  <dt><a href="#install-plugin">Install Plugin</a></dt>
+				  <dd>Upload a plugin.xml file to PowerSchool.</dd>
+
+					<dt><a href="#enable-plugin">Enable Plugin</a></dt>
+				  <dd>Enable services declared in plugin.xml.</dd>
+					
+					<dt><a href="#get-test-server">Become a Pearson Partner</a></dt>
+					<dd>Information about becoming a Pearson Partner.</dd>
+		
+				</dl>
+					<h2 id="sample-code-package">Download Example Code Package</h2>
+					<p>You can <a href="examples.zip">download the example code package</a>	to experiment with the code used in our examples. After the download completes, unzip the package.</p>
+				  <p>The example code package contains the following directories: </p>
+					<ul>
+                        <li><span class="bold">events</span> - contains the example code for <a href="">Event Listener Example</a>.</li>
+						<li><span class="bold">OpenSamlSP</span> - contains the example code for <a href="../examples/open-saml-sample-app.html">SAML Service Provider</a>.</li>
+						<li><span class="bold">registration</span> - contains the example code for <a href="../examples/registration.html">Registration Example</a>.</li>
+						<li><span class="bold">rest-api</span> - contains the example code for 	<a href="../examples/oauth.html">Authentication Example</a> and <a href="../examples/data-access.html">REST API Example</a>.</li>
+						<li><span class="bold">sso</span> - contains the example code for <a href="../examples/sso.html">OpenID Relying Party Example</a> and <a href="../examples/sso-data-access.html">SSO with Data Access Example</a>.</li>
+					</ul>
+					<h2 id="install-nodejs">Install Node.js</h2>
+					<p>
+						Since our example code is written in JavaScript, you will need to
+						<a href="http://nodejs.org/" target="_blank">install Node.js</a> to run the
+						example code. After installing Node.js, check to make sure the executables are installed on <a href="http://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">the system path</a> correctly:</p> 
+						<ol>
+						  <li>Open a Terminal Window.</li>
+						  <li>Enter the following commands: 
+						    <blockquote>
+						      <pre class="prettyprint lang-xhtml">node -v</pre>
+						      <pre class="prettyprint lang-xhtml">npm -v</pre>
+					        </blockquote>
+						  </li>
+				  
+			              <li>If the executables are on the system path, the version numbers of node and npm should appear. If the executables cannot be found, 
+						  make sure your <a href="http://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a> variable contains the Node.js installation directory.</li>
+				  </ol>
+                  <h2 id="certificates">Create a Self-Signed Certificate</h2>
+                    <p>PowerSchool uses HTTPS for all communication with external systems. Your certificate must
+                        be a valid certificate issued by an authentic Certificate Authority like VeriSign, Thawte,
+                        Entrust, and others trusted by Java. Self-signed certificates are not recommended.
+                    </p>
+                    <p>The instructions for creating a self-signed certificate use the program
+                        <a href="http://www.openssl.org/" target="_blank">OpenSSL</a>. OpenSSL is installed
+                        on many non-Windows systems by default. For Windows there is a
+                        <a href="http://slproweb.com/products/Win32OpenSSL.html" target="_blank">Win32 OpenSSL</a>
+                        program available.
+                    </p>
+                    <p>To determine if OpenSSL is already installed on your system:</p>
+                    <ol>
+                      <li>Open a Terminal Window.</li>
+                      <li>Enter the command: 
+                        <blockquote>
+                          <pre class="prettyprint lang-xhtml">openssl version</pre>
+                        </blockquote>
+                      </li>
+                    
+                      <li>If you have OpenSSL installed already you should see the version number appear. If you get an
+                        error or a message that OpenSSL cannot be found, visit the OpenSSL web site for installation instructions.                      </li>
+                    </ol>
+                  <p>Here are some simple instructions for creating a self-signed certificate using OpenSSL:</p>
+<pre class="prettyprint lang-xhtml">openssl genrsa -out ssl-certificate.key 1024</pre>
+<pre class="prettyprint lang-xhtml">openssl req -new -key ssl-certificate.key -out certrequest.csr</pre>
+<pre class="prettyprint lang-xhtml">openssl x509 -req -in certrequest.csr -signkey ssl-certificate.key -out ssl-certificate.crt</pre>
+<p>Use of a self-signed certificate should only be used to facilitate quick testing with
+                        an example. If you are using a self-signed certificate, the certificate will need to
+                        be imported to the trust store of PowerSchool before it will function correctly. To import a certificate to the trust store of PowerSchool:
+                    </p>
+					<ol>
+						<li>Sign in to the PowerSchool admin portal as a System Administrator.</li>
+						<li>On the start page, choose <span class="bold">System</span> from the main menu. The System Administrator page appears.</li>
+						<li>Click <span class="bold">System Settings</span>. The System Settings page appears.</li>
+						<li>Click <span class="bold">Digital Certificate Management</span>. The Digital Certificate Management page appears.</li>
+						<li>Select the <span class="bold">Trust Store </span> tab. </li>
+						<li>Use the following table to enter information in the Import Certificate fields:</li>
+						<table>
+						<thead>
+						<tr>
+							<th>Field</th>
+							<th>Description</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr>
+							<td>Certificate Name</td>
+							<td>Enter a name for the external server certificate to be used in lists.</td>
+						</tr>
+						<tr>
+							<td>Certificate</td>
+							<td>Click <span class="bold">Choose File </span>and   select a certificate.<br />
+							<span class="bold">Note:</span> If using   Firefox or Internet Explorer, Click <span class="bold">Browse</span> and select a certificate.</td>
+						</tr>
+						</tbody></table>
+						<li>Click <span class="bold">Import</span>. A confirmation message appears. <br />
+					</ol>
+				  <h2 id="certificates2">Obtain the PowerSchool SSL Certificate from a PowerSchool Test Server</h2>
+					<p>In order for Java applications to communicate with PowerSchool through an SSL port, it will be necessary to obtain the SSL Certificate used
+					by the PowerSchool installation with which you want to communicate. To export the SSL certificate from the key store of PowerSchool:
+                    </p>
+					<p><span class="bold">Note:</span> You can get a test server by becoming a <a href="http://www.pearsonschoolsystems.com/partners/" target="_blank">Pearson Partner</a>.</p>
+					<ol>
+						<li>Sign in to the PowerSchool admin portal as a System Administrator.</li>
+						<li>On the start page, choose <span class="bold">System</span> from the main menu. The System Administrator page appears.</li>
+						<li>Click <span class="bold">System Settings</span>. The System Settings page appears.</li>
+						<li>Click <span class="bold">Digital Certificate Management</span>. The Digital Certificate Management page appears.</li>
+						<li>The <span class="bold">Key Store </span> tab should be selected. If not, select it. </li>
+						<li>Identify the SSL certificate and click <span class="bold">Export</span>. Save the .PEM file to a secure location.</li>
+					</ol>
+				  <p><span id="removeprivatekeydata" class="bold">Note:</span> The exported certificate contains the private key information for that certificate. If you plan on sharing this cert with others, edit the .PEM 
+					file and remove the text that looks similar to the following:</p>
+					<pre>-----BEGIN RSA PRIVATE KEY-----
+MIICXgIBAAKBgQDDW7XUHTvjnLPc5Cga71/yRiueWwyRNhwI+pN173pdEtcy09Bp
+XKj4BVSgJX1M6bjwvERaQBrU1nEYYJ3ZTDtN7F86GBXY51qJHNuO8WguwVDAYPkv
+++7pfvy9r/wuZjDv8iTBZVg72dhA2dW2z6y9Te5Rngh+KqYX7mvACF936wIDAQAB
+AoGBAJ7c/1oEg+UuUx139B0jN9Tety3JQMj9RYMPscaf/dOeNJ3CnaJwlX9LZmvs
+0J4xGhG6J6N0qd0WnVWDjBle4oGmyt6aoeVwMQAuR7jyh/zl3rG8MQUGWd/FJ0i1
+m8Px/UF7cIFghDoziz07s9rygmKLBmSmNHgXqEvR+Ns4QyEhAkEA/nar9K2oozpR
+FYa37IID6J4Hboc9Dx6PTQHOVK6vI/woO2QAeqK0vae4DnXAa9C0qB1O9lVW3AuA
+8/X3HSaa+QJBAMSJrbWnOtpKxsYvrH84u8A2LZeO91GKM2gQI3ObOuyyhSv/dIG7
+/99NdSJBkAFwKQ4lF9huYnUPJTqrrMPDnwMCQA5eu0U9DVnycCPMENTtXrUjP34x
+avRQoH0TzgggOUnJ8qev9Qr350cSkqVWZwBvr9QSm6Pzm80fZS/hwwvFY1kCQQCR
+g8p8o5ucgh7YH/Ycn9nK/5IUE8MjuSpEkyZccwNWuvqEz/foElTpdYUTXu2LUwri
+sS4NjfUR7KvI29DnhNAXAkEAvejsLMIJN34pu+fiK+RN6yIRPTN4WcCmHNRqrWW5
+NEiqbXsBHyP3RfbHtI7a+cU7GtiE3mUgz5LprZAKRUyTyQ==
+-----END RSA PRIVATE KEY-----
+					</pre>
+				  <h2 id="install-plugin">Install Plugin</h2>		
+					<p>To install a plugin on a PowerSchool test server:</p>
+					<p><strong>Note: </strong>You can get a test server by becoming a <a href="http://www.pearsonschoolsystems.com/partners/" target="_blank">Pearson Partner</a>.</p>
+<ol>
+						<li>Sign in to the PowerSchool admin portal as a System Administrator.</li>
+						<li>On the start page, choose <span class="bold">System</span> from the main menu. The System Administrator page appears.</li>
+						<li>Click <span class="bold">System Settings</span>. The System Settings page appears.</li>
+						<li>Click <span class="bold">Plugin Management Configuration</span>. The Plugin Management Dashboard page appears.</li>
+						<li>Click <span class="bold">Install</span>. The Plugin Install page appears.</li>
+						<li>For the <span class="bold">Plugin Installation File</span>, enter or select the plugin installation file (plugin.xml).</li>
+						<li>Click <span class="bold">Install</span>. A confirmation message appears. The plugin appears in the Installed Plugins section on the Plugin Management Dashboard page.<br />
+						<span class="bold">Note:</span> For more information, click the <span class="bold">Help</span> link in upper right corner of the page. </li>						
+					</ol>							
+				  <blockquote>
+				    <p>Currently, PowerSchool does not allow two plugins with the same name. If the following error message appears:</p>
+				    <pre class="prettyprint lang-xhtml">Plugin {plugin_name} has already been installed.  If you would like to reinstall the plugin, first delete it from the Plugin Management.</pre>
+				    <p>you can change the name attribute of the plugin element in the plugin.xml file and then try again. </p>
+				    <p>For example, you can change the plugin name from <span class="bold"><strong>rest-api-example</strong></span> to <strong class="bold">rest-api-example-1</strong> (line 5).</p>
+			      </blockquote>
+				  <pre class="prettyprint lang-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;plugin xmlns="http://plugin.powerschool.pearson.com"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation='http://plugin.powerschool.pearson.com plugin.xsd'
+        name="rest-api-example"
+        version="1.0.0"
+        description="The plugin for PowerSchool REST API Example"&gt;
+
+    &lt;oauth&gt;&lt;/oauth&gt;
+    
+    &lt;publisher name="Example Publisher"&gt;
+        &lt;contact email="publisher@example.com" /&gt;
+    &lt;/publisher&gt;	
+	
+&lt;/plugin&gt;</pre>
+				      <pre class="prettyprint lang-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;plugin xmlns="http://plugin.powerschool.pearson.com"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation='http://plugin.powerschool.pearson.com plugin.xsd'
+        name="rest-api-example-1"
+        version="1.0.0"
+        description="The plugin for PowerSchool REST API Example"&gt;
+
+    &lt;oauth&gt;&lt;/oauth&gt;
+
+    &lt;publisher name="Example Publisher"&gt;
+        &lt;contact email="publisher@example.com" /&gt;
+    &lt;/publisher&gt;
+	
+&lt;/plugin&gt;</pre>
+				  <h2 id="enable-plugin">Enable Plugin</h2>		
+				<p>To enable a plugin on a PowerSchool test server (You can get a test server by becoming a <a href="http://www.pearsonschoolsystems.com/partners/" target="_blank">Pearson Partner</a>):</p>
+				<ol>
+					<li>Sign in to  the PowerSchool admin portal as a System Administrator.</li>
+					<li>On the start page, choose <span class="bold">System</span> from the main menu. The System Administrator page appears.</li>
+					<li>Click <span class="bold">System Settings</span>. The System Settings page appears.</li>
+					<li>Click <span class="bold">Plugin Management Configuration</span>. The Plugin Management Dashboard page appears.</li>
+					<li>Select the <span class="bold">Enable/Disable</span> checkbox of the plugin you want to enable. A confirmation message appears.</li>
+					<li>Click <span class="bold">Yes</span>.<br />
+					<span class="bold">Note:</span> For more information,  click the <span class="bold">Help</span> link in upper right corner of the page.</li>						
+				</ol>							
+				<h2 id="get-test-server">Become a Pearson Partner</h2>
+				<p>There are many beneftis to becoming a <a href="http://www.pearsonschoolsystems.com/partners/" target="_blank">Pearson Partner</a>, including  access to a PowerSchool test server for developing plugins. <a href="http://www.pearsonschoolsystems.com/partners/contact/" target="_blank">Contact us</a> to find out about the benefits of becoming a Pearson partner.				                
+			  </div>
+			</div>
+
+		<footer id="footer">
+			<p>
+				<small>Copyright © 2014 Pearson Education, Inc. or its affiliates. All rights reserved. All trademarks are either owned or
+					licensed by Pearson Education, Inc. or its affiliates. Other brands
+					and names are the property of their respective owners.</small>
+			</p>
+			<p>
+				<small>PowerSchool is a trademark, in the U.S. and/or other
+					countries, of Pearson Education, Inc. or its affiliate(s).</small>
+			</p>
+			<p>
+				<small>The data and names used to illustrate the reports,
+					screen images, and examples may include names of individuals,
+					companies, brands, and products. All of the data and names are
+					fictitious; any similarities to actual names are entirely
+					coincidental.</small>
+			</p>
+		</footer>
+	</div>
+	</div>
+
+</body>
+</html>
+
+
+

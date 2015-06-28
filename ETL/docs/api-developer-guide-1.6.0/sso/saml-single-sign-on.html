@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PowerSchool API Developer Guide</title>
+    <link href="../screen.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="../google-code-prettify/prettify.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="../google-code-prettify/prettify.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body class="psDocs" onLoad="prettyPrint()">
+
+<div id="outer-frame">
+<div id="page-content">
+        <div id="nav">
+            <ul>
+                <li><a href="../index.html">API Home</a></li>
+                <li><a href="../data-access/index.html">REST API</a></li>
+                <li class="sub1"><a href="../data-access/basic-read-and-write/index.html">Read/Write Access</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/usage.html">General Usage</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/data-dictionary.html">Data Dictionary</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/resources.html">Available Resources</a></li>
+                <li class="sub2"><a href="../data-access/basic-read-and-write/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../data-access/oauth/index.html">Authentication</a></li>
+                <li class="sub2"><a href="../data-access/oauth/reference.html">Reference</a></li>
+                <li class="sub1"><a href="../data-access/notification/index.html">Notification</a></li>
+                <li class="sub2"><a href="../data-access/notification/subscribe.html">Subscription</a></li>                      
+                <li class="sub2"><a href="../data-access/notification/resource-notifications.html">Resource Notifications</a></li>
+                <li><a href="../sso/index.html">Single Sign-On</a></li>
+                <li class="sub1"><a href="../sso/openid-single-sign-on.html">OpenID</a></li>
+                <li class="sub1 selected"><a href="../sso/saml-single-sign-on.html">SAML</a></li>
+                <li class="sub1"><a href="../sso/identity-attribute.html">Identity Attribute</a></li>
+                <li><a href="../linking/index.html">Linking</a></li>
+                <li><a href="../plugin/index.html">Plugin</a></li>
+                <li class="sub1"><a href="../plugin/pluginXML.html">Plugin XML</a></li>
+                <li class="sub1"><a href="../plugin/pluginZIP.html">Plugin Package</a></li>
+                <li><a href="../registration/index.html">Registration</a></li>
+                <li><a href="../examples/index.html">Examples</a></li>
+				<li class="sub1"><a href="../examples/oauth.html">Authentication </a></li>  
+				<li class="sub1"><a href="../examples/data-access.html">Data Access</a></li>
+                <li class="sub1"><a href="../examples/namedquery.html">Named Query</a></li>
+                <li class="sub1"><a href="../examples/enroll-students.html">Enroll Students</a></li>
+                <li class="sub1"><a href="../examples/registration.html">Registration </a></li>
+            	<li class="sub1"><a href="../examples/sso.html">OpenID Relying Party </a></li>                
+            	<li class="sub1"><a href="../examples/sso-data-access.html">SSO with Data Access</a></li>
+				<li class="sub1"><a href="../examples/open-saml-sample-app.html">SAML Service Provider</a></li>
+                <li class="sub1"><a href="../examples/events.html">Event Listener</a></li>
+				<li class="sub1"><a href="../examples/sample-code.html">Environment Setup</a></li>                
+                <li><a href="../toc.html">Terms of Use</a></li>
+            </ul>
+        </div><!--nav-->
+
+<div id="right-content">
+
+<h1>SAML Single Sign-On</h1>
+
+<div class="box-round">
+    <h2 id="introduction">Introduction</h2>
+
+    <p>
+        <a href="http://saml.xml.org/"  target="_blank">SAML</a> single sign-on allows PowerSchool users to seamlessly navigate between
+        PowerSchool and your application without reauthentication.
+    </p>
+
+    <p>
+        This document assumes a general knowledge of XML document structure
+        and syntax, and SAML single sign-on technology.
+    </p>
+	
+	<p>
+		<i>Powerschool Identity Provider needs to be installed on the PowerSchool server in order for SAML SSO to work.</i>	</p>
+
+    <h2 id="contents">Contents</h2>
+    <dl>
+        <dt><a href="#declare-service-provider">Declare SAML Service Provider Information</a></dt>
+        <dd>Specifying SAML information about your application.</dd>
+    </dl>
+    <dl>
+        <dt><a href="#nameid-format">Configure Name ID Format</a></dt>
+        <dd>Determining which of three Name ID formats will be returned in the Subject section of the AuthnResponse.</dd>
+    </dl>
+	<dl>
+        <dt><a href="#declare-links">Declare Single Sign-On Links</a></dt>
+        <dd>Adding single sign-on links to PowerSchool user interface.</dd>
+    </dl>	
+	<dl>
+        <dt><a href="#link-visibility">Single Sign-On Link Visibility</a></dt>
+        <dd>Rules that govern when links appear.</dd>
+    </dl>
+	<dl>
+        <dt><a href="#declare-permissions">Declare Single Sign-On Permissions</a></dt>
+        <dd>Adding permissions.</dd>
+    </dl>
+	<dl>
+        <dt><a href="#declare-attributes">Declare Single Sign-On Attributes</a></dt>
+        <dd>Adding response attributes.</dd>
+    </dl>
+	<dl>
+        <dt><a href="#studentEmail-attribute">Student Email Attribute</a></dt>
+        <dd>Adding a special attribute that returns the email address for current student. Email is not available as a "built-in" for the STUDENTS table.</dd>
+    </dl>
+	<dl>
+        <dt><a href="#institution-attribute">Institution Attribute</a></dt>
+        <dd>Adding an attribute that returns all enabled institutions for current user.</dd>
+    </dl>
+	<dl>
+        <dt><a href="#students-attribute">Students Attribute</a></dt>
+        <dd>Adding an attribute that returns all students associated with a parent/guardian user.</dd>
+    </dl>
+	<dl>
+        <dt><a href="#extended-schema-support">Extended Schema Attribute</a></dt>
+        <dd>Extended Schema tables may be accessed for attributes to return in the SAML response.</dd>
+    </dl>
+
+    <h2 id="declare-service-provider">Declare SAML Service Provider Information</h2>
+
+    <p>
+        Adding a SAML service provider to the PowerSchool user interface is very easy. You simply
+        need to supply a <a href="../plugin/index.html#tag_saml">&lt;saml&gt;</a>
+        tag to &lt;plugin&gt;.
+    </p>
+
+    <h2 id="nameid-format">Configure Name ID Format</h2>
+    <p>
+        By default the SAML single sign-on plugin will return a Name ID that is constructed from the <b>authenticationId</b>
+        attribute. The authenticationId attribute is defined via the <a href="identity-attribute.html">Identity Attribute</a>
+        element in the plugin.
+    </p>
+
+    <p>The default authenticationId and Name ID will return a string as described below:
+    <table>
+        <colgroup>
+            <col style="width: 100px;"/>
+            <col/>
+        </colgroup>
+        <tbody>
+        <tr>
+            <th>Format</th>
+            <td>PowerSchool URL + "/" + User Context + "/" + User Name</td>
+        </tr>
+        <tr>
+            <th>Example</th>
+            <td>http://www.powerschool-district.com/admin/ssmith</td>
+        </tr>
+        </tbody>
+    </table>
+    </p>
+
+    <p>
+        However, when the identity attribute element is declared, this Name ID string will be replaced by whatever is configured
+        in that identity attribute.
+    </p>
+
+    <p>
+        In addition, the Name ID format can also be configured. In the &lt;saml&gt; declaration, the following Name ID
+        formats may be requested:
+    <table class="dictionary">
+        <thead>
+        <tr>
+            <th scope="col">Format</th>
+            <th scope="col">Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>unspecified</td>
+            <td>Returns the Name ID as the raw value of the authenticationId attribute.</td>
+        </tr>
+        <tr>
+            <td>persistent</td>
+            <td>A one-way MD5 hash of the concatenation of the plugin name and the authenticationId attribute.</td>
+        </tr>
+        <tr>
+            <td>transient</td>
+            <td>Returns the Name ID as the raw value of the authenticationId attribute.</td>
+        </tbody>
+    </table>
+    </p>
+    <p>
+        An example &lt;saml&gt; declaration with the <b>nameid-format</b> is shown below:
+<pre class="prettyprint">
+&lt;saml name="MyApp"
+    entity-id="http://mycompany.com/myapp"
+    base-url="https://mycompany.com"
+    metadata-url="http://mycompany.com/path/to/metadata"
+    nameid-format="persistent" &gt;
+</pre>
+    <p>
+       The nameid-format is optional. When it is not specified, the system will use the unspecified format.
+    </p>
+
+    <h2 id="declare-links">Declare Single Sign-On Links</h2>
+
+    <p>
+        Adding single sign-on links to the PowerSchool user interface is done by including a <a href="../plugin/index.html#tag_saml_links">&lt;links&gt;</a>
+		tag inside the &lt;saml&gt; tag.
+    </p>
+
+    <p>
+        This sample XML defines a plugin for <i>MyApp</i> and configures PowerSchool
+		with the information necessary to initiate single sign-on with <em>MyApp</em></a>.    </p>
+<pre class="prettyprint">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;plugin xmlns="http://plugin.powerschool.pearson.com"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation='http://plugin.powerschool.pearson.com plugin.xsd'
+        name="MyApp"
+        version="1.0"
+        description="Provides SAML single sign-on link to my third-party application"&gt;
+
+  &lt;saml name="MyApp"
+	    entity-id="http://mycompany.com/myapp"
+		base-url="https://mycompany.com" 
+		metadata-url="http://mycompany.com/path/to/metadata" &gt;
+
+    &lt;links&gt;
+      &lt;link display-text="My App" title="Login to MyApp" path="/sso"&gt;
+        &lt;ui_contexts&gt;
+          &lt;ui_context id="admin.header"/&gt;
+          &lt;ui_context id="admin.left_nav"/&gt;
+          &lt;ui_context id="teacher.header"/&gt;
+          &lt;ui_context id="student.header"/&gt;
+        &lt;/ui_contexts&gt;
+      &lt;/link&gt;
+    &lt;/links&gt;
+
+  &lt;/saml&gt;
+  
+  &lt;publisher name="Example Publisher"&gt;
+    &lt;contact email="publisher@example.com" /&gt;
+  &lt;/publisher&gt;  
+  
+&lt;/plugin&gt;
+</pre>
+
+	<h2 id="link-visibility">Single Sign-On Link Visibility</h2>
+	<p>
+		For an admin or teacher, a plugin SAML single sign-on link will only display if:
+		<ul>
+			<li>They are of the user type the link is specified for, and there are no permissions declared in that plugin.</li>
+			<li>There are permissions declared in that plugin, and one or more of the permissions declared in that plugin is 
+				turned on for one or more of the user access roles that are assigned to that user.</li>
+		</ul>
+	<h2 id="declare-permissions">Declare Single Sign-On Permissions</h2>
+	<p>
+        Adding single sign-on permissions to the PowerSchool user interface is done by including a <a href="../plugin/index.html#tag_saml_permissions">&lt;permissions&gt;</a>
+		tag inside the &lt;saml&gt; tag.
+    </p>
+
+    <p>
+        This sample XML defines a plugin for <i>MyApp</i> and configures PowerSchool
+		with the information necessary to initiate single sign-on with <em>MyApp</em></a>.    </p>
+		
+	<pre class="prettyprint">
+	&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+	&lt;plugin xmlns="http://plugin.powerschool.pearson.com"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation='http://plugin.powerschool.pearson.com plugin.xsd'
+			name="MyApp"
+			version="1.0"
+			description="Provides SAML single sign-on link to my third-party application"&gt;
+
+	  &lt;saml name="MyApp"
+			entity-id="http://mycompany.com/myapp"
+			base-url="https://mycompany.com" &gt;
+			
+		...
+		
+		&lt;permissions&gt;
+			&lt;permission name="P1" description="Permission 1" value="PERM_1" /&gt;
+			&lt;permission name="P2" description="Permission 2" value="PERM_2" /&gt;
+			&lt;permission name="P3" description="Permission 3" value="PERM_3" /&gt;
+		&lt/permissions&gt;
+		
+	  &lt;/saml&gt;
+	  
+	  &lt;publisher name="Example Publisher"&gt;
+		&lt;contact email="publisher@example.com" /&gt;
+	  &lt;/publisher&gt;  
+	  
+	&lt;/plugin&gt;
+	</pre>
+
+    <h2 id="declare-attributes">Declare Single Sign-On Attributes</h2>
+
+    <p>
+        As part of the authentication process the PowerSchool identity provider will include attributes derived from the current user's profile.
+		The plugin author chooses which attributes should be included for each of the four user types allowed: admin, teacher, student, guardian. 
+		The attributes for a particular user type need only be specified when links are included with a matching ui context value in the links
+		section of the XML file.
+    </p>
+	<p>
+		Attributes are added by adding an <a href="../plugin/index.html#tag_saml_attributes">&lt;attributes&gt;</a> tag with nested 
+		<a href="../plugin/index.html#tag_saml_user">&lt;user&gt;</a> tags containing attributes for each user.
+	<p>
+        Many of the attributes are selected directly from tables in the PowerSchool SIS schema. These are referred to using the PowerSchool schema
+		column name, but can be an alias by using an 'attribute-name' to whatever name the author requires for the attributes in the SAML response.
+    </p>
+	<p>
+        Certain attributes represent the result of some computation or an extended selection of data from the SIS. Some of these may not be applicable to all user types.
+		In such cases the attribute tag can specify an attribute-value, which will be transmitted in the SAML response.
+    </p>
+<h2 id="studentEmail-attribute">Student Email Attribute</h2>
+
+    <p>
+       A special attribute can be defined in the plugin.xml that will cause the federating PowerSchool IdP to include an email address for the current student. Student email is not
+	   available as a "built-in" of the STUDENT table; therefore, to include the student email in the authenticated response, the plugin author will have to include a special 
+	   attribute for this purpose. The attribute name value for this special attribute is "studentEmail" and a typical XML entry would look like this:
+	</p>    
+<pre class="prettyprint">&lt;user type="student"&gt;
+	&lt;attribute name="FIRST_NAME" /&gt;
+	&lt;attribute name="LAST_NAME" /&gt;
+	&lt;attribute name="LASTFIRST" /&gt;
+	&lt;attribute name="SCHOOLID" /&gt;
+	&lt;attribute name="studentEmail" /&gt;			
+&lt;/user&gt;</pre>
+	<p> </p>
+	<p><strong>Note: </strong>The studentEmail special attribute is only applicable when working within the &quot;student&quot; context.<BR>
+</p>
+	<p>A typical response would look something like this:</p>
+	<pre class="prettyprint">&lt;saml2:Attribute Name="studentEmail"&gt;
+	&lt;saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;student@aghs.edu&lt;/saml2:AttributeValue&gt;
+&lt;/saml2:Attribute&gt;</pre>
+	<p> </p>
+  
+	<h2 id="institution-attribute">Institution Attribute</h2>
+
+    <p>
+       A special attribute can be defined in the plugin.xml that will cause the federating PowerSchool IdP to include a list of valid institutions to which the current
+	   user is associated. The plugin.xml attribute is defined for each context, and must indicate the institution identifier to be returned in the single sign-on response.    </p>    
+  <p>
+       Depending on the user context, valid institutions will be defined as follows:
+    </p>
+        <table class="dictionary">
+            <thead>
+            <tr>
+                <th scope="col">Context</th>
+                <th scope="col">Table.Column</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><b>Student</b></td>
+                <td>Student.SchoolID</td>
+            </tr>
+			<tr>
+                <td><b>Teacher</b></td>
+                <td>Teacher.SchoolID</td>
+            </tr>
+			<tr>
+                <td><b>Parent</b></td>
+                <td>Student.SchoolID for each student associated with this parent.</td>
+            </tr>
+			<tr>
+                <td><b>Admin</b></td>
+                <td>Teacher.CanChangeSchools</td>
+            </tr>
+             </tbody>
+        </table>
+	<p> </p>
+	<strong>Updating the Plugin</strong>
+	<p>
+		To enable the "institutions" attribute feature, add an attribute with the name "institutions" to your plugin.xml. This attribute must also define the data type to be returned
+		in the single sign-on response. You MUST select one valid data type from the list below, identifying this as an "attribute-value". You may ONLY select one valid data type:	</p>
+	<p><b>Valid Data Types:</b></p>
+	    <div>
+        <table class="dictionary">
+            <thead>
+            <tr>
+                <th scope="col">attribute-value</th>
+                <th scope="col">Table.Column</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><b>id</b></td>
+                <td>School.ID</td>
+            </tr>
+			<tr>
+                <td><b>dcid</b></td>
+                <td>School.DCID</td>
+            </tr>
+			<tr>
+                <td><b>name</b></td>
+                <td>School.NAME</td>
+            </tr>
+			<tr>
+                <td><b>school_number</b></td>
+                <td>School.SCHOOL_NUMBER</td>
+            </tr>
+            <tr>
+                <td><b>alternate_school_number</b></td>
+                <td>School.ALT_SCHOOL_NUMBER</td>
+            </tr>
+             </tbody>
+        </table>
+    </div>
+	<p> </p>
+	<p>
+		A valid institution attribute might look something like this:
+	</p>
+<pre class="prettyprint">&lt;user type="admin"&gt;
+	&lt;attribute name="FIRST_NAME" /&gt;
+	&lt;attribute name="LAST_NAME" /&gt;
+	&lt;attribute name="LASTFIRST" /&gt;
+	&lt;attribute name="SCHOOLID" /&gt;
+	&lt;attribute name="institutions" attribute-value="name" /&gt;			
+&lt;/user&gt;</pre>
+	<p> </p>
+	<p>
+		In the above case, the response XML that is returned from an admin user who has been authorized by the PowerSchool IdP will contain the following:
+	</p>
+<pre class="prettyprint">&lt;saml2:Attribute Name="institutions"&gt;
+	&lt;saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;District Office&lt;/saml2:AttributeValue&gt;
+	&lt;saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;Washington Elementary&lt;/saml2:AttributeValue&gt;
+	&lt;saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;Apple Grove High School&lt;/saml2:AttributeValue&gt;
+	&lt;saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;Ontario High School&lt;/saml2:AttributeValue&gt;
+	&lt;saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;Cherry Hill Middle School&lt;/saml2:AttributeValue&gt;
+&lt;/saml2:Attribute&gt;</pre>
+	<p> </p>
+	<p>
+		Bear in mind however that any school, which is excluded by the access features of the plugin itself, will not ever be included in any list returned to the service provider application.
+	</p>
+	<p> </p>
+	<h2 id="students-attribute">Students Attribute</h2>
+
+    <p>
+       A special attribute can be defined in the plugin.xml that will cause the federating PowerSchool IdP to include a list of valid students to which the current
+	   guardian is associated. The plugin.xml attribute is defined for the guardian context only, and must indicate the student identifier to be returned in the single sign-on response.	</p>    
+	<strong>Updating the Plugin</strong>
+	<p>
+		To enable the "students" attribute feature, add an attribute with the name "students" to your plugin.xml. This attribute must also define the data type to be returned
+		in the single sign-on response. You MUST select one valid data type from the list below, identifying this as an "attribute-value". You may ONLY select one valid data type:	</p>
+	<p><b>Valid Data Types:</b></p>
+	    <div>
+        <table class="dictionary">
+            <thead>
+            <tr>
+                <th scope="col">attribute-value</th>
+                <th scope="col">Table.Column</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><b>id</b></td>
+                <td>Student.ID</td>
+            </tr>
+			<tr>
+                <td><b>dcid</b></td>
+                <td>Student.DCID</td>
+            </tr>
+			<tr>
+                <td><b>student_number</b></td>
+                <td>Student.STUDENT_NUMBER</td>
+            </tr>			<tr>
+                <td><b>state_student_number</b></td>
+                <td>Student.STATE_STUDENTNUMBER</td>
+            </tr>
+             </tbody>
+        </table>
+    </div>
+	<p> </p>
+	<p>
+		A valid students attribute might look something like this:
+	</p>
+<pre class="prettyprint">&lt;user type="guardian"&gt;
+	&lt;attribute name="FIRST_NAME" /&gt;
+	&lt;attribute name="LAST_NAME" /&gt;
+	&lt;attribute name="LASTFIRST" /&gt;
+	&lt;attribute name="SCHOOLID" /&gt;
+	&lt;attribute name="students" attribute-value="dcid" /&gt;			
+&lt;/user&gt;</pre>
+	<p> </p>
+	<p>
+		In the above case, the response XML that is returned from an admin user who has been authorized by the PowerSchool IdP will contain the following:
+	</p>
+<pre class="prettyprint">&lt;saml2:Attribute Name="students"&gt;
+	&lt;saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;12345&lt;/saml2:AttributeValue&gt;
+	&lt;saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;12346&lt;/saml2:AttributeValue&gt;
+	&lt;saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;12347&lt;/saml2:AttributeValue&gt;
+	&lt;saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;12348&lt;/saml2:AttributeValue&gt;
+	&lt;saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;12349&lt;/saml2:AttributeValue&gt;
+&lt;/saml2:Attribute&gt;</pre>
+	<p> </p>
+
+	<h2 id="extended-schema-support">Extended Schema Attribute</h2>
+	<p>
+		Schema extension fields may also be returned as SAML attributes. The fields must be from 1-to-1 extensions to the
+        USERS, STUDENTS, or GUARDIAN tables.
+	</p>
+
+    <p>
+        Declare the attribute within each user type element. For example, the declaration below requests that for
+        students, single sign-on also sends the student's ACT Composite data.
+<pre class="prettyprint">&lt;user type="students"&gt;
+	&lt;attribute name="act_composite" attribute-value="act_composite" extension="studentcorefields" /&gt;
+&lt;/user&gt;</pre>
+    </p>
+
+    <p>
+    The declaration elements are described below:
+    <table>
+        <colgroup>
+            <col/>
+            <col/>
+        </colgroup>
+        <tbody>
+        <tr>
+            <th>name</th>
+            <td>Used as the attribute name in the SAML response.</td>
+        </tr>
+        <tr>
+            <th>attribute-value</th>
+            <td>The physical field name from the extension table.</td>
+        </tr>
+        <tr>
+            <th>extension</th>
+            <td>The physical table name of extension.</td>
+        </tr>
+        </tbody>
+    </table>
+    </p>
+
+    <p>
+        In the SAML response the field will be returned as an attribute named act_composite as shown below:
+<pre class="prettyprint">&lt;saml2:AttributeStatement&gt;
+	&lt;saml2:Attribute Name="act_composite"&gt;
+	     &lt;saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;22&lt;/saml2:AttributeValue&gt;
+	&lt;/saml2:Attribute&gt;
+&lt;/saml2:AttributeStatement&gt;</pre>
+    </p>
+
+
+</div><!--box-round-->
+</div><!--right-content-->
+</div><!--page-content-->
+</div><!--outer-frame-->
+
+    <footer id="footer">
+        <p><small>Copyright © 2014 Pearson Education, Inc. or its affiliates. All rights reserved. All trademarks are either owned or licensed by Pearson Education, Inc. or its affiliates. Other brands and names are the property of their respective owners.</small></p>
+        <p><small>PowerSchool is a trademark, in the U.S. and/or other countries, of Pearson Education, Inc. or its affiliate(s).</small></p>
+        <p><small>The data and names used to illustrate the reports, screen images, and examples may include names of individuals, companies, brands, and products. All of the data and names are fictitious; any similarities to actual names are entirely coincidental.</small></p>
+    </footer>
+
+</body>
+</html>

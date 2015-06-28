@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+    version="2.0">
+    
+  <tlib-version>1.0</tlib-version>
+  <short-name>idpui</short-name>
+  <uri>urn:mace:shibboleth:2.0:idp:ui</uri>
+  
+  <tag>
+    <description>Service Name - some user friendly description about the relying party</description>
+    <name>serviceName</name>
+    <tag-class>edu.internet2.middleware.shibboleth.idp.ui.ServiceNameTag</tag-class>
+    <body-content>empty</body-content>
+    
+  </tag>
+  
+  <tag>
+    <description>Service Description - taken from the mdui statement</description>
+    <name>serviceDescription</name>
+    <tag-class>edu.internet2.middleware.shibboleth.idp.ui.ServiceDescriptionTag</tag-class>
+    <body-content>scriptless</body-content>
+  </tag>
+  
+  <tag>
+    <description>Service Contact - information about the contact at the SP</description>
+    <name>serviceContact</name>
+    <tag-class>edu.internet2.middleware.shibboleth.idp.ui.ServiceContactTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+      <name>contactType</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>cssId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>cssClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>cssStyle</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <description>Service PrivacyURL - directly from the metadata if present</description>
+    <name>servicePrivacyURL</name>
+    <tag-class>edu.internet2.middleware.shibboleth.idp.ui.ServicePrivacyURLTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+      <name>linkText</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>cssId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>cssClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>cssStyle</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <description>Service Information URL - directly from the metadata if present</description>
+    <name>serviceInformationURL</name>
+    <tag-class>edu.internet2.middleware.shibboleth.idp.ui.ServiceInformationURLTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+      <name>linkText</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>cssId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>cssClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>cssStyle</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <description>Logo for the SP</description>
+    <name>serviceLogo</name>
+    <tag-class>edu.internet2.middleware.shibboleth.idp.ui.ServiceLogoTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+      <name>alt</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>minHeight</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>maxHeight</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>minWidth</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>maxWidth</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>cssId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>cssClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>cssStyle</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+</taglib>

@@ -1,0 +1,67 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:simpleType name="argType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="primitive" />
+            <xs:enumeration value="array" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="queries">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="query" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="description" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="args" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="arg" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:string">
+                                                        <xs:attribute type="xs:string" name="name" use="required"/>
+                                                        <xs:attribute type="xs:string" name="column" use="optional"/>
+                                                        <xs:attribute type="xs:boolean" name="required" use="optional" default="true" />
+                                                        <xs:attribute type="xs:string" name="description" use="optional"/>
+                                                        <xs:attribute type="argType"  name="type" use="optional" default="primitive" />
+                                                        <xs:attribute type="xs:string" name="default" use="optional"/>
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="columns">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="column" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:string">
+                                                        <xs:attribute type="xs:string" name="column" use="optional"/>
+                                                        <xs:attribute type="xs:string" name="description" use="optional"/>
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element type="xs:string" name="sql" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="handler" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:attribute type="xs:string" name="bean" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute type="xs:string" name="name" use="required"/>
+                        <xs:attribute type="xs:string" name="coreTable" use="optional"/>
+                        <xs:attribute type="xs:boolean" name="flattened" use="optional" default="false" />
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

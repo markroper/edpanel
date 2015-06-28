@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://plugin.powerschool.pearson.com"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation='http://plugin.powerschool.pearson.com plugin.xsd'
+        name="registration-example"
+        version="1.0.0"
+        description="The plugin for PowerSchool Registration Example">
+
+    <oauth/>
+
+    <registration url=""/>
+
+    <publisher name="Example Publisher">
+        <contact email="publisher@example.com" />
+    </publisher>
+
+</plugin>
