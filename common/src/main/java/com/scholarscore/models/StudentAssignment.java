@@ -70,12 +70,20 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
 
     @Override
     public Long getAwardedPoints() {
-        return awardedPoints;
+        return awardedPoints != null ? awardedPoints : null;
     }
 
     @Override
     public Long getAvailablePoints() {
-        return (assignment != null ? assignment.getAvailablePoints() : null );
+        Long availablePoints = assignment != null ? assignment.getAvailablePoints() : null;
+        return (availablePoints != null ? availablePoints : null );
+    }
+
+    @Override
+    public int getWeight() {
+        // Today, these weights live in GradeFormula and can't be 
+        // directly grabbed from StudentAssignment.
+        return 1;
     }
 
     public void setAwardedPoints(Long awardedPoints) {

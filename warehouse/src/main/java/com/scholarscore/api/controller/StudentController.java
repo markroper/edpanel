@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.scholarscore.models.GradeFormula;
 import com.scholarscore.models.WeightedGradable;
+import com.scholarscore.util.GradeUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -110,11 +110,11 @@ public class StudentController extends BaseController {
     }
 
     @ApiOperation(
-            value = "Get a student by ID",
-            notes = "Given a student ID, the endpoint returns the student",
+            value = "Get a student's GPA",
+            notes = "Given a student ID, the endpoint returns the student's Grade Point Average on a scale of 0.0 - 4.0",
             response = List.class)
     @RequestMapping(
-            value = "/{studentId}/GPA",
+            value = "/{studentId}/gpa",
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -122,8 +122,7 @@ public class StudentController extends BaseController {
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId) {
         Collection<? extends WeightedGradable> courseGrades = getStudentSectionGradeManager().getSectionGradesForStudent(studentId).getValue();
-        Double gpa = GradeFormula.calculateAverageGrade(courseGrades);
-        return respond(gpa * 4.0);
+        return respond(GradeUtil.calculateGPA(courseGrades));
     }
 
 }

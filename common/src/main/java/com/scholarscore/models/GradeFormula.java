@@ -1,12 +1,12 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.scholarscore.util.GradeUtil;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -42,10 +42,11 @@ public class GradeFormula implements Serializable {
         }
         double calculatedGrade = 0D;
         if(null == assignmentTypeWeights) {
-            calculatedGrade = calculateAverageGrade(studentAssignments);
+            calculatedGrade = GradeUtil.calculateAverageGrade(studentAssignments);
         } else {
             Map<AssignmentType, MutablePair<Long, Long>> calculatedGradeByType = new HashMap<>();
             for(StudentAssignment sa : studentAssignments) {
+                // TODO Jordan: this does some of the same weighted average work done in GradeUtil. Good enough for now?
                 AssignmentType type = sa.getAssignment().getType();
                 if(!assignmentTypeWeights.containsKey(type)) {
                     continue;
@@ -66,20 +67,6 @@ public class GradeFormula implements Serializable {
             }
         }
         return calculatedGrade;
-    }
-
-    public static Double calculateAverageGrade(Collection<? extends WeightedGradable> gradables) {
-        long availablePoints = 0L;
-        long awardedPoints = 0L;
-        for(WeightedGradable g : gradables) {
-            if(null != g.getAwardedPoints()) {
-                awardedPoints += g.getAwardedPoints();
-            }
-            if(null != g.getAvailablePoints()) {
-                availablePoints += g.getAvailablePoints();
-            }
-        }
-       return (availablePoints != 0L ? awardedPoints * 1.0 / availablePoints : 0L);
     }
     
     public Map<AssignmentType, Integer> getAssignmentTypeWeights() {

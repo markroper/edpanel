@@ -7,6 +7,9 @@ package com.scholarscore.models;
  */
 public interface WeightedGradable {
 
-    public Long getAwardedPoints();
-    public Long getAvailablePoints();
+    public Number getAwardedPoints();
+    public Number getAvailablePoints();
+
+    // relative weight compared to other WeightedGradables
+    public int getWeight();
 }

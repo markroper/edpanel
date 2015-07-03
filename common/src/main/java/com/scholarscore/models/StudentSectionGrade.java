@@ -19,6 +19,8 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
     protected Boolean complete;
     protected Double grade;
     
+    private static final Double MAX_GRADE = 100D;
+    
     public StudentSectionGrade() {
         
     }
@@ -83,13 +85,17 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
     }
 
     @Override
-    public Long getAwardedPoints() {
-        return Math.round(grade);
+    public Double getAwardedPoints() {
+        return grade;
     }
 
     @Override
-    public Long getAvailablePoints() {
-        // TODO: not implemented for real yet, need to decide approach
-        return 100L;
+    public Double getAvailablePoints() {
+        return MAX_GRADE;
+    }
+
+    @Override
+    public int getWeight() {
+        return 1;
     }
 }
