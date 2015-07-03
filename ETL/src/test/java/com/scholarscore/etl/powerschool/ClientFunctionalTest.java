@@ -40,6 +40,21 @@ public class ClientFunctionalTest extends AbstractTestNGSpringContextTests {
         }
     }
 
+    public void testGetSectionsBySchool() {
+        for (School school : client.getSchools().schools.school) {
+            SectionResponse sectionResponse = client.getSectionsBySchoolId(school.id);
+            assertNotNull(sectionResponse);
+            assertNotNull(sectionResponse.sections);
+        }
+    }
+
+    public void testGetTermBySchool() {
+        for (School school : client.getSchools().schools.school) {
+            TermResponse termResponse = client.getTermsBySchoolId(school.id);
+            assertNotNull(termResponse);
+        }
+    }
+
     public void testGetCoursesBySchool() {
         for (School school : client.getSchools().schools.school) {
             CourseResponse response = client.getCoursesBySchool(school.id);

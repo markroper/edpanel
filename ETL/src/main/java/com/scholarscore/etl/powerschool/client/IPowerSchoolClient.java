@@ -17,4 +17,8 @@ public interface IPowerSchoolClient {
     CourseResponse getCoursesBySchool(Long schoolId);
 
     public Object getAsMap(String path);
+
+    TermResponse getTermsBySchoolId(Long schoolId);
+
+    SectionResponse getSectionsBySchoolId(Long schoolId);
 }
