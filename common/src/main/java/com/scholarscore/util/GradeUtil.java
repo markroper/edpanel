@@ -24,13 +24,13 @@ public class GradeUtil {
             // thing is the ratio between them. (4/5 == 80/100 == 160/200)
             Double percentageScore = null;
             if (null != g.getAwardedPoints() && null != g.getAvailablePoints()) {
-                percentageScore = (g.getAwardedPoints().doubleValue() / g.getAvailablePoints().doubleValue()) 
+                percentageScore = (g.getAwardedPoints().doubleValue() / g.getAvailablePoints().doubleValue())
                         * ONE_HUNDRED_POINT_MULTIPLIER;
-            } else { continue; }
 
-            // weight is then factored in.
-            numerator += percentageScore * g.getWeight();
-            denominator += ONE_HUNDRED_POINT_MULTIPLIER * g.getWeight();
+                // weight is then factored in.
+                numerator += percentageScore * g.getWeight();
+                denominator += ONE_HUNDRED_POINT_MULTIPLIER * g.getWeight();
+            }
         }
         return (numerator / denominator);
     }
