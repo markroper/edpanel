@@ -20,6 +20,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 /**
  * Created by mattg on 7/2/15.
@@ -31,8 +32,11 @@ public class PowerSchoolClient implements IPowerSchoolClient {
 
     public static final String PATH_RESOURCE_DISTRICT = "/ws/v1/district";
     public static final String PATH_RESOURCE_SCHOOL = "/ws/v1/district/school";
-    public static final String PATH_RESOURCE_STAFF = "/ws/v1/school/{id}/staff";
     public static final String PATH_RESOURCE_STUDENT = "/ws/v1/district/student";
+    public static final String PATH_RESOURCE_STAFF = "/ws/v1/school/{0}/staff";
+    public static final String PATH_RESOURCE_COURSE = "/ws/v1/school/{0}/course";
+    public static final String PATH_RESOURCE_TERMS = "/ws/v1/school/{0}/term";
+    public static final String PATH_RESOURCE_SECTION = "/ws/v1/school/{0}/section";
 
     private static final String HEADER_CONTENT_TYPE_NAME = "Content-Type";
     private static final String HEADER_CONTENT_TYPE_X_FORM_URLENCODED = "application/x-www-form-urlencoded;charset=UTF-8";
@@ -40,7 +44,6 @@ public class PowerSchoolClient implements IPowerSchoolClient {
     private static final String HEADER_ACCEPT_JSON = "application/json";
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";
     private static final String URI_PATH_OATH = "/oauth/access_token";
-    private static final String PATH_RESOURCE_COURSE = "/ws/v1/school/{id}/course";
     private final String clientSecret;
     private final String clientId;
     private final URI uri;
@@ -99,7 +102,7 @@ public class PowerSchoolClient implements IPowerSchoolClient {
      */
     @Override
     public StaffResponse getStaff(Long schoolId) {
-        return get(StaffResponse.class, PATH_RESOURCE_STAFF.replaceAll("\\{id\\}", schoolId.toString()));
+        return get(StaffResponse.class, PATH_RESOURCE_STAFF, schoolId.toString());
     }
 
     @Override
@@ -109,10 +112,19 @@ public class PowerSchoolClient implements IPowerSchoolClient {
 
     @Override
     public CourseResponse getCoursesBySchool(Long schoolId) {
-        return get(CourseResponse.class, PATH_RESOURCE_COURSE.replaceAll("\\{id\\}", schoolId.toString()));
+        return get(CourseResponse.class, PATH_RESOURCE_COURSE, schoolId.toString());
     }
     
-    private <T> T get(Class<T> clazz, String path) {
+    private <T> T get(Class<T> clazz, String path, String ...params) {
+
+        if (null != params && params.length > 0) {
+            int count = 0;
+            for (String param : params) {
+                path = path.replaceAll("\\{" + count + "\\}", param);
+                count++;
+            }
+        }
+
         try {
             HttpGet get = new HttpGet();
             setupCommonHeaders(get);
@@ -126,6 +138,16 @@ public class PowerSchoolClient implements IPowerSchoolClient {
 
     public Object getAsMap(String path) {
         return get(Object.class, path);
+    }
+
+    @Override
+    public TermResponse getTermsBySchoolId(Long schoolId) {
+        return get(TermResponse.class, PATH_RESOURCE_TERMS, schoolId.toString());
+    }
+
+    @Override
+    public SectionResponse getSectionsBySchoolId(Long schoolId) {
+        return get(SectionResponse.class, PATH_RESOURCE_SECTION, schoolId.toString());
     }
 
     protected String getJSON(HttpUriRequest request) throws IOException {
