@@ -1,9 +1,20 @@
 package com.scholarscore.models.query;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.scholarscore.models.Course;
+import com.scholarscore.models.GradeLevel;
+import com.scholarscore.models.School;
+import com.scholarscore.models.SchoolYear;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.Student;
+import com.scholarscore.models.SubjectArea;
+import com.scholarscore.models.Teacher;
+import com.scholarscore.models.Term;
 
 /**
  * Enumerates the supported dimensions of the warehouse report and querying model.
@@ -17,44 +28,43 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @SuppressWarnings("serial")
 public enum Dimension {
-    //TODO: return sets of field strings from the POJO static map
-    COURSE (new HashSet<String>(){{ add("course.name"); add("course.id"); add("course.teacher"); }}, 
+    COURSE (Course.class,
             new HashSet<Dimension>(){{ add(Dimension.SCHOOL); add(Dimension.SUBJECT_AREA); }}),
-    SECTION (new HashSet<String>(){{ add("section.name"); add("section.enddate"); add("section.startdate"); 
-                add("section.room"); add("section.gradeformula"); }}, 
-            new HashSet<Dimension>(){{ add(Dimension.COURSE); add(Dimension.TERM); }}),
-    TERM (new HashSet<String>(){{ add("term.name"); add("term.enddate"); add("term.startdate"); }}, 
-            new HashSet<Dimension>(){{ add(Dimension.YEAR); }}),
-    YEAR (new HashSet<String>(){{ add("year.name"); add("year.startdate"); add("year.enddate"); }}, 
+    SECTION (Section.class,
+            new HashSet<Dimension>(){{add(Dimension.COURSE); add(Dimension.TERM); }}),
+    TERM (Term.class,
+          new HashSet<Dimension>(){{ add(Dimension.YEAR); }}),
+    YEAR (SchoolYear.class,
             new HashSet<Dimension>(){{ add(Dimension.SCHOOL); }}),
-    SUBJECT_AREA (new HashSet<String>(){{ add("subject.name"); add("subject.id"); }}, 
+    SUBJECT_AREA (SubjectArea.class,
             new HashSet<Dimension>(){{ add(Dimension.SCHOOL); }}),
-    GRADE_LEVEL (new HashSet<String>(){{ add("grade.name"); add("grade.id"); }}, 
+    GRADE_LEVEL (GradeLevel.class,
             new HashSet<Dimension>(){{ add(Dimension.SCHOOL); }}),
-    SCHOOL (new HashSet<String>(){{ add("school.name"); add("school.id"); }}, 
-            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); add(Dimension.DISTRICT); }}),
-    DISTRICT (new HashSet<String>(){{ add("district.name"); add("district.id"); }}, 
-            new HashSet<Dimension>()),
-    TEACHER (new HashSet<String>(){{ add("teacher.name"); }}, 
+    SCHOOL (School.class,
+            new HashSet<Dimension>(){{ }}),
+    TEACHER (Teacher.class,
             new HashSet<Dimension>(){{ add(Dimension.SCHOOL); }}),
-    STUDENT (new HashSet<String>(){{ add("student.name"); add("student.gender"); add("student.freelunch"); 
-                add("student.age"); add("student.graderepeater"); add("student.ethnicity"); add("student.race"); 
-                add("student.ell"); add("student.specialed"); add("student.cityofresidence");  }}, 
-            new HashSet<Dimension>(){{ add(Dimension.DISTRICT); add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL); }}),
-    DATE (new HashSet<String>(){{ add("date.date");  add("date.quarter");  add("date.week");  add("date.month");  add("date.year"); }}, 
+    STUDENT (Student.class,
+            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL); }}),
+    //Date is a psuedo-dimension that can be used in conjunction with only date-sensitive measures like attendance
+    DATE (Date.class,
             new HashSet<Dimension>());
     
+    private Class<?> associatedClass;
     private Set<Dimension> parentDimensions;
-    private Set<String> availableFields;
-    
-    private Dimension(HashSet<String> fields, HashSet<Dimension> parents) {
-        this.availableFields = fields;
+
+    private Dimension(Class<?> associatedClass, Set<Dimension> parents) {
+        this.associatedClass = associatedClass;
         this.parentDimensions = parents;
     }
     
+    @JsonValue
+    public String toValue() {
+        return this.toString();
+    }
     @JsonIgnore
-    public Set<String> getAvailableFields() {
-        return availableFields;
+    public Class<?> getAssociatedClass() {
+        return associatedClass;
     }
     
     @JsonIgnore

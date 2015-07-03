@@ -10,6 +10,8 @@ import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.scholarscore.models.School;
+import com.scholarscore.models.Student;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
@@ -30,11 +32,10 @@ public class QuerySerializationTest {
         measures.add(new AggregateMeasure(Measure.COURSE_GRADE, AggregateFunction.AVERAGE));
         fullyPopulatedQuery.setAggregateMeasures(measures);
         
-        //define dimension
-        fullyPopulatedQuery.setDimension(Dimension.STUDENT);
-        
         //No date dimension for this query
-        fullyPopulatedQuery.setFields(null);
+        fullyPopulatedQuery.addField(Student.STUDENT_AGE);
+        fullyPopulatedQuery.addField(Student.STUDENT_ETHNICITY);
+        fullyPopulatedQuery.addField(School.ADDRESS);
         
         //Create expression
         Expression whereClause = new Expression();
