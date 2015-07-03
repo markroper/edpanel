@@ -48,11 +48,9 @@ public class PowerSchoolClient {
     private final String clientId;
     private final URI uri;
 
-    // This is the authentication token generated once the client has sent the clientId + clientSecret
-    private String accessToken;
-
     private OAuthResponse oauthToken;
     private final CloseableHttpClient httpclient;
+    private Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 
     public PowerSchoolClient(String clientId, String clientSecret, URI uri) {
         this.clientId = clientId;
@@ -72,7 +70,6 @@ public class PowerSchoolClient {
                     new UsernamePasswordCredentials(clientId, clientSecret),
                     "UTF-8", false));
             post.setURI(uri.resolve(URI_PATH_OATH));
-            Gson gson = new Gson();
             String json = getJSON(post);
             if (null != json) {
                 oauthToken = gson.fromJson(json, OAuthResponse.class);
@@ -99,7 +96,6 @@ public class PowerSchoolClient {
             setupCommonHeaders(get);
             get.setURI(uri.resolve(path));
             String json = getJSON(get);
-            Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
             return gson.fromJson(json, clazz);
         } catch (IOException e) {
             throw new PowerSchoolClientException(e);

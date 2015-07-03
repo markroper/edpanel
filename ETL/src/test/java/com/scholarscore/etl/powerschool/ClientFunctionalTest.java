@@ -18,7 +18,7 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 /**
- * A simple functional client test to provide that we can get results from invoking the API
+ * A simple functional client test to prove that we can get results from invoking the API
  *
  * Created by mattg on 7/2/15.
  */
