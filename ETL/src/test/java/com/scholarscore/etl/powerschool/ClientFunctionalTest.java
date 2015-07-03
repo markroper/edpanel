@@ -1,10 +1,7 @@
 package com.scholarscore.etl.powerschool;
 
 import com.scholarscore.etl.powerschool.api.model.School;
-import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
-import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
-import com.scholarscore.etl.powerschool.api.response.StaffResponse;
-import com.scholarscore.etl.powerschool.api.response.StudentResponse;
+import com.scholarscore.etl.powerschool.api.response.*;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.client.PowerSchoolClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +37,15 @@ public class ClientFunctionalTest extends AbstractTestNGSpringContextTests {
         for (School school : client.getSchools().schools.school) {
             StaffResponse response = client.getStaff(school.id);
             assertNotNull(response);
+        }
+    }
+
+    public void testGetCoursesBySchool() {
+        for (School school : client.getSchools().schools.school) {
+            CourseResponse response = client.getCoursesBySchool(school.id);
+            assertNotNull(response);
+            assertNotNull(response.courses);
+            // no data is in any of the 3 schools thus we cannot verify the data in powerschool
         }
     }
 
