@@ -10,10 +10,6 @@ public class Name {
 
     @Override
     public String toString() {
-        return "Name{" +
-                "first_name='" + first_name + '\'' +
-                ", middle_name='" + middle_name + '\'' +
-                ", last_name='" + last_name + '\'' +
-                '}';
+        return first_name + " " + middle_name + " " + last_name;
     }
 }

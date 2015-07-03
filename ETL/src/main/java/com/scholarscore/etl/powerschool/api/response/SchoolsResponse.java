@@ -1,18 +1,17 @@
 package com.scholarscore.etl.powerschool.api.response;
 
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import com.scholarscore.etl.powerschool.api.model.School;
+import com.scholarscore.models.Student;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
  * Created by mattg on 7/2/15.
  */
-public class SchoolsResponse {
+public class SchoolsResponse implements ITranslateCollection<com.scholarscore.models.School> {
     public Schools schools;
 
     @Override
@@ -20,6 +19,11 @@ public class SchoolsResponse {
         return "SchoolsResponse{" +
                 "schools=" + schools +
                 '}';
+    }
+
+    @Override
+    public Collection<Student> toInternalModel() {
+        return null;
     }
 
     public class Schools {
