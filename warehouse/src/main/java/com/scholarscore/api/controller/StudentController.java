@@ -118,9 +118,9 @@ public class StudentController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity getGPA(
+    public @ResponseBody ResponseEntity getGpa(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
-            @PathVariable(value="studentId") Long studentId) {
+            @PathVariable(value = "studentId") Long studentId) {
         Collection<? extends WeightedGradable> courseGrades = getStudentSectionGradeManager().getSectionGradesForStudent(studentId).getValue();
         return respond(GradeUtil.calculateGPA(courseGrades));
     }
