@@ -8,7 +8,7 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scholarscore.api.persistence.mysql.AuthorityPersistence;
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
-import com.scholarscore.api.persistence.mysql.ReportPersistence;
+import com.scholarscore.api.persistence.mysql.QueryPersistence;
 import com.scholarscore.api.persistence.mysql.SchoolPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.StudentSectionGradePersistence;
@@ -34,7 +34,7 @@ import com.scholarscore.models.query.QueryResults;
 
 public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
         TermManager, SectionManager, AssignmentManager, StudentAssignmentManager,
-        StudentSectionGradeManager, CourseManager, TeacherManager, UserManager, ReportManager {
+        StudentSectionGradeManager, CourseManager, TeacherManager, UserManager, QueryManager {
     
     private static final String SCHOOL = "school";
     private static final String COURSE = "course";
@@ -46,7 +46,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private static final String STUDENT = "student";
     private static final String STUDENT_SECTION_GRADE = "student section grade";
     private static final String USER = "user";
-    private static final String REPORT = "report";
+    private static final String QUERY = "query";
  
     //Persistence managers for each entity
     private SchoolPersistence schoolPersistence;
@@ -61,7 +61,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private StudentSectionGradePersistence studentSectionGradePersistence;
     private UserPersistence userPersistence;
     private AuthorityPersistence authorityPersistence;
-    private ReportPersistence reportPersistence;
+    private QueryPersistence reportPersistence;
     
     //Setters for the persistence layer for each entity
     public void setTeacherPersistence(TeacherPersistence ap) {
@@ -1138,34 +1138,34 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
 	}
 
     @Override
-    public ServiceResponse<Query> getReport(Long schoolId, Long reportId) {
+    public ServiceResponse<Query> getQuery(Long schoolId, Long reportId) {
         StatusCode code = this.schoolExists(schoolId);
         if(!code.isOK()) {
             return new ServiceResponse<Query>(code);
         }
         return new ServiceResponse<Query>(
-                reportPersistence.selectReport(schoolId, reportId));
+                reportPersistence.selectQuery(schoolId, reportId));
     }
     
     @Override
-    public ServiceResponse<Collection<Query>> getReports(Long schoolId) {
+    public ServiceResponse<Collection<Query>> getQueries(Long schoolId) {
         StatusCode code = this.schoolExists(schoolId);
         if(!code.isOK()) {
             return new ServiceResponse<Collection<Query>>(code);
         }
         return new ServiceResponse<Collection<Query>>(
-                reportPersistence.selectReports(schoolId));
+                reportPersistence.selectQueries(schoolId));
     }
 
     @Override
-    public ServiceResponse<Long> createReport(Long schoolId, Query query) {
+    public ServiceResponse<Long> createQuery(Long schoolId, Query query) {
         StatusCode code = this.schoolExists(schoolId);
         if(!code.isOK()) {
             return new ServiceResponse<Long>(code);
         }
         try {
             return new ServiceResponse<Long>(
-                    reportPersistence.createReport(schoolId, query));
+                    reportPersistence.createQuery(schoolId, query));
         } catch (JsonProcessingException e) {
             return new ServiceResponse<Long>(
                     StatusCodes.getStatusCode(StatusCodeType.BAD_REQUEST_CANNOT_PARSE_BODY));
@@ -1173,17 +1173,17 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     }
 
     @Override
-    public ServiceResponse<Long> deleteReport(Long schoolId, Long reportId) {
+    public ServiceResponse<Long> deleteQuery(Long schoolId, Long reportId) {
         StatusCode code = this.schoolExists(schoolId);
         if(!code.isOK()) {
             return new ServiceResponse<Long>(code);
         }
         return new ServiceResponse<Long>(
-                reportPersistence.deleteReport(schoolId, reportId));
+                reportPersistence.deleteQuery(schoolId, reportId));
     }
 
     @Override
-    public ServiceResponse<QueryResults> getReportResults(Long schoolId,
+    public ServiceResponse<QueryResults> getQueryResults(Long schoolId,
             Long reportId) {
         // TODO: Implement query generation
         return new ServiceResponse<QueryResults>(

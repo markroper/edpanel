@@ -2,6 +2,7 @@ package com.scholarscore.models.query;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("serial")
 public class QueryResults implements Serializable {
@@ -39,40 +40,18 @@ public class QueryResults implements Serializable {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((fieldInfo == null) ? 0 : fieldInfo.hashCode());
-        result = prime * result + ((query == null) ? 0 : query.hashCode());
-        result = prime * result + ((records == null) ? 0 : records.hashCode());
-        return result;
+        return 31 * super.hashCode() + Objects.hash(records, fieldInfo, query);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
+        if(!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
-            return false;
-        QueryResults other = (QueryResults) obj;
-        if (fieldInfo == null) {
-            if (other.fieldInfo != null)
-                return false;
-        } else if (!fieldInfo.equals(other.fieldInfo))
-            return false;
-        if (query == null) {
-            if (other.query != null)
-                return false;
-        } else if (!query.equals(other.query))
-            return false;
-        if (records == null) {
-            if (other.records != null)
-                return false;
-        } else if (!records.equals(other.records))
-            return false;
-        return true;
+        }
+        final QueryResults other = (QueryResults) obj;
+        return Objects.equals(this.records, other.records) 
+                && Objects.equals(this.fieldInfo, other.fieldInfo) 
+                && Objects.equals(this.query, other.query);
     }
     
 }

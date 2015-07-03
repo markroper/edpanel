@@ -2,7 +2,7 @@ package com.scholarscore.api.controller;
 
 import com.scholarscore.api.persistence.AssignmentManager;
 import com.scholarscore.api.persistence.CourseManager;
-import com.scholarscore.api.persistence.ReportManager;
+import com.scholarscore.api.persistence.QueryManager;
 import com.scholarscore.api.persistence.SchoolManager;
 import com.scholarscore.api.persistence.SchoolYearManager;
 import com.scholarscore.api.persistence.SectionManager;
@@ -95,5 +95,5 @@ public abstract class BaseController {
     protected StudentAssignmentManager getStudentAssignmentManager() { return PM; }
     protected StudentSectionGradeManager getStudentSectionGradeManager() { return PM; }
     protected UserManager getUserManager() { return PM; }
-    protected ReportManager getReportManager() { return PM; }
+    protected QueryManager getQueryManager() { return PM; }
 }

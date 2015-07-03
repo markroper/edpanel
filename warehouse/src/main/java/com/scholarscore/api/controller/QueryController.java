@@ -19,28 +19,28 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Validated
-@RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/reports")
-public class ReportController extends BaseController {
+@RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/querys")
+public class QueryController extends BaseController {
     @ApiOperation(
-            value = "Get a report by ID", 
-            notes = "Given a report ID, returns the report", 
+            value = "Get a query by ID", 
+            notes = "Given a query ID, returns the query", 
             response = Query.class)
     @RequestMapping(
-            value = "/{reportId}", 
+            value = "/{queryId}", 
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getReport(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "reportId", required = true, value = "Report ID")
-            @PathVariable(value="reportId") Long reportId) {
-        return respond(getReportManager().getReport(schoolId, reportId));
+            @ApiParam(name = "queryId", required = true, value = "Report ID")
+            @PathVariable(value="queryId") Long queryId) {
+        return respond(getQueryManager().getQuery(schoolId, queryId));
     }
     
     @ApiOperation(
-            value = "Get all reports for a school", 
-            notes = "Returns all saved reports for a school with ID schoolId", 
+            value = "Get all queries for a school", 
+            notes = "Returns all saved querys for a school with ID schoolId", 
             response = List.class)
     @RequestMapping( 
             method = RequestMethod.GET, 
@@ -49,12 +49,12 @@ public class ReportController extends BaseController {
     public @ResponseBody ResponseEntity getReport(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId) {
-        return respond(getReportManager().getReports(schoolId));
+        return respond(getQueryManager().getQueries(schoolId));
     }
 
     @ApiOperation(
-            value = "Create a report within a school", 
-            notes = "Creates, assigns an ID, persists and returns the report ID",
+            value = "Create a query within a school", 
+            notes = "Creates, assigns an ID, persists and returns the query ID",
             response = EntityId.class)
     @RequestMapping(
             method = RequestMethod.POST, 
@@ -64,39 +64,39 @@ public class ReportController extends BaseController {
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid Query query) {
-        return respond(getReportManager().createReport(schoolId, query));
+        return respond(getQueryManager().createQuery(schoolId, query));
     }
     
     @ApiOperation(
-            value = "Delete a report", 
+            value = "Delete a query", 
             response = Void.class)
     @RequestMapping(
-            value = "/{reportId}", 
+            value = "/{queryId}", 
             method = RequestMethod.DELETE, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity deleteCourse(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "reportId", required = true, value = "Report ID")
-            @PathVariable(value="reportId") Long reportId) {
-        return respond(getReportManager().deleteReport(schoolId, reportId));
+            @ApiParam(name = "queryId", required = true, value = "Report ID")
+            @PathVariable(value="queryId") Long queryId) {
+        return respond(getQueryManager().deleteQuery(schoolId, queryId));
     }
     
     @ApiOperation(
-            value = "Execute a report and return results", 
-            notes = "Given a report ID, returns the report", 
+            value = "Execute a query and return results", 
+            notes = "Given a query ID, returns the query", 
             response = Query.class)
     @RequestMapping(
-            value = "/{reportId}/results", 
+            value = "/{queryId}/results", 
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getReportResults(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "reportId", required = true, value = "Report ID")
-            @PathVariable(value="reportId") Long reportId) {
-        return respond(getReportManager().getReportResults(schoolId, reportId));
+            @ApiParam(name = "queryId", required = true, value = "Report ID")
+            @PathVariable(value="queryId") Long queryId) {
+        return respond(getQueryManager().getQueryResults(schoolId, queryId));
     }
 }

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.persistence.mysql.DbConst;
 import com.scholarscore.models.query.Query;
 
-public class ReportMapper implements RowMapper<Query> {
+public class QueryMapper implements RowMapper<Query> {
 
     @Override
     public Query mapRow(ResultSet rs, int rowNum) throws SQLException {

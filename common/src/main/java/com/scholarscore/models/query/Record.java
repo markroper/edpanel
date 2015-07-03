@@ -3,6 +3,7 @@ package com.scholarscore.models.query;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("serial")
 public class Record implements Serializable {
@@ -28,27 +29,16 @@ public class Record implements Serializable {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((values == null) ? 0 : values.hashCode());
-        return result;
+        return 31 * super.hashCode() + Objects.hash(values);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
+        if(!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Record other = (Record) obj;
-        if (values == null) {
-            if (other.values != null)
-                return false;
-        } else if (!values.equals(other.values))
-            return false;
-        return true;
+        }
+        final Record other = (Record) obj;
+        return Objects.equals(this.values, other.values);
     }
     
     

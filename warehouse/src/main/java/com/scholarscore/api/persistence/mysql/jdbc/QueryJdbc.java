@@ -12,12 +12,12 @@ import org.springframework.jdbc.support.KeyHolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.persistence.mysql.DbConst;
-import com.scholarscore.api.persistence.mysql.ReportPersistence;
-import com.scholarscore.api.persistence.mysql.mapper.ReportMapper;
+import com.scholarscore.api.persistence.mysql.QueryPersistence;
+import com.scholarscore.api.persistence.mysql.mapper.QueryMapper;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.QueryResults;
 
-public class ReportJdbc extends BaseJdbc implements ReportPersistence {
+public class QueryJdbc extends BaseJdbc implements QueryPersistence {
     private static String INSERT_REPORT_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.REPORT_TABLE + "` " +
             "(" + DbConst.SCHOOL_FK_COL + ", " + DbConst.REPORT_ID_COL + ", " + DbConst.REPORT_COL + ")" +
@@ -36,14 +36,14 @@ public class ReportJdbc extends BaseJdbc implements ReportPersistence {
             " AND `" + DbConst.REPORT_ID_COL + "`= :reportid";
     
     @Override
-    public Query selectReport(Long schoolId, Long reportId) {
+    public Query selectQuery(Long schoolId, Long reportId) {
         Map<String, Object> params = new HashMap<>();     
         params.put("reportid", new Long(reportId));
         params.put("schoolfk", new Long(schoolId));
         List<Query> queries = jdbcTemplate.query(
                 SELECT_REPORT_SQL, 
                 params, 
-                new ReportMapper());
+                new QueryMapper());
         Query query = null;
         if(null != queries && !queries.isEmpty()) {
             query = queries.get(0);
@@ -52,18 +52,18 @@ public class ReportJdbc extends BaseJdbc implements ReportPersistence {
     }
     
     @Override
-    public Collection<Query> selectReports(Long schoolId) {
+    public Collection<Query> selectQueries(Long schoolId) {
         Map<String, Object> params = new HashMap<>();     
         params.put("schoolfk", new Long(schoolId));
         List<Query> queries = jdbcTemplate.query(
                 SELECT_REPORTS_IN_SCHOOL_SQL, 
                 params, 
-                new ReportMapper());
+                new QueryMapper());
         return queries;
     }
 
     @Override
-    public Long createReport(Long schoolId, Query query) 
+    public Long createQuery(Long schoolId, Query query) 
             throws JsonProcessingException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         ObjectMapper mapper = new ObjectMapper();
@@ -75,7 +75,7 @@ public class ReportJdbc extends BaseJdbc implements ReportPersistence {
     }
 
     @Override
-    public Long deleteReport(Long schoolId, Long reportId) {
+    public Long deleteQuery(Long schoolId, Long reportId) {
         Map<String, Object> params = new HashMap<>();
         params.put("schoolfk", schoolId);
         params.put("reportid", reportId);
@@ -84,7 +84,7 @@ public class ReportJdbc extends BaseJdbc implements ReportPersistence {
     }
 
     @Override
-    public QueryResults generateReportResults(Long schoolId, Long reportId) {
+    public QueryResults generateQueryResults(Long schoolId, Long reportId) {
         // TODO: Implement query generator
         return null;
     }

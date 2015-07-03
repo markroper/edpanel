@@ -1,28 +1,27 @@
-package com.scholarscore.api.persistence.mysql;
+package com.scholarscore.api.persistence;
 
 import java.util.Collection;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.QueryResults;
 
-public interface ReportPersistence {
+public interface QueryManager {
     /**
      * Retrieves the definition for the school with ID schoolId and report ID reportId.
      * @param schoolId
      * @param reportId
      * @return
      */
-    public Query selectReport(Long schoolId, Long reportId);
+    public ServiceResponse<Query> getQuery(Long schoolId, Long queryId);
     
     /**
      * Persists a report definition for the school with schoolId and the query schema as provided.
      * @param schoolId
      * @param query
      * @return
-     * @throws JsonProcessingException 
      */
-    public Long createReport(Long schoolId, Query query) throws JsonProcessingException;
+    public ServiceResponse<Long> createQuery(Long schoolId, Query query);
     
     /**
      * Deletes an existing report in the school with schoolId and the report with reportId.
@@ -30,7 +29,7 @@ public interface ReportPersistence {
      * @param reportId
      * @return
      */
-    public Long deleteReport(Long schoolId, Long reportId);
+    public ServiceResponse<Long> deleteQuery(Long schoolId, Long queryId);
     
     /**
      * Executes a saves report schema and returns the results.
@@ -39,12 +38,13 @@ public interface ReportPersistence {
      * @param reportId
      * @return
      */
-    public QueryResults generateReportResults(Long schoolId, Long reportId);
+    public ServiceResponse<QueryResults> getQueryResults(Long schoolId, Long queryId);
 
     /**
-     * Return all saved reports within a school
+     * Returns all saved reports for the school with ID schoolId.
      * @param schoolId
      * @return
      */
-    Collection<Query> selectReports(Long schoolId);
+    public ServiceResponse<Collection<Query>> getQueries(Long schoolId);
+
 }
