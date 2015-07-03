@@ -9,6 +9,6 @@ public class Phones {
         public String number;
     }
 
-    Number main;
-    Number fax;
+    public Number main;
+    public Number fax;
 }

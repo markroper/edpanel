@@ -15,18 +15,11 @@ public class School {
     public Long low_grade;
     public Long high_grade;
     public Long alternate_school_number;
-//    List<Addresses> addresses;
-//
-//    Person assistantPrincipal;
-//
-//    Phones phone;
-//
-//    Person principal;
-//
-//    Boundary boundary;
-//
-//    SchoolFeesSetup schoolFeesSetup;
 
+    public Addresses addresses;
+    public Person principal;
+    public Person assistant_principal;
+    public Phones phones;
 
     @Override
     public String toString() {
@@ -38,6 +31,10 @@ public class School {
                 ", low_grade=" + low_grade +
                 ", high_grade=" + high_grade +
                 ", alternate_school_number=" + alternate_school_number +
+                ", addresses=" + addresses +
+                ", principal=" + principal +
+                ", assistant_principal=" + assistant_principal +
+                ", phones=" + phones +
                 '}';
     }
 }

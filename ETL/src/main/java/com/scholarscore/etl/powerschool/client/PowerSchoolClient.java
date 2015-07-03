@@ -4,10 +4,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
-import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
-import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
-import com.scholarscore.etl.powerschool.api.response.StaffResponse;
-import com.scholarscore.etl.powerschool.api.response.StudentResponse;
+import com.scholarscore.etl.powerschool.api.response.*;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -43,6 +40,7 @@ public class PowerSchoolClient implements IPowerSchoolClient {
     private static final String HEADER_ACCEPT_JSON = "application/json";
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";
     private static final String URI_PATH_OATH = "/oauth/access_token";
+    private static final String PATH_RESOURCE_COURSE = "/ws/v1/school/{id}/course";
     private final String clientSecret;
     private final String clientId;
     private final URI uri;
@@ -109,6 +107,11 @@ public class PowerSchoolClient implements IPowerSchoolClient {
         return get(StudentResponse.class, PATH_RESOURCE_STUDENT);
     }
 
+    @Override
+    public CourseResponse getCoursesBySchool(Long schoolId) {
+        return get(CourseResponse.class, PATH_RESOURCE_COURSE.replaceAll("\\{id\\}", schoolId.toString()));
+    }
+    
     private <T> T get(Class<T> clazz, String path) {
         try {
             HttpGet get = new HttpGet();
@@ -140,7 +143,7 @@ public class PowerSchoolClient implements IPowerSchoolClient {
         return null;
     }
 
-    public void setupCommonHeaders(HttpRequest req) {
+    protected void setupCommonHeaders(HttpRequest req) {
         req.setHeader(new BasicHeader(HEADER_ACCEPT_NAME, HEADER_ACCEPT_JSON));
 
         if (null != oauthToken) {
