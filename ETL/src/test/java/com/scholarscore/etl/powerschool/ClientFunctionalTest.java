@@ -2,6 +2,7 @@ package com.scholarscore.etl.powerschool;
 
 import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
+import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.client.PowerSchoolClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -27,7 +28,7 @@ import static org.testng.Assert.assertTrue;
 public class ClientFunctionalTest extends AbstractTestNGSpringContextTests {
 
     @Autowired
-    private PowerSchoolClient client;
+    private IPowerSchoolClient client;
 
 
     public void testLoadSchools() {

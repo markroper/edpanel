@@ -30,7 +30,7 @@ import java.net.URISyntaxException;
 /**
  * Created by mattg on 7/2/15.
  */
-public class PowerSchoolClient {
+public class PowerSchoolClient implements IPowerSchoolClient {
 
     private static final String HEADER_ACCEPT_NAME = "Accept";
     private static final String HEADER_AUTH_NAME = "Authorization";
@@ -82,10 +82,12 @@ public class PowerSchoolClient {
         }
     }
 
+    @Override
     public SchoolsResponse getSchools() {
         return get(SchoolsResponse.class, PATH_RESOURCE_SCHOOL);
     }
 
+    @Override
     public DistrictResponse getDistrict() {
         return get(DistrictResponse.class, PATH_RESOURCE_DISTRICT);
     }
@@ -102,7 +104,7 @@ public class PowerSchoolClient {
         }
     }
 
-    public String getJSON(HttpUriRequest request) throws IOException {
+    protected String getJSON(HttpUriRequest request) throws IOException {
         HttpResponse response = httpclient.execute(request);
         if (response.getStatusLine().getStatusCode() == 200) {
             if (null != response) {
