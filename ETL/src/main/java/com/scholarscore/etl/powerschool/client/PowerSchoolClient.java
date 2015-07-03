@@ -4,9 +4,10 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
-import com.scholarscore.etl.powerschool.api.model.District;
 import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
+import com.scholarscore.etl.powerschool.api.response.StaffResponse;
+import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -19,13 +20,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Created by mattg on 7/2/15.
@@ -35,8 +32,10 @@ public class PowerSchoolClient implements IPowerSchoolClient {
     private static final String HEADER_ACCEPT_NAME = "Accept";
     private static final String HEADER_AUTH_NAME = "Authorization";
 
-    private static final String PATH_RESOURCE_DISTRICT = "/ws/v1/district";
-    private static final String PATH_RESOURCE_SCHOOL = "/ws/v1/district/school";
+    public static final String PATH_RESOURCE_DISTRICT = "/ws/v1/district";
+    public static final String PATH_RESOURCE_SCHOOL = "/ws/v1/district/school";
+    public static final String PATH_RESOURCE_STAFF = "/ws/v1/school/{id}/staff";
+    public static final String PATH_RESOURCE_STUDENT = "/ws/v1/district/student";
 
     private static final String HEADER_CONTENT_TYPE_NAME = "Content-Type";
     private static final String HEADER_CONTENT_TYPE_X_FORM_URLENCODED = "application/x-www-form-urlencoded;charset=UTF-8";
@@ -92,6 +91,24 @@ public class PowerSchoolClient implements IPowerSchoolClient {
         return get(DistrictResponse.class, PATH_RESOURCE_DISTRICT);
     }
 
+    /**
+     * Get a collection of staff by
+     *
+     * @param schoolId
+     *      The school identifier to retrieve the staff from within
+     *
+     * @return
+     */
+    @Override
+    public StaffResponse getStaff(Long schoolId) {
+        return get(StaffResponse.class, PATH_RESOURCE_STAFF.replaceAll("\\{id\\}", schoolId.toString()));
+    }
+
+    @Override
+    public StudentResponse getDistrictStudents() {
+        return get(StudentResponse.class, PATH_RESOURCE_STUDENT);
+    }
+
     private <T> T get(Class<T> clazz, String path) {
         try {
             HttpGet get = new HttpGet();
@@ -102,6 +119,10 @@ public class PowerSchoolClient implements IPowerSchoolClient {
         } catch (IOException e) {
             throw new PowerSchoolClientException(e);
         }
+    }
+
+    public Object getAsMap(String path) {
+        return get(Object.class, path);
     }
 
     protected String getJSON(HttpUriRequest request) throws IOException {

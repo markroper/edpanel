@@ -15,11 +15,11 @@ public class School {
     public Long low_grade;
     public Long high_grade;
     public Long alternate_school_number;
-//    List<Address> addresses;
+//    List<Addresses> addresses;
 //
 //    Person assistantPrincipal;
 //
-//    Phone phone;
+//    Phones phone;
 //
 //    Person principal;
 //

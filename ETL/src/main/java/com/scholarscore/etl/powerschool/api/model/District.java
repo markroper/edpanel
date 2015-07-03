@@ -6,11 +6,13 @@ import java.util.List;
  * Created by mattg on 6/28/15.
  */
 public class District {
-    private String uuid;
-    private String name;
-    private String district_number;
-//    private List<Address> addresses;
-//
+    public String uuid;
+    public String name;
+    public String district_number;
+
+    public Addresses addresses;
+
+    public Phones phones;
 //    private List<DistrictRaceCode> raceCodes;
 //
 //    private List<DistrictOfResidence> residences;
@@ -29,7 +31,7 @@ public class District {
 //    private List<FeesPaymentMethod> feesPaymentMethods;
 //
 //
-//    private List<Phone> phones;
+//    private List<Phones> phones;
 //
 //    private List<SchedulingReportingEthnicity> schedulingReportingEthnicities;
 
