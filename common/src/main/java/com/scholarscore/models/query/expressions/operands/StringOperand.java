@@ -32,7 +32,10 @@ public class StringOperand implements Serializable, IOperand {
 
     @Override
     public boolean equals(Object obj) {
-        if (!super.equals(obj)) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
         final StringOperand other = (StringOperand) obj;

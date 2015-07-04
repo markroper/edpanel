@@ -32,7 +32,10 @@ public class NumericOperand implements Serializable, IOperand {
     
     @Override
     public boolean equals(Object obj) {
-        if (!super.equals(obj)) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
         final NumericOperand other = (NumericOperand) obj;
