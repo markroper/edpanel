@@ -13,7 +13,7 @@ import static org.testng.Assert.assertNotNull;
  * Created by mattg on 7/3/15.
  */
 @Test
-@ContextConfiguration(locations = {"classpath:etl.xml", "classpath*:powerschool.xml", "classpath*:scholarscore.xml"})
+@ContextConfiguration(locations = {"classpath:etl.xml"})
 public class E2EIntegrationTest extends AbstractTestNGSpringContextTests {
 
     @Autowired
