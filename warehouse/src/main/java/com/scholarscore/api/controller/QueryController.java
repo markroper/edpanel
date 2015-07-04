@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +20,8 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Validated
-@RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/querys")
+@Controller
+@RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/queries")
 public class QueryController extends BaseController {
     @ApiOperation(
             value = "Get a query by ID", 
@@ -30,10 +32,10 @@ public class QueryController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity getReport(
+    public @ResponseBody ResponseEntity getQuery(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "queryId", required = true, value = "Report ID")
+            @ApiParam(name = "queryId", required = true, value = "Query ID")
             @PathVariable(value="queryId") Long queryId) {
         return respond(getQueryManager().getQuery(schoolId, queryId));
     }
@@ -46,7 +48,7 @@ public class QueryController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity getReport(
+    public @ResponseBody ResponseEntity getQuery(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId) {
         return respond(getQueryManager().getQueries(schoolId));
@@ -60,7 +62,7 @@ public class QueryController extends BaseController {
             method = RequestMethod.POST, 
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity createReport(
+    public @ResponseBody ResponseEntity createQuery(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid Query query) {
@@ -75,7 +77,7 @@ public class QueryController extends BaseController {
             method = RequestMethod.DELETE, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity deleteCourse(
+    public @ResponseBody ResponseEntity deleteQuery(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "queryId", required = true, value = "Report ID")
@@ -92,10 +94,10 @@ public class QueryController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity getReportResults(
+    public @ResponseBody ResponseEntity getQueryResults(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "queryId", required = true, value = "Report ID")
+            @ApiParam(name = "queryId", required = true, value = "Query ID")
             @PathVariable(value="queryId") Long queryId) {
         return respond(getQueryManager().getQueryResults(schoolId, queryId));
     }

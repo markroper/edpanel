@@ -8,6 +8,8 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.IApiModel;
 import com.scholarscore.models.query.expressions.Expression;
@@ -89,6 +91,16 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     // In SQL terms, this defines the WHERE clause of a query
     Expression filter;
 
+    public Query() {
+        
+    }
+    
+    public Query(Query q) {
+        aggregateMeasures = q.getAggregateMeasures();
+        fields = q.getFields();
+        filter = q.getFilter();
+    }
+    
     @Override
     public void mergePropertiesIfNull(Query mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);

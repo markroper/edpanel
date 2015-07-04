@@ -20,8 +20,8 @@ import com.scholarscore.models.query.QueryResults;
 public class QueryJdbc extends BaseJdbc implements QueryPersistence {
     private static String INSERT_REPORT_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.REPORT_TABLE + "` " +
-            "(" + DbConst.SCHOOL_FK_COL + ", " + DbConst.REPORT_ID_COL + ", " + DbConst.REPORT_COL + ")" +
-            " VALUES (:schoolfk, :reportid, :report)";   
+            "(" + DbConst.SCHOOL_FK_COL + ", " + DbConst.REPORT_COL + ")" +
+            " VALUES (:schoolfk, :report)";   
     
     private static String DELETE_REPORT_SQL = "DELETE FROM `"+ 
             DbConst.DATABASE +"`.`" + DbConst.REPORT_TABLE + "` " +
@@ -30,7 +30,7 @@ public class QueryJdbc extends BaseJdbc implements QueryPersistence {
     
     private static String SELECT_REPORTS_IN_SCHOOL_SQL = "SELECT * FROM `"+ 
             DbConst.DATABASE +"`.`" + DbConst.REPORT_TABLE + "`"
-                    + " WHERE `" + DbConst.SCHOOL_FK_COL + "` = schoolfk";
+                    + " WHERE `" + DbConst.SCHOOL_FK_COL + "` = :schoolfk";
     
     private static String SELECT_REPORT_SQL = SELECT_REPORTS_IN_SCHOOL_SQL + 
             " AND `" + DbConst.REPORT_ID_COL + "`= :reportid";

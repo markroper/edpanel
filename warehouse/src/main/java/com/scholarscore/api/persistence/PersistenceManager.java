@@ -3,7 +3,6 @@ package com.scholarscore.api.persistence;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scholarscore.api.persistence.mysql.AuthorityPersistence;
@@ -46,7 +45,6 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private static final String STUDENT = "student";
     private static final String STUDENT_SECTION_GRADE = "student section grade";
     private static final String USER = "user";
-    private static final String QUERY = "query";
  
     //Persistence managers for each entity
     private SchoolPersistence schoolPersistence;
@@ -61,9 +59,13 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private StudentSectionGradePersistence studentSectionGradePersistence;
     private UserPersistence userPersistence;
     private AuthorityPersistence authorityPersistence;
-    private QueryPersistence reportPersistence;
+    private QueryPersistence queryPersistence;
     
     //Setters for the persistence layer for each entity
+    public void setQueryPersistence(QueryPersistence ap) {
+        this.queryPersistence = ap;
+    }
+    
     public void setTeacherPersistence(TeacherPersistence ap) {
         this.teacherPersistence = ap;
     }
@@ -1144,7 +1146,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             return new ServiceResponse<Query>(code);
         }
         return new ServiceResponse<Query>(
-                reportPersistence.selectQuery(schoolId, reportId));
+                queryPersistence.selectQuery(schoolId, reportId));
     }
     
     @Override
@@ -1154,7 +1156,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             return new ServiceResponse<Collection<Query>>(code);
         }
         return new ServiceResponse<Collection<Query>>(
-                reportPersistence.selectQueries(schoolId));
+                queryPersistence.selectQueries(schoolId));
     }
 
     @Override
@@ -1165,7 +1167,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         }
         try {
             return new ServiceResponse<Long>(
-                    reportPersistence.createQuery(schoolId, query));
+                    queryPersistence.createQuery(schoolId, query));
         } catch (JsonProcessingException e) {
             return new ServiceResponse<Long>(
                     StatusCodes.getStatusCode(StatusCodeType.BAD_REQUEST_CANNOT_PARSE_BODY));
@@ -1179,7 +1181,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             return new ServiceResponse<Long>(code);
         }
         return new ServiceResponse<Long>(
-                reportPersistence.deleteQuery(schoolId, reportId));
+                queryPersistence.deleteQuery(schoolId, reportId));
     }
 
     @Override

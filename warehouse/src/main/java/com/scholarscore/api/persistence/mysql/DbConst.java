@@ -140,7 +140,7 @@ public class DbConst {
 	public static final String AUTHORITY_USERNAME_COL = "username";
 	public static final String AUTHORITY_AUTHORITY_COL = "authority";
 	
-	public static final String REPORT_TABLE = "reports";
+	public static final String REPORT_TABLE = "report";
 	public static final String REPORT_ID_COL = "report_id";
 	public static final String REPORT_COL = "report";
 	
