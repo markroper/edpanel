@@ -1,1 +1,0 @@
-<jsp:forward page="/profile/Metadata/SAML" />
