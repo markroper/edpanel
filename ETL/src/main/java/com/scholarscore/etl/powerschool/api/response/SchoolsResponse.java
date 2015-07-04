@@ -22,8 +22,14 @@ public class SchoolsResponse implements ITranslateCollection<com.scholarscore.mo
     }
 
     @Override
-    public Collection<Student> toInternalModel() {
-        return null;
+    public Collection<com.scholarscore.models.School> toInternalModel() {
+        ArrayList<com.scholarscore.models.School> response = new ArrayList<>();
+        for (School school : schools.school) {
+            com.scholarscore.models.School apiSchool = new com.scholarscore.models.School();
+            apiSchool.setName(school.name);
+            response.add(apiSchool);
+        }
+        return response;
     }
 
     public class Schools {

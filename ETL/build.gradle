@@ -10,6 +10,7 @@ ext {
 dependencies {
 
     compile project(':common'),
+            project(':apiClient'),
 
             //MySQL dependencies
             'mysql:mysql-connector-java:5.1.6',

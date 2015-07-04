@@ -2,6 +2,7 @@ package com.scholarscore.etl.powerschool.api.response;
 
 import com.scholarscore.etl.powerschool.api.model.Staffs;
 import com.scholarscore.models.Student;
+import com.scholarscore.models.User;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
@@ -25,7 +26,7 @@ public class StaffResponse implements ITranslateCollection<com.scholarscore.mode
     }
 
     @Override
-    public Collection<Student> toInternalModel() {
+    public Collection<User> toInternalModel() {
         return null;
     }
 }

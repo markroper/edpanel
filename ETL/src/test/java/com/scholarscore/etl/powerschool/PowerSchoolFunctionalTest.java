@@ -20,7 +20,7 @@ import static org.testng.Assert.assertTrue;
  */
 @Test
 @ContextConfiguration(locations = { "classpath:powerschool.xml" })
-public class ClientFunctionalTest extends AbstractTestNGSpringContextTests {
+public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests {
 
     @Autowired
     private IPowerSchoolClient client;
