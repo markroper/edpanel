@@ -1,7 +1,8 @@
 package com.scholarscore.api.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashSet;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
@@ -43,7 +44,7 @@ public class QueryControllerIntegrationTest extends IntegrationBase {
         
         Query fullyPopulatedQuery = new Query();
         //Define aggregate measures
-        LinkedHashSet<AggregateMeasure> measures = new LinkedHashSet<>();
+        List<AggregateMeasure> measures = new ArrayList<>();
         measures.add(new AggregateMeasure(Measure.DEMERITS, AggregateFunction.SUM));
         measures.add(new AggregateMeasure(Measure.COURSE_GRADE, AggregateFunction.AVERAGE));
         fullyPopulatedQuery.setAggregateMeasures(measures);
@@ -70,7 +71,7 @@ public class QueryControllerIntegrationTest extends IntegrationBase {
         fullyPopulatedQuery.setFilter(whereClause);
        
         return new Object[][] {
-//                { "Empty query", emptyQuery },
+                { "Empty query", emptyQuery },
                 { "Populated query", fullyPopulatedQuery }
         };
     }
@@ -87,22 +88,22 @@ public class QueryControllerIntegrationTest extends IntegrationBase {
         queryValidatingExecutor.delete(school.getId(), createdQuery.getId(), msg);
     }
     
-    @Test(dataProvider = "createQueryProvider")
-    public void replaceQueryTest(String msg, Query query) {
-        Query createdQuery = queryValidatingExecutor.create(school.getId(), query, msg);
-        queryValidatingExecutor.replace(school.getId(), createdQuery.getId(), new Query(), msg);
-        numberOfItemsCreated++;
-    }
-    
-    @Test(dataProvider = "createQueryProvider")
-    public void updateQueryTest(String msg, Query query) {
-        Query createdQuery = queryValidatingExecutor.create(school.getId(), query, msg);
-        Query updatedQuery = new Query();
-        updatedQuery.setName(localeServiceUtil.generateName());
-        //PATCH the existing record with a new name.
-        queryValidatingExecutor.update(school.getId(), createdQuery.getId(), updatedQuery, msg);
-        numberOfItemsCreated++;
-    }
+//    @Test(dataProvider = "createQueryProvider")
+//    public void replaceQueryTest(String msg, Query query) {
+//        Query createdQuery = queryValidatingExecutor.create(school.getId(), query, msg);
+//        queryValidatingExecutor.replace(school.getId(), createdQuery.getId(), new Query(), msg);
+//        numberOfItemsCreated++;
+//    }
+//    
+//    @Test(dataProvider = "createQueryProvider")
+//    public void updateQueryTest(String msg, Query query) {
+//        Query createdQuery = queryValidatingExecutor.create(school.getId(), query, msg);
+//        Query updatedQuery = new Query();
+//        updatedQuery.setName(localeServiceUtil.generateName());
+//        //PATCH the existing record with a new name.
+//        queryValidatingExecutor.update(school.getId(), createdQuery.getId(), updatedQuery, msg);
+//        numberOfItemsCreated++;
+//    }
     
     @Test
     public void getAllItems() {
@@ -125,10 +126,10 @@ public class QueryControllerIntegrationTest extends IntegrationBase {
         queryValidatingExecutor.createNegative(school.getId(), query, expectedStatus, msg);
     }
     
-    @Test(dataProvider = "createQueryNegativeProvider")
-    public void replaceQueryNegativeTest(String msg, Query query, HttpStatus expectedStatus) {
-        Query created = queryValidatingExecutor.create(school.getId(), new Query(), msg);
-        queryValidatingExecutor.replaceNegative(school.getId(), created.getId(), query, expectedStatus, msg);
-    }
+//    @Test(dataProvider = "createQueryNegativeProvider")
+//    public void replaceQueryNegativeTest(String msg, Query query, HttpStatus expectedStatus) {
+//        Query created = queryValidatingExecutor.create(school.getId(), new Query(), msg);
+//        queryValidatingExecutor.replaceNegative(school.getId(), created.getId(), query, expectedStatus, msg);
+//    }
 
 }

@@ -45,7 +45,8 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private static final String STUDENT = "student";
     private static final String STUDENT_SECTION_GRADE = "student section grade";
     private static final String USER = "user";
- 
+    private static final String QUERY = "query";
+    
     //Persistence managers for each entity
     private SchoolPersistence schoolPersistence;
     private EntityPersistence<SchoolYear> schoolYearPersistence;
@@ -1138,15 +1139,20 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
 	public ServiceResponse<String> deleteUser(String username) {
 		return new ServiceResponse<String>(userPersistence.deleteUser(username));
 	}
-
+    
     @Override
-    public ServiceResponse<Query> getQuery(Long schoolId, Long reportId) {
+    public ServiceResponse<Query> getQuery(Long schoolId, Long queryId) {
         StatusCode code = this.schoolExists(schoolId);
         if(!code.isOK()) {
             return new ServiceResponse<Query>(code);
         }
-        return new ServiceResponse<Query>(
-                queryPersistence.selectQuery(schoolId, reportId));
+        Query query =  queryPersistence.selectQuery(schoolId, queryId);
+        if(null == query) {
+            return new ServiceResponse<Query>(StatusCodes.getStatusCode(
+                    StatusCodeType.MODEL_NOT_FOUND, 
+                    new Object[] { QUERY, queryId }));
+        }
+        return new ServiceResponse<Query>(query);
     }
     
     @Override

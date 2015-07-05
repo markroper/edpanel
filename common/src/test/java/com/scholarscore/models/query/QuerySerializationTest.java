@@ -1,8 +1,9 @@
 package com.scholarscore.models.query;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashSet;
+import java.util.List;
 
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -27,7 +28,7 @@ public class QuerySerializationTest {
         
         Query fullyPopulatedQuery = new Query();
         //Define aggregate measures
-        LinkedHashSet<AggregateMeasure> measures = new LinkedHashSet<>();
+        List<AggregateMeasure> measures = new ArrayList<>();
         measures.add(new AggregateMeasure(Measure.DEMERITS, AggregateFunction.SUM));
         measures.add(new AggregateMeasure(Measure.COURSE_GRADE, AggregateFunction.AVERAGE));
         fullyPopulatedQuery.setAggregateMeasures(measures);

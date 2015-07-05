@@ -1,15 +1,14 @@
 package com.scholarscore.models.query;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.IApiModel;
 import com.scholarscore.models.query.expressions.Expression;
@@ -83,11 +82,11 @@ import com.scholarscore.models.query.expressions.Expression;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     // In SQL terms, this collection defines the columns that are being SUM'd, AVG'd, or otherwise aggregated
-    LinkedHashSet<AggregateMeasure> aggregateMeasures;
+    List<AggregateMeasure> aggregateMeasures;
     // In SQL terms, the Dimension represents those columns in the GROUP BY clause.
     // In our model, a dimension may be a complex object leading to multiple columns in a returned
     // SQL result set, but a dimension can generally be thought of correlating to a single table
-    LinkedHashSet<DimensionField> fields;
+    List<DimensionField> fields;
     // In SQL terms, this defines the WHERE clause of a query
     Expression filter;
 
@@ -120,12 +119,12 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     }
 
     // Getters, setters, equals(), hashCode(), toString()
-    public LinkedHashSet<AggregateMeasure> getAggregateMeasures() {
+    public List<AggregateMeasure> getAggregateMeasures() {
         return aggregateMeasures;
     }
 
     public void setAggregateMeasures(
-            LinkedHashSet<AggregateMeasure> aggregateMeasures) {
+            List<AggregateMeasure> aggregateMeasures) {
         this.aggregateMeasures = aggregateMeasures;
     }
 
@@ -137,17 +136,17 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         this.filter = filter;
     }
 
-    public LinkedHashSet<DimensionField> getFields() {
+    public List<DimensionField> getFields() {
         return fields;
     }
 
-    public void setFields(LinkedHashSet<DimensionField> fields) {
+    public void setFields(List<DimensionField> fields) {
         this.fields = fields;
     }
     
     public void addField(DimensionField field) {
         if(null == this.fields) {
-            this.fields = new LinkedHashSet<DimensionField>();
+            this.fields = new ArrayList<DimensionField>();
         }
         this.fields.add(field);
     }
