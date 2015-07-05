@@ -2,10 +2,14 @@ package com.scholarscore.models;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.query.DimensionField;
 
 /**
  * A Section is a temporal instance of a Course.  Where a course defines that which is to be taught, a Section has
@@ -18,6 +22,24 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Section extends ApiModel implements Serializable, IApiModel<Section> {
+    public static final DimensionField ID = new DimensionField(Dimension.SECTION, "ID");
+    public static final DimensionField NAME = new DimensionField(Dimension.SECTION, "Name");
+    public static final DimensionField END_DATE = new DimensionField(Dimension.SECTION, "End Date");
+    public static final DimensionField START_DATE = new DimensionField(Dimension.SECTION, "Start Date");
+    public static final DimensionField TEACHER = new DimensionField(Dimension.SECTION, "Teacher");
+    public static final DimensionField GRADE_FORMULA = new DimensionField(Dimension.SECTION, "Grade Formula");
+    public static final DimensionField ROOM = new DimensionField(Dimension.SECTION, "Room");
+    
+    public static final Set<DimensionField> DIMENSION_FIELDS = new HashSet<DimensionField>() {{
+        add(ID);
+        add(NAME);
+        add(END_DATE);
+        add(START_DATE);
+        add(TEACHER);
+        add(GRADE_FORMULA);
+        add(ROOM);
+    }};
+    
     protected Date startDate;
     protected Date endDate;
     protected String room;

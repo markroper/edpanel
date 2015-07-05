@@ -33,6 +33,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableMap;
 import com.scholarscore.api.controller.service.CourseValidatingExecutor;
 import com.scholarscore.api.controller.service.LocaleServiceUtil;
+import com.scholarscore.api.controller.service.QueryValidatingExecutor;
 import com.scholarscore.api.controller.service.SchoolValidatingExecutor;
 import com.scholarscore.api.controller.service.SchoolYearValidatingExecutor;
 import com.scholarscore.api.controller.service.AssignmentValidatingExecutor;
@@ -71,6 +72,7 @@ public class IntegrationBase {
     private static final String STUDENT_ASSIGNMENT_ENDPOINT = "/studentassignments";
     private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
     private static final String TEACHER_ENDPOINT = "/teachers";
+    private static final String QUERIES_ENDPOINT = "/queries";
 
     public LocaleServiceUtil localeServiceUtil;
     public CourseValidatingExecutor courseValidatingExecutor;
@@ -83,6 +85,7 @@ public class IntegrationBase {
     public StudentAssignmentValidatingExecutor studentAssignmentValidatingExecutor;
     public StudentSectionGradeValidatingExecutor studentSectionGradeValidatingExecutor;
     public TeacherValidatingExecutor teacherValidatingExecutor;
+    public QueryValidatingExecutor queryValidatingExecutor;
     
 
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
@@ -134,6 +137,7 @@ public class IntegrationBase {
         studentAssignmentValidatingExecutor = new StudentAssignmentValidatingExecutor(this);
         studentSectionGradeValidatingExecutor = new StudentSectionGradeValidatingExecutor(this);
         teacherValidatingExecutor = new TeacherValidatingExecutor(this);
+        queryValidatingExecutor = new QueryValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -172,6 +176,7 @@ public class IntegrationBase {
         Assert.assertNotNull(studentValidatingExecutor, "Unable to configure student service");
         Assert.assertNotNull(studentAssignmentValidatingExecutor, "Unable to configure student assignment service");
         Assert.assertNotNull(teacherValidatingExecutor, "Unable to configure teacher service");
+        Assert.assertNotNull(queryValidatingExecutor, "Unable to configure query service");
     }
 
     /**
@@ -545,6 +550,14 @@ public class IntegrationBase {
      */
     public String getSchoolYearEndpoint(Long schoolId, Long schoolYearId) {
         return getSchoolYearEndpoint(schoolId) + pathify(schoolYearId); 
+    }
+    
+    public String getQueryEndpoint(Long schoolId, Long queryId) {
+        return getQueryEndpoint(schoolId) + pathify(queryId);
+    }
+    
+    public String getQueryEndpoint(Long schoolId) {
+        return getSchoolEndpoint(schoolId) + QUERIES_ENDPOINT;
     }
     
     /**

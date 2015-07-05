@@ -1,8 +1,12 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.query.DimensionField;
 
 /**
  * The class represents a course, for example 'AP Calculus BC'. The course
@@ -20,6 +24,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Course extends ApiModel implements Serializable, IApiModel<Course> {
+    public static final DimensionField ID = new DimensionField(Dimension.COURSE, "ID");
+    public static final DimensionField NAME = new DimensionField(Dimension.COURSE, "Name");
+    
+    public static final Set<DimensionField> DIMENSION_FIELDS = new HashSet<DimensionField>() {{
+        add(ID);
+        add(NAME);
+    }};
+    
     //TODO: Boolean honors
     //TODO: GPA weight
     

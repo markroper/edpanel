@@ -2,9 +2,13 @@ package com.scholarscore.models;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.query.DimensionField;
 
 /**
  * A term represents one segment of an {@link com.scholarscore.models.SchoolYear}.
@@ -19,6 +23,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Term extends ApiModel implements Serializable, IApiModel<Term>{
+    public static final DimensionField ID = new DimensionField(Dimension.TERM, "ID");
+    public static final DimensionField NAME = new DimensionField(Dimension.TERM, "Name");
+    public static final DimensionField END_DATE = new DimensionField(Dimension.TERM, "End Date");
+    public static final DimensionField START_DATE = new DimensionField(Dimension.TERM, "Start Date");
+    public static final Set<DimensionField> DIMENSION_FIELDS = new HashSet<DimensionField>() {{
+        add(ID);
+        add(NAME);
+        add(END_DATE);
+        add(START_DATE);
+    }};
+    
     protected Date startDate;
     protected Date endDate;
     

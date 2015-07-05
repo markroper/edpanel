@@ -137,6 +137,18 @@ CREATE TABLE `scholar_warehouse`.`student_section_grade` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
+CREATE TABLE `scholar_warehouse`.`report` (
+  `report_id`  INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key identity column',
+  `school_fk` INT UNSIGNED NOT NULL COMMENT 'The foreign key to the school table',
+  `report` TEXT NOT NULL COMMENT 'The report meta-data in JSON string format',
+  PRIMARY KEY (`report_id`),
+  CONSTRAINT `fk_school$report`
+    FOREIGN KEY (`school_fk`)
+    REFERENCES `scholar_warehouse`.`school`(`school_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
 CREATE TABLE `scholar_warehouse`.`users` (
     `username` varchar(50) NOT NULL,
     `password` varchar(50) CHARACTER SET UTF8 NOT NULL,

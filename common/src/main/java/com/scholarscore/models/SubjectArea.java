@@ -1,8 +1,12 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.query.DimensionField;
 
 /**
  * The class represents a school subject area, for example history, or biology.
@@ -14,8 +18,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SubjectArea extends ApiModel 
-    implements Serializable, IApiModel<SubjectArea>{
+public class SubjectArea extends ApiModel implements Serializable, IApiModel<SubjectArea>{
+    public static final DimensionField ID = new DimensionField(Dimension.SUBJECT_AREA, "ID");
+    public static final DimensionField NAME = new DimensionField(Dimension.SUBJECT_AREA, "Name");
+    public static final Set<DimensionField> DIMENSION_FIELDS = new HashSet<DimensionField>() {{
+        add(ID);
+        add(NAME);
+    }};
     
     public SubjectArea() {
         super();
