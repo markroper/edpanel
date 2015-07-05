@@ -1,0 +1,16 @@
+{
+  "staffs": {
+    "@expansions": "addresses, emails, phones, school_affiliations",
+    "@extensions": "",
+    "staff": {
+      "id": 52,
+      "local_id": 3,
+      "admin_username": "***REMOVED***",
+      "name": {
+        "first_name": "Jean",
+        "middle_name": "E",
+        "last_name": "Kim"
+      }
+    }
+  }
+}
