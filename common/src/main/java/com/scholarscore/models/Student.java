@@ -61,6 +61,12 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.mailingAddress = student.mailingAddress;
         this.homeAddress = student.homeAddress;
         this.gender = student.gender;
+        this.birthDate = student.birthDate;
+        this.districtEntryDate = student.districtEntryDate;
+        this.projectedGraduationYear = student.projectedGraduationYear;
+        this.socialSecurityNumber = student.socialSecurityNumber;
+        this.federalRace = student.federalRace;
+        this.federalEthnicity = student.federalEthnicity;
     }
     
     // FK to the Users table, this is optional as a 1:1 relationship does not need to exist between
