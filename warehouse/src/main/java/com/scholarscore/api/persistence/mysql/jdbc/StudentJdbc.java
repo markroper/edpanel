@@ -13,17 +13,68 @@ import org.springframework.jdbc.support.KeyHolder;
 import com.scholarscore.api.persistence.mysql.DbConst;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.StudentMapper;
+import com.scholarscore.models.Address;
 import com.scholarscore.models.Student;
 
 public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPersistence {
     private static String INSERT_STUDENT_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.STUDENT_TABLE + "` " +
-            "(" + DbConst.STUDENT_NAME_COL + ")" +
-            " VALUES (:" + DbConst.STUDENT_NAME_COL + ")";   
+            "(" + DbConst.STUDENT_NAME_COL + ", " +
+                DbConst.STUDENT_SOURCE_SYSTEM_ID + ", " +
+                DbConst.STUDENT_MAILING_STREET_COL + ", " +
+                DbConst.STUDENT_MAILING_CITY_COL + ", " +
+                DbConst.STUDENT_MAILING_STATE_COL + ", " +
+                DbConst.STUDENT_MAILING_POSTAL_COL + ", " +
+                DbConst.STUDENT_HOME_STREET_COL + ", " +
+                DbConst.STUDENT_HOME_CITY_COL + ", " +
+                DbConst.STUDENT_HOME_STATE_COL + ", " +
+                DbConst.STUDENT_HOME_POSTAL_COL + ", " +
+                DbConst.STUDENT_GENDER_COL + ", " +
+                DbConst.STUDENT_BIRTH_DATE_COL + ", " +
+                DbConst.STUDENT_DISTRICT_ENTRY_DATE_COL + ", " +
+                DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL + ", " +
+                DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL + ", " +
+                DbConst.STUDENT_RACE_COL + ", " +
+                DbConst.STUDENT_ETHNICITY_COL +
+            ") VALUES (" + 
+                ":" + DbConst.STUDENT_NAME_COL + ", " +
+                ":" + DbConst.STUDENT_SOURCE_SYSTEM_ID + ", " +
+                ":" + DbConst.STUDENT_MAILING_STREET_COL + ", " +
+                ":" + DbConst.STUDENT_MAILING_CITY_COL + ", " +
+                ":" + DbConst.STUDENT_MAILING_STATE_COL + ", " +
+                ":" + DbConst.STUDENT_MAILING_POSTAL_COL + ", " +
+                ":" + DbConst.STUDENT_HOME_STREET_COL + ", " +
+                ":" + DbConst.STUDENT_HOME_CITY_COL + ", " +
+                ":" + DbConst.STUDENT_HOME_STATE_COL + ", " +
+                ":" + DbConst.STUDENT_HOME_POSTAL_COL + ", " +
+                ":" + DbConst.STUDENT_GENDER_COL + ", " +
+                ":" + DbConst.STUDENT_BIRTH_DATE_COL + ", " +
+                ":" + DbConst.STUDENT_DISTRICT_ENTRY_DATE_COL + ", " +
+                ":" + DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL + ", " +
+                ":" + DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL + ", " +
+                ":" + DbConst.STUDENT_RACE_COL + ", " +
+                ":" + DbConst.STUDENT_ETHNICITY_COL +  
+                ")";   
 
     private static String UPDATE_STUDENT_SQL = 
             "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.STUDENT_TABLE + "` " + 
-            "SET `" + DbConst.STUDENT_NAME_COL + "`= :" + DbConst.STUDENT_NAME_COL + " " + 
+            "SET `" + DbConst.STUDENT_NAME_COL + "`= :" + DbConst.STUDENT_NAME_COL + ", " + 
+                 DbConst.STUDENT_SOURCE_SYSTEM_ID + "`= :" + DbConst.STUDENT_SOURCE_SYSTEM_ID + ", " +
+                 DbConst.STUDENT_MAILING_STREET_COL + "`= :" + DbConst.STUDENT_MAILING_STREET_COL + ", " +
+                 DbConst.STUDENT_MAILING_CITY_COL + "`= :" + DbConst.STUDENT_MAILING_CITY_COL + ", " +
+                 DbConst.STUDENT_MAILING_STATE_COL + "`= :" + DbConst.STUDENT_MAILING_STATE_COL + ", " +
+                 DbConst.STUDENT_MAILING_POSTAL_COL + "`= :" + DbConst.STUDENT_MAILING_POSTAL_COL + ", " +
+                 DbConst.STUDENT_HOME_STREET_COL + "`= :" + DbConst.STUDENT_HOME_STREET_COL + ", " +
+                 DbConst.STUDENT_HOME_CITY_COL + "`= :" + DbConst.STUDENT_HOME_CITY_COL + ", " +
+                 DbConst.STUDENT_HOME_STATE_COL + "`= :" + DbConst.STUDENT_HOME_STATE_COL + ", " +
+                 DbConst.STUDENT_HOME_POSTAL_COL + "`= :" + DbConst.STUDENT_HOME_POSTAL_COL + ", " +
+                 DbConst.STUDENT_GENDER_COL + "`= :" + DbConst.STUDENT_GENDER_COL + ", " +
+                 DbConst.STUDENT_BIRTH_DATE_COL + "`= :" + DbConst.STUDENT_BIRTH_DATE_COL + ", " +
+                 DbConst.STUDENT_DISTRICT_ENTRY_DATE_COL + "`= :" + DbConst.STUDENT_DISTRICT_ENTRY_DATE_COL + ", " +
+                 DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL + "`= :" + DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL + ", " +
+                 DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL + "`= :" + DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL + ", " +
+                 DbConst.STUDENT_RACE_COL + "`= :" + DbConst.STUDENT_RACE_COL + ", " +
+                 DbConst.STUDENT_ETHNICITY_COL + "`= :" + DbConst.STUDENT_ETHNICITY_COL + " " +
             "WHERE `" + DbConst.STUDENT_ID_COL + "`= :" + DbConst.STUDENT_ID_COL + "";
 
     private static String SELECT_ALL_STUDENTS_SQL = "SELECT * FROM `"+
@@ -51,6 +102,30 @@ public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPer
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.STUDENT_NAME_COL, student.getName());
+        params.put(DbConst.STUDENT_SOURCE_SYSTEM_ID, student.getSourceSystemId());
+        Address mailingAddress = student.getMailingAddress();
+        if(null == mailingAddress) {
+            mailingAddress = new Address();
+        }
+        params.put(DbConst.STUDENT_MAILING_STREET_COL, mailingAddress.getStreet());
+        params.put(DbConst.STUDENT_MAILING_CITY_COL, mailingAddress.getCity());
+        params.put(DbConst.STUDENT_MAILING_STATE_COL, mailingAddress.getState());
+        params.put(DbConst.STUDENT_MAILING_POSTAL_COL, mailingAddress.getPostalCode());
+        Address homeAddress = student.getMailingAddress();
+        if(null == homeAddress) {
+            homeAddress = new Address();
+        }
+        params.put(DbConst.STUDENT_HOME_STREET_COL, homeAddress.getStreet());
+        params.put(DbConst.STUDENT_HOME_CITY_COL, homeAddress.getCity());
+        params.put(DbConst.STUDENT_HOME_STATE_COL, homeAddress.getState());
+        params.put(DbConst.STUDENT_HOME_POSTAL_COL, homeAddress.getPostalCode());
+        params.put(DbConst.STUDENT_GENDER_COL, student.getGender());
+        params.put(DbConst.STUDENT_BIRTH_DATE_COL, student.getBirthDate());
+        params.put(DbConst.STUDENT_DISTRICT_ENTRY_DATE_COL, student.getDistrictEntryDate());
+        params.put(DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL, student.getProjectedGraduationYear());
+        params.put(DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL, student.getSocialSecurityNumber());
+        params.put(DbConst.STUDENT_RACE_COL, student.getFederalRace());
+        params.put(DbConst.STUDENT_ETHNICITY_COL, student.getFederalEthnicity());
         jdbcTemplate.update(INSERT_STUDENT_SQL, new MapSqlParameterSource(params), keyHolder);
         return keyHolder.getKey().longValue();
     }
@@ -59,6 +134,30 @@ public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPer
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.STUDENT_NAME_COL, student.getName());
         params.put(DbConst.STUDENT_ID_COL, new Long(studentId));
+        params.put(DbConst.STUDENT_SOURCE_SYSTEM_ID, student.getSourceSystemId());
+        Address mailingAddress = student.getMailingAddress();
+        if(null == mailingAddress) {
+            mailingAddress = new Address();
+        }
+        params.put(DbConst.STUDENT_MAILING_STREET_COL, mailingAddress.getStreet());
+        params.put(DbConst.STUDENT_MAILING_CITY_COL, mailingAddress.getCity());
+        params.put(DbConst.STUDENT_MAILING_STATE_COL, mailingAddress.getState());
+        params.put(DbConst.STUDENT_MAILING_POSTAL_COL, mailingAddress.getPostalCode());
+        Address homeAddress = student.getMailingAddress();
+        if(null == homeAddress) {
+            homeAddress = new Address();
+        }
+        params.put(DbConst.STUDENT_HOME_STREET_COL, homeAddress.getStreet());
+        params.put(DbConst.STUDENT_HOME_CITY_COL, homeAddress.getCity());
+        params.put(DbConst.STUDENT_HOME_STATE_COL, homeAddress.getState());
+        params.put(DbConst.STUDENT_HOME_POSTAL_COL, homeAddress.getPostalCode());
+        params.put(DbConst.STUDENT_GENDER_COL, student.getGender());
+        params.put(DbConst.STUDENT_BIRTH_DATE_COL, student.getBirthDate());
+        params.put(DbConst.STUDENT_DISTRICT_ENTRY_DATE_COL, student.getDistrictEntryDate());
+        params.put(DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL, student.getProjectedGraduationYear());
+        params.put(DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL, student.getSocialSecurityNumber());
+        params.put(DbConst.STUDENT_RACE_COL, student.getFederalRace());
+        params.put(DbConst.STUDENT_ETHNICITY_COL, student.getFederalEthnicity());
         jdbcTemplate.update(UPDATE_STUDENT_SQL, new MapSqlParameterSource(params));
         return studentId;
     }

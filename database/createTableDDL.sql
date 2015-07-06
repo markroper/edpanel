@@ -2,6 +2,22 @@
 CREATE TABLE `scholar_warehouse`.`student` (
   `student_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `student_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
+  `source_system_id` INT UNSIGNED COMMENT 'The identifier from the source system, if any',
+  `mailing_street` VARCHAR(512) NULL COMMENT 'The street portion of the mailing address',
+  `mailing_city` VARCHAR(256) NULL COMMENT 'The city portion of the student mailing address',
+  `mailing_state` VARCHAR(256) NULL COMMENT 'The state abbreviation of the student mailing address',
+  `mailing_postal_code` VARCHAR(256) NULL COMMENT 'The postal code of the student mailing address',
+  `home_street` VARCHAR(512) NULL COMMENT 'The street portion of the home address',
+  `home_city` VARCHAR(256) NULL COMMENT 'The city portion of the student home address',
+  `home_state` VARCHAR(256) NULL COMMENT 'The state abbreviation of the student home address',
+  `home_postal_code` VARCHAR(256) NULL COMMENT 'The postal code of the student home address',
+  `gender` CHAR(1) NULL COMMENT 'The gender of the student',
+  `birth_date` DATETIME NULL COMMENT 'The birth date of the student',
+  `district_entry_date` DATETIME NULL COMMENT 'The date the student entered the school district',
+  `projected_graduation_year` INT UNSIGNED NULL COMMENT 'The projected year of graduation for the student. For example: 2020',
+  `social_security_number` VARCHAR(256) NULL COMMENT 'The student\'s social security number',
+  `federal_race` VARCHAR(512) NULL COMMENT 'The student\'s race according to the federal gov\'t',
+  `federal_ethnicity` VARCHAR(512) NULL COMMENT 'The student\'s ethnicity according to the federal gov\'t',
   PRIMARY KEY (`student_id`))
 ENGINE = InnoDB;
 
