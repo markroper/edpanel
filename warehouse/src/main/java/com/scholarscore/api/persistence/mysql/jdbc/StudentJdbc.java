@@ -58,22 +58,22 @@ public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPer
 
     private static String UPDATE_STUDENT_SQL = 
             "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.STUDENT_TABLE + "` " + 
-            "SET `" + DbConst.STUDENT_NAME_COL + "`= :" + DbConst.STUDENT_NAME_COL + ", " + 
-                 DbConst.STUDENT_SOURCE_SYSTEM_ID + "`= :" + DbConst.STUDENT_SOURCE_SYSTEM_ID + ", " +
-                 DbConst.STUDENT_MAILING_STREET_COL + "`= :" + DbConst.STUDENT_MAILING_STREET_COL + ", " +
-                 DbConst.STUDENT_MAILING_CITY_COL + "`= :" + DbConst.STUDENT_MAILING_CITY_COL + ", " +
-                 DbConst.STUDENT_MAILING_STATE_COL + "`= :" + DbConst.STUDENT_MAILING_STATE_COL + ", " +
-                 DbConst.STUDENT_MAILING_POSTAL_COL + "`= :" + DbConst.STUDENT_MAILING_POSTAL_COL + ", " +
-                 DbConst.STUDENT_HOME_STREET_COL + "`= :" + DbConst.STUDENT_HOME_STREET_COL + ", " +
-                 DbConst.STUDENT_HOME_CITY_COL + "`= :" + DbConst.STUDENT_HOME_CITY_COL + ", " +
-                 DbConst.STUDENT_HOME_STATE_COL + "`= :" + DbConst.STUDENT_HOME_STATE_COL + ", " +
-                 DbConst.STUDENT_HOME_POSTAL_COL + "`= :" + DbConst.STUDENT_HOME_POSTAL_COL + ", " +
-                 DbConst.STUDENT_GENDER_COL + "`= :" + DbConst.STUDENT_GENDER_COL + ", " +
-                 DbConst.STUDENT_BIRTH_DATE_COL + "`= :" + DbConst.STUDENT_BIRTH_DATE_COL + ", " +
-                 DbConst.STUDENT_DISTRICT_ENTRY_DATE_COL + "`= :" + DbConst.STUDENT_DISTRICT_ENTRY_DATE_COL + ", " +
-                 DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL + "`= :" + DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL + ", " +
-                 DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL + "`= :" + DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL + ", " +
-                 DbConst.STUDENT_RACE_COL + "`= :" + DbConst.STUDENT_RACE_COL + ", " +
+            "SET `" + DbConst.STUDENT_NAME_COL + "`= :" + DbConst.STUDENT_NAME_COL + ", `" + 
+                 DbConst.STUDENT_SOURCE_SYSTEM_ID + "`= :" + DbConst.STUDENT_SOURCE_SYSTEM_ID + ", `" +
+                 DbConst.STUDENT_MAILING_STREET_COL + "`= :" + DbConst.STUDENT_MAILING_STREET_COL + ", `" +
+                 DbConst.STUDENT_MAILING_CITY_COL + "`= :" + DbConst.STUDENT_MAILING_CITY_COL + ", `" +
+                 DbConst.STUDENT_MAILING_STATE_COL + "`= :" + DbConst.STUDENT_MAILING_STATE_COL + ", `" +
+                 DbConst.STUDENT_MAILING_POSTAL_COL + "`= :" + DbConst.STUDENT_MAILING_POSTAL_COL + ", `" +
+                 DbConst.STUDENT_HOME_STREET_COL + "`= :" + DbConst.STUDENT_HOME_STREET_COL + ", `" +
+                 DbConst.STUDENT_HOME_CITY_COL + "`= :" + DbConst.STUDENT_HOME_CITY_COL + ", `" +
+                 DbConst.STUDENT_HOME_STATE_COL + "`= :" + DbConst.STUDENT_HOME_STATE_COL + ", `" +
+                 DbConst.STUDENT_HOME_POSTAL_COL + "`= :" + DbConst.STUDENT_HOME_POSTAL_COL + ", `" +
+                 DbConst.STUDENT_GENDER_COL + "`= :" + DbConst.STUDENT_GENDER_COL + ", `" +
+                 DbConst.STUDENT_BIRTH_DATE_COL + "`= :" + DbConst.STUDENT_BIRTH_DATE_COL + ", `" +
+                 DbConst.STUDENT_DISTRICT_ENTRY_DATE_COL + "`= :" + DbConst.STUDENT_DISTRICT_ENTRY_DATE_COL + ", `" +
+                 DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL + "`= :" + DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL + ", `" +
+                 DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL + "`= :" + DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL + ", `" +
+                 DbConst.STUDENT_RACE_COL + "`= :" + DbConst.STUDENT_RACE_COL + ", `" +
                  DbConst.STUDENT_ETHNICITY_COL + "`= :" + DbConst.STUDENT_ETHNICITY_COL + " " +
             "WHERE `" + DbConst.STUDENT_ID_COL + "`= :" + DbConst.STUDENT_ID_COL + "";
 
