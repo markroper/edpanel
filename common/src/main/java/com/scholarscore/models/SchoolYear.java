@@ -105,7 +105,9 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
             return false;
         }
         final SchoolYear other = (SchoolYear) obj;
-        return Objects.equals(this.startDate, other.startDate) && Objects.equals(this.endDate, other.endDate) && Objects.equals(this.terms, other.terms);
+        return Objects.equals(this.startDate, other.startDate) 
+                && Objects.equals(this.endDate, other.endDate) 
+                && Objects.equals(this.terms, other.terms);
     }
     
     @Override

@@ -17,17 +17,17 @@ public class DbConst {
     public static final Map<DimensionField, String> DIMENSION_TO_DB_NAME = 
             new HashMap<DimensionField, String>(){{
         //Student dimension field to db column name lookup
-        put(Student.STUDENT_AGE, STUDENT_AGE);
-        put(Student.STUDENT_GENDER, STUDENT_GENER);
+        put(Student.STUDENT_AGE, STUDENT_BIRTH_DATE_COL);
+        put(Student.STUDENT_GENDER, STUDENT_GENDER_COL);
         put(Student.STUDENT_NAME, STUDENT_NAME_COL);
         put(Student.STUDENT_ID, STUDENT_ID_COL);
-        put(Student.STUDENT_FREE_LUNCH, STUDENT_FREE_LUNCH_COL);
-        put(Student.STUDENT_GRADE_REPEATER, STUDENT_GRADE_REPEATER_COL);
+//        put(Student.STUDENT_FREE_LUNCH, STUDENT_FREE_LUNCH_COL);
+//        put(Student.STUDENT_GRADE_REPEATER, STUDENT_GRADE_REPEATER_COL);
         put(Student.STUDENT_ETHNICITY, STUDENT_ETHNICITY_COL);
         put(Student.STUDENT_RACE, STUDENT_RACE_COL);
-        put(Student.STUDENT_ELL, STUDENT_ELL_COL);
-        put(Student.STUDENT_SPECIAL_ED, STUDENT_SPECIAL_ED_COL);
-        put(Student.STUDENT_CITY_OF_RESIDENCE, STUDENT_CITY_OF_RESIDENCE_COL);
+//        put(Student.STUDENT_ELL, STUDENT_ELL_COL);
+//        put(Student.STUDENT_SPECIAL_ED, STUDENT_SPECIAL_ED_COL);
+        put(Student.STUDENT_CITY_OF_RESIDENCE, STUDENT_HOME_CITY_COL);
         //Teacher dimension field to DB column name lookup
         put(Teacher.NAME, TEACHER_NAME_COL);
         put(Teacher.ID, TEACHER_ID_COL);
@@ -85,15 +85,27 @@ public class DbConst {
     
     public static final String STUDENT_ID_COL = "student_id";
     public static final String STUDENT_NAME_COL = "student_name";
-    public static final String STUDENT_AGE = "student_age";
-    public static final String STUDENT_GENER = "student_gender";
-    public static final String STUDENT_FREE_LUNCH_COL = "student_free_lunch";
-    public static final String STUDENT_GRADE_REPEATER_COL = "student_grade_repeater";
-    public static final String STUDENT_ETHNICITY_COL = "student_ethnicity";
-    public static final String STUDENT_RACE_COL = "student_race";
-    public static final String STUDENT_ELL_COL = "student_ell";
-    public static final String STUDENT_SPECIAL_ED_COL = "student_special_ed";
-    public static final String STUDENT_CITY_OF_RESIDENCE_COL = "student_city_of_residence";
+//    public static final String STUDENT_AGE = "student_age";
+    public static final String STUDENT_GENDER_COL = "gender";
+//    public static final String STUDENT_FREE_LUNCH_COL = "student_free_lunch";
+//    public static final String STUDENT_GRADE_REPEATER_COL = "student_grade_repeater";
+    public static final String STUDENT_ETHNICITY_COL = "federal_ethnicity";
+    public static final String STUDENT_RACE_COL = "federal_race";
+//    public static final String STUDENT_ELL_COL = "student_ell";
+//    public static final String STUDENT_SPECIAL_ED_COL = "student_special_ed";
+    public static final String STUDENT_HOME_CITY_COL = "home_city";
+    public static final String STUDENT_MAILING_STREET_COL = "mailing_street";
+    public static final String STUDENT_MAILING_CITY_COL = "mailing_city";
+    public static final String STUDENT_MAILING_STATE_COL = "mailing_state";
+    public static final String STUDENT_MAILING_POSTAL_COL = "mailing_postal_code";
+    public static final String STUDENT_HOME_STREET_COL = "home_street";
+    public static final String STUDENT_HOME_STATE_COL = "home_state";
+    public static final String STUDENT_HOME_POSTAL_COL = "home_postal_code";
+    public static final String STUDENT_BIRTH_DATE_COL = "birth_date";
+    public static final String STUDENT_DISTRICT_ENTRY_DATE_COL = "district_entry_date";
+    public static final String STUDENT_PROJECTED_GRADUATION_DATE_COL = "projected_graduation_year";
+    public static final String STUDENT_SOURCE_SYSTEM_ID = "source_system_id";
+    public static final String STUDENT_SOCIAL_SECURTIY_NUMBER_COL = "social_security_number";
     
     public static final String SECTION_ID_COL = "section_id";
     public static final String ROOM_COL = "room";
