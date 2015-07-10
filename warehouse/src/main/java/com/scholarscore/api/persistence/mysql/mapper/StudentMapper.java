@@ -50,6 +50,10 @@ public class StudentMapper implements RowMapper<Student>{
         if(rs.wasNull()) {
             student.setProjectedGraduationYear(null);
         }
+        student.setCurrentSchoolId(rs.getLong(DbConst.STUDENT_CURRENT_SCHOOL_FK_COL));
+        if(rs.wasNull()) {
+            student.setCurrentSchoolId(null);
+        }
         student.setSocialSecurityNumber(rs.getString(DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL));
         student.setFederalRace(rs.getString(DbConst.STUDENT_RACE_COL));
         student.setFederalEthnicity(rs.getString(DbConst.STUDENT_ETHNICITY_COL));

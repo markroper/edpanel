@@ -67,6 +67,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.socialSecurityNumber = student.socialSecurityNumber;
         this.federalRace = student.federalRace;
         this.federalEthnicity = student.federalEthnicity;
+        this.currentSchoolId = student.currentSchoolId;
     }
     
     // FK to the Users table, this is optional as a 1:1 relationship does not need to exist between
@@ -92,6 +93,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
     //EthnicityRace
     private String federalRace;
     private String federalEthnicity;
+    private Long currentSchoolId;
     
     @Override
     public void mergePropertiesIfNull(Student mergeFrom) {
@@ -131,6 +133,9 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         }
         if (null == getFederalEthnicity()) {
             setFederalEthnicity(mergeFrom.getFederalEthnicity());
+        }
+        if(null == getCurrentSchoolId()) {
+            setCurrentSchoolId(mergeFrom.getCurrentSchoolId());
         }
     }
 
@@ -230,6 +235,14 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.federalEthnicity = federalEthnicity;
     }
 
+    public Long getCurrentSchoolId() {
+        return currentSchoolId;
+    }
+
+    public void setCurrentSchoolId(Long currentSchoolId) {
+        this.currentSchoolId = currentSchoolId;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!super.equals(obj)) {
@@ -247,13 +260,14 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
                 && Objects.equals(this.projectedGraduationYear, other.projectedGraduationYear)
                 && Objects.equals(this.socialSecurityNumber, other.socialSecurityNumber)
                 && Objects.equals(this.federalRace, other.federalRace)
-                && Objects.equals(this.federalEthnicity, other.federalEthnicity);
+                && Objects.equals(this.federalEthnicity, other.federalEthnicity)
+                && Objects.equals(this.currentSchoolId, other.currentSchoolId);
     }
 
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
                 + Objects.hash(username, login, sourceSystemId, mailingAddress, homeAddress, gender, birthDate, 
-                        districtEntryDate, projectedGraduationYear, socialSecurityNumber, federalRace, federalEthnicity);
+                        districtEntryDate, projectedGraduationYear, socialSecurityNumber, federalRace, federalEthnicity, currentSchoolId);
     }
 }

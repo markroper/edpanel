@@ -11,7 +11,8 @@ public enum StatusCodeType {
     BAD_REQUEST_CANNOT_PARSE_BODY(StatusCodes.UNPARSABLE_REQUEST_CODE, "warehouse.api.error.bodyunparsable"),
     MODEL_NOT_FOUND(StatusCodes.ENTITY_NOT_FOUND_CODE, "warehouse.api.error.model.notfound"),
     UNSUPPORTED_ASSIGNMENT_TYPE(StatusCodes.UNSUPPORTED_VALUE_CODE, ""),
-    ENTITY_INVALID_IN_CONTEXT(StatusCodes.INVALID_ENTITY, "warehouse.api.error.invalidcontext");
+    ENTITY_INVALID_IN_CONTEXT(StatusCodes.INVALID_ENTITY, "warehouse.api.error.invalidcontext"),
+    INVALID_QUERY(StatusCodes.INVALID_ENTITY, "warehouse.api.error.invalidquery");
 
     private int code;
     private String key;

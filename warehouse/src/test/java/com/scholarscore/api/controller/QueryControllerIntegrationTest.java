@@ -46,7 +46,7 @@ public class QueryControllerIntegrationTest extends IntegrationBase {
         //Define aggregate measures
         List<AggregateMeasure> measures = new ArrayList<>();
         measures.add(new AggregateMeasure(Measure.DEMERITS, AggregateFunction.SUM));
-        measures.add(new AggregateMeasure(Measure.COURSE_GRADE, AggregateFunction.AVERAGE));
+        measures.add(new AggregateMeasure(Measure.MERITS, AggregateFunction.AVERAGE));
         fullyPopulatedQuery.setAggregateMeasures(measures);
         
         //No date dimension for this query
