@@ -106,6 +106,7 @@ public class DbConst {
     public static final String STUDENT_PROJECTED_GRADUATION_DATE_COL = "projected_graduation_year";
     public static final String STUDENT_SOURCE_SYSTEM_ID = "source_system_id";
     public static final String STUDENT_SOCIAL_SECURTIY_NUMBER_COL = "social_security_number";
+    public static final String STUDENT_CURRENT_SCHOOL_FK_COL = "current_school_fk";
     
     public static final String SECTION_ID_COL = "section_id";
     public static final String ROOM_COL = "room";

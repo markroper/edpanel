@@ -30,7 +30,7 @@ public class QuerySerializationTest {
         //Define aggregate measures
         List<AggregateMeasure> measures = new ArrayList<>();
         measures.add(new AggregateMeasure(Measure.DEMERITS, AggregateFunction.SUM));
-        measures.add(new AggregateMeasure(Measure.COURSE_GRADE, AggregateFunction.AVERAGE));
+        measures.add(new AggregateMeasure(Measure.MERITS, AggregateFunction.AVERAGE));
         fullyPopulatedQuery.setAggregateMeasures(measures);
         
         //No date dimension for this query
@@ -55,13 +55,13 @@ public class QuerySerializationTest {
         fullyPopulatedQuery.setFilter(whereClause);
         
         return new Object[][] {
-                { "empty query", emptyQuery },
-                { "fully populated query", fullyPopulatedQuery },
+                { "empty query", emptyQuery, true },
+                { "fully populated query", fullyPopulatedQuery, true },
         };
     }
     
     @Test(dataProvider = "queriesToSerialize")
-    public void testJacksonSerializationAndDeserialization(String msg, Query q) {
+    public void testJacksonSerializationAndDeserialization(String msg, Query q, boolean isValid) {
         ObjectMapper mapper = new ObjectMapper();
         String json = null;
         try {
@@ -81,5 +81,10 @@ public class QuerySerializationTest {
         } catch (JsonProcessingException e) {
             Assert.fail("Failed to produce JSON from the reanimated Query object" + e.getMessage());
         }
+    }
+    
+    @Test(dataProvider = "queriesToSerialize")
+    public void testIsValid(String msg, Query q, boolean isValid) {
+        Assert.assertEquals(q.isValid(), isValid, "Unexpected valid state of query: " + msg);
     }
 }
