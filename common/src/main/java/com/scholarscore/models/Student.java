@@ -79,7 +79,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
     @JsonInclude
     private transient User login;
     //Source system identifier. E.g. powerschool ID
-    private Long sourceSystemId;
+    private String sourceSystemId;
     //Addresses
     private Address mailingAddress;
     private Address homeAddress;
@@ -150,11 +150,11 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
 		this.login = login;
 	}
 
-	public Long getSourceSystemId() {
+	public String getSourceSystemId() {
         return sourceSystemId;
     }
 
-    public void setSourceSystemId(Long sourceSystemId) {
+    public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
     }
 

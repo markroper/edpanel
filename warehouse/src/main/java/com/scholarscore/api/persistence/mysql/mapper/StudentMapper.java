@@ -17,7 +17,7 @@ public class StudentMapper implements RowMapper<Student>{
         Student student = new Student();
         student.setId(rs.getLong(DbConst.STUDENT_ID_COL));
         student.setName(rs.getString(DbConst.STUDENT_NAME_COL));
-        student.setSourceSystemId(rs.getLong(DbConst.STUDENT_SOURCE_SYSTEM_ID));
+        student.setSourceSystemId(rs.getString(DbConst.STUDENT_SOURCE_SYSTEM_ID));
         if(rs.wasNull()) {
             student.setSourceSystemId(null);
         }
