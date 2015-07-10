@@ -2,7 +2,7 @@
 CREATE TABLE `scholar_warehouse`.`student` (
   `student_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `student_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
-  `source_system_id` INT UNSIGNED COMMENT 'The identifier from the source system, if any',
+  `source_system_id` VARCHAR(256) NULL COMMENT 'The identifier from the source system, if any',
   `mailing_street` VARCHAR(512) NULL COMMENT 'The street portion of the mailing address',
   `mailing_city` VARCHAR(256) NULL COMMENT 'The city portion of the student mailing address',
   `mailing_state` VARCHAR(256) NULL COMMENT 'The state abbreviation of the student mailing address',
