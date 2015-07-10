@@ -10,9 +10,38 @@ import com.scholarscore.models.Section;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.Teacher;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
+import com.scholarscore.models.query.Measure;
 
 public class DbConst {
+    
+   public static final Map<Measure, String> MEASURE_TO_TABLE_NAME = 
+           new HashMap<Measure, String>() {{
+//               put(Measure.ATTENDANCE, );
+//               put(Measure.DEMERTIS, );
+//               put(Measure.MERITS, );
+//               put(Measure.DETENTIONS, );
+//               put(Measure.HOMEWORK_CLUBS, );
+//               put(Measure.SUSPENSIONS, );
+//               put(Measure.GPA, );
+               put(Measure.COURSE_GRADE, STUDENT_SECTION_GRADE_TABLE);
+               put(Measure.ASSIGNMENT_GRADE, STUDENT_ASSIGNMENT_TABLE);
+               put(Measure.HW_COMPLETION, STUDENT_ASSIGNMENT_TABLE);
+           }};
+    @SuppressWarnings("serial")
+    public static final Map<Dimension, String> DIMENSION_TO_TABLE_NAME = 
+            new HashMap<Dimension, String>() {{
+               put(Dimension.SCHOOL, SCHOOL_TABLE);
+               put(Dimension.COURSE, COURSE_TABLE);
+               //put(Dimension.GRADE_LEVEL, GRADE_LEVEL_TABLE);
+               put(Dimension.SECTION, SECTION_TABLE);
+               put(Dimension.TERM, TERM_TABLE);
+               put(Dimension.STUDENT, STUDENT_TABLE);
+               //put(Dimension.SUBJECT_AREA, SUBJECT_AREA_TABLE);
+               put(Dimension.TEACHER, TEACHER_TABLE);
+               put(Dimension.YEAR, SCHOOL_YEAR_TABLE);
+            }};
     @SuppressWarnings("serial")
     public static final Map<DimensionField, String> DIMENSION_TO_DB_NAME = 
             new HashMap<DimensionField, String>(){{
@@ -106,7 +135,6 @@ public class DbConst {
     public static final String STUDENT_PROJECTED_GRADUATION_DATE_COL = "projected_graduation_year";
     public static final String STUDENT_SOURCE_SYSTEM_ID = "source_system_id";
     public static final String STUDENT_SOCIAL_SECURTIY_NUMBER_COL = "social_security_number";
-    public static final String STUDENT_CURRENT_SCHOOL_FK_COL = "current_school_fk";
     
     public static final String SECTION_ID_COL = "section_id";
     public static final String ROOM_COL = "room";

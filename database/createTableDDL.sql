@@ -23,10 +23,10 @@ CREATE TABLE `scholar_warehouse`.`student` (
   `social_security_number` VARCHAR(256) NULL COMMENT 'The student\'s social security number',
   `federal_race` VARCHAR(512) NULL COMMENT 'The student\'s race according to the federal gov\'t',
   `federal_ethnicity` VARCHAR(512) NULL COMMENT 'The student\'s ethnicity according to the federal gov\'t',
-  `current_school_fk` INT UNSIGNED NULL COMMENT 'The foreign key to the current school the student is enrolled in within the district',
+  `school_fk` INT UNSIGNED NULL COMMENT 'The foreign key to the current school the student is enrolled in within the district',
   PRIMARY KEY (`student_id`),
-  CONSTRAINT `current_school_fk$student`
-    FOREIGN KEY (`current_school_fk`)
+  CONSTRAINT `school_fk$student`
+    FOREIGN KEY (`school_fk`)
     REFERENCES `scholar_warehouse`.`school`(`school_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE)
