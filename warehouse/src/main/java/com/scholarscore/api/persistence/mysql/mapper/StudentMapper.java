@@ -50,7 +50,7 @@ public class StudentMapper implements RowMapper<Student>{
         if(rs.wasNull()) {
             student.setProjectedGraduationYear(null);
         }
-        student.setCurrentSchoolId(rs.getLong(DbConst.STUDENT_CURRENT_SCHOOL_FK_COL));
+        student.setCurrentSchoolId(rs.getLong(DbConst.SCHOOL_FK_COL));
         if(rs.wasNull()) {
             student.setCurrentSchoolId(null);
         }
