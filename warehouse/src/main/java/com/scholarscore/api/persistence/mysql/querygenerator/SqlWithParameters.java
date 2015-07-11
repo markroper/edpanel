@@ -1,4 +1,4 @@
-package com.scholarscore.api.querygenerator;
+package com.scholarscore.api.persistence.mysql.querygenerator;
 
 import java.util.Map;
 import java.util.Objects;
