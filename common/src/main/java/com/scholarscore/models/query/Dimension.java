@@ -1,7 +1,9 @@
 package com.scholarscore.models.query;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -70,5 +72,46 @@ public enum Dimension {
     @JsonIgnore
     public Set<Dimension> getParentDimensions() {
         return parentDimensions;
+    }
+    
+    /**
+     * Given a set of Dimensions, orders supported dimension from most to least granular in a List,
+     * and returns that list. Certain dimensions like Date are not supported and are ignored if they are 
+     * included in the input set.
+     * 
+     * @param selectedDims
+     * @return
+     */
+    public static List<Dimension> resolveOrderedDimensions(Set<Dimension> selectedDims) {
+        List<Dimension> orderedDimTables = new ArrayList<>();
+        
+        if(selectedDims.contains(Dimension.STUDENT)) {
+            orderedDimTables.add(Dimension.STUDENT);
+        }
+        if(selectedDims.contains(Dimension.TEACHER)) {
+            orderedDimTables.add(Dimension.TEACHER);
+        }
+        if(selectedDims.contains(Dimension.SECTION)) {
+            orderedDimTables.add(Dimension.SECTION);
+        }
+        if(selectedDims.contains(Dimension.TERM)) {
+            orderedDimTables.add(Dimension.TERM);
+        }
+        if(selectedDims.contains(Dimension.YEAR)) {
+            orderedDimTables.add(Dimension.YEAR);
+        }
+        if(selectedDims.contains(Dimension.COURSE)) {
+            orderedDimTables.add(Dimension.COURSE);
+        }
+        if(selectedDims.contains(Dimension.SUBJECT_AREA)) {
+            orderedDimTables.add(Dimension.STUDENT);
+        }
+        if(selectedDims.contains(Dimension.GRADE_LEVEL)) {
+            orderedDimTables.add(Dimension.GRADE_LEVEL);
+        }
+        if(selectedDims.contains(Dimension.SCHOOL)) {
+            orderedDimTables.add(Dimension.SCHOOL);
+        }
+        return orderedDimTables;
     }
 }

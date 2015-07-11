@@ -14,6 +14,7 @@ import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
 
+@SuppressWarnings("serial")
 public class DbConst {
     
    public static final Map<Measure, String> MEASURE_TO_TABLE_NAME = 
@@ -29,7 +30,20 @@ public class DbConst {
                put(Measure.ASSIGNMENT_GRADE, STUDENT_ASSIGNMENT_TABLE);
                put(Measure.HW_COMPLETION, STUDENT_ASSIGNMENT_TABLE);
            }};
-    @SuppressWarnings("serial")
+   public static final Map<Measure, String> MEASURE_TO_COL_NAME = 
+           new HashMap<Measure, String>() {{
+//                       put(Measure.ATTENDANCE, );
+//                       put(Measure.DEMERTIS, );
+//                       put(Measure.MERITS, );
+//                       put(Measure.DETENTIONS, );
+//                       put(Measure.HOMEWORK_CLUBS, );
+//                       put(Measure.SUSPENSIONS, );
+//                       put(Measure.GPA, );
+               put(Measure.COURSE_GRADE, STUD_SECTION_GRADE_GRADE);
+               put(Measure.ASSIGNMENT_GRADE, STUD_AWARDED_POINTS);
+               put(Measure.HW_COMPLETION, STUD_COMPLETED_COL);
+           }};
+
     public static final Map<Dimension, String> DIMENSION_TO_TABLE_NAME = 
             new HashMap<Dimension, String>() {{
                put(Dimension.SCHOOL, SCHOOL_TABLE);
@@ -42,8 +56,8 @@ public class DbConst {
                put(Dimension.TEACHER, TEACHER_TABLE);
                put(Dimension.YEAR, SCHOOL_YEAR_TABLE);
             }};
-    @SuppressWarnings("serial")
-    public static final Map<DimensionField, String> DIMENSION_TO_DB_NAME = 
+
+    public static final Map<DimensionField, String> DIMENSION_TO_COL_NAME = 
             new HashMap<DimensionField, String>(){{
         //Student dimension field to db column name lookup
         put(Student.STUDENT_AGE, STUDENT_BIRTH_DATE_COL);
