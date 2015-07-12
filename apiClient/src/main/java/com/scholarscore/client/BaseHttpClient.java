@@ -87,8 +87,8 @@ public abstract class BaseHttpClient {
         }
     }
 
-    protected <T> T get(Class<T> clazz, String path, String ...params) {
-
+    protected String getPath(String root, String ...params) {
+        String path = root;
         if (null != params && params.length > 0) {
             int count = 0;
             for (String param : params) {
@@ -96,6 +96,12 @@ public abstract class BaseHttpClient {
                 count++;
             }
         }
+        return path;
+    }
+
+    protected <T> T get(Class<T> clazz, String path, String ...params) {
+
+        path = getPath(path, params);
 
         try {
             HttpGet get = new HttpGet();

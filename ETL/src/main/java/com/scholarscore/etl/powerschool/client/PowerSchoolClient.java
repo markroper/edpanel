@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.scholarscore.client.BaseHttpClient;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
+import com.scholarscore.etl.powerschool.api.model.Staff;
 import com.scholarscore.etl.powerschool.api.response.*;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -105,6 +106,15 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     @Override
     public StaffResponse getStaff(Long schoolId) {
         return get(StaffResponse.class, PATH_RESOURCE_STAFF, schoolId.toString());
+    }
+
+    @Override
+    public Long createStaff(Staff staff, Long schoolId) {
+        assert(schoolId != null);
+
+        String json = gson.toJson(staff, Staff.class);
+        String response = post(json.getBytes(), getPath(PATH_RESOURCE_STAFF, schoolId.toString()));
+        return 0L;
     }
 
     @Override

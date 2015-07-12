@@ -1,6 +1,7 @@
 package com.scholarscore.etl.powerschool;
 
 import com.scholarscore.etl.powerschool.api.model.School;
+import com.scholarscore.etl.powerschool.api.model.Staff;
 import com.scholarscore.etl.powerschool.api.response.*;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.client.PowerSchoolClient;
@@ -25,6 +26,15 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
     @Autowired
     private IPowerSchoolClient client;
 
+    public void testCreateStaff() {
+        Staff staff = new Staff();
+        staff.admin_username = "mroper";
+        staff.teacher_username = "mroper";
+
+        School indexZeroSchool = client.getSchools().schools.school.get(0);
+        System.out.println("Using school: " + indexZeroSchool.id + ", name: " + indexZeroSchool.name);
+        client.createStaff(staff, indexZeroSchool.id);
+    }
 
     public void testLoadSchools() {
         SchoolsResponse response = client.getSchools();

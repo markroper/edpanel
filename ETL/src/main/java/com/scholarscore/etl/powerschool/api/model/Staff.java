@@ -8,10 +8,10 @@ import java.util.List;
  */
 @XmlRootElement(name = "staff")
 public class Staff {
-    Long id;
-    String local_id;
-    String admin_username;
-    String teacher_username;
+    public Long id;
+    public String local_id;
+    public String admin_username;
+    public String teacher_username;
 //    Name name;
 //
 //    List<Addresses> addresses;
