@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
@@ -69,17 +70,20 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     }
 
     @Override
+    @JsonIgnore
     public Long getAwardedPoints() {
         return awardedPoints != null ? awardedPoints : null;
     }
 
     @Override
+    @JsonIgnore
     public Long getAvailablePoints() {
         Long availablePoints = assignment != null ? assignment.getAvailablePoints() : null;
         return (availablePoints != null ? availablePoints : null );
     }
 
     @Override
+    @JsonIgnore
     public int getWeight() {
         // Today, these weights live in GradeFormula and can't be 
         // directly grabbed from StudentAssignment.
