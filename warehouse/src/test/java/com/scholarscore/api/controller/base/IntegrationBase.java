@@ -73,6 +73,7 @@ public class IntegrationBase {
     private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
     private static final String TEACHER_ENDPOINT = "/teachers";
     private static final String QUERIES_ENDPOINT = "/queries";
+    private static final String GPA_ENDPOINT = "/gpa";
 
     public LocaleServiceUtil localeServiceUtil;
     public CourseValidatingExecutor courseValidatingExecutor;
@@ -516,6 +517,11 @@ public class IntegrationBase {
     public String getStudentEndpoint(Long studentId) {
         return getStudentEndpoint() + pathify(studentId);
     }
+    
+    public String getStudentGpaEndpoint(Long studentId, Integer gpaScale) {
+        return getStudentEndpoint(studentId) + GPA_ENDPOINT + pathify(gpaScale);
+    }
+    
     /**
      * returns the school endpoint
      * @return

@@ -55,6 +55,7 @@ gretty {
 
     // automatically start up the container before the following task, and shut it down afterwards
     integrationTestTask = 'integrationLocalWithContainer'
+    jvmArgs '-XX:MaxPermSize=1024m', '-Xmx2048m'
 }
 
 //Integration test suite
