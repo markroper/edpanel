@@ -46,7 +46,6 @@ public class GradeFormula implements Serializable {
         } else {
             Map<AssignmentType, MutablePair<Long, Long>> calculatedGradeByType = new HashMap<>();
             for(StudentAssignment sa : studentAssignments) {
-                // TODO Jordan: this does some of the same weighted average work done in GradeUtil. Good enough for now?
                 AssignmentType type = sa.getAssignment().getType();
                 if(!assignmentTypeWeights.containsKey(type)) {
                     continue;

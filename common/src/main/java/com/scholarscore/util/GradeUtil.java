@@ -11,7 +11,6 @@ import java.util.Collection;
  */
 public class GradeUtil {
     
-    private static final double GPA_MULTIPLIER = 4.0;
     private static final double ONE_HUNDRED_POINT_MULTIPLIER = 100.0;
     
     // returns the average grade on a scale from 0.0 (0%) to 1.0 (100%)
@@ -35,7 +34,7 @@ public class GradeUtil {
         return (numerator / denominator);
     }
     
-    public static Double calculateGPA(Collection<? extends WeightedGradable> gradables) { 
-        return GPA_MULTIPLIER * calculateAverageGrade(gradables);
+    public static Double calculateGPA(Integer gpaScale, Collection<? extends WeightedGradable> gradables) {
+        return gpaScale * calculateAverageGrade(gradables);
     }
 }

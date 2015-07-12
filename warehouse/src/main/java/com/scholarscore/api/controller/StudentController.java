@@ -111,18 +111,22 @@ public class StudentController extends BaseController {
 
     @ApiOperation(
             value = "Get a student's GPA",
-            notes = "Given a student ID, the endpoint returns the student's Grade Point Average on a scale of 0.0 - 4.0",
+            notes = "Given a student ID, the endpoint returns the student's Grade Point Average on a specified scale",
             response = List.class)
     @RequestMapping(
-            value = "/{studentId}/gpa",
+            value = "/{studentId}/gpa/{gpaScale}",
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getGpa(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
-            @PathVariable(value = "studentId") Long studentId) {
-        Collection<? extends WeightedGradable> courseGrades = getStudentSectionGradeManager().getSectionGradesForStudent(studentId).getValue();
-        return respond(GradeUtil.calculateGPA(courseGrades));
+            @PathVariable(value = "studentId") Long studentId,
+            @ApiParam(name = "gpaScale", required = true)
+            @PathVariable(value="gpaScale") Integer gpaScale)
+    {
+        Collection<? extends WeightedGradable> courseGrades =
+                getStudentSectionGradeManager().getSectionGradesForStudent(studentId).getValue();
+        return respond(GradeUtil.calculateGPA(gpaScale, courseGrades));
     }
 
 }

@@ -1,7 +1,6 @@
 package com.scholarscore;
 
 import com.scholarscore.models.GradedAssignment;
-import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.WeightedGradable;
 import com.scholarscore.util.GradeUtil;
@@ -63,7 +62,6 @@ public class GradeUtilTest {
         Collection<WeightedStudentAssignment> weightedAssignments = new HashSet<WeightedStudentAssignment>();
 
         for (long i = 0; i < 5; i++) {
-            System.out.println("inside first loop...");
             GradedAssignment gradedAssignment = new GradedAssignment();
             gradedAssignment.setAvailablePoints(100L);
             WeightedStudentAssignment studentAssignment = new WeightedStudentAssignment();
@@ -120,7 +118,7 @@ public class GradeUtilTest {
     
     @Test(dataProvider = "gradablesToTest")
     public void testCalculateGPA(String caseName, Collection<? extends WeightedGradable> gradables, Double expectedScore) {
-        Assert.assertEquals(GradeUtil.calculateGPA(gradables), expectedScore*4.0, "Unexpected average grade calculated: " + caseName);
+        Assert.assertEquals(GradeUtil.calculateGPA(4, gradables), expectedScore *4.0 , "Unexpected average grade calculated: " + caseName);
     }
     
     private class WeightedStudentAssignment extends StudentAssignment {
