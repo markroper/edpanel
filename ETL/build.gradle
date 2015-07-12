@@ -1,0 +1,44 @@
+apply plugin: 'java'
+
+//Dependencies section:
+ext {
+    jacksonVersion = "2.4.3"
+    apacheHttpVersion = "4.3.3"
+    springVersion = "4.0.3.RELEASE"
+}
+
+dependencies {
+
+    compile project(':common'),
+            project(':apiClient'),
+
+            //MySQL dependencies
+            'mysql:mysql-connector-java:5.1.6',
+
+            //Jackson for JSON & XML API serialization
+            "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
+            "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion",
+            "com.fasterxml.jackson.core:jackson-core:$jacksonVersion",
+            "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion",
+            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion",
+            "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion",
+            "com.fasterxml.jackson.module:jackson-module-scala_2.10:$jacksonVersion",
+            "org.springframework:spring-aop:$springVersion",
+            "org.springframework:spring-aspects:$springVersion",
+            "org.springframework:spring-expression:$springVersion",
+            "org.springframework:spring-instrument:$springVersion",
+            "org.springframework:spring-instrument-tomcat:$springVersion",
+            "org.springframework:spring-beans:$springVersion",
+            "org.springframework:spring-context:$springVersion",
+            "org.springframework:spring-core:$springVersion",
+            "org.springframework:spring-jms:$springVersion",
+
+            "org.apache.httpcomponents:httpclient:$apacheHttpVersion",
+            "org.apache.httpcomponents:httpcore:$apacheHttpVersion",
+            "org.apache.httpcomponents:httpmime:$apacheHttpVersion",
+            "com.google.code.gson:gson:2.3.1"
+
+    testCompile "org.testng:testng:6.8.8",
+        "org.springframework:spring-test:$springVersion"
+
+}

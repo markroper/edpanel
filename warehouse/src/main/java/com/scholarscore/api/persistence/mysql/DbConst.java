@@ -2,8 +2,58 @@ package com.scholarscore.api.persistence.mysql;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.scholarscore.models.School;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.Student;
+import com.scholarscore.models.Teacher;
+import com.scholarscore.models.Term;
+import com.scholarscore.models.query.DimensionField;
 
 public class DbConst {
+    @SuppressWarnings("serial")
+    public static final Map<DimensionField, String> DIMENSION_TO_DB_NAME = 
+            new HashMap<DimensionField, String>(){{
+        //Student dimension field to db column name lookup
+        put(Student.STUDENT_AGE, STUDENT_BIRTH_DATE_COL);
+        put(Student.STUDENT_GENDER, STUDENT_GENDER_COL);
+        put(Student.STUDENT_NAME, STUDENT_NAME_COL);
+        put(Student.STUDENT_ID, STUDENT_ID_COL);
+//        put(Student.STUDENT_FREE_LUNCH, STUDENT_FREE_LUNCH_COL);
+//        put(Student.STUDENT_GRADE_REPEATER, STUDENT_GRADE_REPEATER_COL);
+        put(Student.STUDENT_ETHNICITY, STUDENT_ETHNICITY_COL);
+        put(Student.STUDENT_RACE, STUDENT_RACE_COL);
+//        put(Student.STUDENT_ELL, STUDENT_ELL_COL);
+//        put(Student.STUDENT_SPECIAL_ED, STUDENT_SPECIAL_ED_COL);
+        put(Student.STUDENT_CITY_OF_RESIDENCE, STUDENT_HOME_CITY_COL);
+        //Teacher dimension field to DB column name lookup
+        put(Teacher.NAME, TEACHER_NAME_COL);
+        put(Teacher.ID, TEACHER_ID_COL);
+        put(Teacher.EMAIL_ADDRESS, TEACHER_EMAIL_COL);
+        //School dimension field to DB column name lookup
+        put(School.NAME, SCHOOL_NAME_COL);
+        put(School.ID, SCHOOL_ID_COL);
+        put(School.ADDRESS, SCHOOL_ADDRESS_COL);
+        //SECTION dimension field to DB column name lookup
+        put(Section.NAME, SECTION_NAME_COL);
+        put(Section.ID, SECTION_ID_COL);
+        put(Section.END_DATE, SECTION_END_DATE_COL);
+        put(Section.START_DATE, SECTION_START_DATE_COL);
+        put(Section.TEACHER, TEACHER_NAME_COL);
+        put(Section.GRADE_FORMULA, GRADE_FORMULA_COL);
+        put(Section.ROOM, ROOM_COL);
+        //COURSE dimension field to DB column name lookup
+        put(Section.NAME, COURSE_NAME_COL);
+        put(Section.ID, COURSE_ID_COL);
+        //TERM dimension field to DB column name lookup
+        put(Term.NAME, TERM_NAME_COL);
+        put(Term.ID, TERM_ID_COL);
+        put(Term.END_DATE, TERM_END_DATE_COL);
+        put(Term.START_DATE, TERM_END_DATE_COL);
+    }};
+    
     public static final String DATABASE = "scholar_warehouse";
     //Tables
     public static final String SCHOOL_TABLE = "school";
@@ -19,6 +69,7 @@ public class DbConst {
     //Columns
     public static final String SCHOOL_ID_COL = "school_id";
     public static final String SCHOOL_NAME_COL = "school_name";
+    public static final String SCHOOL_ADDRESS_COL = "school_address";
     
     public static final String SCHOOL_FK_COL = "school_fk";
     public static final String SCHOOL_YEAR_ID_COL = "school_year_id";
@@ -34,6 +85,27 @@ public class DbConst {
     
     public static final String STUDENT_ID_COL = "student_id";
     public static final String STUDENT_NAME_COL = "student_name";
+//    public static final String STUDENT_AGE = "student_age";
+    public static final String STUDENT_GENDER_COL = "gender";
+//    public static final String STUDENT_FREE_LUNCH_COL = "student_free_lunch";
+//    public static final String STUDENT_GRADE_REPEATER_COL = "student_grade_repeater";
+    public static final String STUDENT_ETHNICITY_COL = "federal_ethnicity";
+    public static final String STUDENT_RACE_COL = "federal_race";
+//    public static final String STUDENT_ELL_COL = "student_ell";
+//    public static final String STUDENT_SPECIAL_ED_COL = "student_special_ed";
+    public static final String STUDENT_HOME_CITY_COL = "home_city";
+    public static final String STUDENT_MAILING_STREET_COL = "mailing_street";
+    public static final String STUDENT_MAILING_CITY_COL = "mailing_city";
+    public static final String STUDENT_MAILING_STATE_COL = "mailing_state";
+    public static final String STUDENT_MAILING_POSTAL_COL = "mailing_postal_code";
+    public static final String STUDENT_HOME_STREET_COL = "home_street";
+    public static final String STUDENT_HOME_STATE_COL = "home_state";
+    public static final String STUDENT_HOME_POSTAL_COL = "home_postal_code";
+    public static final String STUDENT_BIRTH_DATE_COL = "birth_date";
+    public static final String STUDENT_DISTRICT_ENTRY_DATE_COL = "district_entry_date";
+    public static final String STUDENT_PROJECTED_GRADUATION_DATE_COL = "projected_graduation_year";
+    public static final String STUDENT_SOURCE_SYSTEM_ID = "source_system_id";
+    public static final String STUDENT_SOCIAL_SECURTIY_NUMBER_COL = "social_security_number";
     
     public static final String SECTION_ID_COL = "section_id";
     public static final String ROOM_COL = "room";
@@ -69,7 +141,8 @@ public class DbConst {
     
     public static final String TEACHER_ID_COL = "teacher_id";
     public static final String TEACHER_NAME_COL = "teacher_name";
-	
+	public static final String TEACHER_EMAIL_COL = "teacher_email";
+    
     public static final String USER_TABLE = "users";
     public static final String USER_USERNAME_COL = "username";
 	public static final String USER_PASSWORD_COL = "password";
@@ -78,6 +151,10 @@ public class DbConst {
 	public static final String AUTHORITY_TABLE = "authorities";
 	public static final String AUTHORITY_USERNAME_COL = "username";
 	public static final String AUTHORITY_AUTHORITY_COL = "authority";
+	
+	public static final String REPORT_TABLE = "report";
+	public static final String REPORT_ID_COL = "report_id";
+	public static final String REPORT_COL = "report";
 	
 	
     /**
