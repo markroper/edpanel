@@ -16,7 +16,7 @@ public class CourseGradeSqlSerializer implements MeasureSqlSerializer {
         String dimTableName = DbConst.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         return LEFT_OUTER_JOIN + DbConst.STUDENT_SECTION_GRADE_TABLE + ON +
                 dimTableName + DOT + dimTableName + ID_COL_SUFFIX + EQUALS +
-                DbConst.STUDENT_SECTION_GRADE_TABLE + DOT + dimTableName + FK_COL_SUFFIX;
+                DbConst.STUDENT_SECTION_GRADE_TABLE + DOT + dimTableName + FK_COL_SUFFIX + " ";
     }
 
 }
