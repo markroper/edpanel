@@ -62,6 +62,8 @@ public class RestErrorHandler extends BaseController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ResponseEntity<StatusCode> processGeneralException(Exception ex) {
-        return respond(StatusCodes.getStatusCode(StatusCodeType.UNKNOWN_INTERNAL_SERVER_ERROR));
+        StatusCode returnCode = StatusCodes.getStatusCode(StatusCodeType.UNKNOWN_INTERNAL_SERVER_ERROR);
+        returnCode.setMessage(ex.getMessage());
+        return respond(returnCode);
     }
 }

@@ -8,6 +8,9 @@ public interface StudentSectionGradePersistence {
     public Collection<StudentSectionGrade> selectAll(
             long sectionId);
 
+    public Collection<StudentSectionGrade> selectAllByStudent(
+            long studentId);
+
     public StudentSectionGrade select(
             long sectionId,
             long student);

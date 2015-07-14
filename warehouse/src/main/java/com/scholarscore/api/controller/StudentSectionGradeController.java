@@ -40,7 +40,7 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="sectId") Long sectId) {
         return respond(getStudentSectionGradeManager().getAllStudentSectionGrades(schoolId, yearId, termId, sectId));
     }
-    
+
     @ApiOperation(
             value = "Get a student grade in a section", 
             notes = "Get a student grade in a section", 
