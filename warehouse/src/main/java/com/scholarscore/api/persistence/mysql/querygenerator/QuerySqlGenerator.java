@@ -23,6 +23,13 @@ import com.scholarscore.models.query.expressions.operands.StringOperand;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
 
+/**
+ * The query generator provides a single public method generate(Query q), which returns an object 
+ * containing a SQL string and a set of parameters to be sent to the database for execution via JDBC.
+ * 
+ * @author markroper
+ *
+ */
 public class QuerySqlGenerator {
     private static final String SELECT = "SELECT ";
     private static final String FROM = "FROM ";

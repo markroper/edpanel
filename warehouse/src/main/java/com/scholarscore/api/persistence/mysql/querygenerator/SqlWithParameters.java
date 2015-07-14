@@ -3,6 +3,14 @@ package com.scholarscore.api.persistence.mysql.querygenerator;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Contains a SQL query string and names parameters map that is compatible with a 
+ * NamedParameterJdbcTemplate.
+ * 
+ * @author markroper
+ * @see NamedParameterJdbcTemplate
+ *
+ */
 public class SqlWithParameters {
     protected String sql;
     protected Map<String, Object> params;
