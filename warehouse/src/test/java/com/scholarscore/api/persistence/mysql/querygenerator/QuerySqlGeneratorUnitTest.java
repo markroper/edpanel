@@ -1,5 +1,8 @@
 package com.scholarscore.api.persistence.mysql.querygenerator;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,26 +38,39 @@ public class QuerySqlGeneratorUnitTest {
         courseGradeQuery.addField(Student.STUDENT_AGE);
         courseGradeQuery.addField(Student.STUDENT_ETHNICITY);
         courseGradeQuery.addField(School.ADDRESS);
-        String courseGradeQuerySql = "SELECT student.birth_date, student.federal_ethnicity, school.school_address, "
-                + "SUM(student_section_grade.grade) FROM student LEFT OUTER JOIN student_section_grade ON student."
-                + "student_id = student_section_grade.student_fk LEFT OUTER JOIN school ON student.school_fk = "
-                + "school.school_id GROUP BY student.birth_date, student.federal_ethnicity, school.school_address";
         
         //Create expression
         Expression whereClause = new Expression();
-        @SuppressWarnings("deprecation")
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        Date date1 = null;
+        Date date2 = null;
+        try {
+            date1 = dateFormat.parse("01-09-2014");
+            date2 = dateFormat.parse("01-09-2015");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         Expression minBound = new Expression(
-                new DateOperand(new Date(2014, 9, 1)), 
+                new DateOperand(date1), 
                 ComparisonOperator.GREATER_THAN_OR_EQUAL, 
                 new DimensionOperand(Section.START_DATE));
         Expression maxBound = new Expression(
-                new DateOperand(new Date()), 
+                new DateOperand(date2), 
                 ComparisonOperator.LESS_THAN_OR_EQUAL, 
                 new DimensionOperand(Section.START_DATE));
         whereClause.setLeftHandSide(minBound);
         whereClause.setOperator(BinaryOperator.AND);
         whereClause.setRightHandSide(maxBound);
         courseGradeQuery.setFilter(whereClause);
+        
+        String courseGradeQuerySql = 
+                "SELECT student.birth_date, student.federal_ethnicity, school.school_address, SUM(student_section_grade.grade) "
+                + "FROM student LEFT OUTER JOIN student_section_grade ON student.student_id = student_section_grade.student_fk "
+                + "LEFT OUTER JOIN school ON student.school_fk = school.school_id "
+                + "WHERE  ( ( '2014-09-01 00:00:00.0'  >=  section.section_start_date )  "
+                + "AND  ( '2015-09-01 00:00:00.0'  <=  section.section_start_date ) ) "
+                + "GROUP BY student.birth_date, student.federal_ethnicity, school.school_address";
         
         return new Object[][] {
                 { "Course Grade query", courseGradeQuery, courseGradeQuerySql }  
