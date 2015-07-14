@@ -1,9 +1,11 @@
 package com.scholarscore.api.controller.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.ResultActions;
 import org.testng.Assert;
 
@@ -126,7 +128,22 @@ public class StudentValidatingExecutor {
     public IntegrationBase getServiceBase() {
         return serviceBase;
     }
-    
+
+    public String getGpa(Long studentId, Integer gpaScale) {
+        ResultActions response = serviceBase.makeRequest(HttpMethod.GET,
+                serviceBase.getStudentGpaEndpoint(studentId, gpaScale));
+
+        MockHttpServletResponse resp = response.andReturn().getResponse();
+        Assert.assertEquals(resp.getStatus(), HttpStatus.OK.value(),
+                "Unexpected Http status code returned when fetching GPA");
+        try {
+            return resp.getContentAsString();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * Given an ID and the value submitted to a GET/PUT endpoint, retrieve the assignment via GET, validate it, and 
      * return it to the caller.

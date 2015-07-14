@@ -1,9 +1,12 @@
 package com.scholarscore.api.controller;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.validation.Valid;
 
+import com.scholarscore.models.WeightedGradable;
+import com.scholarscore.util.GradeUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -105,4 +108,25 @@ public class StudentController extends BaseController {
             @PathVariable(value="studentId") Long studentId) {
         return respond(getStudentManager().deleteStudent(studentId));
     }
+
+    @ApiOperation(
+            value = "Get a student's GPA",
+            notes = "Given a student ID, the endpoint returns the student's Grade Point Average on a specified scale",
+            response = List.class)
+    @RequestMapping(
+            value = "/{studentId}/gpa/{gpaScale}",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getGpa(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value = "studentId") Long studentId,
+            @ApiParam(name = "gpaScale", required = true)
+            @PathVariable(value="gpaScale") Integer gpaScale)
+    {
+        Collection<? extends WeightedGradable> courseGrades =
+                getStudentSectionGradeManager().getSectionGradesForStudent(studentId).getValue();
+        return respond(GradeUtil.calculateGPA(gpaScale, courseGrades));
+    }
+
 }

@@ -3,6 +3,7 @@ package com.scholarscore.models;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
@@ -14,10 +15,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StudentSectionGrade implements Serializable, IApiModel<StudentSectionGrade> {
+public class StudentSectionGrade implements Serializable, WeightedGradable, IApiModel<StudentSectionGrade> {
     protected Long id;
     protected Boolean complete;
     protected Double grade;
+    
+    // teachers can grade assignments however they want, 
+    // though currently each course must have a final grade out of 100
+    private static final Double MAX_GRADE = 100D;
     
     public StudentSectionGrade() {
         
@@ -82,4 +87,21 @@ public class StudentSectionGrade implements Serializable, IApiModel<StudentSecti
         return 31 * super.hashCode() + Objects.hash(id, complete, grade);
     }
 
+    @Override
+    @JsonIgnore
+    public Double getAwardedPoints() {
+        return grade;
+    }
+
+    @Override
+    @JsonIgnore
+    public Double getAvailablePoints() {
+        return MAX_GRADE;
+    }
+
+    @Override
+    @JsonIgnore
+    public int getWeight() {
+        return 1;
+    }
 }
