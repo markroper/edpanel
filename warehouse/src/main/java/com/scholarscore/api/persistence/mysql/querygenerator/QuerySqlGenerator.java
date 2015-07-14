@@ -20,6 +20,8 @@ import com.scholarscore.models.query.expressions.operands.DimensionOperand;
 import com.scholarscore.models.query.expressions.operands.IOperand;
 import com.scholarscore.models.query.expressions.operands.NumericOperand;
 import com.scholarscore.models.query.expressions.operands.StringOperand;
+import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
+import com.scholarscore.models.query.expressions.operators.IOperator;
 
 public class QuerySqlGenerator {
     private static final String SELECT = "SELECT ";
@@ -27,6 +29,16 @@ public class QuerySqlGenerator {
     private static final String LEFT_OUTER_JOIN = "LEFT OUTER JOIN ";
     private static final String GROUP_BY = "GROUP BY ";
     private static final String WHERE = "WHERE ";
+    private static final String OR = "OR";
+    private static final String AND = "AND";
+    private static final String GREATER_THAN = "GREATER_THAN";
+    private static final String GREATER_THAN_OR_EQUAL = "GREATER_THAN_OR_EQUAL";
+    private static final String LESS_THAN = "LESS_THAN";
+    private static final String LESS_THAN_OR_EQUAL = "LESS_THAN_OR_EQUAL";
+    private static final String IN = "IN";
+    private static final String LIKE = "LIKE";
+    private static final String EQUAL = "EQUAL";
+    private static final String NOT_EQUAL = "NOT_EQUAL";
     
     public static SqlWithParameters generate(Query q) throws SqlGenerationException {
         Map<String, Object> params = new HashMap<>();
@@ -106,11 +118,18 @@ public class QuerySqlGenerator {
     protected static void expressionToSql(Expression exp, Map<String, Object> params, StringBuilder sqlBuilder) 
             throws SqlGenerationException{
         sqlBuilder.append(" (");
+        //Serialize the right hand side
         operandToSql(exp.getLeftHandSide(), params, sqlBuilder);
-        sqlBuilder.append(" " + exp.getOperator().name() + " ");
+        //Serialize the operator
+        String operator = resolveOperatorSql(exp.getOperator());
+        sqlBuilder.append(" " + operator + " ");
+        //Serialize the left hand side
         operandToSql(exp.getRightHandSide(), params, sqlBuilder);
+        //TODO: change this. Close the operator parens if needed
+        if(exp.getOperator().equals(ComparisonOperator.IN)) {
+            sqlBuilder.append(" ");
+        }
         sqlBuilder.append(") ");
-        
     }
     
     protected static void operandToSql(IOperand operand, Map<String, Object> params, StringBuilder sqlBuilder) 
@@ -129,6 +148,7 @@ public class QuerySqlGenerator {
                 expressionToSql((Expression) operand, params, sqlBuilder);
                 break;
             case STRING:
+                //Protect against SQL injection attack:
                 String rand = RandomStringUtils.randomAlphabetic(32);
                 sqlBuilder.append(" :" + rand + " ");
                 params.put(rand, ((StringOperand)operand).getValue());
@@ -137,7 +157,6 @@ public class QuerySqlGenerator {
                 throw new SqlGenerationException("Operand type not supported: " + operand);
         }
     }
-    
     
     protected static void populateGroupByClause(StringBuilder sqlBuilder, Query q) throws SqlGenerationException {
         sqlBuilder.append(GROUP_BY);
@@ -161,5 +180,44 @@ public class QuerySqlGenerator {
                     columnName + ") must both be non-null");
         }
         return tableName + "." + columnName;
+    }
+    
+    protected static String resolveOperatorSql(IOperator op) throws SqlGenerationException {
+        String operator = null;
+        switch(op.name()) {
+            case OR:
+                operator = OR;
+                break;
+            case AND:
+                operator = AND;
+                break;
+            case EQUAL:
+                operator = "=";
+                break;
+            case NOT_EQUAL:
+                operator = "!=";
+                break;
+            case GREATER_THAN:
+                operator = ">";
+                break;
+            case GREATER_THAN_OR_EQUAL:
+                operator = ">=";
+                break;
+            case LESS_THAN:
+                operator = "<";
+                break;
+            case LESS_THAN_OR_EQUAL:
+                operator = "<=";
+                break;
+            case IN:
+                operator = "IN (";
+                break;
+            case LIKE:
+                operator = LIKE;
+                break;
+            default:
+                throw new SqlGenerationException("Operator not supported: " + op.name());
+        }
+        return operator;
     }
 }
