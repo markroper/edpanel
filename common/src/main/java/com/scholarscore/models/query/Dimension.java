@@ -74,6 +74,17 @@ public enum Dimension {
         return parentDimensions;
     }
     
+    private static final List<Dimension> orderedDimensions = new ArrayList<Dimension>(){{
+        add(Dimension.STUDENT);
+        add(Dimension.TEACHER);
+        add(Dimension.SECTION);
+        add(Dimension.TERM);
+        add(Dimension.YEAR);
+        add(Dimension.COURSE);
+        add(Dimension.SUBJECT_AREA);
+        add(Dimension.GRADE_LEVEL);
+        add(Dimension.SCHOOL);
+    }};
     /**
      * Given a set of Dimensions, orders supported dimension from most to least granular in a List,
      * and returns that list. Certain dimensions like Date are not supported and are ignored if they are 
@@ -85,32 +96,10 @@ public enum Dimension {
     public static List<Dimension> resolveOrderedDimensions(Set<Dimension> selectedDims) {
         List<Dimension> orderedDimTables = new ArrayList<>();
         
-        if(selectedDims.contains(Dimension.STUDENT)) {
-            orderedDimTables.add(Dimension.STUDENT);
-        }
-        if(selectedDims.contains(Dimension.TEACHER)) {
-            orderedDimTables.add(Dimension.TEACHER);
-        }
-        if(selectedDims.contains(Dimension.SECTION)) {
-            orderedDimTables.add(Dimension.SECTION);
-        }
-        if(selectedDims.contains(Dimension.TERM)) {
-            orderedDimTables.add(Dimension.TERM);
-        }
-        if(selectedDims.contains(Dimension.YEAR)) {
-            orderedDimTables.add(Dimension.YEAR);
-        }
-        if(selectedDims.contains(Dimension.COURSE)) {
-            orderedDimTables.add(Dimension.COURSE);
-        }
-        if(selectedDims.contains(Dimension.SUBJECT_AREA)) {
-            orderedDimTables.add(Dimension.STUDENT);
-        }
-        if(selectedDims.contains(Dimension.GRADE_LEVEL)) {
-            orderedDimTables.add(Dimension.GRADE_LEVEL);
-        }
-        if(selectedDims.contains(Dimension.SCHOOL)) {
-            orderedDimTables.add(Dimension.SCHOOL);
+        for(Dimension d : orderedDimensions) {
+            if(selectedDims.contains(d)) {
+                orderedDimTables.add(d);
+            }
         }
         return orderedDimTables;
     }

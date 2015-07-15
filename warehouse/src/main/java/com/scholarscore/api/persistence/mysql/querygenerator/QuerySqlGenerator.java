@@ -30,7 +30,7 @@ import com.scholarscore.models.query.expressions.operators.IOperator;
  * @author markroper
  *
  */
-public class QuerySqlGenerator {
+public abstract class QuerySqlGenerator {
     private static final String SELECT = "SELECT ";
     private static final String FROM = "FROM ";
     private static final String LEFT_OUTER_JOIN = "LEFT OUTER JOIN ";
