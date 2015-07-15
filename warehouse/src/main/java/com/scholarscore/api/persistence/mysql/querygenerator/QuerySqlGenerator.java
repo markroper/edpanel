@@ -125,20 +125,22 @@ public abstract class QuerySqlGenerator {
     protected static void expressionToSql(Expression exp, Map<String, Object> params, StringBuilder sqlBuilder) 
             throws SqlGenerationException{
         sqlBuilder.append(" (");
-        //Serialize the right hand side
+        //Serialize the left hand side
         operandToSql(exp.getLeftHandSide(), params, sqlBuilder);
         //Serialize the operator
         String operator = resolveOperatorSql(exp.getOperator());
         sqlBuilder.append(" " + operator + " ");
-        //Serialize the left hand side
+        if (exp.getOperator().equals((ComparisonOperator.IN))) {
+            sqlBuilder.append(" (");
+        }
+        //Serialize the right hand side
         operandToSql(exp.getRightHandSide(), params, sqlBuilder);
-        //TODO: change this. Close the operator parens if needed
         if(exp.getOperator().equals(ComparisonOperator.IN)) {
-            sqlBuilder.append(" ");
+            sqlBuilder.append(") ");
         }
         sqlBuilder.append(") ");
     }
-    
+
     protected static void operandToSql(IOperand operand, Map<String, Object> params, StringBuilder sqlBuilder) 
             throws SqlGenerationException {
         switch(operand.getType()) {
@@ -217,7 +219,7 @@ public abstract class QuerySqlGenerator {
                 operator = "<=";
                 break;
             case IN:
-                operator = "IN (";
+                operator = IN;
                 break;
             case LIKE:
                 operator = LIKE;
