@@ -104,7 +104,7 @@ public enum Dimension {
             orderedDimTables.add(Dimension.COURSE);
         }
         if(selectedDims.contains(Dimension.SUBJECT_AREA)) {
-            orderedDimTables.add(Dimension.STUDENT);
+            orderedDimTables.add(Dimension.SUBJECT_AREA);
         }
         if(selectedDims.contains(Dimension.GRADE_LEVEL)) {
             orderedDimTables.add(Dimension.GRADE_LEVEL);
