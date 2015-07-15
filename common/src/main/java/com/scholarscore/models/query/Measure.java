@@ -3,6 +3,7 @@ package com.scholarscore.models.query;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import com.google.common.collect.ImmutableSet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -34,21 +35,21 @@ public enum Measure {
         }})),
     //Behavioral measures
     DEMERITS(
-        Collections.unmodifiableSet(new HashSet<String>(){{ add("MERITS"); add("DETENTIONS"); add("SUSPENSIONS"); }}),    
+        ImmutableSet.of("MERITS", "DETENSIONS", "SUSPENSIONS"),  
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
             add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
             add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
             add(Dimension.TEACHER); add(Dimension.SECTION);
         }})),
     MERITS(
-        Collections.unmodifiableSet(new HashSet<String>(){{ add("DEMERITS"); add("DETENTIONS"); add("SUSPENSIONS"); }}),
+        ImmutableSet.of("DEMERITS", "DETENSIONS", "SUSPENSIONS"), 
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
             add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
             add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
             add(Dimension.TEACHER); add(Dimension.SECTION);
         }})),
     DETENTIONS(
-        Collections.unmodifiableSet(new HashSet<String>(){{ add("MERITS"); add("DEMERITS"); add("SUSPENSIONS"); }}),
+            ImmutableSet.of("MERITS", "DEMERITS", "SUSPENSIONS"), 
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
             add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
             add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
@@ -61,7 +62,7 @@ public enum Measure {
             add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
         }})),
     SUSPENSIONS(
-        Collections.unmodifiableSet(new HashSet<String>(){{ add("MERITS"); add("DETENTIONS"); add("DEMERITS"); }}),
+            ImmutableSet.of("MERITS", "DETENSIONS", "DEMERITS"), 
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
             add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
             add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);

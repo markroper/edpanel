@@ -21,7 +21,9 @@ dependencies {
             "org.hibernate:hibernate-validator-cdi:5.1.0.Final",
             //Apache commons
             "commons-io:commons-io:2.4",
-            "org.apache.commons:commons-lang3:3.3.2"
+            "org.apache.commons:commons-lang3:3.3.2",
+            //Guava utils
+            "com.google.guava:guava:18.0"
 
     testCompile "org.testng:testng:6.8.8",
             "org.apache.httpcomponents:httpclient:$apacheHttpVersion",
