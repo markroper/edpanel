@@ -125,12 +125,12 @@ public class QuerySqlGenerator {
     protected static void expressionToSql(Expression exp, Map<String, Object> params, StringBuilder sqlBuilder) 
             throws SqlGenerationException{
         sqlBuilder.append(" (");
-        //Serialize the right hand side
+        //Serialize the left hand side
         operandToSql(exp.getLeftHandSide(), params, sqlBuilder);
         //Serialize the operator
         String operator = resolveOperatorSql(exp.getOperator());
         sqlBuilder.append(" " + operator + " ");
-        //Serialize the left hand side
+        //Serialize the right hand side
         operandToSql(exp.getRightHandSide(), params, sqlBuilder);
         //TODO: change this. Close the operator parens if needed
         if(exp.getOperator().equals(ComparisonOperator.IN)) {
