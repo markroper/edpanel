@@ -41,9 +41,15 @@ public class StudentSectionGradeJdbc extends EnhancedBaseJdbc<StudentSectionGrad
             "WHERE `" + DbConst.STUD_FK_COL + "`= :" + DbConst.STUD_FK_COL + " " +
             "AND `" + DbConst.SECTION_FK_COL + "`= :" + DbConst.SECTION_FK_COL;
     
+    // all grades for one section
     private final String SELECT_ALL_STUD_SECTION_GRADES_SQL = "SELECT * FROM `"+
             DbConst.DATABASE +"`.`" + getTableName() + "` " +
             "WHERE `" + DbConst.SECTION_FK_COL + "` = :" + DbConst.SECTION_FK_COL;
+
+    // all grades for one student
+    private final String SELECT_ALL_SECTION_GRADES_FOR_STUDENT_SQL = "SELECT * FROM `"+
+            DbConst.DATABASE +"`.`" + getTableName() + "` " +
+            "WHERE `" + DbConst.STUD_FK_COL + "` = :" + DbConst.STUD_FK_COL;
     
     private final String SELECT_STUD_SECTION_GRADE_SQL = SELECT_ALL_STUD_SECTION_GRADES_SQL +
             " AND `" + DbConst.STUD_FK_COL + "`= :" + DbConst.STUD_FK_COL;
@@ -53,6 +59,13 @@ public class StudentSectionGradeJdbc extends EnhancedBaseJdbc<StudentSectionGrad
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.SECTION_FK_COL, new Long(sectionId));
         return super.selectAll(params, SELECT_ALL_STUD_SECTION_GRADES_SQL);
+    }
+
+    @Override
+    public Collection<StudentSectionGrade> selectAllByStudent(long studentId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(DbConst.STUD_FK_COL, new Long(studentId));
+        return super.selectAll(params, SELECT_ALL_SECTION_GRADES_FOR_STUDENT_SQL);
     }
 
     @Override

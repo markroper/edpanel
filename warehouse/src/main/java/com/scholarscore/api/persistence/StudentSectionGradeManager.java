@@ -20,6 +20,14 @@ public interface StudentSectionGradeManager {
             long schoolId, long yearId, long termId, long sectionId);
 
     /**
+     * Return all section grades completed by a student
+     * @param studentId the ID of the student
+     * @return
+     */
+    public ServiceResponse<Collection<StudentSectionGrade>> getSectionGradesForStudent(
+        long studentId);
+    
+    /**
      * Returns ErrorCodes.OK if a section student grade exists and otherwise returns a descriptive error code
      * 
      * @param schoolId ID of parent school

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.scholarscore.util.GradeUtil;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -41,17 +42,7 @@ public class GradeFormula implements Serializable {
         }
         double calculatedGrade = 0D;
         if(null == assignmentTypeWeights) {
-            long availablePoints = 0L;
-            long awardedPoints = 0L;
-            for(StudentAssignment sa : studentAssignments) {
-                if(null != sa.getAwardedPoints()) {
-                    awardedPoints += sa.getAwardedPoints();
-                }
-                if(null != sa.getAssignment() && null != sa.getAssignment().getAvailablePoints()) {
-                    availablePoints += sa.getAssignment().getAvailablePoints();
-                }
-            }
-            calculatedGrade = awardedPoints * 1.0 / availablePoints;
+            calculatedGrade = GradeUtil.calculateAverageGrade(studentAssignments);
         } else {
             Map<AssignmentType, MutablePair<Long, Long>> calculatedGradeByType = new HashMap<>();
             for(StudentAssignment sa : studentAssignments) {
@@ -65,8 +56,8 @@ public class GradeFormula implements Serializable {
                 if(null != sa.getAwardedPoints()) {
                     calculatedGradeByType.get(type).left += sa.getAwardedPoints();
                 }
-                if(null != sa.getAssignment() && null != sa.getAssignment().getAvailablePoints()) {
-                    calculatedGradeByType.get(type).right += sa.getAssignment().getAvailablePoints();
+                if(null != sa.getAvailablePoints()) {
+                    calculatedGradeByType.get(type).right += sa.getAvailablePoints();
                 }
             }
             //Now we calculate the final score as the sum of AssignmentTypeAwardedPoints/AssignmentTypeAvailPoints * PercentOfGradeAsLong
@@ -76,7 +67,7 @@ public class GradeFormula implements Serializable {
         }
         return calculatedGrade;
     }
-
+    
     public Map<AssignmentType, Integer> getAssignmentTypeWeights() {
         return assignmentTypeWeights;
     }

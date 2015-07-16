@@ -4,13 +4,13 @@ Warehouse Module
 To build the warehouse WAR and deploy it to a running Jetty (Tomcat coming soon) instance, run:
 
 <code>
-./grade clean build appRun
+./gradle clean build appRun
 </code>
 
 To build the warehouse WAR and deploy it to a DEBUGGABLE jetty instance, run:
 
 <code>
-./grade clean build appRunDebug
+./gradle clean build appRunDebug
 </code>
 
 Note: The process will be in suspended mode until a debugger is attached on port 5005.

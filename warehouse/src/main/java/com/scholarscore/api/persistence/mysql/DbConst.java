@@ -76,7 +76,7 @@ public class DbConst {
         put(Term.END_DATE, TERM_END_DATE_COL);
         put(Term.START_DATE, TERM_END_DATE_COL);
     }};
-    
+
     public static final String DATABASE = "scholar_warehouse";
     //Tables
     public static final String SCHOOL_TABLE = "school";
