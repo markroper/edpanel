@@ -1,11 +1,14 @@
 package com.scholarscore.etl.powerschool.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.scholarscore.client.BaseHttpClient;
+import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
 import com.scholarscore.etl.powerschool.api.model.Staff;
+import com.scholarscore.etl.powerschool.api.model.Staffs;
 import com.scholarscore.etl.powerschool.api.response.*;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -34,7 +37,7 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     public static final String PATH_RESOURCE_DISTRICT = "/ws/v1/district";
     public static final String PATH_RESOURCE_SCHOOL = "/ws/v1/district/school";
     public static final String PATH_RESOURCE_STUDENT = "/ws/v1/district/student";
-    public static final String PATH_RESOURCE_STAFF = "/ws/v1/school/{0}/staff";
+    public static final String PATH_RESOURCE_STAFF = "/ws/v1/school/{0}/staff?expansions=phones,addresses,emails,school_affiliations";
     public static final String PATH_RESOURCE_COURSE = "/ws/v1/school/{0}/course";
     public static final String PATH_RESOURCE_TERMS = "/ws/v1/school/{0}/term";
     public static final String PATH_RESOURCE_SECTION = "/ws/v1/school/{0}/section";
@@ -96,7 +99,7 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     }
 
     /**
-     * Get a collection of staff by
+     * Get a collection of staff by school
      *
      * @param schoolId
      *      The school identifier to retrieve the staff from within
@@ -104,8 +107,24 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
      * @return
      */
     @Override
-    public StaffResponse getStaff(Long schoolId) {
-        return get(StaffResponse.class, PATH_RESOURCE_STAFF, schoolId.toString());
+    public Staffs getStaff(Long schoolId) {
+        return getJackson(Staffs.class, PATH_RESOURCE_STAFF, schoolId.toString());
+    }
+
+    protected <T> T getJackson(Class<T> clazz, String path, String ...params) {
+
+        path = getPath(path, params);
+
+        try {
+            HttpGet get = new HttpGet();
+            setupCommonHeaders(get);
+            get.setURI(uri.resolve(path));
+            String json = getJSON(get);
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(json, clazz);
+        } catch (IOException e) {
+            throw new HttpClientException(e);
+        }
     }
 
     @Override

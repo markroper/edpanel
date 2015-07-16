@@ -108,6 +108,7 @@ public abstract class BaseHttpClient {
             setupCommonHeaders(get);
             get.setURI(uri.resolve(path));
             String json = getJSON(get);
+            System.out.println(json);
             return gson.fromJson(json, clazz);
         } catch (IOException e) {
             throw new HttpClientException(e);
