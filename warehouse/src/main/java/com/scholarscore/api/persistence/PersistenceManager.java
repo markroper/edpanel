@@ -1177,6 +1177,9 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
 
     @Override
     public ServiceResponse<Long> createQuery(Long schoolId, Query query) {
+        if(!query.isValid()) {
+            return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.INVALID_QUERY));
+        }
         StatusCode code = this.schoolExists(schoolId);
         if(!code.isOK()) {
             return new ServiceResponse<Long>(code);
