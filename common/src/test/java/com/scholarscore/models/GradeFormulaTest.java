@@ -15,6 +15,7 @@ public class GradeFormulaTest {
     @DataProvider
     public Object[][] formulasToTest() {
         Set<StudentAssignment> studentAssignments = new HashSet<>();
+
         for(long i = 1; i <= 10; i++) {
             GradedAssignment sect = new GradedAssignment();
             sect.setAvailablePoints(10L);
@@ -37,7 +38,7 @@ public class GradeFormulaTest {
         //THE FORMULAS:
         GradeFormula emptyFormula = new GradeFormula();
         //The no formula just takes all the awarded points and divides them by all available points;
-        Double noFormulaGrade = 145.0/175.0;
+        Double noFormulaGrade = ((70.0*10.0) + (100.0*15.0)) / (25.0 * 100);
         
         GradeFormula validFormula = new GradeFormula();
         Map<AssignmentType, Integer> assignmentTypeWeights = new HashMap<>();

@@ -858,6 +858,16 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     }
 
     @Override
+    public ServiceResponse<Collection<StudentSectionGrade>> getSectionGradesForStudent(long studentId) {
+        StatusCode code = studentExists(studentId);
+        if(!code.isOK()) {
+            return new ServiceResponse<>(code);
+        }
+        Collection<StudentSectionGrade> grades = studentSectionGradePersistence.selectAllByStudent(studentId);
+        return new ServiceResponse<>(grades);
+    }
+    
+    @Override
     public StatusCode studentSectionGradeExists(long schoolId, long yearId,
             long termId, long sectionId, long studentId) {
         StatusCode code = sectionExists(schoolId, yearId, termId, sectionId);
