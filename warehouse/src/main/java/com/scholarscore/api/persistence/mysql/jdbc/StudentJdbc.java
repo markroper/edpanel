@@ -35,6 +35,7 @@ public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPer
                 DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL + ", " +
                 DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL + ", " +
                 DbConst.STUDENT_RACE_COL + ", " +
+                DbConst.SCHOOL_FK_COL + ", " +
                 DbConst.STUDENT_ETHNICITY_COL +
             ") VALUES (" + 
                 ":" + DbConst.STUDENT_NAME_COL + ", " +
@@ -53,6 +54,7 @@ public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPer
                 ":" + DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL + ", " +
                 ":" + DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL + ", " +
                 ":" + DbConst.STUDENT_RACE_COL + ", " +
+                ":" + DbConst.SCHOOL_FK_COL + ", " +
                 ":" + DbConst.STUDENT_ETHNICITY_COL +  
                 ")";   
 
@@ -74,6 +76,7 @@ public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPer
                  DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL + "`= :" + DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL + ", `" +
                  DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL + "`= :" + DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL + ", `" +
                  DbConst.STUDENT_RACE_COL + "`= :" + DbConst.STUDENT_RACE_COL + ", `" +
+                 DbConst.SCHOOL_FK_COL + "`= :" + DbConst.SCHOOL_FK_COL + ", `" +
                  DbConst.STUDENT_ETHNICITY_COL + "`= :" + DbConst.STUDENT_ETHNICITY_COL + " " +
             "WHERE `" + DbConst.STUDENT_ID_COL + "`= :" + DbConst.STUDENT_ID_COL + "";
 
@@ -126,6 +129,7 @@ public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPer
         params.put(DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL, student.getSocialSecurityNumber());
         params.put(DbConst.STUDENT_RACE_COL, student.getFederalRace());
         params.put(DbConst.STUDENT_ETHNICITY_COL, student.getFederalEthnicity());
+        params.put(DbConst.SCHOOL_FK_COL, student.getCurrentSchoolId());
         jdbcTemplate.update(INSERT_STUDENT_SQL, new MapSqlParameterSource(params), keyHolder);
         return keyHolder.getKey().longValue();
     }
@@ -158,6 +162,7 @@ public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPer
         params.put(DbConst.STUDENT_SOCIAL_SECURTIY_NUMBER_COL, student.getSocialSecurityNumber());
         params.put(DbConst.STUDENT_RACE_COL, student.getFederalRace());
         params.put(DbConst.STUDENT_ETHNICITY_COL, student.getFederalEthnicity());
+        params.put(DbConst.SCHOOL_FK_COL, student.getCurrentSchoolId());
         jdbcTemplate.update(UPDATE_STUDENT_SQL, new MapSqlParameterSource(params));
         return studentId;
     }

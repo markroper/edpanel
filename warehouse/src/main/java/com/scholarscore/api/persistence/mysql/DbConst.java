@@ -10,23 +10,46 @@ import com.scholarscore.models.Section;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.Teacher;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
+import com.scholarscore.models.query.Measure;
 
-public abstract class DbConst {
-    @SuppressWarnings("serial")
-    public static final Map<DimensionField, String> DIMENSION_TO_DB_NAME = 
+@SuppressWarnings("serial")
+public class DbConst {
+    
+   public static final Map<Measure, String> MEASURE_TO_TABLE_NAME = 
+           new HashMap<Measure, String>() {{
+               put(Measure.COURSE_GRADE, STUDENT_SECTION_GRADE_TABLE);
+               put(Measure.ASSIGNMENT_GRADE, STUDENT_ASSIGNMENT_TABLE);
+               put(Measure.HW_COMPLETION, STUDENT_ASSIGNMENT_TABLE);
+           }};
+   public static final Map<Measure, String> MEASURE_TO_COL_NAME = 
+           new HashMap<Measure, String>() {{
+               put(Measure.COURSE_GRADE, STUD_SECTION_GRADE_GRADE);
+               put(Measure.ASSIGNMENT_GRADE, STUD_AWARDED_POINTS);
+               put(Measure.HW_COMPLETION, STUD_COMPLETED_COL);
+           }};
+
+    public static final Map<Dimension, String> DIMENSION_TO_TABLE_NAME = 
+            new HashMap<Dimension, String>() {{
+               put(Dimension.SCHOOL, SCHOOL_TABLE);
+               put(Dimension.COURSE, COURSE_TABLE);
+               put(Dimension.SECTION, SECTION_TABLE);
+               put(Dimension.TERM, TERM_TABLE);
+               put(Dimension.STUDENT, STUDENT_TABLE);
+               put(Dimension.TEACHER, TEACHER_TABLE);
+               put(Dimension.YEAR, SCHOOL_YEAR_TABLE);
+            }};
+
+    public static final Map<DimensionField, String> DIMENSION_TO_COL_NAME = 
             new HashMap<DimensionField, String>(){{
         //Student dimension field to db column name lookup
         put(Student.STUDENT_AGE, STUDENT_BIRTH_DATE_COL);
         put(Student.STUDENT_GENDER, STUDENT_GENDER_COL);
         put(Student.STUDENT_NAME, STUDENT_NAME_COL);
         put(Student.STUDENT_ID, STUDENT_ID_COL);
-//        put(Student.STUDENT_FREE_LUNCH, STUDENT_FREE_LUNCH_COL);
-//        put(Student.STUDENT_GRADE_REPEATER, STUDENT_GRADE_REPEATER_COL);
         put(Student.STUDENT_ETHNICITY, STUDENT_ETHNICITY_COL);
         put(Student.STUDENT_RACE, STUDENT_RACE_COL);
-//        put(Student.STUDENT_ELL, STUDENT_ELL_COL);
-//        put(Student.STUDENT_SPECIAL_ED, STUDENT_SPECIAL_ED_COL);
         put(Student.STUDENT_CITY_OF_RESIDENCE, STUDENT_HOME_CITY_COL);
         //Teacher dimension field to DB column name lookup
         put(Teacher.NAME, TEACHER_NAME_COL);
