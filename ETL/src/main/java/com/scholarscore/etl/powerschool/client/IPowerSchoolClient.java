@@ -1,6 +1,7 @@
 package com.scholarscore.etl.powerschool.client;
 
 import com.scholarscore.etl.powerschool.api.model.Staff;
+import com.scholarscore.etl.powerschool.api.model.Staffs;
 import com.scholarscore.etl.powerschool.api.response.*;
 
 /**
@@ -11,7 +12,7 @@ public interface IPowerSchoolClient {
 
     DistrictResponse getDistrict();
 
-    StaffResponse getStaff(Long schoolId);
+    Staffs getStaff(Long schoolId);
 
     Long createStaff(Staff staff, Long schoolId);
 

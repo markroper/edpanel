@@ -4,24 +4,24 @@ package com.scholarscore.etl.powerschool.api.model;
  * Created by mattg on 6/28/15.
  */
 public class Addresses {
-    public class Physical {
+    public static class Physical {
         public String street;
         public String city;
-        public String stateProvince;
-        public String postalCode;
+        public String state_province;
+        public String postal_code;
 
         @Override
         public String toString() {
             return "Physical{" +
                     "street='" + street + '\'' +
                     ", city='" + city + '\'' +
-                    ", stateProvince='" + stateProvince + '\'' +
-                    ", postalCode='" + postalCode + '\'' +
+                    ", stateProvince='" + state_province + '\'' +
+                    ", postalCode='" + postal_code + '\'' +
                     '}';
         }
     }
 
-    Physical physical;
+    public Physical physical;
 
     @Override
     public String toString() {

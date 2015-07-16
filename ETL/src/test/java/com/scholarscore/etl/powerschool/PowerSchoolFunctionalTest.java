@@ -2,6 +2,7 @@ package com.scholarscore.etl.powerschool;
 
 import com.scholarscore.etl.powerschool.api.model.School;
 import com.scholarscore.etl.powerschool.api.model.Staff;
+import com.scholarscore.etl.powerschool.api.model.Staffs;
 import com.scholarscore.etl.powerschool.api.response.*;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.client.PowerSchoolClient;
@@ -45,7 +46,8 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
 
     public void testGetStaffBySchool() {
         for (School school : client.getSchools().schools.school) {
-            StaffResponse response = client.getStaff(school.id);
+            Staffs response = client.getStaff(school.id);
+            System.out.println(response);
             assertNotNull(response);
         }
     }
