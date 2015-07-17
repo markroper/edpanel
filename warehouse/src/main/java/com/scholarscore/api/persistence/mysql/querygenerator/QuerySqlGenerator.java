@@ -85,7 +85,7 @@ public abstract class QuerySqlGenerator {
         for(DimensionField f: q.getFields()) {
             selectedDims.add(f.getDimension());
         }
-        //Add any dimensinos to join that may be referenced only in the WHERE clause
+        //Add any dimensions to join that may be referenced only in the WHERE clause
         selectedDims.addAll(q.resolveFilterDimensions());
         List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
         if(null == orderedTables || orderedTables.isEmpty()) {
