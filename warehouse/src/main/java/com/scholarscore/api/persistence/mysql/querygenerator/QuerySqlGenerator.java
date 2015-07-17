@@ -85,6 +85,8 @@ public abstract class QuerySqlGenerator {
         for(DimensionField f: q.getFields()) {
             selectedDims.add(f.getDimension());
         }
+        //Add any dimensinos to join that may be referenced only in the WHERE clause
+        selectedDims.addAll(q.resolveFilterDimensions());
         List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
         if(null == orderedTables || orderedTables.isEmpty()) {
             throw new SqlGenerationException("No tables were resolved to query in the FROM clause");
@@ -104,13 +106,32 @@ public abstract class QuerySqlGenerator {
             for(int i = 1; i < orderedTables.size(); i++) {
                 Dimension joinDim = orderedTables.get(i);
                 String currentTableName = DbConst.DIMENSION_TO_TABLE_NAME.get(currTable);
+                //If the next dimension is not compatible with the previous table for joining, that is, there is no 
+                //PK/FK relationship between the two, try to join on the measure table directly. If the measure is 
+                //not compatible with the dimension for joining, try joining on the previous dimension in the hierarchy.
+                //If that doesn't work, give up!
+                //TODO: generalize this mechanism so it tries to roll all the way back to the first table before failing
+                if(!currTable.getParentDimensions().contains(joinDim)) {
+                    if(am.getMeasure().getCompatibleDimensions().contains(joinDim)){
+                        currentTableName = mss.toTableName();
+                    } else {
+                        if(i - 2 >= 0) {
+                            Dimension previousTable = orderedTables.get(i - 2);
+                            if(!previousTable.getParentDimensions().contains(joinDim)) {
+                                throw new SqlGenerationException(
+                                        "Cannot join dimension to either previous dimension or measure: " + joinDim);
+                            }
+                            currentTableName = DbConst.DIMENSION_TO_TABLE_NAME.get(previousTable);
+                        }
+                    }
+                }
                 String joinTableName = DbConst.DIMENSION_TO_TABLE_NAME.get(joinDim);
                 if(null == currentTableName || null == joinTableName) {
                     throw new SqlGenerationException("Unable to generate JOIN clause due to null table name");
                 }
                 sqlBuilder.append(LEFT_OUTER_JOIN + joinTableName + " ON ");
-                sqlBuilder.append(currentTableName + "." + joinTableName + "_fk = ");
-                sqlBuilder.append(joinTableName + "." + joinTableName + "_id ");
+                sqlBuilder.append(joinTableName + "." + joinTableName + "_id = ");
+                sqlBuilder.append(currentTableName + "." + joinTableName + "_fk ");
                 currTable = joinDim;
             }
         }

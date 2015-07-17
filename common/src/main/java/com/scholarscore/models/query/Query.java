@@ -12,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.IApiModel;
 import com.scholarscore.models.query.expressions.Expression;
+import com.scholarscore.models.query.expressions.operands.DimensionOperand;
+import com.scholarscore.models.query.expressions.operands.IOperand;
 
 /**
  * Represents a query for data, the execution of which results in a table of
@@ -191,6 +193,28 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
             }
         }
         return true;
+    }
+    
+    /**
+     * Returns a set of all dimensions referenced within the query filter expression
+     * @return
+     */
+    public Set<Dimension> resolveFilterDimensions() {
+        return resolveExpressionDimensions(this.filter);
+    }
+    
+    private static Set<Dimension> resolveExpressionDimensions(IOperand operand) {
+        HashSet<Dimension> dimensions = new HashSet<>();
+        if(operand instanceof DimensionOperand) {
+            dimensions.add(((DimensionOperand)operand).getValue().getDimension());
+            return dimensions;
+        }
+        if(operand instanceof Expression) {
+            dimensions.addAll(resolveExpressionDimensions(((Expression) operand).getLeftHandSide())); 
+            dimensions.addAll(resolveExpressionDimensions(((Expression) operand).getRightHandSide())); 
+            return dimensions;
+        }
+        return dimensions;
     }
     
     @Override
