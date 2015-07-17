@@ -66,8 +66,9 @@ public class QuerySqlGeneratorUnitTest {
         courseGradeQuery.setFilter(whereClause);
         
         String courseGradeQuerySql = "SELECT student.birth_date, student.federal_ethnicity, school.school_address, SUM(student_section_grade.grade) "
-                + "FROM student LEFT OUTER JOIN student_section_grade ON student.student_id = student_section_grade.student_fk "
-                + "LEFT OUTER JOIN section ON section.section_id = student.section_fk "
+                + "FROM student "
+                + "LEFT OUTER JOIN student_section_grade ON student.student_id = student_section_grade.student_fk "
+                + "LEFT OUTER JOIN section ON section.section_id = student_section_grade.section_fk "
                 + "LEFT OUTER JOIN school ON school.school_id = student.school_fk "
                 + "WHERE  ( ( '2014-09-01 00:00:00.0'  >=  section.section_start_date )  "
                 + "AND  ( '2015-09-01 00:00:00.0'  <=  section.section_start_date ) ) "
