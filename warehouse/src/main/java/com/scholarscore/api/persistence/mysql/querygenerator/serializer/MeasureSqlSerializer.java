@@ -14,4 +14,6 @@ public interface MeasureSqlSerializer {
     public String toSelectClause(AggregateFunction agg);
     
     public String toJoinClause(Dimension dimToJoinUpon);
+    
+    public String toTableName();
 }

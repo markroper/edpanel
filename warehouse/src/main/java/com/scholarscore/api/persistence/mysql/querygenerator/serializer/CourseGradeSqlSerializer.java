@@ -19,4 +19,9 @@ public class CourseGradeSqlSerializer implements MeasureSqlSerializer {
                 DbConst.STUDENT_SECTION_GRADE_TABLE + DOT + dimTableName + FK_COL_SUFFIX + " ";
     }
 
+    @Override
+    public String toTableName() {
+        return DbConst.STUDENT_SECTION_GRADE_TABLE;
+    }
+
 }

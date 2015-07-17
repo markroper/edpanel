@@ -21,6 +21,7 @@ import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
+import com.scholarscore.models.query.expressions.operands.NumericOperand;
 import com.scholarscore.models.query.expressions.operators.BinaryOperator;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 
@@ -64,16 +65,34 @@ public class QuerySqlGeneratorUnitTest {
         whereClause.setRightHandSide(maxBound);
         courseGradeQuery.setFilter(whereClause);
         
-        String courseGradeQuerySql = 
-                "SELECT student.birth_date, student.federal_ethnicity, school.school_address, SUM(student_section_grade.grade) "
+        String courseGradeQuerySql = "SELECT student.birth_date, student.federal_ethnicity, school.school_address, SUM(student_section_grade.grade) "
                 + "FROM student LEFT OUTER JOIN student_section_grade ON student.student_id = student_section_grade.student_fk "
-                + "LEFT OUTER JOIN school ON student.school_fk = school.school_id "
+                + "LEFT OUTER JOIN section ON section.section_id = student.section_fk "
+                + "LEFT OUTER JOIN school ON school.school_id = student.school_fk "
                 + "WHERE  ( ( '2014-09-01 00:00:00.0'  >=  section.section_start_date )  "
                 + "AND  ( '2015-09-01 00:00:00.0'  <=  section.section_start_date ) ) "
                 + "GROUP BY student.birth_date, student.federal_ethnicity, school.school_address";
         
+        Query assignmentGradesQuery  = new Query();
+        ArrayList<AggregateMeasure> assginmentMeasures = new ArrayList<>();
+        assginmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVERAGE));
+        assignmentGradesQuery.setAggregateMeasures(assginmentMeasures);
+        assignmentGradesQuery.addField(Student.STUDENT_NAME);
+        Expression assignmentWhereClause = new Expression(
+                new DimensionOperand(Section.ID), 
+                ComparisonOperator.EQUAL, 
+                new NumericOperand(4));
+        assignmentGradesQuery.setFilter(assignmentWhereClause);
+        String assignmentGradesQuerySql = "SELECT student.student_name, AVERAGE(student_assignment.awarded_points / assignment.available_points) "
+                + "FROM student LEFT OUTER JOIN student_assignment ON student.student_id = student_assignment.student_fk "
+                + "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id "
+                + "LEFT OUTER JOIN section ON section.section_id = student_assignment.section_fk "
+                + "WHERE  ( section.course_id  =  4 ) "
+                + "GROUP BY student.student_name";
+        
         return new Object[][] {
-                { "Course Grade query", courseGradeQuery, courseGradeQuerySql }  
+                { "Course Grade query", courseGradeQuery, courseGradeQuerySql }, 
+                { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql }, 
         };
     }
     

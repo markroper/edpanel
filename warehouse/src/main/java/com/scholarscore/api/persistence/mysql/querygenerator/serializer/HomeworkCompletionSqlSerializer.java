@@ -23,4 +23,9 @@ public class HomeworkCompletionSqlSerializer implements MeasureSqlSerializer {
                 " ";
     }
 
+    @Override
+    public String toTableName() {
+        return DbConst.STUDENT_ASSIGNMENT_TABLE;
+    }
+
 }
