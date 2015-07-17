@@ -78,8 +78,7 @@ public enum Measure {
     COURSE_GRADE(
         Collections.unmodifiableSet(new HashSet<String>()),
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
-            add(Dimension.TERM); add(Dimension.STUDENT); 
-            add(Dimension.GRADE_LEVEL);
+            add(Dimension.STUDENT); add(Dimension.SECTION);
         }})),
     ASSIGNMENT_GRADE(
         Collections.unmodifiableSet(new HashSet<String>()),
