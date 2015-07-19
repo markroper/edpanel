@@ -35,7 +35,11 @@ public class Teacher extends ApiModel implements Serializable, IApiModel<Teacher
     
     @JsonInclude
     private transient User login;
-    
+
+    private String sourceSystemId;
+    private Address homeAddress;
+    private String homePhone;
+
     @Override
     public void mergePropertiesIfNull(Teacher mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
@@ -52,5 +56,37 @@ public class Teacher extends ApiModel implements Serializable, IApiModel<Teacher
     @Override
     public int hashCode() {
         return 31 * super.hashCode();
+    }
+
+    public void setSourceSystemId(String sourceSystemId) {
+        this.sourceSystemId = sourceSystemId;
+    }
+
+    public void setLogin(User login) {
+        this.login = login;
+    }
+
+    public User getLogin() {
+        return login;
+    }
+
+    public Address getHomeAddress() {
+        return homeAddress;
+    }
+
+    public void setHomeAddress(Address homeAddress) {
+        this.homeAddress = homeAddress;
+    }
+
+    public String getHomePhone() {
+        return homePhone;
+    }
+
+    public void setHomePhone(String homePhone) {
+        this.homePhone = homePhone;
+    }
+
+    public String getSourceSystemId() {
+        return sourceSystemId;
     }
 }
