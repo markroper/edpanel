@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
@@ -14,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StudentAssignment extends ApiModel implements Serializable, IApiModel<StudentAssignment> {
+public class StudentAssignment extends ApiModel implements Serializable, WeightedGradable, IApiModel<StudentAssignment> {
     private Boolean completed;
     private Date completionDate;
     private Long awardedPoints;
@@ -68,8 +69,25 @@ public class StudentAssignment extends ApiModel implements Serializable, IApiMod
         return assignment;
     }
 
+    @Override
+    @JsonIgnore
     public Long getAwardedPoints() {
-        return awardedPoints;
+        return awardedPoints != null ? awardedPoints : null;
+    }
+
+    @Override
+    @JsonIgnore
+    public Long getAvailablePoints() {
+        Long availablePoints = assignment != null ? assignment.getAvailablePoints() : null;
+        return (availablePoints != null ? availablePoints : null );
+    }
+
+    @Override
+    @JsonIgnore
+    public int getWeight() {
+        // Today, these weights live in GradeFormula and can't be 
+        // directly grabbed from StudentAssignment.
+        return 1;
     }
 
     public void setAwardedPoints(Long awardedPoints) {

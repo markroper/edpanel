@@ -1,3 +1,8 @@
+CREATE TABLE `scholar_warehouse`.`school` (
+  `school_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key column for the school table.',
+  `school_name` VARCHAR(256) NULL COMMENT 'A human readable user-defined name',
+  PRIMARY KEY (`school_id`))
+ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`student` (
   `student_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
@@ -18,19 +23,19 @@ CREATE TABLE `scholar_warehouse`.`student` (
   `social_security_number` VARCHAR(256) NULL COMMENT 'The student\'s social security number',
   `federal_race` VARCHAR(512) NULL COMMENT 'The student\'s race according to the federal gov\'t',
   `federal_ethnicity` VARCHAR(512) NULL COMMENT 'The student\'s ethnicity according to the federal gov\'t',
-  PRIMARY KEY (`student_id`))
+  `school_fk` INT UNSIGNED NULL COMMENT 'The foreign key to the current school the student is enrolled in within the district',
+  PRIMARY KEY (`student_id`),
+  CONSTRAINT `school_fk$student`
+    FOREIGN KEY (`school_fk`)
+    REFERENCES `scholar_warehouse`.`school`(`school_id`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`teacher` (
   `teacher_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `teacher_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   PRIMARY KEY (`teacher_id`))
-ENGINE = InnoDB;
-
-CREATE TABLE `scholar_warehouse`.`school` (
-  `school_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key column for the school table.',
-  `school_name` VARCHAR(256) NULL COMMENT 'A human readable user-defined name',
-  PRIMARY KEY (`school_id`))
 ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`school_year` (
@@ -176,10 +181,10 @@ CREATE TABLE `scholar_warehouse`.`authorities` (
     `username` varchar(50) not null COMMENT 'The associated user with this record',
     `authority` varchar(50) not null COMMENT 'The Users Role',
     CONSTRAINT `fk_authorities_users` 
-	FOREIGN KEY(`username`) 
-	REFERENCES `scholar_warehouse`.`users`(`username`)
-    	ON DELETE CASCADE
-    	ON UPDATE CASCADE)
+    FOREIGN KEY(`username`) 
+    REFERENCES `scholar_warehouse`.`users`(`username`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE)
 ENGINE = InnoDB;
 CREATE INDEX `ix_auth_username` on `scholar_warehouse`.`authorities`(`username`,`authority`);
 

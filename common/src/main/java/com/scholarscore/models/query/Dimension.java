@@ -1,7 +1,9 @@
 package com.scholarscore.models.query;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -70,5 +72,35 @@ public enum Dimension {
     @JsonIgnore
     public Set<Dimension> getParentDimensions() {
         return parentDimensions;
+    }
+    
+    private static final List<Dimension> orderedDimensions = new ArrayList<Dimension>(){{
+        add(Dimension.STUDENT);
+        add(Dimension.TEACHER);
+        add(Dimension.SECTION);
+        add(Dimension.TERM);
+        add(Dimension.YEAR);
+        add(Dimension.COURSE);
+        add(Dimension.SUBJECT_AREA);
+        add(Dimension.GRADE_LEVEL);
+        add(Dimension.SCHOOL);
+    }};
+    /**
+     * Given a set of Dimensions, orders supported dimension from most to least granular in a List,
+     * and returns that list. Certain dimensions like Date are not supported and are ignored if they are 
+     * included in the input set.
+     * 
+     * @param selectedDims
+     * @return
+     */
+    public static List<Dimension> resolveOrderedDimensions(Set<Dimension> selectedDims) {
+        List<Dimension> orderedDimTables = new ArrayList<>();
+        
+        for(Dimension d : orderedDimensions) {
+            if(selectedDims.contains(d)) {
+                orderedDimTables.add(d);
+            }
+        }
+        return orderedDimTables;
     }
 }
