@@ -47,7 +47,7 @@ public class SectionJdbc extends EnhancedBaseJdbc<Section> implements EntityPers
     
     private final String SELECT_SECTION_SQL = SELECT_ALL_SECTIONS_SQL +
             " AND `" + DbConst.SECTION_ID_COL + "`= :" + DbConst.SECTION_ID_COL;
-    
+
     @Override
     public Collection<Section> selectAll(long termId) {
         Map<String, Object> params = new HashMap<>();     

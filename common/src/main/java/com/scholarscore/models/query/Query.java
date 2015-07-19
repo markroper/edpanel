@@ -155,33 +155,37 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     public boolean isValid() {
         //Are the measures in the AggregateMeasures compatible?
         Set<Measure> measuresInUse = new HashSet<Measure>();
-        for(AggregateMeasure am: aggregateMeasures) {
-            if(!measuresInUse.contains(am.getMeasure())) {
-                for(Measure m : measuresInUse) {
-                    if(!m.getCompatibleMeasures().contains(am.getMeasure())){
-                        return false;
+        if(null != aggregateMeasures) {
+            for(AggregateMeasure am: aggregateMeasures) {
+                if(!measuresInUse.contains(am.getMeasure())) {
+                    for(Measure m : measuresInUse) {
+                        if(!m.getCompatibleMeasures().contains(am.getMeasure().name())){
+                            return false;
+                        }
                     }
+                    measuresInUse.add(am.getMeasure());
                 }
-                measuresInUse.add(am.getMeasure());
             }
         }
         //Are the dimensions in the DimensionFields compatible with one another and with the Measures?
         Set<Dimension> dimensionsInUse = new HashSet<Dimension>();
-        for(DimensionField df : fields) {
-            if(!dimensionsInUse.contains(df.getDimension())) {
-                for(Dimension d : dimensionsInUse) {
-                    //If neither the field dimension nor the other dimension are parents of one another
-                    //The dimensions are incompatible for a single query.
-                    if(!d.getParentDimensions().contains(df.getDimension()) &&
-                            !df.getDimension().getParentDimensions().contains(d)) {
-                        return false;
+        if(null != fields) {
+            for(DimensionField df : fields) {
+                if(!dimensionsInUse.contains(df.getDimension())) {
+                    for(Dimension d : dimensionsInUse) {
+                        //If neither the field dimension nor the other dimension are parents of one another
+                        //The dimensions are incompatible for a single query.
+                        if(!d.getParentDimensions().contains(df.getDimension()) &&
+                                !df.getDimension().getParentDimensions().contains(d)) {
+                            return false;
+                        }
                     }
-                }
-                dimensionsInUse.add(df.getDimension());
-                //Check that all measures in use are compatible with the new dimension
-                for(Measure m: measuresInUse) {
-                    if(!m.getCompatibleDimensions().contains(df.getDimension())) {
-                        return false;
+                    dimensionsInUse.add(df.getDimension());
+                    //Check that all measures in use are compatible with the new dimension
+                    for(Measure m: measuresInUse) {
+                        if(!m.getCompatibleDimensions().contains(df.getDimension())) {
+                            return false;
+                        }
                     }
                 }
             }

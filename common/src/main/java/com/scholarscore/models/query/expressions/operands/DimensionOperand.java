@@ -3,27 +3,27 @@ package com.scholarscore.models.query.expressions.operands;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.query.DimensionField;
 
 @SuppressWarnings("serial")
 public class DimensionOperand implements Serializable, IOperand {
-    protected Dimension value;
+    protected DimensionField value;
     protected OperandType type;
 
     public DimensionOperand() {
         this.type = OperandType.DIMENSION;
     }
     
-    public DimensionOperand(Dimension dimension) {
+    public DimensionOperand(DimensionField dimension) {
         this();
         this.value = dimension;
     }
 
-    public Dimension getValue() {
+    public DimensionField getValue() {
         return value;
     }
 
-    public void setValue(Dimension value) {
+    public void setValue(DimensionField value) {
         this.value = value;
     }
     

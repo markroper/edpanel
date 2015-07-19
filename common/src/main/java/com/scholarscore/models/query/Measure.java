@@ -3,6 +3,7 @@ package com.scholarscore.models.query;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import com.google.common.collect.ImmutableSet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -27,41 +28,41 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @SuppressWarnings("serial")
 public enum Measure {
     ATTENDANCE(
-        Collections.unmodifiableSet(new HashSet<Measure>()),
+        Collections.unmodifiableSet(new HashSet<String>()),
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
             add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
             add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
         }})),
     //Behavioral measures
     DEMERITS(
-        Collections.unmodifiableSet(new HashSet<Measure>(){{ add(Measure.MERITS); add(Measure.DETENTIONS); add(Measure.SUSPENSIONS); }}),    
+        ImmutableSet.of("MERITS", "DETENSIONS", "SUSPENSIONS"),  
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
             add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
             add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
             add(Dimension.TEACHER); add(Dimension.SECTION);
         }})),
     MERITS(
-        Collections.unmodifiableSet(new HashSet<Measure>(){{ add(Measure.DEMERITS); add(Measure.DETENTIONS); add(Measure.SUSPENSIONS); }}),
+        ImmutableSet.of("DEMERITS", "DETENSIONS", "SUSPENSIONS"), 
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
             add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
             add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
             add(Dimension.TEACHER); add(Dimension.SECTION);
         }})),
     DETENTIONS(
-        Collections.unmodifiableSet(new HashSet<Measure>(){{ add(Measure.MERITS); add(Measure.DEMERITS); add(Measure.SUSPENSIONS); }}),
+            ImmutableSet.of("MERITS", "DEMERITS", "SUSPENSIONS"), 
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
             add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
             add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
             add(Dimension.TEACHER); add(Dimension.SECTION);
         }})),
     HOMEWORK_CLUBS(
-        Collections.unmodifiableSet(new HashSet<Measure>()),
+        Collections.unmodifiableSet(new HashSet<String>()),
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
             add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
             add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
         }})),
     SUSPENSIONS(
-        Collections.unmodifiableSet(new HashSet<Measure>(){{ add(Measure.MERITS); add(Measure.DETENTIONS); add(Measure.DEMERITS); }}),
+            ImmutableSet.of("MERITS", "DETENSIONS", "DEMERITS"), 
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
             add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
             add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
@@ -69,35 +70,35 @@ public enum Measure {
         }})),
     //Academic measures
     GPA(
-        Collections.unmodifiableSet(new HashSet<Measure>()),
+        Collections.unmodifiableSet(new HashSet<String>()),
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
             add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
             add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
         }})),
     COURSE_GRADE(
-        Collections.unmodifiableSet(new HashSet<Measure>()),
+        Collections.unmodifiableSet(new HashSet<String>()),
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
             add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
             add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
             add(Dimension.SECTION);
         }})),
     ASSIGNMENT_GRADE(
-        Collections.unmodifiableSet(new HashSet<Measure>()),
+        Collections.unmodifiableSet(new HashSet<String>()),
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
             add(Dimension.STUDENT); add(Dimension.SECTION);
         }})),
     HW_COMPLETION(
-        Collections.unmodifiableSet(new HashSet<Measure>()),   
+        Collections.unmodifiableSet(new HashSet<String>()),   
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
             add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
             add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
             add(Dimension.TEACHER); add(Dimension.SECTION);
         }}));
     
-    private Set<Measure> compatibleMeasures;
+    private Set<String> compatibleMeasures;
     private Set<Dimension> compatibleDimensions;
     
-    private Measure(Set<Measure> compatibleMeasures, Set<Dimension> compatibleDimensions) {
+    private Measure(Set<String> compatibleMeasures, Set<Dimension> compatibleDimensions) {
         this.compatibleDimensions = compatibleDimensions;
         this.compatibleMeasures = compatibleMeasures;
     }
@@ -108,7 +109,7 @@ public enum Measure {
     }
     
     @JsonIgnore
-    public Set<Measure> getCompatibleMeasures() {
+    public Set<String> getCompatibleMeasures() {
         return compatibleMeasures;
     }
 }

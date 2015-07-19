@@ -46,29 +46,13 @@ public class QueryControllerIntegrationTest extends IntegrationBase {
         //Define aggregate measures
         List<AggregateMeasure> measures = new ArrayList<>();
         measures.add(new AggregateMeasure(Measure.DEMERITS, AggregateFunction.SUM));
-        measures.add(new AggregateMeasure(Measure.COURSE_GRADE, AggregateFunction.AVERAGE));
+        measures.add(new AggregateMeasure(Measure.MERITS, AggregateFunction.AVERAGE));
         fullyPopulatedQuery.setAggregateMeasures(measures);
         
         //No date dimension for this query
         fullyPopulatedQuery.addField(Student.STUDENT_AGE);
         fullyPopulatedQuery.addField(Student.STUDENT_ETHNICITY);
         fullyPopulatedQuery.addField(School.ADDRESS);
-        
-        //Create expression
-        Expression whereClause = new Expression();
-        @SuppressWarnings("deprecation")
-        Expression minBound = new Expression(
-                new DateOperand(new Date(2014, 9, 1)), 
-                ComparisonOperator.GREATER_THAN_OR_EQUAL, 
-                new DimensionOperand(Dimension.DATE));
-        Expression maxBound = new Expression(
-                new DateOperand(new Date()), 
-                ComparisonOperator.LESS_THAN_OR_EQUAL, 
-                new DimensionOperand(Dimension.DATE));
-        whereClause.setLeftHandSide(minBound);
-        whereClause.setOperator(BinaryOperator.AND);
-        whereClause.setRightHandSide(maxBound);
-        fullyPopulatedQuery.setFilter(whereClause);
        
         return new Object[][] {
                 { "Empty query", emptyQuery },
