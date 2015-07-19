@@ -28,7 +28,7 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 	private String username;
 	// full name
 	private String name;
-	
+
 	// Indicates whether the user is a login user and can login (by default this is disabled until the user has set a username/password)
 	private Boolean enabled;
 
