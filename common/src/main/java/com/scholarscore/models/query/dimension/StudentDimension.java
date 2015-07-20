@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.query.Dimension;
 
+@SuppressWarnings("serial")
 public class StudentDimension implements IDimension {
     public static final String ID = "ID";
     public static final String NAME = "Name";
@@ -43,5 +44,10 @@ public class StudentDimension implements IDimension {
     @Override
     public Set<String> getFields() {
         return StudentDimension.DIMENSION_FIELDS;
+    }
+
+    @Override
+    public String getName() {
+        return "Student";
     }
 }

@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.Measure;
 
+@SuppressWarnings("serial")
 public class AssignmentGradeMeasure implements IMeasure {
     Set<String> compatibleMeasures = Collections.unmodifiableSet(new HashSet<String>());
     Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SECTION);
@@ -25,6 +26,11 @@ public class AssignmentGradeMeasure implements IMeasure {
     @Override
     public Measure getMeasure() {
         return Measure.ASSIGNMENT_GRADE;
+    }
+
+    @Override
+    public String getName() {
+        return "Assignment Grade";
     }
 
 }

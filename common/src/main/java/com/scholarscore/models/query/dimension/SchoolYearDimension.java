@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.query.Dimension;
 
+@SuppressWarnings("serial")
 public class SchoolYearDimension implements IDimension {
     public static final Set<String> DIMENSION_FIELDS = 
             ImmutableSet.of("ID", "Name", "Start Date", "End Date");
@@ -32,5 +33,10 @@ public class SchoolYearDimension implements IDimension {
     @Override
     public Set<String> getFields() {
         return SchoolYearDimension.DIMENSION_FIELDS;
+    }
+
+    @Override
+    public String getName() {
+        return "Year";
     }
 }
