@@ -204,9 +204,15 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     }
     
     private static Set<Dimension> resolveExpressionDimensions(IOperand operand) {
+        if(null == operand) {
+            return null;
+        }
         HashSet<Dimension> dimensions = new HashSet<>();
         if(operand instanceof DimensionOperand) {
-            dimensions.add(((DimensionOperand)operand).getValue().getDimension());
+            DimensionField dimField = ((DimensionOperand)operand).getValue();
+            if(null != dimField) {
+                dimensions.add(dimField.getDimension());
+            }
             return dimensions;
         }
         if(operand instanceof Expression) {
