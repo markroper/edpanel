@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.SubjectArea;
 import com.scholarscore.models.query.Dimension;
 
+@SuppressWarnings("serial")
 public class SubjectAreaDimension implements IDimension {
     public static final Set<String> DIMENSION_FIELDS = 
             ImmutableSet.of("ID", "Name");
@@ -32,5 +33,10 @@ public class SubjectAreaDimension implements IDimension {
     @Override
     public Set<String> getFields() {
         return SubjectAreaDimension.DIMENSION_FIELDS;
+    }
+
+    @Override
+    public String getName() {
+        return "Subject";
     }
 }

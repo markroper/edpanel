@@ -38,6 +38,7 @@ public abstract class QuerySqlGenerator {
     private static final String WHERE = "WHERE ";
     private static final String OR = "OR";
     private static final String AND = "AND";
+    private static final String ON = "ON";
     private static final String GREATER_THAN = "GREATER_THAN";
     private static final String GREATER_THAN_OR_EQUAL = "GREATER_THAN_OR_EQUAL";
     private static final String LESS_THAN = "LESS_THAN";
@@ -46,6 +47,8 @@ public abstract class QuerySqlGenerator {
     private static final String LIKE = "LIKE";
     private static final String EQUAL = "EQUAL";
     private static final String NOT_EQUAL = "NOT_EQUAL";
+    private static final String ID_SUFFIX = "_id";
+    private static final String FK_SUFFIX = "_fk";
     
     public static SqlWithParameters generate(Query q) throws SqlGenerationException {
         Map<String, Object> params = new HashMap<>();
@@ -110,18 +113,22 @@ public abstract class QuerySqlGenerator {
                 //PK/FK relationship between the two, try to join on the measure table directly. If the measure is 
                 //not compatible with the dimension for joining, try joining on the previous dimension in the hierarchy.
                 //If that doesn't work, give up!
-                //TODO: generalize this mechanism so it tries to roll all the way back to the first table before failing
                 if(!Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
                     if(am.getMeasure().getCompatibleDimensions().contains(joinDim)){
                         currentTableName = mss.toTableName();
                     } else {
-                        if(i - 2 >= 0) {
-                            Dimension previousTable = orderedTables.get(i - 2);
-                            if(!Dimension.buildDimension(previousTable).getParentDimensions().contains(joinDim)) {
-                                throw new SqlGenerationException(
-                                        "Cannot join dimension to either previous dimension or measure: " + joinDim);
-                            }
-                            currentTableName = DbConst.DIMENSION_TO_TABLE_NAME.get(previousTable);
+                        Dimension dimDesc = currTable;
+                        //Start with the previous dimension since we're already dealing with i and i-1...
+                        int descIndex = i - 2;
+                        while(descIndex >= 0 && !Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
+                            dimDesc = orderedTables.get(descIndex); 
+                            descIndex--;
+                        }
+                        if(Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
+                            currentTableName = DbConst.DIMENSION_TO_TABLE_NAME.get(dimDesc);
+                        } else {
+                            throw new SqlGenerationException(
+                                    "Cannot join dimension to either previous dimension or measure: " + joinDim);
                         }
                     }
                 }
@@ -129,9 +136,9 @@ public abstract class QuerySqlGenerator {
                 if(null == currentTableName || null == joinTableName) {
                     throw new SqlGenerationException("Unable to generate JOIN clause due to null table name");
                 }
-                sqlBuilder.append(LEFT_OUTER_JOIN + joinTableName + " ON ");
-                sqlBuilder.append(joinTableName + "." + joinTableName + "_id = ");
-                sqlBuilder.append(currentTableName + "." + joinTableName + "_fk ");
+                sqlBuilder.append(LEFT_OUTER_JOIN + joinTableName + " " + ON + " ");
+                sqlBuilder.append(joinTableName + "." + joinTableName + ID_SUFFIX + " = ");
+                sqlBuilder.append(currentTableName + "." + joinTableName + FK_SUFFIX + " ");
                 currTable = joinDim;
             }
         }

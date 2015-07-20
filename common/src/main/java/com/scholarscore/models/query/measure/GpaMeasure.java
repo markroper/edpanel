@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.Measure;
 
+@SuppressWarnings("serial")
 public class GpaMeasure implements IMeasure {
     Set<String> compatibleMeasures = Collections.unmodifiableSet(new HashSet<String>());
     Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR, 
@@ -26,6 +27,11 @@ public class GpaMeasure implements IMeasure {
     @Override
     public Measure getMeasure() {
         return Measure.GPA;
+    }
+
+    @Override
+    public String getName() {
+        return "GPA";
     }
 
 }
