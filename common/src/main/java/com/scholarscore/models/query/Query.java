@@ -177,8 +177,8 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
                     for(Dimension d : dimensionsInUse) {
                         //If neither the field dimension nor the other dimension are parents of one another
                         //The dimensions are incompatible for a single query.
-                        if(!d.getParentDimensions().contains(df.getDimension()) &&
-                                !df.getDimension().getParentDimensions().contains(d)) {
+                        if(!Dimension.buildDimension(d).getParentDimensions().contains(df.getDimension()) &&
+                                !Dimension.buildDimension(df.getDimension()).getParentDimensions().contains(d)) {
                             return false;
                         }
                     }

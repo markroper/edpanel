@@ -100,13 +100,11 @@ public enum Measure {
         this.compatibleDimensions = compatibleDimensions;
         this.compatibleMeasures = compatibleMeasures;
     }
-
-    @JsonIgnore
+    
     public Set<Dimension> getCompatibleDimensions() {
         return compatibleDimensions;
     }
     
-    @JsonIgnore
     public Set<String> getCompatibleMeasures() {
         return compatibleMeasures;
     }
