@@ -1,7 +1,6 @@
 package com.scholarscore.api.controller;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -11,17 +10,13 @@ import org.testng.annotations.Test;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.School;
-import com.scholarscore.models.Student;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.AggregateMeasure;
 import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
 import com.scholarscore.models.query.Query;
-import com.scholarscore.models.query.expressions.Expression;
-import com.scholarscore.models.query.expressions.operands.DateOperand;
-import com.scholarscore.models.query.expressions.operands.DimensionOperand;
-import com.scholarscore.models.query.expressions.operators.BinaryOperator;
-import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
+import com.scholarscore.models.query.dimension.StudentDimension;
 
 @Test(groups = { "integration" })
 public class QueryControllerIntegrationTest extends IntegrationBase {
@@ -50,9 +45,9 @@ public class QueryControllerIntegrationTest extends IntegrationBase {
         fullyPopulatedQuery.setAggregateMeasures(measures);
         
         //No date dimension for this query
-        fullyPopulatedQuery.addField(Student.STUDENT_AGE);
-        fullyPopulatedQuery.addField(Student.STUDENT_ETHNICITY);
-        fullyPopulatedQuery.addField(School.ADDRESS);
+        fullyPopulatedQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.AGE));
+        fullyPopulatedQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ETHNICITY));
+        fullyPopulatedQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.HOME_ADDRESS));
        
         return new Object[][] {
                 { "Empty query", emptyQuery },

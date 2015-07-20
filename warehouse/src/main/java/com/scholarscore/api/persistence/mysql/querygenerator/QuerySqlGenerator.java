@@ -111,13 +111,13 @@ public abstract class QuerySqlGenerator {
                 //not compatible with the dimension for joining, try joining on the previous dimension in the hierarchy.
                 //If that doesn't work, give up!
                 //TODO: generalize this mechanism so it tries to roll all the way back to the first table before failing
-                if(!currTable.getParentDimensions().contains(joinDim)) {
+                if(!Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
                     if(am.getMeasure().getCompatibleDimensions().contains(joinDim)){
                         currentTableName = mss.toTableName();
                     } else {
                         if(i - 2 >= 0) {
                             Dimension previousTable = orderedTables.get(i - 2);
-                            if(!previousTable.getParentDimensions().contains(joinDim)) {
+                            if(!Dimension.buildDimension(previousTable).getParentDimensions().contains(joinDim)) {
                                 throw new SqlGenerationException(
                                         "Cannot join dimension to either previous dimension or measure: " + joinDim);
                             }

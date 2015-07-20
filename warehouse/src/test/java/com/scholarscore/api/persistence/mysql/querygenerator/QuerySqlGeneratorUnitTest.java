@@ -11,13 +11,15 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.scholarscore.models.School;
-import com.scholarscore.models.Section;
-import com.scholarscore.models.Student;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.AggregateMeasure;
+import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
 import com.scholarscore.models.query.Query;
+import com.scholarscore.models.query.dimension.SchoolDimension;
+import com.scholarscore.models.query.dimension.SectionDimension;
+import com.scholarscore.models.query.dimension.StudentDimension;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
@@ -36,10 +38,9 @@ public class QuerySqlGeneratorUnitTest {
         measures.add(new AggregateMeasure(Measure.COURSE_GRADE, AggregateFunction.SUM));
         courseGradeQuery.setAggregateMeasures(measures);
         //No date dimension for this query
-        courseGradeQuery.addField(Student.STUDENT_AGE);
-        courseGradeQuery.addField(Student.STUDENT_ETHNICITY);
-        courseGradeQuery.addField(School.ADDRESS);
-        
+        courseGradeQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.AGE));
+        courseGradeQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ETHNICITY));
+        courseGradeQuery.addField(new DimensionField(Dimension.SCHOOL, SchoolDimension.ADDRESS));
         //Create expression
         Expression whereClause = new Expression();
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -55,16 +56,15 @@ public class QuerySqlGeneratorUnitTest {
         Expression minBound = new Expression(
                 new DateOperand(date1), 
                 ComparisonOperator.GREATER_THAN_OR_EQUAL, 
-                new DimensionOperand(Section.START_DATE));
+                new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.START_DATE)));
         Expression maxBound = new Expression(
                 new DateOperand(date2), 
                 ComparisonOperator.LESS_THAN_OR_EQUAL, 
-                new DimensionOperand(Section.START_DATE));
+                new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.START_DATE)));
         whereClause.setLeftHandSide(minBound);
         whereClause.setOperator(BinaryOperator.AND);
         whereClause.setRightHandSide(maxBound);
-        courseGradeQuery.setFilter(whereClause);
-        
+        courseGradeQuery.setFilter(whereClause);   
         String courseGradeQuerySql = "SELECT student.birth_date, student.federal_ethnicity, school.school_address, SUM(student_section_grade.grade) "
                 + "FROM student "
                 + "LEFT OUTER JOIN student_section_grade ON student.student_id = student_section_grade.student_fk "
@@ -73,24 +73,25 @@ public class QuerySqlGeneratorUnitTest {
                 + "WHERE  ( ( '2014-09-01 00:00:00.0'  >=  section.section_start_date )  "
                 + "AND  ( '2015-09-01 00:00:00.0'  <=  section.section_start_date ) ) "
                 + "GROUP BY student.birth_date, student.federal_ethnicity, school.school_address";
-        
+       
         Query assignmentGradesQuery  = new Query();
         ArrayList<AggregateMeasure> assginmentMeasures = new ArrayList<>();
         assginmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVERAGE));
         assignmentGradesQuery.setAggregateMeasures(assginmentMeasures);
-        assignmentGradesQuery.addField(Student.STUDENT_NAME);
+        assignmentGradesQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
         Expression assignmentWhereClause = new Expression(
-                new DimensionOperand(Section.ID), 
+                new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)), 
                 ComparisonOperator.EQUAL, 
                 new NumericOperand(4));
         assignmentGradesQuery.setFilter(assignmentWhereClause);
         String assignmentGradesQuerySql = "SELECT student.student_name, AVERAGE(student_assignment.awarded_points / assignment.available_points) "
-                + "FROM student LEFT OUTER JOIN student_assignment ON student.student_id = student_assignment.student_fk "
+                + "FROM student "
+                + "LEFT OUTER JOIN student_assignment ON student.student_id = student_assignment.student_fk "
                 + "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id "
                 + "LEFT OUTER JOIN section ON section.section_id = student_assignment.section_fk "
-                + "WHERE  ( section.course_id  =  4 ) "
+                + "WHERE  ( section.section_id  =  4 ) "
                 + "GROUP BY student.student_name";
-        
+       
         return new Object[][] {
                 { "Course Grade query", courseGradeQuery, courseGradeQuerySql }, 
                 { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql }, 
