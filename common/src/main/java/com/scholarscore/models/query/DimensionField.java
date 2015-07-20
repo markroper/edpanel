@@ -48,6 +48,6 @@ public class DimensionField implements Serializable {
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(dimension, field);
+        return 31 * Objects.hash(dimension, field);
     }
 }
