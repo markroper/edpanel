@@ -31,12 +31,12 @@ public interface IOperator {
             JsonNode node = codec.readTree(jp);
             IOperator expOp = null;
             try {
-                expOp = ComparisonOperator.valueOf(node.get(OPERATOR).asText());
+                expOp = ComparisonOperator.valueOf(node.asText());
             } catch (Exception e) {
                 
             }
             if(null == expOp) {
-                expOp = BinaryOperator.valueOf(node.get(OPERATOR).asText());
+                expOp = BinaryOperator.valueOf(node.asText());
             }
             return expOp;
         }
