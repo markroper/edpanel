@@ -42,7 +42,6 @@ public class DbConst {
                put(Dimension.YEAR, SCHOOL_YEAR_TABLE);
             }};
 
-            private static final DimensionField STUDENT_NAME = new DimensionField(Dimension.STUDENT, StudentDimension.NAME);
     public static final Map<DimensionField, String> DIMENSION_TO_COL_NAME = 
             new HashMap<DimensionField, String>(){{
         //Student dimension field to db column name lookup

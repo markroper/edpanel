@@ -35,22 +35,17 @@ import com.scholarscore.models.query.measure.IMeasure;
 @SuppressWarnings("serial")
 public class QueryComponents implements Serializable {
 
-    Set<IDimension> avalailableDimensions = ImmutableSet.of(new CourseDimension(), new GradeLevelDimension(), new SchoolDimension(),
+    protected final Set<IDimension> avalailableDimensions = ImmutableSet.of(new CourseDimension(), new GradeLevelDimension(), new SchoolDimension(),
             new SchoolYearDimension(), new SectionDimension(), new StudentDimension(), new SubjectAreaDimension(), new TeacherDimension(),
             new TermDimension());
-    Set<IMeasure> availableMeasures = ImmutableSet.of(
+    protected final Set<IMeasure> availableMeasures = ImmutableSet.of(
             new AssignmentGradeMeasure(), new CourseGradeMeasure(), new GpaMeasure(), new HomeworkCompletionMeasure());
+    
     public Set<IDimension> getAvalailableDimensions() {
         return avalailableDimensions;
     }
-    public void setAvalailableDimensions(Set<IDimension> avalailableDimensions) {
-        this.avalailableDimensions = avalailableDimensions;
-    }
+    
     public Set<IMeasure> getAvailableMeasures() {
         return availableMeasures;
     }
-    public void setAvailableMeasures(Set<IMeasure> availableMeasures) {
-        this.availableMeasures = availableMeasures;
-    }
-    
 }
