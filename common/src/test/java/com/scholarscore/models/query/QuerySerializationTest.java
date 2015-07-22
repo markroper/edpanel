@@ -2,7 +2,6 @@ package com.scholarscore.models.query;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -10,7 +9,12 @@ import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.scholarscore.models.query.dimension.SectionDimension;
 import com.scholarscore.models.query.dimension.StudentDimension;
+import com.scholarscore.models.query.expressions.Expression;
+import com.scholarscore.models.query.expressions.operands.DimensionOperand;
+import com.scholarscore.models.query.expressions.operands.NumericOperand;
+import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 
 @Test(groups = { "unit" })
 public class QuerySerializationTest {
@@ -19,21 +23,20 @@ public class QuerySerializationTest {
     public Object[][] queriesToSerialize() {
         Query emptyQuery = new Query();
         
-        Query fullyPopulatedQuery = new Query();
-        //Define aggregate measures
-        List<AggregateMeasure> measures = new ArrayList<>();
-        measures.add(new AggregateMeasure(Measure.DEMERITS, AggregateFunction.SUM));
-        measures.add(new AggregateMeasure(Measure.MERITS, AggregateFunction.AVERAGE));
-        fullyPopulatedQuery.setAggregateMeasures(measures);
-        
-        //No date dimension for this query
-        fullyPopulatedQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.AGE));
-        fullyPopulatedQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ETHNICITY));
-        fullyPopulatedQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.HOME_ADDRESS));
+        Query assignmentGradesQuery  = new Query();
+        ArrayList<AggregateMeasure> assginmentMeasures = new ArrayList<>();
+        assginmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVERAGE));
+        assignmentGradesQuery.setAggregateMeasures(assginmentMeasures);
+        assignmentGradesQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
+        Expression assignmentWhereClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)), 
+                ComparisonOperator.EQUAL, 
+                new NumericOperand(4));
+        assignmentGradesQuery.setFilter(assignmentWhereClause);
         
         return new Object[][] {
                 { "empty query", emptyQuery, true },
-                { "fully populated query", fullyPopulatedQuery, true },
+                { "fully populated query", assignmentGradesQuery, true },
         };
     }
     

@@ -18,7 +18,7 @@ public interface IMeasure extends Serializable {
     
     public Set<Dimension> getCompatibleDimensions();
     
-    public Set<String> getCompatibleMeasures();
+    public Set<Measure> getCompatibleMeasures();
     
     public Measure getMeasure();
     
