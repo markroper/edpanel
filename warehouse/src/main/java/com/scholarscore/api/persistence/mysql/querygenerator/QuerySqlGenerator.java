@@ -112,7 +112,7 @@ public abstract class QuerySqlGenerator {
                 //If the next dimension is not compatible with the previous table for joining, that is, there is no 
                 //PK/FK relationship between the two, try to join on the measure table directly. If the measure is 
                 //not compatible with the dimension for joining, try joining on the previous dimension in the hierarchy.
-                //If that doesn't work, give up!
+                //If that doesn't match, check the dimension before that.
                 if(!Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
                     if(am.getMeasure().getCompatibleDimensions().contains(joinDim)){
                         currentTableName = mss.toTableName();
