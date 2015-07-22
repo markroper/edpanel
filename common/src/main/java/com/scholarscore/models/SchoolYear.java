@@ -2,14 +2,10 @@ package com.scholarscore.models;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.query.Dimension;
-import com.scholarscore.models.query.DimensionField;
 
 /**
  * Represents a school year, which may cross calendar year boundaries. 
@@ -22,17 +18,6 @@ import com.scholarscore.models.query.DimensionField;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SchoolYear extends ApiModel implements Serializable, IApiModel<SchoolYear>{
-    public static final DimensionField ID = new DimensionField(Dimension.YEAR, "ID");
-    public static final DimensionField NAME = new DimensionField(Dimension.YEAR, "Name");
-    public static final DimensionField END_DATE = new DimensionField(Dimension.YEAR, "End Date");
-    public static final DimensionField START_DATE = new DimensionField(Dimension.YEAR, "Start Date");
-    public static final Set<DimensionField> DIMENSION_FIELDS = new HashSet<DimensionField>() {{
-        add(ID);
-        add(NAME);
-        add(END_DATE);
-        add(START_DATE);
-    }};
-    
     protected Date startDate;
     protected Date endDate;
     protected List<Term> terms;

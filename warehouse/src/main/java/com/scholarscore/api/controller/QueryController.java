@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.query.Query;
+import com.scholarscore.models.query.QueryComponents;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
@@ -101,5 +103,20 @@ public class QueryController extends BaseController {
             @PathVariable(value="queryId") Long queryId) {
         //TODO: implement this
         return respond(getQueryManager().getQueryResults(schoolId, queryId));
+    }
+    
+    @ApiOperation(
+            value = "Get valid query components", 
+            notes = "Returns a data structure expressing all eligible Dimensions and Measures from which queries can be built", 
+            response = QueryComponents.class)
+    @RequestMapping(
+            value = "/components", 
+            method = RequestMethod.GET, 
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getQueryComponents(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId) {
+        return respond(new ServiceResponse<QueryComponents>(new QueryComponents()));
     }
 }

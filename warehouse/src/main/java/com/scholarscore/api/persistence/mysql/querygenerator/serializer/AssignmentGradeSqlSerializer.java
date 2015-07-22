@@ -24,8 +24,13 @@ public class AssignmentGradeSqlSerializer implements MeasureSqlSerializer {
                 EQUALS + DbConst.STUDENT_ASSIGNMENT_TABLE + DOT + dimTableName + FK_COL_SUFFIX +
                 " " +
                 LEFT_OUTER_JOIN + DbConst.ASSIGNMENT_TABLE + ON +
-                DbConst.STUDENT_ASSIGNMENT_TABLE + DOT + DbConst.STUDENT_ASSIGNMENT_TABLE + ID_COL_SUFFIX +
-                EQUALS + DbConst.ASSIGNMENT_TABLE + DOT + DbConst.STUDENT_ASSIGNMENT_TABLE + FK_COL_SUFFIX + " ";
+                DbConst.STUDENT_ASSIGNMENT_TABLE + DOT + DbConst.ASSIGNMENT_TABLE + FK_COL_SUFFIX +
+                EQUALS + DbConst.ASSIGNMENT_TABLE + DOT + DbConst.ASSIGNMENT_TABLE + ID_COL_SUFFIX + " ";
+    }
+
+    @Override
+    public String toTableName() {
+        return DbConst.STUDENT_ASSIGNMENT_TABLE;
     }
 
 }
