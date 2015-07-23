@@ -15,6 +15,6 @@ public class StudentResponse implements ITranslateCollection<com.scholarscore.mo
 
     @Override
     public Collection<com.scholarscore.models.Student> toInternalModel() {
-//        return null;
+        return null;
     }
 }
