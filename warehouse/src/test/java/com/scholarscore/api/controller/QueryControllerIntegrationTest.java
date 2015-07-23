@@ -43,9 +43,9 @@ public class QueryControllerIntegrationTest extends IntegrationBase {
         Query emptyQuery = new Query();
         
         Query assignmentGradesQuery  = new Query();
-        ArrayList<AggregateMeasure> assginmentMeasures = new ArrayList<>();
-        assginmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVERAGE));
-        assignmentGradesQuery.setAggregateMeasures(assginmentMeasures);
+        ArrayList<AggregateMeasure> assignmentMeasures = new ArrayList<>();
+        assignmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVERAGE));
+        assignmentGradesQuery.setAggregateMeasures(assignmentMeasures);
         assignmentGradesQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
         Expression assignmentWhereClause = new Expression(
                 new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)), 
