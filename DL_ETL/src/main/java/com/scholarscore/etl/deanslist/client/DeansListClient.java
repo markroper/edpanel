@@ -2,6 +2,8 @@ package com.scholarscore.etl.deanslist.client;
 
 import com.scholarscore.client.BaseHttpClient;
 import com.scholarscore.client.HttpClientException;
+import com.scholarscore.etl.deanslist.api.response.BehaviorResponse;
+import com.scholarscore.etl.deanslist.api.response.StudentResponse;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -16,6 +18,8 @@ import java.net.URI;
  */
 public class DeansListClient extends BaseHttpClient implements IDeansListClient {
 
+    public static final String HEADER_LOCATION = "Location";
+    
     public static final String PATH_LOGIN = "/login.php";
     // TODO: secure this when it's not just a demo account
     private static final String CREDS_PAYLOAD = "username=mroper&pw=muskrat";
@@ -34,7 +38,12 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
 
     @Override
     protected void authenticate() {
-
+        
+        // The only mention of login or authentication in the DeansList API document says that all requests must 
+        // be accompanied by an API key, but no API key is supplied (or found in settings) with the demo account
+        // we have access to. Logging in through the same endpoint as the UI (by posting credentials as the login form does)
+        // does apparently allow us to make requests, though, so doing that for now.
+        
         try {
             HttpPost post = new HttpPost();
             post.setHeader(new BasicHeader(HEADER_CONTENT_TYPE_NAME, HEADER_CONTENT_TYPE_X_FORM_URLENCODED));
@@ -43,14 +52,14 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
 
             HttpResponse response = httpclient.execute(post);
             if (response.getStatusLine().getStatusCode() == 200) {
+                // This is actually bad because deanslist gives us 200 but is showing us an HTML error page
                     String responseValue = EntityUtils.toString(response.getEntity());
                     System.out.println("Got response: " + responseValue);
-//                    return responseValue;
-            } else if (response.getStatusLine().getStatusCode() == 302) {
-                String redirectLocation = response.getFirstHeader("Location").getValue();
-                System.out.println("Got redirected after a successful login (?) to " + redirectLocation);
-            }
-            else {
+                throw new DeansListClientException("Error logging into DeansList");
+            } else if (response.getStatusLine().getStatusCode() == 302
+                    && response.getFirstHeader(HEADER_LOCATION).getValue().contains("index.php")) {
+                System.out.println("Got redirected to index.php, so login was successful");
+            } else {
                 throw new HttpClientException("Failed to make request to end point: " + post.getURI() 
                         + ", status line: " + response.getStatusLine().toString());
             }
@@ -62,16 +71,19 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
 
     @Override
     protected Boolean isAuthenticated() {
-        return null;
+        return true;
     }
 
     @Override
-    public void getStudents() {
-        
+    public StudentResponse getStudents() {
+        StudentResponse studentResponse = get(StudentResponse.class, PATH_GET_STUDENTS);
+        System.out.println("got studentResponse: " + studentResponse);
+        return studentResponse;
+//        throw new UnsupportedOperationException("not implemented yet");
     }
 
     @Override
-    public void getBehaviorData() {
+    public BehaviorResponse getBehaviorData() {
         throw new UnsupportedOperationException("not implemented yet");
     }
 }
