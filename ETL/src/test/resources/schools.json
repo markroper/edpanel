@@ -30,6 +30,70 @@
             "middle_name": "Keough"
           },
           "email": "nkeough@excelacademy.com"
+        },
+        "school_fees_setup": {
+          "exemption_status": 3,
+          "fee_types": {
+            "fee_type": [
+              {
+                "id": 3,
+                "name": "Uniform Patches",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-22"
+              },
+              {
+                "id": 5,
+                "name": "Athletic Fee",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-22"
+              },
+              {
+                "id": 2,
+                "name": "Uniform Pins",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-22"
+              },
+              {
+                "id": 8,
+                "name": "Technology",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-22"
+              },
+              {
+                "id": 6,
+                "name": "Lunch",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-22"
+              },
+              {
+                "id": 1,
+                "name": "Field Trip",
+                "description": "Field Trip",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-19"
+              },
+              {
+                "id": 4,
+                "name": "T Pass",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-22"
+              },
+              {
+                "id": 7,
+                "name": "Extracurricular",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-22"
+              }
+            ]
+          }
         }
       },
       {
@@ -59,6 +123,9 @@
             "middle_name": "Pereira"
           },
           "email": "kpereira@excelacademy.org"
+        },
+        "school_fees_setup": {
+          "exemption_status": 3
         }
       },
       {
@@ -95,6 +162,9 @@
             "middle_name": "Gallaspy"
           },
           "email": "jgallaspy@excelacademy.org"
+        },
+        "school_fees_setup": {
+          "exemption_status": 3
         }
       },
       {
@@ -124,6 +194,9 @@
             "middle_name": "Cronan"
           },
           "email": "ncronan@excelacademy.org"
+        },
+        "school_fees_setup": {
+          "exemption_status": 3
         }
       }
     ]

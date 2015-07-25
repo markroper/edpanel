@@ -8,15 +8,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.scholarscore.models.Course;
-import com.scholarscore.models.GradeLevel;
-import com.scholarscore.models.School;
-import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.Section;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.SubjectArea;
-import com.scholarscore.models.Teacher;
-import com.scholarscore.models.Term;
+import com.scholarscore.models.*;
 
 /**
  * Enumerates the supported dimensions of the warehouse report and querying model.
@@ -45,6 +37,8 @@ public enum Dimension {
     SCHOOL (School.class,
             new HashSet<Dimension>(){{ }}),
     TEACHER (Teacher.class,
+            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); }}),
+    ADMINISTRATOR(Administrator.class,
             new HashSet<Dimension>(){{ add(Dimension.SCHOOL); }}),
     STUDENT (Student.class,
             new HashSet<Dimension>(){{ add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL); }}),

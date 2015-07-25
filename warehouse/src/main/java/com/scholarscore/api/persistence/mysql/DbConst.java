@@ -54,7 +54,6 @@ public class DbConst {
         //Teacher dimension field to DB column name lookup
         put(Teacher.NAME, TEACHER_NAME_COL);
         put(Teacher.ID, TEACHER_ID_COL);
-        put(Teacher.EMAIL_ADDRESS, TEACHER_EMAIL_COL);
         //School dimension field to DB column name lookup
         put(School.NAME, SCHOOL_NAME_COL);
         put(School.ID, SCHOOL_ID_COL);
@@ -93,13 +92,14 @@ public class DbConst {
     public static final String SCHOOL_ID_COL = "school_id";
     public static final String SCHOOL_NAME_COL = "school_name";
     public static final String SCHOOL_ADDRESS_COL = "school_address";
-    
+    public static final String SCHOOL_SOURCE_SYSTEM_ID_COL = "sourceSystemId";
+
     public static final String SCHOOL_FK_COL = "school_fk";
     public static final String SCHOOL_YEAR_ID_COL = "school_year_id";
     public static final String SCHOOL_YEAR_NAME_COL = "school_year_name";
     public static final String SCHOOL_YEAR_START_DATE_COL = "school_year_start_date";
     public static final String SCHOOL_YEAR_END_DATE_COL = "school_year_end_date";
-    
+
     public static final String TERM_ID_COL = "term_id";
     public static final String SCHOOL_YEAR_FK_COL = "school_year_fk";
     public static final String TERM_NAME_COL = "term_name";
@@ -164,7 +164,13 @@ public class DbConst {
     
     public static final String TEACHER_ID_COL = "teacher_id";
     public static final String TEACHER_NAME_COL = "teacher_name";
-	public static final String TEACHER_EMAIL_COL = "teacher_email";
+	public static final String TEACHER_SOURCE_SYSTEM_ID_COL = "teacher_sourceSystemId";
+    public static final String TEACHER_HOME_STREET = "teacher_home_street";
+    public static final String TEACHER_HOME_CITY = "teacher_home_city";
+    public static final String TEACHER_HOME_STATE = "teacher_home_state";
+    public static final String TEACHER_HOME_POSTAL_CODE = "teacher_home_postal_code";
+    public static final String TEACHER_HOME_PHONE = "teacher_home_phone";
+    public static final String TEACHER_USERNAME_COL = "teacher_username";
     
     public static final String USER_TABLE = "users";
     public static final String USER_USERNAME_COL = "username";
@@ -178,8 +184,8 @@ public class DbConst {
 	public static final String REPORT_TABLE = "report";
 	public static final String REPORT_ID_COL = "report_id";
 	public static final String REPORT_COL = "report";
-	
-	
+
+
     /**
      * Helper method converts a Java Date to a Timestamp for storage in the Database.
      * 

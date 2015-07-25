@@ -17,20 +17,40 @@ public class SchoolJdbc extends EnhancedBaseJdbc<School> implements SchoolPersis
     
     private static String INSERT_SCHOOL_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SCHOOL_TABLE + "` " +
-            "(" + DbConst.SCHOOL_NAME_COL + ")" +
-            " VALUES (:name)";   
+            "(" + DbConst.SCHOOL_NAME_COL + ", " + DbConst.SCHOOL_SOURCE_SYSTEM_ID_COL + ")" +
+            " VALUES (:name, :sourceSystemId)";
 
     private static String UPDATE_SCHOOL_SQL = 
             "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.SCHOOL_TABLE + "` " + 
-            "SET `" + DbConst.SCHOOL_NAME_COL + "`= :name " + 
+            "SET `" + DbConst.SCHOOL_NAME_COL + "`= :name, " +
+            "`" + DbConst.SCHOOL_SOURCE_SYSTEM_ID_COL + "` = :sourceSystemId " +
             "WHERE `" + DbConst.SCHOOL_ID_COL + "`= :id";
+
+    private static String SCHOOL_COLUMNS = "`" + DbConst.SCHOOL_ID_COL
+        + "`, `"
+        + DbConst.SCHOOL_NAME_COL
+        + ", "
+        + DbConst.SCHOOL_SOURCE_SYSTEM_ID_COL;
+
+    private static final String SELECT_SCHOOL_SQL = "SELCT "
+            + SCHOOL_COLUMNS
+            + " FROM `"
+            + DbConst.DATABASE +"`.`" + DbConst.SCHOOL_TABLE + "`"
+            + " WHERE " + DbConst.SCHOOL_ID_COL + " = :" + DbConst.SCHOOL_ID_COL;
+
+    private static final String SELECT_ALL_SCHOOLS_SQL = "SELECT "
+            + SCHOOL_COLUMNS
+            + " FROM `"
+                + DbConst.DATABASE +"`.`" + DbConst.SCHOOL_TABLE + "`";
 
     /* (non-Javadoc)
      * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolPersistence#getSchool(long)
      */
     @Override
     public School selectSchool(long schoolId) {
-        return super.select(schoolId);
+        Map<String, Object> params = new HashMap<>();
+        params.put(DbConst.SCHOOL_ID_COL, new Long(schoolId));
+        return super.select(params, SELECT_SCHOOL_SQL);
     }
 
     /* (non-Javadoc)
@@ -41,6 +61,7 @@ public class SchoolJdbc extends EnhancedBaseJdbc<School> implements SchoolPersis
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Map<String, Object> params = new HashMap<>();     
         params.put("name", school.getName());
+        params.put("sourceSystemId", school.getSourceSystemId());
         jdbcTemplate.update(INSERT_SCHOOL_SQL, new MapSqlParameterSource(params), keyHolder);
         return keyHolder.getKey().longValue();
     }
@@ -53,6 +74,7 @@ public class SchoolJdbc extends EnhancedBaseJdbc<School> implements SchoolPersis
         Map<String, Object> params = new HashMap<>();     
         params.put("name", school.getName());
         params.put("id", new Long(schoolId));
+        params.put("sourceSystemId", school.getSourceSystemId());
         jdbcTemplate.update(UPDATE_SCHOOL_SQL, new MapSqlParameterSource(params));
         return schoolId;
     }

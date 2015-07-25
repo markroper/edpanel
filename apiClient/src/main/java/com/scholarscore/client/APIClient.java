@@ -3,10 +3,7 @@ package com.scholarscore.client;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scholarscore.models.EntityId;
-import com.scholarscore.models.LoginRequest;
-import com.scholarscore.models.School;
-import com.scholarscore.models.Student;
+import com.scholarscore.models.*;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -38,6 +35,10 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     private static final String STUDENT_ASSIGNMENT_ENDPOINT = "/studentassignments";
     private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
     private static final String TEACHER_ENDPOINT = "/teachers";
+
+    // TODO: Create this end point
+    private static final String ADMINISTRATOR_ENDPOINT = "/administrators";
+    private static final String USERS_ENDPOINT = "/users";
 
     private final String password;
     private final String username;
@@ -73,6 +74,32 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         EntityId id = create(student, STUDENT_ENDPOINT);
         Student response = new Student(student);
         response.setId(id.getId());
+        return response;
+    }
+
+    @Override
+    public Teacher createTeacher(Teacher teacher) {
+        EntityId id = create(teacher, TEACHER_ENDPOINT);
+        Teacher response = new Teacher(teacher);
+        response.setId(id.getId());
+        return response;
+    }
+
+    @Override
+    public Administrator createAdministrator(Administrator administrator) {
+        // TODO: Implement administrator controller and persistence
+        //EntityId id = create(administrator, ADMINISTRATOR_ENDPOINT);
+        EntityId id = new EntityId(1L);
+        Administrator response = new Administrator(administrator);
+        response.setId(id.getId());
+        return response;
+    }
+
+    @Override
+    public User createUser(User login) {
+        EntityId id = create(login, USERS_ENDPOINT);
+        User response = new User(login);
+        response.setId(login.getId());
         return response;
     }
 

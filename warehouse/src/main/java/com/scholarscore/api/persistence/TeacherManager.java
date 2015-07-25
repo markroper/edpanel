@@ -14,5 +14,4 @@ public interface TeacherManager {
     public ServiceResponse<Long> replaceTeacher(long teacherId, Teacher teacher);
     public ServiceResponse<Long> updateTeacher(long teacherId, Teacher teacher);
     public ServiceResponse<Long> deleteTeacher(long teacherId);
-    
 }
