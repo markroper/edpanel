@@ -35,9 +35,16 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     private static final String HEADER_AUTH_NAME = "Authorization";
 
     public static final String PATH_RESOURCE_DISTRICT = "/ws/v1/district";
+    public static final String EXPANSION_RESOURCE_DISTRICT = "?expansions=district_race_codes,districts_of_residence,entry_codes,ethnicity_race_decline_to_specify,exit_codes,federal_race_categories,fees_payment_methods,scheduling_reporting_ethnicities,test_setup";
+
     public static final String PATH_RESOURCE_SCHOOL = "/ws/v1/district/school";
+    public static final String EXPANSION_RESOURCE_SCHOOL = "?expansions=school_boundary,school_fees_setup";
+
     public static final String PATH_RESOURCE_STUDENT = "/ws/v1/district/student";
-    public static final String PATH_RESOURCE_STAFF = "/ws/v1/school/{0}/staff?expansions=phones,addresses,emails,school_affiliations";
+
+    public static final String PATH_RESOURCE_STAFF = "/ws/v1/school/{0}/staff";
+    public static final String EXPANSION_RESOURCE_STAFF = "?expansions=phones,addresses,emails,school_affiliations";
+
     public static final String PATH_RESOURCE_COURSE = "/ws/v1/school/{0}/course";
     public static final String PATH_RESOURCE_TERMS = "/ws/v1/school/{0}/term";
     public static final String PATH_RESOURCE_SECTION = "/ws/v1/school/{0}/section";
@@ -90,7 +97,7 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
 
     @Override
     public SchoolsResponse getSchools() {
-        return get(SchoolsResponse.class, PATH_RESOURCE_SCHOOL);
+        return get(SchoolsResponse.class, PATH_RESOURCE_SCHOOL + EXPANSION_RESOURCE_SCHOOL);
     }
 
     @Override
@@ -108,7 +115,7 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
      */
     @Override
     public Staffs getStaff(Long schoolId) {
-        return getJackson(Staffs.class, PATH_RESOURCE_STAFF, schoolId.toString());
+        return getJackson(Staffs.class, PATH_RESOURCE_STAFF + EXPANSION_RESOURCE_STAFF, schoolId.toString());
     }
 
     protected <T> T getJackson(Class<T> clazz, String path, String ...params) {

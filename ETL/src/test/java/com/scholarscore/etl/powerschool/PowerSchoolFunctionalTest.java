@@ -6,11 +6,14 @@ import com.scholarscore.etl.powerschool.api.model.Staffs;
 import com.scholarscore.etl.powerschool.api.response.*;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.client.PowerSchoolClient;
+import com.scholarscore.models.IStaff;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Collection;
 
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -27,16 +30,6 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
     @Autowired
     private IPowerSchoolClient client;
 
-    public void testCreateStaff() {
-        Staff staff = new Staff();
-        staff.admin_username = "mroper";
-        staff.teacher_username = "mroper";
-
-        School indexZeroSchool = client.getSchools().schools.school.get(0);
-        System.out.println("Using school: " + indexZeroSchool.id + ", name: " + indexZeroSchool.name);
-        client.createStaff(staff, indexZeroSchool.id);
-    }
-
     public void testLoadSchools() {
         SchoolsResponse response = client.getSchools();
         assertNotNull(response);
@@ -49,6 +42,8 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
             Staffs response = client.getStaff(school.id);
             System.out.println(response);
             assertNotNull(response);
+            Collection<IStaff> internalModel = response.toInternalModel();
+            System.out.println(internalModel);
         }
     }
 

@@ -82,8 +82,7 @@ public abstract class EnhancedBaseJdbc<T> extends BaseJdbc {
 
     // These are needed for all subclasses
     public abstract RowMapper<T> getMapper();
-    
+
     public abstract String getTableName();
     // -- END GENERAL --
-
 }

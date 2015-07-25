@@ -1,7 +1,6 @@
 package com.scholarscore.client;
 
-import com.scholarscore.models.School;
-import com.scholarscore.models.Student;
+import com.scholarscore.models.*;
 
 /**
  * Created by mattg on 7/3/15.
@@ -9,6 +8,8 @@ import com.scholarscore.models.Student;
 public interface IAPIClient {
     School createSchool(School school);
     School getSchool(Long id);
-
     Student createStudent(Student student);
+    Teacher createTeacher(Teacher teacher);
+    Administrator createAdministrator(Administrator administrator);
+    User createUser(User login);
 }

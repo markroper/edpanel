@@ -11,7 +11,7 @@ import com.scholarscore.models.query.DimensionField;
 
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Teacher extends ApiModel implements Serializable, IApiModel<Teacher>{
+public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
     public static final DimensionField ID = new DimensionField(Dimension.TEACHER, "ID");
     public static final DimensionField NAME = new DimensionField(Dimension.TEACHER, "Name");
     public static final DimensionField EMAIL_ADDRESS = new DimensionField(Dimension.TEACHER, "Address");
@@ -27,6 +27,12 @@ public class Teacher extends ApiModel implements Serializable, IApiModel<Teacher
     
     public Teacher(Teacher t) {
         super(t);
+        this.setLogin(t.getLogin());
+        this.setSourceSystemId(t.getSourceSystemId());
+        this.setName(t.getName());
+        this.setHomeAddress(t.getHomeAddress());
+        this.setHomePhone(t.getHomePhone());
+        this.setUsername(t.getUsername());
     }
     
     // FK to the Users table entry
@@ -42,51 +48,102 @@ public class Teacher extends ApiModel implements Serializable, IApiModel<Teacher
 
     @Override
     public void mergePropertiesIfNull(Teacher mergeFrom) {
+        // MJG: do we merge address properties if null too?
+        if (null == this.homeAddress) {
+            this.homeAddress = mergeFrom.homeAddress;
+        }
+        if (null == this.homePhone) {
+            this.homePhone = mergeFrom.homePhone;
+        }
+        if (null == this.sourceSystemId) {
+            this.sourceSystemId = mergeFrom.sourceSystemId;
+        }
+        if (null == this.getHomeAddress()) {
+            this.homeAddress = mergeFrom.getHomeAddress();
+        }
+        if (null == this.getHomePhone()) {
+            this.homePhone = mergeFrom.getHomePhone();
+        }
+        if (null == this.getUsername()) {
+            this.username = mergeFrom.getUsername();
+        }
         super.mergePropertiesIfNull(mergeFrom);
     }
-    
+
     @Override
-    public boolean equals(Object obj) {
-        if(!super.equals(obj)) {
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Teacher)) return false;
+        if (!super.equals(o)) return false;
+
+        Teacher teacher = (Teacher) o;
+
+        if (getUsername() != null ? !getUsername().equals(teacher.getUsername()) : teacher.getUsername() != null)
             return false;
-        }
-        return true;
-    }
-    
-    @Override
-    public int hashCode() {
-        return 31 * super.hashCode();
+        if (getLogin() != null ? !getLogin().equals(teacher.getLogin()) : teacher.getLogin() != null) return false;
+        if (getSourceSystemId() != null ? !getSourceSystemId().equals(teacher.getSourceSystemId()) : teacher.getSourceSystemId() != null)
+            return false;
+        if (getHomeAddress() != null ? !getHomeAddress().equals(teacher.getHomeAddress()) : teacher.getHomeAddress() != null)
+            return false;
+        return !(getHomePhone() != null ? !getHomePhone().equals(teacher.getHomePhone()) : teacher.getHomePhone() != null);
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (getUsername() != null ? getUsername().hashCode() : 0);
+        result = 31 * result + (getLogin() != null ? getLogin().hashCode() : 0);
+        result = 31 * result + (getSourceSystemId() != null ? getSourceSystemId().hashCode() : 0);
+        result = 31 * result + (getHomeAddress() != null ? getHomeAddress().hashCode() : 0);
+        result = 31 * result + (getHomePhone() != null ? getHomePhone().hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
     }
 
+    @Override
     public void setLogin(User login) {
         this.login = login;
     }
 
+    @Override
     public User getLogin() {
         return login;
     }
 
+    @Override
     public Address getHomeAddress() {
         return homeAddress;
     }
 
+    @Override
     public void setHomeAddress(Address homeAddress) {
         this.homeAddress = homeAddress;
     }
 
+    @Override
     public String getHomePhone() {
         return homePhone;
     }
 
+    @Override
     public void setHomePhone(String homePhone) {
         this.homePhone = homePhone;
     }
 
+    @Override
     public String getSourceSystemId() {
         return sourceSystemId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

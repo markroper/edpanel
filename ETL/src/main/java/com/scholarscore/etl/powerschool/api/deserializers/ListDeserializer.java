@@ -22,6 +22,7 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
     abstract String getEntityName();
 
     @Override
+    @SuppressWarnings("unchecked")
     public T deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         JsonNode node = jp.getCodec().readTree(jp);
         List staffs = (List) getTemplateElementInstance();

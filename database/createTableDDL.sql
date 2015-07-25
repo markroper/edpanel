@@ -1,6 +1,7 @@
 CREATE TABLE `scholar_warehouse`.`school` (
   `school_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key column for the school table.',
   `school_name` VARCHAR(256) NULL COMMENT 'A human readable user-defined name',
+  `sourceSystemId` VARCHAR(256) NULL COMMENT 'The source system from which the entity was imported - the id from that system',
   PRIMARY KEY (`school_id`))
 ENGINE = InnoDB;
 
@@ -35,8 +36,28 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`teacher` (
   `teacher_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `teacher_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
+  `teacher_home_street` VARCHAR(256) NULL,
+  `teacher_home_city` VARCHAR(256) NULL,
+  `teacher_home_state` VARCHAR(256) NULL,
+  `teacher_home_postal_code` VARCHAR(256) NULL,
+  `teacher_home_phone` VARCHAR(256) NULL,
+  `teacher_sourceSystemId` VARCHAR(256) NULL,
+  `teacher_username` VARCHAR(256) NULL COMMENT 'A link back to the users table',
   PRIMARY KEY (`teacher_id`))
 ENGINE = InnoDB;
+
+CREATE TABLE `scholar_warehouse`.`administrator` (
+  `administrator_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
+  `administrator_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
+  `administrator_home_street` VARCHAR(256) NULL,
+  `administrator_home_city` VARCHAR(256) NULL,
+  `administrator_home_state` VARCHAR(256) NULL,
+  `administrator_home_postal_code` VARCHAR(256) NULL,
+  `administrator_home_phone` VARCHAR(256) NULL,
+  `administrator_sourceSystemId` VARCHAR(256) NULL,
+  `administrator_username` VARCHAR(256) NULL COMMENT 'A link back to the users table',
+  PRIMARY KEY (`administrator_id`))
+  ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`school_year` (
   `school_year_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',

@@ -96,4 +96,5 @@ public abstract class BaseController {
     protected StudentSectionGradeManager getStudentSectionGradeManager() { return PM; }
     protected UserManager getUserManager() { return PM; }
     protected QueryManager getQueryManager() { return PM; }
+    protected AdminManager getAdminManager() { return PM; }
 }
