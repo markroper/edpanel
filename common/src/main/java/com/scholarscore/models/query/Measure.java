@@ -78,9 +78,7 @@ public enum Measure {
     COURSE_GRADE(
         Collections.unmodifiableSet(new HashSet<String>()),
         Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
-            add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
-            add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
-            add(Dimension.SECTION);
+            add(Dimension.STUDENT); add(Dimension.SECTION);
         }})),
     ASSIGNMENT_GRADE(
         Collections.unmodifiableSet(new HashSet<String>()),
@@ -102,13 +100,11 @@ public enum Measure {
         this.compatibleDimensions = compatibleDimensions;
         this.compatibleMeasures = compatibleMeasures;
     }
-
-    @JsonIgnore
+    
     public Set<Dimension> getCompatibleDimensions() {
         return compatibleDimensions;
     }
     
-    @JsonIgnore
     public Set<String> getCompatibleMeasures() {
         return compatibleMeasures;
     }

@@ -11,15 +11,7 @@ import com.scholarscore.models.query.DimensionField;
 
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
-    public static final DimensionField ID = new DimensionField(Dimension.TEACHER, "ID");
-    public static final DimensionField NAME = new DimensionField(Dimension.TEACHER, "Name");
-    public static final DimensionField EMAIL_ADDRESS = new DimensionField(Dimension.TEACHER, "Address");
-    public static final Set<DimensionField> DIMENSION_FIELDS = new HashSet<DimensionField>() {{
-        add(ID);
-        add(NAME);
-        add(EMAIL_ADDRESS);
-    }};
+public class Teacher extends ApiModel implements Serializable, IApiModel<Teacher>{
     
     public Teacher() {
         

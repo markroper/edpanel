@@ -5,14 +5,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.scholarscore.models.School;
-import com.scholarscore.models.Section;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.Teacher;
-import com.scholarscore.models.Term;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
+import com.scholarscore.models.query.dimension.CourseDimension;
+import com.scholarscore.models.query.dimension.SchoolDimension;
+import com.scholarscore.models.query.dimension.SectionDimension;
+import com.scholarscore.models.query.dimension.StudentDimension;
+import com.scholarscore.models.query.dimension.TeacherDimension;
+import com.scholarscore.models.query.dimension.TermDimension;
 
 @SuppressWarnings("serial")
 public class DbConst {
@@ -44,36 +45,40 @@ public class DbConst {
     public static final Map<DimensionField, String> DIMENSION_TO_COL_NAME = 
             new HashMap<DimensionField, String>(){{
         //Student dimension field to db column name lookup
-        put(Student.STUDENT_AGE, STUDENT_BIRTH_DATE_COL);
-        put(Student.STUDENT_GENDER, STUDENT_GENDER_COL);
-        put(Student.STUDENT_NAME, STUDENT_NAME_COL);
-        put(Student.STUDENT_ID, STUDENT_ID_COL);
-        put(Student.STUDENT_ETHNICITY, STUDENT_ETHNICITY_COL);
-        put(Student.STUDENT_RACE, STUDENT_RACE_COL);
-        put(Student.STUDENT_CITY_OF_RESIDENCE, STUDENT_HOME_CITY_COL);
+        put(new DimensionField(Dimension.STUDENT, StudentDimension.AGE), STUDENT_BIRTH_DATE_COL);
+        put(new DimensionField(Dimension.STUDENT, StudentDimension.GENDER), STUDENT_GENDER_COL);
+        put(new DimensionField(Dimension.STUDENT, StudentDimension.NAME), STUDENT_NAME_COL);
+        put(new DimensionField(Dimension.STUDENT, StudentDimension.ID), STUDENT_ID_COL);
+        put(new DimensionField(Dimension.STUDENT, StudentDimension.ETHNICITY), STUDENT_ETHNICITY_COL);
+        put(new DimensionField(Dimension.STUDENT, StudentDimension.RACE), STUDENT_RACE_COL);
+        put(new DimensionField(Dimension.STUDENT, StudentDimension.HOME_ADDRESS), STUDENT_HOME_STREET_COL);
+        put(new DimensionField(Dimension.STUDENT, StudentDimension.CITY_OF_RESIDENCE), STUDENT_HOME_CITY_COL);
         //Teacher dimension field to DB column name lookup
+        put(new DimensionField(Dimension.TEACHER, TeacherDimension.NAME), TEACHER_NAME_COL);
+        put(new DimensionField(Dimension.TEACHER, TeacherDimension.ID), TEACHER_ID_COL);
+        put(new DimensionField(Dimension.TEACHER, TeacherDimension.EMAIL), TEACHER_EMAIL_COL);
         put(Teacher.NAME, TEACHER_NAME_COL);
         put(Teacher.ID, TEACHER_ID_COL);
         //School dimension field to DB column name lookup
-        put(School.NAME, SCHOOL_NAME_COL);
-        put(School.ID, SCHOOL_ID_COL);
-        put(School.ADDRESS, SCHOOL_ADDRESS_COL);
+        put(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME), SCHOOL_NAME_COL);
+        put(new DimensionField(Dimension.SCHOOL, SchoolDimension.ID), SCHOOL_ID_COL);
+        put(new DimensionField(Dimension.SCHOOL, SchoolDimension.ADDRESS), SCHOOL_ADDRESS_COL);
         //SECTION dimension field to DB column name lookup
-        put(Section.NAME, SECTION_NAME_COL);
-        put(Section.ID, SECTION_ID_COL);
-        put(Section.END_DATE, SECTION_END_DATE_COL);
-        put(Section.START_DATE, SECTION_START_DATE_COL);
-        put(Section.TEACHER, TEACHER_NAME_COL);
-        put(Section.GRADE_FORMULA, GRADE_FORMULA_COL);
-        put(Section.ROOM, ROOM_COL);
+        put(new DimensionField(Dimension.SECTION, SectionDimension.NAME), SECTION_NAME_COL);
+        put(new DimensionField(Dimension.SECTION, SectionDimension.ID), SECTION_ID_COL);
+        put(new DimensionField(Dimension.SECTION, SectionDimension.END_DATE), SECTION_END_DATE_COL);
+        put(new DimensionField(Dimension.SECTION, SectionDimension.START_DATE), SECTION_START_DATE_COL);
+        put(new DimensionField(Dimension.SECTION, SectionDimension.TEACHER), TEACHER_NAME_COL);
+        put(new DimensionField(Dimension.SECTION, SectionDimension.GRADE_FORMULA), GRADE_FORMULA_COL);
+        put(new DimensionField(Dimension.SECTION, SectionDimension.ROOM), ROOM_COL);
         //COURSE dimension field to DB column name lookup
-        put(Section.NAME, COURSE_NAME_COL);
-        put(Section.ID, COURSE_ID_COL);
+        put(new DimensionField(Dimension.COURSE, CourseDimension.NAME), COURSE_NAME_COL);
+        put(new DimensionField(Dimension.COURSE, CourseDimension.ID), COURSE_ID_COL);
         //TERM dimension field to DB column name lookup
-        put(Term.NAME, TERM_NAME_COL);
-        put(Term.ID, TERM_ID_COL);
-        put(Term.END_DATE, TERM_END_DATE_COL);
-        put(Term.START_DATE, TERM_END_DATE_COL);
+        put(new DimensionField(Dimension.TERM, TermDimension.NAME), TERM_NAME_COL);
+        put(new DimensionField(Dimension.TERM, TermDimension.ID), TERM_ID_COL);
+        put(new DimensionField(Dimension.TERM, TermDimension.END_DATE), TERM_END_DATE_COL);
+        put(new DimensionField(Dimension.TERM, TermDimension.START_DATE), TERM_START_DATE_COL);
     }};
 
     public static final String DATABASE = "scholar_warehouse";

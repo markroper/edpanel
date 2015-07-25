@@ -2,14 +2,10 @@ package com.scholarscore.models;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.query.Dimension;
-import com.scholarscore.models.query.DimensionField;
 
 /**
  * The student class expresses a single student with a unique ID per school district.
@@ -23,31 +19,6 @@ import com.scholarscore.models.query.DimensionField;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Student extends ApiModel implements Serializable, IApiModel<Student>{
-    public static final DimensionField STUDENT_ID = new DimensionField(Dimension.STUDENT, "ID");
-    public static final DimensionField STUDENT_NAME = new DimensionField(Dimension.STUDENT, "Name");
-    public static final DimensionField STUDENT_GENDER = new DimensionField(Dimension.STUDENT, "Gender");
-    public static final DimensionField STUDENT_AGE = new DimensionField(Dimension.STUDENT, "Age");
-//    public static final DimensionField STUDENT_FREE_LUNCH = new DimensionField(Dimension.STUDENT, "Free Lunch");
-//    public static final DimensionField STUDENT_GRADE_REPEATER = new DimensionField(Dimension.STUDENT, "Grade Repeater");
-    public static final DimensionField STUDENT_ETHNICITY = new DimensionField(Dimension.STUDENT, "Ethnicity");
-    public static final DimensionField STUDENT_RACE = new DimensionField(Dimension.STUDENT, "Race");
-//    public static final DimensionField STUDENT_ELL = new DimensionField(Dimension.STUDENT, "ELL");
-//    public static final DimensionField STUDENT_SPECIAL_ED = new DimensionField(Dimension.STUDENT, "Special Ed");
-    public static final DimensionField STUDENT_CITY_OF_RESIDENCE = new DimensionField(Dimension.STUDENT, "City of Residence");
-    
-    public static final Set<DimensionField> DIMENSION_FIELDS = new HashSet<DimensionField>() {{
-        add(STUDENT_NAME);
-        add(STUDENT_ID);
-        add(STUDENT_GENDER);
-//        add(STUDENT_FREE_LUNCH);
-//        add(STUDENT_GRADE_REPEATER);
-        add(STUDENT_ETHNICITY);
-        add(STUDENT_RACE);
-//        add(STUDENT_ELL);
-//        add(STUDENT_SPECIAL_ED);
-        add(STUDENT_CITY_OF_RESIDENCE);
-        add(STUDENT_AGE);
-    }};
     
     public Student() {
         

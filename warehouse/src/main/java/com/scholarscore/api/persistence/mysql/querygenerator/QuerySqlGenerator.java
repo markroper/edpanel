@@ -38,6 +38,7 @@ public abstract class QuerySqlGenerator {
     private static final String WHERE = "WHERE ";
     private static final String OR = "OR";
     private static final String AND = "AND";
+    private static final String ON = "ON";
     private static final String GREATER_THAN = "GREATER_THAN";
     private static final String GREATER_THAN_OR_EQUAL = "GREATER_THAN_OR_EQUAL";
     private static final String LESS_THAN = "LESS_THAN";
@@ -46,6 +47,8 @@ public abstract class QuerySqlGenerator {
     private static final String LIKE = "LIKE";
     private static final String EQUAL = "EQUAL";
     private static final String NOT_EQUAL = "NOT_EQUAL";
+    private static final String ID_SUFFIX = "_id";
+    private static final String FK_SUFFIX = "_fk";
     
     public static SqlWithParameters generate(Query q) throws SqlGenerationException {
         Map<String, Object> params = new HashMap<>();
@@ -85,6 +88,8 @@ public abstract class QuerySqlGenerator {
         for(DimensionField f: q.getFields()) {
             selectedDims.add(f.getDimension());
         }
+        //Add any dimensions to join that may be referenced only in the WHERE clause
+        selectedDims.addAll(q.resolveFilterDimensions());
         List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
         if(null == orderedTables || orderedTables.isEmpty()) {
             throw new SqlGenerationException("No tables were resolved to query in the FROM clause");
@@ -104,13 +109,36 @@ public abstract class QuerySqlGenerator {
             for(int i = 1; i < orderedTables.size(); i++) {
                 Dimension joinDim = orderedTables.get(i);
                 String currentTableName = DbConst.DIMENSION_TO_TABLE_NAME.get(currTable);
+                //If the next dimension is not compatible with the previous table for joining, that is, there is no 
+                //PK/FK relationship between the two, try to join on the measure table directly. If the measure is 
+                //not compatible with the dimension for joining, try joining on the previous dimension in the hierarchy.
+                //If that doesn't match, check the dimension before that.
+                if(!Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
+                    if(am.getMeasure().getCompatibleDimensions().contains(joinDim)){
+                        currentTableName = mss.toTableName();
+                    } else {
+                        Dimension dimDesc = currTable;
+                        //Start with the previous dimension since we're already dealing with i and i-1...
+                        int descIndex = i - 2;
+                        while(descIndex >= 0 && !Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
+                            dimDesc = orderedTables.get(descIndex); 
+                            descIndex--;
+                        }
+                        if(Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
+                            currentTableName = DbConst.DIMENSION_TO_TABLE_NAME.get(dimDesc);
+                        } else {
+                            throw new SqlGenerationException(
+                                    "Cannot join dimension to either previous dimension or measure: " + joinDim);
+                        }
+                    }
+                }
                 String joinTableName = DbConst.DIMENSION_TO_TABLE_NAME.get(joinDim);
                 if(null == currentTableName || null == joinTableName) {
                     throw new SqlGenerationException("Unable to generate JOIN clause due to null table name");
                 }
-                sqlBuilder.append(LEFT_OUTER_JOIN + joinTableName + " ON ");
-                sqlBuilder.append(currentTableName + "." + joinTableName + "_fk = ");
-                sqlBuilder.append(joinTableName + "." + joinTableName + "_id ");
+                sqlBuilder.append(LEFT_OUTER_JOIN + joinTableName + " " + ON + " ");
+                sqlBuilder.append(joinTableName + "." + joinTableName + ID_SUFFIX + " = ");
+                sqlBuilder.append(currentTableName + "." + joinTableName + FK_SUFFIX + " ");
                 currTable = joinDim;
             }
         }
