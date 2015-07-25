@@ -1,14 +1,22 @@
 package com.scholarscore.models.query;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.scholarscore.models.*;
+import com.scholarscore.models.query.dimension.CourseDimension;
+import com.scholarscore.models.query.dimension.GradeLevelDimension;
+import com.scholarscore.models.query.dimension.IDimension;
+import com.scholarscore.models.query.dimension.SchoolDimension;
+import com.scholarscore.models.query.dimension.SchoolYearDimension;
+import com.scholarscore.models.query.dimension.SectionDimension;
+import com.scholarscore.models.query.dimension.StudentDimension;
+import com.scholarscore.models.query.dimension.SubjectAreaDimension;
+import com.scholarscore.models.query.dimension.TeacherDimension;
+import com.scholarscore.models.query.dimension.TermDimension;
 
 /**
  * Enumerates the supported dimensions of the warehouse report and querying model.
@@ -22,63 +30,50 @@ import com.scholarscore.models.*;
  */
 @SuppressWarnings("serial")
 public enum Dimension {
-    COURSE (Course.class,
-            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); add(Dimension.SUBJECT_AREA); }}),
-    SECTION (Section.class,
-            new HashSet<Dimension>(){{add(Dimension.COURSE); add(Dimension.TERM); }}),
-    TERM (Term.class,
-          new HashSet<Dimension>(){{ add(Dimension.YEAR); }}),
-    YEAR (SchoolYear.class,
-            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); }}),
-    SUBJECT_AREA (SubjectArea.class,
-            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); }}),
-    GRADE_LEVEL (GradeLevel.class,
-            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); }}),
-    SCHOOL (School.class,
-            new HashSet<Dimension>(){{ }}),
-    TEACHER (Teacher.class,
-            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); }}),
-    ADMINISTRATOR(Administrator.class,
-            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); }}),
-    STUDENT (Student.class,
-            new HashSet<Dimension>(){{ add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL); }}),
-    //Date is a psuedo-dimension that can be used in conjunction with only date-sensitive measures like attendance
-    DATE (Date.class,
-            new HashSet<Dimension>());
+    COURSE,
+    SECTION,
+    TERM,
+    YEAR,
+    SUBJECT_AREA,
+    GRADE_LEVEL,
+    SCHOOL,
+    TEACHER,
+    STUDENT,
+    ADMINISTRATOR;
     
-    private Class<?> associatedClass;
-    private Set<Dimension> parentDimensions;
-
-    private Dimension(Class<?> associatedClass, Set<Dimension> parents) {
-        this.associatedClass = associatedClass;
-        this.parentDimensions = parents;
+    /**
+     * Factory method for constructing an IDimension of time Dimension.
+     * @param d
+     * @return
+     */
+    public static IDimension buildDimension(Dimension d) {
+        switch(d) {
+            case COURSE:
+                return new CourseDimension();
+            case SECTION:
+                return new SectionDimension();
+            case TERM:
+                return new TermDimension();
+            case YEAR:
+                return new SchoolYearDimension();
+            case SUBJECT_AREA:
+                return new SubjectAreaDimension();
+            case GRADE_LEVEL:
+                return new GradeLevelDimension();
+            case SCHOOL:
+                return new SchoolDimension();
+            case TEACHER:
+                return new TeacherDimension();
+            case STUDENT:
+                return new StudentDimension();
+            case ADMINISTRATOR:
+                return new AdministratorDimension();
+            default:
+                return null;
+            
+        }
     }
     
-    @JsonValue
-    public String toValue() {
-        return this.toString();
-    }
-    @JsonIgnore
-    public Class<?> getAssociatedClass() {
-        return associatedClass;
-    }
-    
-    @JsonIgnore
-    public Set<Dimension> getParentDimensions() {
-        return parentDimensions;
-    }
-    
-    private static final List<Dimension> orderedDimensions = new ArrayList<Dimension>(){{
-        add(Dimension.STUDENT);
-        add(Dimension.TEACHER);
-        add(Dimension.SECTION);
-        add(Dimension.TERM);
-        add(Dimension.YEAR);
-        add(Dimension.COURSE);
-        add(Dimension.SUBJECT_AREA);
-        add(Dimension.GRADE_LEVEL);
-        add(Dimension.SCHOOL);
-    }};
     /**
      * Given a set of Dimensions, orders supported dimension from most to least granular in a List,
      * and returns that list. Certain dimensions like Date are not supported and are ignored if they are 
@@ -97,4 +92,17 @@ public enum Dimension {
         }
         return orderedDimTables;
     }
+    
+    private static final List<Dimension> orderedDimensions = new ArrayList<Dimension>(){{
+        add(Dimension.STUDENT);
+        add(Dimension.TEACHER);
+        add(Dimension.SECTION);
+        add(Dimension.TERM);
+        add(Dimension.YEAR);
+        add(Dimension.COURSE);
+        add(Dimension.SUBJECT_AREA);
+        add(Dimension.GRADE_LEVEL);
+        add(Dimension.SCHOOL);
+        add(Dimension.ADMINISTRATOR);
+    }};
 }

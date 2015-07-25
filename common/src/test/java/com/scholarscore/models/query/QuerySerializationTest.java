@@ -2,7 +2,6 @@ package com.scholarscore.models.query;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.testng.Assert;
@@ -11,13 +10,7 @@ import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scholarscore.models.School;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.query.expressions.Expression;
-import com.scholarscore.models.query.expressions.operands.DateOperand;
-import com.scholarscore.models.query.expressions.operands.DimensionOperand;
-import com.scholarscore.models.query.expressions.operators.BinaryOperator;
-import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
+import com.scholarscore.models.query.dimension.StudentDimension;
 
 @Test(groups = { "unit" })
 public class QuerySerializationTest {
@@ -34,9 +27,9 @@ public class QuerySerializationTest {
         fullyPopulatedQuery.setAggregateMeasures(measures);
         
         //No date dimension for this query
-        fullyPopulatedQuery.addField(Student.STUDENT_AGE);
-        fullyPopulatedQuery.addField(Student.STUDENT_ETHNICITY);
-        fullyPopulatedQuery.addField(School.ADDRESS);
+        fullyPopulatedQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.AGE));
+        fullyPopulatedQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ETHNICITY));
+        fullyPopulatedQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.HOME_ADDRESS));
         
         return new Object[][] {
                 { "empty query", emptyQuery, true },

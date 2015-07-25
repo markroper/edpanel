@@ -12,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.IApiModel;
 import com.scholarscore.models.query.expressions.Expression;
+import com.scholarscore.models.query.expressions.operands.DimensionOperand;
+import com.scholarscore.models.query.expressions.operands.IOperand;
 
 /**
  * Represents a query for data, the execution of which results in a table of
@@ -175,8 +177,8 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
                     for(Dimension d : dimensionsInUse) {
                         //If neither the field dimension nor the other dimension are parents of one another
                         //The dimensions are incompatible for a single query.
-                        if(!d.getParentDimensions().contains(df.getDimension()) &&
-                                !df.getDimension().getParentDimensions().contains(d)) {
+                        if(!Dimension.buildDimension(d).getParentDimensions().contains(df.getDimension()) &&
+                                !Dimension.buildDimension(df.getDimension()).getParentDimensions().contains(d)) {
                             return false;
                         }
                     }
@@ -191,6 +193,34 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
             }
         }
         return true;
+    }
+    
+    /**
+     * Returns a set of all dimensions referenced within the query filter expression
+     * @return
+     */
+    public Set<Dimension> resolveFilterDimensions() {
+        return resolveExpressionDimensions(this.filter);
+    }
+    
+    private static Set<Dimension> resolveExpressionDimensions(IOperand operand) {
+        if(null == operand) {
+            return null;
+        }
+        HashSet<Dimension> dimensions = new HashSet<>();
+        if(operand instanceof DimensionOperand) {
+            DimensionField dimField = ((DimensionOperand)operand).getValue();
+            if(null != dimField) {
+                dimensions.add(dimField.getDimension());
+            }
+            return dimensions;
+        }
+        if(operand instanceof Expression) {
+            dimensions.addAll(resolveExpressionDimensions(((Expression) operand).getLeftHandSide())); 
+            dimensions.addAll(resolveExpressionDimensions(((Expression) operand).getRightHandSide())); 
+            return dimensions;
+        }
+        return dimensions;
     }
     
     @Override
