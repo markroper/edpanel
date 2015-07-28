@@ -16,7 +16,12 @@ import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
 import com.scholarscore.models.query.Query;
+import com.scholarscore.models.query.dimension.SectionDimension;
 import com.scholarscore.models.query.dimension.StudentDimension;
+import com.scholarscore.models.query.expressions.Expression;
+import com.scholarscore.models.query.expressions.operands.DimensionOperand;
+import com.scholarscore.models.query.expressions.operands.NumericOperand;
+import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 
 @Test(groups = { "integration" })
 public class QueryControllerIntegrationTest extends IntegrationBase {
@@ -37,21 +42,20 @@ public class QueryControllerIntegrationTest extends IntegrationBase {
     public Object[][] createQueryProvider() {
         Query emptyQuery = new Query();
         
-        Query fullyPopulatedQuery = new Query();
-        //Define aggregate measures
-        List<AggregateMeasure> measures = new ArrayList<>();
-        measures.add(new AggregateMeasure(Measure.DEMERITS, AggregateFunction.SUM));
-        measures.add(new AggregateMeasure(Measure.MERITS, AggregateFunction.AVERAGE));
-        fullyPopulatedQuery.setAggregateMeasures(measures);
-        
-        //No date dimension for this query
-        fullyPopulatedQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.AGE));
-        fullyPopulatedQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ETHNICITY));
-        fullyPopulatedQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.HOME_ADDRESS));
+        Query assignmentGradesQuery  = new Query();
+        ArrayList<AggregateMeasure> assignmentMeasures = new ArrayList<>();
+        assignmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVERAGE));
+        assignmentGradesQuery.setAggregateMeasures(assignmentMeasures);
+        assignmentGradesQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
+        Expression assignmentWhereClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)), 
+                ComparisonOperator.EQUAL, 
+                new NumericOperand(4));
+        assignmentGradesQuery.setFilter(assignmentWhereClause);
        
         return new Object[][] {
                 { "Empty query", emptyQuery },
-                { "Populated query", fullyPopulatedQuery }
+                { "Populated query", assignmentGradesQuery }
         };
     }
     
