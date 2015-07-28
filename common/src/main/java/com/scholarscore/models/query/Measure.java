@@ -1,11 +1,10 @@
 package com.scholarscore.models.query;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import com.google.common.collect.ImmutableSet;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.scholarscore.models.query.measure.AssignmentGradeMeasure;
+import com.scholarscore.models.query.measure.CourseGradeMeasure;
+import com.scholarscore.models.query.measure.GpaMeasure;
+import com.scholarscore.models.query.measure.HomeworkCompletionMeasure;
+import com.scholarscore.models.query.measure.IMeasure;
 
 /**
  * Enumerates the supported measures, or scalar values, supported within the 
@@ -25,87 +24,37 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author markroper
  *
  */
-@SuppressWarnings("serial")
 public enum Measure {
-    ATTENDANCE(
-        Collections.unmodifiableSet(new HashSet<String>()),
-        Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
-            add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
-            add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
-        }})),
+    ATTENDANCE,
     //Behavioral measures
-    DEMERITS(
-        ImmutableSet.of("MERITS", "DETENSIONS", "SUSPENSIONS"),  
-        Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
-            add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
-            add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
-            add(Dimension.TEACHER); add(Dimension.SECTION);
-        }})),
-    MERITS(
-        ImmutableSet.of("DEMERITS", "DETENSIONS", "SUSPENSIONS"), 
-        Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
-            add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
-            add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
-            add(Dimension.TEACHER); add(Dimension.SECTION);
-        }})),
-    DETENTIONS(
-            ImmutableSet.of("MERITS", "DEMERITS", "SUSPENSIONS"), 
-        Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
-            add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
-            add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
-            add(Dimension.TEACHER); add(Dimension.SECTION);
-        }})),
-    HOMEWORK_CLUBS(
-        Collections.unmodifiableSet(new HashSet<String>()),
-        Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
-            add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
-            add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
-        }})),
-    SUSPENSIONS(
-            ImmutableSet.of("MERITS", "DETENSIONS", "DEMERITS"), 
-        Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
-            add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
-            add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
-            add(Dimension.TEACHER); add(Dimension.SECTION);
-        }})),
+    DEMERITS,
+    MERITS,
+    DETENTIONS,
+    HOMEWORK_CLUBS,
+    SUSPENSIONS,
     //Academic measures
-    GPA(
-        Collections.unmodifiableSet(new HashSet<String>()),
-        Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
-            add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
-            add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
-        }})),
-    COURSE_GRADE(
-        Collections.unmodifiableSet(new HashSet<String>()),
-        Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
-            add(Dimension.STUDENT); add(Dimension.SECTION);
-        }})),
-    ASSIGNMENT_GRADE(
-        Collections.unmodifiableSet(new HashSet<String>()),
-        Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
-            add(Dimension.STUDENT); add(Dimension.SECTION);
-        }})),
-    HW_COMPLETION(
-        Collections.unmodifiableSet(new HashSet<String>()),   
-        Collections.unmodifiableSet(new HashSet<Dimension>(){{ 
-            add(Dimension.TERM); add(Dimension.YEAR); add(Dimension.STUDENT); 
-            add(Dimension.SCHOOL); add(Dimension.GRADE_LEVEL);
-            add(Dimension.TEACHER); add(Dimension.SECTION);
-        }}));
+    GPA,
+    COURSE_GRADE,
+    ASSIGNMENT_GRADE,
+    HW_COMPLETION;
     
-    private Set<String> compatibleMeasures;
-    private Set<Dimension> compatibleDimensions;
-    
-    private Measure(Set<String> compatibleMeasures, Set<Dimension> compatibleDimensions) {
-        this.compatibleDimensions = compatibleDimensions;
-        this.compatibleMeasures = compatibleMeasures;
-    }
-    
-    public Set<Dimension> getCompatibleDimensions() {
-        return compatibleDimensions;
-    }
-    
-    public Set<String> getCompatibleMeasures() {
-        return compatibleMeasures;
+    /**
+     * Factory method for constructing an IMeasure instance of type measure.
+     * @param measure
+     * @return
+     */
+    public static IMeasure buildMeasure(Measure measure) {
+        switch(measure) {
+            case COURSE_GRADE:
+                return new CourseGradeMeasure();
+            case ASSIGNMENT_GRADE:
+                return new AssignmentGradeMeasure();
+            case HW_COMPLETION:
+                return new HomeworkCompletionMeasure();
+            case GPA:
+                return new GpaMeasure();
+            default:
+                return null;   
+        }
     }
 }
