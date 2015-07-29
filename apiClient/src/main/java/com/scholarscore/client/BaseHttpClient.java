@@ -6,6 +6,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -103,6 +104,27 @@ public abstract class BaseHttpClient {
             get.setURI(uri.resolve(path));
             String json = getJSON(get);
             return gson.fromJson(json, clazz);
+        } catch (IOException e) {
+            throw new HttpClientException(e);
+        }
+    }
+
+    protected String patch(byte[] data, String path) {
+        HttpPatch patch = new HttpPatch();
+        patch.setURI(uri.resolve(path));
+        setupCommonHeaders(patch);
+        patch.setHeader(HEADER_CONTENT_TYPE_JSON);
+        patch.setEntity(new ByteArrayEntity(data));
+        try {
+            HttpResponse response = httpclient.execute(patch);
+            int code = response.getStatusLine().getStatusCode();
+            String json = EntityUtils.toString(response.getEntity());
+            if (code == HttpStatus.SC_CREATED || code == HttpStatus.SC_OK) {
+                return json;
+            }
+            else {
+                throw new HttpClientException("Failed to post to end point: " + patch.getURI().toString() + ", status line: " + response.getStatusLine().toString() + ", payload: " + json);
+            }
         } catch (IOException e) {
             throw new HttpClientException(e);
         }

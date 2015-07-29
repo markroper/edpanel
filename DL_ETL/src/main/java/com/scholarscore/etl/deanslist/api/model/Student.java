@@ -7,31 +7,33 @@ package com.scholarscore.etl.deanslist.api.model;
  */
 public class Student {
     
-    String DLSchoolID;
-    String SchoolName;
-    String StudentSchoolID;
-    String SecondaryStudentID;
-    String FirstName;
-    String MiddleName;
-    String LastName;
-    String GradeLevel;
-    String StartDate;
-    String EndDate;
+    public String DLSchoolID;
+    public String SchoolName;
+    public String StudentSchoolID;
+    public String SecondaryStudentID;
+    public String FirstName;
+    public String MiddleName;
+    public String LastName;
+    public String GradeLevel;
+    public String StartDate;
+    public String EndDate;
     
     @Override
     public String toString() { 
-        return "{" 
-                + "\"DLSchoolID\":\"" + DLSchoolID + "\","
-                + "\"SchoolName\":\"" + SchoolName + "\","
-                + "\"StudentSchoolID\":\"" + StudentSchoolID + "\","
-                + "\"SecondaryStudentID\":\"" + SecondaryStudentID + "\","
-                + "\"FirstName\":\"" + FirstName + "\","
-                + "\"MiddleName\":\"" + MiddleName + "\","
-                + "\"LastName\":\"" + LastName + "\","
-                + "\"GradeLevel\":\"" + GradeLevel + "\","
-                + "\"StartDate\":\"" + StartDate + "\","
-                + "\"EndDate\":\"" + EndDate + "\""
+        return "\n" + "{"
+                + "\n" + "\"DLSchoolID\":\"" + DLSchoolID + "\","
+                + "\n" + "\"SchoolName\":\"" + SchoolName + "\","
+                + "\n" + "\"StudentSchoolID\":\"" + StudentSchoolID + "\","
+                + "\n" + "\"SecondaryStudentID\":\"" + SecondaryStudentID + "\","
+                + "\n" + "\"FirstName\":\"" + FirstName + "\","
+                + "\n" + "\"MiddleName\":\"" + MiddleName + "\","
+                + "\n" + "\"LastName\":\"" + LastName + "\","
+                + "\n" + "\"GradeLevel\":\"" + GradeLevel + "\","
+                + "\n" + "\"StartDate\":\"" + StartDate + "\","
+                + "\n" + "\"EndDate\":\"" + EndDate + "\""
                 + "}";
     }
+    
+    
     
 }

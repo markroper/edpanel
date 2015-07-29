@@ -20,7 +20,27 @@ public class StudentResponse implements ITranslateCollection<com.scholarscore.mo
     @Override
     public Collection<com.scholarscore.models.Student> toInternalModel() {
         // TODO: convert to scholarscore student model
-        return null;
+        ArrayList<com.scholarscore.models.Student> toReturn = new ArrayList<>();
+        for (Student student : data) {
+            com.scholarscore.models.Student out = new com.scholarscore.models.Student();
+            String name = 
+                      (student.FirstName == null? "" : student.FirstName)
+                    + (student.MiddleName == null ? "" : " " + student.MiddleName)
+                    + (student.LastName == null ? "" : " " + student.LastName)
+                              .trim();
+            out.setName(name);
+            
+            out.setSourceSystemId(student.DLSchoolID);
+            // TODO: the above could also be set to...
+//            out.setSourceSystemId(student.StudentSchoolID);
+//            out.setSourceSystemId(student.SecondaryStudentID);
+
+            // TODO: have school name here but need school ID to match with model
+            // out.setCurrentSchoolId(student.SchoolName);
+
+            toReturn.add(out);
+        }
+        return toReturn;
     }
     
     @Override
