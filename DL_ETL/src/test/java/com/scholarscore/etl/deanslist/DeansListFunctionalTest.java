@@ -17,8 +17,8 @@ public class DeansListFunctionalTest extends AbstractTestNGSpringContextTests {
 
     @Autowired
     private IDeansListClient client;
-    
-    public void testGetStudents() { 
+
+    public void testGetStudents() {
         client.getStudents();
     }
     

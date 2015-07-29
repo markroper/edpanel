@@ -3,6 +3,8 @@ package com.scholarscore.client;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Student;
 
+import java.util.Collection;
+
 /**
  * Created by mattg on 7/3/15.
  */
@@ -11,4 +13,6 @@ public interface IAPIClient {
     School getSchool(Long id);
 
     Student createStudent(Student student);
+    Student updateStudent(Long studentId, Student student);
+    Collection<Student> getStudents();
 }

@@ -16,6 +16,8 @@ import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -61,6 +63,11 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         String jsonCreateResponse = post(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
         return gson.fromJson(jsonCreateResponse, EntityId.class);
     }
+    
+    private EntityId update(Object obj, String path) {
+        String jsonCreateResponse = patch(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
+        return gson.fromJson(jsonCreateResponse, EntityId.class);
+    }
 
     public School getSchool(Long schoolId) {
         School response = get(School.class,
@@ -71,6 +78,24 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     @Override
     public Student createStudent(Student student) {
         EntityId id = create(student, STUDENT_ENDPOINT);
+        Student response = new Student(student);
+        response.setId(id.getId());
+        return response;
+    }
+
+    @Override
+    public Collection<Student> getStudents() {
+        Student[] students = get(Student[].class, BASE_API_ENDPOINT + STUDENT_ENDPOINT);
+        for (Student student : students) {
+            System.out.println("Got scholarScore student: " + student);
+        }
+        return Arrays.asList(students);
+    }
+
+    @Override
+    public Student updateStudent(Long studentId, Student student) {
+        if (studentId == null || studentId < 0) { return null; }
+        EntityId id = update(student, STUDENT_ENDPOINT + "/" + studentId);
         Student response = new Student(student);
         response.setId(id.getId());
         return response;
