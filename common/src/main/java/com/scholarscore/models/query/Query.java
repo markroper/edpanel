@@ -161,7 +161,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
             for(AggregateMeasure am: aggregateMeasures) {
                 if(!measuresInUse.contains(am.getMeasure())) {
                     for(Measure m : measuresInUse) {
-                        if(!m.getCompatibleMeasures().contains(am.getMeasure().name())){
+                        if(!Measure.buildMeasure(m).getCompatibleMeasures().contains(am.getMeasure())){
                             return false;
                         }
                     }
@@ -185,7 +185,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
                     dimensionsInUse.add(df.getDimension());
                     //Check that all measures in use are compatible with the new dimension
                     for(Measure m: measuresInUse) {
-                        if(!m.getCompatibleDimensions().contains(df.getDimension())) {
+                        if(!Measure.buildMeasure(m).getCompatibleDimensions().contains(df.getDimension())) {
                             return false;
                         }
                     }
