@@ -10,7 +10,7 @@ import com.scholarscore.models.query.Measure;
 
 @SuppressWarnings("serial")
 public class HomeworkCompletionMeasure implements IMeasure {
-    Set<String> compatibleMeasures = Collections.unmodifiableSet(new HashSet<String>());
+    Set<Measure> compatibleMeasures = Collections.unmodifiableSet(new HashSet<Measure>());
     Set<Dimension> compatibleDimensions = ImmutableSet.of(
             Dimension.TERM, Dimension.STUDENT, Dimension.SCHOOL, Dimension.SECTION, 
             Dimension.YEAR, Dimension.GRADE_LEVEL, Dimension.TEACHER);
@@ -21,7 +21,7 @@ public class HomeworkCompletionMeasure implements IMeasure {
     }
 
     @Override
-    public Set<String> getCompatibleMeasures() {
+    public Set<Measure> getCompatibleMeasures() {
         return compatibleMeasures;
     }
 
