@@ -1,13 +1,20 @@
 package com.scholarscore.api.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import com.scholarscore.models.Assignment;
+import com.scholarscore.models.AssignmentType;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.Gender;
+import com.scholarscore.models.GradeFormula;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
@@ -75,6 +82,7 @@ public class SchoolDataFactory {
             add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Studette Seven", 2018L));
             add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Studette Eight", 2017L));
             add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Studette Nine", 2016L));
+            add(new Student(BLACK, PACIFIC_ISLANDER, currentSchoolId, Gender.MALE, "Student Ten", 2016L));
         }};
     }
     
@@ -91,7 +99,7 @@ public class SchoolDataFactory {
         int day = 1;
         ArrayList<SchoolYear> years = new ArrayList<SchoolYear>();
         for(int i = 0; i < 4; i++) {
-            years.add(new SchoolYear(new Date(year -i, startMonth, day), new Date(year - 1 + 1, endMonth, day)));
+            years.add(new SchoolYear(new Date(year - i, startMonth, day), new Date(year - i + 1, endMonth, day)));
         }
         return years;
     }
@@ -103,7 +111,31 @@ public class SchoolDataFactory {
      * @return
      */
     public static List<Course> generateCourses(Long schoolId) {
-        return null;
+        Course calc = new Course();
+        calc.setName("BC Calculus");
+        Course geo = new Course();
+        geo.setName("Geometry");
+        Course alg = new Course();
+        alg.setName("Algebra 2");
+        Course history = new Course();
+        history.setName("History");
+        Course apHistory = new Course();
+        apHistory.setName("AP History");
+        Course bio = new Course();
+        bio.setName("Biology");
+        Course chem = new Course();
+        chem.setName("Chemistry");
+        Course spanish = new Course();
+        spanish.setName("Spanish");
+        Course eng = new Course();
+        eng.setName("English");
+        Course art = new Course();
+        art.setName("Art");
+        Course phys = new Course();
+        phys.setName("Physics");
+        Course gym = new Course();
+        gym.setName("Gym");
+        return Arrays.asList(calc, geo, alg, history, apHistory, bio, chem, spanish, eng, art, phys, gym);
     }
     
     /**
@@ -113,7 +145,25 @@ public class SchoolDataFactory {
      * @return
      */
     public static Map<Long, Term> generateTerms(List<SchoolYear> schoolYears) {
-        return null;
+        Map<Long, Term> terms = new HashMap<Long, Term>();
+        for(SchoolYear year : schoolYears) {
+            Date start = year.getStartDate();
+            Date end = year.getEndDate();
+            
+            Calendar endCalendar = new GregorianCalendar();
+            endCalendar.setTime(end);
+            int endYear = endCalendar.get(Calendar.YEAR);
+            
+            Term firstTerm = new Term();
+            firstTerm.setStartDate(start);
+            firstTerm.setEndDate(new Date(endYear - 1, 12, 31));
+            Term secondTerm = new Term();
+            secondTerm.setStartDate(new Date(endYear, 1, 1));
+            secondTerm.setEndDate(end);
+            terms.put(year.getId(), firstTerm);
+            terms.put(year.getId(), secondTerm);
+        }
+        return terms;
     }
     
     /**
@@ -122,9 +172,50 @@ public class SchoolDataFactory {
      * @param courses
      * @return
      */
-    public static Map<Long, List<Section>> 
-            generateSections(List<Term> terms, List<Course> courses) {
-        return null;
+    public static Map<Long, List<Section>> generateSections(List<Term> terms, List<Course> courses) {
+        //Static set of grade formulas
+        List<GradeFormula> gradeFormulas = new ArrayList<GradeFormula>();
+        Map<AssignmentType, Integer> weight1 = new HashMap<AssignmentType, Integer>() {{
+            put(AssignmentType.ATTENDANCE, 10); put(AssignmentType.FINAL, 35);
+            put(AssignmentType.MIDTERM, 25); put(AssignmentType.HOMEWORK, 30);
+        }};
+        Map<AssignmentType, Integer> weight2 = new HashMap<AssignmentType, Integer>() {{
+            put(AssignmentType.FINAL, 60); put(AssignmentType.MIDTERM, 40);
+        }};
+        Map<AssignmentType, Integer> weight3 = new HashMap<AssignmentType, Integer>() {{
+            put(AssignmentType.LAB, 40); put(AssignmentType.MIDTERM, 20);
+            put(AssignmentType.FINAL, 30); put(AssignmentType.QUIZ, 10);
+        }};
+        Map<AssignmentType, Integer> weight4 = new HashMap<AssignmentType, Integer>() {{
+            put(AssignmentType.GRADED, 25); put(AssignmentType.FINAL, 30);
+            put(AssignmentType.QUIZ, 10); put(AssignmentType.HOMEWORK, 35);
+        }};
+        gradeFormulas.add(new GradeFormula(weight1));
+        gradeFormulas.add(new GradeFormula(weight2));
+        gradeFormulas.add(new GradeFormula(weight3));
+        gradeFormulas.add(new GradeFormula(weight4));
+        
+        List<String> rooms = new ArrayList<String>(){{
+            add("101"); add("102");
+            add("103"); add("104");
+            add("105"); add("106");
+        }};
+        int numRooms = rooms.size();
+        Map<Long, List<Section>> sectionMap = new HashMap<Long, List<Section>>();
+        for(Term t : terms) {
+            for(Course c : courses) {
+                Section section = new Section(
+                        t.getStartDate(), 
+                        t.getEndDate(), 
+                        rooms.get(new Random().nextInt(numRooms)), 
+                        gradeFormulas.get(new Random().nextInt(gradeFormulas.size())));
+                if(null == sectionMap.get(c.getId())) {
+                    sectionMap.put(c.getId(), new ArrayList<Section>());
+                }
+                sectionMap.get(c.getId()).add(section);
+            }
+        }
+        return sectionMap;
     }
     
     /**
