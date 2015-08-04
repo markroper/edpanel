@@ -61,9 +61,9 @@ public class ETLEngine implements IETLEngine {
 
             List<Student> students = new ArrayList<>();
             apiListOfStudents.forEach(student -> {
+                student.setCurrentSchoolId(school.getId());
                 Student createdStudent = scholarScore.createStudent(student);
                 student.setId(createdStudent.getId());
-                student.setCurrentSchoolId(school.getId());
                 students.add(student);
             });
             studentsBySchool.put(schoolId, students);
@@ -120,7 +120,6 @@ public class ETLEngine implements IETLEngine {
             School response = scholarScore.createSchool(school);
             school.setId(response.getId());
         }
-
         return schools;
     }
 }

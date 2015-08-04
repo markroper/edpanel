@@ -34,7 +34,7 @@ public class Students extends ArrayList<Student> implements ITranslateCollection
                     model.setProjectedGraduationYear(student.school_enrollment.exit_date.getYear() + 1900L);
                 }
             }
-            
+
             if (null != student.addresses) {
                 if (null != student.addresses.physical) {
                     model.setHomeAddress(new Address());
@@ -53,6 +53,7 @@ public class Students extends ArrayList<Student> implements ITranslateCollection
             }
             if (null != student.ethnicity_race) {
                 model.setFederalEthnicity(student.ethnicity_race.federal_ethnicity);
+                model.setFederalRace(student.ethnicity_race.scheduling_reporting_ethnicity);
             }
             if (null != student.demographics) {
                 if (null != student.demographics.gender) {
