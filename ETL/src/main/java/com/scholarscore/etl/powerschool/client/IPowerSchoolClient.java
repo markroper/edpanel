@@ -2,6 +2,7 @@ package com.scholarscore.etl.powerschool.client;
 
 import com.scholarscore.etl.powerschool.api.model.Staff;
 import com.scholarscore.etl.powerschool.api.model.Staffs;
+import com.scholarscore.etl.powerschool.api.model.Students;
 import com.scholarscore.etl.powerschool.api.response.*;
 
 /**
@@ -14,13 +15,11 @@ public interface IPowerSchoolClient {
 
     Staffs getStaff(Long schoolId);
 
-    Long createStaff(Staff staff, Long schoolId);
-
-    StudentResponse getDistrictStudents();
+    Students getStudentsBySchool(Long schoolId);
 
     CourseResponse getCoursesBySchool(Long schoolId);
 
-    public Object getAsMap(String path);
+    Object getAsMap(String path);
 
     TermResponse getTermsBySchoolId(Long schoolId);
 

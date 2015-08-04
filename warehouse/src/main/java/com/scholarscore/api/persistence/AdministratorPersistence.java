@@ -3,26 +3,48 @@ package com.scholarscore.api.persistence;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.Administrator;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Created by mattg on 7/20/15.
  */
-public class AdministratorPersistence {
-    public StatusCode selectAll() {
-        return null;
-    }
+public interface AdministratorPersistence {
+    /**
+     * Select all administrators
+     *
+     * @return
+     */
+    Collection<Administrator> selectAll();
 
-    public Administrator select(long administratorId) {
-        return null;
-    }
+    /**
+     * Select a single administrator
+     *
+     * @param administratorId
+     * @return
+     */
+    Administrator select(long administratorId);
 
-    public StatusCode createAdministrator(Administrator admin) {
-        return null;
-    }
+    /**
+     * Create an administrator
+     *
+     * @param admin
+     * @return
+     */
+    Long createAdministrator(Administrator admin);
 
-    public void replaceAdministrator(long administratorId, Administrator administrator) {
+    /**
+     * Update / replace an existing administrator - none of the attributes will remain
+     *
+     * @param administratorId
+     * @param administrator
+     */
+    void replaceAdministrator(long administratorId, Administrator administrator);
 
-    }
-
-    public void delete(long administratorId) {
-    }
+    /**
+     * Delete an existing administrator
+     *
+     * @param administratorId
+     */
+    Long delete(long administratorId);
 }

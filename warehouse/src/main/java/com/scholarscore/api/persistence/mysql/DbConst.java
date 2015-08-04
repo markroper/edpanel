@@ -56,9 +56,7 @@ public class DbConst {
         //Teacher dimension field to DB column name lookup
         put(new DimensionField(Dimension.TEACHER, TeacherDimension.NAME), TEACHER_NAME_COL);
         put(new DimensionField(Dimension.TEACHER, TeacherDimension.ID), TEACHER_ID_COL);
-        put(new DimensionField(Dimension.TEACHER, TeacherDimension.EMAIL), TEACHER_EMAIL_COL);
-        put(Teacher.NAME, TEACHER_NAME_COL);
-        put(Teacher.ID, TEACHER_ID_COL);
+
         //School dimension field to DB column name lookup
         put(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME), SCHOOL_NAME_COL);
         put(new DimensionField(Dimension.SCHOOL, SchoolDimension.ID), SCHOOL_ID_COL);
@@ -93,6 +91,8 @@ public class DbConst {
     public static final String STUDENT_ASSIGNMENT_TABLE = "student_assignment";
     public static final String STUDENT_SECTION_GRADE_TABLE = "student_section_grade";
     public static final String TEACHER_TABLE = "teacher";
+    public static final String ADMINISTRATOR_TABLE = "administrator";
+
     //Columns
     public static final String SCHOOL_ID_COL = "school_id";
     public static final String SCHOOL_NAME_COL = "school_name";
@@ -176,7 +176,17 @@ public class DbConst {
     public static final String TEACHER_HOME_POSTAL_CODE = "teacher_home_postal_code";
     public static final String TEACHER_HOME_PHONE = "teacher_home_phone";
     public static final String TEACHER_USERNAME_COL = "teacher_username";
-    
+
+    public static final String ADMINISTRATOR_ID_COL = "administrator_id";
+    public static final String ADMINISTRATOR_NAME_COL = "administrator_name";
+    public static final String ADMINISTRATOR_SOURCE_SYSTEM_ID_COL = "administrator_sourceSystemId";
+    public static final String ADMINISTRATOR_HOME_STREET = "administrator_home_street";
+    public static final String ADMINISTRATOR_HOME_CITY = "administrator_home_city";
+    public static final String ADMINISTRATOR_HOME_STATE = "administrator_home_state";
+    public static final String ADMINISTRATOR_HOME_POSTAL_CODE = "administrator_home_postal_code";
+    public static final String ADMINISTRATOR_HOME_PHONE = "administrator_home_phone";
+    public static final String ADMINISTRATOR_USERNAME_COL = "administrator_username";
+
     public static final String USER_TABLE = "users";
     public static final String USER_USERNAME_COL = "username";
 	public static final String USER_PASSWORD_COL = "password";

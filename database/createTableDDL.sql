@@ -17,7 +17,7 @@ CREATE TABLE `scholar_warehouse`.`student` (
   `home_city` VARCHAR(256) NULL COMMENT 'The city portion of the student home address',
   `home_state` VARCHAR(256) NULL COMMENT 'The state abbreviation of the student home address',
   `home_postal_code` VARCHAR(256) NULL COMMENT 'The postal code of the student home address',
-  `gender` CHAR(1) NULL COMMENT 'The gender of the student',
+  `gender` CHAR(7) NULL COMMENT 'The gender of the student',
   `birth_date` DATETIME NULL COMMENT 'The birth date of the student',
   `district_entry_date` DATETIME NULL COMMENT 'The date the student entered the school district',
   `projected_graduation_year` INT UNSIGNED NULL COMMENT 'The projected year of graduation for the student. For example: 2020',

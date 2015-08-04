@@ -8,6 +8,8 @@ import com.scholarscore.models.Teacher;
 import java.util.Collection;
 
 /**
+ * Manages the persistence (CRUD) on administrator entities
+ *
  * Created by mattg on 7/20/15.
  */
 public interface AdminManager {

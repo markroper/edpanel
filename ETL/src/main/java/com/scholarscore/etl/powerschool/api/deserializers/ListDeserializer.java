@@ -11,6 +11,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,17 +76,21 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
      * @return
      */
     private <V> V readObj(JsonNode node, Class<V> clazz) {
+        String name = null;
         try {
             V out = clazz.newInstance();
             for (Field field : clazz.getDeclaredFields()) {
-                String name = field.getName();
-                //System.out.println(name + " type: " + field.getType().toString());
+                name = field.getName();
                 switch (field.getType().getName()) {
                     case "java.lang.String":
                         field.set(out, asText(node, name));
                         break;
                     case "java.lang.Long":
                         field.set(out, asLong(node, name));
+                        break;
+                    case "java.util.Date":
+                        Date date = parseDate(asText(node, name));
+                        field.set(out, date);
                         break;
                     case "java.lang.List":
                         if (field.getClass().isAnnotationPresent(JsonDeserialize.class)) {
@@ -94,14 +101,24 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
                         Object innerObj = readObj(
                                 node.findValue(field.getName().toLowerCase()),
                                 field.getType());
-                        field.set(out,
-                                innerObj);
+                        field.set(out, innerObj);
                         break;
                 }
             }
             return out;
         } catch (IllegalAccessException|InstantiationException e) {
             e.printStackTrace();
+        }
+        return null;
+    }
+
+    private Date parseDate(String value) {
+        if (null != value) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                return sdf.parse(value);
+            } catch (Exception e) {
+            }
         }
         return null;
     }

@@ -28,13 +28,14 @@ public class Administrator extends ApiModel implements Serializable, IStaff<Admi
 
     }
 
-    public Administrator(Administrator t) {
-        super(t);
-        this.setLogin(t.getLogin());
-        this.setSourceSystemId(t.getSourceSystemId());
-        this.setName(t.getName());
-        this.setHomeAddress(t.getHomeAddress());
-        this.setHomePhone(t.getHomePhone());
+    public Administrator(Administrator admin) {
+        super(admin);
+        this.setUsername(admin.getUsername());
+        this.setLogin(admin.getLogin());
+        this.setSourceSystemId(admin.getSourceSystemId());
+        this.setName(admin.getName());
+        this.setHomeAddress(admin.getHomeAddress());
+        this.setHomePhone(admin.getHomePhone());
     }
 
     // FK to the Users table entry
@@ -51,14 +52,17 @@ public class Administrator extends ApiModel implements Serializable, IStaff<Admi
     @Override
     public void mergePropertiesIfNull(Administrator mergeFrom) {
         // MJG: do we merge address properties if null too?
-        if (null == this.homeAddress) {
-            this.homeAddress = mergeFrom.homeAddress;
+        if (null == this.getHomeAddress()) {
+            this.setHomeAddress(mergeFrom.getHomeAddress());
         }
-        if (null == this.homePhone) {
-            this.homePhone = mergeFrom.homePhone;
+        if (null == this.getHomePhone()) {
+            this.setHomePhone(mergeFrom.getHomePhone());
         }
-        if (null == this.sourceSystemId) {
-            this.sourceSystemId = mergeFrom.sourceSystemId;
+        if (null == this.getSourceSystemId()) {
+            this.setSourceSystemId(mergeFrom.getSourceSystemId());
+        }
+        if (null == this.getUsername()) {
+            this.setUsername(mergeFrom.getUsername());
         }
         super.mergePropertiesIfNull(mergeFrom);
     }

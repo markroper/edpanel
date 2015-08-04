@@ -1,6 +1,7 @@
-package com.scholarscore.api.controller;
+    package com.scholarscore.api.controller;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.validation.Valid;
 
@@ -15,13 +16,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.Teacher;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/administrators")
 public class AdministratorController extends BaseController {
+
     @ApiOperation(
             value = "Get all administrators",
             notes = "Retrieve all administrators within a district",
@@ -31,13 +32,13 @@ public class AdministratorController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAll() {
-        return respond(getTeacherManager().getAllTeachers());
+        return respond(getAdminManager().getAllAdministrators());
     }
 
     @ApiOperation(
-            value = "Get a teacher by ID",
-            notes = "Given a teacher ID, the endpoint returns the teacher",
-            response = Teacher.class)
+            value = "Get a administrator by ID",
+            notes = "Given a administrator ID, the endpoint returns the administrator",
+            response = Administrator.class)
     @RequestMapping(
             value = "/{administratorId}",
             method = RequestMethod.GET,
@@ -45,8 +46,8 @@ public class AdministratorController extends BaseController {
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity get(
             @ApiParam(name = "administratorId", required = true, value = "Administrator ID")
-            @PathVariable(value="administratorId") Long teacherId) {
-        return respond(getTeacherManager().getTeacher(teacherId));
+            @PathVariable(value="administratorId") Long administratorId) {
+        return respond(getAdminManager().getAdministrator(administratorId));
     }
 
     @ApiOperation(
@@ -58,6 +59,7 @@ public class AdministratorController extends BaseController {
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity create(@RequestBody @Valid Administrator admin) {
+        System.out.println("Admin create called with entity sourceSystemId: " + admin.getSourceSystemId());
         return respond(getAdminManager().createAdministrator(admin));
     }
 
@@ -74,23 +76,23 @@ public class AdministratorController extends BaseController {
             @ApiParam(name = "administratorId", required = true, value = "Administrator ID")
             @PathVariable(value="administratorId") Long administratorId,
             @RequestBody @Valid Administrator admin) {
-        return respond(getAdminManager().replaceAdmin(administratorId, admin));
+        return respond(getAdminManager().replaceAdministrator(administratorId, admin));
     }
 
     @ApiOperation(
-            value = "Update an existing teacher",
-            notes = "Updates an existing teacher properties. Will not overwrite existing values with null.",
+            value = "Update an existing administrator",
+            notes = "Updates an existing administrator properties. Will not overwrite existing values with null.",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{teacherId}",
+            value = "/{administratorId}",
             method = RequestMethod.PATCH,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity update(
-            @ApiParam(name = "teacherId", required = true, value = "Teacher ID")
-            @PathVariable(value="teacherId") Long teacherId,
-            @RequestBody @Valid Teacher teacher) {
-        return respond(getTeacherManager().updateTeacher(teacherId, teacher));
+            @ApiParam(name = "administratorId", required = true, value = "Administrator ID")
+            @PathVariable(value="administratorId") Long administratorId,
+            @RequestBody @Valid Administrator administrator) {
+        return respond(getAdminManager().updateAdministrator(administratorId, administrator));
     }
 
     @ApiOperation(

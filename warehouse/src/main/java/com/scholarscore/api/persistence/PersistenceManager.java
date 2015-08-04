@@ -13,6 +13,7 @@ import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.StudentSectionGradePersistence;
 import com.scholarscore.api.persistence.mysql.TeacherPersistence;
 import com.scholarscore.api.persistence.mysql.UserPersistence;
+import com.scholarscore.api.persistence.mysql.jdbc.AdministratorJdbc;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
@@ -55,7 +56,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private UserPersistence userPersistence;
     private AuthorityPersistence authorityPersistence;
     private QueryPersistence queryPersistence;
-    
+
     //Setters for the persistence layer for each entity
     public void setQueryPersistence(QueryPersistence ap) {
         this.queryPersistence = ap;
@@ -1063,6 +1064,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
 
     @Override
     public ServiceResponse<Long> createAdministrator(Administrator admin) {
+        System.out.println("Admin persistence: " + administratorPersistence);
         return new ServiceResponse<>(administratorPersistence.createAdministrator(admin));
     }
 
@@ -1266,5 +1268,9 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         // TODO: Implement query generation
         return new ServiceResponse<QueryResults>(
                 StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND));
+    }
+
+    public void setAdministratorPersistence(AdministratorJdbc adminPersistence) {
+        this.administratorPersistence = adminPersistence;
     }
 }

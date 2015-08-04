@@ -67,6 +67,7 @@ public abstract class BaseHttpClient {
     }
 
     protected String post(byte[] data, String path) {
+        String strData = new String(data);
         HttpPost post = new HttpPost();
         post.setURI(uri.resolve(path));
         setupCommonHeaders(post);
