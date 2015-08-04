@@ -3,7 +3,6 @@ package com.scholarscore.etl;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.api.model.*;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
-import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.*;
 import com.scholarscore.models.School;
@@ -26,6 +25,7 @@ public class ETLEngine implements IETLEngine {
     private IAPIClient scholarScore;
     private List<School> schools;
     private Map<Long, List<IStaff>> staff;
+    private Map<Long, List<Student>> students;
 
     public void setPowerSchool(IPowerSchoolClient powerSchool) {
         this.powerSchool = powerSchool;
@@ -48,16 +48,33 @@ public class ETLEngine implements IETLEngine {
         MigrationResult result = new MigrationResult();
         this.schools = createSchools();
         this.staff = createStaff();
-//        result.students = createStudents();
+        this.students = createStudents();
         return result;
     }
 
-    private List<Student> createStudents() {
-        StudentResponse response = powerSchool.getDistrictStudents();
-        List<Student> addedStudents = response.toInternalModel().stream().map(scholarScore::createStudent).collect(Collectors.toList());
-        return addedStudents;
+    private Map<Long, List<Student>> createStudents() {
+        Map<Long, List<Student>> studentsBySchool = new HashMap<>();
+        for (School school : schools) {
+            Long schoolId = Long.valueOf(school.getSourceSystemId());
+            Students response = powerSchool.getStudentsBySchool(schoolId);
+            Collection<Student> apiListOfStudents = response.toInternalModel();
+
+            List<Student> students = new ArrayList<>();
+            apiListOfStudents.forEach(student -> {
+                Student createdStudent = scholarScore.createStudent(student);
+                student.setId(createdStudent.getId());
+                student.setCurrentSchoolId(school.getId());
+                students.add(student);
+            });
+            studentsBySchool.put(schoolId, students);
+        }
+        return studentsBySchool;
     }
 
+    /**
+     * Create the user entry along side the teacher and administrator entries
+     * @return
+     */
     public Map<Long, List<IStaff>> createStaff() {
         Map<Long, List<IStaff>> staffBySchool = new HashMap<>();
         for (School school : schools) {
@@ -77,19 +94,17 @@ public class ETLEngine implements IETLEngine {
                         staff.getLogin().setId(result.getId());
                     }
                     catch (Exception e) {
-                        e.printStackTrace();
                     }
                 }
                 if (staff instanceof Teacher) {
-                    // TODO: Need to save linkage between staff(teacher/admin) and user identity not persisted currently
                     Teacher teacher = (Teacher)staff;
                     Teacher teacherResponse = scholarScore.createTeacher(teacher);
                     teacher.setId(teacherResponse.getId());
                 }
                 else if (staff instanceof Administrator) {
-                    // TODO: No such entity as administrator yet (needs controller and persistence layer)
-                    //Administrator administrator = (Administrator)staff;
-                    //apiListOfStaff.add(scholarScore.createAdministrator(administrator));
+                    Administrator administrator = (Administrator)staff;
+                    Administrator adminResponse = scholarScore.createAdministrator(administrator);
+                    administrator.setId(adminResponse.getId());
                 }
             });
 
@@ -99,8 +114,13 @@ public class ETLEngine implements IETLEngine {
     }
 
     public List<School> createSchools() {
-        List<School> addedSchools = powerSchool.getSchools().toInternalModel().stream().map(scholarScore::createSchool).collect(Collectors.toList());
-        System.out.println("Created " + addedSchools.size() + " schools");
-        return addedSchools;
+        SchoolsResponse powerSchools = powerSchool.getSchools();
+        List<School> schools = (List<School>) powerSchools.toInternalModel();
+        for (School school : schools) {
+            School response = scholarScore.createSchool(school);
+            school.setId(response.getId());
+        }
+
+        return schools;
     }
 }

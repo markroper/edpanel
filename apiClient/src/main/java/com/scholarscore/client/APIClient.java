@@ -87,9 +87,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
 
     @Override
     public Administrator createAdministrator(Administrator administrator) {
-        // TODO: Implement administrator controller and persistence
-        //EntityId id = create(administrator, ADMINISTRATOR_ENDPOINT);
-        EntityId id = new EntityId(1L);
+        EntityId id = create(administrator, ADMINISTRATOR_ENDPOINT);
         Administrator response = new Administrator(administrator);
         response.setId(id.getId());
         return response;

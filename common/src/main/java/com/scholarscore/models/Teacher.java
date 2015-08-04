@@ -11,10 +11,9 @@ import com.scholarscore.models.query.DimensionField;
 
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Teacher extends ApiModel implements Serializable, IApiModel<Teacher>{
+public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
     
     public Teacher() {
-        
     }
     
     public Teacher(Teacher t) {
@@ -41,23 +40,17 @@ public class Teacher extends ApiModel implements Serializable, IApiModel<Teacher
     @Override
     public void mergePropertiesIfNull(Teacher mergeFrom) {
         // MJG: do we merge address properties if null too?
-        if (null == this.homeAddress) {
-            this.homeAddress = mergeFrom.homeAddress;
-        }
-        if (null == this.homePhone) {
-            this.homePhone = mergeFrom.homePhone;
-        }
-        if (null == this.sourceSystemId) {
-            this.sourceSystemId = mergeFrom.sourceSystemId;
-        }
         if (null == this.getHomeAddress()) {
-            this.homeAddress = mergeFrom.getHomeAddress();
+            this.setHomeAddress(mergeFrom.getHomeAddress());
         }
         if (null == this.getHomePhone()) {
-            this.homePhone = mergeFrom.getHomePhone();
+            this.setHomePhone(mergeFrom.getHomePhone());
+        }
+        if (null == this.getSourceSystemId()) {
+            this.setSourceSystemId(mergeFrom.getSourceSystemId());
         }
         if (null == this.getUsername()) {
-            this.username = mergeFrom.getUsername();
+            this.setUsername(mergeFrom.getUsername());
         }
         super.mergePropertiesIfNull(mergeFrom);
     }
@@ -91,42 +84,34 @@ public class Teacher extends ApiModel implements Serializable, IApiModel<Teacher
         return result;
     }
 
-    @Override
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
     }
 
-    @Override
     public void setLogin(User login) {
         this.login = login;
     }
 
-    @Override
     public User getLogin() {
         return login;
     }
 
-    @Override
     public Address getHomeAddress() {
         return homeAddress;
     }
 
-    @Override
     public void setHomeAddress(Address homeAddress) {
         this.homeAddress = homeAddress;
     }
 
-    @Override
     public String getHomePhone() {
         return homePhone;
     }
 
-    @Override
     public void setHomePhone(String homePhone) {
         this.homePhone = homePhone;
     }
 
-    @Override
     public String getSourceSystemId() {
         return sourceSystemId;
     }
