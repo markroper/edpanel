@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.scholarscore.client.BaseHttpClient;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
+import com.scholarscore.etl.powerschool.api.model.Courses;
 import com.scholarscore.etl.powerschool.api.model.Staffs;
 import com.scholarscore.etl.powerschool.api.model.Students;
 import com.scholarscore.etl.powerschool.api.response.*;
@@ -134,8 +135,8 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     }
 
     @Override
-    public CourseResponse getCoursesBySchool(Long schoolId) {
-        return get(CourseResponse.class, PATH_RESOURCE_COURSE, schoolId.toString());
+    public Courses getCoursesBySchool(Long schoolId) {
+        return getJackson(Courses.class, PATH_RESOURCE_COURSE, schoolId.toString());
     }
 
     public void getSectionsBySchool(Long schoolId) {

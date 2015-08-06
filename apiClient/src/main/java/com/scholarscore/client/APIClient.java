@@ -1,19 +1,15 @@
 package com.scholarscore.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.models.*;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Map;
 
 /**
  * TODO: Convert InternalBase to consume this API (perhaps?)
@@ -27,7 +23,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     private static final String LOGIN_ENDPOINT = "/login";
     private static final String SCHOOL_ENDPOINT = "/schools";
     private static final String SCHOOL_YEAR_ENDPOINT = "/years";
-    private static final String COURSE_ENDPOINT = "/courses";
+    private static final String COURSE_ENDPOINT = "/schools/{0}/courses";
     private static final String TERM_ENDPOINT = "/terms";
     private static final String SECTION_ENDPOINT = "/sections";
     private static final String SECTION_ASSIGNMENT_ENDPOINT = "/assignments";
@@ -98,6 +94,14 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         EntityId id = create(login, USERS_ENDPOINT);
         User response = new User(login);
         response.setId(login.getId());
+        return response;
+    }
+
+    @Override
+    public Course createCourse(Long schoolId, Course course) {
+        Course response = new Course(course);
+        EntityId id = create(course, getPath(COURSE_ENDPOINT, schoolId.toString()));
+        response.setId(id.getId());
         return response;
     }
 

@@ -5,6 +5,7 @@ import com.scholarscore.etl.powerschool.api.model.*;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.*;
+import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Student;
 
@@ -24,6 +25,9 @@ public class ETLEngine implements IETLEngine {
     private IPowerSchoolClient powerSchool;
     private IAPIClient scholarScore;
     private List<School> schools;
+
+    // Collections by schoolId
+    private Map<Long, List<Course>> courses;
     private Map<Long, List<IStaff>> staff;
     private Map<Long, List<Student>> students;
 
@@ -49,6 +53,22 @@ public class ETLEngine implements IETLEngine {
         this.schools = createSchools();
         this.staff = createStaff();
         this.students = createStudents();
+        this.courses = createCourses();
+        return result;
+    }
+
+    private Map<Long, List<Course>> createCourses() {
+
+        Map<Long, List<Course>> result = new HashMap<>();
+        for (School school : schools) {
+            Long schoolId = Long.valueOf(school.getSourceSystemId());
+            Courses response = powerSchool.getCoursesBySchool(schoolId);
+            Collection<Course> apiListOfCourses = response.toInternalModel();
+
+            apiListOfCourses.forEach(course -> {
+                scholarScore.createCourse(school.getId(), course);
+            });
+        }
         return result;
     }
 

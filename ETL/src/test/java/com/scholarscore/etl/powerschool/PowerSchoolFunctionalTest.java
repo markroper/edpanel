@@ -1,9 +1,6 @@
 package com.scholarscore.etl.powerschool;
 
-import com.scholarscore.etl.powerschool.api.model.School;
-import com.scholarscore.etl.powerschool.api.model.Staff;
-import com.scholarscore.etl.powerschool.api.model.Staffs;
-import com.scholarscore.etl.powerschool.api.model.Students;
+import com.scholarscore.etl.powerschool.api.model.*;
 import com.scholarscore.etl.powerschool.api.response.*;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.client.PowerSchoolClient;
@@ -44,7 +41,7 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
             System.out.println(response);
             assertNotNull(response);
             Collection<IStaff> internalModel = response.toInternalModel();
-            System.out.println(internalModel);
+            assertNotNull(internalModel);
         }
     }
 
@@ -65,9 +62,8 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
 
     public void testGetCoursesBySchool() {
         for (School school : client.getSchools().schools.school) {
-            CourseResponse response = client.getCoursesBySchool(school.id);
+            Courses response = client.getCoursesBySchool(school.id);
             assertNotNull(response);
-            assertNotNull(response.courses);
             // no data is in any of the 3 schools thus we cannot verify the data in powerschool
         }
     }

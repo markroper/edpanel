@@ -146,6 +146,8 @@ public class DbConst {
     
     public static final String COURSE_ID_COL = "course_id";
     public static final String COURSE_NAME_COL = "course_name";
+    public static final String COURSE_NUMBER_COL = "course_number";
+    public static final String COURSE_SOURCE_SYSTEM_ID_COL = "course_source_system_id";
     
     public static final String ASSIGNMENT_ID_COL = "assignment_id";
     public static final String ASSIGNMENT_NAME_COL = "assignment_name";

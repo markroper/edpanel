@@ -32,7 +32,7 @@ public class SchoolJdbc extends EnhancedBaseJdbc<School> implements SchoolPersis
         + ", "
         + DbConst.SCHOOL_SOURCE_SYSTEM_ID_COL;
 
-    private static final String SELECT_SCHOOL_SQL = "SELCT "
+    private static final String SELECT_SCHOOL_SQL = "SELECT "
             + SCHOOL_COLUMNS
             + " FROM `"
             + DbConst.DATABASE +"`.`" + DbConst.SCHOOL_TABLE + "`"
@@ -47,9 +47,9 @@ public class SchoolJdbc extends EnhancedBaseJdbc<School> implements SchoolPersis
      * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolPersistence#getSchool(long)
      */
     @Override
-    public School selectSchool(long schoolId) {
+    public School selectSchool(Long schoolId) {
         Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.SCHOOL_ID_COL, new Long(schoolId));
+        params.put(DbConst.SCHOOL_ID_COL, schoolId);
         return super.select(params, SELECT_SCHOOL_SQL);
     }
 

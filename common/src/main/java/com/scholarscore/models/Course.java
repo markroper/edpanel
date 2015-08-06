@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import javax.validation.constraints.Size;
+
 /**
  * The class represents a course, for example 'AP Calculus BC'. The course
  * may be taught in many different schools, in many different years and 
@@ -26,23 +28,41 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
     
     public Course(Course clone) {
         super(clone);
+        this.sourceSystemId = clone.sourceSystemId;
+        this.number = clone.number;
     }
+
+    @Size(min = 0, max=255)
+    private String number;
+
+    @Size(min = 0, max=255)
+    private String sourceSystemId;
 
     @Override
     public void mergePropertiesIfNull(Course mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if(!super.equals(obj)) {
-            return false;
+
+        if (null == number) {
+            this.number = mergeFrom.getNumber();
         }
-        return true;
+        if (null == sourceSystemId) {
+            this.sourceSystemId = mergeFrom.getSourceSystemId();
+        }
     }
-    
-    @Override
-    public int hashCode() {
-        return 31 * super.hashCode();
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public void setSourceSystemId(String sourceSystemId) {
+        this.sourceSystemId = sourceSystemId;
+    }
+
+    public String getSourceSystemId() {
+        return sourceSystemId;
     }
 }

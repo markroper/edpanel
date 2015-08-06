@@ -17,13 +17,15 @@ import com.scholarscore.models.Course;
 public class CourseJdbc extends EnhancedBaseJdbc<Course> implements EntityPersistence<Course> {
     private static final String INSERT_COURSE_SQL = "INSERT INTO `"+
             DbConst.DATABASE +"`.`" + DbConst.COURSE_TABLE + "` " +
-            "(" + DbConst.COURSE_NAME_COL + ", " + DbConst.SCHOOL_FK_COL + ")" +
-            " VALUES (:" + DbConst.COURSE_NAME_COL + ", :" + DbConst.SCHOOL_FK_COL + ")";
+            "(" + DbConst.COURSE_NAME_COL + ", " + DbConst.SCHOOL_FK_COL + ", " + DbConst.COURSE_NUMBER_COL + ", " + DbConst.COURSE_SOURCE_SYSTEM_ID_COL + ")" +
+            " VALUES (:" + DbConst.COURSE_NAME_COL + ", :" + DbConst.SCHOOL_FK_COL + ", :" + DbConst.COURSE_NUMBER_COL + ", :" + DbConst.COURSE_SOURCE_SYSTEM_ID_COL + ")";
     
     private static final String UPDATE_COURSE_SQL =
             "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.COURSE_TABLE + "` " + 
             "SET `" + DbConst.COURSE_NAME_COL + "`= :" + DbConst.COURSE_NAME_COL + ", `" +
-            DbConst.SCHOOL_FK_COL + "`= :" + DbConst.SCHOOL_FK_COL + " " +
+                    DbConst.COURSE_NUMBER_COL + "`= :" + DbConst.COURSE_NUMBER_COL + ", `" +
+                    DbConst.COURSE_SOURCE_SYSTEM_ID_COL + "`= :" + DbConst.COURSE_SOURCE_SYSTEM_ID_COL + ", `" +
+                    DbConst.SCHOOL_FK_COL + "`= :" + DbConst.SCHOOL_FK_COL + " " +
             "WHERE `" + DbConst.COURSE_ID_COL + "`= :" + DbConst.COURSE_ID_COL + "";
     
     private static final String DELETE_COURSE_SQL = "DELETE FROM `"+
@@ -58,6 +60,8 @@ public class CourseJdbc extends EnhancedBaseJdbc<Course> implements EntityPersis
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.COURSE_NAME_COL, course.getName());
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
+        params.put(DbConst.COURSE_NUMBER_COL, course.getNumber());
+        params.put(DbConst.COURSE_SOURCE_SYSTEM_ID_COL, course.getSourceSystemId());
         jdbcTemplate.update(
                 INSERT_COURSE_SQL, 
                 new MapSqlParameterSource(params), 
@@ -71,6 +75,8 @@ public class CourseJdbc extends EnhancedBaseJdbc<Course> implements EntityPersis
         params.put(DbConst.COURSE_NAME_COL, course.getName());
         params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
         params.put(DbConst.COURSE_ID_COL, courseId);
+        params.put(DbConst.COURSE_NUMBER_COL, course.getNumber());
+        params.put(DbConst.COURSE_SOURCE_SYSTEM_ID_COL, course.getSourceSystemId());
         jdbcTemplate.update(
                 UPDATE_COURSE_SQL, 
                 new MapSqlParameterSource(params));
