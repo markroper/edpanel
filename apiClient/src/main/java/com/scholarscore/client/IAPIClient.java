@@ -12,4 +12,5 @@ public interface IAPIClient {
     Teacher createTeacher(Teacher teacher);
     Administrator createAdministrator(Administrator administrator);
     User createUser(User login);
+    Course createCourse(Long schoolId, Course course);
 }

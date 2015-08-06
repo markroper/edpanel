@@ -90,6 +90,8 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`course` (
   `course_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `course_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
+  `course_number` VARCHAR(256) NULL COMMENT 'User defined human-readable number for the course',
+  `course_source_system_id` VARCHAR(256) NULL COMMENT 'The origin system id',
   `school_fk` INT UNSIGNED NOT NULL COMMENT 'The foreign key to the school table',
   PRIMARY KEY (`course_id`),
   CONSTRAINT `fk_school$course`
