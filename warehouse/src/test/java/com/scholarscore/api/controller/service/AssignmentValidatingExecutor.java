@@ -9,6 +9,7 @@ import org.testng.Assert;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.AssignmentList;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.factory.AssignmentFactory;
@@ -36,7 +37,7 @@ public class AssignmentValidatingExecutor {
                 HttpMethod.GET, 
                 serviceBase.getSectionAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId), 
                 null);
-        ArrayList<Assignment> terms = serviceBase.validateResponse(response, new TypeReference<ArrayList<Assignment>>(){});
+        AssignmentList terms = serviceBase.validateResponse(response, new TypeReference<AssignmentList>(){});
         Assert.assertNotNull(terms, "Unexpected null term returned for case: " + msg);
         Assert.assertEquals(terms.size(), numberOfItems, "Unexpected number of items returned for case: " + msg);
     }
