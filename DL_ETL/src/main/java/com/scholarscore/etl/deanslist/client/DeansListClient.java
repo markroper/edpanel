@@ -84,6 +84,9 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
 
     @Override
     public BehaviorResponse getBehaviorData() {
-        throw new UnsupportedOperationException("not implemented yet");
+        BehaviorResponse behaviorResponse = get(BehaviorResponse.class, PATH_GET_BEHAVIOR_DATA);
+        System.out.println("got behaviorResponse: " + behaviorResponse);
+        return behaviorResponse;
+//        throw new UnsupportedOperationException("not implemented yet");
     }
 }

@@ -1,5 +1,6 @@
 package com.scholarscore.client;
 
+import com.scholarscore.models.Behavior;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Student;
 
@@ -15,4 +16,6 @@ public interface IAPIClient {
     Student createStudent(Student student);
     Student updateStudent(Long studentId, Student student);
     Collection<Student> getStudents();
+    
+    Collection<Behavior> getBehaviors();
 }
