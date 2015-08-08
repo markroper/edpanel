@@ -66,7 +66,7 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
         Date nextYear = cal.getTime();
         
         GradedAssignment namedAssignment = new GradedAssignment();
-        namedAssignment.setType(AssignmentType.LAB);
+        namedAssignment.setType(AssignmentType.QUIZ);
         namedAssignment.setName(localeServiceUtil.generateName());
         namedAssignment.setAssignedDate(today);
         namedAssignment.setDueDate(nextYear);
@@ -92,7 +92,9 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createAssignmentProvider")
     public void replaceAssignmentTest(String msg, Assignment sectionAssignment) {
         Assignment createdSection = sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), sectionAssignment, msg);
-        sectionAssignmentValidatingExecutor.replace(school.getId(), schoolYear.getId(), term.getId(), section.getId(), createdSection.getId(), new GradedAssignment(), msg);
+        GradedAssignment a = new GradedAssignment();
+        a.setType(AssignmentType.LAB);
+        sectionAssignmentValidatingExecutor.replace(school.getId(), schoolYear.getId(), term.getId(), section.getId(), createdSection.getId(), a, msg);
         numberOfItemsCreated++;
     }
     
@@ -115,6 +117,7 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
     @DataProvider
     public Object[][] createSectionNegativeProvider() {
         Assignment gradedSectionNameTooLong = new GradedAssignment();
+        gradedSectionNameTooLong.setType(AssignmentType.QUIZ);
         gradedSectionNameTooLong.setName(localeServiceUtil.generateName(257));
         
         return new Object[][] {
@@ -130,7 +133,9 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createSectionNegativeProvider")
     public void replaceSectionNegativeTest(String msg, Assignment sectionAssignment, HttpStatus expectedStatus) {
-        Assignment created = sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), new GradedAssignment(), msg);
+        GradedAssignment a = new GradedAssignment();
+        a.setType(AssignmentType.MIDTERM);
+        Assignment created = sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), a, msg);
         sectionAssignmentValidatingExecutor.replaceNegative(school.getId(), schoolYear.getId(), term.getId(), 
                 section.getId(), created.getId(), sectionAssignment, expectedStatus, msg);
     }

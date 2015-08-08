@@ -98,7 +98,7 @@ task integrationLocalWithContainer(type: Test, dependsOn: integrationLocal) {
 ext {
     springVersion = "4.0.3.RELEASE"
     springSecurityVersion = "3.2.5.RELEASE"
-    jacksonVersion = "2.4.3"
+    jacksonVersion = "2.6.0"
     apacheHttpVersion = "4.3.3"
 }
 
