@@ -1,8 +1,10 @@
 package com.scholarscore.etl;
 
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.deanslist.api.response.BehaviorResponse;
 import com.scholarscore.etl.deanslist.api.response.StudentResponse;
 import com.scholarscore.etl.deanslist.client.IDeansListClient;
+import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Student;
 
 import java.util.ArrayList;
@@ -38,18 +40,27 @@ public class DLETLEngine implements IETLEngine {
     @Override
     public MigrationResult migrateDistrict() {
 
+        Collection<Behavior> existingBehaviors = scholarScore.getBehaviors();
+        
+        
+        Collection<Behavior> behaviorsToMerge = getBehaviorData();
+        for (Behavior behavior: behaviorsToMerge) {
+            System.out.println("Got  behavior event for student " + behavior.getStudentName() + " ("
+                    + behavior.getName() + ") with point value " + behavior.getPointValue());
+        }
+
         Collection<Student> existingStudents = scholarScore.getStudents();
         Collection<Student> studentsToMerge = getStudents();
 
         // TODO Jordan: just for testing. Students found in both DeansList and local Scholar DB 
         // will have their stats updated, others won't.
         for (Student student : studentsToMerge) {
+            // insert actual behavioral data here
             student.setFederalRace("Klingon");
             student.setFederalEthnicity("Latino");
         }
 
         mergeOnName(existingStudents, studentsToMerge);
-
         return new MigrationResult();
     }
 
@@ -95,6 +106,11 @@ public class DLETLEngine implements IETLEngine {
 
     private List<Student> getStudents() {
         StudentResponse response = deansList.getStudents();
+        return new ArrayList<>(response.toInternalModel());
+    }
+    
+    private List<Behavior> getBehaviorData() {
+        BehaviorResponse response = deansList.getBehaviorData();
         return new ArrayList<>(response.toInternalModel());
     }
     

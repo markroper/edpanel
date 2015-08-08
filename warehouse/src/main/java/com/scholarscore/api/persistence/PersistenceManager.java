@@ -18,6 +18,7 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.Assignment;
+import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
@@ -33,7 +34,8 @@ import com.scholarscore.models.query.QueryResults;
 
 public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
         TermManager, SectionManager, AssignmentManager, StudentAssignmentManager,
-        StudentSectionGradeManager, CourseManager, TeacherManager, UserManager, QueryManager {
+        StudentSectionGradeManager, CourseManager, TeacherManager, UserManager, QueryManager,
+        BehaviorManager {
     
     private static final String SCHOOL = "school";
     private static final String COURSE = "course";
@@ -1209,5 +1211,40 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         // TODO: Implement query generation
         return new ServiceResponse<QueryResults>(
                 StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND));
+    }
+
+    @Override
+    public ServiceResponse<Collection<Behavior>> getAllBehaviors() {
+        throw new UnsupportedOperationException("not implemented yet");
+    }
+
+    @Override
+    public StatusCode behaviorExists(long behaviorId) {
+        throw new UnsupportedOperationException("not implemented yet");
+    }
+
+    @Override
+    public ServiceResponse<Behavior> getBehavior(long behaviorId) {
+        throw new UnsupportedOperationException("not implemented yet");
+    }
+
+    @Override
+    public ServiceResponse<Long> createBehavior(Behavior behavior) {
+        throw new UnsupportedOperationException("not implemented yet");
+    }
+
+    @Override
+    public ServiceResponse<Long> replaceBehavior(long behaviorId, Behavior behavior) {
+        throw new UnsupportedOperationException("not implemented yet");
+    }
+
+    @Override
+    public ServiceResponse<Long> updateBehavior(long behaviorId, Behavior behavior) {
+        throw new UnsupportedOperationException("not implemented yet");
+    }
+
+    @Override
+    public ServiceResponse<Long> deleteBehavior(long behaviorId) {
+        throw new UnsupportedOperationException("not implemented yet");
     }
 }

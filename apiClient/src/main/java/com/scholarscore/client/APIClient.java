@@ -3,6 +3,7 @@ package com.scholarscore.client;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.scholarscore.models.Behavior;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.LoginRequest;
 import com.scholarscore.models.School;
@@ -40,6 +41,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     private static final String STUDENT_ASSIGNMENT_ENDPOINT = "/studentassignments";
     private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
     private static final String TEACHER_ENDPOINT = "/teachers";
+    private static final String BEHAVIOR_ENDPOINT = "/behaviors";
 
     private final String password;
     private final String username;
@@ -99,6 +101,15 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         Student response = new Student(student);
         response.setId(id.getId());
         return response;
+    }
+
+    @Override
+    public Collection<Behavior> getBehaviors() {
+        Behavior[] behaviors = get(Behavior[].class, BASE_API_ENDPOINT + BEHAVIOR_ENDPOINT);
+//        for (Behavior behavior : behaviors) {
+//            System.out.println("Got scholarScore behavior: " + behavior);
+//        }
+        return Arrays.asList(behaviors);
     }
 
     /**
