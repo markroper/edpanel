@@ -12,9 +12,11 @@ import java.util.Random;
 
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.AssignmentType;
+import com.scholarscore.models.AttendanceAssignment;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.Gender;
 import com.scholarscore.models.GradeFormula;
+import com.scholarscore.models.GradedAssignment;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
@@ -23,9 +25,15 @@ import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.Teacher;
 import com.scholarscore.models.Term;
 
+/**
+ * Generates arbitrary school data for use in testing and developing the UI.
+ * 
+ * @author markroper
+ *
+ */
 public class SchoolDataFactory {
+    private final static long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
     private static final int NUM_STUDENTS = 10;
-    
     private static final String WHITE = "White";
     private static final String BLACK = "Black";
     private static final String AMERICAN_INDIAN = "American Indian";
@@ -225,7 +233,56 @@ public class SchoolDataFactory {
      * @return
      */
     public static Map<Long, List<Assignment>> generateAssignments(List<Section> sections) {
-        return null;
+        Map<Long, List<Assignment>> returnMap = new HashMap<Long, List<Assignment>>();
+        for(Section s: sections) {
+            returnMap.put(s.getId(), new ArrayList<Assignment>());
+            Date startDate = s.getStartDate();
+            Date endDate = s.getEndDate();
+            int diffInDays = (int) ((startDate.getTime() - endDate.getTime())/ DAY_IN_MILLIS );
+            //Create HW Assignments & Attendance assignments
+            for(int i = 0; i < diffInDays; i++) {
+                Calendar c = Calendar.getInstance();
+                c.setTime(startDate); // Now use today date.
+                c.add(Calendar.DATE, i);
+                Date assignmentDate = c.getTime();
+                AttendanceAssignment attend = new AttendanceAssignment();
+                attend.setDate(assignmentDate);
+                attend.setDueDate(assignmentDate);
+                returnMap.get(s.getId()).add(attend);
+                //For every other day, add a homework assignment
+                if(i % 2 == 0) {
+                    GradedAssignment hw = new GradedAssignment();
+                    hw.setAssignedDate(s.getStartDate());
+                    hw.setDueDate(assignmentDate);
+                    hw.setType(AssignmentType.HOMEWORK);
+                    returnMap.get(s.getId()).add(hw);
+                }
+                
+            }
+            //Create midterm
+            Calendar c = Calendar.getInstance();
+            c.setTime(startDate); // Now use today date.
+            c.add(Calendar.DATE, diffInDays/2);
+            GradedAssignment midterm = new GradedAssignment();
+            midterm.setDueDate(c.getTime());
+            midterm.setType(AssignmentType.MIDTERM);
+            midterm.setAvailablePoints(100L);
+            midterm.setAssignedDate(startDate);
+            returnMap.get(s.getId()).add(midterm);
+            
+            //Create final
+            c.setTime(endDate); // Now use today date.
+            c.add(Calendar.DATE, -2);
+            GradedAssignment fin = new GradedAssignment();
+            fin.setDueDate(c.getTime());
+            fin.setType(AssignmentType.FINAL);
+            fin.setAvailablePoints(100L);
+            fin.setAssignedDate(startDate);
+            returnMap.get(s.getId()).add(fin);
+            
+            //TODO: Create Labs or quizes?
+        }
+        return returnMap;
     }
     
     /**
@@ -237,6 +294,24 @@ public class SchoolDataFactory {
      */
     public static Map<Long, List<StudentAssignment>> 
             generateStudentAssignments(List<Assignment> assignments, List<Student> students) {
-        return null;
+        Map<Long, List<StudentAssignment>> assIdToStudAss = 
+                new HashMap<Long, List<StudentAssignment>>();
+        for(Assignment a : assignments) {
+            assIdToStudAss.put(a.getId(), new ArrayList<StudentAssignment>());
+            for(Student s: students) {
+                StudentAssignment sa = new StudentAssignment();
+                sa.setAssignment(a);
+                Boolean completed = new Random().nextBoolean();
+                sa.setCompleted(completed);
+                if(null != a.getAvailablePoints() && a.getAvailablePoints() > 0 && completed) {
+                    Integer awardedInt = new Random().nextInt((int)(long)a.getAvailablePoints());
+                    sa.setAwardedPoints(awardedInt.longValue());
+                    sa.setCompletionDate(a.getDueDate());
+                }
+                sa.setStudent(s);
+                assIdToStudAss.get(a.getId()).add(sa);
+            }
+        }
+        return assIdToStudAss;
     }
 }
