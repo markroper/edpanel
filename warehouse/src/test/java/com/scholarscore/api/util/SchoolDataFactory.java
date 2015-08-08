@@ -187,7 +187,7 @@ public class SchoolDataFactory {
             put(AssignmentType.FINAL, 30); put(AssignmentType.QUIZ, 10);
         }};
         Map<AssignmentType, Integer> weight4 = new HashMap<AssignmentType, Integer>() {{
-            put(AssignmentType.GRADED, 25); put(AssignmentType.FINAL, 30);
+            put(AssignmentType.TEST, 25); put(AssignmentType.FINAL, 30);
             put(AssignmentType.QUIZ, 10); put(AssignmentType.HOMEWORK, 35);
         }};
         gradeFormulas.add(new GradeFormula(weight1));

@@ -9,6 +9,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.AssignmentType;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.GradedAssignment;
 import com.scholarscore.models.School;
@@ -57,6 +58,7 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
     @DataProvider
     public Object[][] createAssignmentProvider() {
         GradedAssignment emptyAssignment = new GradedAssignment();
+        emptyAssignment.setType(AssignmentType.HOMEWORK);
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);
         Date today = cal.getTime();
@@ -64,6 +66,7 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
         Date nextYear = cal.getTime();
         
         GradedAssignment namedAssignment = new GradedAssignment();
+        namedAssignment.setType(AssignmentType.LAB);
         namedAssignment.setName(localeServiceUtil.generateName());
         namedAssignment.setAssignedDate(today);
         namedAssignment.setDueDate(nextYear);
