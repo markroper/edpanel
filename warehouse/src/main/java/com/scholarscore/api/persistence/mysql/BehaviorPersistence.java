@@ -11,30 +11,14 @@ import java.util.Collection;
  */
 public interface BehaviorPersistence {
 
-    public Collection<Behavior> selectAll();
+    public Collection<Behavior> selectAll(long studentId);
     
-    public Behavior select(long behaviorId);
+    public Behavior select(long studentId, long behaviorId);
     
-    public Long createBehavior(Behavior behavior);
+    public Long createBehavior(long studentId, Behavior behavior);
     
-    public Long replaceBehavior(long behaviorId, Behavior behavior);
+    public Long replaceBehavior(long studentId, long behaviorId, Behavior behavior);
     
-    public Long delete(long behaviorId);
-    
-    /* 
-    * 
-    *   public Collection<Student> selectAll();
-    
-    public Collection<Student> selectAllStudentsInSection(long sectionId);
-
-    public Student select(long studentId);
-
-    public Long createStudent(Student student);
-
-    public Long replaceStudent(long studentId, Student student);
-
-    public Long delete(long studentId);
-    * 
-    * * * * * */
+    public Long delete(long studentId, long behaviorId);
 
 }

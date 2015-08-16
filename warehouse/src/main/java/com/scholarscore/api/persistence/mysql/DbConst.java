@@ -181,7 +181,19 @@ public class DbConst {
 	public static final String REPORT_ID_COL = "report_id";
 	public static final String REPORT_COL = "report";
 	
-	
+    public static final String BEHAVIOR_TABLE = "behavior";
+    public static final String BEHAVIOR_ID_COL = "behavior_id";
+    //    public static final String BEHAVIOR_STUDENT_NAME_COL = "";
+    public static final String BEHAVIOR_STUDENT_FK_COL = "behavior_student_fk";
+    // TODO: switch to staff ID whenever we add staff
+    public static final String BEHAVIOR_STAFF_NAME_COL = "behavior_staff_name";
+    public static final String BEHAVIOR_NAME_COL = "behavior_name";
+    public static final String BEHAVIOR_DATE_COL = "behavior_date";
+    public static final String BEHAVIOR_REMOTE_STUDENT_ID_COL = "behavior_remote_student_id";
+    public static final String BEHAVIOR_CATEGORY_COL = "behavior_category";
+    public static final String BEHAVIOR_POINT_VALUE_COL = "behavior_point_value";
+    public static final String BEHAVIOR_ROSTER_COL = "behavior_roster";
+
     /**
      * Helper method converts a Java Date to a Timestamp for storage in the Database.
      * 

@@ -30,6 +30,7 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
             out.setPointValue(behavior.PointValue);
             out.setStudentName(getStudentName(behavior));
             out.setStaffName(getStaffName(behavior));
+            out.setRoster(behavior.Roster);
             toReturn.add(out);
         }
         return toReturn;
