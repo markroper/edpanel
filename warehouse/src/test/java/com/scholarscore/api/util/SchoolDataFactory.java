@@ -3,6 +3,7 @@ package com.scholarscore.api.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -101,12 +102,12 @@ public class SchoolDataFactory {
      * @return
      */
     public static List<SchoolYear> generateSchoolYears() {
-        int year = 2015;
+        int year = 115;
         int startMonth = 9;
         int endMonth = 6;
         int day = 1;
         ArrayList<SchoolYear> years = new ArrayList<SchoolYear>();
-        for(int i = 0; i < 4; i++) {
+        for(int i = 0; i < 1; i++) {
             years.add(new SchoolYear(new Date(year - i, startMonth, day), new Date(year - i + 1, endMonth, day)));
         }
         return years;
@@ -152,15 +153,17 @@ public class SchoolDataFactory {
      * @param schoolYears
      * @return
      */
-    public static Map<Long, Term> generateTerms(List<SchoolYear> schoolYears) {
-        Map<Long, Term> terms = new HashMap<Long, Term>();
+    public static Map<Long, List<Term>> generateTerms(List<SchoolYear> schoolYears) {
+        Map<Long, List<Term>> terms = new HashMap<Long, List<Term>>();
         for(SchoolYear year : schoolYears) {
+            terms.put(year.getId(), new ArrayList<Term>());
+            
             Date start = year.getStartDate();
             Date end = year.getEndDate();
             
             Calendar endCalendar = new GregorianCalendar();
             endCalendar.setTime(end);
-            int endYear = endCalendar.get(Calendar.YEAR);
+            int endYear = endCalendar.get(Calendar.YEAR) - 1900;
             
             Term firstTerm = new Term();
             firstTerm.setStartDate(start);
@@ -168,8 +171,9 @@ public class SchoolDataFactory {
             Term secondTerm = new Term();
             secondTerm.setStartDate(new Date(endYear, 1, 1));
             secondTerm.setEndDate(end);
-            terms.put(year.getId(), firstTerm);
-            terms.put(year.getId(), secondTerm);
+            
+            terms.get(year.getId()).add(firstTerm);
+            terms.get(year.getId()).add(secondTerm);
         }
         return terms;
     }
@@ -180,7 +184,7 @@ public class SchoolDataFactory {
      * @param courses
      * @return
      */
-    public static Map<Long, List<Section>> generateSections(List<Term> terms, List<Course> courses) {
+    public static Map<Long, List<Section>> generateSections(Collection<Term> terms, List<Course> courses) {
         //Static set of grade formulas
         List<GradeFormula> gradeFormulas = new ArrayList<GradeFormula>();
         Map<AssignmentType, Integer> weight1 = new HashMap<AssignmentType, Integer>() {{
@@ -217,10 +221,11 @@ public class SchoolDataFactory {
                         t.getEndDate(), 
                         rooms.get(new Random().nextInt(numRooms)), 
                         gradeFormulas.get(new Random().nextInt(gradeFormulas.size())));
-                if(null == sectionMap.get(c.getId())) {
-                    sectionMap.put(c.getId(), new ArrayList<Section>());
+                section.setCourse(c);
+                if(null == sectionMap.get(t.getId())) {
+                    sectionMap.put(t.getId(), new ArrayList<Section>());
                 }
-                sectionMap.get(c.getId()).add(section);
+                sectionMap.get(t.getId()).add(section);
             }
         }
         return sectionMap;
@@ -238,19 +243,18 @@ public class SchoolDataFactory {
             returnMap.put(s.getId(), new ArrayList<Assignment>());
             Date startDate = s.getStartDate();
             Date endDate = s.getEndDate();
-            int diffInDays = (int) ((startDate.getTime() - endDate.getTime())/ DAY_IN_MILLIS );
+            int diffInDays = (int) ((endDate.getTime() - startDate.getTime())/ DAY_IN_MILLIS );
             //Create HW Assignments & Attendance assignments
-            for(int i = 0; i < diffInDays; i++) {
+            for(int i = 0; i < diffInDays; i = i + 3) {
                 Calendar c = Calendar.getInstance();
                 c.setTime(startDate); // Now use today date.
                 c.add(Calendar.DATE, i);
                 Date assignmentDate = c.getTime();
                 AttendanceAssignment attend = new AttendanceAssignment();
-                attend.setDate(assignmentDate);
                 attend.setDueDate(assignmentDate);
                 returnMap.get(s.getId()).add(attend);
                 //For every other day, add a homework assignment
-                if(i % 2 == 0) {
+                if(i % 6 == 0) {
                     GradedAssignment hw = new GradedAssignment();
                     hw.setAssignedDate(s.getStartDate());
                     hw.setDueDate(assignmentDate);

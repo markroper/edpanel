@@ -70,7 +70,6 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     }
 
     @Override
-    @JsonIgnore
     public Long getAwardedPoints() {
         return awardedPoints != null ? awardedPoints : null;
     }

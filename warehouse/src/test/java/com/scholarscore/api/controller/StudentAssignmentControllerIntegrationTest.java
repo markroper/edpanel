@@ -21,7 +21,7 @@ import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.Term;
 
 @Test(groups = { "integration" })
-public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase {
+public class StudentAssignmentControllerIntegrationTest extends IntegrationBase {
     private int numberOfItemsCreated = 0;
     private School school;
     private SchoolYear schoolYear;
@@ -41,6 +41,7 @@ public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase
         
         student = new Student();
         student.setName(localeServiceUtil.generateName());
+        student.setCurrentSchoolId(school.getId());
         student = studentValidatingExecutor.create(student, "create base student");
         
         schoolYear = new SchoolYear();
