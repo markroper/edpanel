@@ -13,13 +13,16 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     private String behaviorDate;
     private String behaviorCategory;
     private String pointValue;
-    
+    private String roster; // the class the behavior event occurred within
+
     // should be linked to actual student/staff by ID
     private String studentName;
     private String staffName;
 
     @Override
     public void mergePropertiesIfNull(Behavior mergeFrom) {
+        super.mergePropertiesIfNull(mergeFrom);
+
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -69,5 +72,13 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
 
     public void setStudentName(String studentName) {
         this.studentName = studentName;
+    }
+
+    public String getRoster() {
+        return roster;
+    }
+
+    public void setRoster(String roster) {
+        this.roster = roster;
     }
 }

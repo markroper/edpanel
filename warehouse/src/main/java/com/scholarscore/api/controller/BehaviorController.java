@@ -24,7 +24,7 @@ import java.util.List;
  */
 
 @Controller
-@RequestMapping(ApiConsts.API_V1_ENDPOINT + "/behaviors")
+@RequestMapping(ApiConsts.API_V1_ENDPOINT + "/students/{studentId}/behaviors")
 public class BehaviorController extends BaseController {
     
     @ApiOperation(
@@ -35,8 +35,10 @@ public class BehaviorController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity getAll() {
-        return respond(getBehaviorManager().getAllBehaviors());
+    public @ResponseBody ResponseEntity getAll(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId) {
+        return respond(getBehaviorManager().getAllBehaviors(studentId));
     }
 
     @ApiOperation(
@@ -49,18 +51,12 @@ public class BehaviorController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity get(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
             @ApiParam(name = "behaviorId", required = true, value = "Behavior ID")
             @PathVariable(value="behaviorId") Long behaviorId) {
-        return respond(getBehaviorManager().getBehavior(behaviorId));
+        return respond(getBehaviorManager().getBehavior(studentId, behaviorId));
     }
-
-    /* 
-    *     @RequestMapping(
-            value = "/{schoolYearId}", 
-            method = RequestMethod.GET, 
-            produces = { JSON_ACCEPT_HEADER })
-
-    * * * */
     
     @ApiOperation(
             value = "Create a behavior",
@@ -70,7 +66,10 @@ public class BehaviorController extends BaseController {
             method = RequestMethod.POST,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity create(@RequestBody @Valid Behavior behavior) {
-        return respond(getBehaviorManager().createBehavior(behavior));
+    public @ResponseBody ResponseEntity create(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId, 
+            @RequestBody @Valid Behavior behavior) {
+        return respond(getBehaviorManager().createBehavior(studentId, behavior));
     }
 }

@@ -12,16 +12,16 @@ import java.util.Collection;
  * Time: 5:28 PM
  */
 public interface BehaviorManager {
-    public ServiceResponse<Collection<Behavior>> getAllBehaviors();
+    public ServiceResponse<Collection<Behavior>> getAllBehaviors(long studentId);
     
-    public StatusCode behaviorExists(long behaviorId);
-    public ServiceResponse<Behavior> getBehavior(long behaviorId);
+    public StatusCode behaviorExists(long studentId, long behaviorId);
+    public ServiceResponse<Behavior> getBehavior(long studentId, long behaviorId);
     
-    public ServiceResponse<Long> createBehavior(Behavior behavior);
+    public ServiceResponse<Long> createBehavior(long studentId, Behavior behavior);
     
-    public ServiceResponse<Long> replaceBehavior(long behaviorId, Behavior behavior);
+    public ServiceResponse<Long> replaceBehavior(long studentId, long behaviorId, Behavior behavior);
     
-    public ServiceResponse<Long> updateBehavior(long behaviorId, Behavior behavior);
+    public ServiceResponse<Long> updateBehavior(long studentId, long behaviorId, Behavior behavior);
     
-    public ServiceResponse<Long> deleteBehavior(long behaviorId);
+    public ServiceResponse<Long> deleteBehavior(long studentId, long behaviorId);
 }
