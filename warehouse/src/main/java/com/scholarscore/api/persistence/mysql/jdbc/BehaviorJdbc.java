@@ -2,6 +2,7 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 
 import com.scholarscore.api.persistence.mysql.BehaviorPersistence;
 import com.scholarscore.api.persistence.mysql.DbConst;
+import com.scholarscore.api.persistence.mysql.mapper.BehaviorMapper;
 import com.scholarscore.models.Behavior;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -21,6 +22,9 @@ public class BehaviorJdbc extends EnhancedBaseJdbc<Behavior> implements Behavior
 
     private static final String INSERT_BEHAVIOR_SQL = "";
 
+    private String SELECT_ALL_BEHAVIORS_SQL = SELECT_ALL_SQL + " " +
+            "WHERE `" + DbConst.BEHAVIOR_STUDENT_FK_COL + "` = :" + DbConst.BEHAVIOR_STUDENT_FK_COL;
+    
     @Override
     public Long createBehavior(long studentId, Behavior behavior) {
 
@@ -39,13 +43,10 @@ public class BehaviorJdbc extends EnhancedBaseJdbc<Behavior> implements Behavior
     }
 
     @Override
-    public Long delete(long studentId, long behaviorId) {
-        throw new UnsupportedOperationException("not implemented yet");
-    }
-
-    @Override
     public Collection<Behavior> selectAll(long studentId) {
-        throw new UnsupportedOperationException("not implemented yet");
+        Map<String, Object> params = new HashMap<>();
+        params.put(DbConst.BEHAVIOR_STUDENT_FK_COL, studentId);
+        return super.selectAll(params, SELECT_ALL_BEHAVIORS_SQL);
     }
 
     @Override
@@ -59,8 +60,13 @@ public class BehaviorJdbc extends EnhancedBaseJdbc<Behavior> implements Behavior
     }
 
     @Override
+    public Long delete(long studentId, long behaviorId) {
+        throw new UnsupportedOperationException("not implemented yet");
+    }
+
+    @Override
     public RowMapper<Behavior> getMapper() {
-        throw new UnsupportedOperationException("mapper not implemented yet");
+        return new BehaviorMapper();
     }
 
     @Override

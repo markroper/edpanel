@@ -9,7 +9,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     
     // "name" in parent class maps to 'behavior'
     private String remoteSystemEventId;    // currently always deanslist DLSAID
-//    private String remoteSystemStudentId;
+    // TODO Jordan should this be date?
     private String behaviorDate;
     private String behaviorCategory;
     private String pointValue;
