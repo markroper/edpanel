@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public abstract class EnhancedBaseJdbc<T> extends BaseJdbc {
 
-    private final String SELECT_ALL_SQL = "SELECT * FROM `" +
+    protected final String SELECT_ALL_SQL = "SELECT * FROM `" +
             DbConst.DATABASE +"`.`" + getTableName() + "`";
 
     private final String SELECT_SQL = SELECT_ALL_SQL + " " + 

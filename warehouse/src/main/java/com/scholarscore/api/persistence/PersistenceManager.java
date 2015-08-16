@@ -112,7 +112,10 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         this.termPersistence = termPersistence;
     }
 
- 
+    public void setBehaviorPersistence(BehaviorPersistence behaviorPersistence) {
+        this.behaviorPersistence = behaviorPersistence;
+    }
+
     //SCHOOLS
     @Override
     public Collection<School> getAllSchools() {
