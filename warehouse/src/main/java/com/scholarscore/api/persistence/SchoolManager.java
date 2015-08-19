@@ -28,7 +28,7 @@ public interface SchoolManager {
      * @param schoolId
      * @return
      */
-    public StatusCode schoolExists(long schoolId);
+    public StatusCode schoolExists(Long schoolId);
     
     /**
      * Returns the school with the ID provided, or in degenerate cases, a descriptive error 

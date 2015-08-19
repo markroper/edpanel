@@ -36,7 +36,7 @@ public class SchoolJdbc extends EnhancedBaseJdbc<School> implements SchoolPersis
             + SCHOOL_COLUMNS
             + " FROM `"
             + DbConst.DATABASE +"`.`" + DbConst.SCHOOL_TABLE + "`"
-            + " WHERE " + DbConst.SCHOOL_ID_COL + " = :" + DbConst.SCHOOL_ID_COL;
+            + " WHERE " + DbConst.SCHOOL_ID_COL + " = :id";
 
     private static final String SELECT_ALL_SCHOOLS_SQL = "SELECT "
             + SCHOOL_COLUMNS
@@ -49,7 +49,7 @@ public class SchoolJdbc extends EnhancedBaseJdbc<School> implements SchoolPersis
     @Override
     public School selectSchool(Long schoolId) {
         Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.SCHOOL_ID_COL, schoolId);
+        params.put("id", new Long(schoolId));
         return super.select(params, SELECT_SCHOOL_SQL);
     }
 

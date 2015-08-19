@@ -8,7 +8,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
+import javax.persistence.*;
+
+@Entity(name = "teacher")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
@@ -84,6 +89,40 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
         return result;
     }
 
+    @Transient
+    public User getLogin() {
+        return login;
+    }
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name = "teacher_id")
+    public Long getId() {
+        return super.getId();
+    }
+
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.ALL)
+    @JoinColumn(name="teacher_homeAddress_fk")
+    public Address getHomeAddress() {
+        return homeAddress;
+    }
+
+    @Column(name = "teacher_homePhone")
+    public String getHomePhone() {
+        return homePhone;
+    }
+
+    @Column(name = "teacher_source_system_id")
+    public String getSourceSystemId() {
+        return sourceSystemId;
+    }
+
+    @Column(name = "teacher_username")
+    public String getUsername() {
+        return username;
+    }
+
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
     }
@@ -92,32 +131,12 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
         this.login = login;
     }
 
-    public User getLogin() {
-        return login;
-    }
-
-    public Address getHomeAddress() {
-        return homeAddress;
-    }
-
     public void setHomeAddress(Address homeAddress) {
         this.homeAddress = homeAddress;
     }
 
-    public String getHomePhone() {
-        return homePhone;
-    }
-
     public void setHomePhone(String homePhone) {
         this.homePhone = homePhone;
-    }
-
-    public String getSourceSystemId() {
-        return sourceSystemId;
-    }
-
-    public String getUsername() {
-        return username;
     }
 
     public void setUsername(String username) {

@@ -1,19 +1,24 @@
 package com.scholarscore.models;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
 @SuppressWarnings("serial")
+@Entity(name="address")
 public class Address implements Serializable {
     private String street;
     private String city;
     private String state;
     private String postalCode;
+
+    private Long id;
     
     public Address() {
         
     }
 
+    @Column(name = "address_street")
     public String getStreet() {
         return street;
     }
@@ -22,6 +27,7 @@ public class Address implements Serializable {
         this.street = street;
     }
 
+    @Column(name = "address_city")
     public String getCity() {
         return city;
     }
@@ -30,6 +36,7 @@ public class Address implements Serializable {
         this.city = city;
     }
 
+    @Column(name = "address_state")
     public String getState() {
         return state;
     }
@@ -38,6 +45,7 @@ public class Address implements Serializable {
         this.state = state;
     }
 
+    @Column(name = "address_postal_code")
     public String getPostalCode() {
         return postalCode;
     }
@@ -58,11 +66,23 @@ public class Address implements Serializable {
     return Objects.equals(this.street, other.street)
             && Objects.equals(this.city, other.city)
             && Objects.equals(this.state, other.state)
-            && Objects.equals(this.postalCode, other.postalCode);
+            && Objects.equals(this.postalCode, other.postalCode)
+            && Objects.equals(this.id, other.id);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(street, city, state, postalCode);
+        return 31 * super.hashCode() + Objects.hash(street, city, state, postalCode, id);
+    }
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    @Column(name = "address_id")
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

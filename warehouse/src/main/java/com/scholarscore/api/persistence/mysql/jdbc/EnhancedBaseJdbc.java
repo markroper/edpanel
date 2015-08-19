@@ -48,14 +48,11 @@ public abstract class EnhancedBaseJdbc<T> extends BaseJdbc {
     }
     
     protected T select(Map<String, Object> params, String selectSql) {
-        List<T> results = jdbcTemplate.query(
+        System.out.println("SQL: " + selectSql + ", Map: " + params);
+        T result = jdbcTemplate.queryForObject(
                 selectSql,
                 params,
                 getMapper());
-        T result = null;
-        if (null != results && !results.isEmpty()) {
-            result = results.get(0);
-        }
         return result;
     }
     // -- END SELECT --
