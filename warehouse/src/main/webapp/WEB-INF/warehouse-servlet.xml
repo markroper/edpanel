@@ -14,6 +14,9 @@
                      http://www.springframework.org/schema/util
                      http://www.springframework.org/schema/util/spring-util.xsd">
 
+
+    <import resource="../../resources/persistence.xml"/>
+
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
       <property name="locations">
         <list>
@@ -59,64 +62,6 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
 
-    <!-- Initialization for data source -->
-    <bean id="dataSource"
-          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306"/>
-        <property name="username" value="warehouse"/>
-        <property name="password" value="t3achTh3Childr3n"/>
-    </bean>
-
-    <!-- Definition for School JDBC templ bean -->
-    <bean id="schoolPersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.SchoolJdbc">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <bean id="schoolYearPersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.SchoolYearJdbc">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <bean id="termPersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.TermJdbc">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <bean id="studentPersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.StudentJdbc">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <bean id="coursePersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.CourseJdbc">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <bean id="sectionPersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.SectionJdbc">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <bean id="assignmentPersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.AssignmentJdbc">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <bean id="studentAssignmentPersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.StudentAssignmentJdbc">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <bean id="studentSectionGradePersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.StudentSectionGradeJdbc">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <bean id="teacherPersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.TeacherJdbc">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <bean id="administratorPersistence"
-            class="com.scholarscore.api.persistence.mysql.jdbc.AdministratorJdbc">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <bean id="queryPersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.QueryJdbc">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
 
     <bean id="PM"
           class="com.scholarscore.api.persistence.PersistenceManager">

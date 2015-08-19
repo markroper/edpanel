@@ -51,8 +51,8 @@ public class ETLEngine implements IETLEngine {
     public MigrationResult migrateDistrict() {
         MigrationResult result = new MigrationResult();
         this.schools = createSchools();
-        this.staff = createStaff();
-        this.students = createStudents();
+//        this.staff = createStaff();
+//        this.students = createStudents();
         this.courses = createCourses();
         return result;
     }

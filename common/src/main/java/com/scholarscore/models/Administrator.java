@@ -4,14 +4,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import javax.persistence.Entity;
 
 /**
  * Created by mattg on 7/19/15.
  */
+@Entity(name = "administrator")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Administrator extends ApiModel implements Serializable, IStaff<Administrator> {
@@ -25,7 +30,6 @@ public class Administrator extends ApiModel implements Serializable, IStaff<Admi
     }};
 
     public Administrator() {
-
     }
 
     public Administrator(Administrator admin) {
@@ -75,9 +79,60 @@ public class Administrator extends ApiModel implements Serializable, IStaff<Admi
         return true;
     }
 
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name = "administrator_id")
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Override
+    @Column(name = "administrator_name")
+    public String getName() {
+        return super.getName();
+    }
+
     @Override
     public int hashCode() {
         return 31 * super.hashCode();
+    }
+
+    @Transient
+    public User getLogin() {
+        return login;
+    }
+
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.ALL)
+    @JoinColumn(name="administrator_homeAddress_fk")
+    public Address getHomeAddress() {
+        return homeAddress;
+    }
+
+    @Column(name = "administrator_homePhone")
+    public String getHomePhone() {
+        return homePhone;
+    }
+
+    @Column(name = "administrator_source_system_id")
+    public String getSourceSystemId() {
+        return sourceSystemId;
+    }
+
+    @Column(name = "administrator_username")
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    public void setHomePhone(String homePhone) {
+        this.homePhone = homePhone;
+    }
+    public void setHomeAddress(Address homeAddress) {
+        this.homeAddress = homeAddress;
+    }
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setSourceSystemId(String sourceSystemId) {
@@ -86,40 +141,6 @@ public class Administrator extends ApiModel implements Serializable, IStaff<Admi
 
     public void setLogin(User login) {
         this.login = login;
-    }
-
-    public User getLogin() {
-        return login;
-    }
-
-    public Address getHomeAddress() {
-        return homeAddress;
-    }
-
-    public void setHomeAddress(Address homeAddress) {
-        this.homeAddress = homeAddress;
-    }
-
-    public String getHomePhone() {
-        return homePhone;
-    }
-
-    public void setHomePhone(String homePhone) {
-        this.homePhone = homePhone;
-    }
-
-    public String getSourceSystemId() {
-        return sourceSystemId;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public void setUsername(String username) {
-        this.username = username;
     }
 
 }

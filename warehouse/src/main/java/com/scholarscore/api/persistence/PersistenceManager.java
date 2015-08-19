@@ -120,7 +120,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     }
 
     @Override
-    public StatusCode schoolExists(long schoolId) {
+    public StatusCode schoolExists(Long schoolId) {
         School school = schoolPersistence.selectSchool(schoolId);
         if(null == school) {
             return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { SCHOOL, schoolId});

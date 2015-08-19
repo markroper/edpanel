@@ -14,6 +14,7 @@ public class SchoolMapper implements RowMapper<School> {
         School school = new School();
         school.setId(rs.getLong(DbConst.SCHOOL_ID_COL));
         school.setName(rs.getString(DbConst.SCHOOL_NAME_COL));
+        school.setSourceSystemId(rs.getString(DbConst.SCHOOL_SOURCE_SYSTEM_ID_COL));
         return school;
     }
 
