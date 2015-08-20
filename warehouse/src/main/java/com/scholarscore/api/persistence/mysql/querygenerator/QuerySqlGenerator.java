@@ -13,6 +13,7 @@ import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureS
 import com.scholarscore.models.query.AggregateMeasure;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
+import com.scholarscore.models.query.Measure;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
@@ -114,7 +115,7 @@ public abstract class QuerySqlGenerator {
                 //not compatible with the dimension for joining, try joining on the previous dimension in the hierarchy.
                 //If that doesn't match, check the dimension before that.
                 if(!Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
-                    if(am.getMeasure().getCompatibleDimensions().contains(joinDim)){
+                    if(Measure.buildMeasure(am.getMeasure()).getCompatibleDimensions().contains(joinDim)){
                         currentTableName = mss.toTableName();
                     } else {
                         Dimension dimDesc = currTable;
