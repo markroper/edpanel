@@ -109,7 +109,7 @@ public class Administrator extends ApiModel implements Serializable, IStaff<Admi
         return homeAddress;
     }
 
-    @Column(name = "administrator_homePhone")
+    @Column(name = "administrator_home_phone")
     public String getHomePhone() {
         return homePhone;
     }

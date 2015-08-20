@@ -52,6 +52,10 @@
           class="com.scholarscore.api.persistence.mysql.jdbc.TeacherJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
     </bean>
+    <bean id="studentPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.StudentJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
 
 
     <!-- Definition for School JDBC templ bean -->
@@ -65,10 +69,6 @@
     </bean>
     <bean id="termPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.TermJdbc">
-    <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <bean id="studentPersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.StudentJdbc">
     <property name="dataSource" ref="dataSource"/>
     </bean>
     <bean id="coursePersistence"

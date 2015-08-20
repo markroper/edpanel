@@ -6,6 +6,10 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import javax.persistence.*;
 
 /**
  * The student class expresses a single student with a unique ID per school district.
@@ -16,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author markroper
  *
  */
+@Entity(name = "student")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Student extends ApiModel implements Serializable, IApiModel<Student>{
@@ -40,7 +45,14 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.federalEthnicity = student.federalEthnicity;
         this.currentSchoolId = student.currentSchoolId;
     }
-    
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name = "student_id")
+    public Long getId() {
+        return super.getId();
+    }
+
     // FK to the Users table, this is optional as a 1:1 relationship does not need to exist between
     // a user and a student.  A student can exist without a login.  Currently spring security requires
     // this as the PK of the table, this should be changed to an id column as usernames may be able to
@@ -51,6 +63,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
     @JsonInclude
     private transient User login;
     //Source system identifier. E.g. powerschool ID
+
     private String sourceSystemId;
     //Addresses
     private Address mailingAddress;
@@ -114,34 +127,46 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
 		return username;
 	}
 
+    @Transient
+    public User getLogin() {
+        return login;
+    }
+    @Column(name = "source_system_id")
+    public String getSourceSystemId() {
+        return sourceSystemId;
+    }
+
+    @Column(name = "student_name")
+    public String getName() {
+        return super.getName();
+    }
+
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.ALL)
+    @JoinColumn(name="mailing_fk")
+    public Address getMailingAddress() {
+        return mailingAddress;
+    }
+
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public User getLogin() {
-		return login;
 	}
 
 	public void setLogin(User login) {
 		this.login = login;
 	}
 
-	public String getSourceSystemId() {
-        return sourceSystemId;
-    }
-
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
-    }
-
-    public Address getMailingAddress() {
-        return mailingAddress;
     }
 
     public void setMailingAddress(Address mailingAddress) {
         this.mailingAddress = mailingAddress;
     }
 
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.ALL)
+    @JoinColumn(name="home_fk")
     public Address getHomeAddress() {
         return homeAddress;
     }
@@ -150,6 +175,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.homeAddress = homeAddress;
     }
 
+    @Column(name = "gender")
     public Gender getGender() {
         return gender;
     }
@@ -158,6 +184,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.gender = gender;
     }
 
+    @Column(name = "birth_date")
     public Date getBirthDate() {
         return birthDate;
     }
@@ -166,6 +193,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.birthDate = birthDate;
     }
 
+    @Column(name = "district_entry_date")
     public Date getDistrictEntryDate() {
         return districtEntryDate;
     }
@@ -174,6 +202,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.districtEntryDate = districtEntryDate;
     }
 
+    @Column(name = "projected_graduation_year")
     public Long getProjectedGraduationYear() {
         return projectedGraduationYear;
     }
@@ -182,6 +211,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.projectedGraduationYear = projectedGraduationYear;
     }
 
+    @Column(name = "social_security_number")
     public String getSocialSecurityNumber() {
         return socialSecurityNumber;
     }
@@ -190,6 +220,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.socialSecurityNumber = socialSecurityNumber;
     }
 
+    @Column(name = "federal_race")
     public String getFederalRace() {
         return federalRace;
     }
@@ -198,6 +229,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.federalRace = federalRace;
     }
 
+    @Column(name = "federal_ethnicity")
     public String getFederalEthnicity() {
         return federalEthnicity;
     }
@@ -206,6 +238,8 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.federalEthnicity = federalEthnicity;
     }
 
+    //@Column(name = "school_fk", nullable = true)
+    @Transient
     public Long getCurrentSchoolId() {
         return currentSchoolId;
     }
@@ -240,5 +274,24 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         return 31 * super.hashCode()
                 + Objects.hash(username, login, sourceSystemId, mailingAddress, homeAddress, gender, birthDate, 
                         districtEntryDate, projectedGraduationYear, socialSecurityNumber, federalRace, federalEthnicity, currentSchoolId);
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "username='" + username + '\'' +
+                ", login=" + login +
+                ", sourceSystemId='" + sourceSystemId + '\'' +
+                ", mailingAddress=" + mailingAddress +
+                ", homeAddress=" + homeAddress +
+                ", gender=" + gender +
+                ", birthDate=" + birthDate +
+                ", districtEntryDate=" + districtEntryDate +
+                ", projectedGraduationYear=" + projectedGraduationYear +
+                ", socialSecurityNumber='" + socialSecurityNumber + '\'' +
+                ", federalRace='" + federalRace + '\'' +
+                ", federalEthnicity='" + federalEthnicity + '\'' +
+                ", currentSchoolId=" + currentSchoolId +
+                '}';
     }
 }
