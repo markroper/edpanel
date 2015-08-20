@@ -108,7 +108,7 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
         return homeAddress;
     }
 
-    @Column(name = "teacher_homePhone")
+    @Column(name = "teacher_home_phone")
     public String getHomePhone() {
         return homePhone;
     }
