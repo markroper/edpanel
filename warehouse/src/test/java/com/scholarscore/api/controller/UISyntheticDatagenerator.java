@@ -23,7 +23,7 @@ import com.scholarscore.models.Term;
  * @author markroper
  *
  */
-@Test
+@Test(groups = { "datagen" })
 public class UISyntheticDatagenerator extends IntegrationBase {
     School school;
     
