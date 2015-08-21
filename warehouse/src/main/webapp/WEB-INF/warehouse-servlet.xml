@@ -15,7 +15,7 @@
                      http://www.springframework.org/schema/util/spring-util.xsd">
 
 
-    <import resource="../../resources/persistence.xml"/>
+    <import resource="classpath:persistence.xml"/>
 
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
       <property name="locations">
