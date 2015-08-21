@@ -25,7 +25,7 @@ cargo {
     // Note: cargo local stuff will still work for now, but please prefer gretty ("gradle appRun") for local instances
     local {
         installer {
-            installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.zip'
+            installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.63/bin/apache-tomcat-7.0.63.zip'
             downloadDir = file("$buildDir/download")
             extractDir = file("$buildDir/extract")
         }
