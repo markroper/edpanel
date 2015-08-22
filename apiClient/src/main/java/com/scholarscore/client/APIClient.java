@@ -112,6 +112,14 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         return Arrays.asList(behaviors);
     }
 
+    @Override
+    public Behavior createBehavior(Behavior behavior) {
+        EntityId id = create(behavior, BEHAVIOR_ENDPOINT);
+        Behavior response = new Behavior(behavior);
+        response.setId(id.getId());
+        return response;
+    }
+
     /**
      * A method to authenticate a user and store the returned auth cookie for subsequent requests.
      * Called by all integration test classes that are testing protected endpoints.

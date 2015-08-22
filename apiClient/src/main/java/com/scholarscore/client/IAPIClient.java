@@ -17,5 +17,7 @@ public interface IAPIClient {
     Student updateStudent(Long studentId, Student student);
     Collection<Student> getStudents();
     
-    Collection<Behavior> getBehaviors();
+    Collection<Behavior> getBehaviors(Long studentId);
+    Behavior createBehavior(Long studentId, Behavior behavior);
+    
 }

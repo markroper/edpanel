@@ -170,6 +170,26 @@ CREATE TABLE `scholar_warehouse`.`report` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
+CREATE TABLE `scholar_warehouse`.`behavior` (
+  `behavior_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key identity column',
+  `student_fk` INT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
+  `teacher_fk` INT UNSIGNED NOT NULL COMMENT 'The foreign key to the teacher table',
+  `name` VARCHAR(256) NULL COMMENT 'Human readable name of behavior event',
+  `date` DATETIME NULL COMMENT 'Date the behavior event occurred',
+  `remote_student_id` VARCHAR(256) NULL COMMENT 'ID of the student in a remote system (which is not yet defined)',
+  `category` VARCHAR(256) NULL COMMENT 'Human readable category of the behavior event',
+  `point_value` VARCHAR(256) NULL COMMENT 'Point value of the behavior',
+  `roster` VARCHAR(256) NULL COMMENT 'Class where the event occurred',
+  PRIMARY KEY (`behavior_id`),
+  CONSTRAINT `fk_student$behavior`
+    FOREIGN KEY (`student_fk`)
+    REFERENCES `scholar_warehouse`.`student`(`student_id`),
+  CONSTRAINT `fk_teacher$behavior`
+    FOREIGN KEY (`teacher_fk`)
+    REFERENCES `scholar_warehouse`.`teacher`(`teacher_id`)
+)
+ENGINE = InnoDB;
+
 CREATE TABLE `scholar_warehouse`.`users` (
     `username` varchar(50) NOT NULL,
     `password` varchar(50) CHARACTER SET UTF8 NOT NULL,

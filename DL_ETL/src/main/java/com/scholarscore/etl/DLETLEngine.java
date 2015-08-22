@@ -41,30 +41,55 @@ public class DLETLEngine implements IETLEngine {
     public MigrationResult migrateDistrict() {
 
         Collection<Behavior> existingBehaviors = scholarScore.getBehaviors();
-        
-        
+
         Collection<Behavior> behaviorsToMerge = getBehaviorData();
-        for (Behavior behavior: behaviorsToMerge) {
-            System.out.println("Got  behavior event for student " + behavior.getStudentName() + " ("
-                    + behavior.getName() + ") with point value " + behavior.getPointValue());
-        }
 
         Collection<Student> existingStudents = scholarScore.getStudents();
-        Collection<Student> studentsToMerge = getStudents();
+//        Collection<Student> studentsToMerge = getStudents();
 
-        // TODO Jordan: just for testing. Students found in both DeansList and local Scholar DB 
-        // will have their stats updated, others won't.
-        for (Student student : studentsToMerge) {
-            // insert actual behavioral data here
-            student.setFederalRace("Klingon");
-            student.setFederalEthnicity("Latino");
+        // TODO Jordan make these terrible loops better
+        for (Behavior behavior : behaviorsToMerge) {
+            // at this point, the only thing populated in the student is their name
+            Student student = behavior.getStudent();
+            System.out.println("Got behavior event for student named " + (student == null ? "(student null)" : student.getName() )
+                    + " (" + behavior.getName() + ") with point value " + behavior.getPointValue());
+
+            if (student != null) {
+                String studentName = student.getName();
+                if (studentName != null) {
+                    String simpleStudentName = stripAndLowerName(studentName);
+                    for (Student existingStudent : existingStudents) {
+                        if (simpleStudentName.equalsIgnoreCase(stripAndLowerName(existingStudent.getName()))) {
+                            // student name specified in behavior event matches existing student name
+                            behavior.setStudent(existingStudent);
+                            System.out.println("About to create Behavior " + behavior.getName() + " for student " + studentName + " matched student " + existingStudent.getName());
+                            scholarScore.createBehavior(behavior);
+                            break;
+                        }
+                    }
+                }
+            }
+//            behavior.setStudent();
+            // replace 
+            
+            // same for teacher
+//            behavior.getTeacher();
         }
 
-        mergeOnName(existingStudents, studentsToMerge);
+        // TODO Jordan: wrap up DeansList ETL migration task
+        // just for testing. Students found in both DeansList and local Scholar DB
+        // will have their stats updated, others won't.
+//        for (Student student : studentsToMerge) {
+//            // insert actual behavioral data here
+//            student.setFederalRace("Klingon");
+//            student.setFederalEthnicity("Latino");
+//        }
+
+//        mergeOnName(existingStudents, studentsToMerge);
         return new MigrationResult();
     }
 
-    // TODO: WIP
+    // TODO Jordan: WIP
     private void mergeOnName(Collection<Student> existingStudents, Collection<Student> studentsToMerge) {
 
         for (Student studentToMerge : studentsToMerge) {

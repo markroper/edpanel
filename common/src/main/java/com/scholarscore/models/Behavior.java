@@ -15,10 +15,25 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     private String pointValue;
     private String roster; // the class the behavior event occurred within
 
-    // should be linked to actual student/staff by ID
-    private String studentName;
-    private String staffName;
+    // TODO Jordan need to hook up transient Student and Teacher here
+    private transient Student student;
+    private transient Teacher teacher;
+    
+    public Behavior() { }
+    
+    public Behavior(Behavior behavior) {
+        super(behavior);
+        // "name" in parent class maps to 'behavior'
+        this.remoteSystemEventId = behavior.remoteSystemEventId;    // currently always deanslist DLSAID
+        this.behaviorDate = behavior.behaviorDate;
+        this.behaviorCategory = behavior.behaviorCategory;
+        this.pointValue = behavior.pointValue;
+        this.roster = behavior.roster; // the class the behavior event occurred within
 
+        this.student = behavior.student;
+        this.teacher = behavior.teacher;
+    }
+    
     @Override
     public void mergePropertiesIfNull(Behavior mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
@@ -58,27 +73,27 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
         this.pointValue = pointValue;
     }
 
-    public String getStaffName() {
-        return staffName;
-    }
-
-    public void setStaffName(String staffName) {
-        this.staffName = staffName;
-    }
-
-    public String getStudentName() {
-        return studentName;
-    }
-
-    public void setStudentName(String studentName) {
-        this.studentName = studentName;
-    }
-
     public String getRoster() {
         return roster;
     }
 
     public void setRoster(String roster) {
         this.roster = roster;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    public Teacher getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
     }
 }
