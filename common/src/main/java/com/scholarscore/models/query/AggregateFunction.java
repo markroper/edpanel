@@ -8,7 +8,7 @@ package com.scholarscore.models.query;
  */
 public enum AggregateFunction {
     SUM,
-    AVERAGE,
+    AVG,
     STD_DEV,
     COUNT;
 }

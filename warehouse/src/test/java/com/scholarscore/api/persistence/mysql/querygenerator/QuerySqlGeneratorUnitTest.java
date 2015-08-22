@@ -11,6 +11,8 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.AggregateMeasure;
 import com.scholarscore.models.query.Dimension;
@@ -76,7 +78,7 @@ public class QuerySqlGeneratorUnitTest {
        
         Query assignmentGradesQuery  = new Query();
         ArrayList<AggregateMeasure> assginmentMeasures = new ArrayList<>();
-        assginmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVERAGE));
+        assginmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVG));
         assignmentGradesQuery.setAggregateMeasures(assginmentMeasures);
         assignmentGradesQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
         Expression assignmentWhereClause = new Expression(
@@ -92,9 +94,32 @@ public class QuerySqlGeneratorUnitTest {
                 + "WHERE  ( section.section_id  =  4 ) "
                 + "GROUP BY student.student_name";
        
+        Query homeworkCompletionQuery  = new Query();
+        ArrayList<AggregateMeasure> homeworkMeasures = new ArrayList<>();
+        homeworkMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
+        homeworkMeasures.add(new AggregateMeasure(Measure.ATTENDANCE, AggregateFunction.SUM));
+        homeworkCompletionQuery.setAggregateMeasures(homeworkMeasures);
+        homeworkCompletionQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
+        Expression termClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.TERM, SectionDimension.ID)), 
+                ComparisonOperator.EQUAL, 
+                new NumericOperand(1));
+        Expression yearClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.YEAR, SectionDimension.ID)), 
+                ComparisonOperator.EQUAL, 
+                new NumericOperand(1));
+        Expression sectionClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)), 
+                ComparisonOperator.NOT_EQUAL, 
+                new NumericOperand(0));
+        Expression comb1 = new Expression(termClause, BinaryOperator.AND, yearClause);
+        Expression comb2 = new Expression(comb1, BinaryOperator.AND, sectionClause);
+        homeworkCompletionQuery.setFilter(comb2);
+        
         return new Object[][] {
                 { "Course Grade query", courseGradeQuery, courseGradeQuerySql }, 
                 { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql }, 
+//                { "Homework query", homeworkCompletionQuery, null }
         };
     }
     

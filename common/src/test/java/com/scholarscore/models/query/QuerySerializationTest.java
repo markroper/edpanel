@@ -25,7 +25,7 @@ public class QuerySerializationTest {
         
         Query assignmentGradesQuery  = new Query();
         ArrayList<AggregateMeasure> assignmentMeasures = new ArrayList<>();
-        assignmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVERAGE));
+        assignmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVG));
         assignmentGradesQuery.setAggregateMeasures(assignmentMeasures);
         assignmentGradesQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
         Expression assignmentWhereClause = new Expression(

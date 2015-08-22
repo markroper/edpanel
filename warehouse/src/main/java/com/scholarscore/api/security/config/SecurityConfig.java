@@ -12,13 +12,17 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.models.Authority;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +31,7 @@ import javax.sql.DataSource;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 
 /**
  * Use MVC Security with JDBC Authentication as oppose to static authentication using username/password
@@ -128,9 +133,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
         CustomAuthenticationSuccessHandler successHandler = new CustomAuthenticationSuccessHandler();
+        CustomAuthenticationFailureHandler failureHandler = new CustomAuthenticationFailureHandler();
         FormLoginConfigurer formLogin = new FormLoginConfigurer();
         formLogin.
             successHandler(successHandler).
+            failureHandler(failureHandler).
             loginProcessingUrl(LOGIN_ENDPOINT);
         http.apply(formLogin);
         
@@ -236,16 +243,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                             Authentication authentication) throws ServletException, IOException {
             SecurityConfig.addCorsHeaders(response);
+            ObjectMapper mapper = new ObjectMapper();
             PrintWriter out = response.getWriter();
-            out.print("");
+            //TODO: add info about roles so the UI can cache & use it!
+            //Also add teacher|| student ID, so it can be used in the UI as well
+            out.print(mapper.writeValueAsString(authentication.getPrincipal()));
             out.flush();
             out.close(); 
             clearAuthenticationAttributes(request);
         }
     }
     
+    private static class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
+
+        @Override
+        public void onAuthenticationFailure(HttpServletRequest request,
+                HttpServletResponse response, AuthenticationException exception)
+                throws IOException, ServletException {
+            SecurityConfig.addCorsHeaders(response);
+            PrintWriter out = response.getWriter();
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.print("{\"error\":\"Invalid credentials supplied\"}");
+            out.flush();
+            out.close();
+        }
+        
+    }
+    
     public static void addCorsHeaders(HttpServletResponse response) {
-        response.setHeader("Access-Control-Allow-Origin", "http://192.168.1.77:3000");
+        response.setHeader("Access-Control-Allow-Origin", "https://localhost:3000");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Max-Age", "3600");
