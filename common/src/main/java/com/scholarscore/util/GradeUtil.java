@@ -31,6 +31,8 @@ public class GradeUtil {
                 denominator += ONE_HUNDRED_POINT_MULTIPLIER * g.getWeight();
             }
         }
+        // to avoid NaN. assumption is that no completed classes should be thought of as '100%' and not '0%'
+        if (denominator == 0) { return 1D; }
         return (numerator / denominator);
     }
     

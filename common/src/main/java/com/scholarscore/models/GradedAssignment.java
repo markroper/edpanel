@@ -16,11 +16,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GradedAssignment extends Assignment implements Serializable {
-    public static final String GRADED = "GRADED";
     private Date assignedDate;
 
     public GradedAssignment() {
-        super(AssignmentType.GRADED);
+        super();
     }
     
     public GradedAssignment(GradedAssignment assignment) {
