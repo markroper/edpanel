@@ -1210,4 +1210,13 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         return new ServiceResponse<QueryResults>(
                 StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND));
     }
+    
+    @Override
+    public ServiceResponse<QueryResults> getQueryResults(Query query) {
+        QueryResults results = queryPersistence.generateQueryResults(query);
+        if(null == results) {
+            return new ServiceResponse<QueryResults>(StatusCodes.getStatusCode(StatusCodeType.INVALID_QUERY));
+        }
+        return new ServiceResponse<QueryResults>(results);
+    }
 }

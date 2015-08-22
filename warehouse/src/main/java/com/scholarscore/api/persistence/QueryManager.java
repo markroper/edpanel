@@ -46,5 +46,7 @@ public interface QueryManager {
      * @return
      */
     public ServiceResponse<Collection<Query>> getQueries(Long schoolId);
+    
+    public ServiceResponse<QueryResults> getQueryResults(Query query);
 
 }

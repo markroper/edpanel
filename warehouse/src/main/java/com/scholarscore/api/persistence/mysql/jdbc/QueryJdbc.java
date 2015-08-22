@@ -14,8 +14,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.persistence.mysql.DbConst;
 import com.scholarscore.api.persistence.mysql.QueryPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.QueryMapper;
+import com.scholarscore.api.persistence.mysql.mapper.QueryResultsMapper;
+import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
+import com.scholarscore.api.persistence.mysql.querygenerator.SqlGenerationException;
+import com.scholarscore.api.persistence.mysql.querygenerator.SqlWithParameters;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.QueryResults;
+import com.scholarscore.models.query.Record;
 
 public class QueryJdbc extends BaseJdbc implements QueryPersistence {
     private static String INSERT_REPORT_SQL = "INSERT INTO `"+ 
@@ -87,6 +92,22 @@ public class QueryJdbc extends BaseJdbc implements QueryPersistence {
     public QueryResults generateQueryResults(Long schoolId, Long reportId) {
         // TODO: Implement query generator
         return null;
+    }
+
+    @Override
+    public QueryResults generateQueryResults(Query query) {
+        // TODO Auto-generated method stub
+        SqlWithParameters sqlQuery = null;
+        try {
+            sqlQuery = QuerySqlGenerator.generate(query);
+        } catch(SqlGenerationException e) {
+            return null;
+        }
+        List<Record> results = jdbcTemplate.query(
+                sqlQuery.getSql(), 
+                sqlQuery.getParams(), 
+                new QueryResultsMapper());
+        return new QueryResults(results);
     }
 
 }
