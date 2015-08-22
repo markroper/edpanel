@@ -40,13 +40,15 @@ public class DLETLEngine implements IETLEngine {
     @Override
     public MigrationResult migrateDistrict() {
 
-        Collection<Behavior> existingBehaviors = scholarScore.getBehaviors();
+//        Collection<Behavior> existingBehaviors = scholarScore.getBehaviors();
 
         Collection<Behavior> behaviorsToMerge = getBehaviorData();
+        System.out.println("got " + behaviorsToMerge.size() + " behavior events from deanslist.");
 
         Collection<Student> existingStudents = scholarScore.getStudents();
 //        Collection<Student> studentsToMerge = getStudents();
-
+        System.out.println("got " + existingStudents.size() + " existing students as potential merge targets.");
+        
         // TODO Jordan make these terrible loops better
         for (Behavior behavior : behaviorsToMerge) {
             // at this point, the only thing populated in the student is their name
@@ -62,8 +64,10 @@ public class DLETLEngine implements IETLEngine {
                         if (simpleStudentName.equalsIgnoreCase(stripAndLowerName(existingStudent.getName()))) {
                             // student name specified in behavior event matches existing student name
                             behavior.setStudent(existingStudent);
-                            System.out.println("About to create Behavior " + behavior.getName() + " for student " + studentName + " matched student " + existingStudent.getName());
-                            scholarScore.createBehavior(behavior);
+                            System.out.println("About to create Behavior " + behavior.getName() 
+                                    + " for student " + studentName + " (matched student " + existingStudent.getName() + ")");
+                            long studentId = existingStudent.getId();
+                            scholarScore.createBehavior(studentId, behavior);
                             break;
                         }
                     }

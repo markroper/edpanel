@@ -93,7 +93,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         }
         return Arrays.asList(students);
     }
-
+    
     @Override
     public Student updateStudent(Long studentId, Student student) {
         if (studentId == null || studentId < 0) { return null; }
@@ -104,17 +104,18 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Collection<Behavior> getBehaviors() {
-        Behavior[] behaviors = get(Behavior[].class, BASE_API_ENDPOINT + BEHAVIOR_ENDPOINT);
+    public Collection<Behavior> getBehaviors(Long studentId) {
+        throw new UnsupportedOperationException("not implemented yet");
+//        Behavior[] behaviors = get(Behavior[].class, BASE_API_ENDPOINT + BEHAVIOR_ENDPOINT);
 //        for (Behavior behavior : behaviors) {
 //            System.out.println("Got scholarScore behavior: " + behavior);
 //        }
-        return Arrays.asList(behaviors);
+//        return Arrays.asList(behaviors);
     }
 
     @Override
-    public Behavior createBehavior(Behavior behavior) {
-        EntityId id = create(behavior, BEHAVIOR_ENDPOINT);
+    public Behavior createBehavior(Long studentId, Behavior behavior) {
+        EntityId id = create(behavior, STUDENT_ENDPOINT + "/" + studentId + BEHAVIOR_ENDPOINT);
         Behavior response = new Behavior(behavior);
         response.setId(id.getId());
         return response;
