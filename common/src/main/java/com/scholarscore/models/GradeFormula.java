@@ -85,9 +85,6 @@ public class GradeFormula implements Serializable {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        if(!super.equals(obj)) {
-            return false;
-        }
         final GradeFormula other = (GradeFormula) obj;
         return Objects.equals(this.assignmentTypeWeights, other.assignmentTypeWeights);
     }

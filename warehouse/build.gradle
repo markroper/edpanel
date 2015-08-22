@@ -1,23 +1,18 @@
 apply plugin: 'war'
-apply plugin: 'com.bmuschko.cargo'
-apply plugin: 'org.akhikhl.gretty'
-
-//Dependencies section:
-ext {
-    springVersion = "4.0.3.RELEASE"
-    springSecurityVersion = "3.2.5.RELEASE"
-    jacksonVersion = "2.4.3"
-    apacheHttpVersion = "4.3.3"
-}
+//apply plugin: 'com.bmuschko.cargo'
+//apply plugin: 'org.akhikhl.gretty'
+apply plugin: 'com.bmuschko.tomcat'
 
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.bmuschko:gradle-cargo-plugin:2.0.3'
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.1.1'
         classpath 'org.akhikhl.gretty:gretty:1.1.8'
+        classpath 'com.bmuschko:gradle-tomcat-plugin:2.2.2'
     }
 
 }
@@ -27,8 +22,20 @@ props.load(new FileInputStream(projectDir.toString() + "/src/test/resources/loca
 def local_portnum = new URI(props.get("endpoint").toString()).port
 def local_https_portnum = new URI(props.get("httpsEndpoint").toString()).port
 
+war.archiveName = 'warehouse.war'
+
+tomcat {
+    httpPort = local_portnum
+    httpsPort = local_https_portnum
+    enableSSL = true
+    contextPath = 'warehouse'
+    daemon = true
+}
+
+/*
 cargo {
     containerId = 'tomcat7x'
+
 
     // Note: cargo local stuff will still work for now, but please prefer gretty ("gradle appRun") for local instances
     local {
@@ -40,20 +47,23 @@ cargo {
         containerProperties {
             // use a non-standard ajp port (not 9099) so as to not conflict with other tomcat instances
             property 'cargo.tomcat.ajp.port', 9199
-            property 'cargo.servlet.port', local_portnum
+//            property 'cargo.servlet.port', local_portnum
         }
+        outputFile = file("build/catalina.log")
+        timeout = 60000
     }
 
     remote {
         hostname = 'localhost'
-        port = 8090
+        port = local_portnum
         username = 'cargo'
         password = '0BxLrz7zG4dqDX2q6vi4'
     }
 }
+*/
 
 // use gretty to start a container instrumented with jacoco for calculation of integration test coverage
-gretty {
+/*gretty {
     port = local_portnum
     httpsPort = local_https_portnum
     httpsEnabled = true
@@ -64,19 +74,8 @@ gretty {
 
     // automatically start up the container before the following task, and shut it down afterwards
     integrationTestTask = 'integrationLocalWithContainer'
-
-    springBoot = true
-    springBootVersion = "1.2.5.RELEASE"
-
-    springBootMainClass="org.springframework.boot.SpringApplication"
-
-    afterEvaluate {
-        appRunDebug {
-            debugPort = 5005
-            debugSuspend = true
-        }
-    }
-}
+    jvmArgs '-XX:MaxPermSize=1024m', '-Xmx2048m'
+}*/
 
 //Integration test suite
 def getFileByPattern(File dir, String pat, String stripDir) {
@@ -106,15 +105,34 @@ task integrationLocal(type: Test) {
     beforeTest { descriptor ->
         logger.lifecycle("RUNNING INTEGRATION TEST LOCALLY: " + descriptor)
     }
+    tomcatStop.execute()
 }
 
-task integrationLocalWithContainer(type: Test, dependsOn: integrationLocal) {
+task integrationLocalWithContainer(type: Test) {
     group 'Verification'
-    description 'use gretty to start a local container, then run the integrationLocal task, then stop container'
+    description 'use tomcat to start a local container, then run the integrationLocal task, then stop container'
+}
 
+integrationLocalWithContainer.doFirst {
+    war.execute()
+    tomcatRunWar.execute()
+    integrationLocal.execute()
+}
+
+//Dependencies section:
+ext {
+    springVersion = "4.2.0.RELEASE"
+    springSecurityVersion = "3.2.5.RELEASE"
+    jacksonVersion = "2.6.0"
+    apacheHttpVersion = "4.3.3"
+    tomcatVersion = '7.0.59'
 }
 
 dependencies {
+
+    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
+            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
 
     compile project(':common'),
             "javax.servlet:javax.servlet-api:3.1.0",
@@ -141,7 +159,7 @@ dependencies {
             "org.springframework.security:spring-security-core:$springSecurityVersion",
             "org.springframework.security:spring-security-config:$springSecurityVersion",
 
-            'org.springframework.boot:spring-boot-starter-web:1.2.5.RELEASE',
+            //'org.springframework.boot:spring-boot-starter-web:1.2.5.RELEASE',
 
             //Jackson for JSON & XML API serialization
             "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",

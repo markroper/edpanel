@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.serializers.ObjectParsingException;
 
 /**
  * This class catches and handles exceptions thrown within or before entering
@@ -47,15 +46,6 @@ public class RestErrorHandler extends BaseController {
     public ResponseEntity<StatusCode> processJsonMappingException(JsonMappingException ex) {
         StatusCode error = new StatusCode(StatusCodes.JSON_PARSING_ERROR_CODE, ex.getMessage());
         return new ResponseEntity<StatusCode>(error, HttpStatus.BAD_REQUEST);
-    }
-    
-    @ExceptionHandler(ObjectParsingException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public ResponseEntity<StatusCode> processAppJsonMappingException(ObjectParsingException ex) {
-        StatusCode returnCode = StatusCodes.getStatusCode(StatusCodeType.UNSUPPORTED_ASSIGNMENT_TYPE, ex.getArgs());
-        returnCode.setMessage(ex.getMessage());
-        return respond(returnCode);
     }
     
     @ExceptionHandler(Exception.class)
