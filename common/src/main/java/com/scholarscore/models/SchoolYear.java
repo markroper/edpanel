@@ -33,6 +33,11 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         this.terms = year.terms;
     }
     
+    public SchoolYear(Date startDate, Date endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+    
     public Date getStartDate() {
         return startDate;
     }

@@ -10,6 +10,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.AssignmentType;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.GradedAssignment;
 import com.scholarscore.models.School;
@@ -20,7 +21,7 @@ import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.Term;
 
 @Test(groups = { "integration" })
-public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase {
+public class StudentAssignmentControllerIntegrationTest extends IntegrationBase {
     private int numberOfItemsCreated = 0;
     private School school;
     private SchoolYear schoolYear;
@@ -40,6 +41,7 @@ public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase
         
         student = new Student();
         student.setName(localeServiceUtil.generateName());
+        student.setCurrentSchoolId(school.getId());
         student = studentValidatingExecutor.create(student, "create base student");
         
         schoolYear = new SchoolYear();
@@ -62,6 +64,7 @@ public class StudentAssignmentControllerIntegrationTest  extends IntegrationBase
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
         
         sectionAssignment = new GradedAssignment();
+        sectionAssignment.setType(AssignmentType.FINAL);
         sectionAssignment.setName(localeServiceUtil.generateName());
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);

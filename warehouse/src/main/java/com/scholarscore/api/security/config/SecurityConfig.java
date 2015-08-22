@@ -58,6 +58,7 @@ import java.io.PrintWriter;
 @EnableWebMvcSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String USER_ROLE = "USER";
+    private static final String OPTIONS_VERB = "OPTIONS";
     private static final String ADMIN_ROLE = "ROLE";
     private static final String LOGIN_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/login";
     private static final String LOGOUT_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/logout";
@@ -156,6 +157,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             and().
             authorizeRequests().
             antMatchers(HttpMethod.POST, LOGIN_ENDPOINT).permitAll().
+            antMatchers(HttpMethod.OPTIONS, LOGIN_ENDPOINT).permitAll().
+            antMatchers(HttpMethod.OPTIONS, "/**").permitAll().
             antMatchers(HttpMethod.POST, LOGOUT_ENDPOINT).authenticated().
             antMatchers(HttpMethod.GET, "/**").hasRole(USER_ROLE).
             antMatchers(HttpMethod.POST, "/**").hasRole(ADMIN_ROLE).
@@ -176,6 +179,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         public void handle(HttpServletRequest request, 
                 HttpServletResponse response, 
                 AccessDeniedException accessDeniedException) throws IOException, ServletException {
+            SecurityConfig.addCorsHeaders(response);
             response.setContentType(ApiConsts.APPLICATION_JSON);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             PrintWriter out = response.getWriter();
@@ -201,10 +205,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         public void commence(HttpServletRequest request, 
                 HttpServletResponse response, 
                 AuthenticationException authException) throws IOException, ServletException {
-            response.setContentType(ApiConsts.APPLICATION_JSON);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            String responseBody = "";
+            SecurityConfig.addCorsHeaders(response);
+            if(request.getMethod().equals(OPTIONS_VERB)) {
+                response.setContentType(ApiConsts.APPLICATION_JSON);
+                response.setStatus(HttpServletResponse.SC_OK);
+            } else {
+                response.setContentType(ApiConsts.APPLICATION_JSON);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                responseBody = UNAUTHORIZED_JSON;
+            }
             PrintWriter out = response.getWriter();
-            out.print(UNAUTHORIZED_JSON);
+            out.print(responseBody);
             out.flush();
             out.close();
         }
@@ -223,11 +235,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         @Override
         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                             Authentication authentication) throws ServletException, IOException {
+            SecurityConfig.addCorsHeaders(response);
             PrintWriter out = response.getWriter();
             out.print("");
             out.flush();
             out.close(); 
             clearAuthenticationAttributes(request);
         }
+    }
+    
+    public static void addCorsHeaders(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "http://192.168.1.77:3000");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
     }
 }
