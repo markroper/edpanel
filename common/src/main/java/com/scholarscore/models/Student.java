@@ -41,6 +41,15 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.currentSchoolId = student.currentSchoolId;
     }
     
+    public Student(String race, String ethnicity, Long currentSchoolId, Gender gender, String name, Long expectedGraduationYear) {
+        this.federalRace = race;
+        this.federalEthnicity = ethnicity;
+        this.currentSchoolId = currentSchoolId;
+        this.gender = gender;
+        this.name = name;
+        this.projectedGraduationYear = expectedGraduationYear;
+    }
+    
     // FK to the Users table, this is optional as a 1:1 relationship does not need to exist between
     // a user and a student.  A student can exist without a login.  Currently spring security requires
     // this as the PK of the table, this should be changed to an id column as usernames may be able to

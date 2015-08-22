@@ -1,13 +1,12 @@
 package com.scholarscore.models;
 
-import com.scholarscore.models.serializers.*;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * Base class for all assignment subclasses encapsulating shared attributes and behaviors.
@@ -16,8 +15,19 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  *
  */
 @SuppressWarnings("serial")
-@JsonDeserialize(using = AssignmentDeserializerFactory.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = AttendanceAssignment.class, name="ATTENDANCE"),
+    @JsonSubTypes.Type(value = GradedAssignment.class, name = "HOMEWORK"),
+    @JsonSubTypes.Type(value = GradedAssignment.class, name = "QUIZ"),
+    @JsonSubTypes.Type(value = GradedAssignment.class, name = "TEST"),
+    @JsonSubTypes.Type(value = GradedAssignment.class, name = "MIDTERM"),
+    @JsonSubTypes.Type(value = GradedAssignment.class, name = "FINAL"),
+    @JsonSubTypes.Type(value = GradedAssignment.class, name = "LAB"),
+    @JsonSubTypes.Type(value = GradedAssignment.class, name = "CLASSWORK"),
+    @JsonSubTypes.Type(value = GradedAssignment.class, name = "USER_DEFINED")
+})
 public abstract class Assignment 
         extends ApiModel implements Serializable, IApiModel<Assignment> {
     private AssignmentType type;

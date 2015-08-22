@@ -19,15 +19,13 @@ public class AssignmentMapper implements RowMapper<Assignment>{
         AssignmentType type = AssignmentType.toAssignmentType(rs.getString(DbConst.TYPE_FK_COL));
         Assignment ass = null;
         switch(type) {
-            case GRADED:
-                ass = new GradedAssignment();
-                ((GradedAssignment)ass).setAssignedDate(rs.getTimestamp(DbConst.ASSIGNED_DATE_COL));
-                break;
             case ATTENDANCE:
                 ass = new AttendanceAssignment();
                 break;
             default:
-                throw new RuntimeException("Assignment type not supported: " + type);
+                ass = new GradedAssignment();
+                ((GradedAssignment)ass).setAssignedDate(rs.getTimestamp(DbConst.ASSIGNED_DATE_COL));
+                break;
         }
         ass.setType(type);
         Long availPoints = rs.getLong(DbConst.AVAILABLE_POINTS_COL);

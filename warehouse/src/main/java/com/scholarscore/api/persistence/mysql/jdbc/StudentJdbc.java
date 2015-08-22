@@ -122,7 +122,7 @@ public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPer
         params.put(DbConst.STUDENT_HOME_CITY_COL, homeAddress.getCity());
         params.put(DbConst.STUDENT_HOME_STATE_COL, homeAddress.getState());
         params.put(DbConst.STUDENT_HOME_POSTAL_COL, homeAddress.getPostalCode());
-        params.put(DbConst.STUDENT_GENDER_COL, student.getGender());
+        params.put(DbConst.STUDENT_GENDER_COL, (null == student.getGender()) ? null : student.getGender().name());
         params.put(DbConst.STUDENT_BIRTH_DATE_COL, student.getBirthDate());
         params.put(DbConst.STUDENT_DISTRICT_ENTRY_DATE_COL, student.getDistrictEntryDate());
         params.put(DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL, student.getProjectedGraduationYear());
@@ -155,7 +155,7 @@ public class StudentJdbc extends EnhancedBaseJdbc<Student> implements StudentPer
         params.put(DbConst.STUDENT_HOME_CITY_COL, homeAddress.getCity());
         params.put(DbConst.STUDENT_HOME_STATE_COL, homeAddress.getState());
         params.put(DbConst.STUDENT_HOME_POSTAL_COL, homeAddress.getPostalCode());
-        params.put(DbConst.STUDENT_GENDER_COL, student.getGender());
+        params.put(DbConst.STUDENT_GENDER_COL, (null == student.getGender()) ? null : student.getGender().name());
         params.put(DbConst.STUDENT_BIRTH_DATE_COL, DbConst.resolveTimestamp(student.getBirthDate()));
         params.put(DbConst.STUDENT_DISTRICT_ENTRY_DATE_COL, DbConst.resolveTimestamp(student.getDistrictEntryDate()));
         params.put(DbConst.STUDENT_PROJECTED_GRADUATION_DATE_COL, student.getProjectedGraduationYear());

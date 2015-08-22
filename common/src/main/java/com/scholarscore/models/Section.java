@@ -34,6 +34,13 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         super();
     }
     
+    public Section(Date startDate, Date endDate, String room, GradeFormula gradeFormula) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.room = room;
+        this.gradeFormula = gradeFormula;
+    }
+    
     public Section(Section sect) {
         super(sect);
         course = sect.course;
