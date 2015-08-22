@@ -11,6 +11,16 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.scholarscore.models.query.Record;
 
+/**
+ * Capable of mapping the result set from an arbitrary database query into 
+ * a Record instance, which is simply an array of Object instances.  Varchars
+ * map to String instances, sates & timestamps to Date instances, and numerics
+ * all map into Double instances.  Unmapped types are inserted into the resultset 
+ * as nulls.
+ * 
+ * @author markroper
+ *
+ */
 public class QueryResultsMapper implements RowMapper<Record>{
 
     @Override
