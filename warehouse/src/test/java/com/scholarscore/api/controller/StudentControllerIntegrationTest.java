@@ -68,6 +68,7 @@ public class StudentControllerIntegrationTest extends IntegrationBase {
         studentValidatingExecutor.getAll("Get all records created so far");
     }
 
+    @Test
     public void studentGpaTest() {
         School school = new School();
         school.setName(localeServiceUtil.generateName());

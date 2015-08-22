@@ -15,7 +15,7 @@ public abstract class ApiModel implements Serializable {
     private Long id;
 
     @Size(min=1, max=256)
-    private String name;
+    protected String name;
     
     public ApiModel() {
         

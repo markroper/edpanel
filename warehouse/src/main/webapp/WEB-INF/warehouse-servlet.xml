@@ -17,6 +17,10 @@
 
     <import resource="classpath:persistence.xml"/>
 
+    <mvc:interceptors>
+        <bean class="com.scholarscore.api.interceptor.AuthenticationInterceptor" />
+    </mvc:interceptors>
+
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
       <property name="locations">
         <list>

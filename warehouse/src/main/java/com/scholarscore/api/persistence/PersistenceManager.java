@@ -1270,7 +1270,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
                 StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND));
     }
 
-    public void setAdministratorPersistence(AdministratorJdbc adminPersistence) {
+    public void setAdministratorPersistence(AdministratorPersistence adminPersistence) {
         this.administratorPersistence = adminPersistence;
     }
 }

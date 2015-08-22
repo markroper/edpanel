@@ -3,15 +3,9 @@ package com.scholarscore.api.persistence.mysql.mapper;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.jdbc.core.RowMapper;
-
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.persistence.mysql.DbConst;
-import com.scholarscore.models.AssignmentType;
 import com.scholarscore.models.GradeFormula;
 import com.scholarscore.models.Section;
 
@@ -25,11 +19,9 @@ public class SectionMapper implements RowMapper<Section> {
         section.setEndDate(rs.getTimestamp(DbConst.SECTION_END_DATE_COL));
         section.setRoom(rs.getString(DbConst.ROOM_COL));
         try {
-            Map<AssignmentType, Integer> weights = new ObjectMapper().readValue(
-                    rs.getString(DbConst.GRADE_FORMULA_COL), 
-                    new TypeReference<HashMap<AssignmentType, Integer>>(){});
-            if(null != weights && !weights.isEmpty()) {
-                section.setGradeFormula(new GradeFormula(weights));
+            GradeFormula formula = new ObjectMapper().readValue( rs.getString(DbConst.GRADE_FORMULA_COL), GradeFormula.class);
+            if(null != formula && null != formula.getAssignmentTypeWeights() && !formula.getAssignmentTypeWeights().isEmpty()) {
+                section.setGradeFormula(formula);
             }
         } catch (IOException e) {
             //TODO: handle this case...
