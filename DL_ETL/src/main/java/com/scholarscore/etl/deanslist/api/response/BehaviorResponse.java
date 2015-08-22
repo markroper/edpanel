@@ -28,8 +28,15 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
             out.setBehaviorCategory(behavior.BehaviorCategory);
             out.setBehaviorDate(behavior.BehaviorDate);
             out.setPointValue(behavior.PointValue);
-            out.setStudentName(getStudentName(behavior));
-            out.setStaffName(getStaffName(behavior));
+
+            // TODO Jordan: handle student and teacher here
+            com.scholarscore.models.Student student = new com.scholarscore.models.Student();
+            student.setName(getStudentName(behavior));
+//            out.setStudentName(getStudentName(behavior));
+            com.scholarscore.models.Teacher teacher = new com.scholarscore.models.Teacher();
+            teacher.setName(getStaffName(behavior));
+//            out.setStaffName(getStaffName(behavior));
+
             out.setRoster(behavior.Roster);
             toReturn.add(out);
         }

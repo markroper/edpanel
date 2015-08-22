@@ -22,12 +22,13 @@ public class BehaviorMapper implements RowMapper<Behavior> {
         behavior.setBehaviorDate(rs.getString(DbConst.BEHAVIOR_DATE_COL));
         behavior.setBehaviorCategory(rs.getString(DbConst.BEHAVIOR_CATEGORY_COL));
         behavior.setPointValue(rs.getString(DbConst.BEHAVIOR_POINT_VALUE_COL));
-        behavior.setStaffName(rs.getString(DbConst.BEHAVIOR_STAFF_NAME_COL));
         behavior.setRoster(rs.getString(DbConst.BEHAVIOR_ROSTER_COL));
 
-        // TODO: join to student and lookup/populate transient student on behavior
-        
-        return null;
+        // TODO jordan: join to student and lookup/populate transient student on behavior
+        // behavior.setStaffName(rs.getString(DbConst.BEHAVIOR_STAFF_NAME_COL));
+        // behavior.setStudentName();
+
+        return behavior;
         
         /* 
         * 
