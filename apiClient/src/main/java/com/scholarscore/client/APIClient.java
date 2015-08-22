@@ -8,6 +8,7 @@ import com.scholarscore.models.EntityId;
 import com.scholarscore.models.LoginRequest;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Student;
+import com.scholarscore.models.Teacher;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -104,13 +105,16 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
+    public Collection<Teacher> getTeachers() {
+        Teacher[] teachers = get(Teacher[].class, BASE_API_ENDPOINT + TEACHER_ENDPOINT);
+        return Arrays.asList(teachers);
+    }
+
+    @Override
     public Collection<Behavior> getBehaviors(Long studentId) {
-        throw new UnsupportedOperationException("not implemented yet");
-//        Behavior[] behaviors = get(Behavior[].class, BASE_API_ENDPOINT + BEHAVIOR_ENDPOINT);
-//        for (Behavior behavior : behaviors) {
-//            System.out.println("Got scholarScore behavior: " + behavior);
-//        }
-//        return Arrays.asList(behaviors);
+        Behavior[] behaviors = get(Behavior[].class, BASE_API_ENDPOINT
+                + STUDENT_ENDPOINT + "/" + studentId + BEHAVIOR_ENDPOINT);
+        return Arrays.asList(behaviors);
     }
 
     @Override
