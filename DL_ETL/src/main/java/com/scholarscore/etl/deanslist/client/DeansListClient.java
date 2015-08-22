@@ -79,7 +79,6 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
         StudentResponse studentResponse = get(StudentResponse.class, PATH_GET_STUDENTS);
         System.out.println("got studentResponse: " + studentResponse);
         return studentResponse;
-//        throw new UnsupportedOperationException("not implemented yet");
     }
 
     @Override
@@ -87,6 +86,5 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
         BehaviorResponse behaviorResponse = get(BehaviorResponse.class, PATH_GET_BEHAVIOR_DATA);
         System.out.println("got behaviorResponse: " + behaviorResponse);
         return behaviorResponse;
-//        throw new UnsupportedOperationException("not implemented yet");
     }
 }

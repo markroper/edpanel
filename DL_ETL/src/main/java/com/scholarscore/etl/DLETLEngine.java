@@ -6,6 +6,7 @@ import com.scholarscore.etl.deanslist.api.response.StudentResponse;
 import com.scholarscore.etl.deanslist.client.IDeansListClient;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Student;
+import com.scholarscore.models.Teacher;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,60 +41,61 @@ public class DLETLEngine implements IETLEngine {
     @Override
     public MigrationResult migrateDistrict() {
 
-//        Collection<Behavior> existingBehaviors = scholarScore.getBehaviors();
-
+        // grab behaviors from deanslist
         Collection<Behavior> behaviorsToMerge = getBehaviorData();
         System.out.println("got " + behaviorsToMerge.size() + " behavior events from deanslist.");
 
+        // get students from scholarscore -- we need to match names to behavior events
         Collection<Student> existingStudents = scholarScore.getStudents();
-//        Collection<Student> studentsToMerge = getStudents();
         System.out.println("got " + existingStudents.size() + " existing students as potential merge targets.");
+        // get teachers from scholarscore -- we need to match names to behavior events
+        Collection<Teacher> existingTeachers = scholarScore.getTeachers();
+        System.out.println("got " + existingTeachers.size() + " existing teachers as potential merge targets.");
         
-        // TODO Jordan make these terrible loops better
+        // TODO Jordan make this terrible nesting less terrible. don't search the same existing students
+        // and teachers multiple times
         for (Behavior behavior : behaviorsToMerge) {
             // at this point, the only thing populated in the student is their name
             Student student = behavior.getStudent();
-            System.out.println("Got behavior event for student named " + (student == null ? "(student null)" : student.getName() )
-                    + " (" + behavior.getName() + ") with point value " + behavior.getPointValue());
+            Teacher teacher = behavior.getTeacher();
+            System.out.println("Got behavior event (" + behavior.getName() + ")"
+                    + " for student named " + (student == null ? "(student null)" : student.getName())
+                    + " and teacher named " + (teacher == null ? "(teacher null)" : teacher.getName())
+                    + " with point value " + behavior.getPointValue());
 
-            if (student != null) {
-                String studentName = student.getName();
-                if (studentName != null) {
-                    String simpleStudentName = stripAndLowerName(studentName);
-                    for (Student existingStudent : existingStudents) {
-                        if (simpleStudentName.equalsIgnoreCase(stripAndLowerName(existingStudent.getName()))) {
-                            // student name specified in behavior event matches existing student name
-                            behavior.setStudent(existingStudent);
-                            System.out.println("About to create Behavior " + behavior.getName() 
-                                    + " for student " + studentName + " (matched student " + existingStudent.getName() + ")");
-                            long studentId = existingStudent.getId();
-                            scholarScore.createBehavior(studentId, behavior);
-                            break;
+            if (student != null && student.getName() != null
+                && teacher != null && teacher.getName() != null) {
+                String studentName = stripAndLowerName(student.getName());
+                String teacherName = stripAndLowerName(teacher.getName());
+                for (Student existingStudent : existingStudents) {
+                    if (studentName.equalsIgnoreCase(stripAndLowerName(existingStudent.getName()))) {
+                        // student found, now we need to locate teacher
+                        for (Teacher existingTeacher : existingTeachers) {
+                            if (teacherName.equalsIgnoreCase(stripAndLowerName(existingTeacher.getName()))) {
+                                // student and teacher matched! migrate behavioral event
+                                behavior.setStudent(existingStudent);
+                                behavior.setTeacher(existingTeacher);
+                                System.out.println("About to map Behavior " + behavior.getName()
+                                        + " to student " + existingStudent.getName()
+                                        + " and teacher " + existingTeacher.getName());
+                                long studentId = existingStudent.getId();
+                                scholarScore.createBehavior(studentId, behavior);
+                                break;
+                            }
                         }
                     }
                 }
+            } else {
+                System.out.println("WARN: Student and/or Teacher was null, skipping behavior event...");
             }
-//            behavior.setStudent();
-            // replace 
-            
-            // same for teacher
-//            behavior.getTeacher();
         }
 
-        // TODO Jordan: wrap up DeansList ETL migration task
-        // just for testing. Students found in both DeansList and local Scholar DB
-        // will have their stats updated, others won't.
-//        for (Student student : studentsToMerge) {
-//            // insert actual behavioral data here
-//            student.setFederalRace("Klingon");
-//            student.setFederalEthnicity("Latino");
-//        }
-
-//        mergeOnName(existingStudents, studentsToMerge);
+        // TODO Jordan: DeansList ETL in progress
         return new MigrationResult();
     }
 
     // TODO Jordan: WIP
+    /* 
     private void mergeOnName(Collection<Student> existingStudents, Collection<Student> studentsToMerge) {
 
         for (Student studentToMerge : studentsToMerge) {
@@ -127,6 +129,7 @@ public class DLETLEngine implements IETLEngine {
             }
         }
     }
+    */
     
     private String stripAndLowerName(String name) {
         if (null == name) { return null; }
