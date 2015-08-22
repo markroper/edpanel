@@ -14,6 +14,10 @@
                      http://www.springframework.org/schema/util
                      http://www.springframework.org/schema/util/spring-util.xsd">
 
+    <mvc:interceptors>
+        <bean class="com.scholarscore.api.interceptor.AuthenticationInterceptor" />
+    </mvc:interceptors>
+
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
       <property name="locations">
         <list>

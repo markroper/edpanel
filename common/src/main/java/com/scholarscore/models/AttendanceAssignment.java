@@ -1,8 +1,6 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -17,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AttendanceAssignment extends Assignment implements Serializable {
     public static final String ATTENDANCE = "ATTENDANCE";
-    private Date date;
 
     public AttendanceAssignment() {
         super(AssignmentType.ATTENDANCE);
@@ -25,7 +22,6 @@ public class AttendanceAssignment extends Assignment implements Serializable {
     
     public AttendanceAssignment(AttendanceAssignment assignment) {
         super(assignment);
-        this.date = assignment.date;
     }
 
     @Override
@@ -34,18 +30,6 @@ public class AttendanceAssignment extends Assignment implements Serializable {
         if(null == mergeFrom || !(mergeFrom instanceof AttendanceAssignment)) {
             return;
         }
-        AttendanceAssignment attendance = (AttendanceAssignment) mergeFrom;
-        if(null == this.date) {
-            this.date = attendance.date;
-        }
-    }
-    
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
     
     @Override
@@ -54,11 +38,11 @@ public class AttendanceAssignment extends Assignment implements Serializable {
             return false;
         }
         final AttendanceAssignment other = (AttendanceAssignment) obj;
-        return Objects.equals(this.date, other.date);
+        return true;
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(date);
+        return 31 * super.hashCode();
     }
 }
