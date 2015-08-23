@@ -44,6 +44,7 @@ public class SchoolJdbc implements SchoolPersistence {
 
     @Override
     public Long replaceSchool(long schoolId, School school) {
+        school.setId(schoolId);
         hibernateTemplate.update(school);
         return schoolId;
     }
