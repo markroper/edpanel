@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import javax.persistence.*;
 
 /**
  * The class represents a single school within a school district.
@@ -12,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author markroper
  *
  */
+@Entity(name = "school")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class School extends ApiModel implements Serializable, IApiModel<School>{
@@ -36,7 +41,18 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         this.address = clone.address;
         this.mainPhone = clone.mainPhone;
     }
-    
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name = "school_id")
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "school_name")
+    public String getName() { return super.getName(); }
+
+    @Transient
     public List<SchoolYear> getYears() {
         return years;
     }
@@ -102,6 +118,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         return result;
     }
 
+    @Column(name = "sourceSystemId")
     public String getSourceSystemId() {
         return sourceSystemId;
     }
@@ -110,6 +127,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         this.sourceSystemId = sourceSystemId;
     }
 
+    @Column(name = "principal_email")
     public String getPrincipalEmail() {
         return principalEmail;
     }
@@ -118,6 +136,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         this.principalEmail = principalEmail;
     }
 
+    @Column(name = "principal_name")
     public String getPrincipalName() {
         return principalName;
     }
@@ -126,6 +145,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         this.principalName = principalName;
     }
 
+    @Column(name = "main_phone")
     public String getMainPhone() {
         return mainPhone;
     }
@@ -134,6 +154,10 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         this.mainPhone = mainPhone;
     }
 
+
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.ALL)
+    @JoinColumn(name="school_address_fk")
     public Address getAddress() {
         return address;
     }
