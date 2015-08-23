@@ -34,6 +34,8 @@
 
     <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory" />
+        <property name="autodetectDataSource" value="true"/>
+        <property name="nestedTransactionAllowed" value="true"/>
     </bean>
 
     <bean id="hibernateTemplate"
@@ -57,12 +59,12 @@
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
     </bean>
 
-
-    <!-- Definition for School JDBC templ bean -->
     <bean id="schoolPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.SchoolJdbc">
-    <property name="dataSource" ref="dataSource"/>
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
     </bean>
+
+    <!-- Definition for School JDBC templ bean -->
     <bean id="schoolYearPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.SchoolYearJdbc">
     <property name="dataSource" ref="dataSource"/>

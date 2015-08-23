@@ -108,7 +108,7 @@ task integrationLocal(type: Test) {
     tomcatStop.execute()
 }
 
-task integrationLocalWithContainer(type: Test) {
+task integrationLocalWithContainer(type: Test) << {
     group 'Verification'
     description 'use tomcat to start a local container, then run the integrationLocal task, then stop container'
 }
@@ -117,6 +117,24 @@ integrationLocalWithContainer.doFirst {
     war.execute()
     tomcatRunWar.execute()
     integrationLocal.execute()
+}
+
+task appRun() << {
+    tomcat.daemon = false
+    tomcatRunWar.execute()
+    def console = System.console()
+    if (console) {
+        console.readLine("PRESS CTRL+C or RETURN to abort execution of tomcat container");
+    }
+}
+
+task appRunDebug() << {
+    tomcat.daemon = false
+    tomcatRunWar.execute()
+    def console = System.console()
+    if (console) {
+        console.readLine("PRESS CTRL+C or RETURN to abort execution of tomcat container");
+    }
 }
 
 //Dependencies section:
