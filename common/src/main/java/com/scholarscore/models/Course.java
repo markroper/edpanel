@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 /**
@@ -19,6 +20,7 @@ import javax.validation.constraints.Size;
  * @author markroper
  *
  */
+@Entity(name = "course")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Course extends ApiModel implements Serializable, IApiModel<Course> {
@@ -50,6 +52,7 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
         }
     }
 
+    @Column(name = "course_number")
     public String getNumber() {
         return number;
     }
@@ -58,11 +61,26 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
         this.number = number;
     }
 
+    @Column(name = "course_source_system_id")
+    public String getSourceSystemId() {
+        return sourceSystemId;
+    }
+
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
     }
 
-    public String getSourceSystemId() {
-        return sourceSystemId;
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    @Column(name = "course_id")
+    public Long getId() {
+        return super.getId();
     }
+
+    @Override
+    @Column(name = "course_name")
+    public String getName() {
+        return super.getName();
+    }
+
 }
