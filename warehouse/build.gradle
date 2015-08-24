@@ -25,7 +25,7 @@ cargo {
     // Note: cargo local stuff will still work for now, but please prefer gretty ("gradle appRun") for local instances
     local {
         installer {
-            installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.zip'
+            installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.63/bin/apache-tomcat-7.0.63.zip'
             downloadDir = file("$buildDir/download")
             extractDir = file("$buildDir/extract")
         }
@@ -56,6 +56,11 @@ gretty {
     // automatically start up the container before the following task, and shut it down afterwards
     integrationTestTask = 'integrationLocalWithContainer'
     jvmArgs '-XX:MaxPermSize=1024m', '-Xmx2048m'
+
+    // override default generation of SSL cert with this static one, just for convenience (don't need to re-certify when project is cleaned)
+    sslKeyStorePath = "$projectDir/ssl/keystore"
+    sslKeyStorePassword = 'Q7QCES5MoYXYqjgO6Y2hVNNl6j1L2sgPJesmg2mBzPHkHF2esH7KO1G8keUGwHJpyTc6CyHnmWSlRDYcBqtvLQwZsgGwYypAqHnOsPXN0HBF4nwQB9rJltKjMP8yO4Mt'
+    sslKeyManagerPassword = 's5A3O1HioR7pwa8nIgcq08vrbYOKaJgI6m0wLtOiRykxc8oHW19o5G3XnmHMvy5mIPQ4aQGLMsna99E7SXyUrA7ufMCYSqXkOahahOacmKkHeUkHm2ZC6BZ2Qenm4HUF'
 }
 
 //Integration test suite
