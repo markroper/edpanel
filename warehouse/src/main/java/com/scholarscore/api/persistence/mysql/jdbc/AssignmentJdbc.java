@@ -2,118 +2,60 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-
-import com.scholarscore.api.persistence.mysql.DbConst;
-import com.scholarscore.api.persistence.mysql.EntityPersistence;
-import com.scholarscore.api.persistence.mysql.mapper.AssignmentMapper;
 import com.scholarscore.models.Assignment;
-import com.scholarscore.models.GradedAssignment;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.scholarscore.api.persistence.mysql.EntityPersistence;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 
-public class AssignmentJdbc extends EnhancedBaseJdbc<Assignment> implements EntityPersistence<Assignment> {
-    private static String INSERT_ASSIGNMENT_SQL = "INSERT INTO `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.ASSIGNMENT_TABLE + "` " +
-            "(`" + DbConst.ASSIGNMENT_NAME_COL + 
-            "`, `" + DbConst.SECTION_FK_COL + 
-            "`, `" + DbConst.TYPE_FK_COL + 
-            "`, `" + DbConst.DUE_DATE_COL + 
-            "`, `" + DbConst.ASSIGNED_DATE_COL + 
-            "`, `" + DbConst.AVAILABLE_POINTS_COL + "`)" +
-            " VALUES (:" + DbConst.ASSIGNMENT_NAME_COL + 
-            ", :" + DbConst.SECTION_FK_COL + 
-            ", :" +  DbConst.TYPE_FK_COL + 
-            ", :" + DbConst.DUE_DATE_COL + 
-            ", :" + DbConst.ASSIGNED_DATE_COL + 
-            ", :" + DbConst.AVAILABLE_POINTS_COL + ")";
-    
-    private static String UPDATE_ASSIGNMENT_SQL = 
-            "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.ASSIGNMENT_TABLE + "` " + 
-            "SET `" + 
-            DbConst.ASSIGNMENT_NAME_COL + "`= :" + DbConst.ASSIGNMENT_NAME_COL + ", `" +
-            DbConst.SECTION_FK_COL + "`= :" + DbConst.SECTION_FK_COL + ", `" +
-            DbConst.TYPE_FK_COL + "`= :" + DbConst.TYPE_FK_COL + ", `" +
-            DbConst.DUE_DATE_COL + "`= :" + DbConst.DUE_DATE_COL + ", `" +
-            DbConst.ASSIGNED_DATE_COL + "`= :" + DbConst.ASSIGNED_DATE_COL + ", `" +
-            DbConst.AVAILABLE_POINTS_COL + "`= :" + DbConst.AVAILABLE_POINTS_COL + " " +
-            "WHERE `" + DbConst.ASSIGNMENT_ID_COL + "`= :" + DbConst.ASSIGNMENT_ID_COL + "";
-    
-    private static String SELECT_ALL_ASSIGNMENTS_SQL = "SELECT * FROM `"+
-            DbConst.DATABASE +"`.`" + DbConst.ASSIGNMENT_TABLE + "` " +
-            "WHERE `" + DbConst.SECTION_FK_COL + "` = :" + DbConst.SECTION_FK_COL;
-    
-    private final String SELECT_ASSIGNMENT_SQL = SELECT_ALL_ASSIGNMENTS_SQL +
-            " AND `" + DbConst.ASSIGNMENT_ID_COL + "`= :" + DbConst.ASSIGNMENT_ID_COL;
-    
+import javax.transaction.Transactional;
+
+@Transactional
+public class AssignmentJdbc implements EntityPersistence<Assignment> {
+    @Autowired
+    private HibernateTemplate hibernateTemplate;
+
+    public AssignmentJdbc() {
+    }
+
+    public AssignmentJdbc(HibernateTemplate template) {
+        this.hibernateTemplate = template;
+    }
+
+    public void setHibernateTemplate(HibernateTemplate template) {
+        this.hibernateTemplate = template;
+    }
+
     @Override
     public Collection<Assignment> selectAll(long id) {
-        Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.SECTION_FK_COL, new Long(id));
-        return super.selectAll(params, SELECT_ALL_ASSIGNMENTS_SQL);
+        return (Collection<Assignment>)hibernateTemplate.find("from assignment with section_fk = (?)", "section_fk", id);
     }
 
     @Override
     public Assignment select(long parentId, long id) {
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.SECTION_FK_COL, new Long(parentId));
-        params.put(DbConst.ASSIGNMENT_ID_COL, new Long(id));
-        return super.select(params, SELECT_ASSIGNMENT_SQL);
+        return hibernateTemplate.get(Assignment.class, id);
     }
 
     @Override
     public Long insert(long parentId, Assignment entity) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.ASSIGNMENT_NAME_COL, entity.getName());
-        params.put(DbConst.SECTION_FK_COL, new Long(parentId));
-        params.put(DbConst.TYPE_FK_COL, entity.getType().name());
-        params.put(DbConst.DUE_DATE_COL, DbConst.resolveTimestamp(entity.getDueDate()));
-        Timestamp assigned = null;
-        if(entity instanceof GradedAssignment) {
-            assigned = DbConst.resolveTimestamp(((GradedAssignment)entity).getAssignedDate());
-        }
-        params.put(DbConst.ASSIGNED_DATE_COL, DbConst.resolveTimestamp(assigned));
-        params.put(DbConst.AVAILABLE_POINTS_COL, entity.getAvailablePoints());
-        jdbcTemplate.update(
-                INSERT_ASSIGNMENT_SQL, 
-                new MapSqlParameterSource(params), 
-                keyHolder);
-        return keyHolder.getKey().longValue();
+        entity.setSectionFK(parentId);
+        return (Long)hibernateTemplate.save(entity);
     }
 
     @Override
     public Long update(long parentId, long id, Assignment entity) {
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.ASSIGNMENT_NAME_COL, entity.getName());
-        params.put(DbConst.SECTION_FK_COL, new Long(parentId));
-        params.put(DbConst.TYPE_FK_COL, entity.getType().name());
-        params.put(DbConst.DUE_DATE_COL, DbConst.resolveTimestamp(entity.getDueDate()));
-        Timestamp assigned = null;
-        if(entity instanceof GradedAssignment) {
-            assigned = DbConst.resolveTimestamp(((GradedAssignment)entity).getAssignedDate());
-        }
-        params.put(DbConst.ASSIGNED_DATE_COL, DbConst.resolveTimestamp(assigned));
-        params.put(DbConst.AVAILABLE_POINTS_COL, entity.getAvailablePoints());
-        params.put(DbConst.ASSIGNMENT_ID_COL, new Long(id));
-        jdbcTemplate.update(
-                UPDATE_ASSIGNMENT_SQL, 
-                new MapSqlParameterSource(params));
+        entity.setSectionFK(parentId);
+        hibernateTemplate.update(entity);
         return id;
     }
 
     @Override
-    public RowMapper<Assignment> getMapper() {
-        return new AssignmentMapper();
-    }
-
-    @Override
-    public String getTableName() {
-        return DbConst.ASSIGNMENT_TABLE;
+    public Long delete(long id) {
+        Assignment assignment = select(0L, id);
+        if (null != assignment) {
+            hibernateTemplate.delete(assignment);
+        }
+        return id;
     }
 
 }

@@ -144,10 +144,11 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`assignment` (
   `assignment_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `assignment_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
-  `type_fk` varchar(256) NOT NULL COMMENT 'The assignment type string',
+  `type_fk` INT NOT NULL COMMENT 'The assignment type string',
+  `assignmentClass` VARCHAR(256) NULL COMMENT 'The section start date',
   `assigned_date` DATETIME NULL COMMENT 'The section start date',
   `due_date` DATETIME NULL COMMENT 'The section end date',
-  `available_points` INT UNSIGNED NULL COMMENT 'The number of possible points to be awarded for an assignment',
+  `available_points` BIGINT UNSIGNED NULL COMMENT 'The number of possible points to be awarded for an assignment',
   `section_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the term table',
   PRIMARY KEY (`assignment_id`),
   CONSTRAINT `fk_section$assignment`
@@ -162,7 +163,7 @@ CREATE TABLE `scholar_warehouse`.`student_assignment` (
   `student_assignment_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `completed` BIT(1) COMMENT 'Boolean indicating whether or not the assignment was completed',
   `completion_date` DATETIME NULL COMMENT 'The date the student turned in the assignment',
-  `awarded_points` INT UNSIGNED NULL COMMENT 'The number of possible points to be awarded for an assignment',
+  `awarded_points` BIGINT UNSIGNED NULL COMMENT 'The number of possible points to be awarded for an assignment',
   `assignment_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the section assignment table',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
   PRIMARY KEY (`student_assignment_id`),

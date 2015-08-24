@@ -248,8 +248,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.federalEthnicity = federalEthnicity;
     }
 
-    //@Column(name = "school_fk", nullable = true)
-    @Transient
+    @Column(name = "school_fk", nullable = true)
     public Long getCurrentSchoolId() {
         return currentSchoolId;
     }

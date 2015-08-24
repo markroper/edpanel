@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import javax.persistence.*;
+
 /**
  * Represents a graded assignment such as a quiz, test, homework, lab, or other.
  * 
@@ -13,6 +15,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @see Assignment
  *
  */
+@Entity(name = "assignment")
+@Table(name = "assignment")
+@DiscriminatorValue(value = "GradedAssignment")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GradedAssignment extends Assignment implements Serializable {
@@ -38,7 +44,8 @@ public class GradedAssignment extends Assignment implements Serializable {
             this.assignedDate = graded.assignedDate;
         }
     }
-    
+
+    @Column(name = "assigned_date")
     public Date getAssignedDate() {
         return assignedDate;
     }
