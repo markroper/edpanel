@@ -46,5 +46,12 @@ public interface QueryManager {
      * @return
      */
     public ServiceResponse<Collection<Query>> getQueries(Long schoolId);
+    
+    /**
+     * Given an arbitrary query object, executes and returns the query results.
+     * @param query
+     * @return
+     */
+    public ServiceResponse<QueryResults> getQueryResults(Query query);
 
 }

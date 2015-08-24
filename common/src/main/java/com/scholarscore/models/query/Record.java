@@ -11,6 +11,10 @@ public class Record implements Serializable {
     
     public Record() {   
     }
+    
+    public Record(List<Object> record) {   
+        this.values = record;
+    }
 
     public List<Object> getValues() {
         return values;
