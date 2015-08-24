@@ -9,8 +9,11 @@ import com.scholarscore.models.query.Dimension;
 
 @SuppressWarnings("serial")
 public class SchoolYearDimension implements IDimension {
+    public static final String ID = "ID";
+    public static final String START_DATE = "Start Date";
+    public static final String END_DATE = "End Date";
     public static final Set<String> DIMENSION_FIELDS = 
-            ImmutableSet.of("ID", "Name", "Start Date", "End Date");
+            ImmutableSet.of(ID, START_DATE, END_DATE);
     public static final Set<Dimension> PARENT_DIMENSIONS = 
             ImmutableSet.of(Dimension.SCHOOL);
     

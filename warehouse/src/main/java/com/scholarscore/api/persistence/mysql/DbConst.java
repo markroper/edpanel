@@ -10,6 +10,7 @@ import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
 import com.scholarscore.models.query.dimension.CourseDimension;
 import com.scholarscore.models.query.dimension.SchoolDimension;
+import com.scholarscore.models.query.dimension.SchoolYearDimension;
 import com.scholarscore.models.query.dimension.SectionDimension;
 import com.scholarscore.models.query.dimension.StudentDimension;
 import com.scholarscore.models.query.dimension.TeacherDimension;
@@ -77,6 +78,10 @@ public class DbConst {
         put(new DimensionField(Dimension.TERM, TermDimension.ID), TERM_ID_COL);
         put(new DimensionField(Dimension.TERM, TermDimension.END_DATE), TERM_END_DATE_COL);
         put(new DimensionField(Dimension.TERM, TermDimension.START_DATE), TERM_START_DATE_COL);
+        //TERM dimension field to DB column name lookup
+        put(new DimensionField(Dimension.YEAR, SchoolYearDimension.ID), SCHOOL_YEAR_ID_COL);
+        put(new DimensionField(Dimension.YEAR, SchoolYearDimension.END_DATE), SCHOOL_YEAR_END_DATE_COL);
+        put(new DimensionField(Dimension.YEAR, SchoolYearDimension.START_DATE), SCHOOL_YEAR_START_DATE_COL);
     }};
 
     public static final String DATABASE = "scholar_warehouse";
