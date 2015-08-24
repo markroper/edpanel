@@ -69,7 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String LOGOUT_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/logout";
     private static final String ACCESS_DENIED_JSON = "{\"message\":\"You are not privileged to request this resource.\","
             + " \"access-denied\":true,\"cause\":\"AUTHORIZATION_FAILURE\"}";
-    private static final String UNAUTHORIZED_JSON = "{\"message\":\"Full authentication is required to access this resource.\","
+    private static final String UNAUTHORIZED_JSON = "{\"message\":\"Authentication is required to access this resource.\","
             + " \"access-denied\":true,\"cause\":\"NOT AUTHENTICATED\"}";
 
     @Autowired
