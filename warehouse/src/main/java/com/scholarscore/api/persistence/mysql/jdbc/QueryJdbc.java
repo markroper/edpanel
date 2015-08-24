@@ -96,7 +96,6 @@ public class QueryJdbc extends BaseJdbc implements QueryPersistence {
 
     @Override
     public QueryResults generateQueryResults(Query query) {
-        // TODO Auto-generated method stub
         SqlWithParameters sqlQuery = null;
         try {
             sqlQuery = QuerySqlGenerator.generate(query);
