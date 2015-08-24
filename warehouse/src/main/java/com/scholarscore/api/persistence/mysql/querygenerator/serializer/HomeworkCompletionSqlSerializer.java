@@ -1,6 +1,7 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
 
 import com.scholarscore.api.persistence.mysql.DbConst;
+import com.scholarscore.models.AssignmentType;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.Dimension;
 
@@ -9,8 +10,8 @@ public class HomeworkCompletionSqlSerializer implements MeasureSqlSerializer {
     @Override
     public String toSelectClause(AggregateFunction agg) {
         return agg.name() + 
-                "( if(" + DbConst.ASSIGNMENT_TABLE + DOT + DbConst.TYPE_FK_COL + " = 'HOMEWORK', if(" + 
-                DbConst.STUDENT_ASSIGNMENT_TABLE + DOT + DbConst.STUD_COMPLETED_COL +" is true, 1, 0), null))";
+                "( if(" + DbConst.ASSIGNMENT_TABLE + DOT + DbConst.TYPE_FK_COL + " = '" + AssignmentType.HOMEWORK.name() + 
+                "', if(" + DbConst.STUDENT_ASSIGNMENT_TABLE + DOT + DbConst.STUD_COMPLETED_COL +" is true, 1, 0), null))";
     }
 
     @Override
