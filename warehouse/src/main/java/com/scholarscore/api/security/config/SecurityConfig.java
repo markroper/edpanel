@@ -76,6 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * @param response
      */
     public static void addCorsHeaders(HttpServletResponse response) {
+        //TODO: move the allow-origin host to a spring injected config file
         response.setHeader("Access-Control-Allow-Origin", "https://localhost:3000");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
         response.setHeader("Access-Control-Allow-Credentials", "true");
