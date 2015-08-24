@@ -70,6 +70,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             + " \"access-denied\":true,\"cause\":\"NOT AUTHENTICATED\"}";
     private static final String INVALID_CREDENTIALS_JSON = "{\"error\":\"Invalid credentials supplied\"}";
 
+    /**
+     * Adds CORS headers to the HTTP response provided.
+     * 
+     * @param response
+     */
     public static void addCorsHeaders(HttpServletResponse response) {
         response.setHeader("Access-Control-Allow-Origin", "https://localhost:3000");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
