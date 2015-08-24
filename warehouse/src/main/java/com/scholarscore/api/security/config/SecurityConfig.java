@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -22,7 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.ApiConsts;
-import com.scholarscore.models.Authority;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +29,6 @@ import javax.sql.DataSource;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collection;
 
 /**
  * Use MVC Security with JDBC Authentication as oppose to static authentication using username/password
@@ -71,7 +68,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             + " \"access-denied\":true,\"cause\":\"AUTHORIZATION_FAILURE\"}";
     private static final String UNAUTHORIZED_JSON = "{\"message\":\"Authentication is required to access this resource.\","
             + " \"access-denied\":true,\"cause\":\"NOT AUTHENTICATED\"}";
+    private static final String INVALID_CREDENTIALS_JSON = "{\"error\":\"Invalid credentials supplied\"}";
 
+    public static void addCorsHeaders(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "https://localhost:3000");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    }
+    
     @Autowired
     private DataSource dataSource;
 
@@ -245,8 +252,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             SecurityConfig.addCorsHeaders(response);
             ObjectMapper mapper = new ObjectMapper();
             PrintWriter out = response.getWriter();
-            //TODO: add info about roles so the UI can cache & use it!
-            //Also add teacher|| student ID, so it can be used in the UI as well
+            //TODO: Also add teacher|| student ID, so it can be used in the UI as well
             out.print(mapper.writeValueAsString(authentication.getPrincipal()));
             out.flush();
             out.close(); 
@@ -263,19 +269,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             SecurityConfig.addCorsHeaders(response);
             PrintWriter out = response.getWriter();
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print("{\"error\":\"Invalid credentials supplied\"}");
+            out.print(INVALID_CREDENTIALS_JSON);
             out.flush();
             out.close();
         }
         
-    }
-    
-    public static void addCorsHeaders(HttpServletResponse response) {
-        response.setHeader("Access-Control-Allow-Origin", "https://localhost:3000");
-        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
     }
 }
