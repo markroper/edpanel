@@ -30,7 +30,8 @@ public class CourseControllerIntegrationTest extends IntegrationBase {
         Course emptyCourse = new Course();
         Course namedCourse = new Course();
         namedCourse.setName(localeServiceUtil.generateName());
-       
+        emptyCourse.setSchool(school);
+        namedCourse.setSchool(school);
         return new Object[][] {
                 { "Empty course", emptyCourse },
                 { "Named course", namedCourse }
