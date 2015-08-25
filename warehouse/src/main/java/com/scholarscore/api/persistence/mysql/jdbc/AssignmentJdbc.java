@@ -27,8 +27,9 @@ public class AssignmentJdbc implements EntityPersistence<Assignment> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<Assignment> selectAll(long id) {
-        return (Collection<Assignment>)hibernateTemplate.find("from assignment with section_fk = (?)", "section_fk", id);
+        return (Collection<Assignment>)hibernateTemplate.findByNamedParam("from assignment a where a.sectionFK = :id", "id", id);
     }
 
     @Override
