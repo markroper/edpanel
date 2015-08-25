@@ -14,31 +14,16 @@
                      http://www.springframework.org/schema/util
                      http://www.springframework.org/schema/util/spring-util.xsd">
 
+    <import resource="classpath:/dataSource.xml"/>
+    
     <mvc:interceptors>
         <bean class="com.scholarscore.api.interceptor.AuthenticationInterceptor" />
     </mvc:interceptors>
 
-	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-      <property name="locations">
-        <list>
-          <value>classpath:api.properties</value>
-        </list>
-      </property>
-      <property name="properties">
-        <value>
-        auth.encryption.enabled=true
-        auth.encryption.seed=%DU)FöfI8/°
-        auth.encryption.maxAge=2m
-        </value>
-      </property>
-    </bean>
-
     <context:component-scan base-package="com.scholarscore.api.controller, com.scholarscore.api.swagger, com.scholarscore.api.security"/>
 
     <mvc:default-servlet-handler/>
-
-    <import resource="classpath:/dataSource.xml"/>
-
+    
     <context:mbean-export registration="replaceExisting"/>
 
     <!-- Handles GET requests for static resources from ${webapproot}/resources/, used by swagger -->
@@ -62,15 +47,6 @@
             </bean>
         </mvc:message-converters>
     </mvc:annotation-driven>
-
-    <!-- Initialization for data source -->
-    <bean id="dataSource"
-          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306"/>
-        <property name="username" value="warehouse"/>
-        <property name="password" value="t3achTh3Childr3n"/>
-    </bean>
 
     <!-- Definition for School JDBC templ bean -->
     <bean id="schoolPersistence"
