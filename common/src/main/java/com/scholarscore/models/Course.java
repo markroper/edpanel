@@ -3,8 +3,11 @@ package com.scholarscore.models;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import javax.validation.constraints.Size;
 
 /**
@@ -39,6 +42,8 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
 
     @Size(min = 0, max=255)
     private String sourceSystemId;
+
+    private School school;
 
     @Override
     public void mergePropertiesIfNull(Course mergeFrom) {
@@ -83,4 +88,14 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
         return super.getName();
     }
 
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @JoinColumn(name="school_fk")
+    public School getSchool() {
+        return school;
+    }
+
+    public void setSchool(School school) {
+        this.school = school;
+    }
 }

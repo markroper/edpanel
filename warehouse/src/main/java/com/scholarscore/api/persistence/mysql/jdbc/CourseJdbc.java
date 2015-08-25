@@ -1,96 +1,77 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-
-import com.scholarscore.api.persistence.mysql.DbConst;
-import com.scholarscore.api.persistence.mysql.EntityPersistence;
-import com.scholarscore.api.persistence.mysql.mapper.CourseMapper;
+import com.scholarscore.api.persistence.mysql.SchoolPersistence;
 import com.scholarscore.models.Course;
+import com.scholarscore.models.School;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.scholarscore.api.persistence.mysql.EntityPersistence;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 
-public class CourseJdbc extends EnhancedBaseJdbc<Course> implements EntityPersistence<Course> {
-    private static final String INSERT_COURSE_SQL = "INSERT INTO `"+
-            DbConst.DATABASE +"`.`" + DbConst.COURSE_TABLE + "` " +
-            "(" + DbConst.COURSE_NAME_COL + ", " + DbConst.SCHOOL_FK_COL + ", " + DbConst.COURSE_NUMBER_COL + ", " + DbConst.COURSE_SOURCE_SYSTEM_ID_COL + ")" +
-            " VALUES (:" + DbConst.COURSE_NAME_COL + ", :" + DbConst.SCHOOL_FK_COL + ", :" + DbConst.COURSE_NUMBER_COL + ", :" + DbConst.COURSE_SOURCE_SYSTEM_ID_COL + ")";
-    
-    private static final String UPDATE_COURSE_SQL =
-            "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.COURSE_TABLE + "` " + 
-            "SET `" + DbConst.COURSE_NAME_COL + "`= :" + DbConst.COURSE_NAME_COL + ", `" +
-                    DbConst.COURSE_NUMBER_COL + "`= :" + DbConst.COURSE_NUMBER_COL + ", `" +
-                    DbConst.COURSE_SOURCE_SYSTEM_ID_COL + "`= :" + DbConst.COURSE_SOURCE_SYSTEM_ID_COL + ", `" +
-                    DbConst.SCHOOL_FK_COL + "`= :" + DbConst.SCHOOL_FK_COL + " " +
-            "WHERE `" + DbConst.COURSE_ID_COL + "`= :" + DbConst.COURSE_ID_COL + "";
-    
-    private static final String DELETE_COURSE_SQL = "DELETE FROM `"+
-            DbConst.DATABASE +"`.`" + DbConst.COURSE_TABLE + "` " +
-            "WHERE `" + DbConst.COURSE_ID_COL + "`= :" + DbConst.COURSE_ID_COL + "";
-    
-    private static final String SELECT_ALL_COURSES_SQL = "SELECT * FROM `"+
-            DbConst.DATABASE +"`.`" + DbConst.COURSE_TABLE + "` " +
-            "WHERE `" + DbConst.SCHOOL_FK_COL + "` = :" + DbConst.SCHOOL_FK_COL;
-    
-    private static final String SELECT_COURSE_SQL = SELECT_ALL_COURSES_SQL +
-            " AND `" + DbConst.COURSE_ID_COL + "`= :" + DbConst.COURSE_ID_COL;
-    
+import javax.transaction.Transactional;
+
+@Transactional
+public class CourseJdbc implements EntityPersistence<Course> {
+
+    @Autowired
+    private HibernateTemplate hibernateTemplate;
+
+    @Autowired
+    private SchoolPersistence schoolPersistence;
+
+    public CourseJdbc() {
+    }
+
+    public CourseJdbc(HibernateTemplate template) {
+        this.hibernateTemplate = template;
+    }
+
+    public void setHibernateTemplate(HibernateTemplate template) {
+        this.hibernateTemplate = template;
+    }
+
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<Course> selectAll(long schoolId) {
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
-        return super.selectAll(params, SELECT_ALL_COURSES_SQL);
+        return (Collection<Course>)hibernateTemplate.findByNamedParam("from course c where c.school.id = :id", "id", schoolId);
     }
 
     @Override
-    public Course select(long schoolId, long courseId) {
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
-        params.put(DbConst.COURSE_ID_COL, new Long(courseId));
-        return super.select(params, SELECT_COURSE_SQL);
+    public Course select(long schoolId, long id) {
+        return hibernateTemplate.get(Course.class, id);
     }
 
     @Override
-    public Long insert(long schoolId, Course course) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.COURSE_NAME_COL, course.getName());
-        params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
-        params.put(DbConst.COURSE_NUMBER_COL, course.getNumber());
-        params.put(DbConst.COURSE_SOURCE_SYSTEM_ID_COL, course.getSourceSystemId());
-        jdbcTemplate.update(
-                INSERT_COURSE_SQL, 
-                new MapSqlParameterSource(params), 
-                keyHolder);
-        return keyHolder.getKey().longValue();
+    public Long insert(long schoolId, Course entity) {
+        Long value = (Long) hibernateTemplate.save(entity);
+        return value;
     }
 
     @Override
-    public Long update(long schoolId, long courseId, Course course) {
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.COURSE_NAME_COL, course.getName());
-        params.put(DbConst.SCHOOL_FK_COL, new Long(schoolId));
-        params.put(DbConst.COURSE_ID_COL, courseId);
-        params.put(DbConst.COURSE_NUMBER_COL, course.getNumber());
-        params.put(DbConst.COURSE_SOURCE_SYSTEM_ID_COL, course.getSourceSystemId());
-        jdbcTemplate.update(
-                UPDATE_COURSE_SQL, 
-                new MapSqlParameterSource(params));
-        return courseId;
+    public Long update(long schoolId, long id, Course entity) {
+        entity.setId(id);
+        if (null == entity.getSchool()) {
+            School school = schoolPersistence.selectSchool(schoolId);
+            entity.setSchool(school);
+        }
+        hibernateTemplate.update(entity);
+        return id;
     }
+
 
     @Override
-    public RowMapper<Course> getMapper() {
-        return new CourseMapper();
+    public Long delete(long id) {
+        Course course = hibernateTemplate.get(Course.class, id);
+        hibernateTemplate.delete(course);
+        return id;
     }
 
-    @Override
-    public String getTableName() {
-        return DbConst.COURSE_TABLE;
+    public SchoolPersistence getSchoolPersistence() {
+        return schoolPersistence;
     }
 
+    public void setSchoolPersistence(SchoolPersistence schoolPersistence) {
+        this.schoolPersistence = schoolPersistence;
+    }
 }
