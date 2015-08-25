@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import com.scholarscore.models.WeightedGradable;
 import com.scholarscore.util.GradeUtil;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -127,6 +128,50 @@ public class StudentController extends BaseController {
         Collection<? extends WeightedGradable> courseGrades =
                 getStudentSectionGradeManager().getSectionGradesForStudent(studentId).getValue();
         return respond(GradeUtil.calculateGPA(gpaScale, courseGrades));
+    }
+    
+    @ApiOperation(
+            value = "Get all sections for a student", 
+            notes = "Retrieve all sections for a student within a term, school year, and school", 
+            response = List.class)
+    @RequestMapping(
+            value = "/{studentId}/schools/{schoolId}/years/{schoolYearId}/terms/{termId}/sections",
+            method = RequestMethod.GET, 
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getAllSections(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "schoolYearId", required = true, value = "School year long ID")
+            @PathVariable(value="schoolYearId") Long schoolYearId,
+            @ApiParam(name = "termId", required = true, value = "Term ID")
+            @PathVariable(value="termId") Long termId) {
+        return respond(getSectionManager().getAllSections(studentId, schoolId, schoolYearId, termId));
+    }
+    
+    @ApiOperation(
+            value = "Get all student's assignments in one section", 
+            notes = "Retrieve all student assignments within a section. If the section grade is not final, one will be calculated", 
+            response = List.class)
+    @RequestMapping(
+            value = "/{studentId}/schools/{schoolId}/years/{yrId}/terms/{tId}/sections/{sId}/studentassignments",
+            method = RequestMethod.GET, 
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getAllSectionAssignments(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "yrId", required = true, value = "School year ID")
+            @PathVariable(value="yrId") Long yrId,
+            @ApiParam(name = "tId", required = true, value = "Term ID")
+            @PathVariable(value="tId") Long tId,
+            @ApiParam(name = "sId", required = true, value = "Section ID")
+            @PathVariable(value="sId") Long sId) {
+        return respond(getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, schoolId, yrId, tId, sId));
     }
 
 }

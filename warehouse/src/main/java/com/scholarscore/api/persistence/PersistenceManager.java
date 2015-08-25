@@ -9,7 +9,9 @@ import com.scholarscore.api.persistence.mysql.AuthorityPersistence;
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.QueryPersistence;
 import com.scholarscore.api.persistence.mysql.SchoolPersistence;
+import com.scholarscore.api.persistence.mysql.SectionPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
+import com.scholarscore.api.persistence.mysql.StudentAssignmentPersistence;
 import com.scholarscore.api.persistence.mysql.StudentSectionGradePersistence;
 import com.scholarscore.api.persistence.mysql.TeacherPersistence;
 import com.scholarscore.api.persistence.mysql.UserPersistence;
@@ -19,6 +21,7 @@ import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.Course;
+import com.scholarscore.models.GradeFormula;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
@@ -53,10 +56,10 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private EntityPersistence<Term> termPersistence;
     private StudentPersistence studentPersistence;
     private TeacherPersistence teacherPersistence;
-    private EntityPersistence<Section> sectionPersistence;
+    private SectionPersistence sectionPersistence;
     private EntityPersistence<Course> coursePersistence;
     private EntityPersistence<Assignment> assignmentPersistence;
-    private EntityPersistence<StudentAssignment> studentAssignmentPersistence;
+    private StudentAssignmentPersistence studentAssignmentPersistence;
     private StudentSectionGradePersistence studentSectionGradePersistence;
     private UserPersistence userPersistence;
     private AuthorityPersistence authorityPersistence;
@@ -75,7 +78,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         this.studentSectionGradePersistence = ap;
     }
     
-    public void setStudentAssignmentPersistence(EntityPersistence<StudentAssignment> ap) {
+    public void setStudentAssignmentPersistence(StudentAssignmentPersistence ap) {
         this.studentAssignmentPersistence = ap;
     }
     
@@ -87,7 +90,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         coursePersistence = cp;
     }
     
-    public void setSectionPersistence(EntityPersistence<Section> sectionPersistence) {
+    public void setSectionPersistence(SectionPersistence sectionPersistence) {
         this.sectionPersistence = sectionPersistence;
     }
     
@@ -500,6 +503,31 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         }
         return new ServiceResponse<Collection<Section>>(sections);
     }
+    
+    @Override
+    public ServiceResponse<Collection<Section>> getAllSections(long studentId,
+            long schoolId, long yearId, long termId) {
+        StatusCode code = studentExists(studentId);
+        if(!code.isOK()) {
+            return new ServiceResponse<Collection<Section>>(code);
+        }
+        code = termExists(schoolId, yearId, termId);
+        if(!code.isOK()) {
+            return new ServiceResponse<Collection<Section>>(code);
+        }
+        Collection<Section> sections = sectionPersistence.selectAllSectionForStudent(termId, studentId);
+        for(Section s : sections) {
+            Collection<Student> students = studentPersistence.selectAllStudentsInSection(s.getId());
+            if(null != students && !students.isEmpty()) {
+                s.setEnrolledStudents(new ArrayList<Student>(students));
+            }
+            Collection<Assignment> assignments = assignmentPersistence.selectAll(s.getId());
+            if(null != assignments && !assignments.isEmpty()) {
+                s.setAssignments(new ArrayList<Assignment>(assignments));
+            }
+        }
+        return new ServiceResponse<Collection<Section>>(sections);
+    }
 
     @Override
     public StatusCode sectionExists(long schoolId, long yearId, long termId, long sectionId) {
@@ -791,6 +819,15 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         StudentAssignment sa = studentAssignmentPersistence.select(sectionAssignmentId, studentAssignmentId);
         return new ServiceResponse<StudentAssignment>(sa);
     }
+    
+    @Override
+    public ServiceResponse<Collection<StudentAssignment>> getOneSectionOneStudentsAssignments(
+            long studentId, long schoolId, long yearId, long termId,
+            long sectionId) {
+        Collection<StudentAssignment> sas = 
+                studentAssignmentPersistence.selectAllAssignmentsOneSectionOneStudent(sectionId, studentId);
+        return new ServiceResponse<Collection<StudentAssignment>>(sas);
+    }
 
     @Override
     public ServiceResponse<Long> createStudentAssignment(long schoolId,
@@ -896,7 +933,26 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
         }
-        return new ServiceResponse<>(studentSectionGradePersistence.select(sectionId, studentId));
+        StudentSectionGrade grade = studentSectionGradePersistence.select(sectionId, studentId);
+        Boolean complete = grade.getComplete();
+        if(null == complete || complete.equals(Boolean.FALSE)) {
+            //Get the section, and pull off the section formula
+            ServiceResponse<Section> sect = getSection(schoolId, yearId, termId, sectionId);
+            if(null == sect.getCode() || sect.getCode().isOK()) {
+                ServiceResponse<Collection<StudentAssignment>> assignmentResp = 
+                        getOneSectionOneStudentsAssignments(studentId, schoolId, yearId, termId, sectionId);
+                if(null == assignmentResp.getCode() || assignmentResp.getCode().isOK()) {
+                    GradeFormula formula = sect.getValue().getGradeFormula();
+                    Collection<StudentAssignment> assignments = assignmentResp.getValue();
+                    if(null != formula && null != assignments) {
+                        HashSet<StudentAssignment> assignmentSet = new HashSet<StudentAssignment>(assignments);
+                        Double calculatedGrade = formula.calculateGrade(assignmentSet);
+                        grade.setGrade(calculatedGrade);
+                    }
+                }
+            }
+        }
+        return new ServiceResponse<>(grade);
     }
 
     @Override
