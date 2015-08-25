@@ -14,12 +14,15 @@ buildscript {
 
 }
 
-Properties props = new Properties()
-props.load(new FileInputStream(projectDir.toString() + "/src/test/resources/localhost.config.properties"))
-def local_portnum = new URI(props.get("endpoint").toString()).port
-def local_https_portnum = new URI(props.get("httpsEndpoint").toString()).port
+def loadProperty(pathRelToProjectDir, property) {
+    Properties props = new Properties()
+    props.load(new FileInputStream(projectDir.toString() + pathRelToProjectDir))
+    return new URI(props.get(property).toString())
+}
 
 cargo {
+    def local_portnum = loadProperty("/src/test/resources/localhost.config.properties", "endpoint").port;
+    def local_https_portnum = loadProperty("/src/test/resources/localhost.config.properties", "httpsEndpoint").port;
     containerId = 'tomcat7x'
 
     // Note: cargo local stuff will still work for now, but please prefer gretty ("gradle appRun") for local instances
@@ -46,6 +49,9 @@ cargo {
 
 // use gretty to start a container instrumented with jacoco for calculation of integration test coverage
 gretty {
+    def local_portnum = loadProperty("/src/test/resources/localhost.config.properties", "endpoint").port;
+    def local_https_portnum = loadProperty("/src/test/resources/localhost.config.properties", "httpsEndpoint").port;
+
     port = local_portnum
     httpsPort = local_https_portnum
     httpsEnabled = true
