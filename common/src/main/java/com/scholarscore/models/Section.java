@@ -10,6 +10,7 @@ import org.hibernate.annotations.*;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * A Section is a temporal instance of a Course.  Where a course defines that which is to be taught, a Section has
@@ -19,7 +20,8 @@ import javax.persistence.Entity;
  * @author markroper
  *
  */
-@Entity(name = "section")
+@Entity
+@Table(name = "section")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Section extends ApiModel implements Serializable, IApiModel<Section> {
@@ -27,6 +29,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected Date endDate;
     protected String room;
     protected GradeFormula gradeFormula;
+    protected Long termFK;
     protected transient Course course;
     protected transient List<Student> enrolledStudents;
     protected transient List<Assignment> assignments;
@@ -62,6 +65,15 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     @Column(name = "section_id")
     public Long getId() {
         return super.getId();
+    }
+
+    @Column(name = "term_fk")
+    public Long getTermFK() {
+        return termFK;
+    }
+
+    public void setTermFK(Long termFK) {
+        this.termFK = termFK;
     }
 
     @Override
