@@ -15,9 +15,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.ApiConsts;
 
 import javax.servlet.ServletException;
@@ -64,9 +66,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String LOGOUT_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/logout";
     private static final String ACCESS_DENIED_JSON = "{\"message\":\"You are not privileged to request this resource.\","
             + " \"access-denied\":true,\"cause\":\"AUTHORIZATION_FAILURE\"}";
-    private static final String UNAUTHORIZED_JSON = "{\"message\":\"Full authentication is required to access this resource.\","
+    private static final String UNAUTHORIZED_JSON = "{\"message\":\"Authentication is required to access this resource.\","
             + " \"access-denied\":true,\"cause\":\"NOT AUTHENTICATED\"}";
+    private static final String INVALID_CREDENTIALS_JSON = "{\"error\":\"Invalid credentials supplied\"}";
 
+    /**
+     * Adds CORS headers to the HTTP response provided.
+     * 
+     * @param response
+     */
+    public static void addCorsHeaders(HttpServletResponse response) {
+        //TODO: move the allow-origin host to a spring injected config file
+        response.setHeader("Access-Control-Allow-Origin", "https://localhost:3000");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    }
+    
     @Autowired
     private DataSource dataSource;
 
@@ -128,9 +146,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
         CustomAuthenticationSuccessHandler successHandler = new CustomAuthenticationSuccessHandler();
+        CustomAuthenticationFailureHandler failureHandler = new CustomAuthenticationFailureHandler();
         FormLoginConfigurer formLogin = new FormLoginConfigurer();
         formLogin.
             successHandler(successHandler).
+            failureHandler(failureHandler).
             loginProcessingUrl(LOGIN_ENDPOINT);
         http.apply(formLogin);
         
@@ -236,20 +256,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                             Authentication authentication) throws ServletException, IOException {
             SecurityConfig.addCorsHeaders(response);
+            ObjectMapper mapper = new ObjectMapper();
             PrintWriter out = response.getWriter();
-            out.print("");
+            //TODO: Also add teacher|| student ID, so it can be used in the UI as well
+            out.print(mapper.writeValueAsString(authentication.getPrincipal()));
             out.flush();
             out.close(); 
             clearAuthenticationAttributes(request);
         }
     }
     
-    public static void addCorsHeaders(HttpServletResponse response) {
-        response.setHeader("Access-Control-Allow-Origin", "http://192.168.1.77:3000");
-        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    private static class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
+
+        @Override
+        public void onAuthenticationFailure(HttpServletRequest request,
+                HttpServletResponse response, AuthenticationException exception)
+                throws IOException, ServletException {
+            SecurityConfig.addCorsHeaders(response);
+            PrintWriter out = response.getWriter();
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.print(INVALID_CREDENTIALS_JSON);
+            out.flush();
+            out.close();
+        }
+        
     }
 }

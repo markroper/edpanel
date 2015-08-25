@@ -11,6 +11,8 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.AggregateMeasure;
 import com.scholarscore.models.query.Dimension;
@@ -73,10 +75,9 @@ public class QuerySqlGeneratorUnitTest {
                 + "WHERE  ( ( '2014-09-01 00:00:00.0'  >=  section.section_start_date )  "
                 + "AND  ( '2015-09-01 00:00:00.0'  <=  section.section_start_date ) ) "
                 + "GROUP BY student.birth_date, student.federal_ethnicity, school.school_address";
-       
         Query assignmentGradesQuery  = new Query();
         ArrayList<AggregateMeasure> assginmentMeasures = new ArrayList<>();
-        assginmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVERAGE));
+        assginmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVG));
         assignmentGradesQuery.setAggregateMeasures(assginmentMeasures);
         assignmentGradesQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
         Expression assignmentWhereClause = new Expression(
@@ -84,17 +85,49 @@ public class QuerySqlGeneratorUnitTest {
                 ComparisonOperator.EQUAL, 
                 new NumericOperand(4));
         assignmentGradesQuery.setFilter(assignmentWhereClause);
-        String assignmentGradesQuerySql = "SELECT student.student_name, AVERAGE(student_assignment.awarded_points / assignment.available_points) "
+        String assignmentGradesQuerySql = "SELECT student.student_name, AVG(student_assignment.awarded_points / assignment.available_points) "
                 + "FROM student "
                 + "LEFT OUTER JOIN student_assignment ON student.student_id = student_assignment.student_fk "
                 + "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id "
                 + "LEFT OUTER JOIN section ON section.section_id = student_assignment.section_fk "
                 + "WHERE  ( section.section_id  =  4 ) "
                 + "GROUP BY student.student_name";
-       
+        Query homeworkCompletionQuery  = new Query();
+        ArrayList<AggregateMeasure> homeworkMeasures = new ArrayList<>();
+        homeworkMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
+        homeworkMeasures.add(new AggregateMeasure(Measure.ATTENDANCE, AggregateFunction.SUM));
+        homeworkCompletionQuery.setAggregateMeasures(homeworkMeasures);
+        homeworkCompletionQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
+        Expression termClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.TERM, SectionDimension.ID)), 
+                ComparisonOperator.EQUAL, 
+                new NumericOperand(1));
+        Expression yearClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.YEAR, SectionDimension.ID)), 
+                ComparisonOperator.EQUAL, 
+                new NumericOperand(1));
+        Expression sectionClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)), 
+                ComparisonOperator.NOT_EQUAL, 
+                new NumericOperand(0));
+        Expression comb1 = new Expression(termClause, BinaryOperator.AND, yearClause);
+        Expression comb2 = new Expression(comb1, BinaryOperator.AND, sectionClause);
+        homeworkCompletionQuery.setFilter(comb2);
+        String homeworkSql = "SELECT student.student_id, AVG( if(assignment.type_fk = 'HOMEWORK', if(student_assignment.completed is true, 1, 0), null)), "
+                + "SUM( if(assignment.type_fk = 'ATTENDANCE', if(student_assignment.completed is true, 0, 1), null)) "
+                + "FROM student "
+                + "LEFT OUTER JOIN student_assignment ON student.student_id = student_assignment.student_fk "
+                + "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id "
+                + "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk "
+                + "LEFT OUTER JOIN term ON term.term_id = section.term_fk "
+                + "LEFT OUTER JOIN school_year ON school_year.school_year_id = term.school_year_fk "
+                + "WHERE  ( ( ( term.term_id  =  1 )  AND  ( school_year.school_year_id  =  1 ) )  "
+                + "AND  ( section.section_id  !=  0 ) ) "
+                + "GROUP BY student.student_id";
         return new Object[][] {
                 { "Course Grade query", courseGradeQuery, courseGradeQuerySql }, 
                 { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql }, 
+                { "Homework query", homeworkCompletionQuery, homeworkSql }
         };
     }
     

@@ -18,6 +18,7 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.QueryComponents;
+import com.scholarscore.models.query.QueryResults;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
@@ -90,7 +91,7 @@ public class QueryController extends BaseController {
     @ApiOperation(
             value = "Execute a query and return results", 
             notes = "Given a query ID, returns the query", 
-            response = Query.class)
+            response = QueryResults.class)
     @RequestMapping(
             value = "/{queryId}/results", 
             method = RequestMethod.GET, 
@@ -103,6 +104,22 @@ public class QueryController extends BaseController {
             @PathVariable(value="queryId") Long queryId) {
         //TODO: implement this
         return respond(getQueryManager().getQueryResults(schoolId, queryId));
+    }
+    
+    @ApiOperation(
+            value = "Execute a query and return results", 
+            notes = "Given a query object, executes the query returns the query", 
+            response = QueryResults.class)
+    @RequestMapping(
+            value = "/results", 
+            method = RequestMethod.POST, 
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity generateQueryResults(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @RequestBody @Valid Query query) {
+        return respond(getQueryManager().getQueryResults(query));
     }
     
     @ApiOperation(

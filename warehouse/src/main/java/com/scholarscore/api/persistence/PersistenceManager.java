@@ -1291,4 +1291,13 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         behaviorPersistence.delete(studentId, behaviorId);
         return new ServiceResponse<Long>((Long) null);
     }
+        
+    @Override
+    public ServiceResponse<QueryResults> getQueryResults(Query query) {
+        QueryResults results = queryPersistence.generateQueryResults(query);
+        if(null == results) {
+            return new ServiceResponse<QueryResults>(StatusCodes.getStatusCode(StatusCodeType.INVALID_QUERY));
+        }
+        return new ServiceResponse<QueryResults>(results);
+    }
 }
