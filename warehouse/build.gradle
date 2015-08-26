@@ -105,6 +105,17 @@ task integrationLocalWithContainer(type: Test, dependsOn: integrationLocal) {
 
 }
 
+task syntheticDataGen(type: Test) {
+    group 'datagen'
+    description 'runs the synthetic data generation against the local container'
+    useTestNG() {
+        useDefaultListeners = true
+        def suiteFile = getFileByPattern(new File("$projectDir/src/test/resources/"), ".*-datagen.xml", "$projectDir")
+        if (suiteFile) options.suites(suiteFile)
+    }
+    testLogging.showStandardStreams = true
+}
+
 //Dependencies section:
 ext {
     springVersion = "4.2.0.RELEASE"
