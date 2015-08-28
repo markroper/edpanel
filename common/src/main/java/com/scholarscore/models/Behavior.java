@@ -1,5 +1,7 @@
 package com.scholarscore.models;
 
+import java.util.Date;
+
 /**
  * User: jordan
  * Date: 8/8/15
@@ -8,14 +10,11 @@ package com.scholarscore.models;
 public class Behavior extends ApiModel implements IApiModel<Behavior> {
     
     // "name" in parent class maps to 'behavior'
-    private String remoteSystemEventId;    // currently always deanslist DLSAID
-    // TODO Jordan should this be date?
-    private String behaviorDate;
+    private String remoteStudentId;    // currently always deanslist DLSAID
+    private Date behaviorDate;
     private String behaviorCategory;
     private String pointValue;
     private String roster; // the class the behavior event occurred within
-
-    // TODO Jordan need to hook up transient Student and Teacher here
     private transient Student student;
     private transient Teacher teacher;
     
@@ -24,7 +23,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     public Behavior(Behavior behavior) {
         super(behavior);
         // "name" in parent class maps to 'behavior'
-        this.remoteSystemEventId = behavior.remoteSystemEventId;    // currently always deanslist DLSAID
+        this.remoteStudentId = behavior.remoteStudentId;    // currently always deanslist DLSAID
         this.behaviorDate = behavior.behaviorDate;
         this.behaviorCategory = behavior.behaviorCategory;
         this.pointValue = behavior.pointValue;
@@ -41,19 +40,19 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
-    public String getRemoteSystemEventId() {
-        return remoteSystemEventId;
+    public String getRemoteStudentId() {
+        return remoteStudentId;
     }
 
-    public void setRemoteSystemEventId(String remoteSystemEventId) {
-        this.remoteSystemEventId = remoteSystemEventId;
+    public void setRemoteStudentId(String remoteStudentId) {
+        this.remoteStudentId = remoteStudentId;
     }
 
-    public String getBehaviorDate() {
+    public Date getBehaviorDate() {
         return behaviorDate;
     }
 
-    public void setBehaviorDate(String behaviorDate) {
+    public void setBehaviorDate(Date behaviorDate) {
         this.behaviorDate = behaviorDate;
     }
 

@@ -2,7 +2,6 @@ package com.scholarscore.etl.deanslist.api.response;
 
 import com.scholarscore.etl.deanslist.api.model.Behavior;
 import com.scholarscore.etl.powerschool.api.response.ITranslateCollection;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -23,7 +22,7 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
 
         for (Behavior behavior : data) {
             com.scholarscore.models.Behavior out = new com.scholarscore.models.Behavior();
-            out.setRemoteSystemEventId(behavior.DLSAID);
+            out.setRemoteStudentId(behavior.DLSAID);
             out.setName(behavior.Behavior);
             out.setBehaviorCategory(behavior.BehaviorCategory);
             out.setBehaviorDate(behavior.BehaviorDate);

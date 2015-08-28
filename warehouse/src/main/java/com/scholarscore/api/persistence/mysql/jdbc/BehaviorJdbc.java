@@ -38,10 +38,29 @@ public class BehaviorJdbc extends EnhancedBaseJdbc<Behavior> implements Behavior
             ", :" + DbConst.BEHAVIOR_ROSTER_COL +
             ", :" + DbConst.BEHAVIOR_STUDENT_FK_COL +
             ", :" + DbConst.BEHAVIOR_TEACHER_FK_COL + ")";
-
-    private String SELECT_ALL_BEHAVIORS_SQL = SELECT_ALL_SQL + " " +
-            "WHERE `" + DbConst.BEHAVIOR_STUDENT_FK_COL + "` = :" + DbConst.BEHAVIOR_STUDENT_FK_COL;
     
+    // update sql - ignore student and teacher as these fields cannot be updated
+    private static final String UPDATE_BEHAVIOR_SQL = "UPDATE " +
+            "`" + DbConst.DATABASE + "`.`" + DbConst.BEHAVIOR_TABLE + "` " + 
+            "SET `" + DbConst.BEHAVIOR_NAME_COL + "`= :" + DbConst.BEHAVIOR_NAME_COL + ", "
+            + backtickEquals(DbConst.BEHAVIOR_CATEGORY_COL) + ", "
+            + backtickEquals(DbConst.BEHAVIOR_DATE_COL) + ", "
+            + backtickEquals(DbConst.BEHAVIOR_POINT_VALUE_COL) + ", "
+            + backtickEquals(DbConst.BEHAVIOR_REMOTE_STUDENT_ID_COL) + ", "
+            + backtickEquals(DbConst.BEHAVIOR_ROSTER_COL) + ", "
+            + backtickEquals(DbConst.BEHAVIOR_POINT_VALUE_COL) + ", "
+            + backtickEquals(DbConst.BEHAVIOR_REMOTE_STUDENT_ID_COL)
+            + " WHERE " + backtickEquals(DbConst.BEHAVIOR_ID_COL);
+    
+    private String SELECT_ALL_BEHAVIORS_SQL = SELECT_ALL_SQL + " " +
+            "WHERE " + backtickEquals(DbConst.BEHAVIOR_STUDENT_FK_COL);
+    
+    private String SELECT_BEHAVIOR_SQL = SELECT_ALL_BEHAVIORS_SQL + " " + 
+            "AND " + backtickEquals(DbConst.BEHAVIOR_ID_COL);
+    
+    private final String DELETE_BEHAVIOR_SQL = DELETE_SQL + " " + 
+            "AND " + backtickEquals(DbConst.BEHAVIOR_STUDENT_FK_COL);
+
     @Override
     public Long createBehavior(long studentId, Behavior behavior) {
 
@@ -53,7 +72,7 @@ public class BehaviorJdbc extends EnhancedBaseJdbc<Behavior> implements Behavior
         params.put(DbConst.BEHAVIOR_POINT_VALUE_COL, behavior.getPointValue());
         params.put(DbConst.BEHAVIOR_ROSTER_COL, behavior.getRoster());
         params.put(DbConst.BEHAVIOR_DATE_COL, behavior.getBehaviorDate());
-        params.put(DbConst.BEHAVIOR_REMOTE_STUDENT_ID_COL, behavior.getRemoteSystemEventId());
+        params.put(DbConst.BEHAVIOR_REMOTE_STUDENT_ID_COL, behavior.getRemoteStudentId());
         if (behavior.getTeacher() != null) {
             params.put(DbConst.BEHAVIOR_TEACHER_FK_COL, behavior.getTeacher().getId());
         }
@@ -70,17 +89,32 @@ public class BehaviorJdbc extends EnhancedBaseJdbc<Behavior> implements Behavior
 
     @Override
     public Behavior select(long studentId, long behaviorId) {
-        throw new UnsupportedOperationException("not implemented yet");
+        Map<String, Object> params = new HashMap<>();
+        params.put(DbConst.BEHAVIOR_STUDENT_FK_COL, studentId);
+        params.put(DbConst.BEHAVIOR_ID_COL, behaviorId);
+        return super.select(params, SELECT_BEHAVIOR_SQL);
     }
 
     @Override
     public Long replaceBehavior(long studentId, long behaviorId, Behavior behavior) {
-        throw new UnsupportedOperationException("not implemented yet");
+        Map<String, Object> params = new HashMap<>();
+        params.put(DbConst.BEHAVIOR_ID_COL, behaviorId);
+        params.put(DbConst.BEHAVIOR_NAME_COL, behavior.getName());
+        params.put(DbConst.BEHAVIOR_CATEGORY_COL, behavior.getBehaviorCategory());
+        params.put(DbConst.BEHAVIOR_POINT_VALUE_COL, behavior.getPointValue());
+        params.put(DbConst.BEHAVIOR_ROSTER_COL, behavior.getRoster());
+        params.put(DbConst.BEHAVIOR_DATE_COL, behavior.getBehaviorDate());
+        params.put(DbConst.BEHAVIOR_REMOTE_STUDENT_ID_COL, behavior.getRemoteStudentId());
+        jdbcTemplate.update(UPDATE_BEHAVIOR_SQL, new MapSqlParameterSource(params));
+        return behaviorId;
     }
 
     @Override
     public Long delete(long studentId, long behaviorId) {
-        throw new UnsupportedOperationException("not implemented yet");
+        Map<String, Object> params = new HashMap<>();
+        params.put(getIdColName(), behaviorId);
+        params.put(DbConst.BEHAVIOR_STUDENT_FK_COL, studentId);
+        return this.delete(params, DELETE_BEHAVIOR_SQL);
     }
 
     @Override
@@ -91,5 +125,9 @@ public class BehaviorJdbc extends EnhancedBaseJdbc<Behavior> implements Behavior
     @Override
     public String getTableName() {
         return DbConst.BEHAVIOR_TABLE;
+    }
+
+    private static String backtickEquals(String colName) {
+        return "`" + colName + "`= :" + colName;
     }
 }
