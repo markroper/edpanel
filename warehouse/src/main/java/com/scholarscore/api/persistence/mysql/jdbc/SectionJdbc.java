@@ -13,10 +13,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.persistence.mysql.DbConst;
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
+import com.scholarscore.api.persistence.mysql.SectionPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.SectionMapper;
 import com.scholarscore.models.Section;
 
-public class SectionJdbc extends EnhancedBaseJdbc<Section> implements EntityPersistence<Section> {
+public class SectionJdbc extends EnhancedBaseJdbc<Section> implements SectionPersistence {
     private static String INSERT_SECTION_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.SECTION_TABLE + "` " +
             "(`" + DbConst.SECTION_NAME_COL + "`, `" + DbConst.TERM_FK_COL + "`, `" + 
@@ -45,6 +46,15 @@ public class SectionJdbc extends EnhancedBaseJdbc<Section> implements EntityPers
             DbConst.COURSE_ID_COL + "` = `" + DbConst.COURSE_FK_COL +
             "` WHERE `" + DbConst.TERM_FK_COL + "` = :" + DbConst.TERM_FK_COL;
     
+    private static final String SELECT_ALL_SECTIONS_FOR_STUDENT_SQL = "SELECT * FROM `"+
+            DbConst.DATABASE +"`.`" + DbConst.SECTION_TABLE + "` " +
+            "INNER JOIN `" + DbConst.DATABASE +"`.`" + DbConst.COURSE_TABLE + "` ON `" + 
+            DbConst.COURSE_ID_COL + "` = `" + DbConst.COURSE_FK_COL +
+            "` INNER JOIN `" + DbConst.DATABASE + "`.`" + DbConst.STUDENT_SECTION_GRADE_TABLE + "` on `" +
+            DbConst.SECTION_FK_COL + "` = `" + DbConst.SECTION_ID_COL + 
+            "` WHERE `" + DbConst.TERM_FK_COL + "` = :" + DbConst.TERM_FK_COL + " and `" +
+            DbConst.STUD_FK_COL + "` = :" + DbConst.STUD_FK_COL;
+    
     private final String SELECT_SECTION_SQL = SELECT_ALL_SECTIONS_SQL +
             " AND `" + DbConst.SECTION_ID_COL + "`= :" + DbConst.SECTION_ID_COL;
 
@@ -53,6 +63,15 @@ public class SectionJdbc extends EnhancedBaseJdbc<Section> implements EntityPers
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.TERM_FK_COL, new Long(termId));
         return super.selectAll(params, SELECT_ALL_SECTIONS_SQL);
+    }
+    
+    @Override
+    public Collection<Section> selectAllSectionForStudent(long termId,
+            long studentId) {
+        Map<String, Object> params = new HashMap<>();     
+        params.put(DbConst.TERM_FK_COL, new Long(termId));
+        params.put(DbConst.STUD_FK_COL, new Long(studentId));
+        return super.selectAll(params, SELECT_ALL_SECTIONS_FOR_STUDENT_SQL);
     }
 
     @Override
