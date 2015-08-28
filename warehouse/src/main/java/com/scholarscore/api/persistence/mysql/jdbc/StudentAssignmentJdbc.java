@@ -11,11 +11,12 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import com.scholarscore.api.persistence.mysql.DbConst;
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
+import com.scholarscore.api.persistence.mysql.StudentAssignmentPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.StudentAssignmentMapper;
 import com.scholarscore.models.StudentAssignment;
 
 public class StudentAssignmentJdbc extends EnhancedBaseJdbc<StudentAssignment> 
-        implements EntityPersistence<StudentAssignment>{
+        implements StudentAssignmentPersistence {
     private static String INSERT_STUD_ASSIGNMENT_SQL = "INSERT INTO `"+ 
             DbConst.DATABASE +"`.`" + DbConst.STUDENT_ASSIGNMENT_TABLE + "` " +
             "(`" + DbConst.STUD_ASSIGNMENT_NAME_COL + 
@@ -52,6 +53,17 @@ public class StudentAssignmentJdbc extends EnhancedBaseJdbc<StudentAssignment>
             DbConst.STUDENT_ASSIGNMENT_TABLE + "`.`" + DbConst.STUD_FK_COL + "` " + 
             "WHERE `" + DbConst.ASSIGNMENT_FK_COL + "` = :" + DbConst.ASSIGNMENT_FK_COL;
     
+    private static String SELECT_STUD_ASSIGNMENTS_ONE_STUDENT_SQL = "SELECT * FROM `"+ 
+            DbConst.DATABASE +"`.`" + DbConst.STUDENT_ASSIGNMENT_TABLE + "` " +
+            "INNER JOIN `" + DbConst.DATABASE +"`.`" + DbConst.ASSIGNMENT_TABLE + "` " +
+            "ON `" + DbConst.ASSIGNMENT_TABLE + "`.`" + DbConst.ASSIGNMENT_ID_COL + "` = `" +
+            DbConst.STUDENT_ASSIGNMENT_TABLE + "`.`" + DbConst.ASSIGNMENT_FK_COL + "` " + 
+            "INNER JOIN `" + DbConst.DATABASE +"`.`" + DbConst.STUDENT_TABLE + "` " +
+            "ON `" + DbConst.STUDENT_TABLE + "`.`" + DbConst.STUDENT_ID_COL + "` = `" +
+            DbConst.STUDENT_ASSIGNMENT_TABLE + "`.`" + DbConst.STUD_FK_COL + "` " + 
+            "WHERE `" + DbConst.STUD_FK_COL + "` = :" + DbConst.STUD_FK_COL +
+            " and `" + DbConst.SECTION_FK_COL + "` = :" + DbConst.SECTION_FK_COL;
+    
     private static String SELECT_STUD_ASSIGNMENT_SQL = SELECT_ALL_STUD_ASSIGNMENTS_SQL + 
             " AND `" + DbConst.STUD_ASSIGNMENT_ID_COL + "`= :" + DbConst.STUD_ASSIGNMENT_ID_COL;
 
@@ -60,6 +72,15 @@ public class StudentAssignmentJdbc extends EnhancedBaseJdbc<StudentAssignment>
         Map<String, Object> params = new HashMap<>();     
         params.put(DbConst.ASSIGNMENT_FK_COL, new Long(id));
         return super.selectAll(params, SELECT_ALL_STUD_ASSIGNMENTS_SQL);
+    }
+    
+    @Override
+    public Collection<StudentAssignment> selectAllAssignmentsOneSectionOneStudent(
+            long sectionId, long studentId) {
+        Map<String, Object> params = new HashMap<>();     
+        params.put(DbConst.SECTION_FK_COL, new Long(sectionId));
+        params.put(DbConst.STUD_FK_COL, new Long(studentId));
+        return super.selectAll(params, SELECT_STUD_ASSIGNMENTS_ONE_STUDENT_SQL);
     }
 
     @Override
@@ -112,5 +133,4 @@ public class StudentAssignmentJdbc extends EnhancedBaseJdbc<StudentAssignment>
     public String getTableName() {
         return DbConst.STUDENT_ASSIGNMENT_TABLE;
     }
-
 }

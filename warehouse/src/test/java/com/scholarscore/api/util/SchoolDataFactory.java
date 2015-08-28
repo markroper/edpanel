@@ -184,7 +184,10 @@ public class SchoolDataFactory {
      * @param courses
      * @return
      */
-    public static Map<Long, List<Section>> generateSections(Collection<Term> terms, List<Course> courses) {
+    public static Map<Long, List<Section>> generateSections(
+            Collection<Term> terms, 
+            List<Course> courses, 
+            List<Student> students) {
         //Static set of grade formulas
         List<GradeFormula> gradeFormulas = new ArrayList<GradeFormula>();
         Map<AssignmentType, Integer> weight1 = new HashMap<AssignmentType, Integer>() {{
@@ -213,15 +216,25 @@ public class SchoolDataFactory {
             add("105"); add("106");
         }};
         int numRooms = rooms.size();
+        int sectionsCreated = 0;
+        int studentListMidwayPoint = students.size() / 2;
         Map<Long, List<Section>> sectionMap = new HashMap<Long, List<Section>>();
         for(Term t : terms) {
             for(Course c : courses) {
+                sectionsCreated++;
                 Section section = new Section(
                         t.getStartDate(), 
                         t.getEndDate(), 
                         rooms.get(new Random().nextInt(numRooms)), 
                         gradeFormulas.get(new Random().nextInt(gradeFormulas.size())));
                 section.setCourse(c);
+                section.setEnrolledStudents(new ArrayList<Student>());
+                //Add an alternating half of students to each section
+                for(int i = studentListMidwayPoint * (sectionsCreated % 2); 
+                        i < students.size() - studentListMidwayPoint * ((sectionsCreated + 1) % 2); 
+                        i++) {
+                    section.getEnrolledStudents().add(students.get(i));
+                }
                 if(null == sectionMap.get(t.getId())) {
                     sectionMap.put(t.getId(), new ArrayList<Section>());
                 }

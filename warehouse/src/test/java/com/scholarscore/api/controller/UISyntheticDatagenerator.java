@@ -75,7 +75,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
             
             //Create the sections for courses in the school and the terms in the current schoolYear
             Map<Long, List<Section>> sections = 
-                    SchoolDataFactory.generateSections(createdTerms, generatedCourses);
+                    SchoolDataFactory.generateSections(createdTerms, generatedCourses, generatedStudents);
             for(Map.Entry<Long, List<Section>> sectionEntry : sections.entrySet()) {
                 List<Section> createdSections = new ArrayList<Section>();
                 for(Section section : sectionEntry.getValue()) {
