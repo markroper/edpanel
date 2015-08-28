@@ -24,7 +24,7 @@ public abstract class EnhancedBaseJdbc<T> extends BaseJdbc {
     private final String SELECT_SQL = SELECT_ALL_SQL + " " + 
             "WHERE `" + getIdColName() + "`= :" + getIdColName();
 
-    private final String DELETE_SQL = "DELETE FROM `"+
+    protected final String DELETE_SQL = "DELETE FROM `"+
             DbConst.DATABASE +"`.`" + getTableName() + "` " +
             "WHERE `" + getIdColName() + "`= :" + getIdColName();
     

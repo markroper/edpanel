@@ -93,43 +93,6 @@ public class DLETLEngine implements IETLEngine {
         // TODO Jordan: DeansList ETL in progress
         return new MigrationResult();
     }
-
-    // TODO Jordan: WIP
-    /* 
-    private void mergeOnName(Collection<Student> existingStudents, Collection<Student> studentsToMerge) {
-
-        for (Student studentToMerge : studentsToMerge) {
-            int matches = 0;
-            Long lastMatchedId = null;
-            String mergeName = stripAndLowerName(studentToMerge.getName());
-            if (mergeName != null) {
-                for (Student existingStudent : existingStudents) {
-                    String existingName = stripAndLowerName(existingStudent.getName());
-                    if (mergeName.equals(existingName)) {
-                        // Match!
-                        matches++;
-                        lastMatchedId = existingStudent.getId();
-                    }
-                }
-                if (matches < 1) {
-                    // no matching student found
-                    System.out.println("XX No student found matching incoming name " + mergeName);
-                } else if (matches >= 1) {
-                    
-                    // matching student found
-                    System.out.println("!! student found matching incoming name " + mergeName);
-                    scholarScore.updateStudent(lastMatchedId, studentToMerge);
-
-                    // TODO: need to handle multiple matches differently
-//                } else if (matches > 1) {
-//                     // more than one match found, need to refine further
-//                    System.out.println("~~ More than one student found matching incoming name " + mergeName);
-                }
-                
-            }
-        }
-    }
-    */
     
     private String stripAndLowerName(String name) {
         if (null == name) { return null; }
