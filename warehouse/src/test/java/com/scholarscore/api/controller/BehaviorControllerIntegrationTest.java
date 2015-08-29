@@ -9,8 +9,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.SimpleTimeZone;
 
 /**
  * User: jordan
@@ -41,27 +44,45 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
     @DataProvider
     public Object[][] createBehaviorProvider() {
         Behavior emptyBehavior = new Behavior();
-        emptyBehavior.setId(1L);
+        // teacher is always required or constraint exception
+        emptyBehavior.setStudent(student);
+        emptyBehavior.setTeacher(teacher);
 
         Behavior namedBehavior = new Behavior();
+        // teacher is always required or constraint exception
+        namedBehavior.setStudent(student);
+        namedBehavior.setTeacher(teacher);
         namedBehavior.setName("BehaviorEvent");
-        namedBehavior.setId(2L);
-        
+
         Behavior populatedBehavior = new Behavior();
         populatedBehavior.setName("Good Eye Contact");
         populatedBehavior.setStudent(student);
         populatedBehavior.setTeacher(teacher);
         populatedBehavior.setBehaviorCategory("MERITS");
-        populatedBehavior.setBehaviorDate(Calendar.getInstance().getTime());
+//        Date now = Calendar.getInstance().getTime();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        populatedBehavior.setBehaviorDate(cal.getTime());
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//        String nowString = sdf.format(now);
+
+//        Date dateOnly = sdf;
+//        try {
+//             dateOnly = sdf.parse(nowString);
+//        } catch (ParseException pe) {
+//        }
+
         populatedBehavior.setPointValue("1");
         populatedBehavior.setRemoteStudentId("123456");
         populatedBehavior.setRoster("History 101");
-        populatedBehavior.setId(3L);
-        
+
         return new Object[][]{
                 {"Empty behavior", emptyBehavior},
-                {"Named behavior", namedBehavior},
-                {"Fully populated behavior", populatedBehavior}
+//                {"Named behavior", namedBehavior},
+//                {"Fully populated behavior", populatedBehavior}
         };
     }
 
@@ -79,8 +100,12 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
 
     @Test(dataProvider = "createBehaviorProvider")
     public void replaceBehaviorTest(String msg, Behavior behavior) {
+        Behavior newBehavior = new Behavior();
+        newBehavior.setStudent(student);
+        newBehavior.setTeacher(teacher);
+        
         Behavior createdBehavior = behaviorValidatingExecutor.create(student.getId(), behavior, msg);
-        behaviorValidatingExecutor.replace(student.getId(), createdBehavior.getId(), new Behavior(), msg);
+        behaviorValidatingExecutor.replace(student.getId(), createdBehavior.getId(), newBehavior, msg);
         numberOfItemsCreated++;
     }
     
@@ -88,6 +113,8 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
     public void updateBehaviorTest(String msg, Behavior behavior) { 
         Behavior createdBehavior = behaviorValidatingExecutor.create(student.getId(), behavior, msg);
         Behavior updatedBehavior = new Behavior();
+        updatedBehavior.setTeacher(teacher);
+        updatedBehavior.setStudent(student);
         updatedBehavior.setName(localeServiceUtil.generateName());
         //PATCH the existing record with a new name.
         behaviorValidatingExecutor.update(student.getId(), createdBehavior.getId(), updatedBehavior, msg);
@@ -103,18 +130,28 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
     @DataProvider
     public Object[][] createBehaviorNegativeProvider() {
         Behavior behaviorNameTooLong = new Behavior();
+        behaviorNameTooLong.setStudent(student);
+        behaviorNameTooLong.setTeacher(teacher);
         behaviorNameTooLong.setName(localeServiceUtil.generateName(257));
 
         Behavior remoteStudentIdTooLong = new Behavior();
+        remoteStudentIdTooLong.setStudent(student);
+        remoteStudentIdTooLong.setTeacher(teacher);
         remoteStudentIdTooLong.setRemoteStudentId(localeServiceUtil.generateName(257));
         
         Behavior categoryTooLong = new Behavior();
+        categoryTooLong.setStudent(student);
+        categoryTooLong.setTeacher(teacher);
         categoryTooLong.setBehaviorCategory(localeServiceUtil.generateName(257));
         
         Behavior pointValueTooLong = new Behavior();
+        pointValueTooLong.setStudent(student);
+        pointValueTooLong.setTeacher(teacher);
         pointValueTooLong.setPointValue(localeServiceUtil.generateName(257));
         
         Behavior rosterTooLong = new Behavior();
+        rosterTooLong.setStudent(student);
+        rosterTooLong.setTeacher(teacher);
         rosterTooLong.setRoster(localeServiceUtil.generateName(257));
         
         return new Object[][] {
@@ -126,14 +163,17 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
         };
     }
 
-    @Test(dataProvider = "createSchoolYearNegativeProvider")
+    @Test(dataProvider = "createBehaviorNegativeProvider")
     public void createBehaviorNegativeTest(String msg, Behavior behavior, HttpStatus expectedStatus) {
         behaviorValidatingExecutor.createNegative(student.getId(), behavior, expectedStatus, msg);
     }
 
-    @Test(dataProvider = "createSchoolYearNegativeProvider")
+    @Test(dataProvider = "createBehaviorNegativeProvider")
     public void replaceSchoolYearNegativeTest(String msg, Behavior behavior, HttpStatus expectedStatus) {
-        Behavior created = behaviorValidatingExecutor.create(student.getId(), new Behavior(), msg);
+        Behavior updatedBehavior = new Behavior();
+        updatedBehavior.setStudent(student);
+        updatedBehavior.setTeacher(teacher);
+        Behavior created = behaviorValidatingExecutor.create(student.getId(), updatedBehavior, msg);
         behaviorValidatingExecutor.replaceNegative(student.getId(), created.getId(), behavior, expectedStatus, msg);
     }
 }

@@ -1,5 +1,6 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scholarscore.api.persistence.mysql.BehaviorPersistence;
 import com.scholarscore.api.persistence.mysql.DbConst;
 import com.scholarscore.api.persistence.mysql.mapper.BehaviorMapper;
@@ -52,8 +53,18 @@ public class BehaviorJdbc extends EnhancedBaseJdbc<Behavior> implements Behavior
             + backtickEquals(DbConst.BEHAVIOR_REMOTE_STUDENT_ID_COL)
             + " WHERE " + backtickEquals(DbConst.BEHAVIOR_ID_COL);
     
-    private String SELECT_ALL_BEHAVIORS_SQL = SELECT_ALL_SQL + " " +
-            "WHERE " + backtickEquals(DbConst.BEHAVIOR_STUDENT_FK_COL);
+    private String SELECT_ALL_BEHAVIORS_SQL = SELECT_ALL_SQL + " "
+
+            // join on student (first draft -- may change)
+            + "JOIN `" + DbConst.DATABASE + "`.`" + DbConst.STUDENT_TABLE + "` ON `"
+            + getTableName() + "`.`" + DbConst.BEHAVIOR_STUDENT_FK_COL + "`=`"
+            + DbConst.STUDENT_TABLE + "`.`" + DbConst.STUDENT_ID_COL + "` "
+            // join on teacher (first draft -- may change)
+            + "JOIN `" + DbConst.DATABASE + "`.`" + DbConst.TEACHER_TABLE + "` ON `"
+            + getTableName() + "`.`" + DbConst.BEHAVIOR_TEACHER_FK_COL + "`=`"
+            + DbConst.TEACHER_TABLE + "`.`" + DbConst.TEACHER_ID_COL + "` "
+
+            + "WHERE " + backtickEquals(DbConst.BEHAVIOR_STUDENT_FK_COL);
     
     private String SELECT_BEHAVIOR_SQL = SELECT_ALL_BEHAVIORS_SQL + " " + 
             "AND " + backtickEquals(DbConst.BEHAVIOR_ID_COL);
@@ -62,7 +73,7 @@ public class BehaviorJdbc extends EnhancedBaseJdbc<Behavior> implements Behavior
             "AND " + backtickEquals(DbConst.BEHAVIOR_STUDENT_FK_COL);
 
     @Override
-    public Long createBehavior(long studentId, Behavior behavior) {
+    public Long createBehavior(long studentId, Behavior behavior) /*throws JsonProcessingException*/ {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Map<String, Object> params = new HashMap<>();

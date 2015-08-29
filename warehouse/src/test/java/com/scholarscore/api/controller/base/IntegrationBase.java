@@ -141,6 +141,7 @@ public class IntegrationBase {
         studentSectionGradeValidatingExecutor = new StudentSectionGradeValidatingExecutor(this);
         teacherValidatingExecutor = new TeacherValidatingExecutor(this);
         queryValidatingExecutor = new QueryValidatingExecutor(this);
+        behaviorValidatingExecutor = new BehaviorValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
