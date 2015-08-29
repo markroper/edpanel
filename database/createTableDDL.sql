@@ -183,10 +183,14 @@ CREATE TABLE `scholar_warehouse`.`behavior` (
   PRIMARY KEY (`behavior_id`),
   CONSTRAINT `fk_student$behavior`
     FOREIGN KEY (`student_fk`)
-    REFERENCES `scholar_warehouse`.`student`(`student_id`),
+    REFERENCES `scholar_warehouse`.`student`(`student_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_teacher$behavior`
     FOREIGN KEY (`teacher_fk`)
     REFERENCES `scholar_warehouse`.`teacher`(`teacher_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 )
 ENGINE = InnoDB;
 

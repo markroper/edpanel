@@ -1,19 +1,28 @@
 package com.scholarscore.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * User: jordan
  * Date: 8/8/15
  * Time: 3:21 PM
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Behavior extends ApiModel implements IApiModel<Behavior> {
     
     // "name" in parent class maps to 'behavior'
+    @Size(min=1, max=256)
     private String remoteStudentId;    // currently always deanslist DLSAID
     private Date behaviorDate;
+    @Size(min=1, max=256)
     private String behaviorCategory;
+    @Size(min=1, max=256)
     private String pointValue;
+    @Size(min=1, max=256)
     private String roster; // the class the behavior event occurred within
     private transient Student student;
     private transient Teacher teacher;
@@ -36,8 +45,21 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     @Override
     public void mergePropertiesIfNull(Behavior mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
-
-        throw new UnsupportedOperationException("not implemented yet");
+        if (null == this.remoteStudentId) {
+            this.remoteStudentId = mergeFrom.remoteStudentId;
+        }
+        if (null == behaviorDate) {
+            this.behaviorDate = mergeFrom.behaviorDate;
+        }
+        if (null == behaviorCategory) {
+            this.behaviorCategory = mergeFrom.behaviorCategory;
+        }
+        if (null == pointValue) {
+            this.pointValue = mergeFrom.pointValue;
+        }
+        if (null == roster) {
+            this.roster = mergeFrom.roster;
+        }
     }
 
     public String getRemoteStudentId() {
@@ -94,5 +116,40 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
 
     public void setTeacher(Teacher teacher) {
         this.teacher = teacher;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!super.equals(obj)) {
+            return false;
+        }
+        final Behavior other = (Behavior) obj;
+        return Objects.equals(this.remoteStudentId, other.remoteStudentId)
+                && Objects.equals(this.behaviorDate, other.behaviorDate)
+                && Objects.equals(this.behaviorCategory, other.behaviorCategory)
+                && Objects.equals(this.pointValue, other.pointValue)
+                && Objects.equals(this.roster, other.roster)
+                && Objects.equals(this.student, other.student)
+                && Objects.equals(this.teacher, other.teacher);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * super.hashCode() + Objects.hash(remoteStudentId, behaviorDate, behaviorCategory, pointValue, roster, student, teacher);
+    }
+    
+    @Override
+    public String toString() { 
+        return
+                "BEHAVIOR " + "\n"
+                + "Id  : " + getId() + "\n"
+                + "Name: " + getName() + "\n"
+                + "RemoteStudentId: " + getRemoteStudentId() + "\n"
+                + "BehaviorDate: " + getBehaviorDate() + "\n"
+                + "BehaviorCategory: " + getBehaviorCategory() + "\n"
+                + "Point Value: " + getPointValue() + "\n"
+                + "Roster: " + getRoster() + "\n"
+                + "Student: " + getStudent() + "\n"
+                + "Teacher: " + getTeacher() + "\n";
     }
 }

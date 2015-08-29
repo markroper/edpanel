@@ -116,12 +116,12 @@ public class BehaviorController extends BaseController {
             method = RequestMethod.DELETE,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity deleteSchoolYear(
-            @ApiParam(name = "schoolId", required = true, value = "School ID")
-            @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
-            @PathVariable(value="schoolYearId") Long schoolYearId) {
-        return respond(getSchoolYearManager().deleteSchoolYear(schoolId, schoolYearId));
+    public @ResponseBody ResponseEntity deleteBehavior(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "behaviorId", required = true, value = "Behavior ID")
+            @PathVariable(value="behaviorId") Long behaviorId) {
+        return respond(getBehaviorManager().deleteBehavior(studentId, behaviorId));
     }
     
 }
