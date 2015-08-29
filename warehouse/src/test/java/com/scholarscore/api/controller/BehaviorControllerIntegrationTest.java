@@ -32,7 +32,6 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
 
         student = new Student();
         student.setName(localeServiceUtil.generateName());
-//        student.setCurrentSchoolId(school.getId());
         student = studentValidatingExecutor.create(student, "create base student");
 
         teacher = new Teacher();
