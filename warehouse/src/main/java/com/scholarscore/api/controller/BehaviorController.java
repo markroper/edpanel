@@ -71,4 +71,57 @@ public class BehaviorController extends BaseController {
             @RequestBody @Valid Behavior behavior) {
         return respond(getBehaviorManager().createBehavior(studentId, behavior));
     }
+    
+    @ApiOperation(
+            value = "Overwrite an existing behavior",
+            notes = "Overwrites an existing behavior entity for the specified student with the ID provided",
+            response = EntityId.class)
+    @RequestMapping(
+            value = "/{behaviorId}",
+            method = RequestMethod.PUT,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity replaceBehavior(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "behaviorId", required = true, value = "Behavior ID")
+            @PathVariable(value="behaviorId") Long behaviorId,
+            @RequestBody @Valid Behavior behavior) {
+        return respond(getBehaviorManager().replaceBehavior(studentId, behaviorId, behavior));
+    }
+
+    @ApiOperation(
+            value = "Update an existing behavior",
+            notes = "Updates an existing behavior's properties. Will not overwrite existing values with null.",
+            response = EntityId.class)
+    @RequestMapping(
+            value = "/{behaviorId}",
+            method = RequestMethod.PATCH,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity updateBehavior(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "behaviorId", required = true, value = "Behavior ID")
+            @PathVariable(value="behaviorId") Long behaviorId,
+            @RequestBody @Valid Behavior behavior) {
+        return respond(getBehaviorManager().updateBehavior(studentId, behaviorId, behavior));
+    }
+
+    @ApiOperation(
+            value = "Delete a behavior",
+            response = Void.class)
+    @RequestMapping(
+            value = "/{behaviorId}",
+            method = RequestMethod.DELETE,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity deleteSchoolYear(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
+            @PathVariable(value="schoolYearId") Long schoolYearId) {
+        return respond(getSchoolYearManager().deleteSchoolYear(schoolId, schoolYearId));
+    }
+    
 }

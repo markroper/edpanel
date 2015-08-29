@@ -4,8 +4,11 @@ import com.scholarscore.etl.deanslist.api.model.Behavior;
 import com.scholarscore.etl.powerschool.api.response.ITranslateCollection;
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,6 +16,8 @@ import java.util.List;
  */
 public class BehaviorResponse implements ITranslateCollection<com.scholarscore.models.Behavior> {
 
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    
     Integer rowcount;
     private List<Behavior> data = new ArrayList<>();
 
@@ -25,8 +30,11 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
             out.setRemoteStudentId(behavior.DLSAID);
             out.setName(behavior.Behavior);
             out.setBehaviorCategory(behavior.BehaviorCategory);
-            out.setBehaviorDate(behavior.BehaviorDate);
-            out.setPointValue(behavior.PointValue);
+            try {
+                out.setBehaviorDate(sdf.parse(behavior.BehaviorDate));
+            } catch (ParseException pe) {
+                System.out.println("ERROR Could not parse date. Skipping...");
+            }
 
             // mostly-empty student with just student name (it's all we have)
             com.scholarscore.models.Student student = new com.scholarscore.models.Student();
