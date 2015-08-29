@@ -58,30 +58,20 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
         populatedBehavior.setStudent(student);
         populatedBehavior.setTeacher(teacher);
         populatedBehavior.setBehaviorCategory("MERITS");
-//        Date now = Calendar.getInstance().getTime();
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         populatedBehavior.setBehaviorDate(cal.getTime());
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//        String nowString = sdf.format(now);
-
-//        Date dateOnly = sdf;
-//        try {
-//             dateOnly = sdf.parse(nowString);
-//        } catch (ParseException pe) {
-//        }
-
         populatedBehavior.setPointValue("1");
         populatedBehavior.setRemoteStudentId("123456");
         populatedBehavior.setRoster("History 101");
 
         return new Object[][]{
                 {"Empty behavior", emptyBehavior},
-//                {"Named behavior", namedBehavior},
-//                {"Fully populated behavior", populatedBehavior}
+                {"Named behavior", namedBehavior},
+                {"Fully populated behavior", populatedBehavior}
         };
     }
 
