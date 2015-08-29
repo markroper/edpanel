@@ -48,7 +48,7 @@ public class SchoolYearValidatingExecutor {
                 serviceBase.getSchoolYearEndpoint(schoolId, schoolYearId),
                 null);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
-                "Unexpected status code returned while retreiving schoolYear: " + msg);
+                "Unexpected status code returned while retrieving schoolYear: " + msg);
     }
     
     public SchoolYear create(Long schoolId, SchoolYear schoolYear, String msg) {

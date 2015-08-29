@@ -98,7 +98,7 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
     
     @Test
     public void getAllItems() {
-        schoolYearValidatingExecutor.getAll(school.getId(), "Get all records created so far", numberOfItemsCreated++);
+        schoolYearValidatingExecutor.getAll(school.getId(), "Get all records created so far", numberOfItemsCreated);
     }
     
     //Negative test cases
