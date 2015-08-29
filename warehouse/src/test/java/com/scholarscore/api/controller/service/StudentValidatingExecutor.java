@@ -47,7 +47,7 @@ public class StudentValidatingExecutor {
                 serviceBase.getStudentEndpoint(studentId),
                 null);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
-                "Unexpected status code returned while retreiving student: " + msg);
+                "Unexpected status code returned while retrieving student: " + msg);
     }
     
     
