@@ -21,7 +21,7 @@ import java.util.List;
  * Date: 8/8/15
  * Time: 4:59 PM
  * 
- * Performs CRUD operations on student behavior events (e.g. suspensions, demerits, merits, etc)*
+ * Performs CRUD operations on student behavior events (e.g. suspensions, demerits, merits, etc)
  */
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/students/{studentId}/behaviors")
