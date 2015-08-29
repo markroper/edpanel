@@ -18,6 +18,8 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.ApiConsts;
@@ -167,7 +169,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             and(). 
             csrf().disable().
             logout().
-            logoutSuccessUrl(LOGOUT_ENDPOINT).
+            addLogoutHandler(new CustomLogoutHandler()).
+            logoutUrl(LOGOUT_ENDPOINT).
+            logoutSuccessHandler(new CustomLogoutSuccessHandler()).
             and().
             sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).
             and().
@@ -188,6 +192,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             anyRequest().authenticated();
     }
 
+    private static class CustomLogoutHandler implements LogoutHandler {
+
+        @Override
+        public void logout(HttpServletRequest request,
+                HttpServletResponse response, Authentication authentication) {
+            addCorsHeaders(response);
+            response.setStatus(HttpServletResponse.SC_OK); 
+        }
+        
+    }
+    private static class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
+
+        @Override
+        public void onLogoutSuccess(HttpServletRequest request,
+                HttpServletResponse response, Authentication authentication)
+                throws IOException, ServletException {
+            response.setStatus(HttpServletResponse.SC_OK);   
+        }
+        
+    }
     /**
      * The access denied handler is called when authorization fails. This means the client is passing in a correct token but the permissions 
      * associated with the role of this user does not allow the client the access.
