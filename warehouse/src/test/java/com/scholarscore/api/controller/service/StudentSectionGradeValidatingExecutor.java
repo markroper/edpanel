@@ -46,7 +46,7 @@ public class StudentSectionGradeValidatingExecutor {
                 serviceBase.getStudentSectionGradeEndpoint(schoolId, schoolYearId, termId, sectionId, studentId),
                 null);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
-                "Unexpected status code returned while retreiving term: " + msg);
+                "Unexpected status code returned while retrieving term: " + msg);
     }
     
     public StudentSectionGrade create(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long studentId, 

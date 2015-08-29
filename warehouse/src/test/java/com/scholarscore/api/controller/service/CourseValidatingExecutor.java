@@ -46,7 +46,7 @@ public class CourseValidatingExecutor {
                 serviceBase.getCourseEndpoint(schoolId, courseId),
                 null);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
-                "Unexpected status code returned while retreiving course: " + msg);
+                "Unexpected status code returned while retrieving course: " + msg);
     }
     
     public Course create(Long schoolId, Course course, String msg) {

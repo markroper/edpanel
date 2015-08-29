@@ -47,7 +47,7 @@ public class TermValidatingExecutor {
                 serviceBase.getTermEndpoint(schoolId, schoolYearId, id),// + "/" + Long.toString(id), 
                 null);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
-                "Unexpected status code returned while retreiving term: " + msg);
+                "Unexpected status code returned while retrieving term: " + msg);
     }
     
     public Term create(Long schoolId, Long schoolYearId, Term term, String msg) {

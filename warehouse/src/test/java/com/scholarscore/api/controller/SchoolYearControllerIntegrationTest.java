@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
@@ -98,7 +99,7 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
     
     @Test
     public void getAllItems() {
-        schoolYearValidatingExecutor.getAll(school.getId(), "Get all records created so far", numberOfItemsCreated++);
+        schoolYearValidatingExecutor.getAll(school.getId(), "Get all records created so far", numberOfItemsCreated);
     }
     
     //Negative test cases

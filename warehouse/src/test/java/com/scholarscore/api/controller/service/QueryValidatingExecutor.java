@@ -46,7 +46,7 @@ public class QueryValidatingExecutor {
                 serviceBase.getQueryEndpoint(schoolId, queryId),
                 null);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
-                "Unexpected status code returned while retreiving query: " + msg);
+                "Unexpected status code returned while retrieving query: " + msg);
     }
     
     public Query create(Long schoolId, Query query, String msg) {
