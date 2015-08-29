@@ -29,12 +29,11 @@ public class SchoolYearJdbc extends EnhancedBaseJdbc<SchoolYear> implements Enti
             DbConst.SCHOOL_YEAR_START_DATE_COL + "`= :" + DbConst.SCHOOL_YEAR_START_DATE_COL + ", `" +
             DbConst.SCHOOL_YEAR_END_DATE_COL + "`= :" + DbConst.SCHOOL_YEAR_END_DATE_COL + " " +
             "WHERE `" + DbConst.SCHOOL_YEAR_ID_COL + "`= :" + DbConst.SCHOOL_YEAR_ID_COL + "";
-    
-    private static String SELECT_ALL_SCHOOL_YEARS_SQL = "SELECT * FROM `"+
-            DbConst.DATABASE +"`.`" + DbConst.SCHOOL_YEAR_TABLE + "` " +
+
+    private String SELECT_ALL_SCHOOL_YEARS_SQL = SELECT_ALL_SQL + " " +
             "WHERE `" + DbConst.SCHOOL_FK_COL + "` = :" + DbConst.SCHOOL_FK_COL;
     
-    private static String SELECT_SCHOOL_YEAR_SQL = SELECT_ALL_SCHOOL_YEARS_SQL + 
+    private String SELECT_SCHOOL_YEAR_SQL = SELECT_ALL_SCHOOL_YEARS_SQL +
             " AND `" + DbConst.SCHOOL_YEAR_ID_COL + "`= :" + DbConst.SCHOOL_YEAR_ID_COL;
     
     /**
