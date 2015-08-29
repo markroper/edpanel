@@ -318,10 +318,14 @@ public class SchoolDataFactory {
             for(Student s: students) {
                 StudentAssignment sa = new StudentAssignment();
                 sa.setAssignment(a);
-                Boolean completed = new Random().nextBoolean();
+                Boolean completed = true;
+                if(a.getId() % 2 == 0 && a.getId() % 3 == 0) {
+                    completed = new Random().nextBoolean();
+                }
                 sa.setCompleted(completed);
                 if(null != a.getAvailablePoints() && a.getAvailablePoints() > 0 && completed) {
-                    Integer awardedInt = new Random().nextInt((int)(long)a.getAvailablePoints());
+                    Integer awardedInt = new Random().nextInt(40);
+                    awardedInt = ((int)(long)a.getAvailablePoints()) - awardedInt;
                     sa.setAwardedPoints(awardedInt.longValue());
                     sa.setCompletionDate(a.getDueDate());
                 }
