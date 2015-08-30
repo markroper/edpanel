@@ -21,7 +21,7 @@ import javax.persistence.Table;
  * @author markroper
  *
  */
-@Entity
+@Entity(name = "term")
 @Table(name = "term")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)

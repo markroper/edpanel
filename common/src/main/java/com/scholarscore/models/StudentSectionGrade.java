@@ -6,9 +6,11 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * Represents a single student's grade in a specific course.  The complete boolean
@@ -17,7 +19,8 @@ import javax.persistence.Entity;
  * @author markroper
  *
  */
-@Entity(name = "student_section_grade")
+@Entity
+@Table(name = "student_section_grade")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentSectionGrade implements Serializable, WeightedGradable, IApiModel<StudentSectionGrade> {
@@ -55,6 +58,7 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
     }
 
     @OneToOne(optional = true)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name="section_fk")
     public Section getSection() {
         return section;
@@ -65,6 +69,7 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
     }
 
     @OneToOne(optional = true)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "student_fk")
     public Student getStudent() {
         return student;
