@@ -1,7 +1,5 @@
 package com.scholarscore.models.query.measure;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
@@ -9,10 +7,10 @@ import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.Measure;
 
 @SuppressWarnings("serial")
-public class CourseGradeMeasure implements IMeasure {
-    Set<Measure> compatibleMeasures = Collections.unmodifiableSet(new HashSet<Measure>());
-    Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SECTION);
-    
+public class SuspensionMeasure extends BehaviorMeasure implements IMeasure {
+    Set<Measure> compatibleMeasures = ImmutableSet.of(Measure.DEMERIT, Measure.MERIT, Measure.DETENTION);
+    Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR, 
+            Dimension.STUDENT, Dimension.TEACHER, Dimension.SCHOOL, Dimension.GRADE_LEVEL);
     @Override
     public Set<Dimension> getCompatibleDimensions() {
         return compatibleDimensions;
@@ -25,17 +23,12 @@ public class CourseGradeMeasure implements IMeasure {
 
     @Override
     public Measure getMeasure() {
-        return Measure.COURSE_GRADE;
+        return Measure.SUSPENSION;
     }
 
     @Override
     public String getName() {
-        return "Course Grade";
-    }
-
-    @Override
-    public Set<String> getFields() {
-        return new HashSet<String>();
+        return Measure.SUSPENSION.name();
     }
 
 }

@@ -18,6 +18,7 @@ import com.scholarscore.models.query.AggregateMeasure;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
+import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.dimension.SchoolDimension;
 import com.scholarscore.models.query.dimension.SectionDimension;
@@ -25,9 +26,11 @@ import com.scholarscore.models.query.dimension.StudentDimension;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
+import com.scholarscore.models.query.expressions.operands.MeasureOperand;
 import com.scholarscore.models.query.expressions.operands.NumericOperand;
 import com.scholarscore.models.query.expressions.operators.BinaryOperator;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
+import com.scholarscore.models.query.measure.BehaviorMeasure;
 
 @Test(groups = { "unit" })
 public class QuerySqlGeneratorUnitTest {
@@ -124,10 +127,39 @@ public class QuerySqlGeneratorUnitTest {
                 + "WHERE  ( ( ( term.term_id  =  1 )  AND  ( school_year.school_year_id  =  1 ) )  "
                 + "AND  ( section.section_id  !=  0 ) ) "
                 + "GROUP BY student.student_id";
+        
+        
+        Query behaviorQuery = new Query();
+        ArrayList<AggregateMeasure> behaviorMeasures = new ArrayList<>();
+        behaviorMeasures.add(new AggregateMeasure(Measure.DEMERIT, AggregateFunction.SUM));
+        behaviorQuery.setAggregateMeasures(behaviorMeasures);
+        behaviorQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
+        Expression studentIdClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.STUDENT, StudentDimension.ID)), 
+                ComparisonOperator.EQUAL,
+                new NumericOperand(1L));
+        Date afterDate = null;
+        try {
+            afterDate = dateFormat.parse("01-09-2014");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Expression dateClause = new Expression(
+                new MeasureOperand(new MeasureField(Measure.DEMERIT, BehaviorMeasure.DATE)),
+                ComparisonOperator.GREATER_THAN,
+                new DateOperand(afterDate));
+        Expression topClause = new Expression(dateClause, BinaryOperator.AND, studentIdClause);
+        behaviorQuery.setFilter(topClause);
+        String behaviorSql = "SELECT student.student_id, SUM(if(behavior.category = 'DEMERIT', 1, 0)) "
+                + "FROM student LEFT OUTER JOIN behavior ON student.student_id = behavior.student_fk "
+                + "WHERE  ( ( behavior.date  >  '2014-09-01 00:00:00.0' )  "
+                + "AND  ( student.student_id  =  1 ) ) "
+                + "GROUP BY student.student_id";
         return new Object[][] {
                 { "Course Grade query", courseGradeQuery, courseGradeQuerySql }, 
                 { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql }, 
-                { "Homework query", homeworkCompletionQuery, homeworkSql }
+                { "Homework query", homeworkCompletionQuery, homeworkSql },
+                { "Behavior query", behaviorQuery, behaviorSql}
         };
     }
     

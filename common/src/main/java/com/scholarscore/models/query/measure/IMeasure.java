@@ -23,4 +23,6 @@ public interface IMeasure extends Serializable {
     public Measure getMeasure();
     
     public String getName();
+    
+    public Set<String> getFields();
 }
