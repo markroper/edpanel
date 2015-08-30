@@ -89,7 +89,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name="term_fk", insertable = false, updatable = false)
+    @JoinColumn(name="term_fk")
     public Term getTerm() {
         return term;
     }

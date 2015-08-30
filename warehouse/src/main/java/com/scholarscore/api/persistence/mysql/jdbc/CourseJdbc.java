@@ -63,7 +63,9 @@ public class CourseJdbc implements EntityPersistence<Course> {
     @Override
     public Long delete(long id) {
         Course course = hibernateTemplate.get(Course.class, id);
-        hibernateTemplate.delete(course);
+        if (null != course) {
+            hibernateTemplate.delete(course);
+        }
         return id;
     }
 
