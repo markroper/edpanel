@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -20,7 +21,7 @@ import javax.persistence.Table;
  * @author markroper
  *
  */
-@Entity
+@Entity(name = "section")
 @Table(name = "section")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -29,7 +30,8 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected Date endDate;
     protected String room;
     protected GradeFormula gradeFormula;
-    protected Long termFK;
+
+    protected Term term;
     protected transient Course course;
     protected transient List<Student> enrolledStudents;
     protected transient List<Assignment> assignments;
@@ -67,15 +69,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         return super.getId();
     }
 
-    @Column(name = "term_fk")
-    public Long getTermFK() {
-        return termFK;
-    }
-
-    public void setTermFK(Long termFK) {
-        this.termFK = termFK;
-    }
-
     @Override
     @Column(name = "section_name")
     public String getName() {
@@ -83,7 +76,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     }
 
     @OneToOne(optional = true)
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name="course_fk")
     public Course getCourse() {
         return course;
@@ -91,6 +84,18 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
 
     public void setCourse(Course course) {
         this.course = course;
+    }
+
+
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @JoinColumn(name="term_fk", insertable = false, updatable = false)
+    public Term getTerm() {
+        return term;
+    }
+
+    public void setTerm(Term term) {
+        this.term = term;
     }
 
     @Column(name = "section_start_date")

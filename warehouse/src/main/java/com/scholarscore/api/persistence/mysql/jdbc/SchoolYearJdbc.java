@@ -23,8 +23,6 @@ import javax.transaction.Transactional;
 public class SchoolYearJdbc implements EntityPersistence<SchoolYear> {
     @Autowired
     private HibernateTemplate hibernateTemplate;
-
-    @Autowired
     private SchoolPersistence schoolPersistence;
 
     public SchoolYearJdbc() {
@@ -46,8 +44,8 @@ public class SchoolYearJdbc implements EntityPersistence<SchoolYear> {
     }
 
     @Override
-    public SchoolYear select(long parentId, long id) {
-        return hibernateTemplate.get(SchoolYear.class, id);
+    public SchoolYear select(long schoolId, long schoolYearId) {
+        return hibernateTemplate.get(SchoolYear.class, schoolYearId);
     }
 
     @Override
@@ -56,9 +54,9 @@ public class SchoolYearJdbc implements EntityPersistence<SchoolYear> {
         return (Long)hibernateTemplate.save(entity);
     }
 
-    private void fillInSchool(long schoolId, SchoolYear entity) {
-        if (null == entity.getSchool()) {
-            entity.setSchool(schoolPersistence.selectSchool(schoolId));
+    private void fillInSchool(long schoolId, SchoolYear schoolYear) {
+        if (null == schoolYear.getSchool()) {
+            schoolYear.setSchool(schoolPersistence.selectSchool(schoolId));
         }
     }
 
@@ -71,12 +69,12 @@ public class SchoolYearJdbc implements EntityPersistence<SchoolYear> {
     }
 
     @Override
-    public Long delete(long id) {
-        SchoolYear year = select(0L, id);
+    public Long delete(long schoolYearId) {
+        SchoolYear year = select(0L, schoolYearId);
         if (null != year) {
             hibernateTemplate.delete(year);
         }
-        return id;
+        return schoolYearId;
     }
 
     public SchoolPersistence getSchoolPersistence() {

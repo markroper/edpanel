@@ -37,7 +37,7 @@ public class StudentJdbc implements StudentPersistence {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Student> selectAllStudentsInSection(long sectionId) {
-        String sql = "FROM student_section_grade WHERE section_fk = (?)";
+        String sql = "FROM StudentSectionGrade ssg WHERE ssg.Section.id = (?)";
 
         List<StudentSectionGrade> studentSectionGrades = (List<StudentSectionGrade>) hibernateTemplate.find(
                 sql, sectionId);
@@ -68,8 +68,10 @@ public class StudentJdbc implements StudentPersistence {
 
     @Override
     public Long delete(long studentId) {
-        Student admin = hibernateTemplate.get(Student.class, studentId);
-        hibernateTemplate.delete(admin);
+        Student student = hibernateTemplate.get(Student.class, studentId);
+        if (null != student) {
+            hibernateTemplate.delete(student);
+        }
         return studentId;
     }
 }

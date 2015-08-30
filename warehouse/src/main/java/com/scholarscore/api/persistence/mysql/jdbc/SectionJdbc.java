@@ -38,13 +38,11 @@ public class SectionJdbc implements EntityPersistence<Section> {
 
     @Override
     public Long insert(long termId, Section entity) {
-        entity.setTermFK(termId);
         return (Long)hibernateTemplate.save(entity);
     }
 
     @Override
     public Long update(long termId, long sectionId, Section entity) {
-        entity.setTermFK(termId);
         hibernateTemplate.update(entity);
         return sectionId;
     }
