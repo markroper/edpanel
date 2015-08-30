@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scholarscore.api.persistence.mysql.AuthorityPersistence;
+import com.scholarscore.api.persistence.mysql.BehaviorPersistence;
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.QueryPersistence;
 import com.scholarscore.api.persistence.mysql.SchoolPersistence;
@@ -20,6 +21,7 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.Assignment;
+import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.GradeFormula;
 import com.scholarscore.models.School;
@@ -36,7 +38,8 @@ import com.scholarscore.models.query.QueryResults;
 
 public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
         TermManager, SectionManager, AssignmentManager, StudentAssignmentManager,
-        StudentSectionGradeManager, CourseManager, TeacherManager, UserManager, QueryManager {
+        StudentSectionGradeManager, CourseManager, TeacherManager, UserManager, QueryManager,
+        BehaviorManager {
     
     private static final String SCHOOL = "school";
     private static final String COURSE = "course";
@@ -49,6 +52,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private static final String STUDENT_SECTION_GRADE = "student section grade";
     private static final String USER = "user";
     private static final String QUERY = "query";
+    private static final String BEHAVIOR = "behavior";
     
     //Persistence managers for each entity
     private SchoolPersistence schoolPersistence;
@@ -64,6 +68,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private UserPersistence userPersistence;
     private AuthorityPersistence authorityPersistence;
     private QueryPersistence queryPersistence;
+    private BehaviorPersistence behaviorPersistence;
     
     //Setters for the persistence layer for each entity
     public void setQueryPersistence(QueryPersistence ap) {
@@ -110,7 +115,10 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         this.termPersistence = termPersistence;
     }
 
- 
+    public void setBehaviorPersistence(BehaviorPersistence behaviorPersistence) {
+        this.behaviorPersistence = behaviorPersistence;
+    }
+
     //SCHOOLS
     @Override
     public Collection<School> getAllSchools() {
@@ -1266,7 +1274,80 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         return new ServiceResponse<QueryResults>(
                 StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND));
     }
-    
+
+    @Override
+    public ServiceResponse<Collection<Behavior>> getAllBehaviors(long studentId) {
+        return new ServiceResponse<Collection<Behavior>>
+                (behaviorPersistence.selectAll(studentId));
+    }
+
+    @Override
+    public StatusCode behaviorExists(long studentId, long behaviorId) {
+        StatusCode code = studentExists(studentId);
+        if (!code.isOK()) {
+            return code;
+        }
+        Behavior behavior = behaviorPersistence.select(studentId, behaviorId);
+        if (null == behavior) {
+            return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { BEHAVIOR, behaviorId });
+        }
+        return StatusCodes.getStatusCode(StatusCodeType.OK);
+    }
+
+    @Override
+    public ServiceResponse<Behavior> getBehavior(long studentId, long behaviorId) {
+        StatusCode code = behaviorExists(studentId, behaviorId);
+        if (!code.isOK()) {
+            return new ServiceResponse<>(code);
+        }
+        Behavior behavior = behaviorPersistence.select(studentId, behaviorId);
+        return new ServiceResponse<>(behavior);
+    }
+
+    @Override
+    public ServiceResponse<Long> createBehavior(long studentId, Behavior behavior) {
+        StatusCode code = studentExists(studentId);
+        if (!code.isOK()) {
+            return new ServiceResponse<Long>(code);
+        }
+        Long behaviorId = behaviorPersistence.createBehavior(studentId, behavior);
+        return new ServiceResponse<Long>(behaviorId);
+    }
+
+    @Override
+    public ServiceResponse<Long> replaceBehavior(long studentId, long behaviorId, Behavior behavior) {
+        StatusCode code = behaviorExists(studentId, behaviorId);
+        if (!code.isOK()) {
+            return new ServiceResponse<>(code);
+        }
+        
+        behaviorPersistence.replaceBehavior(studentId, behaviorId, behavior);
+        return new ServiceResponse<>(behaviorId);
+    }
+
+    @Override
+    public ServiceResponse<Long> updateBehavior(long studentId, long behaviorId, Behavior behavior) {
+        StatusCode code = behaviorExists(studentId, behaviorId);
+        if (!code.isOK()) {
+            return new ServiceResponse<Long>(code);
+        }
+        behavior.setId(behaviorId);
+        Behavior originalBehavior = 
+                behaviorPersistence.select(studentId, behaviorId);
+        behavior.mergePropertiesIfNull(originalBehavior);
+        return replaceBehavior(studentId, behaviorId, behavior);
+    }
+
+    @Override
+    public ServiceResponse<Long> deleteBehavior(long studentId, long behaviorId) {
+        StatusCode code = behaviorExists(studentId, behaviorId);
+        if (!code.isOK()) {
+            return new ServiceResponse<Long>(code);
+        }
+        behaviorPersistence.delete(studentId, behaviorId);
+        return new ServiceResponse<Long>((Long) null);
+    }
+        
     @Override
     public ServiceResponse<QueryResults> getQueryResults(Query query) {
         QueryResults results = queryPersistence.generateQueryResults(query);

@@ -93,6 +93,10 @@
           class="com.scholarscore.api.persistence.mysql.jdbc.QueryJdbc">
         <property name="dataSource" ref="dataSource"/>
     </bean>
+    <bean id="behaviorPersistence"
+            class="com.scholarscore.api.persistence.mysql.jdbc.BehaviorJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
 
     <bean id="PM"
           class="com.scholarscore.api.persistence.PersistenceManager">
@@ -108,5 +112,6 @@
         <property name="teacherPersistence" ref="teacherPersistence"/>
         <property name="userPersistence" ref="userPersistence"/>
         <property name="queryPersistence" ref="queryPersistence"/>
+        <property name="behaviorPersistence" ref="behaviorPersistence"/>
     </bean>
 </beans>

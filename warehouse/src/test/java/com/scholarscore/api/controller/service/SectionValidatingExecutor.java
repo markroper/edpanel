@@ -47,7 +47,7 @@ public class SectionValidatingExecutor {
                 serviceBase.getSectionEndpoint(schoolId, schoolYearId, termId, id),
                 null);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
-                "Unexpected status code returned while retreiving section: " + msg);
+                "Unexpected status code returned while retrieving section: " + msg);
     }
     
     public Section create(Long schoolId, Long schoolYearId, Long termId, Section section, String msg) {
