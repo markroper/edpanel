@@ -35,6 +35,11 @@ public class BaseJdbcTest {
     protected final EntityPersistence<SchoolYear> schoolYearDao;
     protected final EntityPersistence<Term> termDao;
 
+    private School createdSchool;
+    private SchoolYear createdSchoolYear;
+    private Term createdTerm;
+    private Course createdCourse;
+
     public BaseJdbcTest() {
 
         // Spring context
@@ -102,29 +107,42 @@ public class BaseJdbcTest {
     }
 
     public School createSchool() {
-        Long schoolId = schoolDao.createSchool(school);
-        return schoolDao.selectSchool(schoolId);
+        if (null == createdSchool) {
+            Long schoolId = schoolDao.createSchool(school);
+            this.createdSchool = schoolDao.selectSchool(schoolId);
+        }
+        return createdSchool;
     }
 
     public SchoolYear createSchoolYear() {
-        School createdSchool = createSchool();
-        SchoolYear createSchoolYear = new SchoolYear(schoolYear);
-        Long schoolYearId = schoolYearDao.insert(createdSchool.getId(), createSchoolYear);
-        return schoolYearDao.select(school.getId(), schoolYearId);
+        if (null == createdSchoolYear) {
+            School createdSchool = createSchool();
+            createdSchoolYear = new SchoolYear(schoolYear);
+            createdSchoolYear.setSchool(createdSchool);
+            Long schoolYearId = schoolYearDao.insert(createdSchool.getId(), createdSchoolYear);
+            createdSchoolYear.setId(schoolYearId);
+        }
+        return createdSchoolYear;
     }
 
     public Term createTerm() {
-        SchoolYear createSchoolYear = createSchoolYear();
-        Term createTerm = new Term(term);
-        createTerm.setSchoolYear(createSchoolYear);
-        Long termId = termDao.insert(createSchoolYear.getId(), createTerm);
-        return termDao.select(createSchoolYear.getId(), termId);
+        if (null == createdTerm) {
+            SchoolYear createSchoolYear = createSchoolYear();
+            createdTerm = new Term(term);
+            createdTerm.setSchoolYear(createSchoolYear);
+            Long termId = termDao.insert(createSchoolYear.getId(), createdTerm);
+            createdTerm.setId(termId);
+        }
+        return createdTerm;
     }
 
     public Course createCourse() {
-        Course createCourse = new Course(course);
-        createCourse.setSchool(createSchool());
-        Long courseId = courseDao.insert(createCourse.getSchool().getId(), createCourse);
-        return courseDao.select(createCourse.getSchool().getId(), courseId);
+        if (null == createdCourse) {
+            createdCourse = new Course(course);
+            createdCourse.setSchool(createSchool());
+            Long courseId = courseDao.insert(createdCourse.getSchool().getId(), createdCourse);
+            createdCourse.setId(courseId);
+        }
+        return createdCourse;
     }
 }
