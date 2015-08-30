@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.scholarscore.api.controller.service.BehaviorValidatingExecutor;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -74,6 +75,7 @@ public class IntegrationBase {
     private static final String TEACHER_ENDPOINT = "/teachers";
     private static final String QUERIES_ENDPOINT = "/queries";
     private static final String GPA_ENDPOINT = "/gpa";
+    private static final String BEHAVIOR_ENDPOINT = "/behaviors";
 
     public LocaleServiceUtil localeServiceUtil;
     public CourseValidatingExecutor courseValidatingExecutor;
@@ -87,7 +89,7 @@ public class IntegrationBase {
     public StudentSectionGradeValidatingExecutor studentSectionGradeValidatingExecutor;
     public TeacherValidatingExecutor teacherValidatingExecutor;
     public QueryValidatingExecutor queryValidatingExecutor;
-    
+    public BehaviorValidatingExecutor behaviorValidatingExecutor;
 
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Student> studentsCreated = new CopyOnWriteArrayList<>();
@@ -139,6 +141,7 @@ public class IntegrationBase {
         studentSectionGradeValidatingExecutor = new StudentSectionGradeValidatingExecutor(this);
         teacherValidatingExecutor = new TeacherValidatingExecutor(this);
         queryValidatingExecutor = new QueryValidatingExecutor(this);
+        behaviorValidatingExecutor = new BehaviorValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -672,6 +675,14 @@ public class IntegrationBase {
             Long sectionAssignmentId) {
         return getSectionAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId, sectionAssignmentId) 
                 + STUDENT_ASSIGNMENT_ENDPOINT;
+    }
+    
+    public String getBehaviorEndpoint(Long studentId) { 
+        return getStudentEndpoint(studentId) + BEHAVIOR_ENDPOINT;
+    }
+    
+    public String getBehaviorEndpoint(Long studentId, Long behaviorId) { 
+        return getBehaviorEndpoint(studentId) + pathify(behaviorId);
     }
 
     /**
