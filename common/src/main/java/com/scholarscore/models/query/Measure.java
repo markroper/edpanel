@@ -2,9 +2,13 @@ package com.scholarscore.models.query;
 
 import com.scholarscore.models.query.measure.AssignmentGradeMeasure;
 import com.scholarscore.models.query.measure.CourseGradeMeasure;
+import com.scholarscore.models.query.measure.DemeritMeasure;
+import com.scholarscore.models.query.measure.DetentionMeasure;
 import com.scholarscore.models.query.measure.GpaMeasure;
 import com.scholarscore.models.query.measure.HomeworkCompletionMeasure;
 import com.scholarscore.models.query.measure.IMeasure;
+import com.scholarscore.models.query.measure.MeritMeasure;
+import com.scholarscore.models.query.measure.SuspensionMeasure;
 
 /**
  * Enumerates the supported measures, or scalar values, supported within the 
@@ -27,11 +31,11 @@ import com.scholarscore.models.query.measure.IMeasure;
 public enum Measure {
     ATTENDANCE,
     //Behavioral measures
-    DEMERITS,
-    MERITS,
-    DETENTIONS,
-    HOMEWORK_CLUBS,
-    SUSPENSIONS,
+    DEMERIT,
+    MERIT,
+    DETENTION,
+    HOMEWORK_CLUB,
+    SUSPENSION,
     //Academic measures
     GPA,
     COURSE_GRADE,
@@ -53,6 +57,14 @@ public enum Measure {
                 return new HomeworkCompletionMeasure();
             case GPA:
                 return new GpaMeasure();
+            case MERIT:
+                return new MeritMeasure();
+            case DEMERIT:
+                return new DemeritMeasure();
+            case DETENTION:
+                return new DetentionMeasure();
+            case SUSPENSION:
+                return new SuspensionMeasure();
             default:
                 return null;   
         }

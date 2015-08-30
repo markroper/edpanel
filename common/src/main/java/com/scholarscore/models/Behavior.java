@@ -3,14 +3,18 @@ package com.scholarscore.models;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import javax.validation.constraints.Size;
+
 import java.util.Date;
 import java.util.Objects;
 
 /**
+ * Represents a student behavior event such as a merit, demerit, detention, suspension and so on.
+ * 
  * User: jordan
  * Date: 8/8/15
  * Time: 3:21 PM
  */
+@SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Behavior extends ApiModel implements IApiModel<Behavior> {
     

@@ -33,4 +33,9 @@ public class AssignmentGradeMeasure implements IMeasure {
         return "Assignment Grade";
     }
 
+    @Override
+    public Set<String> getFields() {
+        return new HashSet<String>();
+    }
+
 }

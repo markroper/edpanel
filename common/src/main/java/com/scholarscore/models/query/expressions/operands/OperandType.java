@@ -5,6 +5,7 @@ import java.io.Serializable;
 public enum OperandType implements Serializable {
     DATE,
     DIMENSION,
+    MEASURE,
     NUMERIC,
     EXPRESSION,
     STRING;
