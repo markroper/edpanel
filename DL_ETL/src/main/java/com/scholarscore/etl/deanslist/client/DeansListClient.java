@@ -3,7 +3,6 @@ package com.scholarscore.etl.deanslist.client;
 import com.scholarscore.client.BaseHttpClient;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.deanslist.api.response.BehaviorResponse;
-import com.scholarscore.etl.deanslist.api.response.StudentResponse;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -24,7 +23,6 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
     // TODO: secure this when it's not just a demo account
     private static final String CREDS_PAYLOAD = "username=mroper&pw=muskrat";
     
-    public static final String PATH_GET_STUDENTS = "/api/beta/export/get-students.php";
     public static final String PATH_GET_BEHAVIOR_DATA = "/api/beta/export/get-behavior-data.php";
     
     /*
@@ -72,13 +70,6 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
     @Override
     protected Boolean isAuthenticated() {
         return true;
-    }
-
-    @Override
-    public StudentResponse getStudents() {
-        StudentResponse studentResponse = get(StudentResponse.class, PATH_GET_STUDENTS);
-        System.out.println("got studentResponse: " + studentResponse);
-        return studentResponse;
     }
 
     @Override

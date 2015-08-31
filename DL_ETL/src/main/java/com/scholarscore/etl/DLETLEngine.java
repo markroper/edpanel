@@ -2,7 +2,6 @@ package com.scholarscore.etl;
 
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.deanslist.api.response.BehaviorResponse;
-import com.scholarscore.etl.deanslist.api.response.StudentResponse;
 import com.scholarscore.etl.deanslist.client.IDeansListClient;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Student;
@@ -53,7 +52,7 @@ public class DLETLEngine implements IETLEngine {
         System.out.println("got " + existingTeachers.size() + " existing teachers as potential merge targets.");
         
         // TODO Jordan make this terrible nesting less terrible. don't search the same existing students
-        // and teachers multiple times
+        // and teachers multiple times -- hashmapify this before merge
         for (Behavior behavior : behaviorsToMerge) {
             // at this point, the only thing populated in the student is their name
             Student student = behavior.getStudent();
@@ -99,11 +98,6 @@ public class DLETLEngine implements IETLEngine {
         return name.toLowerCase().trim().replaceAll("\\s", "");
     }
 
-    private List<Student> getStudents() {
-        StudentResponse response = deansList.getStudents();
-        return new ArrayList<>(response.toInternalModel());
-    }
-    
     private List<Behavior> getBehaviorData() {
         BehaviorResponse response = deansList.getBehaviorData();
         return new ArrayList<>(response.toInternalModel());
