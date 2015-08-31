@@ -24,11 +24,7 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
     private static final String CREDS_PAYLOAD = "username=mroper&pw=muskrat";
     
     public static final String PATH_GET_BEHAVIOR_DATA = "/api/beta/export/get-behavior-data.php";
-    
-    /*
-    public static final String PATH_RESOURCE_SECTION = "/ws/v1/school/{0}/section";
-    */
-    
+
     public DeansListClient(URI uri) {
         super(uri);
         authenticate();
