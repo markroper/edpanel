@@ -10,10 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
-import org.joda.time.Days;
-import org.joda.time.ReadableInstant;
-
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.AssignmentType;
 import com.scholarscore.models.AttendanceAssignment;
@@ -365,7 +361,6 @@ public class SchoolDataFactory {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(inputTs);
                 inputTs = (inputTs / 1000L) * 1000L;
-                //inputTs = (long)cal.get(Calendar.SECOND) * (long) 1000;
                 Date d = new Date(inputTs);
                 Behavior b = new Behavior();
                 b.setBehaviorDate(d);
