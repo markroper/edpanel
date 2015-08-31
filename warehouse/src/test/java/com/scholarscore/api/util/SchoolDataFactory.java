@@ -358,8 +358,6 @@ public class SchoolDataFactory {
                 int teacherIndex = new Random().nextInt(teachers.size() - 1);
                 Teacher t = teachers.get(teacherIndex);
                 long inputTs = beginDate.getTime() + ((long) (Math.random() * (endDate.getTime() - beginDate.getTime())));
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(inputTs);
                 inputTs = (inputTs / 1000L) * 1000L;
                 Date d = new Date(inputTs);
                 Behavior b = new Behavior();
