@@ -1,7 +1,6 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Objects;
 
 @SuppressWarnings("serial")
@@ -12,7 +11,7 @@ public class Address implements Serializable {
     private String postalCode;
     
     public Address() {
-
+        
     }
 
     public String getStreet() {
