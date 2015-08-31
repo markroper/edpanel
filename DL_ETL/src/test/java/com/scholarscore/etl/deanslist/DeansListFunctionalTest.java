@@ -19,7 +19,7 @@ public class DeansListFunctionalTest extends AbstractTestNGSpringContextTests {
     private IDeansListClient client;
 
     public void testGetStudents() {
-        client.getStudents();
+        client.getBehaviorData();
     }
     
 }
