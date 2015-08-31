@@ -21,7 +21,7 @@ public class E2EIntegrationTest extends AbstractTestNGSpringContextTests {
     @Autowired
     private IETLEngine engine;
 
-    // Test pulls behaviors from deanslist and matches to studnets in scholarscore
+    // Test pulls behaviors from deanslist and matches to students in scholarscore
     public void testMigrateDistrict() {
         MigrationResult result = engine.migrateDistrict();
         System.out.println("Migration result: " + result);
