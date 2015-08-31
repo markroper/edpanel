@@ -34,4 +34,9 @@ public class GpaMeasure implements IMeasure {
         return "GPA";
     }
 
+    @Override
+    public Set<String> getFields() {
+        return new HashSet<String>();
+    }
+
 }

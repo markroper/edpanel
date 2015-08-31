@@ -1,12 +1,18 @@
 package com.scholarscore.api.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import org.testng.annotations.Test;
+
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.api.util.SchoolDataFactory;
 import com.scholarscore.models.Assignment;
+import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
@@ -122,6 +128,30 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                         }
                     }  
                 }
+            }
+        }
+        
+        Set<Date> allTermsDates = new HashSet<Date>();
+        Date beginDate = new Date();
+        Date endDate = new Date();
+        for(Map.Entry<Long, List<Term>> yearEntry: terms.entrySet()) {
+            for(Term t : yearEntry.getValue()) {
+                if(t.getStartDate().getTime() < beginDate.getTime()) {
+                    beginDate = t.getStartDate();
+                }
+                if(t.getEndDate().getTime() > endDate.getTime()) {
+                    endDate = t.getEndDate();
+                }
+            }
+        }
+        Map<Long, ArrayList<Behavior>> behaviors = 
+                SchoolDataFactory.generateBehaviorEvents(generatedStudents, createdTeachers, beginDate, endDate);
+        for(Map.Entry<Long, ArrayList<Behavior>> studentBehaviorEntry : behaviors.entrySet()) {
+            for(Behavior b : studentBehaviorEntry.getValue()) {
+                behaviorValidatingExecutor.create(
+                        studentBehaviorEntry.getKey(), 
+                        b, 
+                        "Creating randomly generated student");
             }
         }
     }
