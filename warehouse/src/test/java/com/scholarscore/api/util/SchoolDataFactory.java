@@ -10,10 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.AssignmentType;
 import com.scholarscore.models.AttendanceAssignment;
+import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.Gender;
 import com.scholarscore.models.GradeFormula;
@@ -25,6 +25,7 @@ import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.Teacher;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.query.Measure;
 
 /**
  * Generates arbitrary school data for use in testing and developing the UI.
@@ -34,7 +35,6 @@ import com.scholarscore.models.Term;
  */
 public class SchoolDataFactory {
     private final static long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
-    private static final int NUM_STUDENTS = 10;
     private static final String WHITE = "White";
     private static final String BLACK = "Black";
     private static final String AMERICAN_INDIAN = "American Indian";
@@ -334,5 +334,40 @@ public class SchoolDataFactory {
             }
         }
         return assIdToStudAss;
+    }
+    
+    /**
+     * Generates a map of student ID to a list of behavior events associated with the student having that 
+     * student ID.
+     * @param students
+     * @param teachers
+     * @param dates
+     * @return
+     */
+    public static Map<Long, ArrayList<Behavior>> generateBehaviorEvents(
+            Collection<Student> students, 
+            List<Teacher> teachers, 
+            Date beginDate,
+            Date endDate) {
+        int numDates = (int)( (endDate.getTime() - beginDate.getTime()) / (1000 * 60 * 60 * 24));
+        Map<Long, ArrayList<Behavior>> studentBehaviors = new HashMap<Long, ArrayList<Behavior>>();
+        for(Student s: students) {
+            int numEventsToProduce = new Random().nextInt(numDates/2);
+            studentBehaviors.put(s.getId(), new ArrayList<Behavior>());
+            for(int i = 0; i < numEventsToProduce; i++) {
+                int teacherIndex = new Random().nextInt(teachers.size() - 1);
+                Teacher t = teachers.get(teacherIndex);
+                long inputTs = beginDate.getTime() + ((long) (Math.random() * (endDate.getTime() - beginDate.getTime())));
+                inputTs = (inputTs / 1000L) * 1000L;
+                Date d = new Date(inputTs);
+                Behavior b = new Behavior();
+                b.setBehaviorDate(d);
+                b.setBehaviorCategory(Measure.DEMERIT.name());
+                b.setTeacher(t);
+                b.setStudent(s);
+                studentBehaviors.get(s.getId()).add(b);
+            }
+        }
+        return studentBehaviors;
     }
 }

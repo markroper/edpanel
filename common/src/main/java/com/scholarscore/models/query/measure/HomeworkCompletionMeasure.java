@@ -35,4 +35,9 @@ public class HomeworkCompletionMeasure implements IMeasure {
         return "Homework Completion";
     }
 
+    @Override
+    public Set<String> getFields() {
+        return new HashSet<String>();
+    }
+
 }

@@ -14,11 +14,13 @@ import com.scholarscore.models.query.AggregateMeasure;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
+import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
 import com.scholarscore.models.query.expressions.operands.IOperand;
+import com.scholarscore.models.query.expressions.operands.MeasureOperand;
 import com.scholarscore.models.query.expressions.operands.NumericOperand;
 import com.scholarscore.models.query.expressions.operands.StringOperand;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
@@ -179,6 +181,9 @@ public abstract class QuerySqlGenerator {
             case DIMENSION:
                 sqlBuilder.append(" " + generateDimensionFieldSql( ((DimensionOperand)operand).getValue()) + " ");
                 break;
+            case MEASURE:
+                sqlBuilder.append(" " + generateMeasureFieldSql(((MeasureOperand)operand).getValue()) + " ");
+                break;
             case NUMERIC:
                 sqlBuilder.append(" " + ((NumericOperand)operand).getValue() + " ");
                 break;
@@ -212,6 +217,17 @@ public abstract class QuerySqlGenerator {
     protected static String generateDimensionFieldSql(DimensionField f) throws SqlGenerationException {
         String tableName = DbConst.DIMENSION_TO_TABLE_NAME.get(f.getDimension());
         String columnName = DbConst.DIMENSION_TO_COL_NAME.get(f);
+        if(null == tableName || null == columnName) {
+            throw new SqlGenerationException("Invalid dimension, tableName (" + 
+                    tableName + ") and columnName (" + 
+                    columnName + ") must both be non-null");
+        }
+        return tableName + "." + columnName;
+    }
+    
+    protected static String generateMeasureFieldSql(MeasureField f) throws SqlGenerationException {
+        String tableName = DbConst.MEASURE_TO_TABLE_NAME.get(f.getMeasure());
+        String columnName = DbConst.MEASURE_FIELD_TO_COL_NAME.get(f);
         if(null == tableName || null == columnName) {
             throw new SqlGenerationException("Invalid dimension, tableName (" + 
                     tableName + ") and columnName (" + 
