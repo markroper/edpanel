@@ -173,7 +173,7 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`behavior` (
   `behavior_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key identity column',
   `student_fk` INT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
-  `teacher_fk` INT UNSIGNED NOT NULL COMMENT 'The foreign key to the teacher table',
+  `teacher_fk` INT UNSIGNED NULL COMMENT 'The foreign key to the teacher table',
   `name` VARCHAR(256) NULL COMMENT 'Human readable name of behavior event',
   `date` DATETIME NULL COMMENT 'Date the behavior event occurred',
   `remote_student_id` VARCHAR(256) NULL COMMENT 'ID of the student in a remote system (which is not yet defined)',
@@ -189,7 +189,7 @@ CREATE TABLE `scholar_warehouse`.`behavior` (
   CONSTRAINT `fk_teacher$behavior`
     FOREIGN KEY (`teacher_fk`)
     REFERENCES `scholar_warehouse`.`teacher`(`teacher_id`)
-    ON DELETE CASCADE
+    ON DELETE SET NULL
     ON UPDATE CASCADE
 )
 ENGINE = InnoDB;
