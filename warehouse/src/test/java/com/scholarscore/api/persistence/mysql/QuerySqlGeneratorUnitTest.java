@@ -101,7 +101,7 @@ public class QuerySqlGeneratorUnitTest {
         };
     }
     
-    @Test(dataProvider = "queriesProvider")
+   @Test(dataProvider = "queriesProvider")
     public void toSqlTest(String msg, Query q, String expectedSql) {
         SqlWithParameters sql = null;
         try {

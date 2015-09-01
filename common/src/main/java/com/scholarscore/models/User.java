@@ -5,11 +5,15 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import javax.persistence.*;
+
 /**
  * Defines the base identity to attach to spring security with a username (primary key) and password
  * 
  * @author mattg
  */
+@Entity(name = "user")
+@Table(name = "users")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User extends ApiModel implements Serializable, IApiModel<User> {
 	// v1
@@ -32,6 +36,7 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 	// Indicates whether the user is a login user and can login (by default this is disabled until the user has set a username/password)
 	private Boolean enabled;
 
+	@Column(name = "password")
 	public String getPassword() {
 		return password;
 	}
@@ -39,12 +44,17 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	@Id
+	@Column(name = "username")
 	public String getUsername() {
 		return username;
 	}
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
+	@Column(name = "enabled")
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -52,6 +62,7 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 		this.enabled = enabled;
 	}
 
+	@Transient
 	public String getName() {
 		return name;
 	}

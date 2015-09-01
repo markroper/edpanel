@@ -19,7 +19,7 @@ import javax.persistence.Table;
  * @author markroper
  *
  */
-@Entity
+@Entity(name="studentSectionGrade")
 @Table(name = "student_section_grade")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)

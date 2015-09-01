@@ -26,6 +26,7 @@ public class BaseJdbcTest {
     protected final Administrator admin = new Administrator();
     protected final ApplicationContext ctx;
 
+    protected final UserPersistence userDao;
     protected final AdministratorPersistence adminDao;
     protected final SchoolPersistence schoolDao;
     protected final StudentPersistence studentDao;
@@ -34,11 +35,17 @@ public class BaseJdbcTest {
     protected final EntityPersistence<Course> courseDao;
     protected final EntityPersistence<SchoolYear> schoolYearDao;
     protected final EntityPersistence<Term> termDao;
+    protected final EntityPersistence<Assignment> assignmentDao;
+    protected final StudentSectionGradePersistence studentSectionGradeDao;
 
     private School createdSchool;
     private SchoolYear createdSchoolYear;
     private Term createdTerm;
     private Course createdCourse;
+    private Section createdSection;
+    private User createdUser;
+    private Student createdStudent;
+    private StudentSectionGrade createdStudentSectionGrade;
 
     public BaseJdbcTest() {
 
@@ -46,6 +53,7 @@ public class BaseJdbcTest {
         ctx = new ClassPathXmlApplicationContext("persistence.xml");
 
         // Shared DAO objects
+        userDao = (UserPersistence)ctx.getBean("userPersistence");
         teacherDao = (TeacherPersistence) ctx.getBean("teacherPersistence");
         studentDao = (StudentPersistence) ctx.getBean("studentPersistence");
         adminDao = (AdministratorPersistence) ctx.getBean("administratorPersistence");
@@ -54,7 +62,8 @@ public class BaseJdbcTest {
         courseDao = (EntityPersistence<Course>)ctx.getBean("coursePersistence");
         schoolYearDao = (EntityPersistence<SchoolYear>)ctx.getBean("schoolYearPersistence");
         termDao = (EntityPersistence<Term>)ctx.getBean("termPersistence");
-
+        assignmentDao = (EntityPersistence<Assignment>)ctx.getBean("assignmentPersistence");
+        studentSectionGradeDao = (StudentSectionGradePersistence)ctx.getBean("studentSectionGradePersistence");
         // Shared domain model objects
         address.setStreet("51 Round Hill Rd.");
         address.setPostalCode("02364");
@@ -144,5 +153,63 @@ public class BaseJdbcTest {
             createdCourse.setId(courseId);
         }
         return createdCourse;
+    }
+
+    public Section createSection() {
+        if (null == createdSection) {
+            createdSection = new Section();
+            createdSection.setTerm(createTerm());
+            createdSection.setName("Section1");
+            createdSection.setRoom("section_room_1");
+            createdSection.setTerm(createTerm());
+            createdSection.setStartDate(new Date());
+            createdSection.setCourse(createCourse());
+            Long id = sectionDao.insert(createdSection.getTerm().getId(),
+                    createdSection);
+            createdSection.setId(id);
+        }
+        return createdSection;
+    }
+
+    public User createUser() {
+        if (null == createdUser) {
+            User user = new User();
+            user.setUsername("foobar" + System.currentTimeMillis());
+            user.setName("testName");
+            user.setPassword("testPassword");
+            user.setEnabled(true);
+            userDao.createUser(user);
+            createdUser = user;
+        }
+        return createdUser;
+    }
+
+    public Student createStudent() {
+        if (null == createdStudent) {
+            createdStudent = new Student(student);
+            createdStudent.setLogin(createUser());
+            createdStudent.setUsername(createdUser.getUsername());
+            Address homeAddress = new Address(address);
+            Address mailingAddress = new Address(address);
+            homeAddress.setId(null);
+            mailingAddress.setId(null);
+            createdStudent.setHomeAddress(homeAddress);
+            createdStudent.setMailingAddress(mailingAddress);
+
+            studentDao.createStudent(createdStudent);
+        }
+        return createdStudent;
+    }
+
+    public StudentSectionGrade createStudentSectionGrade() {
+        if (null == createdStudentSectionGrade) {
+            createdStudentSectionGrade = new StudentSectionGrade();
+            createdStudentSectionGrade.setSection(createSection());
+            createdStudentSectionGrade.setComplete(true);
+            createdStudentSectionGrade.setGrade(5d);
+            createdStudentSectionGrade.setStudent(createStudent());
+            studentSectionGradeDao.insert(createdStudentSectionGrade.getSection().getId(), createdStudentSectionGrade.getStudent().getId(), createdStudentSectionGrade);
+        }
+        return createdStudentSectionGrade;
     }
 }
