@@ -20,12 +20,18 @@ public class TermJdbcTest extends BaseJdbcTest {
         assertNotNull(term, "Expected non-null term from create");
 
         Collection<Term> terms=termDao.selectAll(term.getSchoolYear().getId());
-        assertTrue(terms.contains(term), "Expected term to exist in collection from selectAll call");
+        Boolean found = false;
+        for (Term it : terms) {
+            if (it.getId().equals(term.getId())) {
+                found = true;
+                break;
+            }
+        }
+        assertTrue(found, "Expected term to exist in collection from selectAll call");
 
         termDao.delete(term.getId());
 
         Term result = termDao.select(term.getSchoolYear().getId(), term.getId());
         assertNull(result, "Expected null term after delete method call");
-
     }
 }

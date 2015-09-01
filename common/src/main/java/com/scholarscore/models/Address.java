@@ -18,6 +18,14 @@ public class Address implements Serializable {
         
     }
 
+    public Address(Address clone) {
+        this.setState(clone.getState());
+        this.setCity(clone.getCity());
+        this.setPostalCode(clone.getPostalCode());
+        this.setStreet(clone.getStreet());
+        this.setId(clone.getId());
+    }
+
     @Column(name = "address_street")
     public String getStreet() {
         return street;

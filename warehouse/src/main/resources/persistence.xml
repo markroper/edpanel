@@ -87,6 +87,10 @@
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
     </bean>
 
+    <bean id="userPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.UserJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
 
     <bean id="schoolYearPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.SchoolYearJdbc">
@@ -97,7 +101,7 @@
 
     <bean id="studentSectionGradePersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.StudentSectionGradeJdbc">
-    <property name="dataSource" ref="dataSource"/>
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
     </bean>
 
     <bean id="queryPersistence"
