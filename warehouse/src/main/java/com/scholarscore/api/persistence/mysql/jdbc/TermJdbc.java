@@ -52,7 +52,8 @@ public class TermJdbc implements EntityPersistence<Term> {
     @Override
     public Long insert(long schoolYearId, Term term) {
         injectSchoolYear(schoolYearId, term);
-        return (Long)hibernateTemplate.save(term);
+        Term out = hibernateTemplate.merge(term);
+        return out.getId();
     }
 
     private void injectSchoolYear(long schoolYearId, Term term) {
@@ -64,7 +65,7 @@ public class TermJdbc implements EntityPersistence<Term> {
 
     @Override
     public Long update(long schoolYearId, long termId, Term term) {
-        hibernateTemplate.update(term);
+        hibernateTemplate.merge(term);
         return termId;
     }
 

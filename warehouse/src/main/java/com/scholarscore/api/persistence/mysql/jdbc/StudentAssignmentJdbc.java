@@ -47,12 +47,13 @@ public class StudentAssignmentJdbc
 
     @Override
     public Long insert(long parentId, StudentAssignment entity) {
-        return (Long)hibernateTemplate.save(entity);
+        StudentAssignment out = hibernateTemplate.merge(entity);
+        return out.getId();
     }
 
     @Override
     public Long update(long parentId, long id, StudentAssignment entity) {
-        hibernateTemplate.update(entity);
+        hibernateTemplate.merge(entity);
         return id;
     }
 

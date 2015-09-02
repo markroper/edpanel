@@ -45,8 +45,8 @@ public class CourseJdbc implements EntityPersistence<Course> {
     @Override
     public Long insert(long schoolId, Course entity) {
         injectSchool(schoolId, entity);
-        Long value = (Long) hibernateTemplate.save(entity);
-        return value;
+        Course out = hibernateTemplate.merge(entity);
+        return out.getId();
     }
 
     private void injectSchool(long schoolId, Course entity) {
@@ -60,7 +60,7 @@ public class CourseJdbc implements EntityPersistence<Course> {
     public Long update(long schoolId, long id, Course entity) {
         entity.setId(id);
         injectSchool(schoolId, entity);
-        hibernateTemplate.update(entity);
+        hibernateTemplate.merge(entity);
         return id;
     }
 

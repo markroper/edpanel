@@ -56,13 +56,13 @@ public class StudentJdbc implements StudentPersistence {
 
     @Override
     public Long createStudent(Student student) {
-        Long value = (Long) hibernateTemplate.save(student);
-        return value;
+        Student out = hibernateTemplate.merge(student);
+        return out.getId();
     }
 
     @Override
     public Long replaceStudent(long studentId, Student student) {
-        hibernateTemplate.update(student);
+        hibernateTemplate.merge(student);
         return studentId;
     }
 

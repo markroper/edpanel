@@ -38,14 +38,14 @@ public class SchoolJdbc implements SchoolPersistence {
 
     @Override
     public Long createSchool(School school) {
-        Long value = (Long) hibernateTemplate.save(school);
-        return value;
+        School out = hibernateTemplate.merge(school);
+        return out.getId();
     }
 
     @Override
     public Long replaceSchool(long schoolId, School school) {
         school.setId(schoolId);
-        hibernateTemplate.update(school);
+        hibernateTemplate.merge(school);
         return schoolId;
     }
 

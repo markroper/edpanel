@@ -46,7 +46,7 @@ public class UserJdbc implements UserPersistence {
 
     @Override
     public String createUser(User user) {
-        hibernateTemplate.save(user);
+        hibernateTemplate.merge(user);
         return user.getUsername();
     }
 
@@ -57,7 +57,7 @@ public class UserJdbc implements UserPersistence {
         fromDB.setName(value.getName());
         fromDB.setPassword(value.getPassword());
         fromDB.setEnabled(value.getEnabled());
-        hibernateTemplate.saveOrUpdate(fromDB);
+        hibernateTemplate.merge(fromDB);
         return username;
     }
 

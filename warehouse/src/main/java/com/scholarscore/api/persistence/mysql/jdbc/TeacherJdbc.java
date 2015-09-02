@@ -38,13 +38,13 @@ public class TeacherJdbc implements TeacherPersistence {
 
     @Override
     public Long createTeacher(Teacher teacher) {
-        Long value = (Long)hibernateTemplate.save(teacher);
-        return value;
+        Teacher out = hibernateTemplate.merge(teacher);
+        return out.getId();
     }
 
     @Override
     public void replaceTeacher(long id, Teacher teacher) {
-        hibernateTemplate.update(teacher);
+        hibernateTemplate.merge(teacher);
     }
 
     @Override

@@ -28,8 +28,9 @@ public class AssignmentJdbc implements EntityPersistence<Assignment> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Collection<Assignment> selectAll(long id) {
-        return (Collection<Assignment>)hibernateTemplate.findByNamedParam("from assignment a where a.sectionFK = :id", "id", id);
+    public Collection<Assignment> selectAll(long assignmentId) {
+        return (Collection<Assignment>)hibernateTemplate.findByNamedParam("from assignment a where a.sectionFK = :id",
+                "id", assignmentId);
     }
 
     @Override
@@ -40,14 +41,16 @@ public class AssignmentJdbc implements EntityPersistence<Assignment> {
     @Override
     public Long insert(long parentId, Assignment entity) {
         entity.setSectionFK(parentId);
-        return (Long)hibernateTemplate.save(entity);
+        Assignment out = hibernateTemplate.merge(entity);
+        return out.getId();
     }
 
     @Override
-    public Long update(long parentId, long id, Assignment entity) {
+    public Long update(long parentId, long assignmentId,
+                       Assignment entity) {
         entity.setSectionFK(parentId);
-        hibernateTemplate.update(entity);
-        return id;
+        hibernateTemplate.merge(entity);
+        return assignmentId;
     }
 
     @Override

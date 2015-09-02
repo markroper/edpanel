@@ -51,7 +51,8 @@ public class SchoolYearJdbc implements EntityPersistence<SchoolYear> {
     @Override
     public Long insert(long parentId, SchoolYear entity) {
         fillInSchool(parentId, entity);
-        return (Long)hibernateTemplate.save(entity);
+        SchoolYear out = hibernateTemplate.merge(entity);
+        return out.getId();
     }
 
     private void fillInSchool(long schoolId, SchoolYear schoolYear) {
