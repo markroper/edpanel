@@ -37,7 +37,7 @@ public class StudentJdbc implements StudentPersistence {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Student> selectAllStudentsInSection(long sectionId) {
-        String sql = "FROM StudentSectionGrade ssg WHERE ssg.Section.id = (?)";
+        String sql = "FROM studentSectionGrade ssg WHERE ssg.section.id = (?)";
 
         List<StudentSectionGrade> studentSectionGrades = (List<StudentSectionGrade>) hibernateTemplate.find(
                 sql, sectionId);

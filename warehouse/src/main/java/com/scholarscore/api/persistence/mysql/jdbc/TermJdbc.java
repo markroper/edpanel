@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Term;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -23,6 +24,8 @@ import javax.transaction.Transactional;
 public class TermJdbc implements EntityPersistence<Term> {
     @Autowired
     private HibernateTemplate hibernateTemplate;
+
+    private EntityPersistence<SchoolYear> schoolYearPersistence;
 
     public TermJdbc() {
     }
@@ -48,7 +51,15 @@ public class TermJdbc implements EntityPersistence<Term> {
 
     @Override
     public Long insert(long schoolYearId, Term term) {
+        injectSchoolYear(schoolYearId, term);
         return (Long)hibernateTemplate.save(term);
+    }
+
+    private void injectSchoolYear(long schoolYearId, Term term) {
+        if (null == term.getSchoolYear()) {
+            SchoolYear year = schoolYearPersistence.select(0L, schoolYearId);
+            term.setSchoolYear(year);
+        }
     }
 
     @Override
@@ -64,5 +75,13 @@ public class TermJdbc implements EntityPersistence<Term> {
             hibernateTemplate.delete(term);
         }
         return id;
+    }
+
+    public EntityPersistence<SchoolYear> getSchoolYearPersistence() {
+        return schoolYearPersistence;
+    }
+
+    public void setSchoolYearPersistence(EntityPersistence<SchoolYear> schoolYearPersistence) {
+        this.schoolYearPersistence = schoolYearPersistence;
     }
 }
