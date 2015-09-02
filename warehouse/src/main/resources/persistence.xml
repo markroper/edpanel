@@ -66,6 +66,7 @@
     <bean id="termPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.TermJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="schoolYearPersistence" ref="schoolYearPersistence"/>
     </bean>
 
     <bean id="studentAssignmentPersistence"
@@ -85,6 +86,7 @@
     <bean id="sectionPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.SectionJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="termEntityPersistence" ref="termPersistence"/>
     </bean>
 
     <bean id="userPersistence"

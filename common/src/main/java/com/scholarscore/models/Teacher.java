@@ -94,6 +94,11 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
         return login;
     }
 
+    @Column(name = "teacher_name")
+    public String getName() {
+        return super.getName();
+    }
+
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "teacher_id")

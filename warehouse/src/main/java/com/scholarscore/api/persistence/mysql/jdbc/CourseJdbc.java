@@ -44,17 +44,22 @@ public class CourseJdbc implements EntityPersistence<Course> {
 
     @Override
     public Long insert(long schoolId, Course entity) {
+        injectSchool(schoolId, entity);
         Long value = (Long) hibernateTemplate.save(entity);
         return value;
+    }
+
+    private void injectSchool(long schoolId, Course entity) {
+        if (null == entity.getSchool()) {
+            School school = schoolPersistence.selectSchool(schoolId);
+            entity.setSchool(school);
+        }
     }
 
     @Override
     public Long update(long schoolId, long id, Course entity) {
         entity.setId(id);
-        if (null == entity.getSchool()) {
-            School school = schoolPersistence.selectSchool(schoolId);
-            entity.setSchool(school);
-        }
+        injectSchool(schoolId, entity);
         hibernateTemplate.update(entity);
         return id;
     }

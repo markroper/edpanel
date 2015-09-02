@@ -3,6 +3,7 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 import java.util.Collection;
 
 import com.scholarscore.models.Section;
+import com.scholarscore.models.Term;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -13,6 +14,8 @@ import javax.transaction.Transactional;
 public class SectionJdbc implements EntityPersistence<Section> {
     @Autowired
     private HibernateTemplate hibernateTemplate;
+
+    private EntityPersistence<Term> termEntityPersistence;
 
     public SectionJdbc() {
     }
@@ -38,12 +41,24 @@ public class SectionJdbc implements EntityPersistence<Section> {
 
     @Override
     public Long insert(long termId, Section entity) {
-        return (Long)hibernateTemplate.save(entity);
+        injectTerm(termId, entity);
+        Section result = hibernateTemplate.merge(entity);
+        return result.getId();
+    }
+
+    private void injectTerm(long termId, Section entity) {
+        if (null == entity.getTerm()) {
+            entity.setTerm(termEntityPersistence.select(0L, termId));
+        }
     }
 
     @Override
     public Long update(long termId, long sectionId, Section entity) {
-        hibernateTemplate.update(entity);
+        injectTerm(termId, entity);
+        if (null == entity.getId()) {
+            entity.setId(sectionId);
+        }
+        hibernateTemplate.merge(entity);
         return sectionId;
     }
 
@@ -56,4 +71,11 @@ public class SectionJdbc implements EntityPersistence<Section> {
         return id;
     }
 
+    public EntityPersistence<Term> getTermEntityPersistence() {
+        return termEntityPersistence;
+    }
+
+    public void setTermEntityPersistence(EntityPersistence<Term> termEntityPersistence) {
+        this.termEntityPersistence = termEntityPersistence;
+    }
 }

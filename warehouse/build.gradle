@@ -32,51 +32,6 @@ tomcat {
     daemon = true
 }
 
-/*
-cargo {
-    containerId = 'tomcat7x'
-
-
-    // Note: cargo local stuff will still work for now, but please prefer gretty ("gradle appRun") for local instances
-    local {
-        installer {
-            installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.63/bin/apache-tomcat-7.0.63.zip'
-            downloadDir = file("$buildDir/download")
-            extractDir = file("$buildDir/extract")
-        }
-        containerProperties {
-            // use a non-standard ajp port (not 9099) so as to not conflict with other tomcat instances
-            property 'cargo.tomcat.ajp.port', 9199
-//            property 'cargo.servlet.port', local_portnum
-        }
-        outputFile = file("build/catalina.log")
-        timeout = 60000
-    }
-
-    remote {
-        hostname = 'localhost'
-        port = local_portnum
-        username = 'cargo'
-        password = '0BxLrz7zG4dqDX2q6vi4'
-    }
-}
-*/
-
-// use gretty to start a container instrumented with jacoco for calculation of integration test coverage
-/*gretty {
-    port = local_portnum
-    httpsPort = local_https_portnum
-    httpsEnabled = true
-
-    // supported values:
-    // 'jetty7', 'jetty8', 'jetty9', 'tomcat7', 'tomcat8'
-    servletContainer = 'tomcat7'
-
-    // automatically start up the container before the following task, and shut it down afterwards
-    integrationTestTask = 'integrationLocalWithContainer'
-    jvmArgs '-XX:MaxPermSize=1024m', '-Xmx2048m'
-}*/
-
 //Integration test suite
 def getFileByPattern(File dir, String pat, String stripDir) {
     String path = ""
