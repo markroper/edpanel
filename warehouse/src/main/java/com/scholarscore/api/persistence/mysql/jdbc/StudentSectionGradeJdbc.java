@@ -50,7 +50,8 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
 
     @Override
     public Long insert(long sectionId, long studentId, StudentSectionGrade entity) {
-        return (Long)hibernateTemplate.save(entity);
+        StudentSectionGrade out = hibernateTemplate.merge(entity);
+        return out.getId();
     }
 
     @Override
@@ -62,7 +63,7 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
             update.setGrade(entity.getGrade());
             update.setComplete(entity.getComplete());
             update.setSection(entity.getSection());
-            hibernateTemplate.update(update);
+            hibernateTemplate.merge(update);
         }
         return update.getId();
     }
