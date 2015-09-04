@@ -1,6 +1,4 @@
 apply plugin: 'war'
-//apply plugin: 'com.bmuschko.cargo'
-//apply plugin: 'org.akhikhl.gretty'
 apply plugin: 'com.bmuschko.tomcat'
 
 buildscript {
