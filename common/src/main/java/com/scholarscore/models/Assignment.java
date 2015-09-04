@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -53,7 +54,7 @@ public abstract class Assignment
     }
 
     @OneToOne
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name="section_fk", insertable = false, updatable = false)
     public Section getSection() {
         return section;

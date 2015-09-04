@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.scholarscore.models.Assignment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -23,6 +24,7 @@ public class StudentAssignmentJdbc
         implements EntityPersistence<StudentAssignment>{
     @Autowired
     private HibernateTemplate hibernateTemplate;
+    private EntityPersistence<Assignment> assignmentPersistence;
 
     public StudentAssignmentJdbc() {
     }
@@ -41,28 +43,41 @@ public class StudentAssignmentJdbc
     }
 
     @Override
-    public StudentAssignment select(long parentId, long id) {
+    public StudentAssignment select(long assignmentId, long id) {
         return hibernateTemplate.get(StudentAssignment.class, id);
     }
 
     @Override
-    public Long insert(long parentId, StudentAssignment entity) {
+    public Long insert(long assignmentId, StudentAssignment entity) {
+        injectAssignment(assignmentId, entity);
         StudentAssignment out = hibernateTemplate.merge(entity);
         return out.getId();
     }
 
+    private void injectAssignment(long assignmentId, StudentAssignment entity) {
+        if (null == entity.getAssignment()) {
+            Assignment assignment = assignmentPersistence.select(0L, assignmentId);
+            entity.setAssignment(assignment);
+        }
+    }
+
     @Override
-    public Long update(long parentId, long id, StudentAssignment entity) {
+    public Long update(long assignmentId, long id, StudentAssignment entity) {
+        injectAssignment(assignmentId, entity);
         hibernateTemplate.merge(entity);
         return id;
     }
 
     @Override
-    public Long delete(long id) {
-        StudentAssignment assignment = select(0L, id);
+    public Long delete(long studentAssignmentId) {
+        StudentAssignment assignment = select(0L, studentAssignmentId);
         if (null != assignment) {
             hibernateTemplate.delete(assignment);
         }
-        return id;
+        return studentAssignmentId;
+    }
+
+    public void setAssignmentPersistence(EntityPersistence<Assignment> assignmentPersistence) {
+        this.assignmentPersistence = assignmentPersistence;
     }
 }

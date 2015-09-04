@@ -72,7 +72,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     }
 
     @OneToOne
-    @Cascade(CascadeType.ALL)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name="assignment_fk")
     public Assignment getAssignment() {
         return assignment;
@@ -110,7 +110,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     }
 
     @OneToOne
-    @Cascade(CascadeType.ALL)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name="student_fk")
     public Student getStudent() {
         return student;

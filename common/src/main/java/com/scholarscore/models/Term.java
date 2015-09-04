@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -68,7 +69,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
     }
 
     @OneToOne(optional = true)
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name="school_year_fk")
     public SchoolYear getSchoolYear() {
         return schoolYear;

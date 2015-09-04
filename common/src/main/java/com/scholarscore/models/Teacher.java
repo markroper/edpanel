@@ -25,7 +25,6 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
         super(t);
         this.setLogin(t.getLogin());
         this.setSourceSystemId(t.getSourceSystemId());
-        this.setName(t.getName());
         this.setHomeAddress(t.getHomeAddress());
         this.setHomePhone(t.getHomePhone());
         this.setUsername(t.getUsername());
@@ -107,7 +106,7 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
     }
 
     @OneToOne(optional = true)
-    @Cascade(CascadeType.ALL)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name="teacher_homeAddress_fk")
     public Address getHomeAddress() {
         return homeAddress;

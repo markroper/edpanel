@@ -31,7 +31,7 @@ public class SectionJdbc implements EntityPersistence<Section> {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Section> selectAll(long termId) {
-        return (Collection<Section>)hibernateTemplate.findByNamedParam("from section s where s.term_fk = :id", "id", termId);
+        return (Collection<Section>)hibernateTemplate.findByNamedParam("from section s where s.term.id = :id", "id", termId);
     }
 
     @Override
