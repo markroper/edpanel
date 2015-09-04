@@ -151,7 +151,11 @@ public class AssignmentValidatingExecutor {
         //Retrieve and validate the created term
         Assignment createdAssignment = this.get(schoolId, schoolYearId, termId, sectionId, id.getId(), msg);
         Assignment expectedAssignment = generateExpectationAssignment(submittedAssignment, createdAssignment, method);
-        Assert.assertEquals(createdAssignment, expectedAssignment, "Unexpected term created for case: " + msg);
+        Assert.assertEquals(createdAssignment.getName(), expectedAssignment.getName(), "Unexpected term created for case: " + msg);
+        Assert.assertEquals(createdAssignment.getAvailablePoints(), expectedAssignment.getAvailablePoints(), "Unexpected term created for case: " + msg);
+        Assert.assertEquals(createdAssignment.getId(), expectedAssignment.getId(), "Unexpected term created for case: " + msg);
+        Assert.assertEquals(createdAssignment.getType(), expectedAssignment.getType(), "Unexpected term created for case: " + msg);
+
         
         return createdAssignment;
     }
