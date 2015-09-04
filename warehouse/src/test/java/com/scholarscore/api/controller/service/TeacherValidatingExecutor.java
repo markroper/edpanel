@@ -131,7 +131,7 @@ public class TeacherValidatingExecutor {
      * Given an ID and the value submitted to a GET/PUT endpoint, retrieve the assignment via GET, validate it, and 
      * return it to the caller.
      * 
-     * @param assignmentId
+     * @param teacherId
      * @param submittedTeacher
      * @param msg
      * @return

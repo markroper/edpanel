@@ -15,11 +15,10 @@ import static org.testng.Assert.*;
 public class CourseJdbcTest extends BaseJdbcTest {
 
     public void testCourseCrud() {
-        Long schoolId = schoolDao.createSchool(school);
-        School createdSchool = schoolDao.selectSchool(schoolId);
-        assertNotNull(createdSchool, "Expected created school to not be null upon select");
 
-        Long courseId = courseDao.insert(schoolId, course);
+        Course course = createCourse();
+        Long courseId = course.getId();
+        Long schoolId = course.getSchool().getId();
 
         assertNotNull(courseId, "Unexpected null course id upon course creation");
         Course selectCourse = courseDao.select(schoolId, courseId);

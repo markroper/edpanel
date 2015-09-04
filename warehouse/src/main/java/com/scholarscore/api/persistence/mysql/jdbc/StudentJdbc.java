@@ -57,6 +57,7 @@ public class StudentJdbc implements StudentPersistence {
     @Override
     public Long createStudent(Student student) {
         Student out = hibernateTemplate.merge(student);
+        student.setId(out.getId());
         return out.getId();
     }
 

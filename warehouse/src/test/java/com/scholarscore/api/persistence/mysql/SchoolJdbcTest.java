@@ -21,9 +21,10 @@ import static org.testng.Assert.*;
 @Test(groups = {"functional"})
 public class SchoolJdbcTest extends BaseJdbcTest {
     public void testSchoolCrud() {
-        Long schoolId = schoolDao.createSchool(school);
+        School createdSchool = createSchool();
+        Long schoolId = createdSchool.getId();
         assertNotNull(schoolId, "Expected non-null identifier to be returned");
-        assertTrue(schoolDao.selectSchool(schoolId).equals(school), "Expected school from database to equal created administrator");
+        assertTrue(schoolDao.selectSchool(schoolId).equals(createdSchool), "Expected school from database to equal created administrator");
         schoolDao.delete(schoolId);
         assertNull(schoolDao.selectSchool(schoolId), "Expected admin to be removed");
     }

@@ -106,7 +106,7 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
     }
 
     @OneToOne(optional = true)
-    @Cascade(CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.ALL)
     @JoinColumn(name="teacher_homeAddress_fk")
     public Address getHomeAddress() {
         return homeAddress;
