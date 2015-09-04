@@ -38,6 +38,7 @@ public class AdministratorJdbc implements AdministratorPersistence {
     @Override
     public Long createAdministrator(Administrator administrator) {
         Administrator adminOut = hibernateTemplate.merge(administrator);
+        administrator.setId(adminOut.getId());
         return adminOut.getId();
     }
 

@@ -46,6 +46,7 @@ public class BaseJdbcTest {
     private User createdUser;
     private Student createdStudent;
     private StudentSectionGrade createdStudentSectionGrade;
+    private Teacher createdTeacher;
 
     public BaseJdbcTest() {
 
@@ -187,8 +188,7 @@ public class BaseJdbcTest {
     public Student createStudent() {
         if (null == createdStudent) {
             createdStudent = new Student(student);
-            createdStudent.setLogin(createUser());
-            createdStudent.setUsername(createdUser.getUsername());
+            createdStudent.setUsername(createUser().getUsername());
             Address homeAddress = new Address(address);
             Address mailingAddress = new Address(address);
             homeAddress.setId(null);
@@ -196,7 +196,8 @@ public class BaseJdbcTest {
             createdStudent.setHomeAddress(homeAddress);
             createdStudent.setMailingAddress(mailingAddress);
 
-            studentDao.createStudent(createdStudent);
+            Long id = studentDao.createStudent(createdStudent);
+            createdStudent = studentDao.select(id);
         }
         return createdStudent;
     }
@@ -211,5 +212,13 @@ public class BaseJdbcTest {
             studentSectionGradeDao.insert(createdStudentSectionGrade.getSection().getId(), createdStudentSectionGrade.getStudent().getId(), createdStudentSectionGrade);
         }
         return createdStudentSectionGrade;
+    }
+
+    public Teacher createTeacher() {
+        if (null == createdTeacher) {
+            Long id = teacherDao.createTeacher(teacher);
+            createdTeacher = teacherDao.select(id);
+        }
+        return createdTeacher;
     }
 }

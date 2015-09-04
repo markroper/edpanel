@@ -65,6 +65,7 @@ public class TermJdbc implements EntityPersistence<Term> {
 
     @Override
     public Long update(long schoolYearId, long termId, Term term) {
+        injectSchoolYear(schoolYearId, term);
         hibernateTemplate.merge(term);
         return termId;
     }

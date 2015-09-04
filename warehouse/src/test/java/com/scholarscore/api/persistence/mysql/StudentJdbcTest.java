@@ -19,10 +19,8 @@ import static org.testng.Assert.*;
 public class StudentJdbcTest extends BaseJdbcTest {
     public void testStudentCRUD() {
         ApplicationContext ctx = new ClassPathXmlApplicationContext("persistence.xml");
-        Long schoolId = schoolDao.createSchool(school);
-        Student createStudent = new Student(student);
-        createStudent.setCurrentSchoolId(schoolId);
-        Long studentId = studentDao.createStudent(createStudent);
+        Student createStudent = createStudent();
+        Long studentId = createStudent.getId();
         assertNotNull(studentId, "Expected non-null identifier to be returned");
         Student selectStudent = studentDao.select(studentId);
         assertTrue(selectStudent.equals(createStudent), "Expected saved student to be the same as the selected student");

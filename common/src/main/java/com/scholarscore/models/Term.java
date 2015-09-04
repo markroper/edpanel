@@ -37,6 +37,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
     
     public Term(Term year) {
         super(year);
+        this.schoolYear = year.schoolYear;
         this.startDate = year.startDate;
         this.endDate = year.endDate;
     }
@@ -91,6 +92,9 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         }
         if(null == this.endDate) {
             this.endDate = mergeFrom.endDate;
+        }
+        if (null == this.schoolYear) {
+            this.schoolYear = mergeFrom.schoolYear;
         }
     }
     

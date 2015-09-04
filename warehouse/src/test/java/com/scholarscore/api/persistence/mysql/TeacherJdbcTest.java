@@ -20,11 +20,11 @@ import static org.testng.Assert.assertNull;
 public class TeacherJdbcTest extends BaseJdbcTest {
     public void testCreateTeacher() {
         ApplicationContext ctx = new ClassPathXmlApplicationContext("persistence.xml");
-        Long id = teacherDao.createTeacher(teacher);
-        assertNotNull(id, "Expected non-null identifier to be returned");
+        Teacher createdTeacher = createTeacher();
+        Long id = createdTeacher.getId();
         Teacher out = teacherDao.select(id);
-        assertEquals(out, teacher, "Expected teacher values to be equal");
-        teacherDao.delete(teacher.getId());
+        assertEquals(out, createdTeacher, "Expected teacher values to be equal");
+        teacherDao.delete(createdTeacher.getId());
         Teacher deletedTeacher = teacherDao.select(id);
         assertNull(deletedTeacher, "Expected deleted teacher to be null");
     }
