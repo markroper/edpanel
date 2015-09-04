@@ -156,7 +156,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
 
 
     @OneToOne(optional = true)
-    @Cascade(CascadeType.ALL)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name="school_address_fk")
     public Address getAddress() {
         return address;

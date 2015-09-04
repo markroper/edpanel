@@ -152,7 +152,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
     }
 
     @OneToOne(optional = true)
-    @Cascade(CascadeType.ALL)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name="mailing_fk")
     public Address getMailingAddress() {
         return mailingAddress;
@@ -175,7 +175,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
     }
 
     @OneToOne(optional = true)
-    @Cascade(CascadeType.ALL)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name="home_fk")
     public Address getHomeAddress() {
         return homeAddress;

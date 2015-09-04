@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.scholarscore.api.persistence.mysql.EntityPersistence;
+import com.scholarscore.api.persistence.mysql.StudentPersistence;
+import com.scholarscore.models.Section;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -24,6 +27,9 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
 
     @Autowired
     private HibernateTemplate hibernateTemplate;
+
+    private StudentPersistence studentPersistence;
+    private EntityPersistence<Section> sectionPersistence;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -50,8 +56,22 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
 
     @Override
     public Long insert(long sectionId, long studentId, StudentSectionGrade entity) {
+        injectStudent(studentId, entity);
+        injectSection(sectionId, entity);
         StudentSectionGrade out = hibernateTemplate.merge(entity);
         return out.getId();
+    }
+
+    private void injectSection(long sectionId, StudentSectionGrade entity) {
+        if (null == entity.getSection()) {
+            entity.setSection(sectionPersistence.select(0L, sectionId));
+        }
+    }
+
+    private void injectStudent(long studentId, StudentSectionGrade entity) {
+        if (null == entity.getStudent()) {
+            entity.setStudent(studentPersistence.select(studentId));
+        }
     }
 
     @Override
@@ -63,6 +83,8 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
             update.setGrade(entity.getGrade());
             update.setComplete(entity.getComplete());
             update.setSection(entity.getSection());
+            injectStudent(studentId, update);
+            injectSection(sectionId, update);
             hibernateTemplate.merge(update);
         }
         return update.getId();
@@ -83,5 +105,13 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
 
     public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
         this.hibernateTemplate = hibernateTemplate;
+    }
+
+    public void setStudentPersistence(StudentPersistence studentPersistence) {
+        this.studentPersistence = studentPersistence;
+    }
+
+    public void setSectionPersistence(EntityPersistence<Section> sectionPersistence) {
+        this.sectionPersistence = sectionPersistence;
     }
 }

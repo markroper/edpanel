@@ -72,6 +72,7 @@
     <bean id="studentAssignmentPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.StudentAssignmentJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="assignmentPersistence" ref="assignmentPersistence"/>
     </bean>
     <bean id="coursePersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.CourseJdbc">
@@ -104,6 +105,8 @@
     <bean id="studentSectionGradePersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.StudentSectionGradeJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="sectionPersistence" ref="sectionPersistence"/>
+        <property name="studentPersistence" ref="studentPersistence"/>
     </bean>
 
     <bean id="queryPersistence"
