@@ -49,7 +49,8 @@ public class AssignmentJdbc implements EntityPersistence<Assignment> {
     public Long update(long parentId, long assignmentId,
                        Assignment entity) {
         entity.setSectionFK(parentId);
-        hibernateTemplate.merge(entity);
+        entity.setId(assignmentId);
+        Assignment result = hibernateTemplate.merge(entity);
         return assignmentId;
     }
 
