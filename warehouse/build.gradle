@@ -130,8 +130,6 @@ dependencies {
             "org.springframework.security:spring-security-core:$springSecurityVersion",
             "org.springframework.security:spring-security-config:$springSecurityVersion",
 
-            //'org.springframework.boot:spring-boot-starter-web:1.2.5.RELEASE',
-
             //Jackson for JSON & XML API serialization
             "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
             "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion",
@@ -141,7 +139,6 @@ dependencies {
             "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion",
             "com.fasterxml.jackson.module:jackson-module-scala_2.10:$jacksonVersion",
             //Swagger for API documentation, & dependent JARs
-            //"org.springframework.boot:spring-boot-starter-data-jpa:1.1.4.RELEASE",
             "org.hibernate:hibernate-core:4.3.11.Final",
             "com.wordnik:swagger-core_2.10:1.3.2",
             "com.wordnik:swagger-annotations:1.3.2",
