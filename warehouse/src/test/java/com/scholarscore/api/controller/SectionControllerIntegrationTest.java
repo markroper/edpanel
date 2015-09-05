@@ -88,12 +88,6 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
     }
     
     @Test(dataProvider = "createSectionProvider")
-    public void deleteSectionTest(String msg, Section section) {
-        Section createdSection = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, msg);
-        sectionValidatingExecutor.delete(school.getId(), schoolYear.getId(), term.getId(), createdSection.getId(), msg);
-    }
-    
-    @Test(dataProvider = "createSectionProvider")
     public void replaceSectionTest(String msg, Section section) {
         Section replaceSection = new Section();
         replaceSection.setCourse(section.getCourse());
@@ -139,5 +133,11 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
         s.setCourse(course);
         Section created = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), s, msg);
         sectionValidatingExecutor.replaceNegative(school.getId(), schoolYear.getId(), term.getId(), created.getId(), section, expectedStatus, msg);
+    }
+
+    @Test(dataProvider = "createSectionProvider")
+    public void deleteSectionTest(String msg, Section section) {
+        Section createdSection = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, msg);
+        sectionValidatingExecutor.delete(school.getId(), schoolYear.getId(), term.getId(), createdSection.getId(), msg);
     }
 }

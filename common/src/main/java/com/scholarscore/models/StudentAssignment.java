@@ -6,6 +6,10 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import javax.persistence.*;
 
 /**
  * Represents the student's performance on an assignment in a specific course.
@@ -13,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author markroper
  *
  */
+@Entity(name = "student_assignment")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentAssignment extends ApiModel implements Serializable, WeightedGradable, IApiModel<StudentAssignment> {
@@ -56,7 +61,8 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
             this.completionDate = mergeFrom.completionDate;
         }
     }
-    
+
+    @Column(name = "completed")
     public Boolean getCompleted() {
         return completed;
     }
@@ -65,17 +71,22 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         this.completed = completed;
     }
 
+    @OneToOne
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @JoinColumn(name="assignment_fk")
     public Assignment getAssignment() {
         return assignment;
     }
 
     @Override
+    @Column(name = "awarded_points")
     public Long getAwardedPoints() {
         return awardedPoints != null ? awardedPoints : null;
     }
 
     @Override
     @JsonIgnore
+    @Transient
     public Long getAvailablePoints() {
         Long availablePoints = assignment != null ? assignment.getAvailablePoints() : null;
         return (availablePoints != null ? availablePoints : null );
@@ -83,6 +94,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
 
     @Override
     @JsonIgnore
+    @Transient
     public int getWeight() {
         // Today, these weights live in GradeFormula and can't be 
         // directly grabbed from StudentAssignment.
@@ -97,6 +109,9 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         this.assignment = assignment;
     }
 
+    @OneToOne
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @JoinColumn(name="student_fk")
     public Student getStudent() {
         return student;
     }
@@ -105,12 +120,26 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         this.student = student;
     }
 
+    @Column(name = "completion_date")
     public Date getCompletionDate() {
         return completionDate;
     }
 
     public void setCompletionDate(Date completionDate) {
         this.completionDate = completionDate;
+    }
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name = "student_assignment_id")
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Override
+    @Column(name = "student_assignment_name")
+    public String getName() {
+        return super.getName();
     }
 
     @Override

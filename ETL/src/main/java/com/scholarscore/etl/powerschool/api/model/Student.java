@@ -9,23 +9,30 @@ import java.util.List;
  */
 @XmlRootElement(name = "student")
 public class Student {
+
+    public static class StudentAddress {
+        public String street;
+        public String city;
+        public String state_province;
+        public String postal_code;
+    }
+
+    public static class StudentAddresses {
+        public StudentAddress physical;
+        public StudentAddress mailing;
+    }
+
     public Long id;
 
     public Long local_id;
+    public Name name;
+    public Demographics demographics;
     public String state_province_d;
     public String student_username;
+    public StudentAddresses addresses;
 
-    public Name name;
+    public SchoolEnrollment school_enrollment;
 
-    Addresses physical;
-    Addresses mailing;
-
-    List<Alert> alerts;
-
-    Contact contact;
-
-    Demographics demographics;
-    EthnicityRace ethnicityRace;
-
-    List<StudentFee> fees;
+    public EthnicityRace ethnicity_race;
+//    public List<StudentFee> fees;
 }

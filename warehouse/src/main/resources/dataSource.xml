@@ -11,6 +11,8 @@
                      http://www.springframework.org/schema/util
                      http://www.springframework.org/schema/util/spring-util.xsd">
 
+    <import resource="classpath:persistence.xml"/>
+
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
       <property name="locations">
         <list>
@@ -30,11 +32,7 @@
    </bean>
    
    <!-- Required so that we can inject an instance into Spring Security -->
-   <bean id="userPersistence" 
-   		 class="com.scholarscore.api.persistence.mysql.jdbc.UserJdbc">
-   	  <property name="dataSource" ref="dataSource"/>
-   </bean>
-   
+
    <bean id="authorityPersistence"
    		 class="com.scholarscore.api.persistence.mysql.jdbc.AuthorityJdbc">
    	  <property name="dataSource" ref="dataSource"/>

@@ -1,15 +1,16 @@
 package com.scholarscore.etl;
 
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.powerschool.api.model.*;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
-import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
+import com.scholarscore.models.*;
+import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Student;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This is the E2E flow for powerschool import to scholarScore export - we have references to both clients and
@@ -23,6 +24,12 @@ public class ETLEngine implements IETLEngine {
 
     private IPowerSchoolClient powerSchool;
     private IAPIClient scholarScore;
+    private List<School> schools;
+
+    // Collections by schoolId
+    private Map<Long, List<Course>> courses;
+    private Map<Long, List<IStaff>> staff;
+    private Map<Long, List<Student>> students;
 
     public void setPowerSchool(IPowerSchoolClient powerSchool) {
         this.powerSchool = powerSchool;
@@ -43,29 +50,96 @@ public class ETLEngine implements IETLEngine {
     @Override
     public MigrationResult migrateDistrict() {
         MigrationResult result = new MigrationResult();
-        result.schools = createSchools();
-//        result.students = createStudents();
+        this.schools = createSchools();
+        this.staff = createStaff();
+        this.students = createStudents();
+        this.courses = createCourses();
         return result;
     }
 
-    private List<Student> createStudents() {
-        StudentResponse response = powerSchool.getDistrictStudents();
-        List<Student> addedStudents = new ArrayList<>();
-        for (Student student : response.toInternalModel()) {
-            addedStudents.add(scholarScore.createStudent(student));
+    private Map<Long, List<Course>> createCourses() {
+
+        Map<Long, List<Course>> result = new HashMap<>();
+        for (School school : schools) {
+            Long schoolId = Long.valueOf(school.getSourceSystemId());
+            Courses response = powerSchool.getCoursesBySchool(schoolId);
+            Collection<Course> apiListOfCourses = response.toInternalModel();
+
+            apiListOfCourses.forEach(course -> {
+                scholarScore.createCourse(school.getId(), course);
+            });
         }
-        return addedStudents;
+        return result;
+    }
+
+    private Map<Long, List<Student>> createStudents() {
+        Map<Long, List<Student>> studentsBySchool = new HashMap<>();
+        for (School school : schools) {
+            Long schoolId = Long.valueOf(school.getSourceSystemId());
+            Students response = powerSchool.getStudentsBySchool(schoolId);
+            Collection<Student> apiListOfStudents = response.toInternalModel();
+
+            List<Student> students = new ArrayList<>();
+            apiListOfStudents.forEach(student -> {
+                student.setCurrentSchoolId(school.getId());
+                Student createdStudent = scholarScore.createStudent(student);
+                student.setId(createdStudent.getId());
+                students.add(student);
+            });
+            studentsBySchool.put(schoolId, students);
+        }
+        return studentsBySchool;
+    }
+
+    /**
+     * Create the user entry along side the teacher and administrator entries
+     * @return
+     */
+    public Map<Long, List<IStaff>> createStaff() {
+        Map<Long, List<IStaff>> staffBySchool = new HashMap<>();
+        for (School school : schools) {
+            Staffs response = powerSchool.getStaff(Long.valueOf(school.getSourceSystemId()));
+
+            List<IStaff> apiListOfStaff = response.toInternalModel();
+
+
+            apiListOfStaff.forEach(staff -> {
+                // Create a login for the user
+                if (null != staff.getLogin()) {
+                    User login = staff.getLogin();
+                    // Generate a random password
+                    login.setPassword(UUID.randomUUID().toString());
+                    try {
+                        User result = scholarScore.createUser(login);
+                        staff.getLogin().setId(result.getId());
+                    }
+                    catch (Exception e) {
+                    }
+                }
+                if (staff instanceof Teacher) {
+                    Teacher teacher = (Teacher)staff;
+                    Teacher teacherResponse = scholarScore.createTeacher(teacher);
+                    teacher.setId(teacherResponse.getId());
+                }
+                else if (staff instanceof Administrator) {
+                    Administrator administrator = (Administrator)staff;
+                    Administrator adminResponse = scholarScore.createAdministrator(administrator);
+                    administrator.setId(adminResponse.getId());
+                }
+            });
+
+            staffBySchool.put(school.getId(), apiListOfStaff);
+        }
+        return staffBySchool;
     }
 
     public List<School> createSchools() {
-        SchoolsResponse response = powerSchool.getSchools();
-        Collection<School> schools = response.toInternalModel();
-        List<School> addedSchools = new ArrayList<>();
+        SchoolsResponse powerSchools = powerSchool.getSchools();
+        List<School> schools = (List<School>) powerSchools.toInternalModel();
         for (School school : schools) {
-            addedSchools.add(scholarScore.createSchool(school));
+            School response = scholarScore.createSchool(school);
+            school.setId(response.getId());
         }
-        // add real logging, derp
-        System.out.println("Created " + addedSchools.size() + " schools");
-        return addedSchools;
+        return schools;
     }
 }

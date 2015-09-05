@@ -8,7 +8,7 @@ public interface SchoolPersistence {
 
     public Collection<School> selectAll();
 
-    public School selectSchool(long schoolId);
+    public School selectSchool(Long schoolId);
 
     public Long createSchool(School school);
 

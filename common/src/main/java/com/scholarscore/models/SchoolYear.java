@@ -6,6 +6,12 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
+
+import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * Represents a school year, which may cross calendar year boundaries. 
@@ -15,12 +21,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author markroper
  *
  */
+@Entity
+@Table(name = "school_year")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SchoolYear extends ApiModel implements Serializable, IApiModel<SchoolYear>{
     protected Date startDate;
     protected Date endDate;
     protected List<Term> terms;
+    protected School school;
     
     public SchoolYear() {
         
@@ -37,7 +46,32 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         this.startDate = startDate;
         this.endDate = endDate;
     }
-    
+
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @JoinColumn(name="school_fk")
+    public School getSchool() {
+        return school;
+    }
+
+    public void setSchool(School school) {
+        this.school = school;
+    }
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    @Column(name = "school_year_id")
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Override
+    @Column(name = "school_year_name")
+    public String getName() {
+        return super.getName();
+    }
+
+    @Column(name = "school_year_start_date")
     public Date getStartDate() {
         return startDate;
     }
@@ -46,6 +80,7 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         this.startDate = startDate;
     }
 
+    @Column(name = "school_year_end_date")
     public Date getEndDate() {
         return endDate;
     }
@@ -54,6 +89,7 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         this.endDate = endDate;
     }
 
+    @Transient
     public List<Term> getTerms() {
         return terms;
     }

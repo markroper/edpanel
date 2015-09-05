@@ -5,6 +5,12 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
+
+import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * Represents a single student's grade in a specific course.  The complete boolean
@@ -13,12 +19,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author markroper
  *
  */
+@Entity(name="studentSectionGrade")
+@Table(name = "student_section_grade")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentSectionGrade implements Serializable, WeightedGradable, IApiModel<StudentSectionGrade> {
     protected Long id;
     protected Boolean complete;
     protected Double grade;
+    protected Section section;
+    protected Student student;
     
     // teachers can grade assignments however they want, 
     // though currently each course must have a final grade out of 100
@@ -47,6 +57,31 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
         }
     }
 
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @JoinColumn(name="section_fk")
+    public Section getSection() {
+        return section;
+    }
+
+    public void setSection(Section section) {
+        this.section = section;
+    }
+
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "student_fk")
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    @Column(name = "student_section_grade_id")
     public Long getId() {
         return id;
     }
@@ -55,6 +90,7 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
         this.id = id;
     }
 
+    @Column(name = "complete")
     public Boolean getComplete() {
         return complete;
     }
@@ -63,6 +99,7 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
         this.complete = complete;
     }
 
+    @Column(name = "grade")
     public Double getGrade() {
         return grade;
     }
@@ -89,18 +126,22 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
 
     @Override
     @JsonIgnore
+    //@Column(name = "grade", insertable=false, updatable=false)
+    @Transient
     public Double getAwardedPoints() {
         return grade;
     }
 
     @Override
     @JsonIgnore
+    @Transient
     public Double getAvailablePoints() {
         return MAX_GRADE;
     }
 
     @Override
     @JsonIgnore
+    @Transient
     public int getWeight() {
         return 1;
     }

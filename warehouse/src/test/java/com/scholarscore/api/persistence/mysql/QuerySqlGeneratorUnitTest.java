@@ -1,4 +1,4 @@
-package com.scholarscore.api.persistence.mysql.querygenerator;
+package com.scholarscore.api.persistence.mysql;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
+import com.scholarscore.api.persistence.mysql.querygenerator.SqlGenerationException;
+import com.scholarscore.api.persistence.mysql.querygenerator.SqlWithParameters;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -163,7 +166,7 @@ public class QuerySqlGeneratorUnitTest {
         };
     }
     
-    @Test(dataProvider = "queriesProvider")
+   @Test(dataProvider = "queriesProvider")
     public void toSqlTest(String msg, Query q, String expectedSql) {
         SqlWithParameters sql = null;
         try {
