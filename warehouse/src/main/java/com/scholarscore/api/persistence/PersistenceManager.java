@@ -53,7 +53,6 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private StudentPersistence studentPersistence;
     private TeacherPersistence teacherPersistence;
     private AdministratorPersistence administratorPersistence;
-    private EntityPersistence<Section> sectionPersistence;
     private SectionPersistence sectionPersistence;
     private EntityPersistence<Course> coursePersistence;
     private EntityPersistence<Assignment> assignmentPersistence;

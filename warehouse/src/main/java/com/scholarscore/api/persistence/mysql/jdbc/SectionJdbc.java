@@ -2,6 +2,7 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 
 import java.util.Collection;
 
+import com.scholarscore.api.persistence.mysql.SectionPersistence;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import javax.transaction.Transactional;
 
 @Transactional
-public class SectionJdbc implements EntityPersistence<Section> {
+public class SectionJdbc implements SectionPersistence {
     @Autowired
     private HibernateTemplate hibernateTemplate;
 
@@ -77,5 +78,10 @@ public class SectionJdbc implements EntityPersistence<Section> {
 
     public void setTermEntityPersistence(EntityPersistence<Term> termEntityPersistence) {
         this.termEntityPersistence = termEntityPersistence;
+    }
+
+    @Override
+    public Collection<Section> selectAllSectionForStudent(long termId, long studentId) {
+        return null;
     }
 }

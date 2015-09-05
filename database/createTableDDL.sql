@@ -213,9 +213,9 @@ CREATE TABLE `scholar_warehouse`.`report` (
 ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`behavior` (
-  `behavior_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key identity column',
-  `student_fk` INT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
-  `teacher_fk` INT UNSIGNED NULL COMMENT 'The foreign key to the teacher table',
+  `behavior_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key identity column',
+  `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
+  `teacher_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the teacher table',
   `name` VARCHAR(256) NULL COMMENT 'Human readable name of behavior event',
   `date` DATETIME NULL COMMENT 'Date the behavior event occurred',
   `remote_student_id` VARCHAR(256) NULL COMMENT 'ID of the student in a remote system (which is not yet defined)',

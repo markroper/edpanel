@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.scholarscore.api.persistence.mysql.StudentAssignmentPersistence;
 import com.scholarscore.models.Assignment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -21,7 +22,7 @@ import javax.transaction.Transactional;
 
 @Transactional
 public class StudentAssignmentJdbc
-        implements EntityPersistence<StudentAssignment>{
+        implements StudentAssignmentPersistence {
     @Autowired
     private HibernateTemplate hibernateTemplate;
     private EntityPersistence<Assignment> assignmentPersistence;
@@ -79,5 +80,10 @@ public class StudentAssignmentJdbc
 
     public void setAssignmentPersistence(EntityPersistence<Assignment> assignmentPersistence) {
         this.assignmentPersistence = assignmentPersistence;
+    }
+
+    @Override
+    public Collection<StudentAssignment> selectAllAssignmentsOneSectionOneStudent(long sectionId, long studentId) {
+        return null;
     }
 }
