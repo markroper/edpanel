@@ -6,10 +6,13 @@ import java.util.HashSet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scholarscore.api.persistence.mysql.AuthorityPersistence;
+import com.scholarscore.api.persistence.mysql.BehaviorPersistence;
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.QueryPersistence;
 import com.scholarscore.api.persistence.mysql.SchoolPersistence;
+import com.scholarscore.api.persistence.mysql.SectionPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
+import com.scholarscore.api.persistence.mysql.StudentAssignmentPersistence;
 import com.scholarscore.api.persistence.mysql.StudentSectionGradePersistence;
 import com.scholarscore.api.persistence.mysql.TeacherPersistence;
 import com.scholarscore.api.persistence.mysql.UserPersistence;
@@ -19,13 +22,14 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.*;
+import com.scholarscore.models.*;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.QueryResults;
 
 public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
         TermManager, SectionManager, AssignmentManager, StudentAssignmentManager,
         StudentSectionGradeManager, CourseManager, TeacherManager, UserManager, QueryManager,
-        AdminManager {
+        AdminManager, BehaviorManager {
     
     private static final String SCHOOL = "school";
     private static final String COURSE = "course";
@@ -40,6 +44,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private static final String STUDENT_SECTION_GRADE = "student section grade";
     private static final String USER = "user";
     private static final String QUERY = "query";
+    private static final String BEHAVIOR = "behavior";
     
     //Persistence managers for each entity
     private SchoolPersistence schoolPersistence;
@@ -49,14 +54,17 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     private TeacherPersistence teacherPersistence;
     private AdministratorPersistence administratorPersistence;
     private EntityPersistence<Section> sectionPersistence;
+    private SectionPersistence sectionPersistence;
     private EntityPersistence<Course> coursePersistence;
     private EntityPersistence<Assignment> assignmentPersistence;
-    private EntityPersistence<StudentAssignment> studentAssignmentPersistence;
+    private StudentAssignmentPersistence studentAssignmentPersistence;
     private StudentSectionGradePersistence studentSectionGradePersistence;
     private UserPersistence userPersistence;
     private AuthorityPersistence authorityPersistence;
     private QueryPersistence queryPersistence;
 
+    private BehaviorPersistence behaviorPersistence;
+    
     //Setters for the persistence layer for each entity
     public void setQueryPersistence(QueryPersistence ap) {
         this.queryPersistence = ap;
@@ -70,7 +78,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         this.studentSectionGradePersistence = ap;
     }
     
-    public void setStudentAssignmentPersistence(EntityPersistence<StudentAssignment> ap) {
+    public void setStudentAssignmentPersistence(StudentAssignmentPersistence ap) {
         this.studentAssignmentPersistence = ap;
     }
     
@@ -82,7 +90,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         coursePersistence = cp;
     }
     
-    public void setSectionPersistence(EntityPersistence<Section> sectionPersistence) {
+    public void setSectionPersistence(SectionPersistence sectionPersistence) {
         this.sectionPersistence = sectionPersistence;
     }
     
@@ -102,7 +110,10 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         this.termPersistence = termPersistence;
     }
 
- 
+    public void setBehaviorPersistence(BehaviorPersistence behaviorPersistence) {
+        this.behaviorPersistence = behaviorPersistence;
+    }
+
     //SCHOOLS
     @Override
     public Collection<School> getAllSchools() {
@@ -495,6 +506,31 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         }
         return new ServiceResponse<Collection<Section>>(sections);
     }
+    
+    @Override
+    public ServiceResponse<Collection<Section>> getAllSections(long studentId,
+            long schoolId, long yearId, long termId) {
+        StatusCode code = studentExists(studentId);
+        if(!code.isOK()) {
+            return new ServiceResponse<Collection<Section>>(code);
+        }
+        code = termExists(schoolId, yearId, termId);
+        if(!code.isOK()) {
+            return new ServiceResponse<Collection<Section>>(code);
+        }
+        Collection<Section> sections = sectionPersistence.selectAllSectionForStudent(termId, studentId);
+        for(Section s : sections) {
+            Collection<Student> students = studentPersistence.selectAllStudentsInSection(s.getId());
+            if(null != students && !students.isEmpty()) {
+                s.setEnrolledStudents(new ArrayList<Student>(students));
+            }
+            Collection<Assignment> assignments = assignmentPersistence.selectAll(s.getId());
+            if(null != assignments && !assignments.isEmpty()) {
+                s.setAssignments(new ArrayList<Assignment>(assignments));
+            }
+        }
+        return new ServiceResponse<Collection<Section>>(sections);
+    }
 
     @Override
     public StatusCode sectionExists(long schoolId, long yearId, long termId, long sectionId) {
@@ -778,13 +814,22 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     public ServiceResponse<StudentAssignment> getStudentAssignment(
             long schoolId, long yearId, long termId, long sectionId,
             long sectionAssignmentId, long studentAssignmentId) {
-        StatusCode code = studentAssignmentExists(schoolId, yearId, termId, sectionId, 
+        StatusCode code = studentAssignmentExists(schoolId, yearId, termId, sectionId,
                 sectionAssignmentId, studentAssignmentId);
         if(!code.isOK()) {
             return new ServiceResponse<StudentAssignment>(code);
         }
         StudentAssignment sa = studentAssignmentPersistence.select(sectionAssignmentId, studentAssignmentId);
         return new ServiceResponse<StudentAssignment>(sa);
+    }
+    
+    @Override
+    public ServiceResponse<Collection<StudentAssignment>> getOneSectionOneStudentsAssignments(
+            long studentId, long schoolId, long yearId, long termId,
+            long sectionId) {
+        Collection<StudentAssignment> sas = 
+                studentAssignmentPersistence.selectAllAssignmentsOneSectionOneStudent(sectionId, studentId);
+        return new ServiceResponse<Collection<StudentAssignment>>(sas);
     }
 
     @Override
@@ -803,7 +848,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     public ServiceResponse<Long> replaceStudentAssignment(long schoolId,
             long yearId, long termId, long sectionId, long sectionAssignmentId,
             long studentAssignmentId, StudentAssignment studentAssignment) {
-        StatusCode code = studentAssignmentExists(schoolId, yearId, termId, sectionId, 
+        StatusCode code = studentAssignmentExists(schoolId, yearId, termId, sectionId,
                 sectionAssignmentId, studentAssignmentId);
         if(!code.isOK()) {
             return new ServiceResponse<Long>(code);
@@ -816,7 +861,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     public ServiceResponse<Long> updateStudentAssignment(long schoolId,
             long yearId, long termId, long sectionId, long sectionAssignmentId,
             long studentAssignmentId, StudentAssignment studentAssignment) {
-        StatusCode code = studentAssignmentExists(schoolId, yearId, termId, sectionId, 
+        StatusCode code = studentAssignmentExists(schoolId, yearId, termId, sectionId,
                 sectionAssignmentId, studentAssignmentId);
         if(!code.isOK()) {
             return new ServiceResponse<Long>(code);
@@ -832,7 +877,7 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
     public ServiceResponse<Long> deleteStudentAssignment(long schoolId,
             long yearId, long termId, long sectionId, long sectionAssignmentId,
             long studentAssignmentId) {
-        StatusCode code = studentAssignmentExists(schoolId, yearId, termId, sectionId, 
+        StatusCode code = studentAssignmentExists(schoolId, yearId, termId, sectionId,
                 sectionAssignmentId, studentAssignmentId);
         if(!code.isOK()) {
             return new ServiceResponse<Long>(code);
@@ -891,7 +936,26 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
         }
-        return new ServiceResponse<>(studentSectionGradePersistence.select(sectionId, studentId));
+        StudentSectionGrade grade = studentSectionGradePersistence.select(sectionId, studentId);
+        Boolean complete = grade.getComplete();
+        if(null == complete || complete.equals(Boolean.FALSE)) {
+            //Get the section, and pull off the section formula
+            ServiceResponse<Section> sect = getSection(schoolId, yearId, termId, sectionId);
+            if(null == sect.getCode() || sect.getCode().isOK()) {
+                ServiceResponse<Collection<StudentAssignment>> assignmentResp = 
+                        getOneSectionOneStudentsAssignments(studentId, schoolId, yearId, termId, sectionId);
+                if(null == assignmentResp.getCode() || assignmentResp.getCode().isOK()) {
+                    GradeFormula formula = sect.getValue().getGradeFormula();
+                    Collection<StudentAssignment> assignments = assignmentResp.getValue();
+                    if(null != formula && null != assignments) {
+                        HashSet<StudentAssignment> assignmentSet = new HashSet<StudentAssignment>(assignments);
+                        Double calculatedGrade = formula.calculateGrade(assignmentSet);
+                        grade.setGrade(calculatedGrade);
+                    }
+                }
+            }
+        }
+        return new ServiceResponse<>(grade);
     }
 
     @Override
@@ -1268,6 +1332,88 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         // TODO: Implement query generation
         return new ServiceResponse<QueryResults>(
                 StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND));
+    }
+
+    @Override
+    public ServiceResponse<Collection<Behavior>> getAllBehaviors(long studentId) {
+        return new ServiceResponse<Collection<Behavior>>
+                (behaviorPersistence.selectAll(studentId));
+    }
+
+    @Override
+    public StatusCode behaviorExists(long studentId, long behaviorId) {
+        StatusCode code = studentExists(studentId);
+        if (!code.isOK()) {
+            return code;
+        }
+        Behavior behavior = behaviorPersistence.select(studentId, behaviorId);
+        if (null == behavior) {
+            return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { BEHAVIOR, behaviorId });
+        }
+        return StatusCodes.getStatusCode(StatusCodeType.OK);
+    }
+
+    @Override
+    public ServiceResponse<Behavior> getBehavior(long studentId, long behaviorId) {
+        StatusCode code = behaviorExists(studentId, behaviorId);
+        if (!code.isOK()) {
+            return new ServiceResponse<>(code);
+        }
+        Behavior behavior = behaviorPersistence.select(studentId, behaviorId);
+        return new ServiceResponse<>(behavior);
+    }
+
+    @Override
+    public ServiceResponse<Long> createBehavior(long studentId, Behavior behavior) {
+        StatusCode code = studentExists(studentId);
+        if (!code.isOK()) {
+            return new ServiceResponse<Long>(code);
+        }
+        Long behaviorId = behaviorPersistence.createBehavior(studentId, behavior);
+        return new ServiceResponse<Long>(behaviorId);
+    }
+
+    @Override
+    public ServiceResponse<Long> replaceBehavior(long studentId, long behaviorId, Behavior behavior) {
+        StatusCode code = behaviorExists(studentId, behaviorId);
+        if (!code.isOK()) {
+            return new ServiceResponse<>(code);
+        }
+        
+        behaviorPersistence.replaceBehavior(studentId, behaviorId, behavior);
+        return new ServiceResponse<>(behaviorId);
+    }
+
+    @Override
+    public ServiceResponse<Long> updateBehavior(long studentId, long behaviorId, Behavior behavior) {
+        StatusCode code = behaviorExists(studentId, behaviorId);
+        if (!code.isOK()) {
+            return new ServiceResponse<Long>(code);
+        }
+        behavior.setId(behaviorId);
+        Behavior originalBehavior = 
+                behaviorPersistence.select(studentId, behaviorId);
+        behavior.mergePropertiesIfNull(originalBehavior);
+        return replaceBehavior(studentId, behaviorId, behavior);
+    }
+
+    @Override
+    public ServiceResponse<Long> deleteBehavior(long studentId, long behaviorId) {
+        StatusCode code = behaviorExists(studentId, behaviorId);
+        if (!code.isOK()) {
+            return new ServiceResponse<Long>(code);
+        }
+        behaviorPersistence.delete(studentId, behaviorId);
+        return new ServiceResponse<Long>((Long) null);
+    }
+        
+    @Override
+    public ServiceResponse<QueryResults> getQueryResults(Query query) {
+        QueryResults results = queryPersistence.generateQueryResults(query);
+        if(null == results) {
+            return new ServiceResponse<QueryResults>(StatusCodes.getStatusCode(StatusCodeType.INVALID_QUERY));
+        }
+        return new ServiceResponse<QueryResults>(results);
     }
 
     public void setAdministratorPersistence(AdministratorPersistence adminPersistence) {

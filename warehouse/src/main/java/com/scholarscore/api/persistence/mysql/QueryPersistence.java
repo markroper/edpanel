@@ -33,13 +33,21 @@ public interface QueryPersistence {
     public Long deleteQuery(Long schoolId, Long queryId);
     
     /**
-     * Executes a saves query schema and returns the results.
+     * Executes a saved query schema and returns the results.
      * 
      * @param schoolId
      * @param queryId
      * @return
      */
     public QueryResults generateQueryResults(Long schoolId, Long queryId);
+    
+    /**
+     * Executes query and returns the results.
+     * 
+     * @param query
+     * @return
+     */
+    public QueryResults generateQueryResults(Query query);
 
     /**
      * Return all saved queries within a school

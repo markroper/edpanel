@@ -8,12 +8,15 @@ import java.util.Map;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
+import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.dimension.CourseDimension;
 import com.scholarscore.models.query.dimension.SchoolDimension;
+import com.scholarscore.models.query.dimension.SchoolYearDimension;
 import com.scholarscore.models.query.dimension.SectionDimension;
 import com.scholarscore.models.query.dimension.StudentDimension;
 import com.scholarscore.models.query.dimension.TeacherDimension;
 import com.scholarscore.models.query.dimension.TermDimension;
+import com.scholarscore.models.query.measure.BehaviorMeasure;
 
 @SuppressWarnings("serial")
 public class DbConst {
@@ -23,12 +26,47 @@ public class DbConst {
                put(Measure.COURSE_GRADE, STUDENT_SECTION_GRADE_TABLE);
                put(Measure.ASSIGNMENT_GRADE, STUDENT_ASSIGNMENT_TABLE);
                put(Measure.HW_COMPLETION, STUDENT_ASSIGNMENT_TABLE);
+               put(Measure.DEMERIT, BEHAVIOR_TABLE);
+               put(Measure.MERIT, BEHAVIOR_TABLE);
+               put(Measure.SUSPENSION, BEHAVIOR_TABLE);
+               put(Measure.DETENTION, BEHAVIOR_TABLE);
            }};
    public static final Map<Measure, String> MEASURE_TO_COL_NAME = 
            new HashMap<Measure, String>() {{
                put(Measure.COURSE_GRADE, STUD_SECTION_GRADE_GRADE);
                put(Measure.ASSIGNMENT_GRADE, STUD_AWARDED_POINTS);
                put(Measure.HW_COMPLETION, STUD_COMPLETED_COL);
+           }};
+   public static final Map<MeasureField, String> MEASURE_FIELD_TO_COL_NAME = 
+           new HashMap<MeasureField, String>() {{
+               put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.ID), BEHAVIOR_ID_COL);
+               put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.STUDENT_FK), STUD_FK_COL);
+               put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.TEACHER_FK), BEHAVIOR_TEACHER_FK_COL);
+               put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.DATE), BEHAVIOR_DATE_COL);
+               put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.POINTS), BEHAVIOR_POINT_VALUE_COL);
+               put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.CATEGORY), BEHAVIOR_CATEGORY_COL);
+               put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.ROSTER), BEHAVIOR_ROSTER_COL);
+               put(new MeasureField(Measure.MERIT, BehaviorMeasure.ID), BEHAVIOR_ID_COL);
+               put(new MeasureField(Measure.MERIT, BehaviorMeasure.STUDENT_FK), STUD_FK_COL);
+               put(new MeasureField(Measure.MERIT, BehaviorMeasure.TEACHER_FK), BEHAVIOR_TEACHER_FK_COL);
+               put(new MeasureField(Measure.MERIT, BehaviorMeasure.DATE), BEHAVIOR_DATE_COL);
+               put(new MeasureField(Measure.MERIT, BehaviorMeasure.POINTS), BEHAVIOR_POINT_VALUE_COL);
+               put(new MeasureField(Measure.MERIT, BehaviorMeasure.CATEGORY), BEHAVIOR_CATEGORY_COL);
+               put(new MeasureField(Measure.MERIT, BehaviorMeasure.ROSTER), BEHAVIOR_ROSTER_COL);
+               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.ID), BEHAVIOR_ID_COL);
+               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.STUDENT_FK), STUD_FK_COL);
+               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.TEACHER_FK), BEHAVIOR_TEACHER_FK_COL);
+               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.DATE), BEHAVIOR_DATE_COL);
+               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.POINTS), BEHAVIOR_POINT_VALUE_COL);
+               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.CATEGORY), BEHAVIOR_CATEGORY_COL);
+               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.ROSTER), BEHAVIOR_ROSTER_COL);
+               put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.ID), BEHAVIOR_ID_COL);
+               put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.STUDENT_FK), STUD_FK_COL);
+               put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.TEACHER_FK), BEHAVIOR_TEACHER_FK_COL);
+               put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.DATE), BEHAVIOR_DATE_COL);
+               put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.POINTS), BEHAVIOR_POINT_VALUE_COL);
+               put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.CATEGORY), BEHAVIOR_CATEGORY_COL);
+               put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.ROSTER), BEHAVIOR_ROSTER_COL);
            }};
 
     public static final Map<Dimension, String> DIMENSION_TO_TABLE_NAME = 
@@ -77,6 +115,10 @@ public class DbConst {
         put(new DimensionField(Dimension.TERM, TermDimension.ID), TERM_ID_COL);
         put(new DimensionField(Dimension.TERM, TermDimension.END_DATE), TERM_END_DATE_COL);
         put(new DimensionField(Dimension.TERM, TermDimension.START_DATE), TERM_START_DATE_COL);
+        //TERM dimension field to DB column name lookup
+        put(new DimensionField(Dimension.YEAR, SchoolYearDimension.ID), SCHOOL_YEAR_ID_COL);
+        put(new DimensionField(Dimension.YEAR, SchoolYearDimension.END_DATE), SCHOOL_YEAR_END_DATE_COL);
+        put(new DimensionField(Dimension.YEAR, SchoolYearDimension.START_DATE), SCHOOL_YEAR_START_DATE_COL);
     }};
 
     public static final String DATABASE = "scholar_warehouse";
@@ -201,6 +243,18 @@ public class DbConst {
 	public static final String REPORT_TABLE = "report";
 	public static final String REPORT_ID_COL = "report_id";
 	public static final String REPORT_COL = "report";
+	
+    public static final String BEHAVIOR_TABLE = "behavior";
+    public static final String BEHAVIOR_ID_COL = "behavior_id";
+    public static final String BEHAVIOR_STUDENT_FK_COL = "student_fk";
+    public static final String BEHAVIOR_TEACHER_FK_COL = "teacher_fk";
+    public static final String BEHAVIOR_NAME_COL = "name";
+    public static final String BEHAVIOR_DATE_COL = "date";
+    public static final String BEHAVIOR_REMOTE_STUDENT_ID_COL = "remote_student_id";
+    public static final String BEHAVIOR_CATEGORY_COL = "category";
+    public static final String BEHAVIOR_POINT_VALUE_COL = "point_value";
+    public static final String BEHAVIOR_ROSTER_COL = "roster";
+
 
 
     /**

@@ -48,7 +48,7 @@ public class AssignmentValidatingExecutor {
                 serviceBase.getSectionAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId, id),
                 null);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
-                "Unexpected status code returned while retreiving term: " + msg);
+                "Unexpected status code returned while retrieving term: " + msg);
     }
     
     public Assignment create(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Assignment sectionAssignment, String msg) {
