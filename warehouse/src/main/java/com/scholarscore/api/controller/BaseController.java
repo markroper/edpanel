@@ -1,25 +1,12 @@
 package com.scholarscore.api.controller;
 
-import com.scholarscore.api.persistence.AssignmentManager;
-import com.scholarscore.api.persistence.BehaviorManager;
-import com.scholarscore.api.persistence.CourseManager;
-import com.scholarscore.api.persistence.QueryManager;
-import com.scholarscore.api.persistence.SchoolManager;
-import com.scholarscore.api.persistence.SchoolYearManager;
-import com.scholarscore.api.persistence.SectionManager;
-import com.scholarscore.api.persistence.StudentAssignmentManager;
-import com.scholarscore.api.persistence.StudentManager;
-import com.scholarscore.api.persistence.StudentSectionGradeManager;
-import com.scholarscore.api.persistence.TeacherManager;
-import com.scholarscore.api.persistence.TermManager;
-import com.scholarscore.api.persistence.UserManager;
+import com.scholarscore.api.persistence.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
-import com.scholarscore.api.persistence.PersistenceManager;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeResponseFactory;
 import com.scholarscore.api.util.ServiceResponse;
@@ -98,4 +85,5 @@ public abstract class BaseController {
     protected UserManager getUserManager() { return PM; }
     protected QueryManager getQueryManager() { return PM; }
     protected BehaviorManager getBehaviorManager() { return PM; }
+    protected AdminManager getAdminManager() { return PM; }
 }

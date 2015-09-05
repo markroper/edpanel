@@ -1,14 +1,17 @@
 package com.scholarscore.etl.powerschool;
 
-import com.scholarscore.etl.powerschool.api.model.School;
+import com.scholarscore.etl.powerschool.api.model.*;
 import com.scholarscore.etl.powerschool.api.response.*;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.client.PowerSchoolClient;
+import com.scholarscore.models.IStaff;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Collection;
 
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -25,7 +28,6 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
     @Autowired
     private IPowerSchoolClient client;
 
-
     public void testLoadSchools() {
         SchoolsResponse response = client.getSchools();
         assertNotNull(response);
@@ -35,8 +37,11 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
 
     public void testGetStaffBySchool() {
         for (School school : client.getSchools().schools.school) {
-            StaffResponse response = client.getStaff(school.id);
+            Staffs response = client.getStaff(school.id);
+            System.out.println(response);
             assertNotNull(response);
+            Collection<IStaff> internalModel = response.toInternalModel();
+            assertNotNull(internalModel);
         }
     }
 
@@ -57,9 +62,8 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
 
     public void testGetCoursesBySchool() {
         for (School school : client.getSchools().schools.school) {
-            CourseResponse response = client.getCoursesBySchool(school.id);
+            Courses response = client.getCoursesBySchool(school.id);
             assertNotNull(response);
-            assertNotNull(response.courses);
             // no data is in any of the 3 schools thus we cannot verify the data in powerschool
         }
     }
@@ -76,8 +80,10 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
         Assert.assertNotNull(response);
     }
 
-    public void testGetAllDistrictStudents() {
-        StudentResponse response = client.getDistrictStudents();
-        Assert.assertNotNull(response);
+    public void testGetAllStudentsBySchoolId() {
+        for (School school : client.getSchools().schools.school) {
+            Students response = client.getStudentsBySchool(school.id);
+            Assert.assertNotNull(response);
+        }
     }
 }

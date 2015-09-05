@@ -3,6 +3,12 @@ package com.scholarscore.models;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
+
+import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.validation.constraints.Size;
 
 /**
  * The class represents a course, for example 'AP Calculus BC'. The course
@@ -17,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author markroper
  *
  */
+@Entity(name = "course")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Course extends ApiModel implements Serializable, IApiModel<Course> {
@@ -26,23 +33,69 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
     
     public Course(Course clone) {
         super(clone);
+        this.sourceSystemId = clone.sourceSystemId;
+        this.number = clone.number;
     }
+
+    @Size(min = 0, max=255)
+    private String number;
+
+    @Size(min = 0, max=255)
+    private String sourceSystemId;
+
+    private School school;
 
     @Override
     public void mergePropertiesIfNull(Course mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if(!super.equals(obj)) {
-            return false;
+
+        if (null == number) {
+            this.number = mergeFrom.getNumber();
         }
-        return true;
+        if (null == sourceSystemId) {
+            this.sourceSystemId = mergeFrom.getSourceSystemId();
+        }
     }
-    
+
+    @Column(name = "course_number")
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    @Column(name = "course_source_system_id")
+    public String getSourceSystemId() {
+        return sourceSystemId;
+    }
+
+    public void setSourceSystemId(String sourceSystemId) {
+        this.sourceSystemId = sourceSystemId;
+    }
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    @Column(name = "course_id")
+    public Long getId() {
+        return super.getId();
+    }
+
     @Override
-    public int hashCode() {
-        return 31 * super.hashCode();
+    @Column(name = "course_name")
+    public String getName() {
+        return super.getName();
+    }
+
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @JoinColumn(name="school_fk")
+    public School getSchool() {
+        return school;
+    }
+
+    public void setSchool(School school) {
+        this.school = school;
     }
 }

@@ -7,13 +7,23 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
+
+import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * Base class for all assignment subclasses encapsulating shared attributes and behaviors.
- * 
+ *
  * @author markroper
  *
  */
+@Entity
+@Table(name = "assignment")
+@DiscriminatorColumn(name="assignmentClass", discriminatorType = DiscriminatorType.STRING)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
@@ -33,6 +43,8 @@ public abstract class Assignment
     private AssignmentType type;
     private Date dueDate;
     private Long availablePoints;
+    protected Section section;
+    protected Long sectionFK;
 
     /**
      * Default constructor used by the serializer
@@ -40,8 +52,28 @@ public abstract class Assignment
     public Assignment() {
 
     }
-    
-    public Assignment(AssignmentType assignmentType) { 
+
+    @OneToOne
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @JoinColumn(name="section_fk", insertable = false, updatable = false)
+    public Section getSection() {
+        return section;
+    }
+
+    public void setSection(Section section) {
+        this.section = section;
+    }
+
+    @Column(name = "section_fk")
+    public Long getSectionFK() {
+        return sectionFK;
+    }
+
+    public void setSectionFK(Long sectionFK) {
+        this.sectionFK = sectionFK;
+    }
+
+    public Assignment(AssignmentType assignmentType) {
         this.type = assignmentType;
     }
     
@@ -71,7 +103,21 @@ public abstract class Assignment
             this.availablePoints = assignment.availablePoints;
         }
     }
-    
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    @Column(name = "assignment_id")
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Override
+    @Column(name = "assignment_name")
+    public String getName() {
+        return super.getName();
+    }
+
+    @Column(name = "type_fk")
     public AssignmentType getType() {
         return this.type;
     }
@@ -80,6 +126,7 @@ public abstract class Assignment
         this.type = type;
     }
 
+    @Column(name = "due_date")
     public Date getDueDate() {
         return dueDate;
     }
@@ -88,6 +135,7 @@ public abstract class Assignment
         this.dueDate = dueDate;
     }
 
+    @Column(name = "available_points")
     public Long getAvailablePoints() {
         return availablePoints;
     }

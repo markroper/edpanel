@@ -5,6 +5,12 @@ import java.util.Date;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
+
+import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * A term represents one segment of an {@link com.scholarscore.models.SchoolYear}.
@@ -16,22 +22,40 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author markroper
  *
  */
+@Entity(name = "term")
+@Table(name = "term")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Term extends ApiModel implements Serializable, IApiModel<Term>{
     protected Date startDate;
     protected Date endDate;
-    
+    protected SchoolYear schoolYear;
+
     public Term() {
         
     }
     
     public Term(Term year) {
         super(year);
+        this.schoolYear = year.schoolYear;
         this.startDate = year.startDate;
         this.endDate = year.endDate;
     }
-    
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name = "term_id")
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Override
+    @Column(name = "term_name")
+    public String getName() {
+        return super.getName();
+    }
+
+    @Column(name = "term_start_date")
     public Date getStartDate() {
         return startDate;
     }
@@ -40,8 +64,20 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         this.startDate = startDate;
     }
 
+    @Column(name = "term_end_date")
     public Date getEndDate() {
         return endDate;
+    }
+
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @JoinColumn(name="school_year_fk")
+    public SchoolYear getSchoolYear() {
+        return schoolYear;
+    }
+
+    public void setSchoolYear(SchoolYear schoolYear) {
+        this.schoolYear = schoolYear;
     }
 
     public void setEndDate(Date endDate) {
@@ -56,6 +92,9 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         }
         if(null == this.endDate) {
             this.endDate = mergeFrom.endDate;
+        }
+        if (null == this.schoolYear) {
+            this.schoolYear = mergeFrom.schoolYear;
         }
     }
     

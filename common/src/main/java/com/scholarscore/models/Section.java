@@ -6,6 +6,12 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
+
+import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * A Section is a temporal instance of a Course.  Where a course defines that which is to be taught, a Section has
@@ -15,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author markroper
  *
  */
+@Entity(name = "section")
+@Table(name = "section")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Section extends ApiModel implements Serializable, IApiModel<Section> {
@@ -22,6 +30,8 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected Date endDate;
     protected String room;
     protected GradeFormula gradeFormula;
+
+    protected Term term;
     protected transient Course course;
     protected transient List<Student> enrolledStudents;
     protected transient List<Assignment> assignments;
@@ -52,6 +62,22 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         gradeFormula = sect.gradeFormula;
     }
 
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    @Column(name = "section_id")
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Override
+    @Column(name = "section_name")
+    public String getName() {
+        return super.getName();
+    }
+
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @JoinColumn(name="course_fk")
     public Course getCourse() {
         return course;
     }
@@ -60,6 +86,19 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.course = course;
     }
 
+
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @JoinColumn(name="term_fk")
+    public Term getTerm() {
+        return term;
+    }
+
+    public void setTerm(Term term) {
+        this.term = term;
+    }
+
+    @Column(name = "section_start_date")
     public Date getStartDate() {
         return startDate;
     }
@@ -68,6 +107,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.startDate = startDate;
     }
 
+    @Column(name = "section_end_date")
     public Date getEndDate() {
         return endDate;
     }
@@ -76,6 +116,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.endDate = endDate;
     }
 
+    @Column(name = "room")
     public String getRoom() {
         return room;
     }
@@ -84,6 +125,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.room = room;
     }
 
+    @Transient
     public List<Student> getEnrolledStudents() {
         return enrolledStudents;
     }
@@ -104,7 +146,8 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         }
         return student;
     }
-    
+
+    @Transient
     public List<Assignment> getAssignments() {
         return assignments;
     }
@@ -126,6 +169,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.assignments = assignments;
     }
 
+    @Transient
     public GradeFormula getGradeFormula() {
         return gradeFormula;
     }

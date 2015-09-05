@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.scholarscore.models.SchoolYear;
+import com.scholarscore.models.Term;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,82 +16,74 @@ import com.scholarscore.api.persistence.mysql.DbConst;
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.TermMapper;
 import com.scholarscore.models.Term;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 
-public class TermJdbc extends EnhancedBaseJdbc<Term> implements EntityPersistence<Term> {
-    private static String INSERT_TERM_SQL = "INSERT INTO `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.TERM_TABLE + "` " +
-            "(" + DbConst.TERM_NAME_COL + ", " + DbConst.SCHOOL_YEAR_FK_COL + ", " + 
-            DbConst.TERM_START_DATE_COL + ", " + DbConst.TERM_END_DATE_COL + ")" +
-            " VALUES (:" + DbConst.TERM_NAME_COL + ", :" + DbConst.SCHOOL_YEAR_FK_COL + 
-            ", :" + DbConst.TERM_START_DATE_COL + ", :" + DbConst.TERM_END_DATE_COL + ")";
-    
-    private static String UPDATE_TERM_SQL = 
-            "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.TERM_TABLE + "` " + 
-            "SET `" + DbConst.TERM_NAME_COL + "`= :" + DbConst.TERM_NAME_COL + ", `" +
-            DbConst.SCHOOL_YEAR_FK_COL + "`= :" + DbConst.SCHOOL_YEAR_FK_COL + ", `" +
-            DbConst.TERM_START_DATE_COL + "`= :" + DbConst.TERM_START_DATE_COL + ", `" +
-            DbConst.TERM_END_DATE_COL + "`= :" + DbConst.TERM_END_DATE_COL + " " +
-            "WHERE `" + DbConst.TERM_ID_COL + "`= :" + DbConst.TERM_ID_COL + "";
+import javax.transaction.Transactional;
 
-    private static String SELECT_ALL_TERMS_SQL = "SELECT * FROM `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.TERM_TABLE + "` " +
-            "WHERE `" + DbConst.SCHOOL_YEAR_FK_COL + "` = :" + DbConst.SCHOOL_YEAR_FK_COL;
-    
-    private static String SELECT_TERM_SQL = SELECT_ALL_TERMS_SQL + 
-            " AND `" + DbConst.TERM_ID_COL + "`= :" + DbConst.TERM_ID_COL;
-    
+@Transactional
+public class TermJdbc implements EntityPersistence<Term> {
+    @Autowired
+    private HibernateTemplate hibernateTemplate;
+
+    private EntityPersistence<SchoolYear> schoolYearPersistence;
+
+    public TermJdbc() {
+    }
+
+    public TermJdbc(HibernateTemplate template) {
+        this.hibernateTemplate = template;
+    }
+
+    public void setHibernateTemplate(HibernateTemplate template) {
+        this.hibernateTemplate = template;
+    }
+
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<Term> selectAll(long schoolYearId) {
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.SCHOOL_YEAR_FK_COL, new Long(schoolYearId));
-        return super.selectAll(params, SELECT_ALL_TERMS_SQL);
+        return (Collection<Term>)hibernateTemplate.findByNamedParam("from term t where t.schoolYear.id = :id", "id", schoolYearId);
     }
 
     @Override
     public Term select(long schoolYearId, long termId) {
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.SCHOOL_YEAR_FK_COL, new Long(schoolYearId));
-        params.put(DbConst.TERM_ID_COL, new Long(termId));
-        return super.select(params, SELECT_TERM_SQL);
+        return hibernateTemplate.get(Term.class, termId);
     }
 
     @Override
     public Long insert(long schoolYearId, Term term) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.TERM_NAME_COL, term.getName());
-        params.put(DbConst.SCHOOL_YEAR_FK_COL, new Long(schoolYearId));
-        params.put(DbConst.TERM_START_DATE_COL, DbConst.resolveTimestamp(term.getStartDate()));
-        params.put(DbConst.TERM_END_DATE_COL, DbConst.resolveTimestamp(term.getEndDate()));
-        jdbcTemplate.update(
-                INSERT_TERM_SQL, 
-                new MapSqlParameterSource(params), 
-                keyHolder);
-        return keyHolder.getKey().longValue();
+        injectSchoolYear(schoolYearId, term);
+        Term out = hibernateTemplate.merge(term);
+        return out.getId();
+    }
+
+    private void injectSchoolYear(long schoolYearId, Term term) {
+        if (null == term.getSchoolYear()) {
+            SchoolYear year = schoolYearPersistence.select(0L, schoolYearId);
+            term.setSchoolYear(year);
+        }
     }
 
     @Override
     public Long update(long schoolYearId, long termId, Term term) {
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.TERM_NAME_COL, term.getName());
-        params.put(DbConst.SCHOOL_YEAR_FK_COL, new Long(schoolYearId));
-        params.put(DbConst.TERM_START_DATE_COL, DbConst.resolveTimestamp(term.getStartDate()));
-        params.put(DbConst.TERM_END_DATE_COL, DbConst.resolveTimestamp(term.getEndDate()));
-        params.put(DbConst.TERM_ID_COL, new Long(termId));
-        jdbcTemplate.update(
-                UPDATE_TERM_SQL, 
-                new MapSqlParameterSource(params));
+        injectSchoolYear(schoolYearId, term);
+        hibernateTemplate.merge(term);
         return termId;
     }
 
     @Override
-    public RowMapper<Term> getMapper() {
-        return new TermMapper();
+    public Long delete(long id) {
+        Term term = select(0L, id);
+        if (null != term) {
+            hibernateTemplate.delete(term);
+        }
+        return id;
     }
 
-    @Override
-    public String getTableName() {
-        return DbConst.TERM_TABLE;
+    public EntityPersistence<SchoolYear> getSchoolYearPersistence() {
+        return schoolYearPersistence;
     }
 
+    public void setSchoolYearPersistence(EntityPersistence<SchoolYear> schoolYearPersistence) {
+        this.schoolYearPersistence = schoolYearPersistence;
+    }
 }
