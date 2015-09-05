@@ -15,8 +15,6 @@
                      http://www.springframework.org/schema/util/spring-util.xsd">
 
 
-    <import resource="classpath:persistence.xml"/>
-
     <import resource="classpath:/dataSource.xml"/>
     
     <mvc:interceptors>
