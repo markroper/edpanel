@@ -10,10 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.AssignmentType;
 import com.scholarscore.models.AttendanceAssignment;
+import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.Gender;
 import com.scholarscore.models.GradeFormula;
@@ -25,6 +25,7 @@ import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.Teacher;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.query.Measure;
 
 /**
  * Generates arbitrary school data for use in testing and developing the UI.
@@ -34,7 +35,6 @@ import com.scholarscore.models.Term;
  */
 public class SchoolDataFactory {
     private final static long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
-    private static final int NUM_STUDENTS = 10;
     private static final String WHITE = "White";
     private static final String BLACK = "Black";
     private static final String AMERICAN_INDIAN = "American Indian";
@@ -184,7 +184,10 @@ public class SchoolDataFactory {
      * @param courses
      * @return
      */
-    public static Map<Long, List<Section>> generateSections(Collection<Term> terms, List<Course> courses) {
+    public static Map<Long, List<Section>> generateSections(
+            Collection<Term> terms, 
+            List<Course> courses, 
+            List<Student> students) {
         //Static set of grade formulas
         List<GradeFormula> gradeFormulas = new ArrayList<GradeFormula>();
         Map<AssignmentType, Integer> weight1 = new HashMap<AssignmentType, Integer>() {{
@@ -213,15 +216,25 @@ public class SchoolDataFactory {
             add("105"); add("106");
         }};
         int numRooms = rooms.size();
+        int sectionsCreated = 0;
+        int studentListMidwayPoint = students.size() / 2;
         Map<Long, List<Section>> sectionMap = new HashMap<Long, List<Section>>();
         for(Term t : terms) {
             for(Course c : courses) {
+                sectionsCreated++;
                 Section section = new Section(
                         t.getStartDate(), 
                         t.getEndDate(), 
                         rooms.get(new Random().nextInt(numRooms)), 
                         gradeFormulas.get(new Random().nextInt(gradeFormulas.size())));
                 section.setCourse(c);
+                section.setEnrolledStudents(new ArrayList<Student>());
+                //Add an alternating half of students to each section
+                for(int i = studentListMidwayPoint * (sectionsCreated % 2); 
+                        i < students.size() - studentListMidwayPoint * ((sectionsCreated + 1) % 2); 
+                        i++) {
+                    section.getEnrolledStudents().add(students.get(i));
+                }
                 if(null == sectionMap.get(t.getId())) {
                     sectionMap.put(t.getId(), new ArrayList<Section>());
                 }
@@ -305,10 +318,14 @@ public class SchoolDataFactory {
             for(Student s: students) {
                 StudentAssignment sa = new StudentAssignment();
                 sa.setAssignment(a);
-                Boolean completed = new Random().nextBoolean();
+                Boolean completed = true;
+                if(a.getId() % 2 == 0 && a.getId() % 3 == 0) {
+                    completed = new Random().nextBoolean();
+                }
                 sa.setCompleted(completed);
                 if(null != a.getAvailablePoints() && a.getAvailablePoints() > 0 && completed) {
-                    Integer awardedInt = new Random().nextInt((int)(long)a.getAvailablePoints());
+                    Integer awardedInt = new Random().nextInt(40);
+                    awardedInt = ((int)(long)a.getAvailablePoints()) - awardedInt;
                     sa.setAwardedPoints(awardedInt.longValue());
                     sa.setCompletionDate(a.getDueDate());
                 }
@@ -317,5 +334,40 @@ public class SchoolDataFactory {
             }
         }
         return assIdToStudAss;
+    }
+    
+    /**
+     * Generates a map of student ID to a list of behavior events associated with the student having that 
+     * student ID.
+     * @param students
+     * @param teachers
+     * @param dates
+     * @return
+     */
+    public static Map<Long, ArrayList<Behavior>> generateBehaviorEvents(
+            Collection<Student> students, 
+            List<Teacher> teachers, 
+            Date beginDate,
+            Date endDate) {
+        int numDates = (int)( (endDate.getTime() - beginDate.getTime()) / (1000 * 60 * 60 * 24));
+        Map<Long, ArrayList<Behavior>> studentBehaviors = new HashMap<Long, ArrayList<Behavior>>();
+        for(Student s: students) {
+            int numEventsToProduce = new Random().nextInt(numDates/2);
+            studentBehaviors.put(s.getId(), new ArrayList<Behavior>());
+            for(int i = 0; i < numEventsToProduce; i++) {
+                int teacherIndex = new Random().nextInt(teachers.size() - 1);
+                Teacher t = teachers.get(teacherIndex);
+                long inputTs = beginDate.getTime() + ((long) (Math.random() * (endDate.getTime() - beginDate.getTime())));
+                inputTs = (inputTs / 1000L) * 1000L;
+                Date d = new Date(inputTs);
+                Behavior b = new Behavior();
+                b.setBehaviorDate(d);
+                b.setBehaviorCategory(Measure.DEMERIT.name());
+                b.setTeacher(t);
+                b.setStudent(s);
+                studentBehaviors.get(s.getId()).add(b);
+            }
+        }
+        return studentBehaviors;
     }
 }

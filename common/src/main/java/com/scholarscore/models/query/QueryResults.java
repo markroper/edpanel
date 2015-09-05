@@ -4,7 +4,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 @SuppressWarnings("serial")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class QueryResults implements Serializable {
     List<Record> records;
     List<Object> fieldInfo;
@@ -12,6 +15,10 @@ public class QueryResults implements Serializable {
     
     public QueryResults() {
         
+    }
+    
+    public QueryResults(List<Record> records) {
+        this.records = records;
     }
 
     public List<Record> getRecords() {

@@ -16,6 +16,16 @@ public interface SectionManager {
      * @return
      */
     public ServiceResponse<Collection<Section>> getAllSections(long schoolId, long yearId, long termId);
+    
+    /**
+     * Return all sections within a term for a given student
+     * @param studentId ID of student
+     * @param schoolId ID of parent school
+     * @param yearId ID of parent year
+     * @param termId the ID of the term
+     * @return
+     */
+    public ServiceResponse<Collection<Section>> getAllSections(long studentId, long schoolId, long yearId, long termId);
 
     /**
      * Returns ErrorCodes.OK if a section exists and otherwise returns a descriptive error code

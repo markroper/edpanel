@@ -59,11 +59,23 @@ task integrationCodeCoverageReport(type: JacocoReport) {
     }
 }
 
+def loadProperty(pathRelToProjectDir, property) {
+    Properties props = new Properties()
+    props.load(new FileInputStream(projectDir.toString() + pathRelToProjectDir))
+    return props.get(property).toString()
+}
+
 task resetDatabase(type: Exec) {
     group 'Database'
     description 'drops the database and re-adds an empty one'
 
-    commandLine 'mysql', '-uwarehouse', '-pt3achTh3Childr3n'
+    def database_user = loadProperty("/warehouse/src/main/resources/database.properties", "database.user");
+    def database_pass = loadProperty("/warehouse/src/main/resources/database.properties", "database.pass");
+    def database_host = loadProperty("/warehouse/src/main/resources/database.properties", "database.host");
+    def database_port = loadProperty("/warehouse/src/main/resources/database.properties", "database.port");
+    def database_name = loadProperty("/warehouse/src/main/resources/database.properties", "database.name");
+
+    commandLine 'mysql', '-u' + database_user, '-p' + database_pass, '--port=' + database_port, '--host=' + database_host
     standardInput file("${project.rootDir.absolutePath}/database/cleanMySqlDatabase.sql").newInputStream()
 }
 
@@ -71,7 +83,13 @@ task refillDatabase(type: Exec, dependsOn: resetDatabase) {
     group 'Database'
     description 'creates everything needed within the database'
 
-    commandLine 'mysql', '-uwarehouse', '-pt3achTh3Childr3n'
+    def database_user = loadProperty("/warehouse/src/main/resources/database.properties", "database.user");
+    def database_pass = loadProperty("/warehouse/src/main/resources/database.properties", "database.pass");
+    def database_host = loadProperty("/warehouse/src/main/resources/database.properties", "database.host");
+    def database_port = loadProperty("/warehouse/src/main/resources/database.properties", "database.port");
+    def database_name = loadProperty("/warehouse/src/main/resources/database.properties", "database.name");
+
+    commandLine 'mysql', '-u' + database_user, '-p' + database_pass, '--port=' + database_port, '--host=' + database_host
     standardInput file("${project.rootDir.absolutePath}/database/createTableDDL.sql").newInputStream()
 }
 
@@ -79,3 +97,4 @@ task refillDatabase(type: Exec, dependsOn: resetDatabase) {
 integrationCodeCoverageReport.dependsOn {
       project(':warehouse').integrationLocalWithContainer
 }
+

@@ -11,6 +11,10 @@ public class MeasureSqlSerializerFactory {
                 return new CourseGradeSqlSerializer();
             case HW_COMPLETION:
                 return new HomeworkCompletionSqlSerializer();
+            case ATTENDANCE:
+                return new AttendanceSqlSerializer();
+            case DEMERIT:
+                return new DemeritSqlSerializer();
             default:
                 return null;
         }

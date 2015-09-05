@@ -14,11 +14,14 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.AggregateMeasure;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
+import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.dimension.SchoolDimension;
 import com.scholarscore.models.query.dimension.SectionDimension;
@@ -26,9 +29,11 @@ import com.scholarscore.models.query.dimension.StudentDimension;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
+import com.scholarscore.models.query.expressions.operands.MeasureOperand;
 import com.scholarscore.models.query.expressions.operands.NumericOperand;
 import com.scholarscore.models.query.expressions.operators.BinaryOperator;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
+import com.scholarscore.models.query.measure.BehaviorMeasure;
 
 @Test(groups = { "unit" })
 public class QuerySqlGeneratorUnitTest {
@@ -76,10 +81,9 @@ public class QuerySqlGeneratorUnitTest {
                 + "WHERE  ( ( '2014-09-01 00:00:00.0'  >=  section.section_start_date )  "
                 + "AND  ( '2015-09-01 00:00:00.0'  <=  section.section_start_date ) ) "
                 + "GROUP BY student.birth_date, student.federal_ethnicity, school.school_address";
-       
         Query assignmentGradesQuery  = new Query();
         ArrayList<AggregateMeasure> assginmentMeasures = new ArrayList<>();
-        assginmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVERAGE));
+        assginmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVG));
         assignmentGradesQuery.setAggregateMeasures(assginmentMeasures);
         assignmentGradesQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
         Expression assignmentWhereClause = new Expression(
@@ -87,17 +91,78 @@ public class QuerySqlGeneratorUnitTest {
                 ComparisonOperator.EQUAL, 
                 new NumericOperand(4));
         assignmentGradesQuery.setFilter(assignmentWhereClause);
-        String assignmentGradesQuerySql = "SELECT student.student_name, AVERAGE(student_assignment.awarded_points / assignment.available_points) "
+        String assignmentGradesQuerySql = "SELECT student.student_name, AVG(student_assignment.awarded_points / assignment.available_points) "
                 + "FROM student "
                 + "LEFT OUTER JOIN student_assignment ON student.student_id = student_assignment.student_fk "
                 + "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id "
                 + "LEFT OUTER JOIN section ON section.section_id = student_assignment.section_fk "
                 + "WHERE  ( section.section_id  =  4 ) "
                 + "GROUP BY student.student_name";
-       
+        Query homeworkCompletionQuery  = new Query();
+        ArrayList<AggregateMeasure> homeworkMeasures = new ArrayList<>();
+        homeworkMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
+        homeworkMeasures.add(new AggregateMeasure(Measure.ATTENDANCE, AggregateFunction.SUM));
+        homeworkCompletionQuery.setAggregateMeasures(homeworkMeasures);
+        homeworkCompletionQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
+        Expression termClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.TERM, SectionDimension.ID)), 
+                ComparisonOperator.EQUAL, 
+                new NumericOperand(1));
+        Expression yearClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.YEAR, SectionDimension.ID)), 
+                ComparisonOperator.EQUAL, 
+                new NumericOperand(1));
+        Expression sectionClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)), 
+                ComparisonOperator.NOT_EQUAL, 
+                new NumericOperand(0));
+        Expression comb1 = new Expression(termClause, BinaryOperator.AND, yearClause);
+        Expression comb2 = new Expression(comb1, BinaryOperator.AND, sectionClause);
+        homeworkCompletionQuery.setFilter(comb2);
+        String homeworkSql = "SELECT student.student_id, AVG( if(assignment.type_fk = 'HOMEWORK', if(student_assignment.completed is true, 1, 0), null)), "
+                + "SUM( if(assignment.type_fk = 'ATTENDANCE', if(student_assignment.completed is true, 0, 1), null)) "
+                + "FROM student "
+                + "LEFT OUTER JOIN student_assignment ON student.student_id = student_assignment.student_fk "
+                + "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id "
+                + "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk "
+                + "LEFT OUTER JOIN term ON term.term_id = section.term_fk "
+                + "LEFT OUTER JOIN school_year ON school_year.school_year_id = term.school_year_fk "
+                + "WHERE  ( ( ( term.term_id  =  1 )  AND  ( school_year.school_year_id  =  1 ) )  "
+                + "AND  ( section.section_id  !=  0 ) ) "
+                + "GROUP BY student.student_id";
+        
+        
+        Query behaviorQuery = new Query();
+        ArrayList<AggregateMeasure> behaviorMeasures = new ArrayList<>();
+        behaviorMeasures.add(new AggregateMeasure(Measure.DEMERIT, AggregateFunction.SUM));
+        behaviorQuery.setAggregateMeasures(behaviorMeasures);
+        behaviorQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
+        Expression studentIdClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.STUDENT, StudentDimension.ID)), 
+                ComparisonOperator.EQUAL,
+                new NumericOperand(1L));
+        Date afterDate = null;
+        try {
+            afterDate = dateFormat.parse("01-09-2014");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Expression dateClause = new Expression(
+                new MeasureOperand(new MeasureField(Measure.DEMERIT, BehaviorMeasure.DATE)),
+                ComparisonOperator.GREATER_THAN,
+                new DateOperand(afterDate));
+        Expression topClause = new Expression(dateClause, BinaryOperator.AND, studentIdClause);
+        behaviorQuery.setFilter(topClause);
+        String behaviorSql = "SELECT student.student_id, SUM(if(behavior.category = 'DEMERIT', 1, 0)) "
+                + "FROM student LEFT OUTER JOIN behavior ON student.student_id = behavior.student_fk "
+                + "WHERE  ( ( behavior.date  >  '2014-09-01 00:00:00.0' )  "
+                + "AND  ( student.student_id  =  1 ) ) "
+                + "GROUP BY student.student_id";
         return new Object[][] {
                 { "Course Grade query", courseGradeQuery, courseGradeQuerySql }, 
                 { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql }, 
+                { "Homework query", homeworkCompletionQuery, homeworkSql },
+                { "Behavior query", behaviorQuery, behaviorSql}
         };
     }
     
