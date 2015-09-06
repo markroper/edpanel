@@ -1,5 +1,6 @@
 apply plugin: 'war'
 apply plugin: 'com.bmuschko.tomcat'
+apply plugin: 'com.bmuschko.cargo'
 
 buildscript {
     repositories {
@@ -72,6 +73,7 @@ integrationLocalWithContainer.doFirst {
     integrationLocal.execute()
 }
 
+// local server deployment
 task appRun() << {
     tomcat.daemon = false
     tomcatRunWar.execute()
@@ -87,6 +89,18 @@ task appRunDebug() << {
     def console = System.console()
     if (console) {
         console.readLine("PRESS CTRL+C or RETURN to abort execution of tomcat container");
+    }
+}
+
+// cargo not used in development, only for deploying to running tomcat on 'hosted' machine
+cargo {
+    containerId = 'tomcat7x'
+
+    remote {
+        hostname = 'localhost'
+        port = 8090
+        username = 'cargo'
+        password = '0BxLrz7zG4dqDX2q6vi4'
     }
 }
 
