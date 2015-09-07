@@ -92,6 +92,19 @@ task appRunDebug() << {
     }
 }
 
+// synthetic data gen
+task syntheticDataGen(type: Test) {
+    group 'datagen'
+    description 'runs the synthetic data generation against the local container'
+    useTestNG() {
+        useDefaultListeners = true
+        def suiteFile = getFileByPattern(new File("$projectDir/src/test/resources/"), ".*-datagen.xml", "$projectDir")
+        if (suiteFile) options.suites(suiteFile)
+    }
+    testLogging.showStandardStreams = true
+}
+
+
 // cargo not used in development, only for deploying to running tomcat on 'hosted' machine
 cargo {
     containerId = 'tomcat7x'
