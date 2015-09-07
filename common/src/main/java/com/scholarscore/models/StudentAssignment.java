@@ -17,7 +17,7 @@ import javax.persistence.*;
  * @author markroper
  *
  */
-@Entity(name = "student_assignment")
+@Entity(name = ColumnConsts.STUDENT_ASSIGNMENT_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentAssignment extends ApiModel implements Serializable, WeightedGradable, IApiModel<StudentAssignment> {
@@ -62,7 +62,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         }
     }
 
-    @Column(name = "completed")
+    @Column(name = ColumnConsts.STUDENT_ASSIGNMENT_COMPLETED)
     public Boolean getCompleted() {
         return completed;
     }
@@ -73,13 +73,13 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
 
     @OneToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name="assignment_fk")
+    @JoinColumn(name=ColumnConsts.ASSIGNMENT_FK)
     public Assignment getAssignment() {
         return assignment;
     }
 
     @Override
-    @Column(name = "awarded_points")
+    @Column(name = ColumnConsts.STUDENT_ASSIGNMENT_AWARDED_POINTS)
     public Long getAwardedPoints() {
         return awardedPoints != null ? awardedPoints : null;
     }
@@ -111,7 +111,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
 
     @OneToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name="student_fk")
+    @JoinColumn(name=ColumnConsts.STUDENT_FK)
     public Student getStudent() {
         return student;
     }
@@ -120,7 +120,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         this.student = student;
     }
 
-    @Column(name = "completion_date")
+    @Column(name = ColumnConsts.STUDENT_ASSIGNMENT_COMPLETION_DATE)
     public Date getCompletionDate() {
         return completionDate;
     }
@@ -131,13 +131,13 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name = "student_assignment_id")
+    @Column(name = ColumnConsts.STUDENT_ASSIGNMENT_ID)
     public Long getId() {
         return super.getId();
     }
 
     @Override
-    @Column(name = "student_assignment_name")
+    @Column(name = ColumnConsts.STUDENT_ASSIGNMENT_NAME)
     public String getName() {
         return super.getName();
     }
