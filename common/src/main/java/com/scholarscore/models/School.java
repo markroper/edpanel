@@ -2,7 +2,6 @@ package com.scholarscore.models;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.annotations.Cascade;
@@ -44,12 +43,12 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name = "school_id")
+    @Column(name = ColumnConsts.SCHOOL_ID)
     public Long getId() {
         return super.getId();
     }
 
-    @Column(name = "school_name")
+    @Column(name = ColumnConsts.SCHOOL_NAME)
     public String getName() { return super.getName(); }
 
     @Transient
@@ -118,7 +117,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         return result;
     }
 
-    @Column(name = "sourceSystemId")
+    @Column(name = ColumnConsts.SCHOOL_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
         return sourceSystemId;
     }
@@ -127,7 +126,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         this.sourceSystemId = sourceSystemId;
     }
 
-    @Column(name = "principal_email")
+    @Column(name = ColumnConsts.SCHOOL_PRINCIPAL_EMAIL)
     public String getPrincipalEmail() {
         return principalEmail;
     }
@@ -136,7 +135,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         this.principalEmail = principalEmail;
     }
 
-    @Column(name = "principal_name")
+    @Column(name = ColumnConsts.SCHOOL_PRINCIPAL_NAME)
     public String getPrincipalName() {
         return principalName;
     }
@@ -145,7 +144,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         this.principalName = principalName;
     }
 
-    @Column(name = "main_phone")
+    @Column(name = ColumnConsts.SCHOOL_MAIN_PHONE)
     public String getMainPhone() {
         return mainPhone;
     }
@@ -157,7 +156,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name="school_address_fk")
+    @JoinColumn(name=ColumnConsts.SCHOOL_ADDRESS_FK)
     public Address getAddress() {
         return address;
     }

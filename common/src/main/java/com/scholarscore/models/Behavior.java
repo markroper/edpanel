@@ -19,8 +19,8 @@ import java.util.Objects;
  * Date: 8/8/15
  * Time: 3:21 PM
  */
-@Entity(name = "behavior")
-@Table(name = "behavior")
+@Entity(name = ColumnConsts.BEHAVIOR_TABLE)
+@Table(name = ColumnConsts.BEHAVIOR_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Behavior extends ApiModel implements IApiModel<Behavior> {
@@ -55,13 +55,13 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name = "behavior_id")
+    @Column(name = ColumnConsts.BEHAVIOR_ID)
     public Long getId() {
         return super.getId();
     }
 
     @Override
-    @Column(name = "name")
+    @Column(name = ColumnConsts.BEHAVIOR_NAME)
     public String getName() {
         return super.getName();
     }
@@ -87,7 +87,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
         }
     }
 
-    @Column(name = "remote_student_id")
+    @Column(name = ColumnConsts.BEHAVIOR_REMOTE_STUDENT_ID)
     public String getRemoteStudentId() {
         return remoteStudentId;
     }
@@ -96,7 +96,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
         this.remoteStudentId = remoteStudentId;
     }
 
-    @Column(name = "date")
+    @Column(name = ColumnConsts.BEHAVIOR_DATE)
     public Date getBehaviorDate() {
         return behaviorDate;
     }
@@ -105,7 +105,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
         this.behaviorDate = behaviorDate;
     }
 
-    @Column(name = "category")
+    @Column(name = ColumnConsts.BEHAVIOR_CATEGORY)
     public String getBehaviorCategory() {
         return behaviorCategory;
     }
@@ -114,7 +114,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
         this.behaviorCategory = behaviorCategory;
     }
 
-    @Column(name = "point_value")
+    @Column(name = ColumnConsts.BEHAVIOR_POINT_VALUE)
     public String getPointValue() {
         return pointValue;
     }
@@ -123,7 +123,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
         this.pointValue = pointValue;
     }
 
-    @Column(name = "roster")
+    @Column(name = ColumnConsts.BEHAVIOR_ROSTER)
     public String getRoster() {
         return roster;
     }
@@ -134,7 +134,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name="student_fk", nullable = true)
+    @JoinColumn(name=ColumnConsts.STUDENT_FK, nullable = true)
     public Student getStudent() {
         return student;
     }
@@ -145,7 +145,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name="teacher_fk", nullable = true)
+    @JoinColumn(name=ColumnConsts.TEACHER_FK, nullable = true)
     public Teacher getTeacher() {
         return teacher;
     }
