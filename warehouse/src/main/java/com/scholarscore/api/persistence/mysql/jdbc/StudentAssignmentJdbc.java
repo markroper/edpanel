@@ -14,7 +14,6 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import com.scholarscore.api.persistence.mysql.DbConst;
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
-import com.scholarscore.api.persistence.mysql.mapper.StudentAssignmentMapper;
 import com.scholarscore.models.StudentAssignment;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
