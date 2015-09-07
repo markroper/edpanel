@@ -1,11 +1,16 @@
 package com.scholarscore.models;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 
@@ -26,10 +31,15 @@ import javax.persistence.Table;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Section extends ApiModel implements Serializable, IApiModel<Section> {
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    
     protected Date startDate;
     protected Date endDate;
     protected String room;
+    //For jackson & for java 
     protected GradeFormula gradeFormula;
+    //For hibernate
+    protected String gradeFormulaString;
 
     protected Term term;
     protected transient Course course;
@@ -124,6 +134,23 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     public void setRoom(String room) {
         this.room = room;
     }
+    
+    @JsonIgnore
+    @Column(name = "grade_formula")
+    public String getGradeFormulaString() {
+        return this.gradeFormulaString;
+    }
+
+    @JsonIgnore
+    public void setGradeFormulaString(String string) {
+        try {
+            this.gradeFormulaString = string;
+            this.gradeFormula = MAPPER.readValue( string, GradeFormula.class);
+        } catch (IOException e) {
+            this.gradeFormula =  null;
+            this.gradeFormulaString = null;
+        }
+    }
 
     @Transient
     public List<Student> getEnrolledStudents() {
@@ -175,7 +202,13 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     }
 
     public void setGradeFormula(GradeFormula gradeFormula) {
-        this.gradeFormula = gradeFormula;
+        try {
+            this.gradeFormula = gradeFormula;
+            this.gradeFormulaString = MAPPER.writeValueAsString(gradeFormula);
+        } catch (JsonProcessingException e) {
+            this.gradeFormulaString = null;
+            this.gradeFormula = null;
+        }
     }
 
     @Override
