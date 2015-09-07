@@ -15,7 +15,7 @@ import javax.persistence.*;
  * @see Assignment
  *
  */
-@Entity(name = "assignment")
+@Entity
 @Table(name = "assignment")
 @DiscriminatorValue(value = "GradedAssignment")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)

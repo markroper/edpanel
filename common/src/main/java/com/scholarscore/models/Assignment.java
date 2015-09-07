@@ -20,7 +20,7 @@ import javax.persistence.Table;
  * @author markroper
  *
  */
-@Entity
+@Entity(name = "assignment")
 @Table(name = "assignment")
 @DiscriminatorColumn(name="assignmentClass", discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
