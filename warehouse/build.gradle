@@ -10,7 +10,6 @@ buildscript {
 
     dependencies {
         classpath 'com.bmuschko:gradle-cargo-plugin:2.1.1'
-        classpath 'org.akhikhl.gretty:gretty:1.1.8'
         classpath 'com.bmuschko:gradle-tomcat-plugin:2.2.2'
     }
 
@@ -30,6 +29,50 @@ tomcat {
     contextPath = 'warehouse'
     daemon = true
 }
+
+cargo {
+    containerId = 'tomcat7x'
+    port = local_https_portnum
+
+    def tomcatVersion = '7.0.64'
+
+    local {
+        installer {
+            installUrl = "http://apache.osuosl.org/tomcat/tomcat-7/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
+            downloadDir = file("$buildDir/download")
+            extractDir = file("$buildDir/extract")
+        }
+        containerProperties {
+            // use a non-standard ajp port (not 9099) so as to not conflict with other tomcat instances
+            property 'cargo.tomcat.ajp.port', 9199 
+            property 'cargo.servlet.port', local_https_portnum 
+            property 'cargo.tomcat.httpSecure', 'true'
+            property 'cargo.protocol', 'https'
+            property 'cargo.tomcat.connector.sslProtocol', 'TLS'
+            property 'cargo.tomcat.connector.keystoreFile', "$projectDir/ssl/tomcat_keystore"
+            property 'cargo.tomcat.connector.keystorePass', 'changeit'
+            property 'cargo.tomcat.connector.clientAuth', 'false'
+        }
+        outputFile = file("build/catalina.log")
+        timeout = 60000
+    }
+
+    remote {
+        hostname = 'localhost'
+        port = local_portnum
+        username = 'cargo'
+        password = '0BxLrz7zG4dqDX2q6vi4'
+    }
+}
+
+task appRunDebug(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal) { 
+    cargo { 
+        local { 
+            jvmArgs "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
+        }
+    }
+}
+
 
 //Integration test suite
 def getFileByPattern(File dir, String pat, String stripDir) {
@@ -73,24 +116,7 @@ integrationLocalWithContainer.doFirst {
     integrationLocal.execute()
 }
 
-// local server deployment
-task appRun() << {
-    tomcat.daemon = false
-    tomcatRunWar.execute()
-    def console = System.console()
-    if (console) {
-        console.readLine("PRESS CTRL+C or RETURN to abort execution of tomcat container");
-    }
-}
-
-task appRunDebug() << {
-    tomcat.daemon = false
-    tomcatRunWar.execute()
-    def console = System.console()
-    if (console) {
-        console.readLine("PRESS CTRL+C or RETURN to abort execution of tomcat container");
-    }
-}
+task appRun(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal) { }
 
 // synthetic data gen
 task syntheticDataGen(type: Test) {
@@ -102,19 +128,6 @@ task syntheticDataGen(type: Test) {
         if (suiteFile) options.suites(suiteFile)
     }
     testLogging.showStandardStreams = true
-}
-
-
-// cargo not used in development, only for deploying to running tomcat on 'hosted' machine
-cargo {
-    containerId = 'tomcat7x'
-
-    remote {
-        hostname = 'localhost'
-        port = 8090
-        username = 'cargo'
-        password = '0BxLrz7zG4dqDX2q6vi4'
-    }
 }
 
 //Dependencies section:
