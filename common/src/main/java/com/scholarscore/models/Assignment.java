@@ -20,8 +20,8 @@ import javax.persistence.Table;
  * @author markroper
  *
  */
-@Entity(name = "assignment")
-@Table(name = "assignment")
+@Entity(name = ColumnConsts.ASSIGNMENT_TABLE)
+@Table(name = ColumnConsts.ASSIGNMENT_TABLE)
 @DiscriminatorColumn(name="assignmentClass", discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @SuppressWarnings("serial")
@@ -55,7 +55,7 @@ public abstract class Assignment
 
     @OneToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name="section_fk", insertable = false, updatable = false)
+    @JoinColumn(name=ColumnConsts.SECTION_FK, insertable = false, updatable = false)
     public Section getSection() {
         return section;
     }
@@ -64,7 +64,7 @@ public abstract class Assignment
         this.section = section;
     }
 
-    @Column(name = "section_fk")
+    @Column(name = ColumnConsts.SECTION_FK)
     public Long getSectionFK() {
         return sectionFK;
     }
@@ -106,18 +106,18 @@ public abstract class Assignment
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name = "assignment_id")
+    @Column(name = ColumnConsts.ASSIGNMENT_ID)
     public Long getId() {
         return super.getId();
     }
 
     @Override
-    @Column(name = "assignment_name")
+    @Column(name = ColumnConsts.ASSIGNMENT_NAME)
     public String getName() {
         return super.getName();
     }
 
-    @Column(name = "type_fk")
+    @Column(name = ColumnConsts.ASSIGNMENT_TYPE_FK)
     public AssignmentType getType() {
         return this.type;
     }
@@ -126,7 +126,7 @@ public abstract class Assignment
         this.type = type;
     }
 
-    @Column(name = "due_date")
+    @Column(name = ColumnConsts.ASSIGNMENT_DUE_DATE)
     public Date getDueDate() {
         return dueDate;
     }
@@ -135,7 +135,7 @@ public abstract class Assignment
         this.dueDate = dueDate;
     }
 
-    @Column(name = "available_points")
+    @Column(name = ColumnConsts.ASSIGNMENT_AVAILABLE_POINTS)
     public Long getAvailablePoints() {
         return availablePoints;
     }
