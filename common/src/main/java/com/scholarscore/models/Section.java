@@ -143,12 +143,17 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
 
     @JsonIgnore
     public void setGradeFormulaString(String string) {
-        try {
-            this.gradeFormulaString = string;
-            this.gradeFormula = MAPPER.readValue( string, GradeFormula.class);
-        } catch (IOException e) {
-            this.gradeFormula =  null;
+        if(null == string) {
+            this.gradeFormula = null;
             this.gradeFormulaString = null;
+        } else {
+            try {
+                this.gradeFormulaString = string;
+                this.gradeFormula = MAPPER.readValue( string, GradeFormula.class);
+            } catch (IOException e) {
+                this.gradeFormula =  null;
+                this.gradeFormulaString = null;
+            }
         }
     }
 
@@ -202,12 +207,17 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     }
 
     public void setGradeFormula(GradeFormula gradeFormula) {
-        try {
-            this.gradeFormula = gradeFormula;
-            this.gradeFormulaString = MAPPER.writeValueAsString(gradeFormula);
-        } catch (JsonProcessingException e) {
-            this.gradeFormulaString = null;
+        if(null == gradeFormula) {
             this.gradeFormula = null;
+            this.gradeFormulaString = null;
+        } else {
+            try {
+                this.gradeFormula = gradeFormula;
+                this.gradeFormulaString = MAPPER.writeValueAsString(gradeFormula);
+            } catch (JsonProcessingException e) {
+                this.gradeFormulaString = null;
+                this.gradeFormula = null;
+            }
         }
     }
 
