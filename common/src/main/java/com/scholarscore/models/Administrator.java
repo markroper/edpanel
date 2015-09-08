@@ -16,7 +16,7 @@ import javax.persistence.Entity;
 /**
  * Created by mattg on 7/19/15.
  */
-@Entity(name = ColumnConsts.ADMIN_TABLE)
+@Entity(name = HibernateConsts.ADMIN_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Administrator extends ApiModel implements Serializable, IStaff<Administrator> {
@@ -81,13 +81,13 @@ public class Administrator extends ApiModel implements Serializable, IStaff<Admi
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name = ColumnConsts.ADMIN_ID)
+    @Column(name = HibernateConsts.ADMIN_ID)
     public Long getId() {
         return super.getId();
     }
 
     @Override
-    @Column(name = ColumnConsts.ADMIN_NAME)
+    @Column(name = HibernateConsts.ADMIN_NAME)
     public String getName() {
         return super.getName();
     }
@@ -104,22 +104,22 @@ public class Administrator extends ApiModel implements Serializable, IStaff<Admi
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.ALL)
-    @JoinColumn(name= ColumnConsts.ADMIN_ADDRESS_FK)
+    @JoinColumn(name= HibernateConsts.ADMIN_ADDRESS_FK)
     public Address getHomeAddress() {
         return homeAddress;
     }
 
-    @Column(name = ColumnConsts.ADMIN_HOME_PHONE)
+    @Column(name = HibernateConsts.ADMIN_HOME_PHONE)
     public String getHomePhone() {
         return homePhone;
     }
 
-    @Column(name = ColumnConsts.ADMIN_SOURCE_SYSTEM_ID)
+    @Column(name = HibernateConsts.ADMIN_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
         return sourceSystemId;
     }
 
-    @Column(name = ColumnConsts.ADMIN_USERNAME)
+    @Column(name = HibernateConsts.ADMIN_USERNAME)
     @Override
     public String getUsername() {
         return username;

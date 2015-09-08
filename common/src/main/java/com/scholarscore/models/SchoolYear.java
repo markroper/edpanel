@@ -22,7 +22,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = ColumnConsts.SCHOOL_YEAR_TABLE)
+@Table(name = HibernateConsts.SCHOOL_YEAR_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SchoolYear extends ApiModel implements Serializable, IApiModel<SchoolYear>{
@@ -49,7 +49,7 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name=ColumnConsts.SCHOOL_FK)
+    @JoinColumn(name=HibernateConsts.SCHOOL_FK)
     public School getSchool() {
         return school;
     }
@@ -60,18 +60,18 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name = ColumnConsts.SCHOOL_YEAR_ID)
+    @Column(name = HibernateConsts.SCHOOL_YEAR_ID)
     public Long getId() {
         return super.getId();
     }
 
     @Override
-    @Column(name = ColumnConsts.SCHOOL_YEAR_NAME)
+    @Column(name = HibernateConsts.SCHOOL_YEAR_NAME)
     public String getName() {
         return super.getName();
     }
 
-    @Column(name = ColumnConsts.SCHOOL_YEAR_START_DATE)
+    @Column(name = HibernateConsts.SCHOOL_YEAR_START_DATE)
     public Date getStartDate() {
         return startDate;
     }
@@ -80,7 +80,7 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         this.startDate = startDate;
     }
 
-    @Column(name = ColumnConsts.SCHOOL_YEAR_END_DATE)
+    @Column(name = HibernateConsts.SCHOOL_YEAR_END_DATE)
     public Date getEndDate() {
         return endDate;
     }

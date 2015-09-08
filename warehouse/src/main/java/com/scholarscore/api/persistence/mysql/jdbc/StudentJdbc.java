@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.scholarscore.api.persistence.mysql.DbConst;
+import com.scholarscore.api.persistence.mysql.DbMappings;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentSectionGrade;
 import org.springframework.beans.factory.annotation.Autowired;

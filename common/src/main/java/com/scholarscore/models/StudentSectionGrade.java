@@ -20,7 +20,7 @@ import javax.persistence.Table;
  *
  */
 @Entity(name="studentSectionGrade")
-@Table(name = ColumnConsts.STUDENT_SECTION_GRADE_TABLE)
+@Table(name = HibernateConsts.STUDENT_SECTION_GRADE_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentSectionGrade implements Serializable, WeightedGradable, IApiModel<StudentSectionGrade> {
@@ -59,7 +59,7 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name=ColumnConsts.SECTION_FK)
+    @JoinColumn(name=HibernateConsts.SECTION_FK)
     public Section getSection() {
         return section;
     }
@@ -70,7 +70,7 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = ColumnConsts.STUDENT_FK)
+    @JoinColumn(name = HibernateConsts.STUDENT_FK)
     public Student getStudent() {
         return student;
     }
@@ -81,7 +81,7 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name = ColumnConsts.STUDENT_SECTION_GRADE_ID)
+    @Column(name = HibernateConsts.STUDENT_SECTION_GRADE_ID)
     public Long getId() {
         return id;
     }
@@ -90,7 +90,7 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
         this.id = id;
     }
 
-    @Column(name = ColumnConsts.STUDENT_SECTION_GRADE_COMPLETE)
+    @Column(name = HibernateConsts.STUDENT_SECTION_GRADE_COMPLETE)
     public Boolean getComplete() {
         return complete;
     }
@@ -99,7 +99,7 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
         this.complete = complete;
     }
 
-    @Column(name = ColumnConsts.STUDENT_SECTION_GRADE_GRADE)
+    @Column(name = HibernateConsts.STUDENT_SECTION_GRADE_GRADE)
     public Double getGrade() {
         return grade;
     }

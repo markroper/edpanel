@@ -26,8 +26,8 @@ import javax.persistence.Table;
  * @author markroper
  *
  */
-@Entity(name = ColumnConsts.SECTION_TABLE)
-@Table(name = ColumnConsts.SECTION_TABLE)
+@Entity(name = HibernateConsts.SECTION_TABLE)
+@Table(name = HibernateConsts.SECTION_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Section extends ApiModel implements Serializable, IApiModel<Section> {
@@ -74,20 +74,20 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name = ColumnConsts.SECTION_ID)
+    @Column(name = HibernateConsts.SECTION_ID)
     public Long getId() {
         return super.getId();
     }
 
     @Override
-    @Column(name = ColumnConsts.SECTION_NAME)
+    @Column(name = HibernateConsts.SECTION_NAME)
     public String getName() {
         return super.getName();
     }
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name=ColumnConsts.COURSE_FK)
+    @JoinColumn(name=HibernateConsts.COURSE_FK)
     public Course getCourse() {
         return course;
     }
@@ -99,7 +99,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name=ColumnConsts.TERM_FK)
+    @JoinColumn(name=HibernateConsts.TERM_FK)
     public Term getTerm() {
         return term;
     }
@@ -108,7 +108,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.term = term;
     }
 
-    @Column(name = ColumnConsts.SECTION_START_DATE)
+    @Column(name = HibernateConsts.SECTION_START_DATE)
     public Date getStartDate() {
         return startDate;
     }
@@ -117,7 +117,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.startDate = startDate;
     }
 
-    @Column(name = ColumnConsts.SECTION_END_DATE)
+    @Column(name = HibernateConsts.SECTION_END_DATE)
     public Date getEndDate() {
         return endDate;
     }
@@ -126,7 +126,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.endDate = endDate;
     }
 
-    @Column(name = ColumnConsts.SECTION_ROOM)
+    @Column(name = HibernateConsts.SECTION_ROOM)
     public String getRoom() {
         return room;
     }
@@ -136,7 +136,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     }
     
     @JsonIgnore
-    @Column(name = ColumnConsts.SECTION_GRADE_FORMULA)
+    @Column(name = HibernateConsts.SECTION_GRADE_FORMULA)
     public String getGradeFormulaString() {
         return this.gradeFormulaString;
     }
