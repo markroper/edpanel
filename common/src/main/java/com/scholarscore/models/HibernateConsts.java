@@ -1,6 +1,6 @@
 package com.scholarscore.models;
 
-public class ColumnConsts {
+public class HibernateConsts {
 
     //Address constants
     public static final String ADDRESS_TABLE = "address";

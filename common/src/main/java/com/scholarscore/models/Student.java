@@ -20,7 +20,7 @@ import javax.persistence.*;
  * @author markroper
  *
  */
-@Entity(name = ColumnConsts.STUDENT_TABLE)
+@Entity(name = HibernateConsts.STUDENT_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Student extends ApiModel implements Serializable, IApiModel<Student>{
@@ -48,7 +48,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name = ColumnConsts.STUDENT_ID)
+    @Column(name = HibernateConsts.STUDENT_ID)
     public Long getId() {
         return super.getId();
     }
@@ -141,19 +141,19 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
     public User getLogin() {
         return login;
     }
-    @Column(name = ColumnConsts.STUDENT_SOURCE_SYSTEM_ID)
+    @Column(name = HibernateConsts.STUDENT_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
         return sourceSystemId;
     }
 
-    @Column(name = ColumnConsts.STUDENT_NAME)
+    @Column(name = HibernateConsts.STUDENT_NAME)
     public String getName() {
         return super.getName();
     }
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.ALL)
-    @JoinColumn(name=ColumnConsts.STUDENT_MAILING_FK)
+    @JoinColumn(name=HibernateConsts.STUDENT_MAILING_FK)
     public Address getMailingAddress() {
         return mailingAddress;
     }
@@ -176,7 +176,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.ALL)
-    @JoinColumn(name=ColumnConsts.STUDENT_HOME_FK)
+    @JoinColumn(name=HibernateConsts.STUDENT_HOME_FK)
     public Address getHomeAddress() {
         return homeAddress;
     }
@@ -185,7 +185,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.homeAddress = homeAddress;
     }
 
-    @Column(name = ColumnConsts.STUDENT_GENDER)
+    @Column(name = HibernateConsts.STUDENT_GENDER)
     public Gender getGender() {
         return gender;
     }
@@ -194,7 +194,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.gender = gender;
     }
 
-    @Column(name = ColumnConsts.STUDENT_BIRTH_DATE)
+    @Column(name = HibernateConsts.STUDENT_BIRTH_DATE)
     public Date getBirthDate() {
         return birthDate;
     }
@@ -203,7 +203,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.birthDate = birthDate;
     }
 
-    @Column(name = ColumnConsts.STUDENT_DISTRICT_ENTRY_DATE)
+    @Column(name = HibernateConsts.STUDENT_DISTRICT_ENTRY_DATE)
     public Date getDistrictEntryDate() {
         return districtEntryDate;
     }
@@ -212,7 +212,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.districtEntryDate = districtEntryDate;
     }
 
-    @Column(name = ColumnConsts.STUDENT_PROJECTED_GRADUATION_YEAR)
+    @Column(name = HibernateConsts.STUDENT_PROJECTED_GRADUATION_YEAR)
     public Long getProjectedGraduationYear() {
         return projectedGraduationYear;
     }
@@ -221,7 +221,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.projectedGraduationYear = projectedGraduationYear;
     }
 
-    @Column(name = ColumnConsts.STUDENT_SOCIAL_SECURITY_NUM)
+    @Column(name = HibernateConsts.STUDENT_SOCIAL_SECURITY_NUM)
     public String getSocialSecurityNumber() {
         return socialSecurityNumber;
     }
@@ -230,7 +230,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.socialSecurityNumber = socialSecurityNumber;
     }
 
-    @Column(name = ColumnConsts.STUDENT_FEDERAL_RACE)
+    @Column(name = HibernateConsts.STUDENT_FEDERAL_RACE)
     public String getFederalRace() {
         return federalRace;
     }
@@ -239,7 +239,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.federalRace = federalRace;
     }
 
-    @Column(name = ColumnConsts.STUDENT_FEDERAL_ETHNICITY)
+    @Column(name = HibernateConsts.STUDENT_FEDERAL_ETHNICITY)
     public String getFederalEthnicity() {
         return federalEthnicity;
     }
@@ -248,7 +248,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.federalEthnicity = federalEthnicity;
     }
 
-    @Column(name = ColumnConsts.SCHOOL_FK, nullable = true)
+    @Column(name = HibernateConsts.SCHOOL_FK, nullable = true)
     public Long getCurrentSchoolId() {
         return currentSchoolId;
     }

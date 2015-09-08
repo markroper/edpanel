@@ -22,8 +22,8 @@ import javax.persistence.Table;
  * @author markroper
  *
  */
-@Entity(name = ColumnConsts.TERM_TABLE)
-@Table(name = ColumnConsts.TERM_TABLE)
+@Entity(name = HibernateConsts.TERM_TABLE)
+@Table(name = HibernateConsts.TERM_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Term extends ApiModel implements Serializable, IApiModel<Term>{
@@ -44,18 +44,18 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name = ColumnConsts.TERM_ID)
+    @Column(name = HibernateConsts.TERM_ID)
     public Long getId() {
         return super.getId();
     }
 
     @Override
-    @Column(name = ColumnConsts.TERM_NAME)
+    @Column(name = HibernateConsts.TERM_NAME)
     public String getName() {
         return super.getName();
     }
 
-    @Column(name = ColumnConsts.TERM_START_DATE)
+    @Column(name = HibernateConsts.TERM_START_DATE)
     public Date getStartDate() {
         return startDate;
     }
@@ -64,14 +64,14 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         this.startDate = startDate;
     }
 
-    @Column(name = ColumnConsts.TERM_END_DATE)
+    @Column(name = HibernateConsts.TERM_END_DATE)
     public Date getEndDate() {
         return endDate;
     }
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name=ColumnConsts.SCHOOL_YEAR_FK)
+    @JoinColumn(name=HibernateConsts.SCHOOL_YEAR_FK)
     public SchoolYear getSchoolYear() {
         return schoolYear;
     }

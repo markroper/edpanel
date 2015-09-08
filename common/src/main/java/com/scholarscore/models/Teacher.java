@@ -13,7 +13,7 @@ import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
 
-@Entity(name = ColumnConsts.TEACHER_TABLE)
+@Entity(name = HibernateConsts.TEACHER_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
@@ -93,36 +93,36 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
         return login;
     }
 
-    @Column(name = ColumnConsts.TEACHER_NAME)
+    @Column(name = HibernateConsts.TEACHER_NAME)
     public String getName() {
         return super.getName();
     }
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name = ColumnConsts.TEACHER_ID)
+    @Column(name = HibernateConsts.TEACHER_ID)
     public Long getId() {
         return super.getId();
     }
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.ALL)
-    @JoinColumn(name=ColumnConsts.TEACHER_ADDRESS_FK)
+    @JoinColumn(name=HibernateConsts.TEACHER_ADDRESS_FK)
     public Address getHomeAddress() {
         return homeAddress;
     }
 
-    @Column(name = ColumnConsts.TEACHER_HOME_PHONE)
+    @Column(name = HibernateConsts.TEACHER_HOME_PHONE)
     public String getHomePhone() {
         return homePhone;
     }
 
-    @Column(name = ColumnConsts.TEACHER_SOURCE_SYSTEM_ID)
+    @Column(name = HibernateConsts.TEACHER_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
         return sourceSystemId;
     }
 
-    @Column(name = ColumnConsts.TEACHER_USERNAME)
+    @Column(name = HibernateConsts.TEACHER_USERNAME)
     public String getUsername() {
         return username;
     }

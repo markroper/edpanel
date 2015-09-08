@@ -43,12 +43,12 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name = ColumnConsts.SCHOOL_ID)
+    @Column(name = HibernateConsts.SCHOOL_ID)
     public Long getId() {
         return super.getId();
     }
 
-    @Column(name = ColumnConsts.SCHOOL_NAME)
+    @Column(name = HibernateConsts.SCHOOL_NAME)
     public String getName() { return super.getName(); }
 
     @Transient
@@ -117,7 +117,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         return result;
     }
 
-    @Column(name = ColumnConsts.SCHOOL_SOURCE_SYSTEM_ID)
+    @Column(name = HibernateConsts.SCHOOL_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
         return sourceSystemId;
     }
@@ -126,7 +126,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         this.sourceSystemId = sourceSystemId;
     }
 
-    @Column(name = ColumnConsts.SCHOOL_PRINCIPAL_EMAIL)
+    @Column(name = HibernateConsts.SCHOOL_PRINCIPAL_EMAIL)
     public String getPrincipalEmail() {
         return principalEmail;
     }
@@ -135,7 +135,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         this.principalEmail = principalEmail;
     }
 
-    @Column(name = ColumnConsts.SCHOOL_PRINCIPAL_NAME)
+    @Column(name = HibernateConsts.SCHOOL_PRINCIPAL_NAME)
     public String getPrincipalName() {
         return principalName;
     }
@@ -144,7 +144,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         this.principalName = principalName;
     }
 
-    @Column(name = ColumnConsts.SCHOOL_MAIN_PHONE)
+    @Column(name = HibernateConsts.SCHOOL_MAIN_PHONE)
     public String getMainPhone() {
         return mainPhone;
     }
@@ -156,7 +156,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name=ColumnConsts.SCHOOL_ADDRESS_FK)
+    @JoinColumn(name=HibernateConsts.SCHOOL_ADDRESS_FK)
     public Address getAddress() {
         return address;
     }

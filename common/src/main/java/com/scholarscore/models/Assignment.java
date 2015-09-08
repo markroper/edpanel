@@ -20,8 +20,8 @@ import javax.persistence.Table;
  * @author markroper
  *
  */
-@Entity(name = ColumnConsts.ASSIGNMENT_TABLE)
-@Table(name = ColumnConsts.ASSIGNMENT_TABLE)
+@Entity(name = HibernateConsts.ASSIGNMENT_TABLE)
+@Table(name = HibernateConsts.ASSIGNMENT_TABLE)
 @DiscriminatorColumn(name="assignmentClass", discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @SuppressWarnings("serial")
@@ -55,7 +55,7 @@ public abstract class Assignment
 
     @OneToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name=ColumnConsts.SECTION_FK, insertable = false, updatable = false)
+    @JoinColumn(name=HibernateConsts.SECTION_FK, insertable = false, updatable = false)
     public Section getSection() {
         return section;
     }
@@ -64,7 +64,7 @@ public abstract class Assignment
         this.section = section;
     }
 
-    @Column(name = ColumnConsts.SECTION_FK)
+    @Column(name = HibernateConsts.SECTION_FK)
     public Long getSectionFK() {
         return sectionFK;
     }
@@ -106,18 +106,18 @@ public abstract class Assignment
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name = ColumnConsts.ASSIGNMENT_ID)
+    @Column(name = HibernateConsts.ASSIGNMENT_ID)
     public Long getId() {
         return super.getId();
     }
 
     @Override
-    @Column(name = ColumnConsts.ASSIGNMENT_NAME)
+    @Column(name = HibernateConsts.ASSIGNMENT_NAME)
     public String getName() {
         return super.getName();
     }
 
-    @Column(name = ColumnConsts.ASSIGNMENT_TYPE_FK)
+    @Column(name = HibernateConsts.ASSIGNMENT_TYPE_FK)
     public AssignmentType getType() {
         return this.type;
     }
@@ -126,7 +126,7 @@ public abstract class Assignment
         this.type = type;
     }
 
-    @Column(name = ColumnConsts.ASSIGNMENT_DUE_DATE)
+    @Column(name = HibernateConsts.ASSIGNMENT_DUE_DATE)
     public Date getDueDate() {
         return dueDate;
     }
@@ -135,7 +135,7 @@ public abstract class Assignment
         this.dueDate = dueDate;
     }
 
-    @Column(name = ColumnConsts.ASSIGNMENT_AVAILABLE_POINTS)
+    @Column(name = HibernateConsts.ASSIGNMENT_AVAILABLE_POINTS)
     public Long getAvailablePoints() {
         return availablePoints;
     }
