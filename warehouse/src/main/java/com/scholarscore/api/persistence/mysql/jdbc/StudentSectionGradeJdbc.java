@@ -1,124 +1,108 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-
-import com.scholarscore.api.persistence.mysql.DbConst;
+import com.scholarscore.api.persistence.mysql.EntityPersistence;
+import com.scholarscore.api.persistence.mysql.StudentPersistence;
+import com.scholarscore.models.Section;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.scholarscore.api.persistence.mysql.StudentSectionGradePersistence;
-import com.scholarscore.api.persistence.mysql.mapper.StudentSectionGradeMapper;
 import com.scholarscore.models.StudentSectionGrade;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 
-public class StudentSectionGradeJdbc extends EnhancedBaseJdbc<StudentSectionGrade> implements StudentSectionGradePersistence {
-    private final String INSERT_STUD_SECTION_GRADE_SQL = "INSERT INTO `"+
-            DbConst.DATABASE +"`.`" + getTableName() + "` " +
-            "(`" + DbConst.STUD_SECTION_GRADE_COMPLETE + 
-            "`, `" + DbConst.STUD_SECTION_GRADE_GRADE + 
-            "`, `" + DbConst.STUD_FK_COL + 
-            "`, `" + DbConst.SECTION_FK_COL + "`)" +
-            " VALUES (:" + DbConst.STUD_SECTION_GRADE_COMPLETE + 
-            ", :" + DbConst.STUD_SECTION_GRADE_GRADE + 
-            ", :" +  DbConst.STUD_FK_COL + 
-            ", :" + DbConst.SECTION_FK_COL + ")";
-    
-    private final String UPDATE_STUD_SECTION_GRADE_SQL =
-            "UPDATE `" + DbConst.DATABASE + "`.`" + getTableName() + "` " +
-            "SET `" + 
-            DbConst.STUD_SECTION_GRADE_COMPLETE + "`= :" + DbConst.STUD_SECTION_GRADE_COMPLETE + ", `" +
-            DbConst.STUD_SECTION_GRADE_GRADE + "`= :" + DbConst.STUD_SECTION_GRADE_GRADE + ", `" +
-            DbConst.STUD_FK_COL + "`= :" + DbConst.STUD_FK_COL + ", `" +
-            DbConst.SECTION_FK_COL + "`= :" + DbConst.SECTION_FK_COL + 
-            " WHERE `" + DbConst.STUD_FK_COL + "`= :" + DbConst.STUD_FK_COL + " " +
-            "AND `" + DbConst.SECTION_FK_COL + "`= :" + DbConst.SECTION_FK_COL;
-    
-    private final String DELETE_STUD_SECTION_GRADE_SQL = "DELETE FROM `"+
-            DbConst.DATABASE +"`.`" + getTableName() + "` " +
-            "WHERE `" + DbConst.STUD_FK_COL + "`= :" + DbConst.STUD_FK_COL + " " +
-            "AND `" + DbConst.SECTION_FK_COL + "`= :" + DbConst.SECTION_FK_COL;
-    
-    // all grades for one section
-    private final String SELECT_ALL_STUD_SECTION_GRADES_SQL = "SELECT * FROM `"+
-            DbConst.DATABASE +"`.`" + getTableName() + "` " +
-            "WHERE `" + DbConst.SECTION_FK_COL + "` = :" + DbConst.SECTION_FK_COL;
+import javax.transaction.Transactional;
 
-    // all grades for one student
-    private final String SELECT_ALL_SECTION_GRADES_FOR_STUDENT_SQL = "SELECT * FROM `"+
-            DbConst.DATABASE +"`.`" + getTableName() + "` " +
-            "WHERE `" + DbConst.STUD_FK_COL + "` = :" + DbConst.STUD_FK_COL;
-    
-    private final String SELECT_STUD_SECTION_GRADE_SQL = SELECT_ALL_STUD_SECTION_GRADES_SQL +
-            " AND `" + DbConst.STUD_FK_COL + "`= :" + DbConst.STUD_FK_COL;
-    
+@Transactional
+public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
+
+    @Autowired
+    private HibernateTemplate hibernateTemplate;
+
+    private StudentPersistence studentPersistence;
+    private EntityPersistence<Section> sectionPersistence;
+
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<StudentSectionGrade> selectAll(long sectionId) {
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.SECTION_FK_COL, new Long(sectionId));
-        return super.selectAll(params, SELECT_ALL_STUD_SECTION_GRADES_SQL);
+        return (Collection<StudentSectionGrade>)hibernateTemplate.findByNamedParam("from studentSectionGrade ssg where ssg.section.id = :id", "id", sectionId);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<StudentSectionGrade> selectAllByStudent(long studentId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.STUD_FK_COL, new Long(studentId));
-        return super.selectAll(params, SELECT_ALL_SECTION_GRADES_FOR_STUDENT_SQL);
+        return (Collection<StudentSectionGrade>)hibernateTemplate.findByNamedParam("from studentSectionGrade ssg where ssg.student.id = :id", "id", studentId);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public StudentSectionGrade select(long sectionId, long studentId) {
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.SECTION_FK_COL, new Long(sectionId));
-        params.put(DbConst.STUD_FK_COL, new Long(studentId));
-        return super.select(params, SELECT_STUD_SECTION_GRADE_SQL);
+        List<StudentSectionGrade> gradeList = (List<StudentSectionGrade>) hibernateTemplate.findByNamedParam("from studentSectionGrade ssg where ssg.student.id = " + String.valueOf(studentId) +
+                " and ssg.section.id = :sectionId", "sectionId", sectionId);
+        if (null != gradeList && gradeList.size() > 0) {
+            return gradeList.get(0);
+        }
+        return null;
     }
 
     @Override
     public Long insert(long sectionId, long studentId, StudentSectionGrade entity) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.SECTION_FK_COL, new Long(sectionId));
-        params.put(DbConst.STUD_FK_COL, new Long(studentId));
-        params.put(DbConst.STUD_SECTION_GRADE_COMPLETE, entity.getComplete());
-        params.put(DbConst.STUD_SECTION_GRADE_GRADE, entity.getGrade());
-        jdbcTemplate.update(
-                INSERT_STUD_SECTION_GRADE_SQL, 
-                new MapSqlParameterSource(params), 
-                keyHolder);
-        return null;
+        injectStudent(studentId, entity);
+        injectSection(sectionId, entity);
+        StudentSectionGrade out = hibernateTemplate.merge(entity);
+        return out.getId();
+    }
+
+    private void injectSection(long sectionId, StudentSectionGrade entity) {
+        if (null == entity.getSection()) {
+            entity.setSection(sectionPersistence.select(0L, sectionId));
+        }
+    }
+
+    private void injectStudent(long studentId, StudentSectionGrade entity) {
+        if (null == entity.getStudent()) {
+            entity.setStudent(studentPersistence.select(studentId));
+        }
     }
 
     @Override
     public Long update(long sectionId, long studentId, StudentSectionGrade entity) {
-        Map<String, Object> params = new HashMap<>();     
-        params.put(DbConst.SECTION_FK_COL, new Long(sectionId));
-        params.put(DbConst.STUD_FK_COL, new Long(studentId));
-        params.put(DbConst.STUD_SECTION_GRADE_COMPLETE, entity.getComplete());
-        params.put(DbConst.STUD_SECTION_GRADE_GRADE, entity.getGrade());
-        jdbcTemplate.update(
-                UPDATE_STUD_SECTION_GRADE_SQL, 
-                new MapSqlParameterSource(params));
-        return null;
+
+        StudentSectionGrade update = select(sectionId, studentId);
+        if (null != update) {
+            update.setStudent(entity.getStudent());
+            update.setGrade(entity.getGrade());
+            update.setComplete(entity.getComplete());
+            update.setSection(entity.getSection());
+            injectStudent(studentId, update);
+            injectSection(sectionId, update);
+            hibernateTemplate.merge(update);
+        }
+        return update.getId();
     }
 
     @Override
     public Long delete(long sectionId, long studentId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put(DbConst.SECTION_FK_COL, new Long(sectionId));
-        params.put(DbConst.STUD_FK_COL, new Long(studentId));
-        return super.delete(params, DELETE_STUD_SECTION_GRADE_SQL);
-    }
-    
-    @Override
-    public RowMapper<StudentSectionGrade> getMapper() {
-        return new StudentSectionGradeMapper();
+        StudentSectionGrade toDelete = select(sectionId, studentId);
+        if (null != toDelete) {
+            hibernateTemplate.delete(toDelete);
+        }
+        return toDelete.getId();
     }
 
-    @Override
-    public String getTableName() {
-        return DbConst.STUDENT_SECTION_GRADE_TABLE;
+    public HibernateTemplate getHibernateTemplate() {
+        return hibernateTemplate;
+    }
+
+    public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+        this.hibernateTemplate = hibernateTemplate;
+    }
+
+    public void setStudentPersistence(StudentPersistence studentPersistence) {
+        this.studentPersistence = studentPersistence;
+    }
+
+    public void setSectionPersistence(EntityPersistence<Section> sectionPersistence) {
+        this.sectionPersistence = sectionPersistence;
     }
 }

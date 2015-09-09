@@ -1,26 +1,18 @@
 package com.scholarscore.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scholarscore.models.Behavior;
-import com.scholarscore.models.EntityId;
-import com.scholarscore.models.LoginRequest;
-import com.scholarscore.models.School;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.Teacher;
-import org.apache.http.Header;
+import com.scholarscore.models.*;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
 import java.net.URI;
+
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * TODO: Convert InternalBase to consume this API (perhaps?)
@@ -34,7 +26,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     private static final String LOGIN_ENDPOINT = "/login";
     private static final String SCHOOL_ENDPOINT = "/schools";
     private static final String SCHOOL_YEAR_ENDPOINT = "/years";
-    private static final String COURSE_ENDPOINT = "/courses";
+    private static final String COURSE_ENDPOINT = "/schools/{0}/courses";
     private static final String TERM_ENDPOINT = "/terms";
     private static final String SECTION_ENDPOINT = "/sections";
     private static final String SECTION_ASSIGNMENT_ENDPOINT = "/assignments";
@@ -43,6 +35,10 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
     private static final String TEACHER_ENDPOINT = "/teachers";
     private static final String BEHAVIOR_ENDPOINT = "/behaviors";
+
+    // TODO: Create this end point
+    private static final String ADMINISTRATOR_ENDPOINT = "/administrators";
+    private static final String USERS_ENDPOINT = "/users";
 
     private final String password;
     private final String username;
@@ -104,6 +100,13 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         return response;
     }
 
+    public Teacher createTeacher(Teacher teacher) {
+        EntityId id = create(teacher, TEACHER_ENDPOINT);
+        Teacher response = new Teacher(teacher);
+        response.setId(id.getId());
+        return response;
+    }
+
     @Override
     public Collection<Teacher> getTeachers() {
         Teacher[] teachers = get(Teacher[].class, BASE_API_ENDPOINT + TEACHER_ENDPOINT);
@@ -121,6 +124,29 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     public Behavior createBehavior(Long studentId, Behavior behavior) {
         EntityId id = create(behavior, STUDENT_ENDPOINT + "/" + studentId + BEHAVIOR_ENDPOINT);
         Behavior response = new Behavior(behavior);
+        response.setId(id.getId());
+        return response;
+    }
+
+    public Administrator createAdministrator(Administrator administrator) {
+        EntityId id = create(administrator, ADMINISTRATOR_ENDPOINT);
+        Administrator response = new Administrator(administrator);
+        response.setId(id.getId());
+        return response;
+    }
+
+    @Override
+    public User createUser(User login) {
+        EntityId id = create(login, USERS_ENDPOINT);
+        User response = new User(login);
+        response.setId(login.getId());
+        return response;
+    }
+
+    @Override
+    public Course createCourse(Long schoolId, Course course) {
+        Course response = new Course(course);
+        EntityId id = create(course, getPath(COURSE_ENDPOINT, schoolId.toString()));
         response.setId(id.getId());
         return response;
     }

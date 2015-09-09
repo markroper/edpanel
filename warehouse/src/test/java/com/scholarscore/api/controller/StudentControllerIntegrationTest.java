@@ -30,7 +30,6 @@ public class StudentControllerIntegrationTest extends IntegrationBase {
         Student emptyStudent = new Student();
         Student namedStudent = new Student();
         namedStudent.setName(localeServiceUtil.generateName());
-        
         return new Object[][] {
                 { "Empty student", emptyStudent },
                 { "Named student", namedStudent }
@@ -51,7 +50,7 @@ public class StudentControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createStudentProvider")
     public void replaceStudentTest(String msg, Student student) {
         Student createdStudent = studentValidatingExecutor.create(student, msg);
-        studentValidatingExecutor.replace(createdStudent.getId(), new Student(), msg);
+        studentValidatingExecutor.replace(createdStudent.getId(), createdStudent, msg);
     }
     
     @Test(dataProvider = "createStudentProvider")
@@ -80,6 +79,7 @@ public class StudentControllerIntegrationTest extends IntegrationBase {
 
         Term term = new Term();
         term.setName(localeServiceUtil.generateName());
+        term.setSchoolYear(schoolYear);
         term = termValidatingExecutor.create(school.getId(), schoolYear.getId(), term, "create test base term");
 
         Student student = new Student();
@@ -88,6 +88,7 @@ public class StudentControllerIntegrationTest extends IntegrationBase {
 
         Course course = new Course();
         course.setName(localeServiceUtil.generateName());
+        course.setSchool(school);
         course = courseValidatingExecutor.create(school.getId(), course, "create base course");
 
         Double[] grades = { 55.0, 70.0, 85.0, 100.0, 100.0, 100.0 };

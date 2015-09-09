@@ -21,7 +21,7 @@ public class StaffResponse implements ITranslateCollection<com.scholarscore.mode
     @Override
     public String toString() {
         return "StaffResponse{" +
-                "staff=" + staffs +
+                "staffs=" + staffs +
                 '}';
     }
 

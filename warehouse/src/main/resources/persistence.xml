@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc
+                     http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                     http://www.springframework.org/schema/beans
+                     http://www.springframework.org/schema/beans/spring-beans.xsd
+                     http://www.springframework.org/schema/context
+                     http://www.springframework.org/schema/context/spring-context.xsd
+                     http://www.springframework.org/schema/util
+                     http://www.springframework.org/schema/util/spring-util.xsd
+                     http://www.springframework.org/schema/tx
+                     http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:api.properties</value>
+                <value>classpath:database.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Initialization for data source -->
+    <bean id="dataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://${database.host}:${database.port}/${database.name}"/>
+        <property name="username" value="${database.user}"/>
+        <property name="password" value="${database.pass}"/>
+    </bean>
+
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="annotatedPackages" value="com.scholarscore.models"/>
+        <property name="packagesToScan" value="com.scholarscore.models"/>
+        <property name="configLocation" value="classpath:hibernate.cfg.xml" />
+    </bean>
+
+    <tx:annotation-driven/>
+
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+        <property name="autodetectDataSource" value="true"/>
+        <property name="nestedTransactionAllowed" value="true"/>
+    </bean>
+
+    <bean id="hibernateTemplate"
+          class="org.springframework.orm.hibernate4.HibernateTemplate">
+        <property name="sessionFactory">
+            <ref bean="sessionFactory"/>
+        </property>
+    </bean>
+
+    <bean id="administratorPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.AdministratorJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
+    <bean id="teacherPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.TeacherJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+    <bean id="studentPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.StudentJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
+    <bean id="schoolPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.SchoolJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+    <bean id="termPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.TermJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="schoolYearPersistence" ref="schoolYearPersistence"/>
+    </bean>
+
+    <bean id="studentAssignmentPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.StudentAssignmentJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="assignmentPersistence" ref="assignmentPersistence"/>
+    </bean>
+    <bean id="coursePersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.CourseJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
+    <bean id="assignmentPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.AssignmentJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
+    <bean id="sectionPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.SectionJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="termEntityPersistence" ref="termPersistence"/>
+    </bean>
+
+    <bean id="userPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.UserJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
+    <bean id="behaviorPersistence" class="com.scholarscore.api.persistence.mysql.jdbc.BehaviorJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
+    <bean id="schoolYearPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.SchoolYearJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="schoolPersistence" ref="schoolPersistence"/>
+    </bean>
+    <!-- Definition for School JDBC templ bean -->
+
+    <bean id="studentSectionGradePersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.StudentSectionGradeJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="sectionPersistence" ref="sectionPersistence"/>
+        <property name="studentPersistence" ref="studentPersistence"/>
+    </bean>
+
+    <bean id="queryPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.QueryJdbc">
+    <property name="dataSource" ref="dataSource"/>
+    </bean>
+</beans>

@@ -3,6 +3,8 @@ package com.scholarscore.models;
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class ApiModel implements Serializable {
     private Long id;
+
     @Size(min=1, max=256)
     protected String name;
     
@@ -34,13 +37,16 @@ public abstract class ApiModel implements Serializable {
             this.name = mergeFrom.name;
         }      
     }
-    
+
+    @Id
+    @Column(name = "id")
     public Long getId() {
         return id;
     }
     public void setId(Long id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }

@@ -42,7 +42,7 @@ public class TeacherControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createTeacherProvider")
     public void replaceTeacherTest(String msg, Teacher teacher) {
         Teacher createdTeacher = teacherValidatingExecutor.create(teacher, msg);
-        teacherValidatingExecutor.replace(createdTeacher.getId(), new Teacher(), msg);
+        teacherValidatingExecutor.replace(createdTeacher.getId(), new Teacher(teacher), msg);
     }
     
     @Test(dataProvider = "createTeacherProvider")

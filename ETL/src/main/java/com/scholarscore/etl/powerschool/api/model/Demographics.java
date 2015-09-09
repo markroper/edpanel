@@ -6,9 +6,9 @@ import java.util.Date;
  * Created by mattg on 6/28/15.
  */
 public class Demographics {
-    String gender;
-    Date birthDate;
-    Date districtEntryDate;
-    Long projectedGraduationYear;
-    String ssn;
+    public String gender;
+    public Date birth_date;
+    public Date district_entry_date;
+    public Long projected_gradulation_date;
+    public String ssn;
 }

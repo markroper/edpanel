@@ -159,6 +159,7 @@ public class StudentValidatingExecutor {
         //Keep a reference to the created assignment for later cleanup
         serviceBase.studentsCreated.add(createdStudent);
         Student expectedStudent = generateExpectationStudent(submittedStudent, createdStudent, method);
+        createdStudent.setCurrentSchoolId(expectedStudent.getCurrentSchoolId());
         Assert.assertEquals(createdStudent, expectedStudent, "Unexpected assignment created for case: " + msg);
         
         return createdStudent;

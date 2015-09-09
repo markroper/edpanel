@@ -1,6 +1,12 @@
-package com.scholarscore.models;
+    package com.scholarscore.models;
 
 import java.io.Serializable;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -11,6 +17,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @see com.scholarscore.models.Assignment
  *
  */
+@Entity
+@Table(name = "assignment")
+@DiscriminatorValue(value = "AttendanceAssignment")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AttendanceAssignment extends Assignment implements Serializable {
