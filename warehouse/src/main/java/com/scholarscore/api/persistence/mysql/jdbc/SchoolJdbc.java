@@ -1,69 +1,58 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-
-import com.scholarscore.api.persistence.mysql.DbConst;
-import com.scholarscore.api.persistence.mysql.SchoolPersistence;
-import com.scholarscore.api.persistence.mysql.mapper.SchoolMapper;
+import java.util.Collection;
 import com.scholarscore.models.School;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class SchoolJdbc extends EnhancedBaseJdbc<School> implements SchoolPersistence {
-    
-    private static String INSERT_SCHOOL_SQL = "INSERT INTO `"+ 
-            DbConst.DATABASE +"`.`" + DbConst.SCHOOL_TABLE + "` " +
-            "(" + DbConst.SCHOOL_NAME_COL + ")" +
-            " VALUES (:name)";   
+import com.scholarscore.api.persistence.mysql.SchoolPersistence;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 
-    private static String UPDATE_SCHOOL_SQL = 
-            "UPDATE `" + DbConst.DATABASE + "`.`" + DbConst.SCHOOL_TABLE + "` " + 
-            "SET `" + DbConst.SCHOOL_NAME_COL + "`= :name " + 
-            "WHERE `" + DbConst.SCHOOL_ID_COL + "`= :id";
+import javax.transaction.Transactional;
 
-    /* (non-Javadoc)
-     * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolPersistence#getSchool(long)
-     */
-    @Override
-    public School selectSchool(long schoolId) {
-        return super.select(schoolId);
+@Transactional
+public class SchoolJdbc implements SchoolPersistence {
+
+    @Autowired
+    private HibernateTemplate hibernateTemplate;
+
+    public SchoolJdbc() {
     }
 
-    /* (non-Javadoc)
-     * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolPersistence#createSchool(com.scholarscore.models.School)
-     */
+    public SchoolJdbc(HibernateTemplate template) {
+        this.hibernateTemplate = template;
+    }
+
+    public void setHibernateTemplate(HibernateTemplate template) {
+        this.hibernateTemplate = template;
+    }
+
+    @Override
+    public Collection<School> selectAll() {
+        return hibernateTemplate.loadAll(School.class);
+    }
+
+    @Override
+    public School selectSchool(Long schoolId) {
+        return hibernateTemplate.get(School.class, schoolId);
+    }
+
     @Override
     public Long createSchool(School school) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        Map<String, Object> params = new HashMap<>();     
-        params.put("name", school.getName());
-        jdbcTemplate.update(INSERT_SCHOOL_SQL, new MapSqlParameterSource(params), keyHolder);
-        return keyHolder.getKey().longValue();
+        School out = hibernateTemplate.merge(school);
+        return out.getId();
     }
 
-    /* (non-Javadoc)
-     * @see com.scholarscore.api.persistence.mysql.jdbc.SchoolPersistence#replaceSchool(long, com.scholarscore.models.School)
-     */
     @Override
     public Long replaceSchool(long schoolId, School school) {
-        Map<String, Object> params = new HashMap<>();     
-        params.put("name", school.getName());
-        params.put("id", new Long(schoolId));
-        jdbcTemplate.update(UPDATE_SCHOOL_SQL, new MapSqlParameterSource(params));
+        school.setId(schoolId);
+        hibernateTemplate.merge(school);
         return schoolId;
-    }
-    
-    @Override
-    public RowMapper<School> getMapper() {
-        return new SchoolMapper();
     }
 
     @Override
-    public String getTableName() {
-        return DbConst.SCHOOL_TABLE;
+    public Long delete(long schoolId) {
+        School admin = hibernateTemplate.get(School.class, schoolId);
+        hibernateTemplate.delete(admin);
+        return schoolId;
     }
 }

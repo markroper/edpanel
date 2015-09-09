@@ -27,6 +27,9 @@ public class SchoolsResponse implements ITranslateCollection<com.scholarscore.mo
         for (School school : schools.school) {
             com.scholarscore.models.School apiSchool = new com.scholarscore.models.School();
             apiSchool.setName(school.name);
+            if (null != school.id) {
+                apiSchool.setSourceSystemId(school.id.toString());
+            }
             response.add(apiSchool);
         }
         return response;

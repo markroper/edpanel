@@ -69,7 +69,7 @@ public class TermControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createTermProvider")
     public void replaceTermTest(String msg, Term term) {
         Term createdTerm = termValidatingExecutor.create(school.getId(), schoolYear.getId(), term, msg);
-        termValidatingExecutor.replace(school.getId(), schoolYear.getId(), createdTerm.getId(), new Term(), msg);
+        termValidatingExecutor.replace(school.getId(), schoolYear.getId(), createdTerm.getId(), new Term(createdTerm), msg);
         numberOfItemsCreated++;
     }
     

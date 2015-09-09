@@ -68,6 +68,7 @@ public abstract class BaseHttpClient {
     }
 
     protected String post(byte[] data, String path) {
+        String strData = new String(data);
         HttpPost post = new HttpPost();
         post.setURI(uri.resolve(path));
         setupCommonHeaders(post);
@@ -88,8 +89,8 @@ public abstract class BaseHttpClient {
         }
     }
 
-    protected <T> T get(Class<T> clazz, String path, String ...params) {
-
+    protected String getPath(String root, String ...params) {
+        String path = root;
         if (null != params && params.length > 0) {
             int count = 0;
             for (String param : params) {
@@ -97,12 +98,19 @@ public abstract class BaseHttpClient {
                 count++;
             }
         }
+        return path;
+    }
+
+    protected <T> T get(Class<T> clazz, String path, String ...params) {
+
+        path = getPath(path, params);
 
         try {
             HttpGet get = new HttpGet();
             setupCommonHeaders(get);
             get.setURI(uri.resolve(path));
             String json = getJSON(get);
+            System.out.println(json);
             return gson.fromJson(json, clazz);
         } catch (IOException e) {
             throw new HttpClientException(e);

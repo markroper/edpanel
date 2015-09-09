@@ -94,7 +94,7 @@ public class DbConst {
         //Teacher dimension field to DB column name lookup
         put(new DimensionField(Dimension.TEACHER, TeacherDimension.NAME), TEACHER_NAME_COL);
         put(new DimensionField(Dimension.TEACHER, TeacherDimension.ID), TEACHER_ID_COL);
-        put(new DimensionField(Dimension.TEACHER, TeacherDimension.EMAIL), TEACHER_EMAIL_COL);
+
         //School dimension field to DB column name lookup
         put(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME), SCHOOL_NAME_COL);
         put(new DimensionField(Dimension.SCHOOL, SchoolDimension.ID), SCHOOL_ID_COL);
@@ -133,17 +133,20 @@ public class DbConst {
     public static final String STUDENT_ASSIGNMENT_TABLE = "student_assignment";
     public static final String STUDENT_SECTION_GRADE_TABLE = "student_section_grade";
     public static final String TEACHER_TABLE = "teacher";
+    public static final String ADMINISTRATOR_TABLE = "administrator";
+
     //Columns
     public static final String SCHOOL_ID_COL = "school_id";
     public static final String SCHOOL_NAME_COL = "school_name";
     public static final String SCHOOL_ADDRESS_COL = "school_address";
-    
+    public static final String SCHOOL_SOURCE_SYSTEM_ID_COL = "sourceSystemId";
+
     public static final String SCHOOL_FK_COL = "school_fk";
     public static final String SCHOOL_YEAR_ID_COL = "school_year_id";
     public static final String SCHOOL_YEAR_NAME_COL = "school_year_name";
     public static final String SCHOOL_YEAR_START_DATE_COL = "school_year_start_date";
     public static final String SCHOOL_YEAR_END_DATE_COL = "school_year_end_date";
-    
+
     public static final String TERM_ID_COL = "term_id";
     public static final String SCHOOL_YEAR_FK_COL = "school_year_fk";
     public static final String TERM_NAME_COL = "term_name";
@@ -185,6 +188,8 @@ public class DbConst {
     
     public static final String COURSE_ID_COL = "course_id";
     public static final String COURSE_NAME_COL = "course_name";
+    public static final String COURSE_NUMBER_COL = "course_number";
+    public static final String COURSE_SOURCE_SYSTEM_ID_COL = "course_source_system_id";
     
     public static final String ASSIGNMENT_ID_COL = "assignment_id";
     public static final String ASSIGNMENT_NAME_COL = "assignment_name";
@@ -208,8 +213,24 @@ public class DbConst {
     
     public static final String TEACHER_ID_COL = "teacher_id";
     public static final String TEACHER_NAME_COL = "teacher_name";
-	public static final String TEACHER_EMAIL_COL = "teacher_email";
-    
+	public static final String TEACHER_SOURCE_SYSTEM_ID_COL = "teacher_sourceSystemId";
+    public static final String TEACHER_HOME_STREET = "teacher_home_street";
+    public static final String TEACHER_HOME_CITY = "teacher_home_city";
+    public static final String TEACHER_HOME_STATE = "teacher_home_state";
+    public static final String TEACHER_HOME_POSTAL_CODE = "teacher_home_postal_code";
+    public static final String TEACHER_HOME_PHONE = "teacher_home_phone";
+    public static final String TEACHER_USERNAME_COL = "teacher_username";
+
+    public static final String ADMINISTRATOR_ID_COL = "administrator_id";
+    public static final String ADMINISTRATOR_NAME_COL = "administrator_name";
+    public static final String ADMINISTRATOR_SOURCE_SYSTEM_ID_COL = "administrator_sourceSystemId";
+    public static final String ADMINISTRATOR_HOME_STREET = "administrator_home_street";
+    public static final String ADMINISTRATOR_HOME_CITY = "administrator_home_city";
+    public static final String ADMINISTRATOR_HOME_STATE = "administrator_home_state";
+    public static final String ADMINISTRATOR_HOME_POSTAL_CODE = "administrator_home_postal_code";
+    public static final String ADMINISTRATOR_HOME_PHONE = "administrator_home_phone";
+    public static final String ADMINISTRATOR_USERNAME_COL = "administrator_username";
+
     public static final String USER_TABLE = "users";
     public static final String USER_USERNAME_COL = "username";
 	public static final String USER_PASSWORD_COL = "password";
@@ -233,6 +254,8 @@ public class DbConst {
     public static final String BEHAVIOR_CATEGORY_COL = "category";
     public static final String BEHAVIOR_POINT_VALUE_COL = "point_value";
     public static final String BEHAVIOR_ROSTER_COL = "roster";
+
+
 
     /**
      * Helper method converts a Java Date to a Timestamp for storage in the Database.

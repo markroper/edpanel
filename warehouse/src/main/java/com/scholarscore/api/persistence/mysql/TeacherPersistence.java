@@ -2,16 +2,18 @@ package com.scholarscore.api.persistence.mysql;
 
 import java.util.Collection;
 
+import com.scholarscore.api.util.StatusCode;
+import com.scholarscore.models.Administrator;
 import com.scholarscore.models.Teacher;
 
 public interface TeacherPersistence {
-    public Collection<Teacher> selectAll();
+    Collection<Teacher> selectAll();
     
-    public Teacher select(long teacherId);
+    Teacher select(long teacherId);
 
-    public Long createTeacher(Teacher teacher);
+    Long createTeacher(Teacher teacher);
 
-    public Long replaceTeacher(long teacherId, Teacher teacher);
+    void replaceTeacher(long teacherId, Teacher teacher);
 
-    public Long delete(long teacherId);
+    Long delete(long teacherId);
 }

@@ -1,73 +1,78 @@
 apply plugin: 'war'
+apply plugin: 'com.bmuschko.tomcat'
 apply plugin: 'com.bmuschko.cargo'
-apply plugin: 'org.akhikhl.gretty'
 
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.bmuschko:gradle-cargo-plugin:2.0.3'
-        classpath 'org.akhikhl.gretty:gretty:1.1.8'
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.1.1'
+        classpath 'com.bmuschko:gradle-tomcat-plugin:2.2.2'
     }
 
 }
 
-def loadProperty(pathRelToProjectDir, property) {
-    Properties props = new Properties()
-    props.load(new FileInputStream(projectDir.toString() + pathRelToProjectDir))
-    return props.get(property).toString()
+Properties props = new Properties()
+props.load(new FileInputStream(projectDir.toString() + "/src/test/resources/localhost.config.properties"))
+def local_portnum = new URI(props.get("endpoint").toString()).port
+def local_https_portnum = new URI(props.get("httpsEndpoint").toString()).port
+
+war.archiveName = 'warehouse.war'
+
+tomcat {
+    httpPort = local_portnum
+    httpsPort = local_https_portnum
+    enableSSL = true
+    contextPath = 'warehouse'
+    daemon = true
 }
 
 cargo {
-    def local_portnum = new URI(loadProperty("/src/test/resources/localhost.config.properties", "endpoint")).port;
-    def local_https_portnum = new URI(loadProperty("/src/test/resources/localhost.config.properties", "httpsEndpoint")).port;
     containerId = 'tomcat7x'
+    port = local_https_portnum
 
-    // Note: cargo local stuff will still work for now, but please prefer gretty ("gradle appRun") for local instances
+    def tomcatVersion = '7.0.64'
+
     local {
         installer {
-            installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.63/bin/apache-tomcat-7.0.63.zip'
+            installUrl = "http://apache.osuosl.org/tomcat/tomcat-7/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
             downloadDir = file("$buildDir/download")
             extractDir = file("$buildDir/extract")
         }
         containerProperties {
             // use a non-standard ajp port (not 9099) so as to not conflict with other tomcat instances
-            property 'cargo.tomcat.ajp.port', 9199
-            property 'cargo.servlet.port', local_portnum
+            property 'cargo.tomcat.ajp.port', 9199 
+            property 'cargo.servlet.port', local_https_portnum 
+            property 'cargo.tomcat.httpSecure', 'true'
+            property 'cargo.protocol', 'https'
+            property 'cargo.tomcat.connector.sslProtocol', 'TLS'
+            property 'cargo.tomcat.connector.keystoreFile', "$projectDir/ssl/tomcat_keystore"
+            property 'cargo.tomcat.connector.keystorePass', 'changeit'
+            property 'cargo.tomcat.connector.clientAuth', 'false'
         }
+        outputFile = file("build/catalina.log")
+        timeout = 60000
     }
 
     remote {
         hostname = 'localhost'
-        port = 8090
+        port = local_portnum
         username = 'cargo'
         password = '0BxLrz7zG4dqDX2q6vi4'
     }
 }
 
-// use gretty to start a container instrumented with jacoco for calculation of integration test coverage
-gretty {
-    def local_portnum = new URI(loadProperty("/src/test/resources/localhost.config.properties", "endpoint")).port;
-    def local_https_portnum = new URI(loadProperty("/src/test/resources/localhost.config.properties", "httpsEndpoint")).port;
-
-    port = local_portnum
-    httpsPort = local_https_portnum
-    httpsEnabled = true
-    // supported values:
-    // 'jetty7', 'jetty8', 'jetty9', 'tomcat7', 'tomcat8'
-    servletContainer = 'tomcat7'
-
-    // automatically start up the container before the following task, and shut it down afterwards
-    integrationTestTask = 'integrationLocalWithContainer'
-    jvmArgs '-XX:MaxPermSize=1024m', '-Xmx2048m'
-
-    // override default generation of SSL cert with this static one, just for convenience (don't need to re-certify when project is cleaned)
-    sslKeyStorePath = "$projectDir/ssl/keystore"
-    sslKeyStorePassword = 'Q7QCES5MoYXYqjgO6Y2hVNNl6j1L2sgPJesmg2mBzPHkHF2esH7KO1G8keUGwHJpyTc6CyHnmWSlRDYcBqtvLQwZsgGwYypAqHnOsPXN0HBF4nwQB9rJltKjMP8yO4Mt'
-    sslKeyManagerPassword = 's5A3O1HioR7pwa8nIgcq08vrbYOKaJgI6m0wLtOiRykxc8oHW19o5G3XnmHMvy5mIPQ4aQGLMsna99E7SXyUrA7ufMCYSqXkOahahOacmKkHeUkHm2ZC6BZ2Qenm4HUF'
+task appRunDebug(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal) { 
+    cargo { 
+        local { 
+            jvmArgs "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
+        }
+    }
 }
+
 
 //Integration test suite
 def getFileByPattern(File dir, String pat, String stripDir) {
@@ -97,14 +102,23 @@ task integrationLocal(type: Test) {
     beforeTest { descriptor ->
         logger.lifecycle("RUNNING INTEGRATION TEST LOCALLY: " + descriptor)
     }
+    tomcatStop.execute()
 }
 
-task integrationLocalWithContainer(type: Test, dependsOn: integrationLocal) {
+task integrationLocalWithContainer(type: Test) << {
     group 'Verification'
-    description 'use gretty to start a local container, then run the integrationLocal task, then stop container'
-
+    description 'use tomcat to start a local container, then run the integrationLocal task, then stop container'
 }
 
+integrationLocalWithContainer.doFirst {
+    war.execute()
+    tomcatRunWar.execute()
+    integrationLocal.execute()
+}
+
+task appRun(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal) { }
+
+// synthetic data gen
 task syntheticDataGen(type: Test) {
     group 'datagen'
     description 'runs the synthetic data generation against the local container'
@@ -122,9 +136,14 @@ ext {
     springSecurityVersion = "3.2.5.RELEASE"
     jacksonVersion = "2.6.0"
     apacheHttpVersion = "4.3.3"
+    tomcatVersion = '7.0.59'
 }
 
 dependencies {
+
+    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
+            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
 
     compile project(':common'),
             "javax.servlet:javax.servlet-api:3.1.0",
@@ -160,6 +179,7 @@ dependencies {
             "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion",
             "com.fasterxml.jackson.module:jackson-module-scala_2.10:$jacksonVersion",
             //Swagger for API documentation, & dependent JARs
+            "org.hibernate:hibernate-core:4.3.11.Final",
             "com.wordnik:swagger-core_2.10:1.3.2",
             "com.wordnik:swagger-annotations:1.3.2",
             "com.knappsack:swagger4spring-web:0.3.3",

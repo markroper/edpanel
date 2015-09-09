@@ -1,9 +1,6 @@
 package com.scholarscore.client;
 
-import com.scholarscore.models.Behavior;
-import com.scholarscore.models.School;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.Teacher;
+import com.scholarscore.models.*;
 
 import java.util.Collection;
 
@@ -13,7 +10,6 @@ import java.util.Collection;
 public interface IAPIClient {
     School createSchool(School school);
     School getSchool(Long id);
-
     Student createStudent(Student student);
     Student updateStudent(Long studentId, Student student);
     Collection<Student> getStudents();
@@ -23,4 +19,8 @@ public interface IAPIClient {
     Collection<Behavior> getBehaviors(Long studentId);
     Behavior createBehavior(Long studentId, Behavior behavior);
     
+    Teacher createTeacher(Teacher teacher);
+    Administrator createAdministrator(Administrator administrator);
+    User createUser(User login);
+    Course createCourse(Long schoolId, Course course);
 }
