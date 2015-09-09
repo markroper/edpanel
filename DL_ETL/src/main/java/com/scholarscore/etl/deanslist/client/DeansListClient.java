@@ -25,6 +25,8 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
     
     public static final String PATH_GET_BEHAVIOR_DATA = "/api/beta/export/get-behavior-data.php";
 
+    private boolean authenticated = false;
+    
     public DeansListClient(URI uri) {
         super(uri);
         authenticate();
@@ -53,6 +55,7 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
             } else if (response.getStatusLine().getStatusCode() == 302
                     && response.getFirstHeader(HEADER_LOCATION).getValue().contains("index.php")) {
                 System.out.println("Got redirected to index.php, so login was successful");
+                authenticated = true;
             } else {
                 throw new HttpClientException("Failed to make request to end point: " + post.getURI() 
                         + ", status line: " + response.getStatusLine().toString());

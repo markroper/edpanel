@@ -3,12 +3,14 @@ package com.scholarscore.etl;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.deanslist.api.response.BehaviorResponse;
 import com.scholarscore.etl.deanslist.client.IDeansListClient;
+import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.Teacher;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -46,13 +48,14 @@ public class DLETLEngine implements IETLEngine {
 
         // get students from scholarscore -- we need to match names to behavior events
         Collection<Student> existingStudents = scholarScore.getStudents();
+        HashMap<String, Student> studentLookup = populateLookup(existingStudents);
+        
         System.out.println("got " + existingStudents.size() + " existing students as potential merge targets.");
         // get teachers from scholarscore -- we need to match names to behavior events
         Collection<Teacher> existingTeachers = scholarScore.getTeachers();
+        HashMap<String, Teacher> teacherLookup = populateLookup(existingTeachers);
         System.out.println("got " + existingTeachers.size() + " existing teachers as potential merge targets.");
         
-        // TODO Jordan make this terrible nesting less terrible. don't search the same existing students
-        // and teachers multiple times -- hashmapify this before merge
         for (Behavior behavior : behaviorsToMerge) {
             // at this point, the only thing populated in the student is their name
             Student student = behavior.getStudent();
@@ -64,25 +67,18 @@ public class DLETLEngine implements IETLEngine {
 
             if (student != null && student.getName() != null
                 && teacher != null && teacher.getName() != null) {
-                String studentName = stripAndLowerName(student.getName());
-                String teacherName = stripAndLowerName(teacher.getName());
-                for (Student existingStudent : existingStudents) {
-                    if (studentName.equalsIgnoreCase(stripAndLowerName(existingStudent.getName()))) {
-                        // student found, now we need to locate teacher
-                        for (Teacher existingTeacher : existingTeachers) {
-                            if (teacherName.equalsIgnoreCase(stripAndLowerName(existingTeacher.getName()))) {
-                                // student and teacher matched! migrate behavioral event
-                                behavior.setStudent(existingStudent);
-                                behavior.setTeacher(existingTeacher);
-                                System.out.println("About to map Behavior " + behavior.getName()
-                                        + " to student " + existingStudent.getName()
-                                        + " and teacher " + existingTeacher.getName());
-                                long studentId = existingStudent.getId();
-                                scholarScore.createBehavior(studentId, behavior);
-                                break;
-                            }
-                        }
-                    }
+                Student existingStudent = studentLookup.get(stripAndLowerName(student.getName()));
+                Teacher existingTeacher = teacherLookup.get(stripAndLowerName(teacher.getName()));
+                if (existingStudent != null && existingTeacher != null) {
+                    // student and teacher matched! migrate behavioral event
+                    behavior.setStudent(existingStudent);
+                    behavior.setTeacher(existingTeacher);
+                    System.out.println("About to map Behavior " + behavior.getName()
+                            + " to student " + existingStudent.getName()
+                            + " and teacher " + existingTeacher.getName());
+                    long studentId = existingStudent.getId();
+                    scholarScore.createBehavior(studentId, behavior);
+                    break;
                 }
             } else {
                 System.out.println("WARN: Student and/or Teacher was null, skipping behavior event...");
@@ -92,7 +88,26 @@ public class DLETLEngine implements IETLEngine {
         // TODO Jordan: DeansList ETL in progress
         return new MigrationResult();
     }
-    
+
+    /* Populate a hashmap with a collection of ApiModel objects,
+     * using the name of the object as the key. 
+     * Multiple objects with the same name are poorly handled at the moment -
+     * if more than one object has the same name, the last one wins.
+     * TODO: how to handle duplicate names?
+     * NOTE: The ApiModel's name is stripped of spaces and lowercased when it is set as the key.
+     *
+     */
+    private <T extends ApiModel> HashMap<String, T> populateLookup(Collection<T> collection) {
+        HashMap<String, T> lookup = new HashMap<>();
+        for (T entry : collection) {
+            String entryName = entry.getName();
+            if (entryName != null) {
+                lookup.put(stripAndLowerName(entryName), entry);
+            }
+        }
+        return lookup;
+    }
+
     private String stripAndLowerName(String name) {
         if (null == name) { return null; }
         return name.toLowerCase().trim().replaceAll("\\s", "");
