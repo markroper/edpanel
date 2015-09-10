@@ -1,5 +1,4 @@
 apply plugin: 'war'
-apply plugin: 'com.bmuschko.tomcat'
 apply plugin: 'com.bmuschko.cargo'
 
 buildscript {
@@ -10,7 +9,6 @@ buildscript {
 
     dependencies {
         classpath 'com.bmuschko:gradle-cargo-plugin:2.1.1'
-        classpath 'com.bmuschko:gradle-tomcat-plugin:2.2.2'
     }
 
 }
@@ -21,14 +19,6 @@ def local_portnum = new URI(props.get("endpoint").toString()).port
 def local_https_portnum = new URI(props.get("httpsEndpoint").toString()).port
 
 war.archiveName = 'warehouse.war'
-
-tomcat {
-    httpPort = local_portnum
-    httpsPort = local_https_portnum
-    enableSSL = true
-    contextPath = 'warehouse'
-    daemon = true
-}
 
 cargo {
     containerId = 'tomcat7x'
@@ -102,21 +92,24 @@ task integrationLocal(type: Test) {
     beforeTest { descriptor ->
         logger.lifecycle("RUNNING INTEGRATION TEST LOCALLY: " + descriptor)
     }
-    tomcatStop.execute()
 }
 
-task integrationLocalWithContainer(type: Test) << {
+task integrationLocalWithContainer(type: Test, dependsOn: 'war') << {
     group 'Verification'
     description 'use tomcat to start a local container, then run the integrationLocal task, then stop container'
 }
 
 integrationLocalWithContainer.doFirst {
-    war.execute()
-    tomcatRunWar.execute()
+    appStart.execute()
     integrationLocal.execute()
+    appStop.execute()
 }
 
 task appRun(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal) { }
+
+task appStart(type: com.bmuschko.gradle.cargo.tasks.local.CargoStartLocal) { }
+
+task appStop(type: com.bmuschko.gradle.cargo.tasks.local.CargoStopLocal) { }
 
 // synthetic data gen
 task syntheticDataGen(type: Test) {
@@ -136,14 +129,9 @@ ext {
     springSecurityVersion = "3.2.5.RELEASE"
     jacksonVersion = "2.6.0"
     apacheHttpVersion = "4.3.3"
-    tomcatVersion = '7.0.59'
 }
 
 dependencies {
-
-    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
-            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
-            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
 
     compile project(':common'),
             "javax.servlet:javax.servlet-api:3.1.0",
