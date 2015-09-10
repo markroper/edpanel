@@ -13,7 +13,7 @@ To build the warehouse WAR and deploy it to a DEBUGGABLE jetty instance, run:
 gradle clean build appRunDebug
 </code>
 
-Note: The process will be in suspended mode until a debugger is attached on port 5005.
+Note: The process will startup normally (not halt) but a debugger can be attached on port 5005.
 
 To view the API endpoints in the browser via swagger click [here](http://localhost:8085/warehouse).
 
