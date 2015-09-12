@@ -23,7 +23,7 @@ import javax.validation.constraints.Size;
  * @author markroper
  *
  */
-@Entity(name = "course")
+@Entity(name = HibernateConsts.COURSE_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Course extends ApiModel implements Serializable, IApiModel<Course> {
@@ -57,7 +57,7 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
         }
     }
 
-    @Column(name = "course_number")
+    @Column(name = HibernateConsts.COURSE_NUMBER)
     public String getNumber() {
         return number;
     }
@@ -66,7 +66,7 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
         this.number = number;
     }
 
-    @Column(name = "course_source_system_id")
+    @Column(name = HibernateConsts.COURSE_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
         return sourceSystemId;
     }
@@ -77,20 +77,20 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name = "course_id")
+    @Column(name = HibernateConsts.COURSE_ID)
     public Long getId() {
         return super.getId();
     }
 
     @Override
-    @Column(name = "course_name")
+    @Column(name = HibernateConsts.COURSE_NAME)
     public String getName() {
         return super.getName();
     }
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
-    @JoinColumn(name="school_fk")
+    @JoinColumn(name=HibernateConsts.SCHOOL_FK)
     public School getSchool() {
         return school;
     }

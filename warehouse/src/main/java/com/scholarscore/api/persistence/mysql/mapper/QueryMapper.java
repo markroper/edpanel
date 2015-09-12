@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scholarscore.api.persistence.mysql.DbConst;
+import com.scholarscore.api.persistence.mysql.DbMappings;
 import com.scholarscore.models.query.Query;
 
 public class QueryMapper implements RowMapper<Query> {
@@ -17,8 +17,8 @@ public class QueryMapper implements RowMapper<Query> {
         ObjectMapper mapper = new ObjectMapper();
         Query query;
         try {
-            query = mapper.readValue(rs.getString(DbConst.REPORT_COL), Query.class);
-            query.setId(rs.getLong(DbConst.REPORT_ID_COL));
+            query = mapper.readValue(rs.getString(DbMappings.REPORT_COL), Query.class);
+            query.setId(rs.getLong(DbMappings.REPORT_ID_COL));
             //TODO: Should we add the school FK to the Query POJO?
             //rs.getString(DbConst.SCHOOL_FK_COL);
         } catch (IOException e) {

@@ -13,7 +13,7 @@ import javax.persistence.*;
  * @author mattg
  */
 @Entity(name = "user")
-@Table(name = "users")
+@Table(name = HibernateConsts.USERS_TABLE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User extends ApiModel implements Serializable, IApiModel<User> {
 	// v1
@@ -36,7 +36,7 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 	// Indicates whether the user is a login user and can login (by default this is disabled until the user has set a username/password)
 	private Boolean enabled;
 
-	@Column(name = "password")
+	@Column(name = HibernateConsts.USER_PASSWORD)
 	public String getPassword() {
 		return password;
 	}
@@ -46,7 +46,7 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 	}
 
 	@Id
-	@Column(name = "username")
+	@Column(name = HibernateConsts.USER_NAME)
 	public String getUsername() {
 		return username;
 	}
@@ -54,7 +54,7 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 		this.username = username;
 	}
 
-	@Column(name = "enabled")
+	@Column(name = HibernateConsts.USER_ENABLED)
 	public Boolean getEnabled() {
 		return enabled;
 	}

@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @SuppressWarnings("serial")
-@Entity(name="address")
+@Entity(name=HibernateConsts.ADDRESS_TABLE)
 public class Address implements Serializable {
     private String street;
     private String city;
@@ -26,7 +26,7 @@ public class Address implements Serializable {
         this.setId(clone.getId());
     }
 
-    @Column(name = "address_street")
+    @Column(name = HibernateConsts.ADDRESS_STREET)
     public String getStreet() {
         return street;
     }
@@ -35,7 +35,7 @@ public class Address implements Serializable {
         this.street = street;
     }
 
-    @Column(name = "address_city")
+    @Column(name = HibernateConsts.ADDRESS_CITY)
     public String getCity() {
         return city;
     }
@@ -44,7 +44,7 @@ public class Address implements Serializable {
         this.city = city;
     }
 
-    @Column(name = "address_state")
+    @Column(name = HibernateConsts.ADDRESS_STATE)
     public String getState() {
         return state;
     }
@@ -53,7 +53,7 @@ public class Address implements Serializable {
         this.state = state;
     }
 
-    @Column(name = "address_postal_code")
+    @Column(name = HibernateConsts.ADDRESS_POSTAL_CODE)
     public String getPostalCode() {
         return postalCode;
     }
@@ -85,7 +85,7 @@ public class Address implements Serializable {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name = "address_id")
+    @Column(name = HibernateConsts.ADDRESS_ID)
     public Long getId() {
         return id;
     }

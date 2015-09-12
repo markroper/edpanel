@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import com.scholarscore.api.persistence.mysql.DbConst;
+import com.scholarscore.api.persistence.mysql.DbMappings;
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.models.StudentAssignment;
 import org.springframework.orm.hibernate4.HibernateTemplate;
