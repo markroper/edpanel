@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  *
  */
 @Entity
-@Table(name = "assignment")
+@Table(name = HibernateConsts.ASSIGNMENT_ASSIGNED_DATE)
 @DiscriminatorValue(value = "AttendanceAssignment")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @SuppressWarnings("serial")
