@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
-import com.scholarscore.api.persistence.mysql.DbConst;
+import com.scholarscore.api.persistence.mysql.DbMappings;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureSqlSerializer;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureSqlSerializerFactory;
 import com.scholarscore.models.query.AggregateMeasure;
@@ -100,7 +100,7 @@ public abstract class QuerySqlGenerator {
         
         //Use the first dimension in the sorted columns as the FROM table
         Dimension currTable = orderedTables.get(0);
-        sqlBuilder.append(DbConst.DIMENSION_TO_TABLE_NAME.get(currTable) + " ");
+        sqlBuilder.append(DbMappings.DIMENSION_TO_TABLE_NAME.get(currTable) + " ");
         
         //Join in the measures table on the FROM table
         AggregateMeasure am = q.getAggregateMeasures().get(0);
@@ -111,7 +111,7 @@ public abstract class QuerySqlGenerator {
         if(orderedTables.size() > 1) {
             for(int i = 1; i < orderedTables.size(); i++) {
                 Dimension joinDim = orderedTables.get(i);
-                String currentTableName = DbConst.DIMENSION_TO_TABLE_NAME.get(currTable);
+                String currentTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(currTable);
                 //If the next dimension is not compatible with the previous table for joining, that is, there is no 
                 //PK/FK relationship between the two, try to join on the measure table directly. If the measure is 
                 //not compatible with the dimension for joining, try joining on the previous dimension in the hierarchy.
@@ -128,14 +128,14 @@ public abstract class QuerySqlGenerator {
                             descIndex--;
                         }
                         if(Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
-                            currentTableName = DbConst.DIMENSION_TO_TABLE_NAME.get(dimDesc);
+                            currentTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimDesc);
                         } else {
                             throw new SqlGenerationException(
                                     "Cannot join dimension to either previous dimension or measure: " + joinDim);
                         }
                     }
                 }
-                String joinTableName = DbConst.DIMENSION_TO_TABLE_NAME.get(joinDim);
+                String joinTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(joinDim);
                 if(null == currentTableName || null == joinTableName) {
                     throw new SqlGenerationException("Unable to generate JOIN clause due to null table name");
                 }
@@ -176,7 +176,7 @@ public abstract class QuerySqlGenerator {
             throws SqlGenerationException {
         switch(operand.getType()) {
             case DATE:
-                sqlBuilder.append(" '" + DbConst.resolveTimestamp(((DateOperand)operand).getValue()) + "' ");
+                sqlBuilder.append(" '" + DbMappings.resolveTimestamp(((DateOperand)operand).getValue()) + "' ");
                 break;
             case DIMENSION:
                 sqlBuilder.append(" " + generateDimensionFieldSql( ((DimensionOperand)operand).getValue()) + " ");
@@ -215,8 +215,8 @@ public abstract class QuerySqlGenerator {
     }
     
     protected static String generateDimensionFieldSql(DimensionField f) throws SqlGenerationException {
-        String tableName = DbConst.DIMENSION_TO_TABLE_NAME.get(f.getDimension());
-        String columnName = DbConst.DIMENSION_TO_COL_NAME.get(f);
+        String tableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(f.getDimension());
+        String columnName = DbMappings.DIMENSION_TO_COL_NAME.get(f);
         if(null == tableName || null == columnName) {
             throw new SqlGenerationException("Invalid dimension, tableName (" + 
                     tableName + ") and columnName (" + 
@@ -226,8 +226,8 @@ public abstract class QuerySqlGenerator {
     }
     
     protected static String generateMeasureFieldSql(MeasureField f) throws SqlGenerationException {
-        String tableName = DbConst.MEASURE_TO_TABLE_NAME.get(f.getMeasure());
-        String columnName = DbConst.MEASURE_FIELD_TO_COL_NAME.get(f);
+        String tableName = DbMappings.MEASURE_TO_TABLE_NAME.get(f.getMeasure());
+        String columnName = DbMappings.MEASURE_FIELD_TO_COL_NAME.get(f);
         if(null == tableName || null == columnName) {
             throw new SqlGenerationException("Invalid dimension, tableName (" + 
                     tableName + ") and columnName (" + 

@@ -16,7 +16,7 @@ import javax.persistence.*;
  *
  */
 @Entity
-@Table(name = "assignment")
+@Table(name = HibernateConsts.ASSIGNMENT_TABLE)
 @DiscriminatorValue(value = "GradedAssignment")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @SuppressWarnings("serial")
@@ -45,7 +45,7 @@ public class GradedAssignment extends Assignment implements Serializable {
         }
     }
 
-    @Column(name = "assigned_date")
+    @Column(name = HibernateConsts.ASSIGNMENT_ASSIGNED_DATE)
     public Date getAssignedDate() {
         return assignedDate;
     }
