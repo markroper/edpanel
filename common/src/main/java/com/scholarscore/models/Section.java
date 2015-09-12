@@ -88,6 +88,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.COURSE_FK)
+    @Fetch(FetchMode.JOIN)
     public Course getCourse() {
         return course;
     }
@@ -100,6 +101,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.TERM_FK)
+    @Fetch(FetchMode.JOIN)
     public Term getTerm() {
         return term;
     }

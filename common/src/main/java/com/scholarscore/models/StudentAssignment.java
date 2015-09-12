@@ -6,10 +6,12 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.hibernate.annotations.Cascade;
+
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 
 /**
  * Represents the student's performance on an assignment in a specific course.
@@ -74,6 +76,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     @OneToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.ASSIGNMENT_FK)
+    @Fetch(FetchMode.JOIN)
     public Assignment getAssignment() {
         return assignment;
     }
