@@ -105,9 +105,9 @@ integrationLocalWithContainer.doFirst {
     appStop.execute()
 }
 
-task appRun(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal) { }
+task appRun(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal, dependsOn: 'war') { }
 
-task appStart(type: com.bmuschko.gradle.cargo.tasks.local.CargoStartLocal) { }
+task appStart(type: com.bmuschko.gradle.cargo.tasks.local.CargoStartLocal, dependsOn: 'war') { }
 
 task appStop(type: com.bmuschko.gradle.cargo.tasks.local.CargoStopLocal) { }
 
