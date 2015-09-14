@@ -13,4 +13,13 @@ public interface SectionPersistence extends EntityPersistence<Section> {
      */
     public Collection<Section> selectAllSectionForStudent(
             long termId, long studentId);
+    
+    /**
+     * Returns all the sections in a term in taught by the teacher with teacherId
+     * @param termId
+     * @param teacherId
+     * @return
+     */
+    public Collection<Section> selectAllSectionForTeacher(
+            long termId, long teacherId);
 }
