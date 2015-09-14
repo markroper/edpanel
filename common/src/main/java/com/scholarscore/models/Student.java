@@ -24,7 +24,7 @@ import javax.persistence.*;
 @Table(name = HibernateConsts.STUDENT_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Student extends ApiModel implements Serializable, IApiModel<Student>{
+public class Student extends Identity implements Serializable, IApiModel<Student>{
     
     public Student() {
         
@@ -32,8 +32,6 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
     
     public Student(Student student) {
         super(student);
-        this.username = student.username;
-        this.login = student.login;
         this.sourceSystemId = student.sourceSystemId;
         this.mailingAddress = student.mailingAddress;
         this.homeAddress = student.homeAddress;
@@ -64,17 +62,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.projectedGraduationYear = expectedGraduationYear;
     }
     
-    // FK to the Users table, this is optional as a 1:1 relationship does not need to exist between
-    // a user and a student.  A student can exist without a login.  Currently spring security requires
-    // this as the PK of the table, this should be changed to an id column as usernames may be able to
-    // change in the future? This should be hidden from the exported model
-    @JsonIgnore
-    private String username;
-    // A loaded version of the user identity
-    @JsonInclude
-    private transient User login;
     //Source system identifier. E.g. powerschool ID
-
     private String sourceSystemId;
     //Addresses
     private Address mailingAddress;
@@ -134,13 +122,9 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         }
     }
 
-	public String getUsername() {
-		return username;
-	}
-
     @Transient
     public User getLogin() {
-        return login;
+        return getLogin();
     }
     @Column(name = HibernateConsts.STUDENT_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
@@ -158,14 +142,6 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
     public Address getMailingAddress() {
         return mailingAddress;
     }
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public void setLogin(User login) {
-		this.login = login;
-	}
 
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
