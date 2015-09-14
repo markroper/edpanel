@@ -54,6 +54,16 @@ public class StudentJdbc implements StudentPersistence {
         return hibernateTemplate.get(Student.class, studentId);
     }
 
+
+    @Override
+    public Student select(String username) {
+        List<Student> students = (List<Student>) hibernateTemplate.findByNamedParam("from student s where s.username = :username", "username", username);
+        if (students.size() == 1) {
+            return students.get(0);
+        }
+        return null;
+    }
+
     @Override
     public Long createStudent(Student student) {
         Student out = hibernateTemplate.merge(student);
