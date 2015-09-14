@@ -43,7 +43,7 @@ public abstract class Assignment
     private AssignmentType type;
     private Date dueDate;
     private Long availablePoints;
-    protected Section section;
+    protected transient Section section;
     protected Long sectionFK;
 
     /**
@@ -56,6 +56,7 @@ public abstract class Assignment
     @OneToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.SECTION_FK, insertable = false, updatable = false)
+    @Transient
     public Section getSection() {
         return section;
     }

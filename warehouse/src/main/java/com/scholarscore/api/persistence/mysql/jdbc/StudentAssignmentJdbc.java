@@ -2,10 +2,12 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.scholarscore.api.persistence.mysql.StudentAssignmentPersistence;
 import com.scholarscore.models.Assignment;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -15,6 +17,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import com.scholarscore.api.persistence.mysql.DbMappings;
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.models.StudentAssignment;
+
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
@@ -82,7 +85,16 @@ public class StudentAssignmentJdbc
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<StudentAssignment> selectAllAssignmentsOneSectionOneStudent(long sectionId, long studentId) {
-        return null;
+        String[] paramNames = new String[]{ "sectionId", "studentId" };
+        Object[] paramValues = new Object[]{ new Long(sectionId), new Long(studentId) };
+        List<StudentAssignment> studentAssignments = (List<StudentAssignment>)
+                hibernateTemplate.findByNamedParam(
+                        "select sa from student_assignment sa inner join fetch sa.assignment a inner join fetch sa.student s "
+                        + "where a.sectionFK = :sectionId and s.id = :studentId", 
+                        paramNames, 
+                        paramValues);
+        return studentAssignments;
     }
 }
