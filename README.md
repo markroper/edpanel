@@ -8,6 +8,28 @@ The platform will also have a data analytics and visualization engine that will 
 
 Domain objects and utility functionality are in the **common** module.  Other modules may have a compile dependency on the common project, for example the **warehouse** module, but the **common** module should have no dependencies on any other module.
 
+Setting up the project
+================
+To run the project you'll need to install the following on the development machine:
+
+    * Java8
+    * Gradle
+    * MySql version 5.6 (Newer versions may also run)
+    * Git
+    * An IDE (recommend Intellij or Eclipse)
+    
+Once these dependencies are resolved, you'll need to create the database user needed to support the API persistence:
+
+`CREATE DATABASE scholar_warehouse;`
+
+`CREATE USER 'warehouse'@'localhost' IDENTIFIED BY 't3achTh3Childr3n';`
+
+`GRANT USAGE ON *.* TO 'warehouse'@'localhost';`
+
+`GRANT ALL PRIVILEGES ON scholar_warehouse.* TO 'warehouse'@'localhost';`
+
+After this the the following gradle command to bootstrap the database (creating all the tables and relationships between those tables) `gradle refillDatabase`. Then you can import the project in your IDE and start working.  When you want to deploy to the local container, run the gradle command `gradle appRun` or if you want to attach your IDE debugger run `gradle appRunDebug` and then attach the debugger once the command has deployed to the container.
+
 Database Entity Relationship Diagram
 ================
 ![Alt text](database/DatabaseModel.png)
