@@ -45,7 +45,7 @@ public class UserController extends BaseController {
 			produces = { JSON_ACCEPT_HEADER })
 	public @ResponseBody ResponseEntity getCurrentIdentity() {
 		ServiceResponse<Identity> identity = getUserManager().getCurrentUser();
-		return null;
+		return respond(identity);
 	}
 
 	@ApiOperation(
