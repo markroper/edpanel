@@ -45,6 +45,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected transient Course course;
     protected transient List<Student> enrolledStudents;
     protected transient List<Assignment> assignments;
+    protected List<StudentSectionGrade> studentSectionGrades;
     //TODO: List<Teacher> teachers;
     //TODO: Set<SectionAssignment> assignments;
     //TODO: Schedule
@@ -166,6 +167,18 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
 
     public void setEnrolledStudents(List<Student> enrolledStudents) {
         this.enrolledStudents = enrolledStudents;
+    }
+    
+    @OneToMany(mappedBy = "section", fetch=FetchType.LAZY)
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @Fetch(FetchMode.JOIN)
+    @JsonIgnore
+    public List<StudentSectionGrade> getStudentSectionGrades() {
+        return studentSectionGrades;
+    }
+
+    public void setStudentSectionGrades(List<StudentSectionGrade> grades) {
+        this.studentSectionGrades = grades;
     }
 
     public Student findEnrolledStudentById(Long id) {
