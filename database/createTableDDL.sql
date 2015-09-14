@@ -141,6 +141,24 @@ CREATE TABLE `scholar_warehouse`.`section` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
+CREATE TABLE `scholar_warehouse`.`teacher_section` (
+  `teacher_section_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
+  `teacher_fk` BIGINT UNSIGNED COMMENT 'The FK to the teacher table',
+  `section_fk` BIGINT UNSIGNED COMMENT 'The FK to the section table',
+  `role` VARCHAR(256) NULL COMMENT 'Indicates the role the teacher has in the section',
+  PRIMARY KEY (`teacher_section_id`),
+  CONSTRAINT `teacher_section_teacher_fk`
+    FOREIGN KEY(`teacher_fk`)
+    REFERENCES `scholar_warehouse`.`teacher`(`teacher_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `teacher_section_section_fk`
+    FOREIGN KEY(`section_fk`)
+    REFERENCES `scholar_warehouse`.`section`(`section_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+  ENGINE = InnoDB;
+
 CREATE TABLE `scholar_warehouse`.`assignment` (
   `assignment_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `assignment_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
