@@ -129,4 +129,8 @@ public class HibernateConsts {
     public static final String USER_NAME = "username";
     public static final String USER_PASSWORD = "password";
     public static final String USER_ENABLED = "enabled";
+    
+    //Section to Teacher table
+    public static final String TEACHER_SECTION_TABLE = "teacher_section";
+    public static final String TEACHER_SECTION_ROLE = "role";
 }
