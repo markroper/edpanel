@@ -6,10 +6,13 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.hibernate.annotations.Cascade;
+
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * Represents the student's performance on an assignment in a specific course.
@@ -18,14 +21,15 @@ import javax.persistence.*;
  *
  */
 @Entity(name = HibernateConsts.STUDENT_ASSIGNMENT_TABLE)
+@Table(name = HibernateConsts.STUDENT_ASSIGNMENT_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentAssignment extends ApiModel implements Serializable, WeightedGradable, IApiModel<StudentAssignment> {
     private Boolean completed;
     private Date completionDate;
     private Long awardedPoints;
-    private transient Assignment assignment;
-    private transient Student student;
+    private Assignment assignment;
+    private Student student;
 
     public StudentAssignment() {
         super();
@@ -71,9 +75,10 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         this.completed = completed;
     }
 
-    @OneToOne
+    @ManyToOne(optional = true, fetch=FetchType.LAZY)
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.ASSIGNMENT_FK)
+    @Fetch(FetchMode.JOIN)
     public Assignment getAssignment() {
         return assignment;
     }
@@ -98,6 +103,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     public int getWeight() {
         // Today, these weights live in GradeFormula and can't be 
         // directly grabbed from StudentAssignment.
+        //TODO: then why is this here?  remove me
         return 1;
     }
 
@@ -109,9 +115,10 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         this.assignment = assignment;
     }
 
-    @OneToOne
+    @ManyToOne(optional = true, fetch=FetchType.LAZY)
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.STUDENT_FK)
+    @Fetch(FetchMode.JOIN)
     public Student getStudent() {
         return student;
     }
