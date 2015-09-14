@@ -11,6 +11,7 @@ import java.util.*;
 
 @Transactional
 public class AdministratorJdbc implements AdministratorPersistence {
+
     @Autowired
     private HibernateTemplate hibernateTemplate;
 
@@ -33,6 +34,14 @@ public class AdministratorJdbc implements AdministratorPersistence {
     @Override
     public Administrator select(long administratorId) {
         return hibernateTemplate.get(Administrator.class, administratorId);
+    }
+
+    public Administrator select(String username) {
+        List<Administrator> users = (List<Administrator>)hibernateTemplate.findByNamedParam("from administrator a where a.username = :username", "username", username);
+        if (users.size() == 1) {
+            return users.get(0);
+        }
+        return null;
     }
 
     @Override

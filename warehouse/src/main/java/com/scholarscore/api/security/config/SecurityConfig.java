@@ -1,5 +1,8 @@
 package com.scholarscore.api.security.config;
 
+import com.scholarscore.api.persistence.AdministratorPersistence;
+import com.scholarscore.api.persistence.mysql.StudentPersistence;
+import com.scholarscore.api.persistence.mysql.TeacherPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -12,6 +15,7 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -58,7 +62,7 @@ import java.io.PrintWriter;
  *
  */
 @Configuration
-@ImportResource("classpath:/dataSource.xml")
+@ImportResource({"classpath:/dataSource.xml", "classpath:/persistence.xml"})
 @EnableWebMvcSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String USER_ROLE = "USER";
@@ -89,6 +93,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Autowired
     private DataSource dataSource;
+
+    @Autowired
+    private StudentPersistence studentPersistence;
+
+    @Autowired
+    private TeacherPersistence teacherPersistence;
+
+    @Autowired
+    private AdministratorPersistence administratorPersistence;
 
     @Autowired
     private UserDetailsService customUserDetailService;
@@ -283,7 +296,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ObjectMapper mapper = new ObjectMapper();
             PrintWriter out = response.getWriter();
             //TODO: Also add teacher|| student ID, so it can be used in the UI as well
-            out.print(mapper.writeValueAsString(authentication.getPrincipal()));
+            User principal = (User)authentication.getPrincipal();
+            out.print(mapper.writeValueAsString(principal));
             out.flush();
             out.close(); 
             clearAuthenticationAttributes(request);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.scholarscore.models.Identity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -18,11 +19,11 @@ import com.scholarscore.models.User;
 @SuppressWarnings("serial")
 public class UserDetailsProxy implements UserDetails {
 
-	private User user;
+	private Identity identity;
 	private List<Authority> authorities;
 
-	public UserDetailsProxy(User user, List<Authority> authorities) {
-		this.user = user;
+	public UserDetailsProxy(Identity identity, List<Authority> authorities) {
+		this.identity = identity;
 		this.authorities = authorities;
 	}
 	
@@ -37,12 +38,12 @@ public class UserDetailsProxy implements UserDetails {
 
 	@Override
 	public String getPassword() {
-		return user.getPassword();
+		return identity.getLogin().getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		return user.getUsername();
+		return identity.getLogin().getUsername();
 	}
 
 	@Override
@@ -62,7 +63,7 @@ public class UserDetailsProxy implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return user.getEnabled();
+		return identity.getLogin().getEnabled();
 	}
 
 }

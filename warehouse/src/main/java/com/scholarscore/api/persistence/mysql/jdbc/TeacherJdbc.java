@@ -36,6 +36,14 @@ public class TeacherJdbc implements TeacherPersistence {
         return hibernateTemplate.get(Teacher.class, id);
     }
 
+    public Teacher select(String username) {
+        List<Teacher> teachers = (List<Teacher>) hibernateTemplate.findByNamedParam("from Teacher t where t.username = :username", "username", username);
+        if (teachers.size() == 1) {
+            return teachers.get(0);
+        }
+        return null;
+    }
+
     @Override
     public Long createTeacher(Teacher teacher) {
         Teacher out = hibernateTemplate.merge(teacher);
