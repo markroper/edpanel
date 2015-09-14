@@ -51,6 +51,17 @@ public interface SectionManager {
     public ServiceResponse<Section> getSection(long schoolId, long yearId, long termId, long sectionId);
 
     /**
+     * Returns a collection of Section instances in a given school, year, term and taught by a specific teacher.
+     * 
+     * @param schoolId ID of parent school
+     * @param yearId the ID of the parent year
+     * @param termId the ID of the term
+     * @param teacherId the ID of a teacher associated with the sections
+     * @return
+     */
+    public ServiceResponse<Collection<Section>> getAllSectionsByTeacher(long schoolId, long yearId, long termId, long teacherId);
+    
+    /**
      * Stores a new term instance in the system and returns the assigned ID populated on
      * the ServiceResponse. In degenerate cases, the returned ServiceResponse
      * is populated with a descriptive error code.
