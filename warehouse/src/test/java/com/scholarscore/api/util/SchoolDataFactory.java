@@ -7,9 +7,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
+
 import com.scholarscore.models.Assignment;
 import com.scholarscore.models.AssignmentType;
 import com.scholarscore.models.AttendanceAssignment;
@@ -187,7 +190,8 @@ public class SchoolDataFactory {
     public static Map<Long, List<Section>> generateSections(
             Collection<Term> terms, 
             List<Course> courses, 
-            List<Student> students) {
+            List<Student> students, 
+            List<Teacher> teachers) {
         //Static set of grade formulas
         List<GradeFormula> gradeFormulas = new ArrayList<GradeFormula>();
         Map<AssignmentType, Integer> weight1 = new HashMap<AssignmentType, Integer>() {{
@@ -235,6 +239,16 @@ public class SchoolDataFactory {
                         i++) {
                     section.getEnrolledStudents().add(students.get(i));
                 }
+                //Assign a random teacher to be the teacher of the class
+                int teacherIndex = new Random().nextInt(teachers.size() - 1);
+                for(int i = 0; i <= teacherIndex; i++) {
+                    if(teacherIndex == i) {
+                        Set<Teacher> sectionTeacher = new HashSet<Teacher>(); 
+                        sectionTeacher.add(teachers.get(i));
+                        section.setTeachers(sectionTeacher);
+                    }
+                }
+                
                 if(null == sectionMap.get(t.getId())) {
                     sectionMap.put(t.getId(), new ArrayList<Section>());
                 }

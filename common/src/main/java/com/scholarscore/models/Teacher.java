@@ -1,19 +1,10 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.query.Dimension;
-import com.scholarscore.models.query.DimensionField;
-
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
 
 @Entity(name = HibernateConsts.TEACHER_TABLE)
@@ -28,7 +19,6 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
     private String sourceSystemId;
     private Address homeAddress;
     private String homePhone;
-    private Set<Section> sections;
     
     public Teacher() {
     }
@@ -63,16 +53,6 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
     @Transient
     public User getLogin() {
         return login;
-    }
-    
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "teachers")
-    @Fetch(FetchMode.JOIN)
-    public Set<Section> getSections() {
-        return sections;
-    }
-
-    public void setSections(Set<Section> sections) {
-        this.sections = sections;
     }
 
     @Column(name = HibernateConsts.TEACHER_NAME)
