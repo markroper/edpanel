@@ -57,9 +57,10 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
         }
     }
 
-    @OneToOne(optional = true)
+    @ManyToOne(optional = true, fetch=FetchType.LAZY)
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.SECTION_FK)
+    @Fetch(FetchMode.JOIN)
     public Section getSection() {
         return section;
     }
@@ -68,9 +69,10 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
         this.section = section;
     }
 
-    @OneToOne(optional = true)
+    @ManyToOne(optional = true, fetch=FetchType.LAZY)
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name = HibernateConsts.STUDENT_FK)
+    @Fetch(FetchMode.JOIN)
     public Student getStudent() {
         return student;
     }

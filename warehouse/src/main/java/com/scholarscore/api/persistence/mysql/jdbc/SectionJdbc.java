@@ -1,12 +1,17 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.scholarscore.api.persistence.mysql.SectionPersistence;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
+
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
@@ -81,7 +86,20 @@ public class SectionJdbc implements SectionPersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<Section> selectAllSectionForStudent(long termId, long studentId) {
-        return null;
+        String[] params = new String[]{"termId", "studentId"};
+        Object[] paramValues = new Object[]{ new Long(termId), new Long(studentId) }; 
+        List<?> objects = hibernateTemplate.findByNamedParam(
+                "from section s join s.studentSectionGrades ssg where s.term.id = :termId and ssg.student.id = :studentId", 
+                params, 
+                paramValues);
+        ArrayList<Section> sectionList = new ArrayList<>();
+        for(Object obj : objects) {
+            Object[] coll = (Object[]) obj;
+            sectionList.add((Section)coll[0]);    
+        }
+        return sectionList;
+        
     }
 }
