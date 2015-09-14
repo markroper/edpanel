@@ -21,6 +21,7 @@ import javax.persistence.*;
  *
  */
 @Entity(name = HibernateConsts.STUDENT_TABLE)
+@Table(name = HibernateConsts.STUDENT_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Student extends ApiModel implements Serializable, IApiModel<Student>{
