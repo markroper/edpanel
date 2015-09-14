@@ -85,6 +85,7 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
     public Long delete(long sectionId, long studentId) {
         StudentSectionGrade toDelete = select(sectionId, studentId);
         if (null != toDelete) {
+            toDelete.getSection().getStudentSectionGrades().remove(toDelete);
             hibernateTemplate.delete(toDelete);
         }
         return toDelete.getId();
