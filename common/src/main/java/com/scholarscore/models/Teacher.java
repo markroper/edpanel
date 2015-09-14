@@ -16,7 +16,7 @@ import javax.persistence.*;
 @Entity(name = HibernateConsts.TEACHER_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
+public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
     
     public Teacher() {
     }
@@ -29,13 +29,7 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
         this.setHomePhone(t.getHomePhone());
         this.setUsername(t.getUsername());
     }
-    
-    // FK to the Users table entry
-    @JsonIgnore
-    private String username;
-    
-    @JsonInclude
-    private transient User login;
+
 
     private String sourceSystemId;
     private Address homeAddress;
@@ -90,7 +84,7 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
 
     @Transient
     public User getLogin() {
-        return login;
+        return super.getLogin();
     }
 
     @Column(name = HibernateConsts.TEACHER_NAME)
@@ -124,15 +118,11 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
 
     @Column(name = HibernateConsts.TEACHER_USERNAME)
     public String getUsername() {
-        return username;
+        return super.getUsername();
     }
 
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
-    }
-
-    public void setLogin(User login) {
-        this.login = login;
     }
 
     public void setHomeAddress(Address homeAddress) {
@@ -141,9 +131,5 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
 
     public void setHomePhone(String homePhone) {
         this.homePhone = homePhone;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 }

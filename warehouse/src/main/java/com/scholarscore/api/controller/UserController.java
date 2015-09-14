@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.scholarscore.api.util.ServiceResponse;
+import com.scholarscore.models.Identity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +34,20 @@ public class UserController extends BaseController {
 	public @ResponseBody ResponseEntity getAll() {
 	    return respond(getUserManager().getAllUsers());
 	}
-	
+
+	@ApiOperation(
+			value = "Get current user by authentication token",
+			notes = "If the user is presently signed in, return the type of user associated with the identity (teacher, administrator, student)",
+			response = Identity.class)
+	@RequestMapping(
+			value = "/current",
+			method = RequestMethod.GET,
+			produces = { JSON_ACCEPT_HEADER })
+	public @ResponseBody ResponseEntity getCurrentIdentity() {
+		ServiceResponse<Identity> identity = getUserManager().getCurrentUser();
+		return null;
+	}
+
 	@ApiOperation(
 	        value = "Get a user by username", 
 	        notes = "Given a user username, the endpoint returns the user", 

@@ -1269,7 +1269,12 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
 	public ServiceResponse<String> deleteUser(String username) {
 		return new ServiceResponse<String>(userPersistence.deleteUser(username));
 	}
-    
+
+    @Override
+    public ServiceResponse<Identity> getCurrentUser() {
+        return null;
+    }
+
     @Override
     public ServiceResponse<Query> getQuery(Long schoolId, Long queryId) {
         StatusCode code = this.schoolExists(schoolId);
