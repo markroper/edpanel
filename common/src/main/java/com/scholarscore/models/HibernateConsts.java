@@ -42,6 +42,8 @@ public class HibernateConsts {
     public static final String BEHAVIOR_TABLE = "behavior";
     public static final String BEHAVIOR_ID = "behavior_id";
     public static final String BEHAVIOR_NAME = "name";
+    public static final String BEHAVIOR_REMOTE_SYSTEM = "remote_system";
+    public static final String BEHAVIOR_REMOTE_BEHAVIOR_ID = "remote_behavior_id";
     public static final String BEHAVIOR_REMOTE_STUDENT_ID = "remote_student_id";
     public static final String BEHAVIOR_DATE = "date";
     public static final String BEHAVIOR_CATEGORY = "category";
