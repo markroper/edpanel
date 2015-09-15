@@ -1,15 +1,21 @@
 package com.scholarscore.models;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * The student class expresses a single student with a unique ID per school district.
@@ -124,7 +130,7 @@ public class Student extends Identity implements Serializable, IApiModel<Student
 
     @Transient
     public User getLogin() {
-        return getLogin();
+        return super.getLogin();
     }
     @Column(name = HibernateConsts.STUDENT_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
@@ -156,6 +162,12 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     @JoinColumn(name=HibernateConsts.STUDENT_HOME_FK)
     public Address getHomeAddress() {
         return homeAddress;
+    }
+
+    @Column(name = HibernateConsts.USER_NAME)
+    @Override
+    public String getUsername() {
+        return super.getUsername();
     }
 
     public void setHomeAddress(Address homeAddress) {

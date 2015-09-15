@@ -1,8 +1,11 @@
 package com.scholarscore.api.security.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.TeacherPersistence;
+import com.scholarscore.models.Identity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -25,14 +28,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scholarscore.api.ApiConsts;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -188,6 +187,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             and().
             sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).
             and().
+            userDetailsService(customUserDetailService).
             exceptionHandling().
             accessDeniedHandler(new CustomAccessDeniedHandler()).
             authenticationEntryPoint(new CustomAuthenticationEntryPoint()).
@@ -295,9 +295,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             SecurityConfig.addCorsHeaders(response);
             ObjectMapper mapper = new ObjectMapper();
             PrintWriter out = response.getWriter();
-            //TODO: Also add teacher|| student ID, so it can be used in the UI as well
-            User principal = (User)authentication.getPrincipal();
-            out.print(mapper.writeValueAsString(principal));
+
+            // This mode should be the only active mode at this point, but in the event the other
+            // modes of operation (returning an identity, or returning a User) still function based
+            // on the builder pattern established in the authentication token then we'll handle those
+            // cases and emit the appropriate JSON there as well.
+            if (authentication.getPrincipal() instanceof UserDetailsProxy) {
+                UserDetailsProxy proxyUser = (UserDetailsProxy)authentication.getPrincipal();
+                Identity identity = proxyUser.getIdentity();
+                // don't bother sending the password value to the client
+                identity.getLogin().setPassword(null);
+                String value = mapper.writeValueAsString(identity);
+                out.print(value);
+            }
+            else if (authentication.getPrincipal() instanceof Identity) {
+                Identity principal = (Identity) authentication.getPrincipal();
+                out.print(mapper.writeValueAsString(principal));
+            }
+            else {
+                User principal = (User)authentication.getPrincipal();
+                out.print(mapper.writeValueAsString(principal));
+            }
             out.flush();
             out.close(); 
             clearAuthenticationAttributes(request);
