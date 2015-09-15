@@ -10,7 +10,6 @@ import org.apache.http.entity.ByteArrayEntity;
 
 import java.io.IOException;
 import java.net.URI;
-
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -120,6 +119,16 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     @Override
     public Behavior createBehavior(Long studentId, Behavior behavior) {
         EntityId id = create(behavior, STUDENT_ENDPOINT + "/" + studentId + BEHAVIOR_ENDPOINT);
+        Behavior response = new Behavior(behavior);
+        response.setId(id.getId());
+        return response;
+    }
+
+    @Override
+    public Behavior updateBehavior(Long studentId, Long behaviorId, Behavior behavior) {
+        if (studentId == null || studentId < 0) { return null; }
+        if (behaviorId == null || behaviorId < 0) { return null; } 
+        EntityId id = update(behavior, STUDENT_ENDPOINT + "/" + studentId + BEHAVIOR_ENDPOINT + "/" + behaviorId);
         Behavior response = new Behavior(behavior);
         response.setId(id.getId());
         return response;
