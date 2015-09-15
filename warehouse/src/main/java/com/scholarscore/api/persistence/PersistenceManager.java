@@ -587,6 +587,31 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
         }
         return new ServiceResponse<Section>(section);
     }
+    
+    @Override
+    public ServiceResponse<Collection<Section>> getAllSectionsByTeacher(
+            long schoolId, long yearId, long termId, long teacherId) {
+        StatusCode code = teacherExists(teacherId);
+        if(!code.isOK()) {
+            return new ServiceResponse<Collection<Section>>(code);
+        }
+        code = termExists(schoolId, yearId, termId);
+        if(!code.isOK()) {
+            return new ServiceResponse<Collection<Section>>(code);
+        }
+        Collection<Section> sections = sectionPersistence.selectAllSectionForTeacher(termId, teacherId);
+        for(Section s : sections) {
+            Collection<Student> students = studentPersistence.selectAllStudentsInSection(s.getId());
+            if(null != students && !students.isEmpty()) {
+                s.setEnrolledStudents(new ArrayList<Student>(students));
+            }
+            Collection<Assignment> assignments = assignmentPersistence.selectAll(s.getId());
+            if(null != assignments && !assignments.isEmpty()) {
+                s.setAssignments(new ArrayList<Assignment>(assignments));
+            }
+        }
+        return new ServiceResponse<Collection<Section>>(sections);
+    }
 
     /**
      * Creates a section including enrolling any students in the enrolled student 

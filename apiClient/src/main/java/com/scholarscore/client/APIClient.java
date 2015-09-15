@@ -10,6 +10,8 @@ import org.apache.http.entity.ByteArrayEntity;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * TODO: Convert InternalBase to consume this API (perhaps?)
@@ -31,6 +33,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     private static final String STUDENT_ASSIGNMENT_ENDPOINT = "/studentassignments";
     private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
     private static final String TEACHER_ENDPOINT = "/teachers";
+    private static final String BEHAVIOR_ENDPOINT = "/behaviors";
 
     // TODO: Create this end point
     private static final String ADMINISTRATOR_ENDPOINT = "/administrators";
@@ -58,6 +61,11 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         String jsonCreateResponse = post(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
         return gson.fromJson(jsonCreateResponse, EntityId.class);
     }
+    
+    private EntityId update(Object obj, String path) {
+        String jsonCreateResponse = patch(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
+        return gson.fromJson(jsonCreateResponse, EntityId.class);
+    }
 
     public School getSchool(Long schoolId) {
         School response = get(School.class,
@@ -74,6 +82,20 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
+    public Collection<Student> getStudents() {
+        Student[] students = get(Student[].class, BASE_API_ENDPOINT + STUDENT_ENDPOINT);
+        return Arrays.asList(students);
+    }
+    
+    @Override
+    public Student updateStudent(Long studentId, Student student) {
+        if (studentId == null || studentId < 0) { return null; }
+        EntityId id = update(student, STUDENT_ENDPOINT + "/" + studentId);
+        Student response = new Student(student);
+        response.setId(id.getId());
+        return response;
+    }
+
     public Teacher createTeacher(Teacher teacher) {
         EntityId id = create(teacher, TEACHER_ENDPOINT);
         Teacher response = new Teacher(teacher);
@@ -82,6 +104,36 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
+    public Collection<Teacher> getTeachers() {
+        Teacher[] teachers = get(Teacher[].class, BASE_API_ENDPOINT + TEACHER_ENDPOINT);
+        return Arrays.asList(teachers);
+    }
+
+    @Override
+    public Collection<Behavior> getBehaviors(Long studentId) {
+        Behavior[] behaviors = get(Behavior[].class, BASE_API_ENDPOINT
+                + STUDENT_ENDPOINT + "/" + studentId + BEHAVIOR_ENDPOINT);
+        return Arrays.asList(behaviors);
+    }
+
+    @Override
+    public Behavior createBehavior(Long studentId, Behavior behavior) {
+        EntityId id = create(behavior, STUDENT_ENDPOINT + "/" + studentId + BEHAVIOR_ENDPOINT);
+        Behavior response = new Behavior(behavior);
+        response.setId(id.getId());
+        return response;
+    }
+
+    @Override
+    public Behavior updateBehavior(Long studentId, Long behaviorId, Behavior behavior) {
+        if (studentId == null || studentId < 0) { return null; }
+        if (behaviorId == null || behaviorId < 0) { return null; } 
+        EntityId id = update(behavior, STUDENT_ENDPOINT + "/" + studentId + BEHAVIOR_ENDPOINT + "/" + behaviorId);
+        Behavior response = new Behavior(behavior);
+        response.setId(id.getId());
+        return response;
+    }
+
     public Administrator createAdministrator(Administrator administrator) {
         EntityId id = create(administrator, ADMINISTRATOR_ENDPOINT);
         Administrator response = new Administrator(administrator);
