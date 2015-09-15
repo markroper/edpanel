@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -31,8 +32,7 @@ import javax.persistence.Table;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Section extends ApiModel implements Serializable, IApiModel<Section> {
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-    
+    private static final ObjectMapper MAPPER = new ObjectMapper(); 
     protected Date startDate;
     protected Date endDate;
     protected String room;
@@ -40,16 +40,12 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected GradeFormula gradeFormula;
     //For hibernate
     protected String gradeFormulaString;
-
     protected Term term;
     protected transient Course course;
     protected transient List<Student> enrolledStudents;
     protected transient List<Assignment> assignments;
     protected List<StudentSectionGrade> studentSectionGrades;
-    //TODO: List<Teacher> teachers;
-    //TODO: Set<SectionAssignment> assignments;
-    //TODO: Schedule
-    //TODO: Gradebook - student -> SectionGrade { overallGrade, List<StudentAssignment>, homeworkGradeAvergae, quizGradeAvg }
+    protected Set<Teacher> teachers;
     
     public Section() {
         super();
@@ -71,6 +67,20 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         enrolledStudents = sect.enrolledStudents;
         assignments = sect.assignments;
         gradeFormula = sect.gradeFormula;
+    }
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @Cascade(CascadeType.ALL)
+    @JoinTable(name = HibernateConsts.TEACHER_SECTION_TABLE, 
+        joinColumns = { @JoinColumn(name = HibernateConsts.SECTION_FK, nullable = false, updatable = false) }, 
+        inverseJoinColumns = { @JoinColumn(name = HibernateConsts.TEACHER_FK, nullable = false, updatable = false) })
+    @Fetch(FetchMode.JOIN)
+    public Set<Teacher> getTeachers() {
+        return teachers;
+    }
+
+    public void setTeachers(Set<Teacher> teachers) {
+        this.teachers = teachers;
     }
 
     @Id

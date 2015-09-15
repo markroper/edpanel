@@ -739,7 +739,6 @@ public class IntegrationBase {
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             out = mapper.writeValueAsBytes(object);
             String bytes = new String(out);
-            System.out.println("POST: " + bytes);
             ////LOGGER.sys().info("JSON: " + new String(out, CHARSET_UTF8_NAME));
         } catch (Exception e) {
             ////LOGGER.sys().error("Unable to convert object to JSON " + e.getMessage(), e);

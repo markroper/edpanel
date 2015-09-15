@@ -86,7 +86,6 @@ public class SectionJdbc implements SectionPersistence {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Collection<Section> selectAllSectionForStudent(long termId, long studentId) {
         String[] params = new String[]{"termId", "studentId"};
         Object[] paramValues = new Object[]{ new Long(termId), new Long(studentId) }; 
@@ -101,5 +100,22 @@ public class SectionJdbc implements SectionPersistence {
         }
         return sectionList;
         
+    }
+
+    @Override
+    public Collection<Section> selectAllSectionForTeacher(
+            long termId, long teacherId) {
+        String[] params = new String[]{"termId", "teacherId"};
+        Object[] paramValues = new Object[]{ new Long(termId), new Long(teacherId) }; 
+        List<?> objects = hibernateTemplate.findByNamedParam(
+                "from section s join s.teachers ts where s.term.id = :termId and ts.id = :teacherId", 
+                params, 
+                paramValues);
+        ArrayList<Section> sectionList = new ArrayList<>();
+        for(Object obj : objects) {
+            Object[] coll = (Object[]) obj;
+            sectionList.add((Section)coll[0]);    
+        }
+        return sectionList;
     }
 }

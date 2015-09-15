@@ -9,6 +9,7 @@ public class StatusCodes {
     public static final int UNSUPPORTED_VALUE_CODE = 3000;
     public static final int INVALID_ENTITY = 4000;
     public static final int NOT_AUTHENTICATED = 5000;
+    public static final int DATA_INTEGRITY_VIOLATION_CODE = 5000;
 
     public static StatusCode getStatusCode(StatusCodeType statusCodeType) {
         return new StatusCode(statusCodeType.getCode(), statusCodeType.getKey());
