@@ -38,6 +38,27 @@ public class TermController extends BaseController {
     }
     
     @ApiOperation(
+            value = "Get all students by teacher & term", 
+            notes = "Retrieve all students taught by a teacher within a term", 
+            response = List.class)
+    @RequestMapping(
+            value = "/{termId}/teachers/{teacherId}/students",
+            method = RequestMethod.GET, 
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getAllStudentsByTermTeacher(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
+            @PathVariable(value="schoolYearId") Long schoolYearId,
+            @ApiParam(name = "termId", required = true, value = "Term ID")
+            @PathVariable(value="termId") Long termId,
+            @ApiParam(name = "teacherId", required = true, value = "Teacher ID")
+            @PathVariable(value="teacherId") Long teacherId) {
+        return respond(getTermManager().getAllStudentsByTermTeacher(schoolId, schoolYearId, termId, teacherId));
+    }
+    
+    @ApiOperation(
             value = "Get a term", 
             notes = "Given a term ID, the endpoint returns the term", 
             response = Term.class)
