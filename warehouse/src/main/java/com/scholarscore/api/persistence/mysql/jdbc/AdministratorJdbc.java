@@ -37,6 +37,7 @@ public class AdministratorJdbc implements AdministratorPersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Administrator select(String username) {
         List<Administrator> users = (List<Administrator>)hibernateTemplate.findByNamedParam("from administrator a where a.username = :username", "username", username);
         if (users.size() == 1) {

@@ -1,16 +1,15 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import com.scholarscore.api.persistence.mysql.DbMappings;
+import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentSectionGrade;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import org.springframework.orm.hibernate4.HibernateTemplate;
+
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Transactional
 public class StudentJdbc implements StudentPersistence {
@@ -56,6 +55,7 @@ public class StudentJdbc implements StudentPersistence {
 
 
     @Override
+    @SuppressWarnings("unchecked")
     public Student select(String username) {
         List<Student> students = (List<Student>) hibernateTemplate.findByNamedParam("from student s where s.username = :username", "username", username);
         if (students.size() == 1) {
