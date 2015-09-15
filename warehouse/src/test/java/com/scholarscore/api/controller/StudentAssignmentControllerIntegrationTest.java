@@ -2,9 +2,12 @@ package com.scholarscore.api.controller;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 
 import org.springframework.http.HttpStatus;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -18,6 +21,7 @@ import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.Teacher;
 import com.scholarscore.models.Term;
 
 @Test(groups = { "integration" })
@@ -30,6 +34,7 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
     private Section section;
     private GradedAssignment sectionAssignment;
     private Student student;
+    private Teacher teacher;
     
     @BeforeClass
     public void init() {
@@ -38,6 +43,10 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
         school = new School();
         school.setName(localeServiceUtil.generateName());
         school = schoolValidatingExecutor.create(school, "Create base school");
+        
+        teacher = new Teacher();
+        teacher.setName("Mr. Jones");
+        teacher = teacherValidatingExecutor.create(teacher, "Create a base teacher");
         
         student = new Student();
         student.setName(localeServiceUtil.generateName());
@@ -61,6 +70,8 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
         section.setName(localeServiceUtil.generateName());
         section.setEnrolledStudents(new ArrayList<Student>());
         section.getEnrolledStudents().add(student);
+        section.setTeachers(new HashSet<>());
+        section.getTeachers().add(teacher);
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
         
         sectionAssignment = new GradedAssignment();
@@ -75,6 +86,18 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
         sectionAssignment.setDueDate(nextYear);
         sectionAssignment = (GradedAssignment) sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), 
                 term.getId(), section.getId(), sectionAssignment, "create test base term");
+    }
+    
+    /**
+     * This integration test really might make more sense in the term controller tests, but this test case already sets up 
+     * all the dependent entities needed to execute the test, so here it lives.
+     */
+    @Test
+    public void validateStudentsReturnedByTerm() {
+        Collection<Student> studs = termValidatingExecutor.getStudentsInTermTaughtByTeacher(
+                school.getId(), schoolYear.getId(), term.getId(), teacher.getId(), "return student taught by teacher in term");
+        Assert.assertNotNull(studs, "Unexpected null set of students returned for term");
+        Assert.assertEquals(studs.size(), 1, "Unexpected number of students returned!");
     }
     
     //Positive test cases
