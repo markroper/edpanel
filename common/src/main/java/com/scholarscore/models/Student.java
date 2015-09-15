@@ -57,7 +57,6 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     public Long getId() {
         return super.getId();
     }
-
     
     public Student(String race, String ethnicity, Long currentSchoolId, Gender gender, String name, Long expectedGraduationYear) {
         this.federalRace = race;
@@ -165,7 +164,6 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     }
 
     @Column(name = HibernateConsts.USER_NAME)
-    @Override
     public String getUsername() {
         return super.getUsername();
     }

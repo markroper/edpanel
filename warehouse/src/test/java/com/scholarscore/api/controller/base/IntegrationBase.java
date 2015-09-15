@@ -1,17 +1,31 @@
 package com.scholarscore.api.controller.base;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.CopyOnWriteArrayList;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.google.common.collect.ImmutableMap;
+import com.scholarscore.api.controller.service.AssignmentValidatingExecutor;
+import com.scholarscore.api.controller.service.AuthValidatingExecutor;
 import com.scholarscore.api.controller.service.BehaviorValidatingExecutor;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import com.scholarscore.api.controller.service.CourseValidatingExecutor;
+import com.scholarscore.api.controller.service.LocaleServiceUtil;
+import com.scholarscore.api.controller.service.QueryValidatingExecutor;
+import com.scholarscore.api.controller.service.SchoolValidatingExecutor;
+import com.scholarscore.api.controller.service.SchoolYearValidatingExecutor;
+import com.scholarscore.api.controller.service.SectionValidatingExecutor;
+import com.scholarscore.api.controller.service.StudentAssignmentValidatingExecutor;
+import com.scholarscore.api.controller.service.StudentSectionGradeValidatingExecutor;
+import com.scholarscore.api.controller.service.StudentValidatingExecutor;
+import com.scholarscore.api.controller.service.TeacherValidatingExecutor;
+import com.scholarscore.api.controller.service.TermValidatingExecutor;
+import com.scholarscore.api.controller.service.UserValidatingExecutor;
+import com.scholarscore.models.LoginRequest;
+import com.scholarscore.models.School;
+import com.scholarscore.models.Student;
+import com.scholarscore.models.Teacher;
+import com.scholarscore.models.User;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,33 +35,23 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.util.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.google.common.collect.ImmutableMap;
-import com.scholarscore.api.controller.service.CourseValidatingExecutor;
-import com.scholarscore.api.controller.service.LocaleServiceUtil;
-import com.scholarscore.api.controller.service.QueryValidatingExecutor;
-import com.scholarscore.api.controller.service.SchoolValidatingExecutor;
-import com.scholarscore.api.controller.service.SchoolYearValidatingExecutor;
-import com.scholarscore.api.controller.service.AssignmentValidatingExecutor;
-import com.scholarscore.api.controller.service.SectionValidatingExecutor;
-import com.scholarscore.api.controller.service.StudentAssignmentValidatingExecutor;
-import com.scholarscore.api.controller.service.StudentSectionGradeValidatingExecutor;
-import com.scholarscore.api.controller.service.StudentValidatingExecutor;
-import com.scholarscore.api.controller.service.TeacherValidatingExecutor;
-import com.scholarscore.api.controller.service.TermValidatingExecutor;
-import com.scholarscore.models.LoginRequest;
-import com.scholarscore.models.School;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.Teacher;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class that contains all common methods for servicing requests
@@ -76,6 +80,8 @@ public class IntegrationBase {
     private static final String QUERIES_ENDPOINT = "/queries";
     private static final String GPA_ENDPOINT = "/gpa";
     private static final String BEHAVIOR_ENDPOINT = "/behaviors";
+    private static final String AUTH_ENDPOINT = "/auth";
+    private static final String USERS_ENDPOINT = "/users";
 
     public LocaleServiceUtil localeServiceUtil;
     public CourseValidatingExecutor courseValidatingExecutor;
@@ -90,6 +96,8 @@ public class IntegrationBase {
     public TeacherValidatingExecutor teacherValidatingExecutor;
     public QueryValidatingExecutor queryValidatingExecutor;
     public BehaviorValidatingExecutor behaviorValidatingExecutor;
+    public AuthValidatingExecutor authValidatingExecutor;
+    public UserValidatingExecutor userValidatingExecutor;
 
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Student> studentsCreated = new CopyOnWriteArrayList<>();
@@ -119,6 +127,8 @@ public class IntegrationBase {
     private ThreadLocal<URL> endpoint = new ThreadLocal<URL>();
     private URL defaultEndpoint;
     private Properties properties;
+    private String usersEndpoint;
+    public List<User> usersCreated = new ArrayList<>();
 
     /**
      * Description:
@@ -142,6 +152,8 @@ public class IntegrationBase {
         teacherValidatingExecutor = new TeacherValidatingExecutor(this);
         queryValidatingExecutor = new QueryValidatingExecutor(this);
         behaviorValidatingExecutor = new BehaviorValidatingExecutor(this);
+        authValidatingExecutor = new AuthValidatingExecutor(this);
+        userValidatingExecutor = new UserValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -156,7 +168,7 @@ public class IntegrationBase {
         loginReq.setUsername("mroper");
         loginReq.setPassword("admin");
         makeRequest(
-                HttpMethod.POST, 
+                HttpMethod.POST,
                 BASE_API_ENDPOINT + LOGIN_ENDPOINT,
                 null,
                 null,
@@ -181,6 +193,8 @@ public class IntegrationBase {
         Assert.assertNotNull(studentAssignmentValidatingExecutor, "Unable to configure student assignment service");
         Assert.assertNotNull(teacherValidatingExecutor, "Unable to configure teacher service");
         Assert.assertNotNull(queryValidatingExecutor, "Unable to configure query service");
+        Assert.assertNotNull(authValidatingExecutor, "Unable to configure auth service");
+        Assert.assertNotNull(userValidatingExecutor, "Unable to configure user service");
     }
 
     /**
@@ -724,6 +738,8 @@ public class IntegrationBase {
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             out = mapper.writeValueAsBytes(object);
+            String bytes = new String(out);
+            System.out.println("POST: " + bytes);
             ////LOGGER.sys().info("JSON: " + new String(out, CHARSET_UTF8_NAME));
         } catch (Exception e) {
             ////LOGGER.sys().error("Unable to convert object to JSON " + e.getMessage(), e);
@@ -740,4 +756,21 @@ public class IntegrationBase {
     public URL getDefaultEndpoint() {
         return defaultEndpoint;
     }
+
+    /**
+     * Get the current user end point
+     * @return
+     */
+    public String getCurrentUserEndpoint() {
+        return BASE_API_ENDPOINT + AUTH_ENDPOINT;
+    }
+
+    public String getUsersEndpoint() {
+        return BASE_API_ENDPOINT + USERS_ENDPOINT;
+    }
+
+    public String getUsersEndpoint(String username) {
+        return BASE_API_ENDPOINT + USERS_ENDPOINT + "/" + username;
+    }
+
 }

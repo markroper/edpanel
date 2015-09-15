@@ -1,6 +1,5 @@
 package com.scholarscore.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
@@ -17,7 +16,6 @@ public class Identity extends ApiModel {
     }
 
     // FK to the Users table entry
-    @JsonIgnore
     protected String username;
 
     @JsonInclude

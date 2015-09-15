@@ -1,11 +1,9 @@
 package com.scholarscore.api.controller;
 
-import java.util.List;
-
-import javax.validation.Valid;
-
-import com.scholarscore.api.util.ServiceResponse;
-import com.scholarscore.models.Identity;
+import com.scholarscore.api.ApiConsts;
+import com.scholarscore.models.User;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,10 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.scholarscore.api.ApiConsts;
-import com.scholarscore.models.User;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/users")
@@ -33,19 +29,6 @@ public class UserController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity getAll() {
 	    return respond(getUserManager().getAllUsers());
-	}
-
-	@ApiOperation(
-			value = "Get current user by authentication token",
-			notes = "If the user is presently signed in, return the type of user associated with the identity (teacher, administrator, student)",
-			response = Identity.class)
-	@RequestMapping(
-			value = "/current",
-			method = RequestMethod.GET,
-			produces = { JSON_ACCEPT_HEADER })
-	public @ResponseBody ResponseEntity getCurrentIdentity() {
-		ServiceResponse<Identity> identity = getUserManager().getCurrentUser();
-		return respond(identity);
 	}
 
 	@ApiOperation(
