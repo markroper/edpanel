@@ -27,6 +27,10 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     
     // "name" in parent class maps to 'behavior'
     @Size(min=1, max=256)
+    private String remoteSystem;
+    @Size(min=1, max=256)
+    private String remoteBehaviorId;
+    @Size(min=1, max=256)
     private String remoteStudentId;    // currently always deanslist DLSAID
     private Date behaviorDate;
     @Size(min=1, max=256)
@@ -43,6 +47,8 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     public Behavior(Behavior behavior) {
         super(behavior);
         // "name" in parent class maps to 'behavior'
+        this.remoteSystem = behavior.remoteSystem;
+        this.remoteBehaviorId = behavior.remoteBehaviorId;
         this.remoteStudentId = behavior.remoteStudentId;    // currently always deanslist DLSAID
         this.behaviorDate = behavior.behaviorDate;
         this.behaviorCategory = behavior.behaviorCategory;
@@ -96,6 +102,24 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
         this.remoteStudentId = remoteStudentId;
     }
 
+    @Column(name = HibernateConsts.BEHAVIOR_REMOTE_BEHAVIOR_ID)
+    public String getRemoteBehaviorId() {
+        return remoteBehaviorId;
+    }
+
+    public void setRemoteBehaviorId(String remoteBehaviorId) {
+        this.remoteBehaviorId = remoteBehaviorId;
+    }
+
+    @Column(name = HibernateConsts.BEHAVIOR_REMOTE_SYSTEM)
+    public String getRemoteSystem() {
+        return remoteSystem;
+    }
+
+    public void setRemoteSystem(String remoteSystem) {
+        this.remoteSystem = remoteSystem;
+    }
+    
     @Column(name = HibernateConsts.BEHAVIOR_DATE)
     public Date getBehaviorDate() {
         return behaviorDate;
@@ -160,7 +184,9 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
             return false;
         }
         final Behavior other = (Behavior) obj;
-        return Objects.equals(this.remoteStudentId, other.remoteStudentId)
+        return Objects.equals(this.remoteSystem, other.remoteSystem)
+                && Objects.equals(this.remoteBehaviorId, other.remoteBehaviorId)
+                && Objects.equals(this.remoteStudentId, other.remoteStudentId)
                 && Objects.equals(this.behaviorDate, other.behaviorDate)
                 && Objects.equals(this.behaviorCategory, other.behaviorCategory)
                 && Objects.equals(this.pointValue, other.pointValue)
@@ -171,7 +197,9 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
 
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(remoteStudentId, behaviorDate, behaviorCategory, pointValue, roster, student, teacher);
+        return 31 * super.hashCode() + 
+                Objects.hash(remoteSystem, remoteBehaviorId, remoteStudentId, behaviorDate,
+                        behaviorCategory, pointValue, roster, student, teacher);
     }
     
     @Override
@@ -180,6 +208,8 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
                 "BEHAVIOR " + "\n"
                 + "Id  : " + getId() + "\n"
                 + "Name: " + getName() + "\n"
+                + "RemoteSystem: " + getRemoteSystem() +"\n"
+                + "RemoteBehaviorId: " + getRemoteBehaviorId() +"\n"
                 + "RemoteStudentId: " + getRemoteStudentId() + "\n"
                 + "BehaviorDate: " + getBehaviorDate() + "\n"
                 + "BehaviorCategory: " + getBehaviorCategory() + "\n"

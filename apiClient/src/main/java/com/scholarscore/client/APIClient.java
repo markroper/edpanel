@@ -85,9 +85,6 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     @Override
     public Collection<Student> getStudents() {
         Student[] students = get(Student[].class, BASE_API_ENDPOINT + STUDENT_ENDPOINT);
-        for (Student student : students) {
-            System.out.println("Got scholarScore student: " + student);
-        }
         return Arrays.asList(students);
     }
     
