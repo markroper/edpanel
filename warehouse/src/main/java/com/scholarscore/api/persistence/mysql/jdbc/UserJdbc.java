@@ -1,17 +1,20 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.TeacherPersistence;
-import com.scholarscore.models.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.scholarscore.api.persistence.mysql.UserPersistence;
+import com.scholarscore.models.Administrator;
+import com.scholarscore.models.Identity;
+import com.scholarscore.models.Student;
+import com.scholarscore.models.Teacher;
+import com.scholarscore.models.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Maintain User identities separate from Student / Teacher entities for Spring Security
@@ -29,14 +32,6 @@ public class UserJdbc implements UserPersistence {
     private HibernateTemplate hibernateTemplate;
 
     public UserJdbc() {}
-
-    public UserJdbc(TeacherPersistence teacherPersistence,
-                    AdministratorPersistence administratorPersistence,
-                    StudentPersistence studentPersistence) {
-        this.teacherPersistence = teacherPersistence;
-        this.administratorPersistence = administratorPersistence;
-        this.studentPersistence = studentPersistence;
-    }
 
     @Override
     public Collection<User> selectAllUsers() {
@@ -57,7 +52,13 @@ public class UserJdbc implements UserPersistence {
         if (null != student) {
             return student;
         }
-        return null;
+        // No user, but we do have the user table identity
+        final User user = selectUser(username);
+        return new Identity() {
+            public User getLogin() {
+                return user;
+            }
+        };
     }
 
     @Override
@@ -102,5 +103,17 @@ public class UserJdbc implements UserPersistence {
 
     public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
         this.hibernateTemplate = hibernateTemplate;
+    }
+
+    public void setTeacherPersistence(TeacherPersistence teacherPersistence) {
+        this.teacherPersistence = teacherPersistence;
+    }
+
+    public void setAdministratorPersistence(AdministratorPersistence administratorPersistence) {
+        this.administratorPersistence = administratorPersistence;
+    }
+
+    public void setStudentPersistence(StudentPersistence studentPersistence) {
+        this.studentPersistence = studentPersistence;
     }
 }

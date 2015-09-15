@@ -1,15 +1,13 @@
 package com.scholarscore.api.security.config;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import com.scholarscore.models.Authority;
 import com.scholarscore.models.Identity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.scholarscore.models.Authority;
-import com.scholarscore.models.User;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Simple proxy / wrapper for the purpose of converting a User & Authority object to a UserDetails object
@@ -46,19 +44,33 @@ public class UserDetailsProxy implements UserDetails {
 		return identity.getLogin().getUsername();
 	}
 
+	/**
+	 * Is the account not expired is the question being answered here
+	 * @return
+	 */
 	@Override
 	public boolean isAccountNonExpired() {
-		return false;
+		return true;
 	}
 
+	/**
+	 * Is the account not locked is the answer here
+	 *
+	 * @return
+	 */
 	@Override
 	public boolean isAccountNonLocked() {
-		return false;
+		return true;
 	}
 
+	/**
+	 * Are the credentials not expired?
+	 *
+	 * @return
+	 */
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -66,4 +78,7 @@ public class UserDetailsProxy implements UserDetails {
 		return identity.getLogin().getEnabled();
 	}
 
+	public Identity getIdentity() {
+		return identity;
+	}
 }
