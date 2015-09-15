@@ -8,6 +8,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -17,6 +19,8 @@ import java.net.URI;
  */
 public class DeansListClient extends BaseHttpClient implements IDeansListClient {
 
+    final static Logger logger = LoggerFactory.getLogger(DeansListClient.class);
+    
     public static final String HEADER_LOCATION = "Location";
     
     public static final String PATH_LOGIN = "/login.php";
@@ -50,17 +54,19 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
             if (response.getStatusLine().getStatusCode() == 200) {
                 // This is actually bad because deanslist gives us 200 but is showing us an HTML error page
                     String responseValue = EntityUtils.toString(response.getEntity());
-                    System.out.println("Got response: " + responseValue);
+                    logger.warn("Got (seemingly unhappy) response: " + responseValue);
                 throw new DeansListClientException("Error logging into DeansList");
             } else if (response.getStatusLine().getStatusCode() == 302
                     && response.getFirstHeader(HEADER_LOCATION).getValue().contains("index.php")) {
-                System.out.println("Got redirected to index.php, so login was successful");
+                logger.info("Got redirected to index.php, so login was successful");
                 authenticated = true;
             } else {
+                authenticated = false;
                 throw new HttpClientException("Failed to make request to end point: " + post.getURI() 
                         + ", status line: " + response.getStatusLine().toString());
             }
         } catch (IOException e) {
+            authenticated = false;
             throw new DeansListClientException(e);
         }
 
@@ -68,13 +74,13 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
 
     @Override
     protected Boolean isAuthenticated() {
-        return true;
+        return authenticated;
     }
 
     @Override
     public BehaviorResponse getBehaviorData() {
         BehaviorResponse behaviorResponse = get(BehaviorResponse.class, PATH_GET_BEHAVIOR_DATA);
-        System.out.println("got behaviorResponse: " + behaviorResponse);
+        logger.debug("got behaviorResponse: " + behaviorResponse);
         return behaviorResponse;
     }
 }
