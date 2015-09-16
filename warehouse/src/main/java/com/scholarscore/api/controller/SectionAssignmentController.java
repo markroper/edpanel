@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.scholarscore.api.persistence.AssignmentManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +23,10 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/assignments")
 public class SectionAssignmentController extends BaseController {
+
+    @Autowired
+    AssignmentManager assignmentManager;
+
     @ApiOperation(
             value = "Get all assignments", 
             notes = "Get all assignments in a section", 
@@ -38,7 +44,7 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId) {
-        return respond(getAssignmentManager().getAllAssignments(schoolId, yearId, termId, sectId));
+        return respond(assignmentManager.getAllAssignments(schoolId, yearId, termId, sectId));
     }
     
     @ApiOperation(
@@ -61,7 +67,7 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
-        return respond(getAssignmentManager().getAssignment(schoolId, yearId, termId, sectId, assignmentId));
+        return respond(assignmentManager.getAssignment(schoolId, yearId, termId, sectId, assignmentId));
     }
 
     @ApiOperation(
@@ -82,7 +88,7 @@ public class SectionAssignmentController extends BaseController {
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId,
             @RequestBody @Valid Assignment sectionAssignment) {
-        return respond(getAssignmentManager().createAssignment(schoolId, yearId, termId, sectId, sectionAssignment));
+        return respond(assignmentManager.createAssignment(schoolId, yearId, termId, sectId, sectionAssignment));
     }
 
     @ApiOperation(
@@ -106,7 +112,7 @@ public class SectionAssignmentController extends BaseController {
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
             @RequestBody @Valid Assignment sectionAssignment) {
-        return respond(getAssignmentManager().replaceAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
+        return respond(assignmentManager.replaceAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
     }
     
     @ApiOperation(
@@ -130,7 +136,7 @@ public class SectionAssignmentController extends BaseController {
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId,
             @RequestBody @Valid Assignment sectionAssignment) {
-        return respond(getAssignmentManager().updateAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
+        return respond(assignmentManager.updateAssignment(schoolId, yearId, termId, sectId, assignmentId, sectionAssignment));
     }
 
     @ApiOperation(
@@ -153,6 +159,6 @@ public class SectionAssignmentController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "assignmentId", required = true, value = "Section assignment ID")
             @PathVariable(value="assignmentId") Long assignmentId) {
-        return respond(getAssignmentManager().deleteAssignment(schoolId, yearId, termId, sectId, assignmentId));
+        return respond(assignmentManager.deleteAssignment(schoolId, yearId, termId, sectId, assignmentId));
     }
 }

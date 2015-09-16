@@ -79,5 +79,5 @@
         <property name="queryManager" ref="queryManager"/>
         <property name="behaviorManager" ref="behaviorManager"/>
     </bean>
-    
+
 </beans>
