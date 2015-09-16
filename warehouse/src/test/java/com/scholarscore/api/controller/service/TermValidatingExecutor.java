@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.testng.Assert;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.Student;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.EntityId;
 
@@ -29,6 +31,17 @@ public class TermValidatingExecutor {
         Assert.assertNotNull(term, "Unexpected null term returned for case: " + msg);
         
         return term;
+    }
+    
+    public Collection<Student> getStudentsInTermTaughtByTeacher(
+            Long schoolId, Long schoolYearId, Long termId, Long teacherId, String msg) {
+        ResultActions response = serviceBase.makeRequest(
+                HttpMethod.GET, 
+                serviceBase.getTermEndpoint(schoolId, schoolYearId, termId) + "/teachers/" + teacherId + "/students",
+                null);
+        ArrayList<Student> students = serviceBase.validateResponse(response, new TypeReference<ArrayList<Student>>(){});
+        Assert.assertNotNull(students, "Unexpected students returned " + msg);
+        return students;
     }
     
     public void getAll(Long schoolId, Long schoolYearId, String msg, int numberOfItems) {
