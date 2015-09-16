@@ -8,3 +8,6 @@ test-output/
 .classpath
 .idea
 .settings
+gradlew
+gradlew.bat
+gradle/
