@@ -88,7 +88,7 @@ task appStart(type: com.bmuschko.gradle.cargo.tasks.local.CargoStartLocal, depen
 
 task appStop(type: com.bmuschko.gradle.cargo.tasks.local.CargoStopLocal) { }
 
-task appRunDebug(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal) {
+task appRunDebug(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal, dependsOn: 'war') {
     cargo {
         local {
             jvmArgs "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
