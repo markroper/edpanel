@@ -8,6 +8,10 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import com.scholarscore.api.persistence.SchoolManager;
+import com.scholarscore.api.persistence.StudentSectionGradeManager;
+import com.scholarscore.models.StudentSectionGrade;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +32,13 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools")
 public class SchoolController extends BaseController {
+
+    @Autowired
+    private SchoolManager schoolManager;
+
+    @Autowired
+    private StudentSectionGradeManager studentSectionGradeManager;
+
     @ApiOperation(
             value = "Get all schools within a district", 
             notes = "Retrieve all schools", 
@@ -37,7 +48,7 @@ public class SchoolController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAllSchools() {
-        return respond(new ArrayList<>(getSchoolManager().getAllSchools()));
+        return respond(new ArrayList<>(schoolManager.getAllSchools()));
     }
     
     @ApiOperation(
@@ -52,7 +63,7 @@ public class SchoolController extends BaseController {
     public @ResponseBody ResponseEntity getSchool(
             @ApiParam(name = "schoolId", required = true, value = "The school long ID")
             @PathVariable(value="schoolId") Long schoolId) {
-        return respond(getSchoolManager().getSchool(schoolId));
+        return respond(schoolManager.getSchool(schoolId));
     }
 
     @ApiOperation(
@@ -64,7 +75,7 @@ public class SchoolController extends BaseController {
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity createSchool(@RequestBody @Valid School school) {
-        return respond(getSchoolManager().createSchool(school));
+        return respond(schoolManager.createSchool(school));
     }
 
     @ApiOperation(
@@ -80,7 +91,7 @@ public class SchoolController extends BaseController {
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid School school) {
-        return respond(getSchoolManager().replaceSchool(schoolId, school));
+        return respond(schoolManager.replaceSchool(schoolId, school));
     }
     
     @ApiOperation(
@@ -96,7 +107,7 @@ public class SchoolController extends BaseController {
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid School school) {
-        return respond(getSchoolManager().updateSchool(schoolId, school));
+        return respond(schoolManager.updateSchool(schoolId, school));
     }
 
     @ApiOperation(
@@ -110,7 +121,7 @@ public class SchoolController extends BaseController {
     public @ResponseBody ResponseEntity deleteSchool(
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId) {
-        return respond(getSchoolManager().deleteSchool(schoolId));
+        return respond(schoolManager.deleteSchool(schoolId));
     }
     
     @ApiOperation(
@@ -133,7 +144,7 @@ public class SchoolController extends BaseController {
         Map<Integer, Double> studentToGpa = new HashMap<>();
         for(int studentId : id) {
             Collection<? extends WeightedGradable> courseGrades =
-                    getStudentSectionGradeManager().getSectionGradesForStudent(studentId).getValue();
+                    studentSectionGradeManager.getSectionGradesForStudent(studentId).getValue();
             studentToGpa.put(studentId, GradeUtil.calculateGPA(gpaScale, courseGrades));
         }
         return respond(studentToGpa);

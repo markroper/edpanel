@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.scholarscore.api.persistence.SectionManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +24,10 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/years/{schoolYearId}/terms/{termId}/sections")
 public class SectionController extends BaseController {
+
+    @Autowired
+    SectionManager sectionManager;
+
     @ApiOperation(
             value = "Get all sections", 
             notes = "Retrieve all sections in a term, school year, and school", 
@@ -37,7 +43,7 @@ public class SectionController extends BaseController {
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId) {
-        return respond(getSectionManager().getAllSections(schoolId, schoolYearId, termId));
+        return respond(sectionManager.getAllSections(schoolId, schoolYearId, termId));
     }
     
     @ApiOperation(
@@ -58,7 +64,7 @@ public class SectionController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId) {
-        return respond(getSectionManager().getSection(schoolId, schoolYearId, termId, sectionId));
+        return respond(sectionManager.getSection(schoolId, schoolYearId, termId, sectionId));
     }
 
     @ApiOperation(
@@ -77,7 +83,7 @@ public class SectionController extends BaseController {
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
             @RequestBody @Valid Section section) throws JsonProcessingException {
-        return respond(getSectionManager().createSection(schoolId, schoolYearId, termId, section));
+        return respond(sectionManager.createSection(schoolId, schoolYearId, termId, section));
     }
 
     @ApiOperation(
@@ -99,7 +105,7 @@ public class SectionController extends BaseController {
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId,
             @RequestBody @Valid Section section) throws JsonProcessingException {
-        return respond(getSectionManager().replaceSection(schoolId, schoolYearId, termId, sectionId, section));
+        return respond(sectionManager.replaceSection(schoolId, schoolYearId, termId, sectionId, section));
     }
     
     @ApiOperation(
@@ -121,7 +127,7 @@ public class SectionController extends BaseController {
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId,
             @RequestBody @Valid Section section) throws JsonProcessingException {
-        return respond(getSectionManager().updateSection(schoolId, schoolYearId, termId, sectionId, section));
+        return respond(sectionManager.updateSection(schoolId, schoolYearId, termId, sectionId, section));
     }
 
     @ApiOperation(
@@ -142,6 +148,6 @@ public class SectionController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId) {
-        return respond(getSectionManager().deleteSection(schoolId, schoolYearId, termId, sectionId));
+        return respond(sectionManager.deleteSection(schoolId, schoolYearId, termId, sectionId));
     }
 }

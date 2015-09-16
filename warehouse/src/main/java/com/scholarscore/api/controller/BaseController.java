@@ -70,16 +70,5 @@ public abstract class BaseController {
                 factory.localizeError(returnError), 
                 StatusCodeToHttpCode.resolveHttpStatus(returnError.getCode()));
     }
-    
-    // TODO: incremental refactoring towards a decomposed PersistenceManager
-    protected StudentManager getStudentManager() { return PM; }
-    protected SchoolManager getSchoolManager() { return PM; }
-    protected SchoolYearManager getSchoolYearManager() { return PM; }
-    protected TermManager getTermManager() { return PM; }
-    protected TeacherManager getTeacherManager() { return PM; }
-    protected SectionManager getSectionManager() { return PM; }
-    protected StudentAssignmentManager getStudentAssignmentManager() { return PM; }
-    protected StudentSectionGradeManager getStudentSectionGradeManager() { return PM; }
-    protected UserManager getUserManager() { return PM; }
-    protected QueryManager getQueryManager() { return PM; }
+
 }

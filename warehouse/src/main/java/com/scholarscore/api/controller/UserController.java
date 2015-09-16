@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.scholarscore.api.persistence.UserManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +23,9 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/users")
 public class UserController extends BaseController {
 
+	@Autowired
+	UserManager userManager;
+
 	@ApiOperation(
 	        value = "Get all users", 
 	        notes = "Retrieve all users", 
@@ -30,7 +35,7 @@ public class UserController extends BaseController {
 	        produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity getAll() {
-	    return respond(getUserManager().getAllUsers());
+	    return respond(userManager.getAllUsers());
 	}
 	
 	@ApiOperation(
@@ -45,7 +50,7 @@ public class UserController extends BaseController {
 	public @ResponseBody ResponseEntity get(
 	        @ApiParam(name = "username", required = true, value = "User login name")
 	        @PathVariable(value="username") String username) {
-	    return respond(getUserManager().getUser(username));
+	    return respond(userManager.getUser(username));
 	}
 	
 	@ApiOperation(
@@ -57,7 +62,7 @@ public class UserController extends BaseController {
 	        produces = {JSON_ACCEPT_HEADER})
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity create(@RequestBody @Valid User user) {
-	    return respond(getUserManager().createUser(user));
+	    return respond(userManager.createUser(user));
 	}
 	
 	@ApiOperation(
@@ -73,7 +78,7 @@ public class UserController extends BaseController {
 	        @ApiParam(name = "username", required = true, value = "User login name")
 	        @PathVariable(value="username") String username,
 	        @RequestBody @Valid User user) {
-	    return respond(getUserManager().replaceUser(username, user));
+	    return respond(userManager.replaceUser(username, user));
 	}
 	
 	@ApiOperation(
@@ -89,7 +94,7 @@ public class UserController extends BaseController {
 	        @ApiParam(name = "username", required = true, value = "User login name")
 	        @PathVariable(value="username") String username,
 	        @RequestBody @Valid User user) {
-	    return respond(getUserManager().updateUser(username, user));
+	    return respond(userManager.updateUser(username, user));
 	}
 	
 	@ApiOperation(
@@ -103,7 +108,7 @@ public class UserController extends BaseController {
 	public @ResponseBody ResponseEntity delete(
 	        @ApiParam(name = "username", required = true, value = "User login name")
 	        @PathVariable(value="username") String username) {
-	    return respond(getUserManager().deleteUser(username));
+	    return respond(userManager.deleteUser(username));
 	}
 	
 
