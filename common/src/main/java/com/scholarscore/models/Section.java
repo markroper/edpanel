@@ -282,6 +282,9 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         if(null == gradeFormula) {
             gradeFormula = mergeFrom.gradeFormula;
         }
+        if(null == studentSectionGrades) {
+            studentSectionGrades = mergeFrom.studentSectionGrades;
+        }
     }
     
     @Override
@@ -296,13 +299,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 Objects.equals(this.room, other.room) &&
                 Objects.equals(this.enrolledStudents, other.enrolledStudents) &&
                 Objects.equals(this.assignments, other.assignments) &&
+                Objects.equals(this.studentSectionGrades, other.studentSectionGrades) &&
                 Objects.equals(this.gradeFormula, other.gradeFormula);
     }
     
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(course, startDate, endDate, 
-                room, enrolledStudents, assignments, gradeFormula);
+                room, enrolledStudents, assignments, gradeFormula, studentSectionGrades);
     }
     
 }
