@@ -22,7 +22,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @Controller
-@RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/years/{schoolYearId}/terms/{termId}/sections")
+@RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/years/{schoolYearId}/terms/{termId}")
 public class SectionController extends BaseController {
 
     @Autowired
@@ -33,6 +33,7 @@ public class SectionController extends BaseController {
             notes = "Retrieve all sections in a term, school year, and school", 
             response = List.class)
     @RequestMapping(
+            value = "/sections",
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -47,11 +48,32 @@ public class SectionController extends BaseController {
     }
     
     @ApiOperation(
+            value = "Get all sections taught by teacher", 
+            notes = "Retrieve all sections in a term taught by a given teacher", 
+            response = List.class)
+    @RequestMapping(
+            value = "/teachers/{teacherId}/sections",
+            method = RequestMethod.GET, 
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getAllSectionsTaughtByTeacher(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "schoolYearId", required = true, value = "School year long ID")
+            @PathVariable(value="schoolYearId") Long schoolYearId,
+            @ApiParam(name = "termId", required = true, value = "Term ID")
+            @PathVariable(value="termId") Long termId,
+            @ApiParam(name = "teacherId", required = true, value = "Teacher ID")
+            @PathVariable(value="teacherId") Long teacherId) {
+        return respond(getSectionManager().getAllSectionsByTeacher(schoolId, schoolYearId, termId, teacherId));
+    }
+    
+    @ApiOperation(
             value = "Get a section", 
             notes = "Given a section ID, return the section instance", 
             response = Section.class)
     @RequestMapping(
-            value = "/{sectionId}", 
+            value = "/sections/{sectionId}", 
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -72,6 +94,7 @@ public class SectionController extends BaseController {
             notes = "Creates, assigns and ID to, persists and returns a section ID",
             response = EntityId.class)
     @RequestMapping(
+            value = "/sections",
             method = RequestMethod.POST, 
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
@@ -91,7 +114,7 @@ public class SectionController extends BaseController {
             notes = "Overwrites an existing section with the ID provided",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{sectionId}",
+            value = "/sections/{sectionId}",
             method = RequestMethod.PUT, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -113,7 +136,7 @@ public class SectionController extends BaseController {
             notes = "Updates an existing section. Will not overwrite existing values with null.",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{sectionId}", 
+            value = "/sections/{sectionId}", 
             method = RequestMethod.PATCH, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -135,7 +158,7 @@ public class SectionController extends BaseController {
             notes = "Deletes the section with the ID provided",
             response = Void.class)
     @RequestMapping(
-            value = "/{sectionId}", 
+            value = "/sections/{sectionId}", 
             method = RequestMethod.DELETE, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")

@@ -1,22 +1,33 @@
 package com.scholarscore.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.hibernate.annotations.*;
-import org.hibernate.annotations.CascadeType;
-
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.util.Set;
 
 /**
  * A Section is a temporal instance of a Course.  Where a course defines that which is to be taught, a Section has
@@ -31,8 +42,7 @@ import javax.persistence.Table;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Section extends ApiModel implements Serializable, IApiModel<Section> {
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-    
+    private static final ObjectMapper MAPPER = new ObjectMapper(); 
     protected Date startDate;
     protected Date endDate;
     protected String room;
@@ -40,15 +50,12 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected GradeFormula gradeFormula;
     //For hibernate
     protected String gradeFormulaString;
-
     protected Term term;
     protected transient Course course;
     protected transient List<Student> enrolledStudents;
     protected transient List<Assignment> assignments;
-    //TODO: List<Teacher> teachers;
-    //TODO: Set<SectionAssignment> assignments;
-    //TODO: Schedule
-    //TODO: Gradebook - student -> SectionGrade { overallGrade, List<StudentAssignment>, homeworkGradeAvergae, quizGradeAvg }
+    protected List<StudentSectionGrade> studentSectionGrades;
+    protected Set<Teacher> teachers;
     
     public Section() {
         super();
@@ -72,6 +79,20 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         gradeFormula = sect.gradeFormula;
     }
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @Cascade(CascadeType.ALL)
+    @JoinTable(name = HibernateConsts.TEACHER_SECTION_TABLE, 
+        joinColumns = { @JoinColumn(name = HibernateConsts.SECTION_FK, nullable = false, updatable = false) }, 
+        inverseJoinColumns = { @JoinColumn(name = HibernateConsts.TEACHER_FK, nullable = false, updatable = false) })
+    @Fetch(FetchMode.JOIN)
+    public Set<Teacher> getTeachers() {
+        return teachers;
+    }
+
+    public void setTeachers(Set<Teacher> teachers) {
+        this.teachers = teachers;
+    }
+
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     @Column(name = HibernateConsts.SECTION_ID)
@@ -88,6 +109,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.COURSE_FK)
+    @Fetch(FetchMode.JOIN)
     public Course getCourse() {
         return course;
     }
@@ -100,6 +122,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.TERM_FK)
+    @Fetch(FetchMode.JOIN)
     public Term getTerm() {
         return term;
     }
@@ -164,6 +187,19 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
 
     public void setEnrolledStudents(List<Student> enrolledStudents) {
         this.enrolledStudents = enrolledStudents;
+    }
+    
+    @OneToMany(mappedBy = "section", fetch=FetchType.LAZY)
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @Fetch(FetchMode.JOIN)
+    @JsonIgnore
+    public List<StudentSectionGrade> getStudentSectionGrades() {
+        return studentSectionGrades;
+    }
+
+    @JsonIgnore
+    public void setStudentSectionGrades(List<StudentSectionGrade> grades) {
+        this.studentSectionGrades = grades;
     }
 
     public Student findEnrolledStudentById(Long id) {
@@ -246,6 +282,9 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         if(null == gradeFormula) {
             gradeFormula = mergeFrom.gradeFormula;
         }
+        if(null == studentSectionGrades) {
+            studentSectionGrades = mergeFrom.studentSectionGrades;
+        }
     }
     
     @Override
@@ -260,13 +299,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 Objects.equals(this.room, other.room) &&
                 Objects.equals(this.enrolledStudents, other.enrolledStudents) &&
                 Objects.equals(this.assignments, other.assignments) &&
+                Objects.equals(this.studentSectionGrades, other.studentSectionGrades) &&
                 Objects.equals(this.gradeFormula, other.gradeFormula);
     }
     
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(course, startDate, endDate, 
-                room, enrolledStudents, assignments, gradeFormula);
+                room, enrolledStudents, assignments, gradeFormula, studentSectionGrades);
     }
     
 }
