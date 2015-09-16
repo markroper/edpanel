@@ -1,17 +1,5 @@
 package com.scholarscore.api.controller;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-
-import org.springframework.http.HttpStatus;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.AssignmentType;
 import com.scholarscore.models.Course;
@@ -23,6 +11,17 @@ import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.Teacher;
 import com.scholarscore.models.Term;
+import org.springframework.http.HttpStatus;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
 
 @Test(groups = { "integration" })
 public class StudentAssignmentControllerIntegrationTest extends IntegrationBase {
@@ -70,7 +69,7 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
         section.setName(localeServiceUtil.generateName());
         section.setEnrolledStudents(new ArrayList<Student>());
         section.getEnrolledStudents().add(student);
-        section.setTeachers(new HashSet<>());
+        section.setTeachers(new HashSet<Teacher>());
         section.getTeachers().add(teacher);
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
         
