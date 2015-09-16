@@ -50,7 +50,7 @@ public class AdminManagerImpl implements  AdminManager {
 
     @Override
     public ServiceResponse<Administrator> getAdministrator(long administratorId) {
-        StatusCode code = pm.teacherExists(administratorId);
+        StatusCode code = pm.getTeacherManager().teacherExists(administratorId);
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
         }
@@ -65,7 +65,7 @@ public class AdminManagerImpl implements  AdminManager {
 
     @Override
     public ServiceResponse<Long> replaceAdministrator(long administratorId, Administrator administrator) {
-        StatusCode code = pm.teacherExists(administratorId);
+        StatusCode code = pm.getTeacherManager().teacherExists(administratorId);
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
         }

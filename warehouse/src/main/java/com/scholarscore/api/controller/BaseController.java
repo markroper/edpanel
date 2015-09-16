@@ -25,12 +25,6 @@ import com.scholarscore.models.EntityId;
 public abstract class BaseController {
     public static final String JSON_ACCEPT_HEADER = "application/json";
 
-    @Autowired
-    private PersistenceManager PM;
-   
-    public void setPM(PersistenceManager persistenceManager) {
-        this.PM = persistenceManager;
-    }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected ResponseEntity respond(Object obj) {
