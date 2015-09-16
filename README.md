@@ -30,6 +30,8 @@ Once these dependencies are resolved, you'll need to create the database user ne
 
 After this the the following gradle command to bootstrap the database (creating all the tables and relationships between those tables) `gradle refillDatabase`. Then you can import the project in your IDE and start working.  When you want to deploy to the local container, run the gradle command `gradle appRun` or if you want to attach your IDE debugger run `gradle appRunDebug` and then attach the debugger once the command has deployed to the container.
 
+If you want to run the UI or access some of the API endpoints with some dummy data, you can generate synthetic data on your instance by running the following Gradle task `./warehouse/gradle syntheticDataGen`.  This task takes about 25 minutes to run, but populates the instance with a school, school years, terms, courses, sections, teachers, students, student section grades, and student assignment grades.
+
 Database Entity Relationship Diagram
 ================
 ![Alt text](database/DatabaseModel.png)
