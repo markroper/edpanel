@@ -73,10 +73,8 @@ public abstract class BaseController {
     
     // TODO: incremental refactoring towards a decomposed PersistenceManager
     protected StudentManager getStudentManager() { return PM; }
-    protected CourseManager getCourseManager() { return PM; }
     protected SchoolManager getSchoolManager() { return PM; }
     protected SchoolYearManager getSchoolYearManager() { return PM; }
-    protected AssignmentManager getAssignmentManager() { return PM; }
     protected TermManager getTermManager() { return PM; }
     protected TeacherManager getTeacherManager() { return PM; }
     protected SectionManager getSectionManager() { return PM; }
@@ -84,6 +82,4 @@ public abstract class BaseController {
     protected StudentSectionGradeManager getStudentSectionGradeManager() { return PM; }
     protected UserManager getUserManager() { return PM; }
     protected QueryManager getQueryManager() { return PM; }
-    protected BehaviorManager getBehaviorManager() { return PM; }
-    protected AdminManager getAdminManager() { return PM; }
 }

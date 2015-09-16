@@ -1,12 +1,10 @@
 package com.scholarscore.api.persistence.mysql;
 
-import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.models.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.testng.annotations.Test;
 
-import java.util.Calendar;
 import java.util.Date;
 
 /**
