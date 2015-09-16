@@ -5,7 +5,9 @@ import java.util.logging.Logger;
 
 import javax.validation.Valid;
 
+import com.scholarscore.api.persistence.AdminManager;
 import com.scholarscore.models.Administrator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +25,9 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/administrators")
 public class AdministratorController extends BaseController {
 
+    @Autowired
+    private AdminManager adminManager;
+
     @ApiOperation(
             value = "Get all administrators",
             notes = "Retrieve all administrators within a district",
@@ -32,7 +37,7 @@ public class AdministratorController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAll() {
-        return respond(getAdminManager().getAllAdministrators());
+        return respond(adminManager.getAllAdministrators());
     }
 
     @ApiOperation(
@@ -47,7 +52,7 @@ public class AdministratorController extends BaseController {
     public @ResponseBody ResponseEntity get(
             @ApiParam(name = "administratorId", required = true, value = "Administrator ID")
             @PathVariable(value="administratorId") Long administratorId) {
-        return respond(getAdminManager().getAdministrator(administratorId));
+        return respond(adminManager.getAdministrator(administratorId));
     }
 
     @ApiOperation(
@@ -60,7 +65,7 @@ public class AdministratorController extends BaseController {
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity create(@RequestBody @Valid Administrator admin) {
         System.out.println("Admin create called with entity sourceSystemId: " + admin.getSourceSystemId());
-        return respond(getAdminManager().createAdministrator(admin));
+        return respond(adminManager.createAdministrator(admin));
     }
 
     @ApiOperation(
@@ -76,7 +81,7 @@ public class AdministratorController extends BaseController {
             @ApiParam(name = "administratorId", required = true, value = "Administrator ID")
             @PathVariable(value="administratorId") Long administratorId,
             @RequestBody @Valid Administrator admin) {
-        return respond(getAdminManager().replaceAdministrator(administratorId, admin));
+        return respond(adminManager.replaceAdministrator(administratorId, admin));
     }
 
     @ApiOperation(
@@ -92,7 +97,7 @@ public class AdministratorController extends BaseController {
             @ApiParam(name = "administratorId", required = true, value = "Administrator ID")
             @PathVariable(value="administratorId") Long administratorId,
             @RequestBody @Valid Administrator administrator) {
-        return respond(getAdminManager().updateAdministrator(administratorId, administrator));
+        return respond(adminManager.updateAdministrator(administratorId, administrator));
     }
 
     @ApiOperation(
@@ -106,6 +111,6 @@ public class AdministratorController extends BaseController {
     public @ResponseBody ResponseEntity delete(
             @ApiParam(name = "administratorId", required = true, value = "Administrator ID")
             @PathVariable(value="administratorId") Long administratorId) {
-        return respond(getAdminManager().deleteAdministrator(administratorId));
+        return respond(adminManager.deleteAdministrator(administratorId));
     }
 }

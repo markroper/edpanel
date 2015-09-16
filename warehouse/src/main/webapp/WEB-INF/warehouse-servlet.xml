@@ -62,9 +62,22 @@
         <property name="studentAssignmentPersistence" ref="studentAssignmentPersistence"/>
         <property name="studentSectionGradePersistence" ref="studentSectionGradePersistence"/>
         <property name="teacherPersistence" ref="teacherPersistence"/>
-        <property name="administratorPersistence" ref="administratorPersistence"/>
         <property name="userPersistence" ref="userPersistence"/>
         <property name="queryPersistence" ref="queryPersistence"/>
         <property name="behaviorPersistence" ref="behaviorPersistence"/>
+        <property name="schoolManager" ref="schoolManager"/>
+        <property name="schoolYearManager" ref="schoolYearManager"/>
+        <property name="termManager" ref="termManager"/>
+        <property name="studentManager" ref="studentManager"/>
+        <property name="sectionManager" ref="sectionManager"/>
+        <property name="courseManager" ref="courseManager"/>
+        <property name="assignmentManager" ref="assignmentManager"/>
+        <property name="studentAssignmentManager" ref="studentAssignmentManager"/>
+        <property name="studentSectionGradeManager" ref="studentSectionGradeManager"/>
+        <property name="teacherManager" ref="teacherManager"/>
+        <property name="userManager" ref="userManager"/>
+        <property name="queryManager" ref="queryManager"/>
+        <property name="behaviorManager" ref="behaviorManager"/>
     </bean>
+    
 </beans>
