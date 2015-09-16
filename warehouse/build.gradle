@@ -55,23 +55,6 @@ cargo {
     }
 }
 
-task appRunDebug(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal) { 
-    cargo { 
-        local { 
-            jvmArgs "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
-        }
-    }
-}
-
-task appStartWithJacocoAgent(type: com.bmuschko.gradle.cargo.tasks.local.CargoStartLocal) {
-    cargo { 
-        local {
-//            print "Using Jacoco Agent Path: $configurations.jacocoAgent.asPath"
-            jvmArgs "-javaagent:$projectDir/jacocoagent.jar=destfile=$buildDir/jacoco/jacoco-int.exec"
-        }
-    }
-}
-
 //Integration test suite
 def getFileByPattern(File dir, String pat, String stripDir) {
     String path = ""
@@ -85,6 +68,32 @@ def getFileByPattern(File dir, String pat, String stripDir) {
             path = path?.substring(stripDir.length(), path?.length())
     }
     path
+}
+
+task appRun(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal, dependsOn: 'war') {
+    cargo {
+        local {
+            jvmArgs "-javaagent:$projectDir/jacocoagent.jar=destfile=$buildDir/jacoco/jacoco-container.exec"
+        }
+    }
+}
+
+task appStart(type: com.bmuschko.gradle.cargo.tasks.local.CargoStartLocal, dependsOn: 'war') {
+    cargo {
+        local {
+            jvmArgs "-javaagent:$projectDir/jacocoagent.jar=destfile=$buildDir/jacoco/jacoco-container.exec"
+        }
+    }
+}
+
+task appStop(type: com.bmuschko.gradle.cargo.tasks.local.CargoStopLocal) { }
+
+task appRunDebug(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal) {
+    cargo {
+        local {
+            jvmArgs "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
+        }
+    }
 }
 
 task integrationLocal(type: Test) {
@@ -107,50 +116,11 @@ task integrationLocalWithContainer(type: Test, dependsOn: 'war') << {
     description 'use tomcat to start a local container, then run the integrationLocal task, then stop container'
 }
 
-task integrationLocalWithInstrumentedContainer(type: Test, dependsOn: 'war') { 
-    
-}
-
-integrationLocalWithInstrumentedContainer.doFirst {
-    appStartWithJacocoAgent.execute()
-    integrationLocal.execute()
-    appStop.execute()
-}
-
 integrationLocalWithContainer.doFirst {
     appStart.execute()
     integrationLocal.execute()
     appStop.execute()
 }
-
-task warehouseIntegrationCodeCoverageReport(type: JacocoReport, dependsOn: integrationLocalWithInstrumentedContainer) {
-    group 'Verification'
-    description 'runs the integration tests against a local container with code coverage'
-
-    // Gather execution data from all subprojects
-    // (change this if you e.g. want to calculate unit test/integration test coverage separately)
-    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/jacoco-int.exec")
-
-    sourceSets sourceSets.main
-//    sourceSets
-    // Add all relevant sourcesets from the subprojects
-//    subprojects.each {
-//        sourceSets it.sourceSets.main
-//    }
-
-    reports {
-        xml.enabled true
-        html.enabled true
-        html.destination "${buildDir}/reports/jacoco"
-        csv.enabled false
-    }
-}
-
-task appRun(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal, dependsOn: 'war') { }
-
-task appStart(type: com.bmuschko.gradle.cargo.tasks.local.CargoStartLocal, dependsOn: 'war') { }
-
-task appStop(type: com.bmuschko.gradle.cargo.tasks.local.CargoStopLocal) { }
 
 // synthetic data gen
 task syntheticDataGen(type: Test) {
