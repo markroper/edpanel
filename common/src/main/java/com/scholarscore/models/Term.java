@@ -72,6 +72,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.SCHOOL_YEAR_FK)
+    @Fetch(FetchMode.JOIN)
     public SchoolYear getSchoolYear() {
         return schoolYear;
     }

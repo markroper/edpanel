@@ -1,17 +1,16 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
-import com.scholarscore.models.Section;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.scholarscore.api.persistence.mysql.StudentSectionGradePersistence;
+import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
+import java.util.List;
 
 @Transactional
 public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
@@ -37,7 +36,8 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
     @Override
     @SuppressWarnings("unchecked")
     public StudentSectionGrade select(long sectionId, long studentId) {
-        List<StudentSectionGrade> gradeList = (List<StudentSectionGrade>) hibernateTemplate.findByNamedParam("from studentSectionGrade ssg where ssg.student.id = " + String.valueOf(studentId) +
+        List<StudentSectionGrade> gradeList = (List<StudentSectionGrade>) hibernateTemplate.findByNamedParam(
+                "from studentSectionGrade ssg where ssg.student.id = " + String.valueOf(studentId) +
                 " and ssg.section.id = :sectionId", "sectionId", sectionId);
         if (null != gradeList && gradeList.size() > 0) {
             return gradeList.get(0);
@@ -85,6 +85,7 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
     public Long delete(long sectionId, long studentId) {
         StudentSectionGrade toDelete = select(sectionId, studentId);
         if (null != toDelete) {
+            toDelete.getSection().getStudentSectionGrades().remove(toDelete);
             hibernateTemplate.delete(toDelete);
         }
         return toDelete.getId();

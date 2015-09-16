@@ -254,4 +254,29 @@ public class SectionManagerImpl implements SectionManager {
         return new ServiceResponse<Long>((Long) null);
     }
 
+    @Override
+    public ServiceResponse<Collection<Section>> getAllSectionsByTeacher(
+            long schoolId, long yearId, long termId, long teacherId) {
+        StatusCode code = pm.getTeacherManager().teacherExists(teacherId);
+        if(!code.isOK()) {
+            return new ServiceResponse<Collection<Section>>(code);
+        }
+        code = pm.getTermManager().termExists(schoolId, yearId, termId);
+        if(!code.isOK()) {
+            return new ServiceResponse<Collection<Section>>(code);
+        }
+        Collection<Section> sections = sectionPersistence.selectAllSectionForTeacher(termId, teacherId);
+        for(Section s : sections) {
+            Collection<Student> students = pm.getStudentPersistence().selectAllStudentsInSection(s.getId());
+            if(null != students && !students.isEmpty()) {
+                s.setEnrolledStudents(new ArrayList<Student>(students));
+            }
+            Collection<Assignment> assignments = pm.getAssignmentPersistence().selectAll(s.getId());
+            if(null != assignments && !assignments.isEmpty()) {
+                s.setAssignments(new ArrayList<Assignment>(assignments));
+            }
+        }
+        return new ServiceResponse<Collection<Section>>(sections);
+    }
+
 }

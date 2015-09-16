@@ -1,14 +1,5 @@
 package com.scholarscore.api.controller;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.testng.annotations.Test;
-
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.api.util.SchoolDataFactory;
 import com.scholarscore.models.Assignment;
@@ -19,8 +10,18 @@ import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Teacher;
 import com.scholarscore.models.Term;
+import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * Generates synthetic data for school, school years, terms, courses, sections, students, teachers, 
@@ -81,16 +82,35 @@ public class UISyntheticDatagenerator extends IntegrationBase {
             
             //Create the sections for courses in the school and the terms in the current schoolYear
             Map<Long, List<Section>> sections = 
-                    SchoolDataFactory.generateSections(createdTerms, generatedCourses, generatedStudents);
+                    SchoolDataFactory.generateSections(createdTerms, generatedCourses, generatedStudents, createdTeachers);
             for(Map.Entry<Long, List<Section>> sectionEntry : sections.entrySet()) {
                 List<Section> createdSections = new ArrayList<Section>();
                 for(Section section : sectionEntry.getValue()) {
-                    createdSections.add(sectionValidatingExecutor.create(
-                            school.getId(), 
-                            termEntry.getKey(), 
-                            sectionEntry.getKey(), 
-                            section, 
-                            section.getName()));
+                    Section createdSection = sectionValidatingExecutor.create(
+                            school.getId(),
+                            termEntry.getKey(),
+                            sectionEntry.getKey(),
+                            section,
+                            section.getName());
+                    createdSections.add(createdSection);
+                    for(Student s : section.getEnrolledStudents()) {
+                        StudentSectionGrade ssg = new StudentSectionGrade();
+                        ssg.setComplete(true);
+                        ssg.setGrade(100D - new Random().nextInt(35));
+                        ssg.setSection(createdSection);
+                        ssg.setStudent(s);
+                        StudentSectionGrade savedGrade = studentSectionGradeValidatingExecutor.update(
+                                school.getId(),
+                                termEntry.getKey(),
+                                sectionEntry.getKey(),
+                                createdSection.getId(),
+                                s.getId(),
+                                ssg,
+                                "Updating student section grade");
+                        if(null == savedGrade) {
+                            System.out.println("failed to update SSG");
+                        }
+                    }
                 }
                 
                 //Create the assignments for each of the sections in the current term

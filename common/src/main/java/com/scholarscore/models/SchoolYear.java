@@ -50,6 +50,7 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
     @OneToOne(optional = true)
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.SCHOOL_FK)
+    @Fetch(FetchMode.JOIN)
     public School getSchool() {
         return school;
     }

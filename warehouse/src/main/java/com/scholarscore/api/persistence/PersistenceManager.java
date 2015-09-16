@@ -1,18 +1,9 @@
 package com.scholarscore.api.persistence;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scholarscore.api.persistence.mysql.*;
-import com.scholarscore.api.util.ServiceResponse;
-import com.scholarscore.api.util.StatusCode;
-import com.scholarscore.api.util.StatusCodeType;
-import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.*;
-import com.scholarscore.models.query.Query;
-import com.scholarscore.models.query.QueryResults;
+
 
 public class PersistenceManager
          {
@@ -142,6 +133,10 @@ public class PersistenceManager
     public UserManager getUserManager() {
         return userManager;
     }
+    
+
+    
+
 
     public void setUserManager(UserManager userManager) {
         this.userManager = userManager;

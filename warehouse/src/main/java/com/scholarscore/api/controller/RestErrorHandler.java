@@ -3,6 +3,7 @@ package com.scholarscore.api.controller;
 import com.scholarscore.api.util.StatusCodeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -37,6 +38,14 @@ public class RestErrorHandler extends BaseController {
     public ResponseEntity<StatusCode> processValidationError(MethodArgumentNotValidException ex) {
         BindingResult result = ex.getBindingResult();
         StatusCode error = new StatusCode(StatusCodes.UNPARSABLE_REQUEST_CODE, result.getFieldError().getDefaultMessage());
+        return new ResponseEntity<StatusCode>(error, HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ResponseEntity<StatusCode> processDataIntegrationViolationException(DataIntegrityViolationException dive) {
+        StatusCode error = new StatusCode(StatusCodes.DATA_INTEGRITY_VIOLATION_CODE, dive.getMessage());
         return new ResponseEntity<StatusCode>(error, HttpStatus.BAD_REQUEST);
     }
     

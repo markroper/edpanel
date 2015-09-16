@@ -1,16 +1,24 @@
 package com.scholarscore.models;
 
-import java.io.Serializable;
-import java.util.Objects;
-
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.hibernate.annotations.*;
-import org.hibernate.annotations.CascadeType;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Represents a single student's grade in a specific course.  The complete boolean
@@ -57,9 +65,9 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
         }
     }
 
-    @OneToOne(optional = true)
-    @Cascade(CascadeType.SAVE_UPDATE)
+    @ManyToOne(optional = true, fetch=FetchType.LAZY)
     @JoinColumn(name=HibernateConsts.SECTION_FK)
+    @Fetch(FetchMode.JOIN)
     public Section getSection() {
         return section;
     }
@@ -68,9 +76,9 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
         this.section = section;
     }
 
-    @OneToOne(optional = true)
-    @Cascade(CascadeType.SAVE_UPDATE)
+    @ManyToOne(optional = true, fetch=FetchType.LAZY)
     @JoinColumn(name = HibernateConsts.STUDENT_FK)
+    @Fetch(FetchMode.JOIN)
     public Student getStudent() {
         return student;
     }
