@@ -2,7 +2,7 @@ package com.scholarscore.api.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.ApiConsts;
-import com.scholarscore.api.persistence.AdministratorPersistence;
+import com.scholarscore.api.persistence.mysql.AdministratorPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.TeacherPersistence;
 import com.scholarscore.models.Identity;
@@ -305,7 +305,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 Identity identity = proxyUser.getIdentity();
                 // don't bother sending the password value to the client
                 identity.getLogin().setPassword(null);
-                String value = mapper.writeValueAsString(identity);
+                String value = mapper.writeValueAsString(proxyUser);
                 out.print(value);
             }
             else if (authentication.getPrincipal() instanceof Identity) {

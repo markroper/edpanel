@@ -1,6 +1,6 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import com.scholarscore.api.persistence.AdministratorPersistence;
+import com.scholarscore.api.persistence.mysql.AdministratorPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.TeacherPersistence;
 import com.scholarscore.api.persistence.mysql.UserPersistence;
@@ -40,20 +40,24 @@ public class UserJdbc implements UserPersistence {
 
     @Override
     public Identity getIdentity(String username) {
+        final User user = selectUser(username);
+
         Teacher teacher = teacherPersistence.select(username);
         if (null != teacher) {
+            teacher.setLogin(user);
             return teacher;
         }
         Administrator administrator = administratorPersistence.select(username);
         if (null != administrator) {
+            administrator.setLogin(user);
             return administrator;
         }
         Student student = studentPersistence.select(username);
         if (null != student) {
+            student.setLogin(user);
             return student;
         }
         // No user, but we do have the user table identity
-        final User user = selectUser(username);
         return new Identity() {
             public User getLogin() {
                 return user;

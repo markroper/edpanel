@@ -1,4 +1,4 @@
-package com.scholarscore.api.persistence;
+package com.scholarscore.api.persistence.mysql;
 
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.Administrator;
