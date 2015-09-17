@@ -102,6 +102,9 @@
     <bean id="userPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.UserJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="administratorPersistence" ref="administratorPersistence"/>
+        <property name="studentPersistence" ref="studentPersistence"/>
+        <property name="teacherPersistence" ref="teacherPersistence"/>
     </bean>
 
     <bean id="behaviorPersistence" class="com.scholarscore.api.persistence.mysql.jdbc.BehaviorJdbc">

@@ -12,18 +12,40 @@ import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.QueryPersistence;
 import com.scholarscore.api.persistence.mysql.SchoolPersistence;
 import com.scholarscore.api.persistence.mysql.SectionPersistence;
-import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.StudentAssignmentPersistence;
+import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.StudentSectionGradePersistence;
 import com.scholarscore.api.persistence.mysql.TeacherPersistence;
 import com.scholarscore.api.persistence.mysql.UserPersistence;
+import com.scholarscore.api.security.config.UserDetailsProxy;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.*;
+import com.scholarscore.models.Administrator;
+import com.scholarscore.models.Assignment;
+import com.scholarscore.models.Behavior;
+import com.scholarscore.models.Course;
+import com.scholarscore.models.GradeFormula;
+import com.scholarscore.models.Identity;
+import com.scholarscore.models.School;
+import com.scholarscore.models.SchoolYear;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.Student;
+import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.Teacher;
+import com.scholarscore.models.Term;
+import com.scholarscore.models.User;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.QueryResults;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class PersistenceManager implements StudentManager, SchoolManager, SchoolYearManager, 
         TermManager, SectionManager, AssignmentManager, StudentAssignmentManager,
@@ -1317,7 +1339,22 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
 	public ServiceResponse<String> deleteUser(String username) {
 		return new ServiceResponse<String>(userPersistence.deleteUser(username));
 	}
-    
+
+    @Override
+    public ServiceResponse<Identity> getCurrentUser() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        if (authentication != null) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof UserDetailsProxy) {
+                UserDetailsProxy proxy = (UserDetailsProxy)principal;
+                return new ServiceResponse<Identity>(proxy.getIdentity());
+            }
+        }
+        return new ServiceResponse<Identity>(new StatusCode(StatusCodes.NOT_AUTHENTICATED,
+                "Not Authenticated"));
+    }
+
     @Override
     public ServiceResponse<Query> getQuery(Long schoolId, Long queryId) {
         StatusCode code = this.schoolExists(schoolId);
