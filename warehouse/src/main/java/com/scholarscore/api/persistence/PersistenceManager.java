@@ -1,8 +1,11 @@
 package com.scholarscore.api.persistence;
 
-
 import com.scholarscore.api.persistence.mysql.*;
-import com.scholarscore.models.*;
+import com.scholarscore.models.Assignment;
+import com.scholarscore.models.Course;
+import com.scholarscore.models.SchoolYear;
+import com.scholarscore.models.Term;
+
 
 
 public class PersistenceManager
@@ -283,8 +286,6 @@ return authorityPersistence;
 		this.authorityPersistence = authorityPersistence;
 	}
 
-
-    
 
 
 

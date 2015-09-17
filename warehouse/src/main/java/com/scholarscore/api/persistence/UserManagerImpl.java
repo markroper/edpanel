@@ -1,11 +1,16 @@
 package com.scholarscore.api.persistence;
 
 import com.scholarscore.api.persistence.mysql.UserPersistence;
+import com.scholarscore.api.security.config.UserDetailsProxy;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
+import com.scholarscore.models.Identity;
 import com.scholarscore.models.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collection;
 
@@ -49,7 +54,7 @@ public class UserManagerImpl implements UserManager {
         if (null != user) {
             return new ServiceResponse<User>(user);
         }
-        return new ServiceResponse<User>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, username}));
+        return new ServiceResponse<User>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { USER, username } ));
     }
 
     @Override
@@ -70,5 +75,20 @@ public class UserManagerImpl implements UserManager {
     @Override
     public ServiceResponse<String> deleteUser(String username) {
         return new ServiceResponse<String>(userPersistence.deleteUser(username));
+    }
+
+    @Override
+    public ServiceResponse<Identity> getCurrentUser() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        if (authentication != null) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof UserDetailsProxy) {
+                UserDetailsProxy proxy = (UserDetailsProxy)principal;
+                return new ServiceResponse<Identity>(proxy.getIdentity());
+            }
+        }
+        return new ServiceResponse<Identity>(new StatusCode(StatusCodes.NOT_AUTHENTICATED,
+                "Not Authenticated"));
     }
 }
