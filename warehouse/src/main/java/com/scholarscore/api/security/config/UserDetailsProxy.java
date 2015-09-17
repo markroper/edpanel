@@ -1,7 +1,9 @@
 package com.scholarscore.api.security.config;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.Authority;
 import com.scholarscore.models.Identity;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,6 +17,7 @@ import java.util.List;
  * @author mattg
  */
 @SuppressWarnings("serial")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDetailsProxy implements UserDetails {
 
 	private Identity identity;
