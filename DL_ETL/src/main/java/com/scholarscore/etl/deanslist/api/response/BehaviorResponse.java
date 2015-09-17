@@ -86,6 +86,8 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
             return BehaviorCategory.IN_SCHOOL_SUSPENSION;
         } else if (lowercased.contains("suspension")) {
             return BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION;
+        } else if (lowercased.contains("detention")) { 
+            return BehaviorCategory.DETENTION;
         } else if (lowercased.contains("demerit")) {
             return BehaviorCategory.DEMERIT;
         } else if (lowercased.contains("merit")) {
