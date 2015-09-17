@@ -73,8 +73,8 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
     }
     
     // the conversion to the BehaviorCategory enum from 'whatever data has been jammed into deanslist' 
-    // is best effort - it'll work in the 'default' Deanslist configuration but we need to make best 
-    // guesses in cases where they've changed the names
+    // is best effort - it'll work in the 'default' Deanslist configuration but we need to do some
+    // best-effort guessing for the cases where they've changed the names
     private BehaviorCategory determineBehaviorCategory(String behaviorCategoryString) {
         if (behaviorCategoryString == null) {
             return null;
