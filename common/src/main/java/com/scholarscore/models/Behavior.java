@@ -33,8 +33,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     @Size(min=1, max=256)
     private String remoteStudentId;    // currently always deanslist DLSAID
     private Date behaviorDate;
-    @Size(min=1, max=256)
-    private String behaviorCategory;
+    private BehaviorCategory behaviorCategory;
     @Size(min=1, max=256)
     private String pointValue;
     @Size(min=1, max=256)
@@ -130,11 +129,12 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     }
 
     @Column(name = HibernateConsts.BEHAVIOR_CATEGORY)
-    public String getBehaviorCategory() {
+    @Enumerated(EnumType.STRING)
+    public BehaviorCategory getBehaviorCategory() {
         return behaviorCategory;
     }
 
-    public void setBehaviorCategory(String behaviorCategory) {
+    public void setBehaviorCategory(BehaviorCategory behaviorCategory) {
         this.behaviorCategory = behaviorCategory;
     }
 
