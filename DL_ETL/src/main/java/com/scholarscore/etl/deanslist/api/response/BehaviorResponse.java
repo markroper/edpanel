@@ -41,7 +41,12 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
             // we parse the category name down to a known enum but don't keep the raw
             // category name in the category field, so appending it to name so that no
             // data is lost.
-            String behaviorName = StringUtils.isEmpty(behavior.Behavior) ? "" : behavior.Behavior;
+            String behaviorName;
+            if (StringUtils.isEmpty(behavior.Behavior)) {
+                behaviorName = "";
+            } else {
+                behaviorName = behavior.Behavior;
+            }
             if (!StringUtils.isEmpty(behavior.BehaviorCategory)) {
                 behaviorName = behavior.BehaviorCategory + " " + behaviorName;
             }
