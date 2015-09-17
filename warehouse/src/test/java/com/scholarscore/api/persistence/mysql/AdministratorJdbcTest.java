@@ -1,14 +1,6 @@
 package com.scholarscore.api.persistence.mysql;
 
-import com.scholarscore.api.persistence.AdministratorPersistence;
-import com.scholarscore.api.persistence.mysql.jdbc.AdministratorJdbc;
-import com.scholarscore.models.Address;
-import com.scholarscore.models.Administrator;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.testng.annotations.Test;
-
-import java.util.logging.Level;
 
 import static org.testng.Assert.*;
 

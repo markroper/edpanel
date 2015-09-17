@@ -1,6 +1,6 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import com.scholarscore.api.persistence.AdministratorPersistence;
+import com.scholarscore.api.persistence.mysql.AdministratorPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.TeacherPersistence;
 import com.scholarscore.api.persistence.mysql.UserPersistence;

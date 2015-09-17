@@ -2,7 +2,7 @@ package com.scholarscore.api.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.ApiConsts;
-import com.scholarscore.api.persistence.AdministratorPersistence;
+import com.scholarscore.api.persistence.mysql.AdministratorPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.TeacherPersistence;
 import com.scholarscore.models.Identity;

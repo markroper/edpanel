@@ -20,6 +20,7 @@ import java.util.List;
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/administrators")
 public class AdministratorController extends BaseController {
 
+
     @ApiOperation(
             value = "Get all administrators",
             notes = "Retrieve all administrators within a district",
@@ -29,7 +30,7 @@ public class AdministratorController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAll() {
-        return respond(getAdminManager().getAllAdministrators());
+        return respond(pm.getAdminManager().getAllAdministrators());
     }
 
     @ApiOperation(
@@ -44,7 +45,7 @@ public class AdministratorController extends BaseController {
     public @ResponseBody ResponseEntity get(
             @ApiParam(name = "administratorId", required = true, value = "Administrator ID")
             @PathVariable(value="administratorId") Long administratorId) {
-        return respond(getAdminManager().getAdministrator(administratorId));
+        return respond(pm.getAdminManager().getAdministrator(administratorId));
     }
 
     @ApiOperation(
@@ -57,7 +58,7 @@ public class AdministratorController extends BaseController {
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity create(@RequestBody @Valid Administrator admin) {
         System.out.println("Admin create called with entity sourceSystemId: " + admin.getSourceSystemId());
-        return respond(getAdminManager().createAdministrator(admin));
+        return respond(pm.getAdminManager().createAdministrator(admin));
     }
 
     @ApiOperation(
@@ -73,7 +74,7 @@ public class AdministratorController extends BaseController {
             @ApiParam(name = "administratorId", required = true, value = "Administrator ID")
             @PathVariable(value="administratorId") Long administratorId,
             @RequestBody @Valid Administrator admin) {
-        return respond(getAdminManager().replaceAdministrator(administratorId, admin));
+        return respond(pm.getAdminManager().replaceAdministrator(administratorId, admin));
     }
 
     @ApiOperation(
@@ -89,7 +90,7 @@ public class AdministratorController extends BaseController {
             @ApiParam(name = "administratorId", required = true, value = "Administrator ID")
             @PathVariable(value="administratorId") Long administratorId,
             @RequestBody @Valid Administrator administrator) {
-        return respond(getAdminManager().updateAdministrator(administratorId, administrator));
+        return respond(pm.getAdminManager().updateAdministrator(administratorId, administrator));
     }
 
     @ApiOperation(
@@ -103,6 +104,6 @@ public class AdministratorController extends BaseController {
     public @ResponseBody ResponseEntity delete(
             @ApiParam(name = "administratorId", required = true, value = "Administrator ID")
             @PathVariable(value="administratorId") Long administratorId) {
-        return respond(getAdminManager().deleteAdministrator(administratorId));
+        return respond(pm.getAdminManager().deleteAdministrator(administratorId));
     }
 }
