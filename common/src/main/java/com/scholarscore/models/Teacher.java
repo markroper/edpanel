@@ -1,24 +1,22 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.query.DimensionField;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+
 import javax.persistence.*;
 
 @Entity(name = HibernateConsts.TEACHER_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
- // FK to the Users table entry
-    @JsonIgnore
-    private String username;
-    @JsonInclude
-    private transient User login;
-    private String sourceSystemId;
-    private Address homeAddress;
-    private String homePhone;
+public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
     
     public Teacher() {
     }
@@ -31,6 +29,11 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
         this.setHomePhone(t.getHomePhone());
         this.setUsername(t.getUsername());
     }
+
+
+    private String sourceSystemId;
+    private Address homeAddress;
+    private String homePhone;
 
     @Override
     public void mergePropertiesIfNull(Teacher mergeFrom) {
@@ -48,11 +51,11 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
             this.setUsername(mergeFrom.getUsername());
         }
         super.mergePropertiesIfNull(mergeFrom);
-    }
-
+    }    
+    
     @Transient
     public User getLogin() {
-        return login;
+        return super.getLogin();
     }
 
     @Column(name = HibernateConsts.TEACHER_NAME)
@@ -86,15 +89,11 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
 
     @Column(name = HibernateConsts.TEACHER_USERNAME)
     public String getUsername() {
-        return username;
+        return super.getUsername();
     }
 
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
-    }
-
-    public void setLogin(User login) {
-        this.login = login;
     }
 
     public void setHomeAddress(Address homeAddress) {
@@ -103,10 +102,6 @@ public class Teacher extends ApiModel implements Serializable, IStaff<Teacher> {
 
     public void setHomePhone(String homePhone) {
         this.homePhone = homePhone;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
     
     @Override
