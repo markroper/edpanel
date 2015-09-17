@@ -28,6 +28,13 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
     Integer rowcount;
     Set<Behavior> data;
 
+    private static final String IN = "in";
+    private static final String SCHOOL = "school";
+    private static final String SUSPENSION = "suspension";
+    private static final String DETENTION = "detention";
+    private static final String DEMERIT = "demerit";
+    private static final String MERIT = "merit";
+
     @Override
     public Collection<com.scholarscore.models.Behavior> toInternalModel() {
         ArrayList<com.scholarscore.models.Behavior> toReturn = new ArrayList<>();
@@ -86,17 +93,17 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
             return null;
         }
         String lowercased = behaviorCategoryString.toLowerCase();
-        if (lowercased.contains("suspension") &&
-                lowercased.contains("in") &&
-                lowercased.contains("school")) {
+        if (lowercased.contains(SUSPENSION) &&
+                lowercased.contains(IN) &&
+                lowercased.contains(SCHOOL)) {
             return BehaviorCategory.IN_SCHOOL_SUSPENSION;
-        } else if (lowercased.contains("suspension")) {
+        } else if (lowercased.contains(SUSPENSION)) {
             return BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION;
-        } else if (lowercased.contains("detention")) { 
+        } else if (lowercased.contains(DETENTION)) {
             return BehaviorCategory.DETENTION;
-        } else if (lowercased.contains("demerit")) {
+        } else if (lowercased.contains(DEMERIT)) {
             return BehaviorCategory.DEMERIT;
-        } else if (lowercased.contains("merit")) {
+        } else if (lowercased.contains(MERIT)) {
             return BehaviorCategory.MERIT;
         }
         return BehaviorCategory.OTHER;
