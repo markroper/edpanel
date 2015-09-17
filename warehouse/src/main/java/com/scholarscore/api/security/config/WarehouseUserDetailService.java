@@ -2,7 +2,6 @@ package com.scholarscore.api.security.config;
 
 import java.util.List;
 
-import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.TeacherPersistence;
 import com.scholarscore.models.Administrator;
