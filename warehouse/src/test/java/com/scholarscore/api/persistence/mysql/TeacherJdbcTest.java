@@ -1,9 +1,5 @@
 package com.scholarscore.api.persistence.mysql;
 
-import com.scholarscore.api.persistence.AdministratorPersistence;
-import com.scholarscore.api.persistence.mysql.TeacherPersistence;
-import com.scholarscore.models.Address;
-import com.scholarscore.models.Administrator;
 import com.scholarscore.models.Teacher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

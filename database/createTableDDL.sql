@@ -280,3 +280,6 @@ insert into `scholar_warehouse`.`users` (username, password, enabled) values ('m
 
 insert into `scholar_warehouse`.`authorities` (username, authority) values ('mroper', 'ADMIN');
 insert into `scholar_warehouse`.`authorities` (username, authority) values ('mattg', 'ADMIN');
+
+insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_username) values ('Mark Roper', 'mroper');
+insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_username) values ('Matt Greenwood', 'mattg');
