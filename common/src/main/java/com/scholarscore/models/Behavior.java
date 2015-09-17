@@ -26,9 +26,9 @@ import java.util.Objects;
 public class Behavior extends ApiModel implements IApiModel<Behavior> {
     
     // "name" in parent class maps to 'behavior'
-    @Size(min=1, max=256)
+    @Size(min=1, max=64)
     private String remoteSystem;
-    @Size(min=1, max=256)
+    @Size(min=1, max=64)
     private String remoteBehaviorId;
     @Size(min=1, max=256)
     private String remoteStudentId;    // currently always deanslist DLSAID
