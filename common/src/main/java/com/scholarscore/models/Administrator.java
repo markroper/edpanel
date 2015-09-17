@@ -19,7 +19,7 @@ import javax.persistence.Entity;
 @Entity(name = HibernateConsts.ADMIN_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Administrator extends ApiModel implements Serializable, IStaff<Administrator> {
+public class Administrator extends Identity implements Serializable, IStaff<Administrator> {
     public static final DimensionField ID = new DimensionField(Dimension.ADMINISTRATOR, "ID");
     public static final DimensionField NAME = new DimensionField(Dimension.ADMINISTRATOR, "Name");
     public static final DimensionField EMAIL_ADDRESS = new DimensionField(Dimension.ADMINISTRATOR, "Address");
@@ -41,13 +41,6 @@ public class Administrator extends ApiModel implements Serializable, IStaff<Admi
         this.setHomeAddress(admin.getHomeAddress());
         this.setHomePhone(admin.getHomePhone());
     }
-
-    // FK to the Users table entry
-    @JsonIgnore
-    private String username;
-
-    @JsonInclude
-    private transient User login;
 
     private String sourceSystemId;
     private Address homeAddress;
@@ -99,7 +92,7 @@ public class Administrator extends ApiModel implements Serializable, IStaff<Admi
 
     @Transient
     public User getLogin() {
-        return login;
+        return super.getLogin();
     }
 
     @OneToOne(optional = true)
@@ -122,7 +115,7 @@ public class Administrator extends ApiModel implements Serializable, IStaff<Admi
     @Column(name = HibernateConsts.ADMIN_USERNAME)
     @Override
     public String getUsername() {
-        return username;
+        return super.getUsername();
     }
 
     public void setHomePhone(String homePhone) {
@@ -131,16 +124,9 @@ public class Administrator extends ApiModel implements Serializable, IStaff<Admi
     public void setHomeAddress(Address homeAddress) {
         this.homeAddress = homeAddress;
     }
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
-    }
-
-    public void setLogin(User login) {
-        this.login = login;
     }
 
 }

@@ -11,6 +11,8 @@ public interface TeacherPersistence {
     
     Teacher select(long teacherId);
 
+    Teacher select(String username);
+
     Long createTeacher(Teacher teacher);
 
     void replaceTeacher(long teacherId, Teacher teacher);

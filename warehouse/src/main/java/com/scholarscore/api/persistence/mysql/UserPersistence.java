@@ -2,6 +2,7 @@ package com.scholarscore.api.persistence.mysql;
 
 import java.util.Collection;
 
+import com.scholarscore.models.Identity;
 import com.scholarscore.models.User;
 
 /**
@@ -12,13 +13,15 @@ import com.scholarscore.models.User;
  *
  */
 public interface UserPersistence {
-    public Collection<User> selectAllUsers();
+    Collection<User> selectAllUsers();
+
+    Identity getIdentity(String username);
     
-    public User selectUser(String username);
+    User selectUser(String username);
 
-    public String createUser(User user);
+    String createUser(User user);
 
-    public String replaceUser(String username, User value);
+    String replaceUser(String username, User value);
 
-    public String deleteUser(String username);
+    String deleteUser(String username);
 }

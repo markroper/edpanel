@@ -12,7 +12,8 @@ public enum StatusCodeType {
     MODEL_NOT_FOUND(StatusCodes.ENTITY_NOT_FOUND_CODE, "warehouse.api.error.model.notfound"),
     UNSUPPORTED_ASSIGNMENT_TYPE(StatusCodes.UNSUPPORTED_VALUE_CODE, ""),
     ENTITY_INVALID_IN_CONTEXT(StatusCodes.INVALID_ENTITY, "warehouse.api.error.invalidcontext"),
-    INVALID_QUERY(StatusCodes.INVALID_ENTITY, "warehouse.api.error.invalidquery");
+    INVALID_QUERY(StatusCodes.INVALID_ENTITY, "warehouse.api.error.invalidquery"),
+    NOT_AUTHENTICATED(StatusCodes.NOT_AUTHENTICATED, "warehouse.api.error.auth_failure");
 
     private int code;
     private String key;

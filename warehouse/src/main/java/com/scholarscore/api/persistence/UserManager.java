@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
+import com.scholarscore.models.Identity;
 import com.scholarscore.models.User;
 
 /**
@@ -12,17 +13,19 @@ import com.scholarscore.models.User;
  * @author mattg
  */
 public interface UserManager {
-    public ServiceResponse<Collection<User>> getAllUsers();
+    ServiceResponse<Collection<User>> getAllUsers();
 
-    public StatusCode userExists(String username);
+    StatusCode userExists(String username);
     
-    public ServiceResponse<User> getUser(String username);
+    ServiceResponse<User> getUser(String username);
 
-    public ServiceResponse<String> createUser(User value);
+    ServiceResponse<String> createUser(User value);
 
-    public ServiceResponse<String> replaceUser(String username, User user);
+    ServiceResponse<String> replaceUser(String username, User user);
     
-    public ServiceResponse<String> updateUser(String username, User user);
+    ServiceResponse<String> updateUser(String username, User user);
 
-    public ServiceResponse<String> deleteUser(String username);
+    ServiceResponse<String> deleteUser(String username);
+
+    ServiceResponse<Identity> getCurrentUser();
 }
