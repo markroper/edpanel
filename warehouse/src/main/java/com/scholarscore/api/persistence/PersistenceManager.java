@@ -1,5 +1,10 @@
 package com.scholarscore.api.persistence;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scholarscore.api.persistence.mysql.AuthorityPersistence;
 import com.scholarscore.api.persistence.mysql.BehaviorPersistence;
@@ -611,6 +616,28 @@ public class PersistenceManager implements StudentManager, SchoolManager, School
             }
         }
         return new ServiceResponse<Collection<Section>>(sections);
+    }
+    
+    @Override
+    public ServiceResponse<Collection<Student>> getAllStudentsByTermTeacher(
+            long schoolId, long schoolYearId, long termId, long teacherId) {
+        StatusCode code = teacherExists(teacherId);
+        if(!code.isOK()) {
+            return new ServiceResponse<Collection<Student>>(code);
+        }
+        code = termExists(schoolId, schoolYearId, termId);
+        if(!code.isOK()) {
+            return new ServiceResponse<Collection<Student>>(code);
+        }
+        Collection<Section> sections = sectionPersistence.selectAllSectionForTeacher(termId, teacherId);
+        Set<Student> studentsByTeacherTerm = new HashSet<>();
+        for(Section s : sections) {
+            Collection<Student> students = studentPersistence.selectAllStudentsInSection(s.getId());
+            if(null != students && !students.isEmpty()) {
+                studentsByTeacherTerm.addAll(students);
+            }
+        }
+        return new ServiceResponse<Collection<Student>>(studentsByTeacherTerm);
     }
 
     /**

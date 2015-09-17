@@ -55,15 +55,6 @@ cargo {
     }
 }
 
-task appRunDebug(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal) { 
-    cargo { 
-        local { 
-            jvmArgs "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
-        }
-    }
-}
-
-
 //Integration test suite
 def getFileByPattern(File dir, String pat, String stripDir) {
     String path = ""
@@ -77,6 +68,32 @@ def getFileByPattern(File dir, String pat, String stripDir) {
             path = path?.substring(stripDir.length(), path?.length())
     }
     path
+}
+
+task appRun(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal, dependsOn: 'war') {
+    cargo {
+        local {
+            jvmArgs "-javaagent:$projectDir/jacocoagent.jar=destfile=$buildDir/jacoco/jacoco-container.exec"
+        }
+    }
+}
+
+task appStart(type: com.bmuschko.gradle.cargo.tasks.local.CargoStartLocal, dependsOn: 'war') {
+    cargo {
+        local {
+            jvmArgs "-javaagent:$projectDir/jacocoagent.jar=destfile=$buildDir/jacoco/jacoco-container.exec"
+        }
+    }
+}
+
+task appStop(type: com.bmuschko.gradle.cargo.tasks.local.CargoStopLocal) { }
+
+task appRunDebug(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal, dependsOn: 'war') {
+    cargo {
+        local {
+            jvmArgs "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
+        }
+    }
 }
 
 task integrationLocal(type: Test) {
@@ -104,12 +121,6 @@ integrationLocalWithContainer.doFirst {
     integrationLocal.execute()
     appStop.execute()
 }
-
-task appRun(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal, dependsOn: 'war') { }
-
-task appStart(type: com.bmuschko.gradle.cargo.tasks.local.CargoStartLocal, dependsOn: 'war') { }
-
-task appStop(type: com.bmuschko.gradle.cargo.tasks.local.CargoStopLocal) { }
 
 // synthetic data gen
 task syntheticDataGen(type: Test) {
