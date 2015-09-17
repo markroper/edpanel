@@ -2,6 +2,7 @@ package com.scholarscore.api.controller;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.Behavior;
+import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.Teacher;
 import org.springframework.http.HttpStatus;
@@ -57,7 +58,7 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
         populatedBehavior.setName("Good Eye Contact");
         populatedBehavior.setStudent(student);
         populatedBehavior.setTeacher(teacher);
-        populatedBehavior.setBehaviorCategory("MERITS");
+        populatedBehavior.setBehaviorCategory(BehaviorCategory.MERIT);
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
@@ -127,12 +128,8 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
         remoteStudentIdTooLong.setStudent(student);
         remoteStudentIdTooLong.setTeacher(teacher);
         remoteStudentIdTooLong.setRemoteStudentId(localeServiceUtil.generateName(257));
-        
-        Behavior categoryTooLong = new Behavior();
-        categoryTooLong.setStudent(student);
-        categoryTooLong.setTeacher(teacher);
-        categoryTooLong.setBehaviorCategory(localeServiceUtil.generateName(257));
-        
+
+
         Behavior pointValueTooLong = new Behavior();
         pointValueTooLong.setStudent(student);
         pointValueTooLong.setTeacher(teacher);
@@ -146,7 +143,6 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
         return new Object[][] {
                 { "Behavior with name exceeding 256 char limit", behaviorNameTooLong, HttpStatus.BAD_REQUEST },
                 { "Behavior with remote student Id exceeding 256 char limit", remoteStudentIdTooLong, HttpStatus.BAD_REQUEST },
-                { "Behavior with category exceeding 256 char limit", categoryTooLong, HttpStatus.BAD_REQUEST },
                 { "Behavior with point value exceeding 256 char limit", pointValueTooLong, HttpStatus.BAD_REQUEST },
                 { "Behavior with roster exceeding 256 char limit", rosterTooLong, HttpStatus.BAD_REQUEST },
         };
