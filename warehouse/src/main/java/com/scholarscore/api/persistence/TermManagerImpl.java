@@ -5,10 +5,14 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.Student;
 import com.scholarscore.models.Term;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by cwallace on 9/16/2015.
@@ -100,5 +104,27 @@ public class TermManagerImpl implements TermManager {
         }
         termPersistence.delete(termId);
         return new ServiceResponse<Long>((Long) null);
+    }
+
+    @Override
+    public ServiceResponse<Collection<Student>> getAllStudentsByTermTeacher(
+            long schoolId, long schoolYearId, long termId, long teacherId) {
+        StatusCode code = pm.getTeacherManager().teacherExists(teacherId);
+        if(!code.isOK()) {
+            return new ServiceResponse<Collection<Student>>(code);
+        }
+        code = termExists(schoolId, schoolYearId, termId);
+        if(!code.isOK()) {
+            return new ServiceResponse<Collection<Student>>(code);
+        }
+        Collection<Section> sections = pm.getSectionPersistence().selectAllSectionForTeacher(termId, teacherId);
+        Set<Student> studentsByTeacherTerm = new HashSet<>();
+        for(Section s : sections) {
+            Collection<Student> students = pm.getStudentPersistence().selectAllStudentsInSection(s.getId());
+            if(null != students && !students.isEmpty()) {
+                studentsByTeacherTerm.addAll(students);
+            }
+        }
+        return new ServiceResponse<Collection<Student>>(studentsByTeacherTerm);
     }
 }
