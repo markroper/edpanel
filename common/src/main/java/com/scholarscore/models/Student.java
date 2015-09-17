@@ -1,15 +1,21 @@
 package com.scholarscore.models;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * The student class expresses a single student with a unique ID per school district.
@@ -24,7 +30,7 @@ import javax.persistence.*;
 @Table(name = HibernateConsts.STUDENT_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Student extends ApiModel implements Serializable, IApiModel<Student>{
+public class Student extends Identity implements Serializable, IApiModel<Student>{
     
     public Student() {
         
@@ -32,8 +38,6 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
     
     public Student(Student student) {
         super(student);
-        this.username = student.username;
-        this.login = student.login;
         this.sourceSystemId = student.sourceSystemId;
         this.mailingAddress = student.mailingAddress;
         this.homeAddress = student.homeAddress;
@@ -53,7 +57,6 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
     public Long getId() {
         return super.getId();
     }
-
     
     public Student(String race, String ethnicity, Long currentSchoolId, Gender gender, String name, Long expectedGraduationYear) {
         this.federalRace = race;
@@ -64,17 +67,7 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         this.projectedGraduationYear = expectedGraduationYear;
     }
     
-    // FK to the Users table, this is optional as a 1:1 relationship does not need to exist between
-    // a user and a student.  A student can exist without a login.  Currently spring security requires
-    // this as the PK of the table, this should be changed to an id column as usernames may be able to
-    // change in the future? This should be hidden from the exported model
-    @JsonIgnore
-    private String username;
-    // A loaded version of the user identity
-    @JsonInclude
-    private transient User login;
     //Source system identifier. E.g. powerschool ID
-
     private String sourceSystemId;
     //Addresses
     private Address mailingAddress;
@@ -134,13 +127,9 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         }
     }
 
-	public String getUsername() {
-		return username;
-	}
-
     @Transient
     public User getLogin() {
-        return login;
+        return super.getLogin();
     }
     @Column(name = HibernateConsts.STUDENT_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
@@ -159,14 +148,6 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
         return mailingAddress;
     }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public void setLogin(User login) {
-		this.login = login;
-	}
-
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
     }
@@ -180,6 +161,11 @@ public class Student extends ApiModel implements Serializable, IApiModel<Student
     @JoinColumn(name=HibernateConsts.STUDENT_HOME_FK)
     public Address getHomeAddress() {
         return homeAddress;
+    }
+
+    @Column(name = HibernateConsts.USER_NAME)
+    public String getUsername() {
+        return super.getUsername();
     }
 
     public void setHomeAddress(Address homeAddress) {

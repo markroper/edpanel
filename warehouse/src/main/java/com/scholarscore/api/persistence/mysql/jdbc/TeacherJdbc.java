@@ -1,13 +1,13 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.util.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import com.scholarscore.api.persistence.mysql.TeacherPersistence;
 import com.scholarscore.models.Teacher;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
+import java.util.List;
 
 @Transactional
 public class TeacherJdbc implements TeacherPersistence {
@@ -34,6 +34,15 @@ public class TeacherJdbc implements TeacherPersistence {
     @Override
     public Teacher select(long id) {
         return hibernateTemplate.get(Teacher.class, id);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Teacher select(String username) {
+        List<Teacher> teachers = (List<Teacher>) hibernateTemplate.findByNamedParam("from teacher t where t.username = :username", "username", username);
+        if (teachers.size() == 1) {
+            return teachers.get(0);
+        }
+        return null;
     }
 
     @Override
