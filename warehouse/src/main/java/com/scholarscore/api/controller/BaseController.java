@@ -26,11 +26,7 @@ public abstract class BaseController {
     public static final String JSON_ACCEPT_HEADER = "application/json";
 
     @Autowired
-    private PersistenceManager PM;
-   
-    public void setPM(PersistenceManager persistenceManager) {
-        this.PM = persistenceManager;
-    }
+    protected PersistenceManager pm;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected ResponseEntity respond(Object obj) {
@@ -70,20 +66,5 @@ public abstract class BaseController {
                 factory.localizeError(returnError), 
                 StatusCodeToHttpCode.resolveHttpStatus(returnError.getCode()));
     }
-    
-    // TODO: incremental refactoring towards a decomposed PersistenceManager
-    protected StudentManager getStudentManager() { return PM; }
-    protected CourseManager getCourseManager() { return PM; }
-    protected SchoolManager getSchoolManager() { return PM; }
-    protected SchoolYearManager getSchoolYearManager() { return PM; }
-    protected AssignmentManager getAssignmentManager() { return PM; }
-    protected TermManager getTermManager() { return PM; }
-    protected TeacherManager getTeacherManager() { return PM; }
-    protected SectionManager getSectionManager() { return PM; }
-    protected StudentAssignmentManager getStudentAssignmentManager() { return PM; }
-    protected StudentSectionGradeManager getStudentSectionGradeManager() { return PM; }
-    protected UserManager getUserManager() { return PM; }
-    protected QueryManager getQueryManager() { return PM; }
-    protected BehaviorManager getBehaviorManager() { return PM; }
-    protected AdminManager getAdminManager() { return PM; }
+
 }

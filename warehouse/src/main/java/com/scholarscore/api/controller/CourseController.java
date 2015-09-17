@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.scholarscore.api.persistence.CourseManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +23,8 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/courses")
 public class CourseController extends BaseController {
+
+
     @ApiOperation(
             value = "Get all courses within a school", 
             notes = "Retrieve all courses", 
@@ -32,7 +36,7 @@ public class CourseController extends BaseController {
     public @ResponseBody ResponseEntity getAllCourses(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId) {
-        return respond(getCourseManager().getAllCourses(schoolId));
+        return respond(pm.getCourseManager().getAllCourses(schoolId));
     }
     
     @ApiOperation(
@@ -49,7 +53,7 @@ public class CourseController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId) {
-        return respond(getCourseManager().getCourse(schoolId, courseId));
+        return respond(pm.getCourseManager().getCourse(schoolId, courseId));
     }
 
     @ApiOperation(
@@ -64,7 +68,7 @@ public class CourseController extends BaseController {
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid Course course) {
-        return respond(getCourseManager().createCourse(schoolId, course));
+        return respond(pm.getCourseManager().createCourse(schoolId, course));
     }
 
     @ApiOperation(
@@ -82,7 +86,7 @@ public class CourseController extends BaseController {
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
             @RequestBody @Valid Course course) {
-        return respond(getCourseManager().replaceCourse(schoolId, courseId, course));
+        return respond(pm.getCourseManager().replaceCourse(schoolId, courseId, course));
     }
     
     @ApiOperation(
@@ -100,7 +104,7 @@ public class CourseController extends BaseController {
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId,
             @RequestBody @Valid Course course) {
-        return respond(getCourseManager().updateCourse(schoolId, courseId, course));
+        return respond(pm.getCourseManager().updateCourse(schoolId, courseId, course));
     }
 
     @ApiOperation(
@@ -116,6 +120,6 @@ public class CourseController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "courseId", required = true, value = "Course ID")
             @PathVariable(value="courseId") Long courseId) {
-        return respond(getCourseManager().deleteCourse(schoolId, courseId));
+        return respond(pm.getCourseManager().deleteCourse(schoolId, courseId));
     }
 }
