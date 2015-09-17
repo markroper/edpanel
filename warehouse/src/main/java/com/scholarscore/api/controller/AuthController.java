@@ -28,7 +28,7 @@ public class AuthController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     public @ResponseBody
     ResponseEntity getCurrentIdentity() {
-        ServiceResponse<Identity> identity = getUserManager().getCurrentUser();
+        ServiceResponse<Identity> identity = pm.getUserManager().getCurrentUser();
         return respond(identity);
     }
 }
