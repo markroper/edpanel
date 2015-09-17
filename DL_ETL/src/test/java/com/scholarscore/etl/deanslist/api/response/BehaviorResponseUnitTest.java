@@ -79,13 +79,6 @@ public class BehaviorResponseUnitTest {
     @DataProvider(name = "behaviorCategoryProvider")
     public Object[][] behaviorCategoryProvider() {
         return new Object[][] {
-                
-                // basic demerit cases
-                { "Demerit", BehaviorCategory.DEMERIT },
-                { "Demerits", BehaviorCategory.DEMERIT },
-                { "demerits", BehaviorCategory.DEMERIT },
-                { "Something Demerits", BehaviorCategory.DEMERIT },
-                { "Something Demerits Something", BehaviorCategory.DEMERIT },
 
                 // basic merit cases
                 { "Merit", BehaviorCategory.MERIT },
@@ -94,6 +87,20 @@ public class BehaviorResponseUnitTest {
                 { "Something Merits", BehaviorCategory.MERIT },
                 { "Something Merits Something", BehaviorCategory.MERIT },
 
+                // basic demerit cases
+                { "Demerit", BehaviorCategory.DEMERIT },
+                { "Demerits", BehaviorCategory.DEMERIT },
+                { "demerits", BehaviorCategory.DEMERIT },
+                { "Something Demerits", BehaviorCategory.DEMERIT },
+                { "Something Demerits Something", BehaviorCategory.DEMERIT },
+
+                // basic detention cases
+                { "Detention", BehaviorCategory.DETENTION },
+                { "Detentions", BehaviorCategory.DETENTION },
+                { "detentions", BehaviorCategory.DETENTION },
+                { "Something Detentions", BehaviorCategory.DETENTION },
+                { "Something Detentions Something", BehaviorCategory.DETENTION },
+                
                 // basic suspension
                 { "Suspension", BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION },
                 { "Suspensions", BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION },
@@ -125,12 +132,19 @@ public class BehaviorResponseUnitTest {
                 { "merit demerit", BehaviorCategory.DEMERIT },
                 { "somethingdemerit merit", BehaviorCategory.DEMERIT },
                 
+                // detention beats demerits 
+                { "detention demerit", BehaviorCategory.DETENTION },
+                { "demerits detentions", BehaviorCategory.DETENTION },
+
+                // (out-of-school) suspension beats detention
+                { "detention suspension", BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION },
+                { "suspensions detentions", BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION },
+
                 // in school suspension beats (out-of-school) suspension
                 { "suspension - in school suspension", BehaviorCategory.IN_SCHOOL_SUSPENSION },
-                // suspension beats (de)merit
-                { "suspension demerit merit", BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION },
+
                 // thus, in school suspension beats everything
-                { "in school suspension suspension demerit merit", BehaviorCategory.IN_SCHOOL_SUSPENSION },
+                { "in school suspension suspension detention demerit merit other", BehaviorCategory.IN_SCHOOL_SUSPENSION },
 
                 // null returns null
                 { null, null },
