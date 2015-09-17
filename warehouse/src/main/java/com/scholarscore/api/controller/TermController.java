@@ -24,8 +24,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/years/{schoolYearId}/terms")
 public class TermController extends BaseController {
 
-    @Autowired
-    TermManager termManager;
     @ApiOperation(
             value = "Get all terms", 
             notes = "Retrieve all terms", 
@@ -39,7 +37,7 @@ public class TermController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId) {
-        return respond(termManager.getAllTerms(schoolId, schoolYearId));
+        return respond(pm.getTermManager().getAllTerms(schoolId, schoolYearId));
     }
     
     @ApiOperation(
@@ -60,7 +58,7 @@ public class TermController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "teacherId", required = true, value = "Teacher ID")
             @PathVariable(value="teacherId") Long teacherId) {
-        return respond(getTermManager().getAllStudentsByTermTeacher(schoolId, schoolYearId, termId, teacherId));
+        return respond(pm.getTermManager().getAllStudentsByTermTeacher(schoolId, schoolYearId, termId, teacherId));
     }
     
     @ApiOperation(
@@ -79,7 +77,7 @@ public class TermController extends BaseController {
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId) {
-        return respond(termManager.getTerm(schoolId, schoolYearId, termId));
+        return respond(pm.getTermManager().getTerm(schoolId, schoolYearId, termId));
     }
 
     @ApiOperation(
@@ -96,7 +94,7 @@ public class TermController extends BaseController {
             @ApiParam(name = "schoolYearId", required = true, value = "School year ID")
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @RequestBody @Valid Term term) {
-        return respond(termManager.createTerm(schoolId, schoolYearId, term));
+        return respond(pm.getTermManager().createTerm(schoolId, schoolYearId, term));
     }
 
     @ApiOperation(
@@ -116,7 +114,7 @@ public class TermController extends BaseController {
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
             @RequestBody @Valid Term term) {
-        return respond(termManager.replaceTerm(schoolId, schoolYearId, termId, term));
+        return respond(pm.getTermManager().replaceTerm(schoolId, schoolYearId, termId, term));
     }
     
     @ApiOperation(
@@ -136,7 +134,7 @@ public class TermController extends BaseController {
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId,
             @RequestBody @Valid Term term) {
-        return respond(termManager.updateTerm(schoolId, schoolYearId, termId, term));
+        return respond(pm.getTermManager().updateTerm(schoolId, schoolYearId, termId, term));
     }
 
     @ApiOperation(
@@ -155,7 +153,7 @@ public class TermController extends BaseController {
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId) {
-        return respond(termManager.deleteTerm(schoolId, schoolYearId, termId));
+        return respond(pm.getTermManager().deleteTerm(schoolId, schoolYearId, termId));
     }
     
 }

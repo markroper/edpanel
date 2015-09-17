@@ -30,8 +30,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/queries")
 public class QueryController extends BaseController {
 
-    @Autowired
-    QueryManager queryManager;
     @ApiOperation(
             value = "Get a query by ID", 
             notes = "Given a query ID, returns the query", 
@@ -46,7 +44,7 @@ public class QueryController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "queryId", required = true, value = "Query ID")
             @PathVariable(value="queryId") Long queryId) {
-        return respond(queryManager.getQuery(schoolId, queryId));
+        return respond(pm.getQueryManager().getQuery(schoolId, queryId));
     }
     
     @ApiOperation(
@@ -60,7 +58,7 @@ public class QueryController extends BaseController {
     public @ResponseBody ResponseEntity getQuery(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId) {
-        return respond(queryManager.getQueries(schoolId));
+        return respond(pm.getQueryManager().getQueries(schoolId));
     }
 
     @ApiOperation(
@@ -75,7 +73,7 @@ public class QueryController extends BaseController {
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid Query query) {
-        return respond(queryManager.createQuery(schoolId, query));
+        return respond(pm.getQueryManager().createQuery(schoolId, query));
     }
     
     @ApiOperation(
@@ -91,7 +89,7 @@ public class QueryController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "queryId", required = true, value = "Report ID")
             @PathVariable(value="queryId") Long queryId) {
-        return respond(queryManager.deleteQuery(schoolId, queryId));
+        return respond(pm.getQueryManager().deleteQuery(schoolId, queryId));
     }
     
     @ApiOperation(
@@ -109,7 +107,7 @@ public class QueryController extends BaseController {
             @ApiParam(name = "queryId", required = true, value = "Query ID")
             @PathVariable(value="queryId") Long queryId) {
         //TODO: implement this
-        return respond(queryManager.getQueryResults(schoolId, queryId));
+        return respond(pm.getQueryManager().getQueryResults(schoolId, queryId));
     }
     
     @ApiOperation(
@@ -125,7 +123,7 @@ public class QueryController extends BaseController {
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @RequestBody @Valid Query query) {
-        return respond(queryManager.getQueryResults(query));
+        return respond(pm.getQueryManager().getQueryResults(query));
     }
     
     @ApiOperation(

@@ -23,8 +23,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/users")
 public class UserController extends BaseController {
 
-	@Autowired
-	UserManager userManager;
 
 	@ApiOperation(
 	        value = "Get all users", 
@@ -35,7 +33,7 @@ public class UserController extends BaseController {
 	        produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity getAll() {
-	    return respond(userManager.getAllUsers());
+	    return respond(pm.getUserManager().getAllUsers());
 	}
 	
 	@ApiOperation(
@@ -50,7 +48,7 @@ public class UserController extends BaseController {
 	public @ResponseBody ResponseEntity get(
 	        @ApiParam(name = "username", required = true, value = "User login name")
 	        @PathVariable(value="username") String username) {
-	    return respond(userManager.getUser(username));
+	    return respond(pm.getUserManager().getUser(username));
 	}
 	
 	@ApiOperation(
@@ -62,7 +60,7 @@ public class UserController extends BaseController {
 	        produces = {JSON_ACCEPT_HEADER})
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity create(@RequestBody @Valid User user) {
-	    return respond(userManager.createUser(user));
+	    return respond(pm.getUserManager().createUser(user));
 	}
 	
 	@ApiOperation(
@@ -78,7 +76,7 @@ public class UserController extends BaseController {
 	        @ApiParam(name = "username", required = true, value = "User login name")
 	        @PathVariable(value="username") String username,
 	        @RequestBody @Valid User user) {
-	    return respond(userManager.replaceUser(username, user));
+	    return respond(pm.getUserManager().replaceUser(username, user));
 	}
 	
 	@ApiOperation(
@@ -94,7 +92,7 @@ public class UserController extends BaseController {
 	        @ApiParam(name = "username", required = true, value = "User login name")
 	        @PathVariable(value="username") String username,
 	        @RequestBody @Valid User user) {
-	    return respond(userManager.updateUser(username, user));
+	    return respond(pm.getUserManager().updateUser(username, user));
 	}
 	
 	@ApiOperation(
@@ -108,7 +106,7 @@ public class UserController extends BaseController {
 	public @ResponseBody ResponseEntity delete(
 	        @ApiParam(name = "username", required = true, value = "User login name")
 	        @PathVariable(value="username") String username) {
-	    return respond(userManager.deleteUser(username));
+	    return respond(pm.getUserManager().deleteUser(username));
 	}
 	
 
