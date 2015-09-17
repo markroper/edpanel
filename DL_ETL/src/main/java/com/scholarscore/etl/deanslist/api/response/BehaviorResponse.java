@@ -2,6 +2,7 @@ package com.scholarscore.etl.deanslist.api.response;
 
 import com.scholarscore.etl.deanslist.api.model.Behavior;
 import com.scholarscore.etl.powerschool.api.response.ITranslateCollection;
+import com.scholarscore.models.BehaviorCategory;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +19,13 @@ import java.util.List;
  */
 public class BehaviorResponse implements ITranslateCollection<com.scholarscore.models.Behavior> {
 
-    final static Logger logger = LoggerFactory.getLogger(BehaviorResponse.class);
+    private final static Logger logger = LoggerFactory.getLogger(BehaviorResponse.class);
     
     protected static final String DEANSLIST_SOURCE = "deanslist";
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     Integer rowcount;
-    private List<Behavior> data = new ArrayList<>();
+    List<Behavior> data = new ArrayList<>();
 
     @Override
     public Collection<com.scholarscore.models.Behavior> toInternalModel() {
@@ -35,12 +36,25 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
             out.setRemoteSystem(DEANSLIST_SOURCE);
             out.setRemoteStudentId(behavior.DLStudentID);
             out.setRemoteBehaviorId(behavior.DLSAID);
-            out.setName(behavior.Behavior);
-            out.setBehaviorCategory(behavior.BehaviorCategory);
+            
+            // we parse the category name down to a known enum but don't keep the raw
+            // category name in the category field, so appending it to name so that no
+            // data is lost.
+            String behaviorName = StringUtils.isEmpty(behavior.Behavior) ? "" : behavior.Behavior;
+            if (!StringUtils.isEmpty(behavior.BehaviorCategory)) {
+                behaviorName = behavior.BehaviorCategory + " " + behaviorName;
+            }
+            out.setName(behaviorName);
+            
+            BehaviorCategory parsedCategory = determineBehaviorCategory(behavior.BehaviorCategory);
+            if (parsedCategory == null) {
+                logger.warn("WARNING Could not parse category. Skipping...");
+            }
+            out.setBehaviorCategory(parsedCategory);
             try {
                 out.setBehaviorDate(sdf.parse(behavior.BehaviorDate));
             } catch (ParseException pe) {
-                logger.warn("ERROR Could not parse date. Skipping...");
+                logger.warn("WARNING Could not parse date. Skipping...");
             }
 
             // mostly-empty student with just student name (it's all we have)
@@ -56,6 +70,28 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
             toReturn.add(out);
         }
         return toReturn;
+    }
+    
+    // the conversion to the BehaviorCategory enum from 'whatever data has been jammed into deanslist' 
+    // is best effort - it'll work in the 'default' Deanslist configuration but we need to make best 
+    // guesses in cases where they've changed the names
+    private BehaviorCategory determineBehaviorCategory(String behaviorCategoryString) {
+        if (StringUtils.isEmpty(behaviorCategoryString)) {
+            return null;
+        }
+        String lowercased = behaviorCategoryString.toLowerCase();
+        if (lowercased.contains("demerit")) { 
+            return BehaviorCategory.DEMERIT;
+        } else if (lowercased.contains("merit")) {
+            return BehaviorCategory.MERIT;
+        } else if (lowercased.contains("suspension") &&
+                    lowercased.contains("in") &&
+                    lowercased.contains("class")) {
+            return BehaviorCategory.IN_SCHOOL_SUSPENSION;
+        } else if (lowercased.contains("suspension")) {
+            return BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION;
+        }
+        return BehaviorCategory.OTHER;
     }
     
     private String getStudentName(Behavior behavior) { 

@@ -17,6 +17,7 @@ import com.scholarscore.models.Assignment;
 import com.scholarscore.models.AssignmentType;
 import com.scholarscore.models.AttendanceAssignment;
 import com.scholarscore.models.Behavior;
+import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.Gender;
 import com.scholarscore.models.GradeFormula;
@@ -376,7 +377,7 @@ public class SchoolDataFactory {
                 Date d = new Date(inputTs);
                 Behavior b = new Behavior();
                 b.setBehaviorDate(d);
-                b.setBehaviorCategory(Measure.DEMERIT.name());
+                b.setBehaviorCategory(BehaviorCategory.DEMERIT);
                 b.setTeacher(t);
                 b.setStudent(s);
                 studentBehaviors.get(s.getId()).add(b);
