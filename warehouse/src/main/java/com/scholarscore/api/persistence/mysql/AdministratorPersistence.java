@@ -26,6 +26,14 @@ public interface AdministratorPersistence {
     Administrator select(long administratorId);
 
     /**
+     * Find the user by username
+     *
+     * @param username
+     * @return
+     */
+    Administrator select(String username);
+
+    /**
      * Create an administrator
      *
      * @param admin

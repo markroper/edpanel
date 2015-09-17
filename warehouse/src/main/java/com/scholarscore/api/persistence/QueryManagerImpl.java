@@ -40,7 +40,7 @@ public class QueryManagerImpl implements QueryManager {
         if(null == query) {
             return new ServiceResponse<Query>(StatusCodes.getStatusCode(
                     StatusCodeType.MODEL_NOT_FOUND,
-                    new Object[]{QUERY, queryId}));
+                    new Object[] { QUERY, queryId }));
         }
         return new ServiceResponse<Query>(query);
     }
