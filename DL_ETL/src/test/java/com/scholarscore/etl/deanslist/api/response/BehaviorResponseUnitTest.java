@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -23,7 +24,7 @@ public class BehaviorResponseUnitTest {
     public void testBehaviorResponseToInternalMode() {
         Behavior behavior = buildDefaultBehavior();
 
-        ArrayList<Behavior> behaviors = new ArrayList<>();
+        HashSet<Behavior> behaviors = new HashSet<>();
         behaviors.add(behavior);
 
         BehaviorResponse response = new BehaviorResponse();
@@ -58,7 +59,7 @@ public class BehaviorResponseUnitTest {
         Behavior behavior = buildDefaultBehavior();
         behavior.BehaviorCategory = behaviorCategory;
 
-        ArrayList<Behavior> behaviors = new ArrayList<>();
+        HashSet<Behavior> behaviors = new HashSet<>();
         behaviors.add(behavior);
 
         BehaviorResponse response = new BehaviorResponse();

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by jwinch on 7/23/15.
@@ -25,7 +26,8 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     Integer rowcount;
-    List<Behavior> data = new ArrayList<>();
+//    List<Behavior> data = new ArrayList<>();
+    Set<Behavior> data;
 
     @Override
     public Collection<com.scholarscore.models.Behavior> toInternalModel() {
