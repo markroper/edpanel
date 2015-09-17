@@ -26,7 +26,6 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     Integer rowcount;
-//    List<Behavior> data = new ArrayList<>();
     Set<Behavior> data;
 
     @Override
