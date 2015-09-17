@@ -76,20 +76,20 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
     // is best effort - it'll work in the 'default' Deanslist configuration but we need to make best 
     // guesses in cases where they've changed the names
     private BehaviorCategory determineBehaviorCategory(String behaviorCategoryString) {
-        if (StringUtils.isEmpty(behaviorCategoryString)) {
+        if (behaviorCategoryString == null) {
             return null;
         }
         String lowercased = behaviorCategoryString.toLowerCase();
-        if (lowercased.contains("demerit")) { 
-            return BehaviorCategory.DEMERIT;
-        } else if (lowercased.contains("merit")) {
-            return BehaviorCategory.MERIT;
-        } else if (lowercased.contains("suspension") &&
-                    lowercased.contains("in") &&
-                    lowercased.contains("class")) {
+        if (lowercased.contains("suspension") &&
+                lowercased.contains("in") &&
+                lowercased.contains("school")) {
             return BehaviorCategory.IN_SCHOOL_SUSPENSION;
         } else if (lowercased.contains("suspension")) {
             return BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION;
+        } else if (lowercased.contains("demerit")) {
+            return BehaviorCategory.DEMERIT;
+        } else if (lowercased.contains("merit")) {
+            return BehaviorCategory.MERIT;
         }
         return BehaviorCategory.OTHER;
     }
