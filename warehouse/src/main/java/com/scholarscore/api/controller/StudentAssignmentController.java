@@ -24,8 +24,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/years/{yrId}/terms/{tId}/sections/{sId}/assignments/{assignId}/studentassignments")
 public class StudentAssignmentController extends BaseController {
 
-    @Autowired
-    StudentAssignmentManager studentAssignmentManager;
 
     @ApiOperation(
             value = "Get all student assignments", 
@@ -46,7 +44,7 @@ public class StudentAssignmentController extends BaseController {
             @PathVariable(value="sId") Long sId,
             @ApiParam(name = "assignId", required = true, value = "Assignment ID")
             @PathVariable(value="assignId") Long assignId) {
-        return respond(studentAssignmentManager.getAllStudentAssignments(schoolId, yrId, tId, sId, assignId));
+        return respond(pm.getStudentAssignmentManager().getAllStudentAssignments(schoolId, yrId, tId, sId, assignId));
     }
     
     @ApiOperation(
@@ -71,7 +69,7 @@ public class StudentAssignmentController extends BaseController {
             @PathVariable(value="assignId") Long assignId,
             @ApiParam(name = "studAssignId", required = true, value = "Student assignment ID")
             @PathVariable(value="studAssignId") Long studAssignId) {
-        return respond(studentAssignmentManager.getStudentAssignment(schoolId, yrId, tId, sId, assignId, studAssignId));
+        return respond(pm.getStudentAssignmentManager().getStudentAssignment(schoolId, yrId, tId, sId, assignId, studAssignId));
     }
 
     @ApiOperation(
@@ -94,7 +92,7 @@ public class StudentAssignmentController extends BaseController {
             @ApiParam(name = "assignId", required = true, value = "Assignment ID")
             @PathVariable(value="assignId") Long assignId,
             @RequestBody @Valid StudentAssignment studentAssignment) {
-         return respond(studentAssignmentManager.createStudentAssignment(schoolId, yrId, tId, sId, assignId, studentAssignment));
+         return respond(pm.getStudentAssignmentManager().createStudentAssignment(schoolId, yrId, tId, sId, assignId, studentAssignment));
     }
 
     @ApiOperation(
@@ -120,7 +118,7 @@ public class StudentAssignmentController extends BaseController {
             @ApiParam(name = "studAssignId", required = true, value = "Section assignment ID")
             @PathVariable(value="studAssignId") Long studAssignId,
             @RequestBody @Valid StudentAssignment studentAssignment) {
-        return respond(studentAssignmentManager.replaceStudentAssignment(schoolId, yrId, tId, sId, assignId, studAssignId, studentAssignment));
+        return respond(pm.getStudentAssignmentManager().replaceStudentAssignment(schoolId, yrId, tId, sId, assignId, studAssignId, studentAssignment));
     }
     
     @ApiOperation(
@@ -146,7 +144,7 @@ public class StudentAssignmentController extends BaseController {
             @ApiParam(name = "studAssignId", required = true, value = "Section assignment ID")
             @PathVariable(value="studAssignId") Long studAssignId,
             @RequestBody @Valid StudentAssignment studentAssignment) {
-        return respond(studentAssignmentManager.updateStudentAssignment(schoolId, yrId, tId, sId, assignId, studAssignId, studentAssignment));
+        return respond(pm.getStudentAssignmentManager().updateStudentAssignment(schoolId, yrId, tId, sId, assignId, studAssignId, studentAssignment));
     }
 
     @ApiOperation(
@@ -171,6 +169,6 @@ public class StudentAssignmentController extends BaseController {
             @PathVariable(value="assignId") Long assignId,
             @ApiParam(name = "studAssignId", required = true, value = "Section assignment ID")
             @PathVariable(value="studAssignId") Long studAssignId) {
-        return respond(studentAssignmentManager.deleteStudentAssignment(schoolId, yrId, tId, sId, assignId, studAssignId));
+        return respond(pm.getStudentAssignmentManager().deleteStudentAssignment(schoolId, yrId, tId, sId, assignId, studAssignId));
     }
 }

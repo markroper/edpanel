@@ -24,9 +24,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/grades")
 public class StudentSectionGradeController extends BaseController {
 
-    @Autowired
-    StudentSectionGradeManager studentSectionGradeManager;
-
     @ApiOperation(
             value = "Get all student grades in a section", 
             notes = "Retrieve all student grades in a section", 
@@ -44,7 +41,7 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectId", required = true, value = "Section ID")
             @PathVariable(value="sectId") Long sectId) {
-        return respond(studentSectionGradeManager.getAllStudentSectionGrades(schoolId, yearId, termId, sectId));
+        return respond(pm.getStudentSectionGradeManager().getAllStudentSectionGrades(schoolId, yearId, termId, sectId));
     }
 
     @ApiOperation(
@@ -67,7 +64,7 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "studId", required = true, value = "Student ID")
             @PathVariable(value="studId") Long studId) {
-        return respond(studentSectionGradeManager.getStudentSectionGrade(schoolId, yearId, termId, sectId, studId));
+        return respond(pm.getStudentSectionGradeManager().getStudentSectionGrade(schoolId, yearId, termId, sectId, studId));
     }
 
     @ApiOperation(
@@ -91,7 +88,7 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "studId", required = true, value = "Student ID")
             @PathVariable(value="studId") Long studId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
-        return respond(studentSectionGradeManager.createStudentSectionGrade(schoolId, yearId, termId, sectId, studId, studentSectionGrade));
+        return respond(pm.getStudentSectionGradeManager().createStudentSectionGrade(schoolId, yearId, termId, sectId, studId, studentSectionGrade));
     }
 
     @ApiOperation(
@@ -115,7 +112,7 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "studId", required = true, value = "Student ID")
             @PathVariable(value="studId") Long studId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
-        return respond(studentSectionGradeManager.replaceStudentSectionGrade(
+        return respond(pm.getStudentSectionGradeManager().replaceStudentSectionGrade(
                 schoolId, yearId, termId, sectId, studId, studentSectionGrade));
     }
     
@@ -140,7 +137,7 @@ public class StudentSectionGradeController extends BaseController {
             @ApiParam(name = "studId", required = true, value = "Student ID")
             @PathVariable(value="studId") Long studId,
             @RequestBody @Valid StudentSectionGrade studentSectionGrade) {
-        return respond(studentSectionGradeManager.updateStudentSectionGrade(
+        return respond(pm.getStudentSectionGradeManager().updateStudentSectionGrade(
                 schoolId, yearId, termId, sectId, studId, studentSectionGrade));
     }
 
@@ -164,6 +161,6 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "studId", required = true, value = "Student ID")
             @PathVariable(value="studId") Long studId) {
-        return respond(studentSectionGradeManager.deleteStudentSectionGrade(schoolId, yearId, termId, sectId, studId));
+        return respond(pm.getStudentSectionGradeManager().deleteStudentSectionGrade(schoolId, yearId, termId, sectId, studId));
     }
 }

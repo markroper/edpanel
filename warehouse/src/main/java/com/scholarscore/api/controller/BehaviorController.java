@@ -29,8 +29,6 @@ import java.util.List;
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/students/{studentId}/behaviors")
 public class BehaviorController extends BaseController {
 
-    @Autowired
-    BehaviorManager behaviorManager;
     
     @ApiOperation(
             value = "Get all behaviors",
@@ -43,7 +41,7 @@ public class BehaviorController extends BaseController {
     public @ResponseBody ResponseEntity getAll(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId) {
-        return respond(behaviorManager.getAllBehaviors(studentId));
+        return respond(pm.getBehaviorManager().getAllBehaviors(studentId));
     }
 
     @ApiOperation(
@@ -60,7 +58,7 @@ public class BehaviorController extends BaseController {
             @PathVariable(value="studentId") Long studentId,
             @ApiParam(name = "behaviorId", required = true, value = "Behavior ID")
             @PathVariable(value="behaviorId") Long behaviorId) {
-        return respond(behaviorManager.getBehavior(studentId, behaviorId));
+        return respond(pm.getBehaviorManager().getBehavior(studentId, behaviorId));
     }
     
     @ApiOperation(
@@ -75,7 +73,7 @@ public class BehaviorController extends BaseController {
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId, 
             @RequestBody @Valid Behavior behavior) {
-        return respond(behaviorManager.createBehavior(studentId, behavior));
+        return respond(pm.getBehaviorManager().createBehavior(studentId, behavior));
     }
     
     @ApiOperation(
@@ -93,7 +91,7 @@ public class BehaviorController extends BaseController {
             @ApiParam(name = "behaviorId", required = true, value = "Behavior ID")
             @PathVariable(value="behaviorId") Long behaviorId,
             @RequestBody @Valid Behavior behavior) {
-        return respond(behaviorManager.replaceBehavior(studentId, behaviorId, behavior));
+        return respond(pm.getBehaviorManager().replaceBehavior(studentId, behaviorId, behavior));
     }
 
     @ApiOperation(
@@ -111,7 +109,7 @@ public class BehaviorController extends BaseController {
             @ApiParam(name = "behaviorId", required = true, value = "Behavior ID")
             @PathVariable(value="behaviorId") Long behaviorId,
             @RequestBody @Valid Behavior behavior) {
-        return respond(behaviorManager.updateBehavior(studentId, behaviorId, behavior));
+        return respond(pm.getBehaviorManager().updateBehavior(studentId, behaviorId, behavior));
     }
 
     @ApiOperation(
@@ -127,7 +125,7 @@ public class BehaviorController extends BaseController {
             @PathVariable(value="studentId") Long studentId,
             @ApiParam(name = "behaviorId", required = true, value = "Behavior ID")
             @PathVariable(value="behaviorId") Long behaviorId) {
-        return respond(behaviorManager.deleteBehavior(studentId, behaviorId));
+        return respond(pm.getBehaviorManager().deleteBehavior(studentId, behaviorId));
     }
     
 }
