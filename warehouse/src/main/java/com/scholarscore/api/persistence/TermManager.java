@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
+import com.scholarscore.models.Student;
 import com.scholarscore.models.Term;
 
 public interface TermManager {
@@ -86,4 +87,18 @@ public interface TermManager {
      * @return
      */
     public ServiceResponse<Long> deleteTerm(long schoolId, long yearId, long termId);
+    
+    
+    /**
+     * Returns a collection of students who are in a section taught by the teacher with ID provided within
+     * the term with ID provided.
+     * 
+     * @param schoolId ID of parent school
+     * @param yearId the ID of the parent year
+     * @param termId the ID of the term
+     * @param teacherId The ID of the teacher
+     * @return
+     */
+    public ServiceResponse<Collection<Student>> 
+        getAllStudentsByTermTeacher(long schoolId, long schoolYearId, long termId, long teacherId);
 }
