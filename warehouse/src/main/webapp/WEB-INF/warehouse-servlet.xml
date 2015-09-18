@@ -79,6 +79,7 @@
         <property name="userManager" ref="userManager"/>
         <property name="queryManager" ref="queryManager"/>
         <property name="behaviorManager" ref="behaviorManager"/>
+        <property name="goalManager" ref="goalManager"/>
     </bean>
 
 </beans>

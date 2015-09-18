@@ -273,6 +273,26 @@ CREATE TABLE `scholar_warehouse`.`authorities` (
         ON DELETE CASCADE
         ON UPDATE CASCADE)
 ENGINE = InnoDB;
+
+CREATE TABLE `scholar_warehouse`.`goal` (
+  `goal_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '',
+  `approved` INT NOT NULL COMMENT '',
+  `parent_fk` BIGINT(20) NOT NULL COMMENT '',
+  `desired_value` DECIMAL(10) NOT NULL COMMENT '',
+  `student_fk` BIGINT UNSIGNED NOT NULL COMMENT '',
+  `teacher_fk` BIGINT UNSIGNED NOT NULL COMMENT '',
+PRIMARY KEY (`goal_id`),
+  CONSTRAINT `fk_student_goal`
+    FOREIGN KEY (`student_fk`)
+    REFERENCES `scholar_warehouse`.`student`(`student_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_teacher_goal`
+    FOREIGN KEY (`teacher_fk`)
+    REFERENCES `scholar_warehouse`.`teacher`(`teacher_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
 CREATE INDEX `ix_auth_username` on `scholar_warehouse`.`authorities`(`username`,`authority`);
 
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mroper', 'admin', 1);

@@ -26,6 +26,7 @@ public class PersistenceManager
     private UserManager userManager;
     private QueryManager queryManager;
     private BehaviorManager behaviorManager;
+             private GoalManager goalManager;
     
     //Persistence managers for each entity
     private EntityPersistence<Assignment> assignmentPersistence;
@@ -64,6 +65,14 @@ public class PersistenceManager
     public TermManager getTermManager() {
         return termManager;
     }
+
+             public GoalManager getGoalManager() {
+                 return goalManager;
+             }
+
+             public void setGoalManager(GoalManager goalManager) {
+                 this.goalManager = goalManager;
+             }
 
     public void setTermManager(TermManager termManager) {
         this.termManager = termManager;

@@ -59,6 +59,11 @@
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
     </bean>
 
+    <bean id="goalPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.GoalJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
     <bean id="teacherPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.TeacherJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
