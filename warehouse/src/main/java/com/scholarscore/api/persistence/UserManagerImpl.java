@@ -78,17 +78,17 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public ServiceResponse<Identity> getCurrentUser() {
+    public ServiceResponse<UserDetailsProxy> getCurrentUser() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         if (authentication != null) {
             Object principal = authentication.getPrincipal();
             if (principal instanceof UserDetailsProxy) {
                 UserDetailsProxy proxy = (UserDetailsProxy)principal;
-                return new ServiceResponse<Identity>(proxy.getIdentity());
+                return new ServiceResponse<UserDetailsProxy>(proxy);
             }
         }
-        return new ServiceResponse<Identity>(new StatusCode(StatusCodes.NOT_AUTHENTICATED,
+        return new ServiceResponse<UserDetailsProxy>(new StatusCode(StatusCodes.NOT_AUTHENTICATED,
                 "Not Authenticated"));
     }
 }
