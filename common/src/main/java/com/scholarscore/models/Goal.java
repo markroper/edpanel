@@ -7,8 +7,6 @@ import org.hibernate.annotations.CascadeType;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.validation.constraints.Size;
-import java.io.Serializable;
 
 /**
  * Created by cwallace on 9/17/2015.
@@ -19,14 +17,13 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Goal extends ApiModel implements IApiModel<Goal> {
-    private Long parent_id;
+    private Long parentId;
     private transient Student student;
     private transient Teacher teacher;
-    private Long desired_value;
-
-    private Long calculated_value;
+    private Long desiredValue;
+    private Long calculatedValue;
     private Boolean approved;
-    private GoalType goal_type;
+    private GoalType goalType;
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
@@ -46,12 +43,12 @@ public class Goal extends ApiModel implements IApiModel<Goal> {
     }
 
     @Column(name = HibernateConsts.PARENT_FK)
-    public Long getParent_id() {
-        return parent_id;
+    public Long getParentId() {
+        return parentId;
     }
 
-    public void setParent_id(Long parent_id) {
-        this.parent_id = parent_id;
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     @OneToOne(optional = true)
@@ -77,35 +74,65 @@ public class Goal extends ApiModel implements IApiModel<Goal> {
     }
 
     @Column(name = HibernateConsts.DESIRED_GOAL_VALUE)
-    public Long getDesired_value() {
-        return desired_value;
+    public Long getDesiredValue() {
+        return desiredValue;
     }
 
-    public void setDesired_value(Long desired_value) {
-        this.desired_value = desired_value;
+    public void setDesired_value(Long desiredValue) {
+        this.desiredValue = desiredValue;
     }
 
     @Transient
-    public Long getCalculated_value() {
-        return calculated_value;
+    public Long getCalculatedValue() {
+        return 10L;
     }
 
-    public void setCalculated_value(Long calculated_value) {
-        this.calculated_value = calculated_value;
+    public void setCalculatedValue(Long calculatedValue) {
+        this.calculatedValue = calculatedValue;
     }
 
     @Column(name = HibernateConsts.GOAL_TYPE)
     @Enumerated(EnumType.STRING)
-    public GoalType getGoal_type() {
-        return goal_type;
+    public GoalType getGoalType() {
+        return goalType;
     }
 
-    public void setGoal_type(GoalType goal_type) {
-        this.goal_type = goal_type;
+    public void setGoalType(GoalType goalType) {
+        this.goalType = goalType;
     }
 
     @Override
     public void mergePropertiesIfNull(Goal mergeFrom) {
+        super.mergePropertiesIfNull(mergeFrom);
+        if (null == this.parentId) {
+            this.parentId = mergeFrom.parentId;
+        }
+        if (null == desiredValue) {
+            this.desiredValue = mergeFrom.desiredValue;
+        }
+        if (null == calculatedValue) {
+            this.calculatedValue = mergeFrom.calculatedValue;
+        }
+        if (null == approved) {
+            this.approved = mergeFrom.approved;
+        }
+        if (null == goalType) {
+            this.goalType = mergeFrom.goalType;
+        }
+    }
 
+    @Override
+    public String toString() {
+        return
+                "GOAL " + "\n"
+                        + "Id  : " + getId() + "\n"
+                        + "Name: " + getName() + "\n"
+                        + "ParentId: " + getParentId() +"\n"
+                        + "DesiredValue: " + getDesiredValue() +"\n"
+                        + "CalculatedValue: " + getCalculatedValue() + "\n"
+                        + "Approved: " + getApproved() + "\n"
+                        + "GoalType: " + getGoalType() + "\n"
+                        + "Student: " + getStudent() + "\n"
+                        + "Teacher: " + getTeacher() + "\n";
     }
 }

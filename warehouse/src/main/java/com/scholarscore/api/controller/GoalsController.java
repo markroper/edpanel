@@ -33,7 +33,7 @@ public class GoalsController extends BaseController {
     ResponseEntity getAll(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId) {
-        return respond(pm.getBehaviorManager().getAllBehaviors(studentId));
+        return respond(pm.getGoalManager().getAllGoals(studentId));
     }
 
     @ApiOperation(
@@ -41,16 +41,16 @@ public class GoalsController extends BaseController {
             notes = "Retrieves one specific goal by ID",
             response = Behavior.class)
     @RequestMapping(
-            value = "/{behaviorId}",
+            value = "/{goalId}",
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity get(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
-            @ApiParam(name = "behaviorId", required = true, value = "Behavior ID")
-            @PathVariable(value="behaviorId") Long behaviorId) {
-        return respond(pm.getBehaviorManager().getBehavior(studentId, behaviorId));
+            @ApiParam(name = "goalId", required = true, value = "Goal ID")
+            @PathVariable(value="goalId") Long goalId) {
+        return respond(pm.getGoalManager().getGoal(studentId, goalId));
     }
 
     @ApiOperation(
@@ -77,13 +77,13 @@ public class GoalsController extends BaseController {
             method = RequestMethod.PUT,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity replaceBehavior(
+    public @ResponseBody ResponseEntity replaceGoal(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
-            @ApiParam(name = "behaviorId", required = true, value = "Behavior ID")
-            @PathVariable(value="behaviorId") Long behaviorId,
-            @RequestBody @Valid Behavior behavior) {
-        return respond(pm.getBehaviorManager().replaceBehavior(studentId, behaviorId, behavior));
+            @ApiParam(name = "goalId", required = true, value = "Goal ID")
+            @PathVariable(value="goalId") Long goalId,
+            @RequestBody @Valid Goal goal) {
+        return respond(pm.getGoalManager().replaceGoal(studentId, goalId, goal));
     }
 
     @ApiOperation(
@@ -91,33 +91,33 @@ public class GoalsController extends BaseController {
             notes = "Updates an existing goal's properties. Will not overwrite existing values with null.",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{behaviorId}",
+            value = "/{goalId}",
             method = RequestMethod.PATCH,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity updateBehavior(
+    public @ResponseBody ResponseEntity updateGoal(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
-            @ApiParam(name = "behaviorId", required = true, value = "Behavior ID")
-            @PathVariable(value="behaviorId") Long behaviorId,
-            @RequestBody @Valid Behavior behavior) {
-        return respond(pm.getBehaviorManager().updateBehavior(studentId, behaviorId, behavior));
+            @ApiParam(name = "goalId", required = true, value = "Goal ID")
+            @PathVariable(value="goalId") Long goalId,
+            @RequestBody @Valid Goal goal) {
+        return respond(pm.getGoalManager().updateGoal(studentId, goalId, goal));
     }
 
     @ApiOperation(
             value = "Delete a goal",
             response = Void.class)
     @RequestMapping(
-            value = "/{behaviorId}",
+            value = "/{goalId}",
             method = RequestMethod.DELETE,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity deleteBehavior(
+    public @ResponseBody ResponseEntity deleteGoal(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
-            @ApiParam(name = "behaviorId", required = true, value = "Behavior ID")
-            @PathVariable(value="behaviorId") Long behaviorId) {
-        return respond(pm.getBehaviorManager().deleteBehavior(studentId, behaviorId));
+            @ApiParam(name = "goalId", required = true, value = "Goal ID")
+            @PathVariable(value="goalId") Long goalId) {
+        return respond(pm.getGoalManager().deleteGoal(studentId, goalId));
     }
 
 }
