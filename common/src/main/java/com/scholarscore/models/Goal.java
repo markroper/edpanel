@@ -1,29 +1,33 @@
 package com.scholarscore.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.hibernate.annotations.*;
-import org.hibernate.annotations.CascadeType;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.util.Date;
 
 /**
- * Created by cwallace on 9/17/2015.
+ * Created by cwallace on 9/20/2015.
  */
+@MappedSuperclass
+@DiscriminatorColumn(name="goalClass", discriminatorType = DiscriminatorType.STRING)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "goalType")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = BehaviorGoal.class, name="BEHAVIOR")
+})
+public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 
-@Entity(name = HibernateConsts.GOAL_TABLE)
-@Table(name = HibernateConsts.GOAL_TABLE)
-@SuppressWarnings("serial")
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class Goal extends ApiModel implements IApiModel<Goal> {
     private Long parentId;
     private transient Student student;
     private transient Teacher teacher;
     private Long desiredValue;
     private Long calculatedValue;
     private Boolean approved;
-    private GoalType goalType;
+    private GoalType goalType = GoalType.BEHAVIOR;
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
@@ -31,6 +35,7 @@ public class Goal extends ApiModel implements IApiModel<Goal> {
     public Long getId() {
         return super.getId();
     }
+
 
     @Column(name = HibernateConsts.GOAL_APPROVED)
     @Type(type = "org.hibernate.type.NumericBooleanType")
@@ -63,10 +68,14 @@ public class Goal extends ApiModel implements IApiModel<Goal> {
     }
 
     @OneToOne(optional = true)
-    @Cascade(CascadeType.SAVE_UPDATE)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.TEACHER_FK, nullable = true)
     public Teacher getTeacher() {
         return teacher;
+    }
+
+    public void setCalculatedValue(Long value) {
+        this.calculatedValue = value;
     }
 
     public void setTeacher(Teacher teacher) {
@@ -78,17 +87,12 @@ public class Goal extends ApiModel implements IApiModel<Goal> {
         return desiredValue;
     }
 
-    public void setDesired_value(Long desiredValue) {
+    public void setDesiredValue(Long desiredValue) {
         this.desiredValue = desiredValue;
     }
 
-    @Transient
-    public Long getCalculatedValue() {
-        return 10L;
-    }
-
-    public void setCalculatedValue(Long calculatedValue) {
-        this.calculatedValue = calculatedValue;
+    public void setGoalType(GoalType goalType) {
+        this.goalType = goalType;
     }
 
     @Column(name = HibernateConsts.GOAL_TYPE)
@@ -97,9 +101,8 @@ public class Goal extends ApiModel implements IApiModel<Goal> {
         return goalType;
     }
 
-    public void setGoalType(GoalType goalType) {
-        this.goalType = goalType;
-    }
+
+
 
     @Override
     public void mergePropertiesIfNull(Goal mergeFrom) {
@@ -119,6 +122,7 @@ public class Goal extends ApiModel implements IApiModel<Goal> {
         if (null == goalType) {
             this.goalType = mergeFrom.goalType;
         }
+
     }
 
     @Override
