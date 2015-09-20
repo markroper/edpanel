@@ -2,7 +2,6 @@ package com.scholarscore.api.persistence;
 
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
-import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Goal;
 
 import java.util.Collection;
@@ -10,6 +9,7 @@ import java.util.Collection;
 /**
  * Created by cwallace on 9/17/2015.
  */
+
 public interface GoalManager {
 
     public ServiceResponse<Long> createGoal(long studentId, Goal goal);

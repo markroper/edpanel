@@ -48,7 +48,7 @@ public class GoalsController extends BaseController {
     public @ResponseBody ResponseEntity get(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
-            @ApiParam(name = "goalId", required = true, value = "Goal ID")
+            @ApiParam(name = "goalId", required = true, value = "IGoal ID")
             @PathVariable(value="goalId") Long goalId) {
         return respond(pm.getGoalManager().getGoal(studentId, goalId));
     }
@@ -80,7 +80,7 @@ public class GoalsController extends BaseController {
     public @ResponseBody ResponseEntity replaceGoal(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
-            @ApiParam(name = "goalId", required = true, value = "Goal ID")
+            @ApiParam(name = "goalId", required = true, value = "IGoal ID")
             @PathVariable(value="goalId") Long goalId,
             @RequestBody @Valid Goal goal) {
         return respond(pm.getGoalManager().replaceGoal(studentId, goalId, goal));
@@ -98,7 +98,7 @@ public class GoalsController extends BaseController {
     public @ResponseBody ResponseEntity updateGoal(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
-            @ApiParam(name = "goalId", required = true, value = "Goal ID")
+            @ApiParam(name = "goalId", required = true, value = "IGoal ID")
             @PathVariable(value="goalId") Long goalId,
             @RequestBody @Valid Goal goal) {
         return respond(pm.getGoalManager().updateGoal(studentId, goalId, goal));
@@ -115,7 +115,7 @@ public class GoalsController extends BaseController {
     public @ResponseBody ResponseEntity deleteGoal(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
-            @ApiParam(name = "goalId", required = true, value = "Goal ID")
+            @ApiParam(name = "goalId", required = true, value = "IGoal ID")
             @PathVariable(value="goalId") Long goalId) {
         return respond(pm.getGoalManager().deleteGoal(studentId, goalId));
     }
