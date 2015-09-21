@@ -2,6 +2,7 @@ package com.scholarscore.api.persistence;
 
 import java.util.Collection;
 
+import com.scholarscore.api.security.config.UserDetailsProxy;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.Identity;
@@ -27,5 +28,5 @@ public interface UserManager {
 
     ServiceResponse<String> deleteUser(String username);
 
-    ServiceResponse<Identity> getCurrentUser();
+    ServiceResponse<UserDetailsProxy> getCurrentUser();
 }

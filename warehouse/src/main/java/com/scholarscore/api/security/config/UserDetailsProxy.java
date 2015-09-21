@@ -23,6 +23,10 @@ public class UserDetailsProxy implements UserDetails {
 	private Identity identity;
 	private List<Authority> authorities;
 
+	public UserDetailsProxy() {
+	    
+	}
+	
 	public UserDetailsProxy(Identity identity, List<Authority> authorities) {
 		this.identity = identity;
 		this.authorities = authorities;
