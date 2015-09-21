@@ -13,11 +13,11 @@ import java.util.Date;
 /**
  * Created by cwallace on 9/20/2015.
  */
-@Entity(name = HibernateConsts.GOAL_TABLE)
+@Entity
 @Table(name = HibernateConsts.GOAL_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@DiscriminatorValue(value = "goal_type")
+@DiscriminatorValue(value = "BEHAVIOR")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class BehaviorGoal extends Goal {
 
@@ -26,18 +26,11 @@ public class BehaviorGoal extends Goal {
 
     private Date startDate;
     private Date endDate;
+    private BehaviorCategory behaviorCategory;
 
     public BehaviorGoal() {
         setGoalType(GoalType.BEHAVIOR);
     }
-
-
-    @Override
-    @Transient
-    public Long getCalculatedValue() {
-        return 10L;
-    }
-
 
     @Column(name = HibernateConsts.GOAL_START_DATE)
     public Date getStartDate() {
@@ -57,6 +50,17 @@ public class BehaviorGoal extends Goal {
     @JsonFormat(pattern = "MM-dd-yyyy")
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+
+    @Column(name = HibernateConsts.BEHAVIOR_GOAL_CATEGORY)
+    @Enumerated(EnumType.STRING)
+    public BehaviorCategory getBehaviorCategory() {
+        return behaviorCategory;
+    }
+
+    public void setBehaviorCategory(BehaviorCategory behaviorCategory) {
+        this.behaviorCategory = behaviorCategory;
     }
 
     @Override
@@ -81,7 +85,7 @@ public class BehaviorGoal extends Goal {
                 "GOAL " + "\n"
                         + "Id  : " + getId() + "\n"
                         + "Name: " + getName() + "\n"
-                        + "ParentId: " + getParentId() +"\n"
+                        + "BehaviorCategory: " + getBehaviorCategory() +"\n"
                         + "DesiredValue: " + getDesiredValue() +"\n"
                         + "CalculatedValue: " + getCalculatedValue() + "\n"
                         + "Approved: " + getApproved() + "\n"
