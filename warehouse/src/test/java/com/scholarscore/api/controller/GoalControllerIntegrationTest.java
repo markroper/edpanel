@@ -35,7 +35,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         BehaviorGoal behaviorGoal = new BehaviorGoal();
         behaviorGoal.setStudent(student);
         behaviorGoal.setTeacher(teacher);
-        behaviorGoal.setBehaviorCategory(BehaviorCategory.MERIT);
+        behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
         behaviorGoal.setStartDate(new Date());
         behaviorGoal.setEndDate(new Date());
         behaviorGoal.setDesiredValue(4l);
@@ -65,5 +65,43 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
     public void deleteGoalTest(Goal goal, String msg) {
         Goal createdGoal = goalValidatingExecutor.create(goal.getStudent().getId(), goal, msg);
         goalValidatingExecutor.delete(student.getId(), createdGoal.getId(), msg);
+    }
+
+    @DataProvider(name = "testCalculatedMethodDataProvider")
+    public Object[][] testCalculatedValuesDateMethod() {
+        Long EXPECTED_VALUE = 3L;
+
+
+        BehaviorGoal behaviorGoal = new BehaviorGoal();
+        behaviorGoal.setStudent(student);
+        behaviorGoal.setTeacher(teacher);
+        behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
+        behaviorGoal.setStartDate(new Date());
+        behaviorGoal.setEndDate(new Date());
+        behaviorGoal.setDesiredValue(4l);
+        behaviorGoal.setName("To win them all");
+        behaviorGoal.setApproved(false);
+        behaviorGoal.setCalculatedValue(EXPECTED_VALUE);
+
+        Behavior namedBehavior = new Behavior();
+        // teacher is always required or constraint exception
+        namedBehavior.setStudent(student);
+        namedBehavior.setTeacher(teacher);
+        namedBehavior.setName("BehaviorEvent");
+        namedBehavior.setBehaviorCategory(BehaviorCategory.DEMERIT);
+        namedBehavior.setPointValue("1");
+        for (int i = 0; i < EXPECTED_VALUE; i++) {
+            behaviorValidatingExecutor.create(student.getId(), namedBehavior, "Beahvior creation failed");
+        }
+        return new Object[][]{
+                {behaviorGoal,"We did not receive teh expected value from your goal"}
+        };
+
+    }
+
+        @Test(dataProvider = "testCalculatedMethodDataProvider")
+        public void testCalculatedValue(Goal goal, String message) {
+            goalValidatingExecutor.create(goal.getStudent().getId(), goal, message);
+
     }
 }
