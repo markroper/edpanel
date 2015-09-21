@@ -29,4 +29,10 @@ public class AssignmentGoal extends Goal {
     public AssignmentGoal() {
         setGoalType(GoalType.ASSIGNMENT);
     }
+
+    public AssignmentGoal(AssignmentGoal goal) {
+        super(goal);
+        this.setGoalType(GoalType.ASSIGNMENT);
+        this.parentId = goal.parentId;
+    }
 }

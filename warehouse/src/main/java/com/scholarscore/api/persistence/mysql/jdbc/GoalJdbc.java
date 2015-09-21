@@ -49,21 +49,23 @@ public class GoalJdbc implements GoalPersistence {
     @Override
     public Goal select(long studentId, long goalId) {
         Goal result = hibernateTemplate.get(Goal.class, goalId);
-        switch (result.getGoalType()) {
-            case BEHAVIOR:
-                if (result instanceof BehaviorGoal) {
-                    BehaviorGoal behaviorGoal = (BehaviorGoal)result;
-                    result.setCalculatedValue(behaviorGoalCalc.calculateBehaviorGoal(behaviorGoal));
-                }
-                break;
-            case ASSIGNMENT:
-                if (result instanceof AssignmentGoal) {
-                    AssignmentGoal assignmentGoal = (AssignmentGoal)result;
-                    result.setCalculatedValue(assignmentGoalCalc.calculateAssignmentGoal(assignmentGoal));
-                }
-                break;
-            case ATTENDANCE:
-                break;
+        if (null != result) {
+            switch (result.getGoalType()) {
+                case BEHAVIOR:
+                    if (result instanceof BehaviorGoal) {
+                        BehaviorGoal behaviorGoal = (BehaviorGoal)result;
+                        result.setCalculatedValue(behaviorGoalCalc.calculateBehaviorGoal(behaviorGoal));
+                    }
+                    break;
+                case ASSIGNMENT:
+                    if (result instanceof AssignmentGoal) {
+                        AssignmentGoal assignmentGoal = (AssignmentGoal)result;
+                        result.setCalculatedValue(assignmentGoalCalc.calculateAssignmentGoal(assignmentGoal));
+                    }
+                    break;
+                case ATTENDANCE:
+                    break;
+            }
         }
 
         return result;

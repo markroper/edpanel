@@ -28,13 +28,33 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     private Long desiredValue;
     private Long calculatedValue;
     private Boolean approved;
-    private GoalType goalType = GoalType.BEHAVIOR;
+    private GoalType goalType;
+
+    public Goal() {
+        super();
+    }
+
+    public Goal(Goal goal) {
+        super(goal);
+        this.student = goal.student;
+        this.teacher = goal.teacher;
+        this.desiredValue = goal.desiredValue;
+        this.calculatedValue = goal.calculatedValue;
+        this.approved = goal.approved;
+        this.goalType = goal.goalType;
+    }
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     @Column(name = HibernateConsts.GOAL_ID)
     public Long getId() {
         return super.getId();
+    }
+
+    @Override
+    @Column(name = HibernateConsts.GOAL_NAME)
+    public String getName() {
+        return super.getName();
     }
 
 

@@ -32,6 +32,14 @@ public class BehaviorGoal extends Goal {
         setGoalType(GoalType.BEHAVIOR);
     }
 
+    public BehaviorGoal(BehaviorGoal goal) {
+        super(goal);
+        this.setGoalType(GoalType.BEHAVIOR);
+        this.startDate = goal.startDate;
+        this.endDate = goal.endDate;
+        this.behaviorCategory = goal.behaviorCategory;
+
+    }
     @Column(name = HibernateConsts.GOAL_START_DATE)
     public Date getStartDate() {
         return startDate;
