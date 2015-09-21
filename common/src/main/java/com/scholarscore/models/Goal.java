@@ -12,16 +12,17 @@ import java.util.Date;
 /**
  * Created by cwallace on 9/20/2015.
  */
-@MappedSuperclass
-@DiscriminatorColumn(name="goalClass", discriminatorType = DiscriminatorType.STRING)
+@Entity(name = HibernateConsts.GOAL_TABLE)
+@Table(name = HibernateConsts.GOAL_TABLE)
+@DiscriminatorColumn(name="goal_type", discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "goalType")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = BehaviorGoal.class, name="BEHAVIOR")
+        @JsonSubTypes.Type(value = BehaviorGoal.class, name="BEHAVIOR"),
+        @JsonSubTypes.Type(value = AssignmentGoal.class, name = "ASSIGNMENT")
 })
 public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 
-    private Long parentId;
     private transient Student student;
     private transient Teacher teacher;
     private Long desiredValue;
@@ -47,14 +48,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         this.approved = approved;
     }
 
-    @Column(name = HibernateConsts.PARENT_FK)
-    public Long getParentId() {
-        return parentId;
-    }
 
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
-    }
 
     @OneToOne(optional = true)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
@@ -78,6 +72,11 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         this.calculatedValue = value;
     }
 
+    @Transient
+    public Long getCalculatedValue() {
+        return calculatedValue;
+    }
+
     public void setTeacher(Teacher teacher) {
         this.teacher = teacher;
     }
@@ -95,7 +94,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         this.goalType = goalType;
     }
 
-    @Column(name = HibernateConsts.GOAL_TYPE)
+    @Column(name = HibernateConsts.GOAL_TYPE, insertable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     public GoalType getGoalType() {
         return goalType;
@@ -107,9 +106,6 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     @Override
     public void mergePropertiesIfNull(Goal mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
-        if (null == this.parentId) {
-            this.parentId = mergeFrom.parentId;
-        }
         if (null == desiredValue) {
             this.desiredValue = mergeFrom.desiredValue;
         }
@@ -131,7 +127,6 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
                 "GOAL " + "\n"
                         + "Id  : " + getId() + "\n"
                         + "Name: " + getName() + "\n"
-                        + "ParentId: " + getParentId() +"\n"
                         + "DesiredValue: " + getDesiredValue() +"\n"
                         + "CalculatedValue: " + getCalculatedValue() + "\n"
                         + "Approved: " + getApproved() + "\n"

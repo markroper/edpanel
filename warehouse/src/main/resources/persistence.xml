@@ -134,4 +134,15 @@
           class="com.scholarscore.api.persistence.mysql.jdbc.QueryJdbc">
     <property name="dataSource" ref="dataSource"/>
     </bean>
+
+    <bean id="behaviorCalc"
+          class="com.scholarscore.api.persistence.goalCalculators.BehaviorGoalCalc">
+
+    </bean>
+
+    <bean id="assignmentCalc"
+          class="com.scholarscore.api.persistence.goalCalculators.AssignmentGoalCalc">
+
+    </bean>
+
 </beans>

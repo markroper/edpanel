@@ -1,7 +1,12 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
+import com.scholarscore.api.persistence.goalCalculators.AssignmentGoalCalc;
+import com.scholarscore.api.persistence.goalCalculators.BehaviorGoalCalc;
 import com.scholarscore.api.persistence.mysql.GoalPersistence;
 import com.scholarscore.api.persistence.mysql.StudentPersistence;
+import com.scholarscore.models.AssignmentGoal;
+import com.scholarscore.models.Behavior;
+import com.scholarscore.models.BehaviorGoal;
 import com.scholarscore.models.Goal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -17,6 +22,12 @@ public class GoalJdbc implements GoalPersistence {
     @Autowired
     private HibernateTemplate hibernateTemplate;
     private StudentPersistence studentPersistence;
+
+    @Autowired
+    private BehaviorGoalCalc behaviorGoalCalc;
+
+    @Autowired
+    private AssignmentGoalCalc assignmentGoalCalc;
 
     public void setHibernateTemplate(HibernateTemplate template) {
         this.hibernateTemplate = template;
@@ -38,6 +49,23 @@ public class GoalJdbc implements GoalPersistence {
     @Override
     public Goal select(long studentId, long goalId) {
         Goal result = hibernateTemplate.get(Goal.class, goalId);
+        switch (result.getGoalType()) {
+            case BEHAVIOR:
+                if (result instanceof BehaviorGoal) {
+                    BehaviorGoal behaviorGoal = (BehaviorGoal)result;
+                    result.setCalculatedValue(behaviorGoalCalc.calculateBehaviorGoal(behaviorGoal));
+                }
+                break;
+            case ASSIGNMENT:
+                if (result instanceof AssignmentGoal) {
+                    AssignmentGoal assignmentGoal = (AssignmentGoal)result;
+                    result.setCalculatedValue(assignmentGoalCalc.calculateAssignmentGoal(assignmentGoal));
+                }
+                break;
+            case ATTENDANCE:
+                break;
+        }
+
         return result;
     }
 
