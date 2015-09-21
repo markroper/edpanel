@@ -1,3 +1,6 @@
+DROP DATABASE IF EXISTS scholar_warehouse;
+CREATE DATABASE scholar_warehouse;
+
 CREATE TABLE `scholar_warehouse`.`address` (
   `address_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The address ID',
   `address_street` VARCHAR(255) NULL COMMENT 'The street address',
