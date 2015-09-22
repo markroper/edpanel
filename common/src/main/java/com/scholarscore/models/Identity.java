@@ -12,14 +12,14 @@ public class Identity extends ApiModel {
     public Identity(Identity identity) {
         super(identity);
         this.username = identity.username;
-        this.login = identity.login;
+        this.user = identity.user;
     }
 
     // FK to the Users table entry
     protected String username;
 
     @JsonInclude
-    protected transient User login;
+    protected transient User user;
 
 
     public String getUsername() {
@@ -30,12 +30,12 @@ public class Identity extends ApiModel {
         this.username = username;
     }
 
-    public User getLogin() {
-        return login;
+    public User getUser() {
+        return user;
     }
 
-    public void setLogin(User login) {
-        this.login = login;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class Identity extends ApiModel {
 
         if (getUsername() != null ? !getUsername().equals(identity.getUsername()) : identity.getUsername() != null)
             return false;
-        return !(getLogin() != null ? !getLogin().equals(identity.getLogin()) : identity.getLogin() != null);
+        return !(getUser() != null ? !getUser().equals(identity.getUser()) : identity.getUser() != null);
 
     }
 
@@ -56,7 +56,7 @@ public class Identity extends ApiModel {
     public int hashCode() {
         int result = super.hashCode();
         result = 31 * result + (getUsername() != null ? getUsername().hashCode() : 0);
-        result = 31 * result + (getLogin() != null ? getLogin().hashCode() : 0);
+        result = 31 * result + (getUser() != null ? getUser().hashCode() : 0);
         return result;
     }
 }

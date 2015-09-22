@@ -102,6 +102,7 @@ public class HibernateConsts {
     public static final String STUDENT_SOCIAL_SECURITY_NUM = "social_security_number";
     public static final String STUDENT_FEDERAL_RACE = "federal_race";
     public static final String STUDENT_FEDERAL_ETHNICITY = "federal_ethnicity";
+    public static final String STUDENT_USER_FK = "student_user_fk";
     
     //Student section grade constants
     public static final String STUDENT_SECTION_GRADE_TABLE = "student_section_grade";

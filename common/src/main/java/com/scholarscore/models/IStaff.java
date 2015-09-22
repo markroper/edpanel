@@ -6,9 +6,9 @@ package com.scholarscore.models;
 public interface IStaff<T> extends IApiModel<T> {
     void setSourceSystemId(String sourceSystemId);
 
-    void setLogin(User login);
+    void setUser(User user);
 
-    User getLogin();
+    User getUser();
 
     Address getHomeAddress();
 

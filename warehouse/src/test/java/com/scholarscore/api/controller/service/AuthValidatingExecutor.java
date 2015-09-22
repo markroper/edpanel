@@ -31,7 +31,7 @@ public class AuthValidatingExecutor {
         assertNotNull(response, "Expected non-null response from getCurrentUser");
         UserDetailsProxy identity = serviceBase.validateResponse(response, new TypeReference<UserDetailsProxy>(){});
         assertNotNull(identity, "Expected non-null identity returned from getCurrentUser");
-        assertNotNull(identity.getIdentity().getLogin(), "Expected non-null identity.getLogin() from getCurrentUser");
-        assertEquals(identity.getIdentity().getLogin().getUsername(), expectUsername, "Expected the username to equal the expected username");
+        assertNotNull(identity.getIdentity().getUser(), "Expected non-null identity.getLogin() from getCurrentUser");
+        assertEquals(identity.getIdentity().getUser().getUsername(), expectUsername, "Expected the username to equal the expected username");
     }
 }
