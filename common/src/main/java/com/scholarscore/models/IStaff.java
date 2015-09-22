@@ -21,8 +21,4 @@ public interface IStaff<T> extends IApiModel<T> {
     String getSourceSystemId();
 
     void setName(String name);
-
-//    String getUsername();
-
-//    void setUsername(String username);
 }

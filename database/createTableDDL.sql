@@ -26,8 +26,9 @@ CREATE TABLE `scholar_warehouse`.`users` (
     `username` varchar(50) NOT NULL,
     `password` varchar(50) CHARACTER SET UTF8 NOT NULL,
     `enabled` BOOLEAN NOT NULL,
--- "email address"
--- "email address validated?"
+-- TODO: for password flow, we need...
+-- `email_address`
+-- `phone_number`
     PRIMARY KEY (`user_id`),
     UNIQUE(`username`)
 )

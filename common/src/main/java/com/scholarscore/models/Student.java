@@ -86,9 +86,6 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     @Override
     public void mergePropertiesIfNull(Student mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);     
-//        if (null == getUsername()) {
-//        	setUsername(mergeFrom.getUsername());
-//        }
         if (null == getUser()) {
             setUser(mergeFrom.getUser());
         }
@@ -127,7 +124,6 @@ public class Student extends Identity implements Serializable, IApiModel<Student
         }
     }
 
-//    @Transient
     @Override
     @OneToOne(optional = true)
     @Cascade(CascadeType.ALL)
@@ -167,11 +163,6 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     public Address getHomeAddress() {
         return homeAddress;
     }
-
-//    @Column(name = HibernateConsts.USER_NAME)
-//    public String getUsername() {
-//        return super.getUsername();
-//    }
 
     public void setHomeAddress(Address homeAddress) {
         this.homeAddress = homeAddress;
