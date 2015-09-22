@@ -35,4 +35,38 @@ public class AssignmentGoal extends Goal {
         this.setGoalType(GoalType.ASSIGNMENT);
         this.parentId = goal.parentId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        AssignmentGoal that = (AssignmentGoal) o;
+
+        return parentId.equals(that.parentId);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + parentId.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return
+                "GOAL " + "\n"
+                        + "Id  : " + getId() + "\n"
+                        + "Name: " + getName() + "\n"
+                        + "DesiredValue: " + getDesiredValue() +"\n"
+                        + "CalculatedValue: " + getCalculatedValue() + "\n"
+                        + "Approved: " + getApproved() + "\n"
+                        + "GoalType: " + getGoalType() + "\n"
+                        + "Student: " + getStudent() + "\n"
+                        + "Teacher: " + getTeacher() + "\n"
+                        + "ParentId: " + getParentId();
+    }
 }

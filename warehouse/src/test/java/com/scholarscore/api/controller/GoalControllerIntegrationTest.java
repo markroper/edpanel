@@ -6,6 +6,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -32,12 +33,18 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
 
     @DataProvider(name = "createGoalDataProvider")
     public Object[][] createGoalDataMethod() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
+        Date today = cal.getTime();
+        cal.add(Calendar.YEAR, 1); // to get previous year add -1
+        Date nextYear = cal.getTime();
+
         BehaviorGoal behaviorGoal = new BehaviorGoal();
         behaviorGoal.setStudent(student);
         behaviorGoal.setTeacher(teacher);
         behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
-        behaviorGoal.setStartDate(new Date());
-        behaviorGoal.setEndDate(new Date());
+        behaviorGoal.setStartDate(today);
+        behaviorGoal.setEndDate(nextYear);
         behaviorGoal.setDesiredValue(4l);
         behaviorGoal.setName("To win them all");
         behaviorGoal.setApproved(false);
@@ -71,13 +78,19 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
     public Object[][] testCalculatedValuesDateMethod() {
         Long EXPECTED_VALUE = 3L;
 
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
+        Date today = cal.getTime();
+        cal.add(Calendar.YEAR, 1); // to get previous year add -1
+        Date nextYear = cal.getTime();
+
 
         BehaviorGoal behaviorGoal = new BehaviorGoal();
         behaviorGoal.setStudent(student);
         behaviorGoal.setTeacher(teacher);
         behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
-        behaviorGoal.setStartDate(new Date());
-        behaviorGoal.setEndDate(new Date());
+        behaviorGoal.setStartDate(today);
+        behaviorGoal.setEndDate(nextYear);
         behaviorGoal.setDesiredValue(4l);
         behaviorGoal.setName("To win them all");
         behaviorGoal.setApproved(false);
