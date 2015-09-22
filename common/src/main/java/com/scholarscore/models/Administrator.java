@@ -90,11 +90,6 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
         return 31 * super.hashCode();
     }
 
-    @Transient
-    public User getUser() {
-        return super.getUser();
-    }
-
     @OneToOne(optional = true)
     @Cascade(CascadeType.ALL)
     @JoinColumn(name= HibernateConsts.ADMIN_ADDRESS_FK)
@@ -112,12 +107,26 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
         return sourceSystemId;
     }
 
-    @Column(name = HibernateConsts.ADMIN_USERNAME)
-    @Override
+//    @Column(name = HibernateConsts.ADMIN_USERNAME)
+//    @Override
+    @Transient
     public String getUsername() {
         return super.getUsername();
     }
 
+    //    @Transient
+//    public User getUser() {
+//        return super.getUser();
+//    }
+
+    @Override
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.ALL)
+    @JoinColumn(name=HibernateConsts.ADMIN_USER_FK)
+    public User getUser() {
+        return super.getUser();
+    }
+    
     public void setHomePhone(String homePhone) {
         this.homePhone = homePhone;
     }
@@ -129,4 +138,5 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
         this.sourceSystemId = sourceSystemId;
     }
 
+    public void setUser(User user) { super.setUser(user); }
 }

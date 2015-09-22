@@ -53,10 +53,10 @@ public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
         super.mergePropertiesIfNull(mergeFrom);
     }    
     
-    @Transient
-    public User getUser() {
-        return super.getUser();
-    }
+//    @Transient
+//    public User getUser() {
+//        return super.getUser();
+//    }
 
     @Column(name = HibernateConsts.TEACHER_NAME)
     public String getName() {
@@ -87,10 +87,19 @@ public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
         return sourceSystemId;
     }
 
-    @Column(name = HibernateConsts.TEACHER_USERNAME)
-    public String getUsername() {
-        return super.getUsername();
+//    @Column(name = HibernateConsts.TEACHER_USERNAME)
+//    public String getUsername() {
+//        return super.getUsername();
+//    }
+
+    @Override
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.ALL)
+    @JoinColumn(name=HibernateConsts.TEACHER_USER_FK)
+    public User getUser() {
+        return super.getUser();
     }
+
 
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;

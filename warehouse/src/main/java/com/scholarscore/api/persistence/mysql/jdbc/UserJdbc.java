@@ -40,21 +40,21 @@ public class UserJdbc implements UserPersistence {
 
     @Override
     public Identity getIdentity(String username) {
-        final User user = selectUser(username);
+//        final User user = selectUser(username);
 
         Teacher teacher = teacherPersistence.select(username);
         if (null != teacher) {
-            teacher.setUser(user);
+//            teacher.setUser(user);
             return teacher;
         }
         Administrator administrator = administratorPersistence.select(username);
         if (null != administrator) {
-            administrator.setUser(user);
+//            administrator.setUser(user);
             return administrator;
         }
         Student student = studentPersistence.select(username);
         if (null != student) {
-            student.setUser(user);
+//            student.setUser(user);
             return student;
         }
         // No user, but we do have the user table identity
@@ -69,7 +69,7 @@ public class UserJdbc implements UserPersistence {
     @SuppressWarnings("unchecked")
     public User selectUser(String username) {
         List values = hibernateTemplate.findByNamedParam("from user u where u.username = :username", "username", username);
-        if (values.size() == 1) {
+        if (values.size() >= 1) {
             return (User)values.get(0);
         }
         return null;

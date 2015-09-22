@@ -71,7 +71,7 @@ CREATE TABLE `scholar_warehouse`.`teacher` (
   `teacher_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `teacher_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `teacher_source_system_id` VARCHAR(256) NULL,
-  `teacher_user_id` BIGINT UNSIGNED NULL COMMENT 'The user_id of the teacher',
+  `teacher_user_fk` BIGINT UNSIGNED NULL COMMENT 'The user_fk of the teacher',
   `teacher_home_phone` VARCHAR(256) NULL COMMENT 'Home phone number for teacher',
   `teacher_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
   PRIMARY KEY (`teacher_id`),
@@ -79,7 +79,7 @@ CREATE TABLE `scholar_warehouse`.`teacher` (
   FOREIGN KEY (`teacher_homeAddress_fk`) REFERENCES `scholar_warehouse`.`address`(`address_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
-  FOREIGN KEY (`teacher_user_id`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
+  FOREIGN KEY (`teacher_user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE
   )
@@ -91,14 +91,14 @@ CREATE TABLE `scholar_warehouse`.`administrator` (
   `administrator_home_phone` VARCHAR(256) NULL,
   `administrator_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
   `administrator_source_system_id` VARCHAR(256) NULL,
-  `administrator_user_id` BIGINT UNSIGNED NULL COMMENT 'The user_id of the teacher',
+  `administrator_user_fk` BIGINT UNSIGNED NULL COMMENT 'The user_fk of the teacher',
   PRIMARY KEY (`administrator_id`),
   CONSTRAINT `administrator_homeAddress_fk$administrator`
   FOREIGN KEY (`administrator_homeAddress_fk`)
     REFERENCES `scholar_warehouse`.`address`(`address_id`)
   ON DELETE SET NULL
   ON UPDATE CASCADE,
-  FOREIGN KEY (`administrator_user_id`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
+  FOREIGN KEY (`administrator_user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
   ON DELETE SET NULL
   ON UPDATE CASCADE
   )
@@ -303,5 +303,5 @@ insert into `scholar_warehouse`.`users` (username, password, enabled) values ('m
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (1, 'ADMIN');
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (2, 'ADMIN');
 
-insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_id) values ('Mark Roper', 1);
-insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_id) values ('Matt Greenwood', 2);
+insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk) values ('Mark Roper', 1);
+insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk) values ('Matt Greenwood', 2);

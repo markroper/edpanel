@@ -13,5 +13,5 @@ import com.scholarscore.models.Authority;
 public interface AuthorityPersistence {
 	public List<Authority> selectAuthorities(String username);
 	public void createAuthority(Authority authority);
-	public void deleteAuthority(String username);
+	public void deleteAuthority(Long userId);
 }

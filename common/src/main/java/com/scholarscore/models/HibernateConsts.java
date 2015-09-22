@@ -17,7 +17,8 @@ public class HibernateConsts {
     public static final String ADMIN_ADDRESS_FK = "administrator_homeAddress_fk";
     public static final String ADMIN_HOME_PHONE = "administrator_home_phone";
     public static final String ADMIN_SOURCE_SYSTEM_ID = "administrator_source_system_id";
-    public static final String ADMIN_USERNAME = "administrator_username";
+//    public static final String ADMIN_USERNAME = "administrator_username";
+    public static final String ADMIN_USER_FK = "administrator_user_fk";
     
     //Assignment constants
     public static final String ASSIGNMENT_TABLE = "assignment";
@@ -118,6 +119,7 @@ public class HibernateConsts {
     public static final String TEACHER_HOME_PHONE = "teacher_home_phone";
     public static final String TEACHER_USERNAME = "teacher_username";
     public static final String TEACHER_SOURCE_SYSTEM_ID = "teacher_source_system_id";
+    public static final String TEACHER_USER_FK = "teacher_user_fk";
     
     //Term constants
     public static final String TERM_TABLE = "term";
@@ -129,6 +131,7 @@ public class HibernateConsts {
     
     //Users constants
     public static final String USERS_TABLE = "users";
+    public static final String USER_ID = "user_id";
     public static final String USER_NAME = "username";
     public static final String USER_PASSWORD = "password";
     public static final String USER_ENABLED = "enabled";

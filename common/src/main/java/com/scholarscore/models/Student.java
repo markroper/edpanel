@@ -163,10 +163,10 @@ public class Student extends Identity implements Serializable, IApiModel<Student
         return homeAddress;
     }
 
-    @Column(name = HibernateConsts.USER_NAME)
-    public String getUsername() {
-        return super.getUsername();
-    }
+//    @Column(name = HibernateConsts.USER_NAME)
+//    public String getUsername() {
+//        return super.getUsername();
+//    }
 
     public void setHomeAddress(Address homeAddress) {
         this.homeAddress = homeAddress;
