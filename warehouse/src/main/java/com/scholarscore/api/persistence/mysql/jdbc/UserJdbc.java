@@ -69,7 +69,7 @@ public class UserJdbc implements UserPersistence {
     @SuppressWarnings("unchecked")
     public User selectUser(String username) {
         List values = hibernateTemplate.findByNamedParam("from user u where u.username = :username", "username", username);
-        if (values.size() >= 1) {
+        if (values.size() == 1) {
             return (User)values.get(0);
         }
         return null;

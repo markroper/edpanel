@@ -18,8 +18,8 @@ public class Identity extends ApiModel {
     // FK to the Users table entry
     protected String username;
 
-    @JsonInclude
-    protected transient User user;
+//    @JsonInclude
+    protected User user;
 
     public String getUsername() {
         if (user == null) {
