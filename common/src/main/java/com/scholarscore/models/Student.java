@@ -127,10 +127,15 @@ public class Student extends Identity implements Serializable, IApiModel<Student
         }
     }
 
-    @Transient
+//    @Transient
+    @Override
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.ALL)
+    @JoinColumn(name=HibernateConsts.STUDENT_USER_FK)
     public User getUser() {
         return super.getUser();
     }
+
     @Column(name = HibernateConsts.STUDENT_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
         return sourceSystemId;

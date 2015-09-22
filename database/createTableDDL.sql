@@ -28,7 +28,8 @@ CREATE TABLE `scholar_warehouse`.`users` (
     `enabled` BOOLEAN NOT NULL,
 -- "email address"
 -- "email address validated?"
-    PRIMARY KEY (`user_id`)
+    PRIMARY KEY (`user_id`),
+    UNIQUE(`username`)
 )
 ENGINE = InnoDB;
 

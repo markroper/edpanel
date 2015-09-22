@@ -24,11 +24,14 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 	
 	public User(User value) {
 		super(value);
+		this.username = value.username;
+		this.password = value.password;
+		this.enabled = value.enabled;
 	}
 
 	private String password;
 	
-	// or login name
+	// login name
 	private String username;
 	// full name
 	private String name;
@@ -69,13 +72,14 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 	}
 
 	@Transient
+	@Override
 	public String getName() {
-		return name;
+		return null;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
+	@Transient
+	@Override
+	public void setName(String name) {	}
 
 	@Override
 	public void mergePropertiesIfNull(User mergeFrom) {	
@@ -108,4 +112,15 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
         return 31 * super.hashCode()
                 + Objects.hash(username, enabled, password);
     }
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n" +
+				"User{" +
+				"password='" + password + '\'' +
+				", username='" + username + '\'' +
+				", name='" + name + '\'' +
+				", enabled=" + enabled +
+				'}';
+	}
 }
