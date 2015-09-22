@@ -142,6 +142,36 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Goal goal = (Goal) o;
+
+        if (!student.equals(goal.student)) return false;
+        if (!teacher.equals(goal.teacher)) return false;
+        if (!desiredValue.equals(goal.desiredValue)) return false;
+        if (calculatedValue != null ? !calculatedValue.equals(goal.calculatedValue) : goal.calculatedValue != null)
+            return false;
+        if (!approved.equals(goal.approved)) return false;
+        return goalType == goal.goalType;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + student.hashCode();
+        result = 31 * result + teacher.hashCode();
+        result = 31 * result + desiredValue.hashCode();
+        result = 31 * result + (calculatedValue != null ? calculatedValue.hashCode() : 0);
+        result = 31 * result + approved.hashCode();
+        result = 31 * result + goalType.hashCode();
+        return result;
+    }
+
+    @Override
     public String toString() {
         return
                 "GOAL " + "\n"

@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by cwallace on 9/20/2015.
@@ -21,7 +22,7 @@ import java.util.Date;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class BehaviorGoal extends Goal {
 
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 
     private Date startDate;
@@ -40,22 +41,20 @@ public class BehaviorGoal extends Goal {
         this.behaviorCategory = goal.behaviorCategory;
 
     }
-    @Column(name = HibernateConsts.GOAL_START_DATE)
+    @Column(name = HibernateConsts.GOAL_START_DATE, columnDefinition="DATE")
     public Date getStartDate() {
         return startDate;
     }
 
-    @JsonFormat(pattern = "MM-dd-yyyy")
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    @Column(name = HibernateConsts.GOAL_END_DATE)
+    @Column(name = HibernateConsts.GOAL_END_DATE, columnDefinition="DATE")
     public Date getEndDate() {
         return endDate;
     }
 
-    @JsonFormat(pattern = "MM-dd-yyyy")
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
@@ -84,7 +83,29 @@ public class BehaviorGoal extends Goal {
             }
         }
 
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        BehaviorGoal that = (BehaviorGoal) o;
+
+        return Objects.equals(this.startDate, that.startDate)
+                && Objects.equals(this.endDate, that.endDate)
+                && Objects.equals(this.behaviorCategory, that.behaviorCategory);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + startDate.hashCode();
+        result = 31 * result + endDate.hashCode();
+        result = 31 * result + behaviorCategory.hashCode();
+        return result;
     }
 
     @Override
