@@ -86,9 +86,9 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     @Override
     public void mergePropertiesIfNull(Student mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);     
-        if (null == getUsername()) {
-        	setUsername(mergeFrom.getUsername());
-        }
+//        if (null == getUsername()) {
+//        	setUsername(mergeFrom.getUsername());
+//        }
         if (null == getUser()) {
             setUser(mergeFrom.getUser());
         }
@@ -255,8 +255,7 @@ public class Student extends Identity implements Serializable, IApiModel<Student
             return false;
         }
         final Student other = (Student) obj;
-        return Objects.equals(this.username, other.username)
-                && Objects.equals(this.user, other.user)
+        return Objects.equals(this.user, other.user)
                 && Objects.equals(this.sourceSystemId, other.sourceSystemId)
                 && Objects.equals(this.mailingAddress, other.mailingAddress)
                 && Objects.equals(this.homeAddress, other.homeAddress)
@@ -273,15 +272,13 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(username, user, sourceSystemId, mailingAddress, homeAddress, gender, birthDate,
+                + Objects.hash(user, sourceSystemId, mailingAddress, homeAddress, gender, birthDate,
                         districtEntryDate, projectedGraduationYear, socialSecurityNumber, federalRace, federalEthnicity, currentSchoolId);
     }
 
     @Override
     public String toString() {
         return "Student{" +
-                "name='" + name + '\'' +
-                ", username='" + username + '\'' +
                 ", user=" + user +
                 ", sourceSystemId='" + sourceSystemId + '\'' +
                 ", mailingAddress=" + mailingAddress +

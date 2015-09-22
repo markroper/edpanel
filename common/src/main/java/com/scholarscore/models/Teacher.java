@@ -27,7 +27,6 @@ public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
         this.setSourceSystemId(t.getSourceSystemId());
         this.setHomeAddress(t.getHomeAddress());
         this.setHomePhone(t.getHomePhone());
-        this.setUsername(t.getUsername());
     }
 
 
@@ -47,17 +46,9 @@ public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
         if (null == this.getSourceSystemId()) {
             this.setSourceSystemId(mergeFrom.getSourceSystemId());
         }
-        if (null == this.getUsername()) {
-            this.setUsername(mergeFrom.getUsername());
-        }
         super.mergePropertiesIfNull(mergeFrom);
     }    
     
-//    @Transient
-//    public User getUser() {
-//        return super.getUser();
-//    }
-
     @Column(name = HibernateConsts.TEACHER_NAME)
     public String getName() {
         return super.getName();
@@ -87,11 +78,6 @@ public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
         return sourceSystemId;
     }
 
-//    @Column(name = HibernateConsts.TEACHER_USERNAME)
-//    public String getUsername() {
-//        return super.getUsername();
-//    }
-
     @Override
     @OneToOne(optional = true)
     @Cascade(CascadeType.ALL)
@@ -115,26 +101,25 @@ public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
     
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Teacher)) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) { return true; }
+        if (!(o instanceof Teacher)) { return false; }
+        if (!super.equals(o)) { return false; }
 
         Teacher teacher = (Teacher) o;
 
-        if (getUsername() != null ? !getUsername().equals(teacher.getUsername()) : teacher.getUsername() != null)
+        if (getUser() != null ? !getUser().equals(teacher.getUser()) : teacher.getUser() != null) { return false; }
+        if (getSourceSystemId() != null ? !getSourceSystemId().equals(teacher.getSourceSystemId()) : teacher.getSourceSystemId() != null) {
             return false;
-        if (getUser() != null ? !getUser().equals(teacher.getUser()) : teacher.getUser() != null) return false;
-        if (getSourceSystemId() != null ? !getSourceSystemId().equals(teacher.getSourceSystemId()) : teacher.getSourceSystemId() != null)
+        }
+        if (getHomeAddress() != null ? !getHomeAddress().equals(teacher.getHomeAddress()) : teacher.getHomeAddress() != null) {
             return false;
-        if (getHomeAddress() != null ? !getHomeAddress().equals(teacher.getHomeAddress()) : teacher.getHomeAddress() != null)
-            return false;
+        }
         return !(getHomePhone() != null ? !getHomePhone().equals(teacher.getHomePhone()) : teacher.getHomePhone() != null);
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (getUsername() != null ? getUsername().hashCode() : 0);
         result = 31 * result + (getUser() != null ? getUser().hashCode() : 0);
         result = 31 * result + (getSourceSystemId() != null ? getSourceSystemId().hashCode() : 0);
         result = 31 * result + (getHomeAddress() != null ? getHomeAddress().hashCode() : 0);

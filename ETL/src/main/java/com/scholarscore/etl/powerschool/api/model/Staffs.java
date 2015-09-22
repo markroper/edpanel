@@ -44,7 +44,6 @@ public class Staffs extends ArrayList<Staff> implements ITranslateCollection<ISt
             // We set this so that we can also create the user it doesn't get sent
             // with the original request
             entity.setUser(user);
-            entity.setUsername(user.getUsername());
 
             if (null != staff.phones && null != staff.phones.home_phone) {
                 entity.setHomePhone(staff.phones.home_phone);
