@@ -22,7 +22,7 @@ public interface IStaff<T> extends IApiModel<T> {
 
     void setName(String name);
 
-    String getUsername();
+//    String getUsername();
 
-    void setUsername(String username);
+//    void setUsername(String username);
 }

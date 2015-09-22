@@ -34,7 +34,6 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
 
     public Administrator(Administrator admin) {
         super(admin);
-        this.setUsername(admin.getUsername());
         this.setUser(admin.getUser());
         this.setSourceSystemId(admin.getSourceSystemId());
         this.setName(admin.getName());
@@ -57,9 +56,6 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
         }
         if (null == this.getSourceSystemId()) {
             this.setSourceSystemId(mergeFrom.getSourceSystemId());
-        }
-        if (null == this.getUsername()) {
-            this.setUsername(mergeFrom.getUsername());
         }
         super.mergePropertiesIfNull(mergeFrom);
     }
@@ -109,11 +105,11 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
 
 //    @Column(name = HibernateConsts.ADMIN_USERNAME)
 //    @Override
-    @Transient
-    public String getUsername() {
-        return super.getUsername();
-    }
-
+//    @Transient
+//    public String getUsername() {
+//        return super.getUsername();
+//    }
+//
     //    @Transient
 //    public User getUser() {
 //        return super.getUser();

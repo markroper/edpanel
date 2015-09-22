@@ -39,7 +39,7 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
         student.setName("Billy Student");
         // TODO Jordan: username shouldn't be set in two places probably
 //        student.setUsername("billys");
-        student.setUsername("studentUser");
+//        student.setUsername("studentUser");
         Student result = studentValidatingExecutor.create(student, "Create student for authentication");
         assertNotNull(result);
     }

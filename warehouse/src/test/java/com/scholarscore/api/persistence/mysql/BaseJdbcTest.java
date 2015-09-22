@@ -76,18 +76,24 @@ public class BaseJdbcTest {
         school.setSourceSystemId("1");
         school.setMainPhone("555-555-1212");
 
-        admin.setUsername("mattg");
+        User adminUser = new User();
+        adminUser.setUsername("mattg");
+        admin.setUser(adminUser);
         admin.setHomePhone("555-1212");
         admin.setName("Matt Greenwood");
         admin.setSourceSystemId("1");
         admin.setHomeAddress(address);
 
-        student.setUsername("mattg");
+        User studentUser = new User();
+        studentUser.setUsername("mattg");
+        student.setUser(studentUser);
         student.setName("Matt Greenwood");
         student.setSourceSystemId("1234");
         student.setHomeAddress(address);
 
-        teacher.setUsername("mattg");
+        User teacherUser = new User();
+        teacherUser.setUsername("mattg");
+        teacher.setUser(teacherUser);
         teacher.setHomePhone("555-1212");
         teacher.setSourceSystemId("abc");
         teacher.setHomeAddress(address);
@@ -186,7 +192,7 @@ public class BaseJdbcTest {
     public Student createStudent() {
         if (null == createdStudent) {
             createdStudent = new Student(student);
-            createdStudent.setUsername(createUser().getUsername());
+            createdStudent.setUser(createUser());
             Address homeAddress = new Address(address);
             Address mailingAddress = new Address(address);
             homeAddress.setId(null);

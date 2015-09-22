@@ -11,27 +11,11 @@ public class Identity extends ApiModel {
 
     public Identity(Identity identity) {
         super(identity);
-        this.username = identity.username;
         this.user = identity.user;
     }
 
-    // FK to the Users table entry
-    protected String username;
-
 //    @JsonInclude
     protected User user;
-
-    public String getUsername() {
-        if (user == null) {
-            return username;
-        } else {
-            return user.getUsername();
-        }
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public User getUser() {
         return user;
@@ -41,6 +25,13 @@ public class Identity extends ApiModel {
         this.user = user;
     }
 
+    public void mergePropertiesIfNull(Identity mergeFrom) {
+        if (null == this.getUser()) {
+            this.setUser(mergeFrom.getUser());
+        }
+        super.mergePropertiesIfNull(mergeFrom);
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -49,8 +40,6 @@ public class Identity extends ApiModel {
 
         Identity identity = (Identity) o;
 
-        if (getUsername() != null ? !getUsername().equals(identity.getUsername()) : identity.getUsername() != null)
-            return false;
         return !(getUser() != null ? !getUser().equals(identity.getUser()) : identity.getUser() != null);
 
     }
@@ -58,7 +47,6 @@ public class Identity extends ApiModel {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (getUsername() != null ? getUsername().hashCode() : 0);
         result = 31 * result + (getUser() != null ? getUser().hashCode() : 0);
         return result;
     }
