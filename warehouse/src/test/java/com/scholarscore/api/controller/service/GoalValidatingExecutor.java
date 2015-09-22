@@ -107,4 +107,16 @@ public class GoalValidatingExecutor {
                 "Unexpected status code returned while retrieving behavior: " + msg);
     }
 
+    public Goal replace(Long studentId, Long goalId, Goal goal, String msg) {
+        //Create the term
+        ResultActions response = serviceBase.makeRequest(HttpMethod.PUT,
+                serviceBase.getGoalEndpoint(studentId, goalId),
+                null,
+                goal);
+        EntityId goalIdEntity = serviceBase.validateResponse(response, new TypeReference<EntityId>() {
+        });
+        Assert.assertNotNull(goalId, "unexpected null goal ID returned from create call for case: " + msg);
+        return retrieveAndValidateCreatedGoal(studentId, goalIdEntity.getId(), goal, HttpMethod.PUT, msg);
+    }
+
 }
