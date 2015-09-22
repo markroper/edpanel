@@ -23,21 +23,28 @@ public class AuthorityJdbc extends BaseJdbc implements AuthorityPersistence {
 
 	private static String INSERT_AUTHORITY_SQL = "INSERT INTO `"+ 
             DbMappings.DATABASE +"`.`" + DbMappings.AUTHORITY_TABLE + "` " +
-            "(" + DbMappings.AUTHORITY_USERNAME_COL + "," + DbMappings.AUTHORITY_AUTHORITY_COL + ")" +
-            " VALUES (:" + DbMappings.AUTHORITY_USERNAME_COL + ", :" + DbMappings.AUTHORITY_AUTHORITY_COL + ")"; 
+            "(" + DbMappings.AUTHORITY_USER_ID_COL + "," + DbMappings.AUTHORITY_AUTHORITY_COL + ")" +
+            " VALUES (:" + DbMappings.AUTHORITY_USER_ID_COL + ", :" + DbMappings.AUTHORITY_AUTHORITY_COL + ")";
     private static String DELETE_AUTHORITY_SQL = "DELETE FROM `"+ 
             DbMappings.DATABASE +"`.`" + DbMappings.AUTHORITY_TABLE + "` " +
-            "WHERE `" + DbMappings.AUTHORITY_USERNAME_COL + "`= :" + DbMappings.AUTHORITY_USERNAME_COL + "";
-    private static String SELECT_ALL_AUTHORITYS_SQL = "SELECT * FROM `"+ 
+            "WHERE `" + DbMappings.AUTHORITY_USER_ID_COL + "`= :" + DbMappings.AUTHORITY_USER_ID_COL + "";
+    private static String SELECT_ALL_AUTHORITIES_SQL = "SELECT * FROM `"+
             DbMappings.DATABASE +"`.`" + DbMappings.AUTHORITY_TABLE + "`" +
-            "WHERE `" + DbMappings.AUTHORITY_USERNAME_COL + "`= :" + DbMappings.AUTHORITY_USERNAME_COL + "";
+            "WHERE `" + DbMappings.AUTHORITY_USER_ID_COL + "`= :" + DbMappings.AUTHORITY_USER_ID_COL + "";
+    private static String SELECT_ALL_AUTHORITIES_JOIN_USER_SQL = "SELECT * FROM `"+
+            DbMappings.DATABASE +"`.`" + DbMappings.AUTHORITY_TABLE + "`" +
+            " JOIN `" + DbMappings.DATABASE + "`.`" + HibernateConsts.USERS_TABLE + "` ON " +
+            "`" + HibernateConsts.USERS_TABLE + "`.`" + HibernateConsts.USER_ID + "`=`" +
+            DbMappings.AUTHORITY_TABLE + "`.`" + DbMappings.AUTHORITY_USER_ID_COL + "` " +
+             "WHERE `" + HibernateConsts.USERS_TABLE + "`.`" + HibernateConsts.USER_NAME + "`= :" + HibernateConsts.USER_NAME;
 
+    
 	@Override
 	public List<Authority> selectAuthorities(String username) {
         Map<String, Object> params = new HashMap<>();     
         params.put(HibernateConsts.USER_NAME, username);
         List<Authority> authorities = jdbcTemplate.query(
-                SELECT_ALL_AUTHORITYS_SQL, 
+                SELECT_ALL_AUTHORITIES_JOIN_USER_SQL,
                 params,
                 new AuthorityMapper());
 		return authorities;
@@ -47,15 +54,15 @@ public class AuthorityJdbc extends BaseJdbc implements AuthorityPersistence {
 	public void createAuthority(Authority authority) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Map<String, Object> params = new HashMap<>();     
-        params.put(DbMappings.AUTHORITY_USERNAME_COL, authority.getUsername());
+        params.put(DbMappings.AUTHORITY_USER_ID_COL, authority.getUserId());
         params.put(DbMappings.AUTHORITY_AUTHORITY_COL, authority.getAuthority());
         jdbcTemplate.update(INSERT_AUTHORITY_SQL, new MapSqlParameterSource(params), keyHolder);
 	}
 
 	@Override
-	public void deleteAuthority(String username) {
+	public void deleteAuthority(Long userId) {
         Map<String, Object> params = new HashMap<>();
-        params.put(DbMappings.AUTHORITY_USERNAME_COL, username);
+        params.put(DbMappings.AUTHORITY_USER_ID_COL, userId);
         jdbcTemplate.update(DELETE_AUTHORITY_SQL, new MapSqlParameterSource(params));
 	}
 }

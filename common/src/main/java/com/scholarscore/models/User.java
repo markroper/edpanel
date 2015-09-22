@@ -36,6 +36,13 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 	// Indicates whether the user is a login user and can login (by default this is disabled until the user has set a username/password)
 	private Boolean enabled;
 
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Column(name = HibernateConsts.USER_ID)
+	public Long getId() {
+		return super.getId();
+	}
+
 	@Column(name = HibernateConsts.USER_PASSWORD)
 	public String getPassword() {
 		return password;
@@ -45,7 +52,6 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 		this.password = password;
 	}
 
-	@Id
 	@Column(name = HibernateConsts.USER_NAME)
 	public String getUsername() {
 		return username;

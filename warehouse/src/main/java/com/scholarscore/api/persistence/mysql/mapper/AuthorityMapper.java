@@ -14,7 +14,7 @@ AuthorityMapper implements RowMapper<Authority> {
 	@Override
 	public Authority mapRow(ResultSet rs, int rowNum) throws SQLException {
 		Authority authority = new Authority();
-		authority.setUsername(rs.getString(DbMappings.AUTHORITY_USERNAME_COL));
+		authority.setUserId(rs.getLong(DbMappings.AUTHORITY_USER_ID_COL));
 		authority.setAuthority(rs.getString(DbMappings.AUTHORITY_AUTHORITY_COL));
 		return authority;
 	}

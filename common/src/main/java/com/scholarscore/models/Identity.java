@@ -21,9 +21,12 @@ public class Identity extends ApiModel {
     @JsonInclude
     protected transient User user;
 
-
     public String getUsername() {
-        return username;
+        if (user == null) {
+            return username;
+        } else {
+            return user.getUsername();
+        }
     }
 
     public void setUsername(String username) {
