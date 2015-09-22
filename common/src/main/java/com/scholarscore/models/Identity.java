@@ -14,7 +14,6 @@ public class Identity extends ApiModel {
         this.user = identity.user;
     }
 
-//    @JsonInclude
     protected User user;
 
     public User getUser() {

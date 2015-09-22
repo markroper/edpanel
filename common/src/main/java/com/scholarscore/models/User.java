@@ -19,8 +19,14 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 	// v1
 	private static final long serialVersionUID = 1L;
 
-	public User() {	
-	}
+	// login name
+	private String username;
+	private String password;
+
+	// Indicates whether the user is a login user and can login (by default this is disabled until the user has set a username/password)
+	private Boolean enabled;
+
+	public User() { }
 	
 	public User(User value) {
 		super(value);
@@ -28,16 +34,6 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 		this.password = value.password;
 		this.enabled = value.enabled;
 	}
-
-	private String password;
-	
-	// login name
-	private String username;
-	// full name
-	private String name;
-
-	// Indicates whether the user is a login user and can login (by default this is disabled until the user has set a username/password)
-	private Boolean enabled;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -71,6 +67,10 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 		this.enabled = enabled;
 	}
 
+	// the next two methods are a hacky way to prevent 'name' value from
+	// being serialized on objects of this type (or objects that extend this type).
+	// This is because this object extends APIModel (should it?) but should not actually serialize a seperate 
+	// 'name' object -- only 'username'
 	@Transient
 	@Override
 	public String getName() {
