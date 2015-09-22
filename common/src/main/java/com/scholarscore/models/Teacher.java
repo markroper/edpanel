@@ -23,7 +23,7 @@ public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
     
     public Teacher(Teacher t) {
         super(t);
-        this.setLogin(t.getLogin());
+        this.setUser(t.getUser());
         this.setSourceSystemId(t.getSourceSystemId());
         this.setHomeAddress(t.getHomeAddress());
         this.setHomePhone(t.getHomePhone());
@@ -54,8 +54,8 @@ public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
     }    
     
     @Transient
-    public User getLogin() {
-        return super.getLogin();
+    public User getUser() {
+        return super.getUser();
     }
 
     @Column(name = HibernateConsts.TEACHER_NAME)
@@ -114,7 +114,7 @@ public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
 
         if (getUsername() != null ? !getUsername().equals(teacher.getUsername()) : teacher.getUsername() != null)
             return false;
-        if (getLogin() != null ? !getLogin().equals(teacher.getLogin()) : teacher.getLogin() != null) return false;
+        if (getUser() != null ? !getUser().equals(teacher.getUser()) : teacher.getUser() != null) return false;
         if (getSourceSystemId() != null ? !getSourceSystemId().equals(teacher.getSourceSystemId()) : teacher.getSourceSystemId() != null)
             return false;
         if (getHomeAddress() != null ? !getHomeAddress().equals(teacher.getHomeAddress()) : teacher.getHomeAddress() != null)
@@ -126,7 +126,7 @@ public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
     public int hashCode() {
         int result = super.hashCode();
         result = 31 * result + (getUsername() != null ? getUsername().hashCode() : 0);
-        result = 31 * result + (getLogin() != null ? getLogin().hashCode() : 0);
+        result = 31 * result + (getUser() != null ? getUser().hashCode() : 0);
         result = 31 * result + (getSourceSystemId() != null ? getSourceSystemId().hashCode() : 0);
         result = 31 * result + (getHomeAddress() != null ? getHomeAddress().hashCode() : 0);
         result = 31 * result + (getHomePhone() != null ? getHomePhone().hashCode() : 0);

@@ -44,22 +44,22 @@ public class UserJdbc implements UserPersistence {
 
         Teacher teacher = teacherPersistence.select(username);
         if (null != teacher) {
-            teacher.setLogin(user);
+            teacher.setUser(user);
             return teacher;
         }
         Administrator administrator = administratorPersistence.select(username);
         if (null != administrator) {
-            administrator.setLogin(user);
+            administrator.setUser(user);
             return administrator;
         }
         Student student = studentPersistence.select(username);
         if (null != student) {
-            student.setLogin(user);
+            student.setUser(user);
             return student;
         }
         // No user, but we do have the user table identity
         return new Identity() {
-            public User getLogin() {
+            public User getUser() {
                 return user;
             }
         };

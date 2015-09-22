@@ -35,7 +35,7 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
     public Administrator(Administrator admin) {
         super(admin);
         this.setUsername(admin.getUsername());
-        this.setLogin(admin.getLogin());
+        this.setUser(admin.getUser());
         this.setSourceSystemId(admin.getSourceSystemId());
         this.setName(admin.getName());
         this.setHomeAddress(admin.getHomeAddress());
@@ -91,8 +91,8 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
     }
 
     @Transient
-    public User getLogin() {
-        return super.getLogin();
+    public User getUser() {
+        return super.getUser();
     }
 
     @OneToOne(optional = true)

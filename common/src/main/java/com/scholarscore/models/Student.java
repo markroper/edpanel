@@ -89,8 +89,8 @@ public class Student extends Identity implements Serializable, IApiModel<Student
         if (null == getUsername()) {
         	setUsername(mergeFrom.getUsername());
         }
-        if (null == getLogin()) {
-            setLogin(mergeFrom.getLogin());
+        if (null == getUser()) {
+            setUser(mergeFrom.getUser());
         }
         if (null == getSourceSystemId()) {
             setSourceSystemId(mergeFrom.getSourceSystemId());
@@ -128,8 +128,8 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     }
 
     @Transient
-    public User getLogin() {
-        return super.getLogin();
+    public User getUser() {
+        return super.getUser();
     }
     @Column(name = HibernateConsts.STUDENT_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
@@ -251,7 +251,7 @@ public class Student extends Identity implements Serializable, IApiModel<Student
         }
         final Student other = (Student) obj;
         return Objects.equals(this.username, other.username)
-                && Objects.equals(this.login, other.login)
+                && Objects.equals(this.user, other.user)
                 && Objects.equals(this.sourceSystemId, other.sourceSystemId)
                 && Objects.equals(this.mailingAddress, other.mailingAddress)
                 && Objects.equals(this.homeAddress, other.homeAddress)
@@ -268,7 +268,7 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(username, login, sourceSystemId, mailingAddress, homeAddress, gender, birthDate, 
+                + Objects.hash(username, user, sourceSystemId, mailingAddress, homeAddress, gender, birthDate,
                         districtEntryDate, projectedGraduationYear, socialSecurityNumber, federalRace, federalEthnicity, currentSchoolId);
     }
 
@@ -277,7 +277,7 @@ public class Student extends Identity implements Serializable, IApiModel<Student
         return "Student{" +
                 "name='" + name + '\'' +
                 ", username='" + username + '\'' +
-                ", login=" + login +
+                ", user=" + user +
                 ", sourceSystemId='" + sourceSystemId + '\'' +
                 ", mailingAddress=" + mailingAddress +
                 ", homeAddress=" + homeAddress +

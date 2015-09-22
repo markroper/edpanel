@@ -304,7 +304,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 UserDetailsProxy proxyUser = (UserDetailsProxy)authentication.getPrincipal();
                 Identity identity = proxyUser.getIdentity();
                 // don't bother sending the password value to the client
-                identity.getLogin().setPassword(null);
+                identity.getUser().setPassword(null);
                 String value = mapper.writeValueAsString(proxyUser);
                 out.print(value);
             }
