@@ -117,4 +117,12 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
             goalValidatingExecutor.create(goal.getStudent().getId(), goal, message);
 
     }
+
+    @Test(dataProvider = "createGoalDataProvider")
+    public void replaceGoalTest(Goal goal, String msg) {
+        Goal createdGoal = goalValidatingExecutor.create(student.getId(), goal, msg);
+        Goal a = new BehaviorGoal();
+        goalValidatingExecutor.replace(student.getId(),createdGoal.getId(), a, msg);
+
+    }
 }

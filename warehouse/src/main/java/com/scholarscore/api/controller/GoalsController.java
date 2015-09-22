@@ -73,7 +73,7 @@ public class GoalsController extends BaseController {
             notes = "Overwrites an existing goal for the specified student with the ID provided",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{behaviorId}",
+            value = "/{goalId}",
             method = RequestMethod.PUT,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
