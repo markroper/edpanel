@@ -1,3 +1,6 @@
+DROP DATABASE IF EXISTS scholar_warehouse;
+CREATE DATABASE scholar_warehouse;
+
 CREATE TABLE `scholar_warehouse`.`address` (
   `address_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The address ID',
   `address_street` VARCHAR(255) NULL COMMENT 'The street address',
@@ -13,7 +16,7 @@ CREATE TABLE `scholar_warehouse`.`school` (
   `school_address_fk` BIGINT UNSIGNED COMMENT 'The FK pointer back to the address of the school',
   `main_phone` VARCHAR(256) NULL COMMENT 'The school\'s main phone number',
   `principal_name` VARCHAR(256) NULL COMMENT 'The principal\'s name',
-  `principal_email` VARCHAR(256) NULL COMMENT 'The principa\'s email address',
+  `principal_email` VARCHAR(256) NULL COMMENT 'The principal\'s email address',
   `sourceSystemId` VARCHAR(256) NULL COMMENT 'The source system from which the entity was imported - the id from that system',
   PRIMARY KEY (`school_id`))
 ENGINE = InnoDB;
