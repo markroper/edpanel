@@ -23,11 +23,19 @@ public class GoalJdbc implements GoalPersistence {
     private HibernateTemplate hibernateTemplate;
     private StudentPersistence studentPersistence;
 
-    @Autowired
+
     private BehaviorGoalCalc behaviorGoalCalc;
 
-    @Autowired
+
     private AssignmentGoalCalc assignmentGoalCalc;
+
+    public void setBehaviorGoalCalc(BehaviorGoalCalc behaviorGoalCalc) {
+        this.behaviorGoalCalc = behaviorGoalCalc;
+    }
+
+    public void setAssignmentGoalCalc(AssignmentGoalCalc assignmentGoalCalc) {
+        this.assignmentGoalCalc = assignmentGoalCalc;
+    }
 
     public void setHibernateTemplate(HibernateTemplate template) {
         this.hibernateTemplate = template;
