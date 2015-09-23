@@ -8,6 +8,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Abstract class defining common fields and methods that exist across all goals.
@@ -147,29 +148,18 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-
         Goal goal = (Goal) o;
-
-        if (!student.equals(goal.student)) return false;
-        if (!teacher.equals(goal.teacher)) return false;
-        if (!desiredValue.equals(goal.desiredValue)) return false;
-        if (calculatedValue != null ? !calculatedValue.equals(goal.calculatedValue) : goal.calculatedValue != null)
-            return false;
-        if (!approved.equals(goal.approved)) return false;
-        return goalType == goal.goalType;
-
+        return Objects.equals(student, goal.student) &&
+                Objects.equals(teacher, goal.teacher) &&
+                Objects.equals(desiredValue, goal.desiredValue) &&
+                Objects.equals(calculatedValue, goal.calculatedValue) &&
+                Objects.equals(approved, goal.approved) &&
+                Objects.equals(goalType, goal.goalType);
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + student.hashCode();
-        result = 31 * result + teacher.hashCode();
-        result = 31 * result + desiredValue.hashCode();
-        result = 31 * result + (calculatedValue != null ? calculatedValue.hashCode() : 0);
-        result = 31 * result + approved.hashCode();
-        result = 31 * result + goalType.hashCode();
-        return result;
+        return Objects.hash(super.hashCode(), student, teacher, desiredValue, calculatedValue, approved, goalType);
     }
 
     @Override

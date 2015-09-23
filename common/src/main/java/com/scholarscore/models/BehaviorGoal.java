@@ -91,22 +91,15 @@ public class BehaviorGoal extends Goal {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-
         BehaviorGoal that = (BehaviorGoal) o;
-
-        return Objects.equals(this.startDate, that.startDate)
-                && Objects.equals(this.endDate, that.endDate)
-                && Objects.equals(this.behaviorCategory, that.behaviorCategory);
-
+        return Objects.equals(startDate, that.startDate) &&
+                Objects.equals(endDate, that.endDate) &&
+                Objects.equals(behaviorCategory, that.behaviorCategory);
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + startDate.hashCode();
-        result = 31 * result + endDate.hashCode();
-        result = 31 * result + behaviorCategory.hashCode();
-        return result;
+        return Objects.hash(super.hashCode(), startDate, endDate, behaviorCategory);
     }
 
     @Override

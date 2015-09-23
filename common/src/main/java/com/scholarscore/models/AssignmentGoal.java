@@ -3,6 +3,7 @@ package com.scholarscore.models;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Goal type for goals that are based on performance on a single assignment
@@ -42,18 +43,13 @@ public class AssignmentGoal extends Goal {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-
         AssignmentGoal that = (AssignmentGoal) o;
-
-        return parentId.equals(that.parentId);
-
+        return Objects.equals(parentId, that.parentId);
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + parentId.hashCode();
-        return result;
+        return Objects.hash(super.hashCode(), parentId);
     }
 
     @Override
