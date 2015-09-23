@@ -119,4 +119,15 @@ public class GoalValidatingExecutor {
         return retrieveAndValidateCreatedGoal(studentId, goalIdEntity.getId(), goal, HttpMethod.PUT, msg);
     }
 
+    public Goal update(Long studentId, Long goalId, Goal goal, String msg) {
+        //Create the term
+        ResultActions response = serviceBase.makeRequest(HttpMethod.PATCH,
+                serviceBase.getGoalEndpoint(studentId, goalId),
+                null,
+                goal);
+        EntityId goalEntityId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
+        Assert.assertNotNull(goalId, "unexpected null section assignment ID returned from create call for case: " + msg);
+        return retrieveAndValidateCreatedGoal(studentId, goalEntityId.getId(),goal, HttpMethod.PATCH, msg);
+    }
+
 }

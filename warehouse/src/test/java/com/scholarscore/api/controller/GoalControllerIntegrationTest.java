@@ -121,8 +121,25 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createGoalDataProvider")
     public void replaceGoalTest(Goal goal, String msg) {
         Goal createdGoal = goalValidatingExecutor.create(student.getId(), goal, msg);
-        Goal a = new BehaviorGoal();
-        goalValidatingExecutor.replace(student.getId(),createdGoal.getId(), a, msg);
+        goalValidatingExecutor.replace(student.getId(), createdGoal.getId(), goal, msg);
 
+    }
+
+    @Test(dataProvider = "createGoalDataProvider")
+    public void updateAssignmentTest(Goal goal, String msg) {
+        Goal createdGoal = goalValidatingExecutor.create(student.getId(), goal, msg);
+
+        Goal updatedGoal;
+        if (goal instanceof BehaviorGoal) {
+            updatedGoal = new BehaviorGoal((BehaviorGoal)createdGoal);
+        } else if (goal instanceof AssignmentGoal) {
+            updatedGoal = new AssignmentGoal((AssignmentGoal)createdGoal);
+        } else {
+            updatedGoal = null;
+        }
+
+        updatedGoal.setName(localeServiceUtil.generateName());
+        //PATCH the existing record with a new name.
+        goalValidatingExecutor.update(student.getId(), createdGoal.getId(), goal, msg);
     }
 }
