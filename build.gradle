@@ -69,21 +69,7 @@ def loadProperty(pathRelToProjectDir, property) {
     return props.get(property).toString()
 }
 
-task resetDatabase(type: Exec) {
-    group 'Database'
-    description 'drops the database and re-adds an empty one'
-
-    def database_user = loadProperty("/warehouse/src/main/resources/database.properties", "database.user");
-    def database_pass = loadProperty("/warehouse/src/main/resources/database.properties", "database.pass");
-    def database_host = loadProperty("/warehouse/src/main/resources/database.properties", "database.host");
-    def database_port = loadProperty("/warehouse/src/main/resources/database.properties", "database.port");
-    def database_name = loadProperty("/warehouse/src/main/resources/database.properties", "database.name");
-
-    commandLine 'mysql', '-u' + database_user, '-p' + database_pass, '--port=' + database_port, '--host=' + database_host
-    standardInput file("${project.rootDir.absolutePath}/database/cleanMySqlDatabase.sql").newInputStream()
-}
-
-task refillDatabase(type: Exec, dependsOn: resetDatabase) {
+task refillDatabase(type: Exec) {
     group 'Database'
     description 'creates everything needed within the database'
 
