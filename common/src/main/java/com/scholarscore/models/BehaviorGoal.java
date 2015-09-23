@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Objects;
 
 /**
+ * Goal type for goals that are behavior related
  * Created by cwallace on 9/20/2015.
  */
 @Entity

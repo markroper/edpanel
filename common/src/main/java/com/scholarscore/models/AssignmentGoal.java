@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import javax.persistence.*;
 
 /**
+ * Goal type for goals that are based on performance on a single assignment
  * Created by cwallace on 9/21/2015.
  */
 @Entity

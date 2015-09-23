@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
+ * Abstract class defining common fields and methods that exist across all goals.
  * Created by cwallace on 9/20/2015.
  */
 @Entity(name = HibernateConsts.GOAL_TABLE)
