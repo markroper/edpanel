@@ -20,10 +20,12 @@ import java.util.stream.Collectors;
 
 public class BehaviorGoalCalc {
 
-    @Autowired
+
     private BehaviorPersistence behaviorPersistence;
 
-
+    public void setBehaviorPersistence(BehaviorPersistence behaviorPersistence) {
+        this.behaviorPersistence = behaviorPersistence;
+    }
 
     public Float calculateBehaviorGoal(BehaviorGoal goal) {
         Collection<Behavior> studentBehaviors = behaviorPersistence.selectAll(goal.getStudent().getId());

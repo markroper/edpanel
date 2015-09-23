@@ -62,6 +62,8 @@
     <bean id="goalPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.GoalJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="assignmentGoalCalc" ref="assignmentCalc"/>
+        <property name="behaviorGoalCalc" ref="behaviorCalc"/>
     </bean>
 
     <bean id="teacherPersistence"
@@ -137,12 +139,12 @@
 
     <bean id="behaviorCalc"
           class="com.scholarscore.api.persistence.goalCalculators.BehaviorGoalCalc">
-
+        <property name="behaviorPersistence" ref="behaviorPersistence"/>
     </bean>
 
     <bean id="assignmentCalc"
           class="com.scholarscore.api.persistence.goalCalculators.AssignmentGoalCalc">
-
+        <property name="studentAssignmentPersistence" ref="studentAssignmentPersistence"/>
     </bean>
 
 </beans>

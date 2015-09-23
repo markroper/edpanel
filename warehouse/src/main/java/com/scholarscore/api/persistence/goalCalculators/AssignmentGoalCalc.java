@@ -13,9 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class AssignmentGoalCalc {
 
-    @Autowired
+
     private StudentAssignmentPersistence studentAssignmentPersistence;
 
+    public void setStudentAssignmentPersistence(StudentAssignmentPersistence studentAssignmentPersistence) {
+        this.studentAssignmentPersistence = studentAssignmentPersistence;
+    }
 
     public Float calculateAssignmentGoal(AssignmentGoal goal) {
         StudentAssignment goalAssignment = studentAssignmentPersistence.select(goal.getParentId(),goal.getStudent().getId());
