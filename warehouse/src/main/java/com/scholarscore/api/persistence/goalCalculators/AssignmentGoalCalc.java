@@ -7,6 +7,8 @@ import com.scholarscore.models.StudentAssignment;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
+ * Calculator class for calculating the value of an assignment goal.
+ * Returns the awarded points of the assignment that the goal references.
  * Created by cwallace on 9/21/2015.
  */
 public class AssignmentGoalCalc {
