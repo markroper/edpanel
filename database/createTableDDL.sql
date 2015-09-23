@@ -284,6 +284,11 @@ CREATE TABLE `scholar_warehouse`.`goal` (
   `desired_value` DECIMAL(10) NOT NULL COMMENT '',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT '',
   `teacher_fk` BIGINT UNSIGNED NOT NULL COMMENT '',
+    `goal_type` varchar(45) NOT NULL COMMENT '',
+  `start_date` datetime DEFAULT NULL COMMENT '',
+  `end_date` datetime DEFAULT NULL COMMENT '',
+  `behavior_category` varchar(45) DEFAULT NULL COMMENT '',
+  `name` varchar(45) NOT NULL COMMENT '',
 PRIMARY KEY (`goal_id`),
   CONSTRAINT `fk_student_goal`
     FOREIGN KEY (`student_fk`)
