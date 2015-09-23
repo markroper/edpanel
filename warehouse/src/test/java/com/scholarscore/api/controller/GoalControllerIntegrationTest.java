@@ -81,16 +81,18 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);
         Date today = cal.getTime();
-        cal.add(Calendar.YEAR, 1); // to get previous year add -1
-        Date nextYear = cal.getTime();
+        cal.add(Calendar.YEAR, -1); // to get previous year add -1
+        Date lastYear = cal.getTime();
+        cal.add(Calendar.MONTH, 1);
+        Date midDate = cal.getTime();
 
 
         BehaviorGoal behaviorGoal = new BehaviorGoal();
         behaviorGoal.setStudent(student);
         behaviorGoal.setTeacher(teacher);
         behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
-        behaviorGoal.setStartDate(today);
-        behaviorGoal.setEndDate(nextYear);
+        behaviorGoal.setStartDate(lastYear);
+        behaviorGoal.setEndDate(today);
         behaviorGoal.setDesiredValue(4l);
         behaviorGoal.setName("To win them all");
         behaviorGoal.setApproved(false);
@@ -103,6 +105,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         namedBehavior.setName("BehaviorEvent");
         namedBehavior.setBehaviorCategory(BehaviorCategory.DEMERIT);
         namedBehavior.setPointValue("1");
+        namedBehavior.setBehaviorDate(midDate);
         for (int i = 0; i < EXPECTED_VALUE; i++) {
             behaviorValidatingExecutor.create(student.getId(), namedBehavior, "Beahvior creation failed");
         }
