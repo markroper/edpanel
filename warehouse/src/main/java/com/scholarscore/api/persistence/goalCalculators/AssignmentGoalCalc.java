@@ -17,8 +17,14 @@ public class AssignmentGoalCalc {
     private StudentAssignmentPersistence studentAssignmentPersistence;
 
 
-    public Long calculateAssignmentGoal(AssignmentGoal goal) {
+    public Float calculateAssignmentGoal(AssignmentGoal goal) {
         StudentAssignment goalAssignment = studentAssignmentPersistence.select(goal.getParentId(),goal.getStudent().getId());
-        return goalAssignment.getAwardedPoints();
+        Long awardedPoints = goalAssignment.getAwardedPoints();
+                if (null != awardedPoints) {
+                    return awardedPoints.floatValue();
+                } else {
+                    //This is an indication that points have not been assigned for a goal
+                    return -1f;
+                }
     }
 }

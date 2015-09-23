@@ -45,7 +45,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
         behaviorGoal.setStartDate(today);
         behaviorGoal.setEndDate(nextYear);
-        behaviorGoal.setDesiredValue(4l);
+        behaviorGoal.setDesiredValue(41.5f);
         behaviorGoal.setName("To win them all");
         behaviorGoal.setApproved(false);
 
@@ -55,7 +55,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         assGoal.setName("The final final");
         assGoal.setApproved(false);
         assGoal.setParentId(1L);
-        assGoal.setDesiredValue(95L);
+        assGoal.setDesiredValue(95f);
 
         return new Object[][] {
                 {behaviorGoal, "Test failed with a behavior goal"},
@@ -76,7 +76,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
 
     @DataProvider(name = "testCalculatedMethodDataProvider")
     public Object[][] testCalculatedValuesDateMethod() {
-        Long EXPECTED_VALUE = 3L;
+        Float EXPECTED_VALUE = 3F;
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);
@@ -93,7 +93,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
         behaviorGoal.setStartDate(lastYear);
         behaviorGoal.setEndDate(today);
-        behaviorGoal.setDesiredValue(4l);
+        behaviorGoal.setDesiredValue(41f);
         behaviorGoal.setName("To win them all");
         behaviorGoal.setApproved(false);
         behaviorGoal.setCalculatedValue(EXPECTED_VALUE);
