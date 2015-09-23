@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 @Entity(name = HibernateConsts.GOAL_TABLE)
 @Table(name = HibernateConsts.GOAL_TABLE)
-@DiscriminatorColumn(name="goal_type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name=HibernateConsts.GOAL_TYPE, discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "goalType")
 @JsonSubTypes({
@@ -25,10 +25,10 @@ import java.util.Objects;
 })
 public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 
-    private transient Student student;
-    private transient Teacher teacher;
-    private Long desiredValue;
-    private Long calculatedValue;
+    private Student student;
+    private Teacher teacher;
+    private Float desiredValue;
+    private Float calculatedValue;
     private Boolean approved;
     private GoalType goalType;
 
@@ -73,7 +73,6 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 
 
     @OneToOne(optional = true)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.STUDENT_FK, nullable = true)
     public Student getStudent() {
         return student;
@@ -84,18 +83,17 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     }
 
     @OneToOne(optional = true)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.TEACHER_FK, nullable = true)
     public Teacher getTeacher() {
         return teacher;
     }
 
-    public void setCalculatedValue(Long value) {
+    public void setCalculatedValue(Float value) {
         this.calculatedValue = value;
     }
 
     @Transient
-    public Long getCalculatedValue() {
+    public Float getCalculatedValue() {
         return calculatedValue;
     }
 
@@ -104,11 +102,11 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     }
 
     @Column(name = HibernateConsts.DESIRED_GOAL_VALUE)
-    public Long getDesiredValue() {
+    public Float getDesiredValue() {
         return desiredValue;
     }
 
-    public void setDesiredValue(Long desiredValue) {
+    public void setDesiredValue(Float desiredValue) {
         this.desiredValue = desiredValue;
     }
 
