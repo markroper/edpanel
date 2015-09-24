@@ -129,7 +129,6 @@ public class DbMappings {
     public static final String STUDENT_HOME_STREET_COL = "home_street";	
 	public static final String AUTHORITY_TABLE = "authorities";
     public static final String AUTHORITY_USER_ID_COL = "user_id";
-//	public static final String AUTHORITY_USERNAME_COL = "username";
 	public static final String AUTHORITY_AUTHORITY_COL = "authority";
 	public static final String REPORT_TABLE = "report";
 	public static final String REPORT_ID_COL = "report_id";
