@@ -28,7 +28,6 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
         
         
         User user = new User();
-        user.setName("Test student");
         user.setPassword("password");
         user.setEnabled(true);
         user.setUsername("studentUser");

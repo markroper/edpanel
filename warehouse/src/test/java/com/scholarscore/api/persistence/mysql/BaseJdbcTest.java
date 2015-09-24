@@ -180,7 +180,6 @@ public class BaseJdbcTest {
         if (null == createdUser) {
             User user = new User();
             user.setUsername("foobar" + System.currentTimeMillis());
-            user.setName("testName");
             user.setPassword("testPassword");
             user.setEnabled(true);
             userDao.createUser(user);
