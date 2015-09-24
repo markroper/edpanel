@@ -40,29 +40,17 @@ public class UserJdbc implements UserPersistence {
 
     @Override
     public Identity getIdentity(String username) {
-        final User user = selectUser(username);
 
         Teacher teacher = teacherPersistence.select(username);
-        if (null != teacher) {
-            teacher.setLogin(user);
-            return teacher;
-        }
+        if (null != teacher) { return teacher; }
+
         Administrator administrator = administratorPersistence.select(username);
-        if (null != administrator) {
-            administrator.setLogin(user);
-            return administrator;
-        }
+        if (null != administrator) { return administrator; }
+        
         Student student = studentPersistence.select(username);
-        if (null != student) {
-            student.setLogin(user);
-            return student;
-        }
-        // No user, but we do have the user table identity
-        return new Identity() {
-            public User getLogin() {
-                return user;
-            }
-        };
+        if (null != student) { return student; }
+        
+        return null;
     }
 
     @Override
@@ -85,7 +73,7 @@ public class UserJdbc implements UserPersistence {
     @SuppressWarnings("unchecked")
     public String replaceUser(String username, User value) {
         User fromDB = selectUser(username);
-        fromDB.setName(value.getName());
+//        fromDB.setName(value.getName());
         fromDB.setPassword(value.getPassword());
         fromDB.setEnabled(value.getEnabled());
         hibernateTemplate.merge(fromDB);

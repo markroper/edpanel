@@ -21,6 +21,19 @@ CREATE TABLE `scholar_warehouse`.`school` (
   PRIMARY KEY (`school_id`))
 ENGINE = InnoDB;
 
+CREATE TABLE `scholar_warehouse`.`users` (
+    `user_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
+    `username` varchar(50) NOT NULL,
+    `password` varchar(50) CHARACTER SET UTF8 NOT NULL,
+    `enabled` BOOLEAN NOT NULL,
+-- TODO: for password flow, we need...
+-- `email_address`
+-- `phone_number`
+    PRIMARY KEY (`user_id`),
+    UNIQUE(`username`)
+)
+ENGINE = InnoDB;
+
 CREATE TABLE `scholar_warehouse`.`student` (
   `student_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `student_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
@@ -28,7 +41,7 @@ CREATE TABLE `scholar_warehouse`.`student` (
   `mailing_fk` BIGINT UNSIGNED NULL COMMENT 'The address FK for mailing address',
   `home_fk` BIGINT UNSIGNED NULL COMMENT 'The address FK for home address',
   `gender` INT NULL COMMENT 'The gender of the student',
-  `username` VARCHAR(256) NULL COMMENT 'The username of the student',
+  `student_user_fk` BIGINT UNSIGNED NULL COMMENT 'The user FK of the student',
   `birth_date` DATETIME NULL COMMENT 'The birth date of the student',
   `district_entry_date` DATETIME NULL COMMENT 'The date the student entered the school district',
   `projected_graduation_year` BIGINT UNSIGNED NULL COMMENT 'The projected year of graduation for the student. For example: 2020',
@@ -48,21 +61,30 @@ CREATE TABLE `scholar_warehouse`.`student` (
   CONSTRAINT `mailing_fk$student`
   FOREIGN KEY (`mailing_fk`) REFERENCES `scholar_warehouse`.`address` (`address_id`)
     ON DELETE SET NULL
-    ON UPDATE CASCADE)
+    ON UPDATE CASCADE,
+  CONSTRAINT `student_user_fk$student`
+  FOREIGN KEY (`student_user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+    )
 ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`teacher` (
   `teacher_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `teacher_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `teacher_source_system_id` VARCHAR(256) NULL,
-  `teacher_username` VARCHAR(256) NULL COMMENT 'A link back to the users table',
+  `teacher_user_fk` BIGINT UNSIGNED NULL COMMENT 'The user_fk of the teacher',
   `teacher_home_phone` VARCHAR(256) NULL COMMENT 'Home phone number for teacher',
   `teacher_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
   PRIMARY KEY (`teacher_id`),
   CONSTRAINT `teacher_homeAddress_fk$teacher`
   FOREIGN KEY (`teacher_homeAddress_fk`) REFERENCES `scholar_warehouse`.`address`(`address_id`)
     ON DELETE SET NULL
-    ON UPDATE CASCADE)
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`teacher_user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+  )
   ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`administrator` (
@@ -71,13 +93,17 @@ CREATE TABLE `scholar_warehouse`.`administrator` (
   `administrator_home_phone` VARCHAR(256) NULL,
   `administrator_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
   `administrator_source_system_id` VARCHAR(256) NULL,
-  `administrator_username` VARCHAR(256) NULL COMMENT 'A link back to the users table',
+  `administrator_user_fk` BIGINT UNSIGNED NULL COMMENT 'The user_fk of the teacher',
   PRIMARY KEY (`administrator_id`),
   CONSTRAINT `administrator_homeAddress_fk$administrator`
   FOREIGN KEY (`administrator_homeAddress_fk`)
     REFERENCES `scholar_warehouse`.`address`(`address_id`)
   ON DELETE SET NULL
-  ON UPDATE CASCADE)
+  ON UPDATE CASCADE,
+  FOREIGN KEY (`administrator_user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
+  ON DELETE SET NULL
+  ON UPDATE CASCADE
+  )
   ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`school_year` (
@@ -260,21 +286,16 @@ CREATE TABLE `scholar_warehouse`.`behavior` (
 )
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`users` (
-    `username` varchar(50) NOT NULL,
-    `password` varchar(50) CHARACTER SET UTF8 NOT NULL,
-    `enabled` BOOLEAN NOT NULL,
-    PRIMARY KEY (username))
-ENGINE = InnoDB;
-
 CREATE TABLE `scholar_warehouse`.`authorities` (
-    `username` varchar(50) not null COMMENT 'The associated user with this record',
-    `authority` varchar(50) not null COMMENT 'The Users Role',
-    CONSTRAINT `fk_authorities_users` 
-    FOREIGN KEY(`username`) 
-    REFERENCES `scholar_warehouse`.`users`(`username`)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE)
+    `authority_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key',
+    `user_id` BIGINT UNSIGNED NOT NULL COMMENT 'The user id of user associated with this record',
+    `authority` VARCHAR(50) NOT NULL COMMENT 'The Users Role',
+    PRIMARY KEY (`authority_id`),
+    CONSTRAINT `user_id$authorities`
+    FOREIGN KEY (`user_id`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+)
 ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`goal` (
@@ -301,13 +322,14 @@ PRIMARY KEY (`goal_id`),
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
-CREATE INDEX `ix_auth_username` on `scholar_warehouse`.`authorities`(`username`,`authority`);
+CREATE INDEX `ix_auth_userid` on `scholar_warehouse`.`authorities`(`user_id`,`authority`);
+
 
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mroper', 'admin', 1);
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mattg', 'admin', 1);
 
-insert into `scholar_warehouse`.`authorities` (username, authority) values ('mroper', 'ADMIN');
-insert into `scholar_warehouse`.`authorities` (username, authority) values ('mattg', 'ADMIN');
+insert into `scholar_warehouse`.`authorities` (user_id, authority) values (1, 'ADMIN');
+insert into `scholar_warehouse`.`authorities` (user_id, authority) values (2, 'ADMIN');
 
-insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_username) values ('Mark Roper', 'mroper');
-insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_username) values ('Matt Greenwood', 'mattg');
+insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk) values ('Mark Roper', 1);
+insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk) values ('Matt Greenwood', 2);

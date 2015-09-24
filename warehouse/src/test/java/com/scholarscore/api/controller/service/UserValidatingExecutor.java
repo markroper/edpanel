@@ -28,6 +28,10 @@ public class UserValidatingExecutor {
     private User retrieveAndValidateCreatedUser(String username, User expectedUser, HttpMethod post, String msg) {
         //Retrieve and validate the created assignment
         User createdUser = this.get(username, msg);
+        // when a user is created locally and submitted to server, ID isn't known until it is fetched again
+        if (expectedUser.getId() == null && createdUser.getId() != null) {
+            expectedUser.setId(createdUser.getId());
+        }
         //Keep a reference to the created assignment for later cleanup
         serviceBase.usersCreated.add(createdUser);
         Assert.assertEquals(createdUser, expectedUser, "Unexpected assignment created for case: " + msg);
