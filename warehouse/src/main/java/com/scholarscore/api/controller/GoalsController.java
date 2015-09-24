@@ -20,6 +20,21 @@ import java.util.List;
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/students/{studentId}/goals")
 public class GoalsController extends BaseController {
 
+    @ApiOperation(
+            value = "Get all goals for a teacher",
+            notes = "Retrieve all goals",
+            response = List.class)
+    @RequestMapping(
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody
+    ResponseEntity getAllForTeacher(
+            @ApiParam(name = "teacherId", required = true, value = "Teacher ID")
+            @PathVariable(value="teacherId") Long studentId) {
+        return respond(pm.getGoalManager().getAllGoals(studentId));
+    }
+
 
     @ApiOperation(
             value = "Get all goals for a student",

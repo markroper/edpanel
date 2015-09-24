@@ -15,6 +15,8 @@ public interface GoalPersistence {
 
     public Collection<Goal> selectAll(long studentId);
 
+    public Collection<Goal> selectAllTeacher(long teacherId);
+
     public Long replaceGoal(long studentId, long goalId, Goal goal);
 
     public Long delete(long studentId, long goalId);

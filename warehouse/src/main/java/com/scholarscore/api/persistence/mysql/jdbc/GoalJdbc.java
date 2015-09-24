@@ -86,6 +86,12 @@ public class GoalJdbc implements GoalPersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public Collection<Goal> selectAllTeacher(long teacherId) {
+        return (Collection<Goal>)hibernateTemplate.findByNamedParam("from goal g where g.teacher.id = :teacherId", "teacherId", teacherId);
+    }
+
+    @Override
     public Long replaceGoal(long studentId, long goalId, Goal goal) {
         injectStudent(studentId, goal);
         goal.setId(goalId);
