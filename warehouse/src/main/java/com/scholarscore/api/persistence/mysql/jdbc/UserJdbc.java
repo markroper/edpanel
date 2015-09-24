@@ -50,12 +50,7 @@ public class UserJdbc implements UserPersistence {
         Student student = studentPersistence.select(username);
         if (null != student) { return student; }
         
-        // No user, but we do have the user table identity
-        return new Identity() {
-            public User getUser() {
-                return user;
-            }
-        };
+        return null;
     }
 
     @Override
