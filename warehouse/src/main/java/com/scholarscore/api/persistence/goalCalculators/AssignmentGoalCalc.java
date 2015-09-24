@@ -21,7 +21,7 @@ public class AssignmentGoalCalc {
     }
 
     public Float calculateAssignmentGoal(AssignmentGoal goal) {
-        StudentAssignment goalAssignment = studentAssignmentPersistence.select(goal.getParentId(),goal.getStudent().getId());
+        StudentAssignment goalAssignment = studentAssignmentPersistence.select(goal.getStudent().getId(), goal.getParentId());
         Long awardedPoints = goalAssignment.getAwardedPoints();
                 if (null != awardedPoints) {
                     return awardedPoints.floatValue();

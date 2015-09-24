@@ -17,7 +17,7 @@ import java.util.List;
  * Created by cwallace on 9/17/2015.
  */
 @Controller
-@RequestMapping(ApiConsts.API_V1_ENDPOINT + "/students/{studentId}/goals")
+@RequestMapping(ApiConsts.API_V1_ENDPOINT )
 public class GoalsController extends BaseController {
 
     @ApiOperation(
@@ -25,16 +25,13 @@ public class GoalsController extends BaseController {
             notes = "Retrieve all goals",
             response = List.class)
     @RequestMapping(
-            value = {"/teacher/{teacherId}"},
+            value =  "/teacher/{teacherId}/goals",
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody
     ResponseEntity getAllForTeacher(
-            //TODO HOW CAN I GET THIS CONTROLLER TO TAKE THE PATH /teacher/id/goal!
-            @ApiParam(name = "studentId", required = true, value = "Student ID")
-            @PathVariable(value="studentId") Long studentId,
-            @ApiParam(name = "teacherId", required = true, value = "IGoal ID")
+            @ApiParam(name = "teacherId", required = true, value = "teacher id")
             @PathVariable(value="teacherId") Long teacherId){
         return respond(pm.getGoalManager().getAllGoalsTeacher(teacherId));
     }
@@ -45,6 +42,7 @@ public class GoalsController extends BaseController {
             notes = "Retrieve all goals",
             response = List.class)
     @RequestMapping(
+            value = "/students/{studentId}/goals",
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -60,7 +58,7 @@ public class GoalsController extends BaseController {
             notes = "Retrieves one specific goal by ID",
             response = Behavior.class)
     @RequestMapping(
-            value = "/{goalId}",
+            value = "/students/{studentId}/goals/{goalId}",
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -77,6 +75,7 @@ public class GoalsController extends BaseController {
             notes = "Creates, assigning an ID to, and persists a student goal",
             response = EntityId.class)
     @RequestMapping(
+            value = "/students/{studentId}/goals",
             method = RequestMethod.POST,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
@@ -92,7 +91,7 @@ public class GoalsController extends BaseController {
             notes = "Overwrites an existing goal for the specified student with the ID provided",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{goalId}",
+            value = "/students/{studentId}/goals/{goalId}",
             method = RequestMethod.PUT,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -110,7 +109,7 @@ public class GoalsController extends BaseController {
             notes = "Updates an existing goal's properties. Will not overwrite existing values with null.",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{goalId}",
+            value = "/students/{studentId}/goals/{goalId}",
             method = RequestMethod.PATCH,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -127,7 +126,7 @@ public class GoalsController extends BaseController {
             value = "Delete a goal",
             response = Void.class)
     @RequestMapping(
-            value = "/{goalId}",
+            value = "/students/{studentId}/goals/{goalId}",
             method = RequestMethod.DELETE,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
