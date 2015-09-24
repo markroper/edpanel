@@ -20,6 +20,8 @@ public interface GoalManager {
 
     public ServiceResponse<Collection<Goal>> getAllGoals(long studentId);
 
+    public ServiceResponse<Collection<Goal>> getAllGoalsTeacher(long teacherId);
+
     public ServiceResponse<Long> replaceGoal(long studentId, long goalId, Goal goal);
 
     public ServiceResponse<Long> updateGoal(long studentId, long goalId, Goal goal);
