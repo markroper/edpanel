@@ -278,17 +278,17 @@ CREATE TABLE `scholar_warehouse`.`authorities` (
 ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`goal` (
-  `goal_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '',
-  `approved` INT NOT NULL COMMENT '',
-  `parent_fk` BIGINT(20) NOT NULL COMMENT '',
-  `desired_value` DECIMAL(10) NOT NULL COMMENT '',
-  `student_fk` BIGINT UNSIGNED NOT NULL COMMENT '',
-  `teacher_fk` BIGINT UNSIGNED NOT NULL COMMENT '',
-    `goal_type` varchar(45) NOT NULL COMMENT '',
-  `start_date` datetime DEFAULT NULL COMMENT '',
-  `end_date` datetime DEFAULT NULL COMMENT '',
-  `behavior_category` varchar(45) DEFAULT NULL COMMENT '',
-  `name` varchar(45) NOT NULL COMMENT '',
+  `goal_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a goal',
+  `approved` INT NOT NULL COMMENT 'Int that should be 0 or 1 indicating if a goal was approved by teha ssigned teacher',
+  `parent_fk` BIGINT(20) NOT NULL COMMENT 'Foreign key that could assocaite many different places depending on the. For assignment goals it points to student assignmnet id',
+  `desired_value` DECIMAL(10) NOT NULL COMMENT 'The value the student is attempting to reach with this goal',
+  `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the student this is assigned to',
+  `teacher_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the teacher who needs to approve this goal',
+    `goal_type` varchar(45) NOT NULL COMMENT ' Correspons to enum GoalType, defines what subclass of goal we are dealing with',
+  `start_date` datetime DEFAULT NULL COMMENT ' Certain goals occur over a time range, this indicates that starting point',
+  `end_date` datetime DEFAULT NULL COMMENT ' Certain goals occur over a time range, this indicates the end date',
+  `behavior_category` varchar(45) DEFAULT NULL COMMENT 'In behavior goals we need a more specific category. Corresponds to enum BehaviorType so show what type of behavior goal',
+  `name` varchar(45) NOT NULL COMMENT 'The name of the goal',
 PRIMARY KEY (`goal_id`),
   CONSTRAINT `fk_student_goal`
     FOREIGN KEY (`student_fk`)
