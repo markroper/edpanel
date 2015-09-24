@@ -86,11 +86,8 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     @Override
     public void mergePropertiesIfNull(Student mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);     
-        if (null == getUsername()) {
-        	setUsername(mergeFrom.getUsername());
-        }
-        if (null == getLogin()) {
-            setLogin(mergeFrom.getLogin());
+        if (null == getUser()) {
+            setUser(mergeFrom.getUser());
         }
         if (null == getSourceSystemId()) {
             setSourceSystemId(mergeFrom.getSourceSystemId());
@@ -127,10 +124,14 @@ public class Student extends Identity implements Serializable, IApiModel<Student
         }
     }
 
-    @Transient
-    public User getLogin() {
-        return super.getLogin();
+    @Override
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.ALL)
+    @JoinColumn(name=HibernateConsts.STUDENT_USER_FK)
+    public User getUser() {
+        return super.getUser();
     }
+
     @Column(name = HibernateConsts.STUDENT_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
         return sourceSystemId;
@@ -161,11 +162,6 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     @JoinColumn(name=HibernateConsts.STUDENT_HOME_FK)
     public Address getHomeAddress() {
         return homeAddress;
-    }
-
-    @Column(name = HibernateConsts.USER_NAME)
-    public String getUsername() {
-        return super.getUsername();
     }
 
     public void setHomeAddress(Address homeAddress) {
@@ -250,8 +246,7 @@ public class Student extends Identity implements Serializable, IApiModel<Student
             return false;
         }
         final Student other = (Student) obj;
-        return Objects.equals(this.username, other.username)
-                && Objects.equals(this.login, other.login)
+        return Objects.equals(this.user, other.user)
                 && Objects.equals(this.sourceSystemId, other.sourceSystemId)
                 && Objects.equals(this.mailingAddress, other.mailingAddress)
                 && Objects.equals(this.homeAddress, other.homeAddress)
@@ -268,16 +263,14 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(username, login, sourceSystemId, mailingAddress, homeAddress, gender, birthDate, 
+                + Objects.hash(user, sourceSystemId, mailingAddress, homeAddress, gender, birthDate,
                         districtEntryDate, projectedGraduationYear, socialSecurityNumber, federalRace, federalEthnicity, currentSchoolId);
     }
 
     @Override
     public String toString() {
         return "Student{" +
-                "name='" + name + '\'' +
-                ", username='" + username + '\'' +
-                ", login=" + login +
+                ", user=" + user +
                 ", sourceSystemId='" + sourceSystemId + '\'' +
                 ", mailingAddress=" + mailingAddress +
                 ", homeAddress=" + homeAddress +

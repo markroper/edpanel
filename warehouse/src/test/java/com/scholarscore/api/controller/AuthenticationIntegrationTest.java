@@ -25,16 +25,17 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
     }
 
     public void testStudentLogin() {
+        
+        
         User user = new User();
-        user.setName("Test student");
         user.setPassword("password");
         user.setEnabled(true);
         user.setUsername("studentUser");
         User studentUser = userValidatingExecutor.create(user, "Creating test student user");
+
         Student student = new Student();
-        student.setName("Test student");
-        student.setUsername("studentUser");
-        student.setName("studentUser");
+        student.setUser(studentUser);
+        student.setName("Billy Student");
         Student result = studentValidatingExecutor.create(student, "Create student for authentication");
         assertNotNull(result);
     }

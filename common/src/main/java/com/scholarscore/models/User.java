@@ -15,26 +15,36 @@ import javax.persistence.*;
 @Entity(name = "user")
 @Table(name = HibernateConsts.USERS_TABLE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class User extends ApiModel implements Serializable, IApiModel<User> {
+public class User implements Serializable, IApiModel<User> {
 	// v1
 	private static final long serialVersionUID = 1L;
 
-	public User() {	
-	}
-	
-	public User(User value) {
-		super(value);
-	}
-
-	private String password;
-	
-	// or login name
+	// login name
 	private String username;
-	// full name
-	private String name;
+	private String password;
 
 	// Indicates whether the user is a login user and can login (by default this is disabled until the user has set a username/password)
 	private Boolean enabled;
+	private Long id;
+	
+	public User() { }
+	
+	public User(User value) {
+		this.username = value.username;
+		this.password = value.password;
+		this.enabled = value.enabled;
+	}
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Column(name = HibernateConsts.USER_ID)
+	public Long getId() {
+		return id;
+	}
+	
+	public void setId(Long id) { 
+		this.id = id;
+	}
 
 	@Column(name = HibernateConsts.USER_PASSWORD)
 	public String getPassword() {
@@ -45,7 +55,6 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 		this.password = password;
 	}
 
-	@Id
 	@Column(name = HibernateConsts.USER_NAME)
 	public String getUsername() {
 		return username;
@@ -62,19 +71,8 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 		this.enabled = enabled;
 	}
 
-	@Transient
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	@Override
-	public void mergePropertiesIfNull(User mergeFrom) {	
-        super.mergePropertiesIfNull(mergeFrom);     
-        
+	public void mergePropertiesIfNull(User mergeFrom) {
         if (null == username) {
         	this.username = mergeFrom.getUsername();
         }
@@ -88,18 +86,30 @@ public class User extends ApiModel implements Serializable, IApiModel<User> {
 	
 	@Override
     public boolean equals(Object obj) {
-        if (!super.equals(obj)) {
-            return false;
-        }
+		if (this == obj) return true;
+		if (obj == null || getClass() != obj.getClass()) return false;
+
         final User other = (User) obj;
-        return Objects.equals(this.enabled, other.enabled)
+		return  Objects.equals(this.id, other.id)
+        		&& Objects.equals(this.enabled, other.enabled)
                 && Objects.equals(this.password, other.password)
                 && Objects.equals(this.username, other.username);
     }
 
-    @Override
+	@Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(username, enabled, password);
+                + Objects.hash(id, username, enabled, password);
     }
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n" +
+				"User{" +
+				"id='" + id + "\'" +
+				"password='" + password + '\'' +
+				", username='" + username + '\'' +
+				", enabled=" + enabled +
+				'}';
+	}
 }
