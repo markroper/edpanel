@@ -6,21 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableMap;
-import com.scholarscore.api.controller.service.AssignmentValidatingExecutor;
-import com.scholarscore.api.controller.service.AuthValidatingExecutor;
-import com.scholarscore.api.controller.service.BehaviorValidatingExecutor;
-import com.scholarscore.api.controller.service.CourseValidatingExecutor;
-import com.scholarscore.api.controller.service.LocaleServiceUtil;
-import com.scholarscore.api.controller.service.QueryValidatingExecutor;
-import com.scholarscore.api.controller.service.SchoolValidatingExecutor;
-import com.scholarscore.api.controller.service.SchoolYearValidatingExecutor;
-import com.scholarscore.api.controller.service.SectionValidatingExecutor;
-import com.scholarscore.api.controller.service.StudentAssignmentValidatingExecutor;
-import com.scholarscore.api.controller.service.StudentSectionGradeValidatingExecutor;
-import com.scholarscore.api.controller.service.StudentValidatingExecutor;
-import com.scholarscore.api.controller.service.TeacherValidatingExecutor;
-import com.scholarscore.api.controller.service.TermValidatingExecutor;
-import com.scholarscore.api.controller.service.UserValidatingExecutor;
+import com.scholarscore.api.controller.service.*;
 import com.scholarscore.models.LoginRequest;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Student;
@@ -82,6 +68,7 @@ public class IntegrationBase {
     private static final String BEHAVIOR_ENDPOINT = "/behaviors";
     private static final String AUTH_ENDPOINT = "/auth";
     private static final String USERS_ENDPOINT = "/users";
+    private static final String GOAL_ENDPOINT = "/goals";
 
     public LocaleServiceUtil localeServiceUtil;
     public CourseValidatingExecutor courseValidatingExecutor;
@@ -98,6 +85,7 @@ public class IntegrationBase {
     public BehaviorValidatingExecutor behaviorValidatingExecutor;
     public AuthValidatingExecutor authValidatingExecutor;
     public UserValidatingExecutor userValidatingExecutor;
+    public GoalValidatingExecutor goalValidatingExecutor;
 
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Student> studentsCreated = new CopyOnWriteArrayList<>();
@@ -154,6 +142,7 @@ public class IntegrationBase {
         behaviorValidatingExecutor = new BehaviorValidatingExecutor(this);
         authValidatingExecutor = new AuthValidatingExecutor(this);
         userValidatingExecutor = new UserValidatingExecutor(this);
+        goalValidatingExecutor = new GoalValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -697,6 +686,14 @@ public class IntegrationBase {
     
     public String getBehaviorEndpoint(Long studentId, Long behaviorId) { 
         return getBehaviorEndpoint(studentId) + pathify(behaviorId);
+    }
+
+    public String getGoalEndpoint(Long studentId) {
+        return getStudentEndpoint(studentId) + GOAL_ENDPOINT;
+    }
+
+    public String getGoalEndpoint(Long studentId, Long goalId) {
+        return getGoalEndpoint(studentId) + pathify(goalId);
     }
 
     /**

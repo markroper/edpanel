@@ -1,5 +1,6 @@
 package com.scholarscore.api.persistence.mysql;
 
+import com.scholarscore.api.persistence.mysql.jdbc.GoalJdbc;
 import com.scholarscore.models.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -20,6 +21,8 @@ public class BaseJdbcTest {
     protected final Course course = new Course();
     protected final SchoolYear schoolYear = new SchoolYear();
     protected final Term term = new Term();
+    protected final BehaviorGoal behaviorGoal = new BehaviorGoal();
+    protected final AssignmentGoal assignmentGoal = new AssignmentGoal();
 
     protected final Administrator admin = new Administrator();
     protected final ApplicationContext ctx;
@@ -35,6 +38,7 @@ public class BaseJdbcTest {
     protected final EntityPersistence<Term> termDao;
     protected final EntityPersistence<Assignment> assignmentDao;
     protected final StudentSectionGradePersistence studentSectionGradeDao;
+    protected final GoalPersistence goalDao;
 
     private School createdSchool;
     private SchoolYear createdSchoolYear;
@@ -45,6 +49,8 @@ public class BaseJdbcTest {
     private Student createdStudent;
     private StudentSectionGrade createdStudentSectionGrade;
     private Teacher createdTeacher;
+    private BehaviorGoal createdBehaviorGoal;
+    private AssignmentGoal createdAssignmentGoal;
 
     public BaseJdbcTest() {
 
@@ -63,6 +69,9 @@ public class BaseJdbcTest {
         termDao = (EntityPersistence<Term>)ctx.getBean("termPersistence");
         assignmentDao = (EntityPersistence<Assignment>)ctx.getBean("assignmentPersistence");
         studentSectionGradeDao = (StudentSectionGradePersistence)ctx.getBean("studentSectionGradePersistence");
+        goalDao = (GoalPersistence)ctx.getBean("goalPersistence");
+
+
         // Shared domain model objects
         address.setStreet("51 Round Hill Rd.");
         address.setPostalCode("02364");
@@ -118,6 +127,22 @@ public class BaseJdbcTest {
         term.setStartDate(new Date());
         term.setEndDate(new Date());
         term.setSchoolYear(schoolYear);
+
+        behaviorGoal.setApproved(false);
+        behaviorGoal.setTeacher(teacher);
+        behaviorGoal.setStudent(student);
+        behaviorGoal.setDesiredValue(5f);
+        behaviorGoal.setName("Does this behave as expected");
+        behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
+        behaviorGoal.setStartDate(new Date());
+        behaviorGoal.setEndDate(new Date());
+
+        assignmentGoal.setApproved(false);
+        assignmentGoal.setTeacher(teacher);
+        assignmentGoal.setStudent(student);
+        assignmentGoal.setDesiredValue(5f);
+        assignmentGoal.setName("Does this behave as expected");
+        assignmentGoal.setParentId(1L);
     }
 
     public School createSchool() {
@@ -201,6 +226,7 @@ public class BaseJdbcTest {
 
             Long id = studentDao.createStudent(createdStudent);
             createdStudent = studentDao.select(id);
+            createdStudent.setId(id);
         }
         return createdStudent;
     }
@@ -221,7 +247,38 @@ public class BaseJdbcTest {
         if (null == createdTeacher) {
             Long id = teacherDao.createTeacher(teacher);
             createdTeacher = teacherDao.select(id);
+            createdTeacher.setId(id);
         }
+
         return createdTeacher;
     }
+
+    public Goal createBehaviorGoal() {
+        if (null == createdBehaviorGoal) {
+            createdBehaviorGoal = new BehaviorGoal();
+            createdBehaviorGoal.setName("Behaves nicely when created");
+            createdBehaviorGoal.setEndDate(new Date());
+            createdBehaviorGoal.setStartDate(new Date());
+            createdBehaviorGoal.setStudent(createStudent());
+            createdBehaviorGoal.setTeacher(createTeacher());
+            createdBehaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
+            createdBehaviorGoal.setApproved(false);
+            createdBehaviorGoal.setDesiredValue(5f);
+        }
+        return createdBehaviorGoal;
+    }
+
+    public Goal createAssignmentGoal() {
+        if (null == createdBehaviorGoal) {
+            createdAssignmentGoal = new AssignmentGoal();
+            createdAssignmentGoal.setName("Behaves nicely when created");
+            createdAssignmentGoal.setStudent(createStudent());
+            createdAssignmentGoal.setTeacher(createTeacher());
+            createdAssignmentGoal.setParentId(1L);
+            createdAssignmentGoal.setApproved(false);
+            createdAssignmentGoal.setDesiredValue(5f);
+        }
+        return createdAssignmentGoal;
+    }
+
 }

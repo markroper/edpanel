@@ -19,6 +19,12 @@
               <property name="pm" ref="PM"/>
        </bean>
 
+    <bean id="goalManager"
+          class="com.scholarscore.api.persistence.GoalManagerImpl">
+        <property name="goalPersistence" ref="goalPersistence"/>
+        <property name="pm" ref="PM"/>
+    </bean>
+
        <bean id="assignmentManager"
              class="com.scholarscore.api.persistence.AssignmentManagerImpl">
               <property name="assignmentPersistence" ref="assignmentPersistence"/>
