@@ -22,6 +22,7 @@ public class BaseJdbcTest {
     protected final SchoolYear schoolYear = new SchoolYear();
     protected final Term term = new Term();
     protected final BehaviorGoal behaviorGoal = new BehaviorGoal();
+    protected final AssignmentGoal assignmentGoal = new AssignmentGoal();
 
     protected final Administrator admin = new Administrator();
     protected final ApplicationContext ctx;
@@ -49,6 +50,7 @@ public class BaseJdbcTest {
     private StudentSectionGrade createdStudentSectionGrade;
     private Teacher createdTeacher;
     private BehaviorGoal createdBehaviorGoal;
+    private AssignmentGoal createdAssignmentGoal;
 
     public BaseJdbcTest() {
 
@@ -128,6 +130,13 @@ public class BaseJdbcTest {
         behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
         behaviorGoal.setStartDate(new Date());
         behaviorGoal.setEndDate(new Date());
+
+        assignmentGoal.setApproved(false);
+        assignmentGoal.setTeacher(teacher);
+        assignmentGoal.setStudent(student);
+        assignmentGoal.setDesiredValue(5f);
+        assignmentGoal.setName("Does this behave as expected");
+        assignmentGoal.setParentId(1L);
     }
 
     public School createSchool() {
@@ -253,4 +262,18 @@ public class BaseJdbcTest {
         }
         return createdBehaviorGoal;
     }
+
+    public Goal createAssignmentGoal() {
+        if (null == createdBehaviorGoal) {
+            createdAssignmentGoal = new AssignmentGoal();
+            createdAssignmentGoal.setName("Behaves nicely when created");
+            createdAssignmentGoal.setStudent(createStudent());
+            createdAssignmentGoal.setTeacher(createTeacher());
+            createdAssignmentGoal.setParentId(1L);
+            createdAssignmentGoal.setApproved(false);
+            createdAssignmentGoal.setDesiredValue(5f);
+        }
+        return createdAssignmentGoal;
+    }
+
 }

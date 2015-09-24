@@ -5,7 +5,7 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.Goal;
+import com.scholarscore.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
@@ -14,6 +14,8 @@ import java.util.Collection;
  * Created by cwallace on 9/17/2015.
  */
 public class GoalManagerImpl implements GoalManager {
+    private static final String STUDENT_ASSIGNMENT = "student assignment";
+
 
     @Autowired
     private PersistenceManager pm;
@@ -37,6 +39,17 @@ public class GoalManagerImpl implements GoalManager {
         if (!code.isOK()) {
             return new ServiceResponse<Long>(code);
         }
+        if (goal.getGoalType() == GoalType.ASSIGNMENT) {
+            AssignmentGoal assignmentGoal = (AssignmentGoal)goal;
+            // The first parameter is not used.
+            StudentAssignment assignment = pm.getStudentAssignmentPersistence().select(1L,assignmentGoal.getParentId());
+            if(null == assignment) {
+                return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
+                        new Object[]{STUDENT_ASSIGNMENT, assignmentGoal.getParentId()}));
+            }
+        }
+
+
         Long goalId = goalPersistence.createGoal(studentId, goal);
         return new ServiceResponse<Long>(goalId);
     }
