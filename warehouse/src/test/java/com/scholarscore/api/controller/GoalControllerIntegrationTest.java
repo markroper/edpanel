@@ -6,8 +6,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 
 /**
  * Created by cwallace on 9/21/2015.
@@ -17,6 +19,14 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
 
     private Student student;
     private Teacher teacher;
+    private School school;
+    private SchoolYear schoolYear;
+    private Term term;
+    private Course course;
+    private Section section;
+    private GradedAssignment sectionAssignment;
+    private StudentAssignment studentAssignment;
+
     private int itemsCreated = 0;
 
     @BeforeClass
@@ -30,6 +40,53 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         teacher = new Teacher();
         teacher.setName(localeServiceUtil.generateName());
         teacher = teacherValidatingExecutor.create(teacher, "create base teacher");
+
+        school = new School();
+        school.setName(localeServiceUtil.generateName());
+        school = schoolValidatingExecutor.create(school, "Create base school");
+
+        schoolYear = new SchoolYear();
+        schoolYear.setName(localeServiceUtil.generateName());
+        schoolYear = schoolYearValidatingExecutor.create(school.getId(), schoolYear, "create base schoolYear");
+
+        term = new Term();
+        term.setName(localeServiceUtil.generateName());
+        term = termValidatingExecutor.create(school.getId(), schoolYear.getId(), term, "create test base term");
+
+        course = new Course();
+        course.setName(localeServiceUtil.generateName());
+        course = courseValidatingExecutor.create(school.getId(), course, "create base course");
+
+        section = new Section();
+        section.setCourse(course);
+        section.setName(localeServiceUtil.generateName());
+        section.setEnrolledStudents(new ArrayList<Student>());
+        section.getEnrolledStudents().add(student);
+        section.setTeachers(new HashSet<Teacher>());
+        section.getTeachers().add(teacher);
+        section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
+
+        sectionAssignment = new GradedAssignment();
+        sectionAssignment.setType(AssignmentType.FINAL);
+        sectionAssignment.setName(localeServiceUtil.generateName());
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
+        Date today = cal.getTime();
+        cal.add(Calendar.YEAR, 1); // to get previous year add -1
+        Date nextYear = cal.getTime();
+        sectionAssignment.setAssignedDate(today);
+        sectionAssignment.setDueDate(nextYear);
+        sectionAssignment = (GradedAssignment) sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(),
+                term.getId(), section.getId(), sectionAssignment, "create test base term");
+
+
+
+        studentAssignment = new StudentAssignment();
+        studentAssignment.setAssignment(sectionAssignment);
+        studentAssignment.setStudent(student);
+
+        studentAssignment = studentAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(),
+                section.getId(), sectionAssignment.getId(), studentAssignment, "Initializing assignmnet");
     }
 
     @DataProvider(name = "createGoalDataProvider")
@@ -39,6 +96,8 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         Date today = cal.getTime();
         cal.add(Calendar.YEAR, 1); // to get previous year add -1
         Date nextYear = cal.getTime();
+
+
 
         BehaviorGoal behaviorGoal = new BehaviorGoal();
         behaviorGoal.setStudent(student);
@@ -55,7 +114,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         assGoal.setTeacher(teacher);
         assGoal.setName("The final final");
         assGoal.setApproved(false);
-        assGoal.setParentId(1L);
+        assGoal.setParentId(studentAssignment.getId());
         assGoal.setDesiredValue(95f);
 
         return new Object[][] {

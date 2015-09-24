@@ -71,7 +71,6 @@ public class GoalManagerImpl implements GoalManager {
         if (!code.isOK()) {
             return code;
         }
-        Goal test = goalPersistence.select(1,1);
         Goal goal = goalPersistence.select(studentId, goalId);
         if (null == goal) {
             return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{GOAL, goalId});
