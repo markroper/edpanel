@@ -6,9 +6,7 @@ import com.scholarscore.etl.powerschool.api.response.ITranslateCollection;
 import com.scholarscore.models.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by mattg on 7/3/15.
@@ -41,12 +39,7 @@ public class Staffs extends ArrayList<Staff> implements ITranslateCollection<ISt
             user.setUsername(staff.getUsername());
 
             // Create linkage between user and teacher/admin
-            user.setName(staff.name.toString());
-
-            // We set this so that we can also create the user it doesn't get sent
-            // with the original request
-            entity.setLogin(user);
-            entity.setUsername(user.getUsername());
+            entity.setUser(user);
 
             if (null != staff.phones && null != staff.phones.home_phone) {
                 entity.setHomePhone(staff.phones.home_phone);

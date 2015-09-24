@@ -34,8 +34,7 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
 
     public Administrator(Administrator admin) {
         super(admin);
-        this.setUsername(admin.getUsername());
-        this.setLogin(admin.getLogin());
+        this.setUser(admin.getUser());
         this.setSourceSystemId(admin.getSourceSystemId());
         this.setName(admin.getName());
         this.setHomeAddress(admin.getHomeAddress());
@@ -57,9 +56,6 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
         }
         if (null == this.getSourceSystemId()) {
             this.setSourceSystemId(mergeFrom.getSourceSystemId());
-        }
-        if (null == this.getUsername()) {
-            this.setUsername(mergeFrom.getUsername());
         }
         super.mergePropertiesIfNull(mergeFrom);
     }
@@ -90,11 +86,6 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
         return 31 * super.hashCode();
     }
 
-    @Transient
-    public User getLogin() {
-        return super.getLogin();
-    }
-
     @OneToOne(optional = true)
     @Cascade(CascadeType.ALL)
     @JoinColumn(name= HibernateConsts.ADMIN_ADDRESS_FK)
@@ -112,10 +103,12 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
         return sourceSystemId;
     }
 
-    @Column(name = HibernateConsts.ADMIN_USERNAME)
     @Override
-    public String getUsername() {
-        return super.getUsername();
+    @OneToOne(optional = true)
+    @Cascade(CascadeType.ALL)
+    @JoinColumn(name=HibernateConsts.ADMIN_USER_FK)
+    public User getUser() {
+        return super.getUser();
     }
 
     public void setHomePhone(String homePhone) {
@@ -129,4 +122,5 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
         this.sourceSystemId = sourceSystemId;
     }
 
+    public void setUser(User user) { super.setUser(user); }
 }

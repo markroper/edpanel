@@ -10,7 +10,6 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.Student;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * This is the E2E flow for powerschool import to scholarScore export - we have references to both clients and
@@ -105,13 +104,13 @@ public class ETLEngine implements IETLEngine {
 
             apiListOfStaff.forEach(staff -> {
                 // Create a login for the user
-                if (null != staff.getLogin()) {
-                    User login = staff.getLogin();
+                if (null != staff.getUser()) {
+                    User login = staff.getUser();
                     // Generate a random password
                     login.setPassword(UUID.randomUUID().toString());
                     try {
                         User result = scholarScore.createUser(login);
-                        staff.getLogin().setId(result.getId());
+                        staff.getUser().setId(result.getId());
                     }
                     catch (Exception e) {
                     }
