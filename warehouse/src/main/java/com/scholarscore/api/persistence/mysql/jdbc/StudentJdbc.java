@@ -57,7 +57,8 @@ public class StudentJdbc implements StudentPersistence {
     @Override
     @SuppressWarnings("unchecked")
     public Student select(String username) {
-        List<Student> students = (List<Student>) hibernateTemplate.findByNamedParam("from student s where s.username = :username", "username", username);
+        String query = "select s from student s join s.user u where u.username = :username";
+        List<Student> students = (List<Student>) hibernateTemplate.findByNamedParam(query, "username", username);
         if (students.size() == 1) {
             return students.get(0);
         }

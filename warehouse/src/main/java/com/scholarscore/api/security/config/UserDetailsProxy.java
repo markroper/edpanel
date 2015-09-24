@@ -43,12 +43,12 @@ public class UserDetailsProxy implements UserDetails {
 
 	@Override
 	public String getPassword() {
-		return identity.getLogin().getPassword();
+		return identity.getUser().getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		return identity.getLogin().getUsername();
+		return identity.getUser().getUsername();
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class UserDetailsProxy implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return identity.getLogin().getEnabled();
+		return identity.getUser().getEnabled();
 	}
 
 	public Identity getIdentity() {
