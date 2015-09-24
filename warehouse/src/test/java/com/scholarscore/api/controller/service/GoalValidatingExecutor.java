@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
 import org.testng.Assert;
 
+import java.util.ArrayList;
+
 /**
  * Created by cwallace on 9/21/2015.
  */
@@ -45,6 +47,17 @@ public class GoalValidatingExecutor {
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), HttpStatus.OK.value(),
                 "Non 200 HttpStatus returned on delete for case: " + msg);
         getNegative(studentId, goalId, HttpStatus.NOT_FOUND, msg);
+    }
+
+    public void getAll(Long studentId, String msg, int numberOfItems) {
+        ResultActions response = serviceBase.makeRequest(
+                HttpMethod.GET,
+                serviceBase.getGoalEndpoint(studentId),
+                null);
+        ArrayList<Goal> goals = serviceBase.validateResponse(response, new TypeReference<ArrayList<Goal>>() {
+        });
+        Assert.assertNotNull(goals, "Unexpected null behavior returned for case: " + msg);
+        Assert.assertEquals(goals.size(), numberOfItems, "Unexpected number of items returned for case: " + msg);
     }
 
     /**

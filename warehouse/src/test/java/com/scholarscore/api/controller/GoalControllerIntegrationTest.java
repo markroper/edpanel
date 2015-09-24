@@ -17,6 +17,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
 
     private Student student;
     private Teacher teacher;
+    private int itemsCreated = 0;
 
     @BeforeClass
     public void init() {
@@ -66,6 +67,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createGoalDataProvider" )
     public void createTest(Goal goal, String msg) {
         goalValidatingExecutor.create(goal.getStudent().getId(), goal, msg);
+        itemsCreated++;
     }
 
     @Test(dataProvider = "createGoalDataProvider")
@@ -118,6 +120,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         @Test(dataProvider = "testCalculatedMethodDataProvider")
         public void testCalculatedValue(Goal goal, String message) {
             goalValidatingExecutor.create(goal.getStudent().getId(), goal, message);
+            itemsCreated++;
 
     }
 
@@ -125,6 +128,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
     public void replaceGoalTest(Goal goal, String msg) {
         Goal createdGoal = goalValidatingExecutor.create(student.getId(), goal, msg);
         goalValidatingExecutor.replace(student.getId(), createdGoal.getId(), goal, msg);
+        itemsCreated++;
 
     }
 
@@ -144,5 +148,11 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         updatedGoal.setName(localeServiceUtil.generateName());
         //PATCH the existing record with a new name.
         goalValidatingExecutor.update(student.getId(), createdGoal.getId(), goal, msg);
+        itemsCreated++;
+    }
+
+    @Test
+    public void testGetAll() {
+        goalValidatingExecutor.getAll(student.getId(),"Get all test failed", itemsCreated);
     }
 }

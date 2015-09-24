@@ -25,14 +25,18 @@ public class GoalsController extends BaseController {
             notes = "Retrieve all goals",
             response = List.class)
     @RequestMapping(
+            value = {"/teacher/{teacherId}"},
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody
     ResponseEntity getAllForTeacher(
-            @ApiParam(name = "teacherId", required = true, value = "Teacher ID")
-            @PathVariable(value="teacherId") Long studentId) {
-        return respond(pm.getGoalManager().getAllGoals(studentId));
+            //TODO HOW CAN I GET THIS CONTROLLER TO TAKE THE PATH /teacher/id/goal!
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "teacherId", required = true, value = "IGoal ID")
+            @PathVariable(value="teacherId") Long teacherId){
+        return respond(pm.getGoalManager().getAllGoalsTeacher(teacherId));
     }
 
 

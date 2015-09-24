@@ -88,8 +88,8 @@ public class GoalManagerImpl implements GoalManager {
     @Override
     public ServiceResponse<Collection<Goal>> getAllGoalsTeacher(long teacherId) {
         return new ServiceResponse<Collection<Goal>>(
-                goalPersistence.selectAllTeacher(teacherId);
-        )
+                goalPersistence.selectAllTeacher(teacherId)
+        );
     }
 
     @Override
