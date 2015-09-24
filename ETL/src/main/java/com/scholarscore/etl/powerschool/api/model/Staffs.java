@@ -39,10 +39,6 @@ public class Staffs extends ArrayList<Staff> implements ITranslateCollection<ISt
             user.setUsername(staff.getUsername());
 
             // Create linkage between user and teacher/admin
-            user.setName(staff.name.toString());
-
-            // We set this so that we can also create the user it doesn't get sent
-            // with the original request
             entity.setUser(user);
 
             if (null != staff.phones && null != staff.phones.home_phone) {
