@@ -82,13 +82,13 @@ public class GoalJdbc implements GoalPersistence {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Goal> selectAll(long studentId) {
-        return (Collection<Goal>)hibernateTemplate.findByNamedParam("from goal g where g.student.id = :studentId", "studentId", studentId);
+        return addCalculatedValue((Collection<Goal>) hibernateTemplate.findByNamedParam("from goal g where g.student.id = :studentId", "studentId", studentId));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Goal> selectAllTeacher(long teacherId) {
-        return (Collection<Goal>)hibernateTemplate.findByNamedParam("from goal g where g.teacher.id = :teacherId", "teacherId", teacherId);
+        return addCalculatedValue((Collection<Goal>)hibernateTemplate.findByNamedParam("from goal g where g.teacher.id = :teacherId", "teacherId", teacherId));
     }
 
     @Override
@@ -106,6 +106,29 @@ public class GoalJdbc implements GoalPersistence {
             hibernateTemplate.delete(result);
         }
         return goalId;
+    }
+
+    private Collection<Goal> addCalculatedValue(Collection<Goal> goals) {
+        for (Goal goal : goals) {
+            switch (goal.getGoalType()) {
+                case BEHAVIOR:
+                    if (goal instanceof BehaviorGoal) {
+                        BehaviorGoal behaviorGoal = (BehaviorGoal)goal;
+                        goal.setCalculatedValue(behaviorGoalCalc.calculateBehaviorGoal(behaviorGoal));
+                    }
+                    break;
+                case ASSIGNMENT:
+                    if (goal instanceof AssignmentGoal) {
+                        AssignmentGoal assignmentGoal = (AssignmentGoal)goal;
+                        goal.setCalculatedValue(assignmentGoalCalc.calculateAssignmentGoal(assignmentGoal));
+                    }
+                    break;
+                case ATTENDANCE:
+                    break;
+            }
+        }
+
+        return goals;
     }
 
 }
