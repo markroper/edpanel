@@ -53,6 +53,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
     }
 
     @Override
+    //Comment so I can reference this in the diff
     public StatusCode studentSectionGradeExists(long schoolId, long yearId,
                                                 long termId, long sectionId, long studentId) {
         StatusCode code = pm.getSectionManager().sectionExists(schoolId, yearId, termId, sectionId);

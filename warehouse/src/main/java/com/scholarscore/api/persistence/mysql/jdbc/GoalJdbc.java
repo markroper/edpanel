@@ -123,16 +123,20 @@ public class GoalJdbc implements GoalPersistence {
                 case BEHAVIOR:
                     if (goal instanceof BehaviorGoal) {
                         BehaviorGoal behaviorGoal = (BehaviorGoal)goal;
-                        goal.setCalculatedValue(behaviorGoalCalc.calculateBehaviorGoal(behaviorGoal));
+                        goal.setCalculatedValue(behaviorGoalCalc.calculateGoal(behaviorGoal));
                     }
                     break;
                 case ASSIGNMENT:
                     if (goal instanceof AssignmentGoal) {
                         AssignmentGoal assignmentGoal = (AssignmentGoal)goal;
-                        goal.setCalculatedValue(assignmentGoalCalc.calculateAssignmentGoal(assignmentGoal));
+                        goal.setCalculatedValue(assignmentGoalCalc.calculateGoal(assignmentGoal));
                     }
                     break;
-                case ATTENDANCE:
+                case CUMULATIVE_GRADE:
+                    if (goal instanceof CumulativeGradeGoal) {
+                        CumulativeGradeGoal cumulativeGradeGoal = (CumulativeGradeGoal)goal;
+                        goal.setCalculatedValue(cumulativeGoalCalc.calculateGoal(cumulativeGradeGoal));
+                    }
                     break;
             }
         }

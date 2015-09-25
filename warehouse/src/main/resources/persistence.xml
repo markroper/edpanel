@@ -64,6 +64,7 @@
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
         <property name="assignmentGoalCalc" ref="assignmentCalc"/>
         <property name="behaviorGoalCalc" ref="behaviorCalc"/>
+        <property name="cumulativeGoalCalc" ref="cumulativeGradeCalc"/>
     </bean>
 
     <bean id="teacherPersistence"

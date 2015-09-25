@@ -22,6 +22,10 @@ public class CumulativeGradeGoal extends Goal {
 
     private Long parentId;
 
+    /**
+     * This points to the student_section_grade_id
+     * @return
+     */
     @Column(name = HibernateConsts.PARENT_FK)
     public Long getParentId() {
         return parentId;
