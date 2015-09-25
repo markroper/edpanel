@@ -14,7 +14,9 @@ import java.util.Collection;
  * Created by cwallace on 9/17/2015.
  */
 public class GoalManagerImpl implements GoalManager {
+
     private static final String STUDENT_ASSIGNMENT = "student assignment";
+    private static final String STUDENT_SECTION_GRADE = "student section grade";
 
 
     @Autowired
@@ -46,6 +48,15 @@ public class GoalManagerImpl implements GoalManager {
             if(null == assignment) {
                 return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
                         new Object[]{STUDENT_ASSIGNMENT, assignmentGoal.getParentId()}));
+            }
+            //TODO I don't like this duplication of code from the JDBC to the managers
+        } else if (goal.getGoalType() == GoalType.CUMULATIVE_GRADE){
+            CumulativeGradeGoal cumulativeGradeGoal = (CumulativeGradeGoal)goal;
+            StudentSectionGrade ssg = pm.getStudentSectionGradePersistence().select(cumulativeGradeGoal.getParentId(),studentId);
+            if(null == ssg) {
+                return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
+                        new Object[]{STUDENT_SECTION_GRADE,
+                                "section id: " + cumulativeGradeGoal.getParentId() + ", student id: " + studentId}));
             }
         }
 

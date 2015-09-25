@@ -21,7 +21,8 @@ import java.util.Objects;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "goalType")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = BehaviorGoal.class, name="BEHAVIOR"),
-        @JsonSubTypes.Type(value = AssignmentGoal.class, name = "ASSIGNMENT")
+        @JsonSubTypes.Type(value = AssignmentGoal.class, name = "ASSIGNMENT"),
+        @JsonSubTypes.Type(value = CumulativeGradeGoal.class, name = "CUMULATIVE_GRADE")
 })
 public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 
