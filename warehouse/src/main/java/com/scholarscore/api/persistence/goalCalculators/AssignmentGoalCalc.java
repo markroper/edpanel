@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Returns the awarded points of the assignment that the goal references.
  * Created by cwallace on 9/21/2015.
  */
-public class AssignmentGoalCalc {
+public class AssignmentGoalCalc implements GoalCalc<AssignmentGoal> {
 
 
     private StudentAssignmentPersistence studentAssignmentPersistence;
@@ -20,7 +20,7 @@ public class AssignmentGoalCalc {
         this.studentAssignmentPersistence = studentAssignmentPersistence;
     }
 
-    public Float calculateAssignmentGoal(AssignmentGoal goal) {
+    public Float calculateGoal(AssignmentGoal goal) {
         StudentAssignment goalAssignment = studentAssignmentPersistence.select(goal.getStudent().getId(), goal.getParentId());
         Long awardedPoints = goalAssignment.getAwardedPoints();
                 if (null != awardedPoints) {

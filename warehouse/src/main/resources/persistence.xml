@@ -147,4 +147,9 @@
         <property name="studentAssignmentPersistence" ref="studentAssignmentPersistence"/>
     </bean>
 
+    <bean id="cumulativeGradeCalc"
+          class="com.scholarscore.api.persistence.goalCalculators.CumulativeGoalCalc">
+        <property name="studentSectionGradePersistence" ref="studentSectionGradePersistence"/>
+    </bean>
+
 </beans>
