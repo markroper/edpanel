@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * Created by cwallace on 9/20/2015.
  */
 
-public class BehaviorGoalCalc {
+public class BehaviorGoalCalc implements GoalCalc<BehaviorGoal> {
 
 
     private BehaviorPersistence behaviorPersistence;
@@ -27,7 +27,7 @@ public class BehaviorGoalCalc {
         this.behaviorPersistence = behaviorPersistence;
     }
 
-    public Float calculateBehaviorGoal(BehaviorGoal goal) {
+    public Float calculateGoal(BehaviorGoal goal) {
         Collection<Behavior> studentBehaviors = behaviorPersistence.selectAll(goal.getStudent().getId());
         //Make sure behavior category matches and it is within the dates specified.
         Collection<Behavior> relevantBehaviors = studentBehaviors.stream().filter(bg -> bg.getBehaviorCategory().equals(goal.getBehaviorCategory()))
