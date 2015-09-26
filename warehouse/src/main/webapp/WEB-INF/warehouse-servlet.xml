@@ -22,7 +22,8 @@
         <bean class="com.scholarscore.api.interceptor.AuthenticationInterceptor" />
     </mvc:interceptors>
 
-    <context:component-scan base-package="com.scholarscore.api.controller, com.scholarscore.api.swagger, com.scholarscore.api.security"/>
+    <context:component-scan base-package="com.scholarscore.api.controller, com.scholarscore.api.swagger, com.scholarscore.api.security,
+    com.scholarscore.api.persistence.goalCalculators"/>
 
     <mvc:default-servlet-handler/>
     
@@ -79,6 +80,9 @@
         <property name="userManager" ref="userManager"/>
         <property name="queryManager" ref="queryManager"/>
         <property name="behaviorManager" ref="behaviorManager"/>
+        <property name="goalManager" ref="goalManager"/>
     </bean>
+
+
 
 </beans>
