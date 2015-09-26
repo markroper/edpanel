@@ -23,12 +23,13 @@ ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`users` (
     `user_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
-    `username` varchar(50) NOT NULL,
-    `password` varchar(50) CHARACTER SET UTF8 NOT NULL,
-    `enabled` BOOLEAN NOT NULL,
--- TODO: for password flow, we need...
--- `email_address`
--- `phone_number`
+    `username` varchar(50) NOT NULL COMMENT 'the username used to login',
+    `password` varchar(50) CHARACTER SET UTF8 NOT NULL COMMENT 'the password',
+    `enabled` BOOLEAN NOT NULL COMMENT 'unknown',
+    `email_address` varchar(256) NULL COMMENT 'the contact email of the user',
+    `email_confirmed` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'if this email has been confirmed as belonging to the user',
+    `phone_number` varchar(256) NULL COMMENT 'the contact phone of the user',
+    `phone_confirmed` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'if this phone number has been confirmed as belonging to the user',
     PRIMARY KEY (`user_id`),
     UNIQUE(`username`)
 )

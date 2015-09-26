@@ -108,6 +108,19 @@ public class UserController extends BaseController {
 	        @PathVariable(value="username") String username) {
 	    return respond(pm.getUserManager().deleteUser(username));
 	}
-	
+
+	@ApiOperation(
+			value = "Validate contact information",
+			response = Void.class)
+	@RequestMapping(
+			value = "/{username}/validate",
+			method = RequestMethod.GET,
+			produces = { JSON_ACCEPT_HEADER })
+	@SuppressWarnings("rawtypes")
+	public @ResponseBody ResponseEntity validateContact(
+			@ApiParam(name = "username", required = true, value = "User login name")
+			@PathVariable(value="username") String username) {
+		return respond(pm.getUserManager().validateContact(username));
+	}
 
 }

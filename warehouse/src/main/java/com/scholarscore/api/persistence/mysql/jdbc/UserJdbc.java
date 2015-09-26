@@ -73,7 +73,6 @@ public class UserJdbc implements UserPersistence {
     @SuppressWarnings("unchecked")
     public String replaceUser(String username, User value) {
         User fromDB = selectUser(username);
-//        fromDB.setName(value.getName());
         fromDB.setPassword(value.getPassword());
         fromDB.setEnabled(value.getEnabled());
         hibernateTemplate.merge(fromDB);
