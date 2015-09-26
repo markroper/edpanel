@@ -141,4 +141,17 @@ public class HibernateConsts {
     //Section to Teacher table
     public static final String TEACHER_SECTION_TABLE = "teacher_section";
     public static final String TEACHER_SECTION_ROLE = "role";
+
+    //IGoal constants
+    public static final String GOAL_TABLE = "goal";
+    public static final String GOAL_ID = "goal_id";
+    public static final String GOAL_APPROVED = "approved";
+    public static final String PARENT_FK = "parent_fk";
+    public static final String DESIRED_GOAL_VALUE = "desired_value";
+    public static final String GOAL_TYPE = "goal_type";
+    public static final String GOAL_START_DATE = "start_date";
+    public static final String GOAL_END_DATE = "end_date";
+    public static final String BEHAVIOR_GOAL_CATEGORY = "behavior_category";
+    public static final String GOAL_NAME = "name";
+    public static final String GOAL_SECTION_FK = "section_fk";
 }

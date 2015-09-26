@@ -8,5 +8,6 @@ public enum OperandType implements Serializable {
     MEASURE,
     NUMERIC,
     EXPRESSION,
-    STRING;
+    STRING,
+    LIST_NUMERIC;
 }
