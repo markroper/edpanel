@@ -91,4 +91,14 @@ public class UserManagerImpl implements UserManager {
         return new ServiceResponse<UserDetailsProxy>(new StatusCode(StatusCodes.NOT_AUTHENTICATED,
                 "Not Authenticated"));
     }
+
+    @Override
+    public ServiceResponse<String> validateContact(String username) {
+        User user = userPersistence.selectUser(username);
+        if (null != user) {
+//            return new ServiceResponse<User>(user);
+        }
+        
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 }

@@ -29,4 +29,6 @@ public interface UserManager {
     ServiceResponse<String> deleteUser(String username);
 
     ServiceResponse<UserDetailsProxy> getCurrentUser();
+    
+    ServiceResponse<String> validateContact(String username);
 }

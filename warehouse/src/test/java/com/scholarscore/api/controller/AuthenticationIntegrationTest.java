@@ -25,8 +25,10 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
     }
 
     public void testStudentLogin() {
-        
-        
+
+        // delete this user, just in case -
+        userValidatingExecutor.delete("studentUser", "deleting user");
+
         User user = new User();
         user.setPassword("password");
         user.setEnabled(true);

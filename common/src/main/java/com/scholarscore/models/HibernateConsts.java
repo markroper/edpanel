@@ -133,7 +133,11 @@ public class HibernateConsts {
     public static final String USER_NAME = "username";
     public static final String USER_PASSWORD = "password";
     public static final String USER_ENABLED = "enabled";
-    
+    public static final String USER_EMAIL_ADDRESS = "email_address";
+    public static final String USER_EMAIL_CONFIRMED = "email_confirmed";
+    public static final String USER_PHONE_NUMBER = "phone_number";
+    public static final String USER_PHONE_CONFIRMED = "phone_confirmed";
+
     //Section to Teacher table
     public static final String TEACHER_SECTION_TABLE = "teacher_section";
     public static final String TEACHER_SECTION_ROLE = "role";

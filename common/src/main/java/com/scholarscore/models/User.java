@@ -27,12 +27,21 @@ public class User implements Serializable, IApiModel<User> {
 	private Boolean enabled;
 	private Long id;
 	
+	private String emailAddress;
+	private String phoneNumber;
+	private Boolean emailConfirmed = false;
+	private Boolean phoneConfirmed = false;
+	
 	public User() { }
 	
 	public User(User value) {
 		this.username = value.username;
 		this.password = value.password;
 		this.enabled = value.enabled;
+		this.emailAddress = value.emailAddress;
+		this.phoneNumber = value.phoneNumber;
+		this.emailConfirmed = value.emailConfirmed;
+		this.phoneConfirmed = value.phoneConfirmed;
 	}
 
 	@Id
@@ -71,6 +80,41 @@ public class User implements Serializable, IApiModel<User> {
 		this.enabled = enabled;
 	}
 
+	@Column(name = HibernateConsts.USER_EMAIL_ADDRESS)
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	@Column(name = HibernateConsts.USER_PHONE_NUMBER)
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	@Column(name = HibernateConsts.USER_EMAIL_CONFIRMED)
+	public Boolean getEmailConfirmed() {
+		return emailConfirmed;
+	}
+
+	public void setEmailConfirmed(Boolean emailConfirmed) {
+		this.emailConfirmed = emailConfirmed;
+	}
+
+	@Column(name = HibernateConsts.USER_PHONE_CONFIRMED)
+	public Boolean getPhoneConfirmed() {
+		return phoneConfirmed;
+	}
+
+	public void setPhoneConfirmed(Boolean phoneConfirmed) {
+		this.phoneConfirmed = phoneConfirmed;
+	}
+
 	@Override
 	public void mergePropertiesIfNull(User mergeFrom) {
         if (null == username) {
@@ -82,6 +126,18 @@ public class User implements Serializable, IApiModel<User> {
         if (null == enabled) {
         	this.enabled = mergeFrom.getEnabled();
         }
+		if (null == emailAddress) {
+			this.emailAddress = mergeFrom.getEmailAddress();
+		}
+		if (null == phoneNumber) {
+			this.phoneNumber = mergeFrom.getPhoneNumber();
+		}
+		if (null == emailConfirmed) {
+			this.emailConfirmed = mergeFrom.getEmailConfirmed();
+		}
+		if (null == phoneConfirmed) {
+			this.phoneConfirmed = mergeFrom.getPhoneConfirmed();
+		}
     }
 	
 	@Override
@@ -93,13 +149,18 @@ public class User implements Serializable, IApiModel<User> {
 		return  Objects.equals(this.id, other.id)
         		&& Objects.equals(this.enabled, other.enabled)
                 && Objects.equals(this.password, other.password)
-                && Objects.equals(this.username, other.username);
+                && Objects.equals(this.username, other.username)
+				&& Objects.equals(this.emailAddress, other.emailAddress)
+				&& Objects.equals(this.phoneNumber, other.phoneNumber)
+				&& Objects.equals(this.emailConfirmed, other.emailConfirmed)
+				&& Objects.equals(this.phoneConfirmed, other.phoneConfirmed)
+				;
     }
 
 	@Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(id, username, enabled, password);
+                + Objects.hash(id, username, enabled, password, emailAddress, phoneNumber, emailConfirmed, phoneConfirmed);
     }
 
 	@Override
@@ -107,9 +168,14 @@ public class User implements Serializable, IApiModel<User> {
 		return super.toString() + "\n" +
 				"User{" +
 				"id='" + id + "\'" +
-				"password='" + password + '\'' +
+				", password='" + password + '\'' +
 				", username='" + username + '\'' +
 				", enabled=" + enabled +
+				", id=" + id +
+				", emailAddress='" + emailAddress + '\'' +
+				", phoneNumber='" + phoneNumber + '\'' +
+				", emailConfirmed=" + emailConfirmed +
+				", phoneConfirmed=" + phoneConfirmed +
 				'}';
 	}
 }
