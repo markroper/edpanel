@@ -4,6 +4,14 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Expressions can have operands that are collections, for example, a statement like
+ * select * from student where student.id in (1, 3,, 5, 7, 9).  This class represents 
+ * the operand type that supports numeric data type lists as in the example above.
+ * 
+ * @author markroper
+ *
+ */
 @SuppressWarnings("serial")
 public class ListNumericOperand implements Serializable, IOperand {
     protected List<Number> value;
