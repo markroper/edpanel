@@ -98,4 +98,29 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
     public void setSchool(School school) {
         this.school = school;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Course course = (Course) o;
+
+        if (number != null ? !number.equals(course.number) : course.number != null) return false;
+        if (school != null ? !school.equals(course.school) : course.school != null) return false;
+        if (sourceSystemId != null ? !sourceSystemId.equals(course.sourceSystemId) : course.sourceSystemId != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (number != null ? number.hashCode() : 0);
+        result = 31 * result + (sourceSystemId != null ? sourceSystemId.hashCode() : 0);
+        result = 31 * result + (school != null ? school.hashCode() : 0);
+        return result;
+    }
 }
