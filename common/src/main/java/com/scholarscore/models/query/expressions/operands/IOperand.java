@@ -17,7 +17,8 @@ import com.scholarscore.models.query.expressions.Expression;
     @JsonSubTypes.Type(value = NumericOperand.class, name = "NUMERIC"),
     @JsonSubTypes.Type(value = StringOperand.class, name = "STRING"),
     @JsonSubTypes.Type(value = Expression.class, name = "EXPRESSION"),
-    @JsonSubTypes.Type(value = MeasureOperand.class, name = "MEASURE")
+    @JsonSubTypes.Type(value = MeasureOperand.class, name = "MEASURE"),
+    @JsonSubTypes.Type(value = ListNumericOperand.class, name = "LIST_NUMERIC")
 })
 public interface IOperand {
     /**
