@@ -40,9 +40,6 @@ public class ModelEqualsAndHashcodeTest {
     private static final String packageToScan = "com.scholarscore.models";
     private static final Set<String> excludedClassNames = new HashSet<String>() {{
         // if you want to exclude a model class from this test, add it here. e.g...
-        // add(packageToScan + ".StudentSectionGrade");
-        // add(packageToScan + ".query.expressions.operators.BinaryOperator");
-//        add(packageToScan + ".query.expressions.operands");
         add(packageToScan + ".ModelEqualsAndHashcodeTest");
     }};
     
@@ -105,9 +102,6 @@ public class ModelEqualsAndHashcodeTest {
             }
             Object instanceWithTweakedField = buildPopulatedObject(clazz, field.getName());
             if (instanceWithTweakedField == null) {
-                // System.out.println("Couldn't build object, skipping...");
-//                fieldsThatNeedDefaults.add(field.toString());
-//                numberOfFailedDefaultFieldAttempts++;
                 continue;
             }
             // System.out.println("Checking equals() and hashcode() on " + clazz.getName() + " with field " + field.getName() + " modified...");
@@ -199,7 +193,6 @@ public class ModelEqualsAndHashcodeTest {
             }
             return school;
         }
-        //  if (type.isAssignableFrom(School.class)) { return buildPopulatedObject(School.class, "principalName", alt); }
 
         if (type.isAssignableFrom(Address.class)) { return buildPopulatedObject(Address.class, "postalCode", alt); }
         if (type.isAssignableFrom(MeasureField.class)) { return buildPopulatedObject(MeasureField.class, "field", alt); }
