@@ -9,6 +9,7 @@ import org.hibernate.annotations.CascadeType;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -62,10 +63,15 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == null || getClass() != obj.getClass()) { return false; }
         if(!super.equals(obj)) {
             return false;
         }
-        return true;
+        if (this == obj) return true;
+        final Administrator other = (Administrator) obj;
+        return Objects.equals(this.sourceSystemId, other.sourceSystemId)
+                && Objects.equals(this.homeAddress, other.homeAddress)
+                && Objects.equals(this.homePhone, other.homePhone);
     }
 
     @Id
@@ -123,4 +129,13 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
     }
 
     public void setUser(User user) { super.setUser(user); }
+
+    @Override
+    public String toString() {
+        return"Administrator{" + "(super):{" + super.toString() + "} " +
+                "sourceSystemId='" + sourceSystemId + '\'' +
+                ", homeAddress=" + homeAddress +
+                ", homePhone='" + homePhone + '\'' +
+                '}';
+    }
 }
