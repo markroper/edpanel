@@ -28,7 +28,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
     private StudentAssignment studentAssignment;
     StudentSectionGrade studentSectionGrade;
 
-    private static final Float EXPECTED_SECTION_GRADE = 85f;
+    private static final Float EXPECTED_SECTION_GRADE = 5.3f;
 
     private int itemsCreated = 0;
 
@@ -93,8 +93,9 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
 
         studentSectionGrade = new StudentSectionGrade();
         studentSectionGrade.setGrade(EXPECTED_SECTION_GRADE.doubleValue());
-        studentSectionGrade = studentSectionGradeValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(),
-                student.getId(), studentSectionGrade, "create student section grade w/ value " + EXPECTED_SECTION_GRADE);
+        studentSectionGrade.setComplete(false);
+        studentSectionGrade = studentSectionGradeValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), section.getId(),
+                student.getId(), studentSectionGrade, "update student section grade w/ value " + EXPECTED_SECTION_GRADE);
     }
 
     @DataProvider(name = "createGoalDataProvider")
@@ -130,7 +131,8 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         cumulativeGradeGoal.setTeacher(teacher);
         cumulativeGradeGoal.setName("ALL OF THE As");
         cumulativeGradeGoal.setApproved(false);
-        cumulativeGradeGoal.setParentId(studentSectionGrade.getId());
+        cumulativeGradeGoal.setParentId(section.getId());
+        cumulativeGradeGoal.setDesiredValue(6f);
 
         return new Object[][] {
                 {behaviorGoal, "Test failed with a behavior goal"},

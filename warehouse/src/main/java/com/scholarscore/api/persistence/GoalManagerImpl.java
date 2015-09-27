@@ -72,7 +72,7 @@ public class GoalManagerImpl implements GoalManager {
             return new ServiceResponse<>(code);
         }
         Goal goal = goalPersistence.select(studentId, goalId);
-        return new ServiceResponse<>(goal);
+        return new ServiceResponse<Goal>(goal);
 
     }
 
