@@ -1,6 +1,7 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -28,7 +29,12 @@ public class User implements Serializable, IApiModel<User> {
 	private Long id;
 	
 	private String emailAddress;
+	private String emailConfirmCode;
+	private Date emailConfirmCodeTime;
 	private String phoneNumber;
+	private String phoneConfirmCode;
+	private Date phoneConfirmCodeTime;
+
 	private Boolean emailConfirmed = false;
 	private Boolean phoneConfirmed = false;
 	
@@ -39,7 +45,11 @@ public class User implements Serializable, IApiModel<User> {
 		this.password = value.password;
 		this.enabled = value.enabled;
 		this.emailAddress = value.emailAddress;
+		this.emailConfirmCode = value.emailConfirmCode;
+		this.emailConfirmCodeTime = value.emailConfirmCodeTime;
 		this.phoneNumber = value.phoneNumber;
+		this.phoneConfirmCode = value.phoneConfirmCode;
+		this.phoneConfirmCodeTime = value.phoneConfirmCodeTime;
 		this.emailConfirmed = value.emailConfirmed;
 		this.phoneConfirmed = value.phoneConfirmed;
 	}
@@ -115,6 +125,42 @@ public class User implements Serializable, IApiModel<User> {
 		this.phoneConfirmed = phoneConfirmed;
 	}
 
+	@Column(name = HibernateConsts.USER_EMAIL_CONFIRM_CODE)
+	public String getEmailConfirmCode() {
+		return emailConfirmCode;
+	}
+
+	public void setEmailConfirmCode(String emailConfirmCode) {
+		this.emailConfirmCode = emailConfirmCode;
+	}
+
+	@Column(name = HibernateConsts.USER_EMAIL_CONFIRM_CODE_GENERATED_TIME)
+	public Date getEmailConfirmCodeTime() {
+		return emailConfirmCodeTime;
+	}
+
+	public void setEmailConfirmCodeTime(Date emailConfirmCodeTime) {
+		this.emailConfirmCodeTime = emailConfirmCodeTime;
+	}
+
+	@Column(name = HibernateConsts.USER_PHONE_CONFIRM_CODE)
+	public String getPhoneConfirmCode() {
+		return phoneConfirmCode;
+	}
+
+	public void setPhoneConfirmCode(String phoneConfirmCode) {
+		this.phoneConfirmCode = phoneConfirmCode;
+	}
+
+	@Column(name = HibernateConsts.USER_PHONE_CONFIRM_CODE_GENERATED_TIME)
+	public Date getPhoneConfirmCodeTime() {
+		return phoneConfirmCodeTime;
+	}
+
+	public void setPhoneConfirmCodeTime(Date phoneConfirmCodeTime) {
+		this.phoneConfirmCodeTime = phoneConfirmCodeTime;
+	}
+
 	@Override
 	public void mergePropertiesIfNull(User mergeFrom) {
         if (null == username) {
@@ -129,8 +175,20 @@ public class User implements Serializable, IApiModel<User> {
 		if (null == emailAddress) {
 			this.emailAddress = mergeFrom.getEmailAddress();
 		}
+		if (null == emailConfirmCode) {
+			this.emailConfirmCode = mergeFrom.getEmailConfirmCode();
+		}
+		if (null == emailConfirmCodeTime) {
+			this.emailConfirmCodeTime = mergeFrom.getEmailConfirmCodeTime();
+		}
 		if (null == phoneNumber) {
 			this.phoneNumber = mergeFrom.getPhoneNumber();
+		}
+		if (null == phoneConfirmCode) {
+			this.phoneConfirmCode = mergeFrom.getPhoneConfirmCode();
+		}
+		if (null == phoneConfirmCodeTime) {
+			this.phoneConfirmCodeTime = mergeFrom.getPhoneConfirmCodeTime();
 		}
 		if (null == emailConfirmed) {
 			this.emailConfirmed = mergeFrom.getEmailConfirmed();
@@ -151,7 +209,11 @@ public class User implements Serializable, IApiModel<User> {
                 && Objects.equals(this.password, other.password)
                 && Objects.equals(this.username, other.username)
 				&& Objects.equals(this.emailAddress, other.emailAddress)
+				&& Objects.equals(this.emailConfirmCode, other.emailConfirmCode)
+				&& Objects.equals(this.emailConfirmCodeTime, other.emailConfirmCodeTime)
 				&& Objects.equals(this.phoneNumber, other.phoneNumber)
+				&& Objects.equals(this.phoneConfirmCode, other.phoneConfirmCode)
+				&& Objects.equals(this.phoneConfirmCodeTime, other.phoneConfirmCodeTime)
 				&& Objects.equals(this.emailConfirmed, other.emailConfirmed)
 				&& Objects.equals(this.phoneConfirmed, other.phoneConfirmed)
 				;
@@ -160,7 +222,8 @@ public class User implements Serializable, IApiModel<User> {
 	@Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(id, username, enabled, password, emailAddress, phoneNumber, emailConfirmed, phoneConfirmed);
+                + Objects.hash(id, username, enabled, password, emailAddress, emailConfirmCode, emailConfirmCodeTime, 
+				phoneNumber, phoneConfirmCode, phoneConfirmCodeTime, emailConfirmed, phoneConfirmed);
     }
 
 	@Override

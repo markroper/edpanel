@@ -30,5 +30,7 @@ public interface UserManager {
 
     ServiceResponse<UserDetailsProxy> getCurrentUser();
     
-    ServiceResponse<String> validateContact(String username);
+    ServiceResponse<String> startPhoneContactValidation(String username);
+    
+    ServiceResponse<String> startEmailContactValidation(String username);
 }

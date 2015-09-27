@@ -27,8 +27,12 @@ CREATE TABLE `scholar_warehouse`.`users` (
     `password` varchar(50) CHARACTER SET UTF8 NOT NULL COMMENT 'the password',
     `enabled` BOOLEAN NOT NULL COMMENT 'unknown',
     `email_address` varchar(256) NULL COMMENT 'the contact email of the user',
+    `email_confirm_code` varchar(64) NULL COMMENT 'the confirmation code sent to the user\'s email',
+    `email_confirm_code_creation_time` DATETIME NULL COMMENT 'the time this confirmation code was generated and sent',
     `email_confirmed` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'if this email has been confirmed as belonging to the user',
     `phone_number` varchar(256) NULL COMMENT 'the contact phone of the user',
+    `phone_confirm_code` varchar(64) NULL COMMENT 'the confirmation code sent to the user\'s phone',
+    `phone_confirm_code_creation_time` DATETIME NULL COMMENT 'the time this confirmation code was generated and sent',
     `phone_confirmed` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'if this phone number has been confirmed as belonging to the user',
     PRIMARY KEY (`user_id`),
     UNIQUE(`username`)

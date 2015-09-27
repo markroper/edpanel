@@ -93,7 +93,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public ServiceResponse<String> validateContact(String username) {
+    public ServiceResponse<String> startPhoneContactValidation(String username) {
         User user = userPersistence.selectUser(username);
         if (null != user) {
 //            return new ServiceResponse<User>(user);
@@ -101,4 +101,15 @@ public class UserManagerImpl implements UserManager {
         
         throw new UnsupportedOperationException("Not implemented yet");
     }
+
+    @Override
+    public ServiceResponse<String> startEmailContactValidation(String username) {
+        User user = userPersistence.selectUser(username);
+        if (null != user) {
+//            return new ServiceResponse<User>(user);
+        }
+
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
 }
