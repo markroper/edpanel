@@ -98,7 +98,7 @@ public class UserManagerImpl implements UserManager {
         if (null != user) {
 //            return new ServiceResponse<User>(user);
         }
-        
+        // TODO Jordan: implement!
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
@@ -108,8 +108,27 @@ public class UserManagerImpl implements UserManager {
         if (null != user) {
 //            return new ServiceResponse<User>(user);
         }
-
+        // TODO Jordan: implement!
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
+    @Override
+    public ServiceResponse<String> completePhoneContactValidation(String username, String code) {
+        User user = userPersistence.selectUser(username);
+        if (null != user) {
+//            return new ServiceResponse<User>(user);
+        }
+        // TODO Jordan: implement!
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    public ServiceResponse<String> completeEmailContactValidation(String username, String code) {
+        User user = userPersistence.selectUser(username);
+        if (null != user) {
+//            return new ServiceResponse<User>(user);
+        }
+        // TODO Jordan: implement!
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 }
