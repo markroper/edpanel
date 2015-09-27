@@ -20,6 +20,7 @@ import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
 import com.scholarscore.models.query.expressions.operands.IOperand;
+import com.scholarscore.models.query.expressions.operands.ListNumericOperand;
 import com.scholarscore.models.query.expressions.operands.MeasureOperand;
 import com.scholarscore.models.query.expressions.operands.NumericOperand;
 import com.scholarscore.models.query.expressions.operands.StringOperand;
@@ -195,6 +196,15 @@ public abstract class QuerySqlGenerator {
                 String rand = RandomStringUtils.randomAlphabetic(32);
                 sqlBuilder.append(" :" + rand + " ");
                 params.put(rand, ((StringOperand)operand).getValue());
+                break;
+            case LIST_NUMERIC:
+                List<Number> nums = ((ListNumericOperand)operand).getValue();
+                for(int i = 0; i < nums.size(); i++) {
+                    sqlBuilder.append(nums.get(i));
+                    if(i != nums.size() -1) {
+                        sqlBuilder.append(",");
+                    }
+                }
                 break;
             default:
                 throw new SqlGenerationException("Operand type not supported: " + operand);
