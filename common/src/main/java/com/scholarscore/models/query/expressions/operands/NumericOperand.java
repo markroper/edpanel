@@ -6,7 +6,7 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 public class NumericOperand implements Serializable, IOperand {
     protected Number value;
-    protected OperandType type;
+    protected final OperandType type;
 
     public NumericOperand() {
         this.type = OperandType.NUMERIC;
