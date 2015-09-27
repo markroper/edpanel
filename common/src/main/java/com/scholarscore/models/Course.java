@@ -35,6 +35,7 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
         super(clone);
         this.sourceSystemId = clone.sourceSystemId;
         this.number = clone.number;
+        this.school = clone.school;
     }
 
     @Size(min = 0, max=255)
@@ -54,6 +55,9 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
         }
         if (null == sourceSystemId) {
             this.sourceSystemId = mergeFrom.getSourceSystemId();
+        }
+        if (null == school) {
+            this.school = mergeFrom.getSchool();
         }
     }
 
@@ -107,10 +111,11 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
 
         Course course = (Course) o;
 
-        if (number != null ? !number.equals(course.number) : course.number != null) return false;
-        if (school != null ? !school.equals(course.school) : course.school != null) return false;
-        if (sourceSystemId != null ? !sourceSystemId.equals(course.sourceSystemId) : course.sourceSystemId != null)
+        if (number != null ? !number.equals(course.number) : course.number != null) { return false; }
+        if (school != null ? !school.equals(course.school) : course.school != null) { return false; }
+        if (sourceSystemId != null ? !sourceSystemId.equals(course.sourceSystemId) : course.sourceSystemId != null) {
             return false;
+        }
 
         return true;
     }
@@ -122,5 +127,14 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
         result = 31 * result + (sourceSystemId != null ? sourceSystemId.hashCode() : 0);
         result = 31 * result + (school != null ? school.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Course{" + " (super: " + super.toString() + ")" +
+                "number='" + number + '\'' +
+                ", sourceSystemId='" + sourceSystemId + '\'' +
+                ", school=" + school +
+                '}';
     }
 }
