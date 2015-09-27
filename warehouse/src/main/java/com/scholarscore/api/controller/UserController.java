@@ -4,11 +4,9 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.scholarscore.api.ApiConsts;
-import com.scholarscore.api.persistence.UserManager;
 import com.scholarscore.models.User;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import javax.validation.Valid;
-import java.util.List;
 
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/users")
@@ -109,18 +105,35 @@ public class UserController extends BaseController {
 	    return respond(pm.getUserManager().deleteUser(username));
 	}
 
+	// TODO Jordan: for these next endpoints, 
+	// ensure that the user logged in is the same as the user being accessed (or possibly, administrator)
 	@ApiOperation(
-			value = "Validate contact information",
+			value = "Start validation for phone contact info",
 			response = Void.class)
 	@RequestMapping(
-			value = "/{username}/validate",
-			method = RequestMethod.GET,
+			value = "/{username}/validation/phone",
+			method = RequestMethod.POST,
 			produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
-	public @ResponseBody ResponseEntity validateContact(
+	public @ResponseBody ResponseEntity startPhoneContactValidation(
 			@ApiParam(name = "username", required = true, value = "User login name")
 			@PathVariable(value="username") String username) {
-		return respond(pm.getUserManager().validateContact(username));
+		return respond(pm.getUserManager().startPhoneContactValidation(username));
 	}
+
+	@ApiOperation(
+			value = "Start validation for email contact info",
+			response = Void.class)
+	@RequestMapping(
+			value = "/{username}/validation/email",
+			method = RequestMethod.POST,
+			produces = { JSON_ACCEPT_HEADER })
+	@SuppressWarnings("rawtypes")
+	public @ResponseBody ResponseEntity startEmailContactValidation(
+			@ApiParam(name = "username", required = true, value = "User login name")
+			@PathVariable(value="username") String username) {
+		return respond(pm.getUserManager().startEmailContactValidation(username));
+	}
+
 
 }
