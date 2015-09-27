@@ -218,6 +218,8 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
             updatedGoal = new BehaviorGoal((BehaviorGoal)createdGoal);
         } else if (goal instanceof AssignmentGoal) {
             updatedGoal = new AssignmentGoal((AssignmentGoal)createdGoal);
+        } else if (goal instanceof CumulativeGradeGoal){
+            updatedGoal = new CumulativeGradeGoal((CumulativeGradeGoal)createdGoal);
         } else {
             updatedGoal = null;
         }
