@@ -32,5 +32,9 @@ public interface UserManager {
     
     ServiceResponse<String> startPhoneContactValidation(String username);
     
+    ServiceResponse<String> completePhoneContactValidation(String username, String code);
+    
     ServiceResponse<String> startEmailContactValidation(String username);
+    
+    ServiceResponse<String> completeEmailContactValidation(String username, String code);
 }

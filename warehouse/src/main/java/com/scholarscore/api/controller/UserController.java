@@ -135,5 +135,40 @@ public class UserController extends BaseController {
 		return respond(pm.getUserManager().startEmailContactValidation(username));
 	}
 
+	// TODO Jordan: I guess the user doesn't have to be logged in for these next endpoints?
+	// (maybe their email client opens into a different default browser, I worry we can't safely assume 'logged in')
+	@ApiOperation(
+			value = "Complete validation for phone contact info",
+			response = Void.class)
+	@RequestMapping(
+			value = "/{username}/validation/phone/{phoneCode}",
+			method = RequestMethod.POST,
+			produces = { JSON_ACCEPT_HEADER })
+	@SuppressWarnings("rawtypes")
+	public @ResponseBody ResponseEntity completePhoneContactValidation(
+			@ApiParam(name = "username", required = true, value = "User login name")
+			@PathVariable(value="username") String username,
+			@ApiParam(name = "phoneCode", required = true, value = "Validation code sent to phone")
+			@PathVariable(value="phoneCode") String phoneCode
+			) {
+		return respond(pm.getUserManager().completePhoneContactValidation(username, phoneCode));
+	}
+
+	@ApiOperation(
+			value = "Complete validation for email contact info",
+			response = Void.class)
+	@RequestMapping(
+			value = "/{username}/validation/email/{emailCode}",
+			method = RequestMethod.POST,
+			produces = { JSON_ACCEPT_HEADER })
+	@SuppressWarnings("rawtypes")
+	public @ResponseBody ResponseEntity completeEmailContactValidation(
+			@ApiParam(name = "username", required = true, value = "User login name")
+			@PathVariable(value="username") String username,
+			@ApiParam(name = "emailCode", required = true, value = "Validation code sent to email")
+			@PathVariable(value="emailCode") String emailCode) {
+		return respond(pm.getUserManager().completeEmailContactValidation(username, emailCode));
+	}
+
 
 }
