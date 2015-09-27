@@ -7,7 +7,7 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 public class DateOperand implements Serializable, IOperand {
     Date value;
-    OperandType type;
+    final OperandType type;
 
     public DateOperand() {
         this.type = OperandType.DATE;
