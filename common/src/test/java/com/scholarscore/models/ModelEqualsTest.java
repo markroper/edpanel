@@ -24,12 +24,12 @@ public class ModelEqualsTest {
         
         for (Class clazz : classes) {
             System.out.println("Now analyzing class " + clazz);
-            handleClass(clazz);
+            checkEqualsForClass(clazz);
             System.out.println("");
         }
     }
 
-    private void handleClass(Class clazz) {
+    private void checkEqualsForClass(Class clazz) {
         if (Modifier.isAbstract(clazz.getModifiers())) {
             System.out.println("Oops! Class " + clazz + " is abstract, not able to test it. skipping...");
             return;
@@ -43,10 +43,13 @@ public class ModelEqualsTest {
                 continue;
             }
             Object instanceWithTweakedField = buildPopulatedObject(clazz, field.getName());
-            System.out.println("---Checking that equals() should be false when using duplicate object with field " + field + " modified");
-            System.out.println("---unmodified: " + unmodifiedInstance + ", tweaked: " + instanceWithTweakedField);
-            String msg = "Equals() returned true even though objects have different values for field " + field.getName();
-            assertNotEquals(unmodifiedInstance, instanceWithTweakedField, msg);
+            System.out.println("Checking equals() and hashcode() on " + clazz.getName() + " with field " + field.getName() + " modified...");
+            String both = "original: " + unmodifiedInstance + ", tweaked: " + instanceWithTweakedField;
+            String objMsg = "For class " + clazz + ", ";
+            String equalsMsg = objMsg + "Equals() returned true even though objects have different values for field " + field.getName() + "\n" + both;
+            String hashMsg = objMsg + "hashcode() returned identical values even though objects have different values for field " + field.getName() + "\n" + both;
+            assertNotEquals(unmodifiedInstance, instanceWithTweakedField, equalsMsg);
+            assertNotEquals(unmodifiedInstance.hashCode(), instanceWithTweakedField.hashCode(), hashMsg);
         }
     }
     
@@ -64,7 +67,7 @@ public class ModelEqualsTest {
                     // ignore static/final
                     continue;
                 }
-                System.out.println("Discovered field [" + field + "] on class " + clazz);
+                // System.out.println("Discovered field [" + field + "] on class " + clazz);
 
                 Object value;
                 if (field.getName().equals(fieldNameToModify)) {
@@ -73,7 +76,7 @@ public class ModelEqualsTest {
                     value = getSensibleValueForType(field.getType());
                 }
 
-                System.out.println("About to set field " + field + /*" on " + instance +*/ " to value " + value);
+              //  System.out.println("About to set field " + field + /*" on " + instance +*/ " to value " + value);
                 if (value == null) {
                     System.out.println("WARNING - default value for field " + field + " appears to be null.");
                 }

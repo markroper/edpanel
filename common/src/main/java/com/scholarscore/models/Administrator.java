@@ -60,20 +60,7 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
         }
         super.mergePropertiesIfNull(mergeFrom);
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || getClass() != obj.getClass()) { return false; }
-        if(!super.equals(obj)) {
-            return false;
-        }
-        if (this == obj) return true;
-        final Administrator other = (Administrator) obj;
-        return Objects.equals(this.sourceSystemId, other.sourceSystemId)
-                && Objects.equals(this.homeAddress, other.homeAddress)
-                && Objects.equals(this.homePhone, other.homePhone);
-    }
-
+    
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = HibernateConsts.ADMIN_ID)
@@ -89,7 +76,8 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
 
     @Override
     public int hashCode() {
-        return 31 * super.hashCode();
+        return 31 * super.hashCode()
+                + Objects.hash(homeAddress, homePhone, sourceSystemId);
     }
 
     @OneToOne(optional = true)
@@ -137,5 +125,21 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
                 ", homeAddress=" + homeAddress +
                 ", homePhone='" + homePhone + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Administrator that = (Administrator) o;
+
+        if (homeAddress != null ? !homeAddress.equals(that.homeAddress) : that.homeAddress != null) return false;
+        if (homePhone != null ? !homePhone.equals(that.homePhone) : that.homePhone != null) return false;
+        if (sourceSystemId != null ? !sourceSystemId.equals(that.sourceSystemId) : that.sourceSystemId != null)
+            return false;
+
+        return true;
     }
 }
