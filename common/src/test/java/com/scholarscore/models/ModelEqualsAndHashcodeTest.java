@@ -1,5 +1,9 @@
 package com.scholarscore.models;
 
+import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.query.DimensionField;
+import com.scholarscore.models.query.Measure;
+import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
 import com.scholarscore.models.query.expressions.operands.IOperand;
@@ -28,15 +32,18 @@ import static org.testng.Assert.assertNotEquals;
  * Time: 5:50 PM
  */
 @Test(groups = { "unit" })
-public class ModelEqualsTest {
+public class ModelEqualsAndHashcodeTest {
 
     private int numberOfFailedDefaultFieldAttempts = 0;
+    private Set<String> fieldsThatNeedDefaults = new HashSet<>();
     
     private static final String packageToScan = "com.scholarscore.models";
     private static final Set<String> excludedClassNames = new HashSet<String>() {{
-        // TODO: examine why these classes aren't working
-        add(packageToScan + ".StudentSectionGrade");
-        add(packageToScan + ".query.expressions.operators.BinaryOperator");
+        // if you want to exclude a model class from this test, add it here. e.g...
+        // add(packageToScan + ".StudentSectionGrade");
+        // add(packageToScan + ".query.expressions.operators.BinaryOperator");
+//        add(packageToScan + ".query.expressions.operands");
+        add(packageToScan + ".ModelEqualsAndHashcodeTest");
     }};
     
     private Set<Class<?>> getClassesInPackage(String packageToScan) {
@@ -54,20 +61,29 @@ public class ModelEqualsTest {
 
     @Test
     public void testModelClassesEqualsBehavior() {
-        // TODO Jordan: add reflective package scanning
-//        Class[] classes = { Address.class, Assignment.class, EntityId.class, User.class, Administrator.class };
-
         Set<Class<?>> classes = getClassesInPackage(packageToScan);
 
         for (Class clazz : classes) {
-            System.out.println("Now analyzing class " + clazz);
+            //System.out.println("Now analyzing class " + clazz);
             checkEqualsForClass(clazz);
-            System.out.println("");
+            //System.out.println("");
         }
         if (numberOfFailedDefaultFieldAttempts <= 0) {
             System.out.println("DONE. No problems.");
         } else {
-            System.out.println("DONE. But encountered " + numberOfFailedDefaultFieldAttempts + " inabilities to properly test because lacking sensible default definitions");
+            System.out.println("DONE. " 
+                    + "But encountered "
+                    + fieldsThatNeedDefaults.size() + " unique failures " 
+                    + "(" + numberOfFailedDefaultFieldAttempts + " total)"
+                    + " to construct objects with sensible default values."
+                    + "\n(To fix this, please add a line to each method getSensibleValueForType and getAnotherValueForType)"
+                    + "\n\n!!!!!!!!!!!!!!!!!!!!!!!!\n" +
+                    "The following fields need sensible defaults defined in getValueForType in ModelEqualsAndHashcodeTest class:"
+                    + "\n!!!!!!!!!!!!!!!!!!!!!!!!"
+            );
+            for (String field : fieldsThatNeedDefaults) {
+                System.out.println(field);
+            }
         }
     }
 
@@ -89,17 +105,27 @@ public class ModelEqualsTest {
             }
             Object instanceWithTweakedField = buildPopulatedObject(clazz, field.getName());
             if (instanceWithTweakedField == null) {
-                System.out.println("Couldn't build object, skipping...");
-                numberOfFailedDefaultFieldAttempts++;
+                // System.out.println("Couldn't build object, skipping...");
+//                fieldsThatNeedDefaults.add(field.toString());
+//                numberOfFailedDefaultFieldAttempts++;
                 continue;
             }
-            System.out.println("Checking equals() and hashcode() on " + clazz.getName() + " with field " + field.getName() + " modified...");
+            // System.out.println("Checking equals() and hashcode() on " + clazz.getName() + " with field " + field.getName() + " modified...");
             String both = "original: " + unmodifiedInstance + ", tweaked: " + instanceWithTweakedField;
             String objMsg = "For class " + clazz + ", ";
             String equalsMsg = objMsg + "Equals() returned true even though objects have different values for field " + field.getName() + "\n" + both;
             String hashMsg = objMsg + "hashcode() returned identical values even though objects have different values for field " + field.getName() + "\n" + both;
             assertNotEquals(unmodifiedInstance, instanceWithTweakedField, equalsMsg);
             assertNotEquals(unmodifiedInstance.hashCode(), instanceWithTweakedField.hashCode(), hashMsg);
+        }
+    }
+    
+    // ad hoc (saves a bunch of lines in a method below)
+    private Object buildPopulatedObject(Class clazz, String fieldNameToModify, boolean doModification) {
+        if (doModification) {
+            return buildPopulatedObject(clazz, fieldNameToModify);
+        } else {
+            return buildPopulatedObject(clazz);
         }
     }
     
@@ -128,7 +154,11 @@ public class ModelEqualsTest {
 
               //  System.out.println("About to set field " + field + /*" on " + instance +*/ " to value " + value);
                 if (value == null) {
-                    System.out.println("WARNING - default value for field " + field + " appears to be null. Returning NULL because test case is void.");
+                    // System.out.println("WARNING - default value for field " + field + " appears to be null." 
+                    // + " Returning NULL because test case is void.");
+                    fieldsThatNeedDefaults.add(field.toString());
+                    numberOfFailedDefaultFieldAttempts++;
+                    // if can't get default for any fields, assume the test is screwed for this instance
                     return null;
                 }
                 field.setAccessible(true);
@@ -136,40 +166,51 @@ public class ModelEqualsTest {
             }
             return instance;
         } catch (InstantiationException|IllegalAccessException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         return null;
     }
 
     private Object getSensibleValueForType(Class<?> type) {
-        if (type.isAssignableFrom(Long.class)) { return 2L; }
-        if (type.isAssignableFrom(String.class)) { return "stringValue"; }
-        if (type.isAssignableFrom(Boolean.class)) { return true; }
-        if (type.isAssignableFrom(Integer.class)) { return 3; }
-        if (type.isAssignableFrom(Date.class)) { return new Date(1442462400000L); }
-        if (type.isAssignableFrom(Address.class)) { return buildPopulatedObject(Address.class); }
-
-        // enums
-        if (type.isAssignableFrom(BehaviorCategory.class)) { return BehaviorCategory.MERIT; }
-        if (type.isAssignableFrom(OperandType.class)) { return OperandType.EXPRESSION; }
-        if  (type.isAssignableFrom(IOperand.class)) { return new Expression(); }
-        else return null;
+        return getValueForType(type, false);
     }
 
     private Object getAnotherValueForType(Class<?> type) {
-        if (type.isAssignableFrom(Long.class)) { return 22L; }
-        if (type.isAssignableFrom(String.class)) { return "anotherStringValue"; }
-        if (type.isAssignableFrom(Boolean.class)) { return false; }
-        if (type.isAssignableFrom(Integer.class)) { return 33; }
-        if (type.isAssignableFrom(Date.class)) { return new Date(1322462400000L); }
-        if (type.isAssignableFrom(Address.class)) { 
-            Address address = (Address)buildPopulatedObject(Address.class);
-            address.setPostalCode("23456");
-            return address; 
+        return getValueForType(type, true);
+    }
+    
+    private Object getValueForType(Class<?> type, boolean alt) {
+        if (type.isAssignableFrom(Double.class)) { return alt ? 777D : 76D; }
+        if (type.isAssignableFrom(Long.class)) { return alt ? 22L : 2L; }
+        if (type.isAssignableFrom(String.class)) { return alt ? "anotherStringValue" : "stringValue"; }
+        if (type.isAssignableFrom(Boolean.class)) { return !alt; }
+        if (type.isAssignableFrom(Integer.class)) { return alt ? 33: 3; }
+        if (type.isAssignableFrom(Date.class)) { return alt ? new Date(1322462400000L) : new Date(1442462400000L); }
+
+        if (type.isAssignableFrom(IOperand.class)) { return alt ? new DimensionOperand() : new Expression(); }
+
+        // in some cases, don't trace through the whole map because it's complex (and possibly circular) and we're lazy
+        // but hey, better than nothing.
+        if (type.isAssignableFrom(School.class)) { School school = new School();
+            if (alt) {
+                school.setMainPhone("3217654098");
+            } else {
+                school.setMainPhone("1234567890");
+            }
+            return school;
         }
-        if (type.isAssignableFrom(BehaviorCategory.class)) { return BehaviorCategory.DEMERIT; }
-        if (type.isAssignableFrom(OperandType.class)) { return OperandType.DIMENSION; }
-        if  (type.isAssignableFrom(IOperand.class)) { return new DimensionOperand(); }
+        //  if (type.isAssignableFrom(School.class)) { return buildPopulatedObject(School.class, "principalName", alt); }
+
+        if (type.isAssignableFrom(Address.class)) { return buildPopulatedObject(Address.class, "postalCode", alt); }
+        if (type.isAssignableFrom(MeasureField.class)) { return buildPopulatedObject(MeasureField.class, "field", alt); }
+        if (type.isAssignableFrom(User.class)) { return buildPopulatedObject(User.class, "password", alt); }
+        if (type.isAssignableFrom(DimensionField.class)) { return buildPopulatedObject(DimensionField.class, "field", alt); }
+
+        if (type.isAssignableFrom(BehaviorCategory.class)) { return alt ? BehaviorCategory.DEMERIT : BehaviorCategory.MERIT; }
+        if (type.isAssignableFrom(OperandType.class)) { return alt ? OperandType.DIMENSION : OperandType.EXPRESSION; }
+        if (type.isAssignableFrom(Dimension.class)) { return alt ? Dimension.STUDENT : Dimension.TEACHER; }
+        if (type.isAssignableFrom(Gender.class)) { return alt ? Gender.FEMALE : Gender.MALE; }
+        if (type.isAssignableFrom(Measure.class)) { return alt ? Measure.DEMERIT : Measure.MERIT; }
         else return null;
     }
 }
