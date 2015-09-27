@@ -6,7 +6,7 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 public class StringOperand implements Serializable, IOperand {
     protected String value;
-    protected OperandType type;
+    protected final OperandType type;
 
     public StringOperand() {
         this.type = OperandType.STRING;
