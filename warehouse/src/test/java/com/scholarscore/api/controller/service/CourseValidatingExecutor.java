@@ -160,8 +160,11 @@ public class CourseValidatingExecutor {
         Course returnCourse = new Course(submitted);
         if(method == HttpMethod.PATCH) {
             returnCourse.mergePropertiesIfNull(created);
-        } else if(null != returnCourse && null == returnCourse.getId()) {
+        } else if(null == returnCourse.getId()) {
             returnCourse.setId(created.getId());
+        }
+        if (null == returnCourse.getSchool()) {
+            returnCourse.setSchool(created.getSchool());
         }
         return returnCourse;
     }

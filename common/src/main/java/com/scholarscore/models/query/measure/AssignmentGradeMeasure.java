@@ -10,8 +10,8 @@ import com.scholarscore.models.query.Measure;
 
 @SuppressWarnings("serial")
 public class AssignmentGradeMeasure implements IMeasure {
-    Set<Measure> compatibleMeasures = Collections.unmodifiableSet(new HashSet<Measure>());
-    Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SECTION);
+    final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(new HashSet<Measure>());
+    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SECTION);
     
     @Override
     public Set<Dimension> getCompatibleDimensions() {
