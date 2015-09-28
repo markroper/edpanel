@@ -36,12 +36,20 @@ public class ModelEqualsAndHashcodeTest {
 
     private int numberOfFailedDefaultFieldAttempts = 0;
     private Set<String> fieldsThatNeedDefaults = new HashSet<>();
-    
-    private static final String packageToScan = "com.scholarscore.models";
-    private static final Set<String> excludedClassNames = new HashSet<String>() {{
+
+    private final String packageToScan = "com.scholarscore.models";
+    private final Set<String> excludedClassNames = new HashSet<String>() {{
         // if you want to exclude a model class from this test, add it here. e.g...
         add(packageToScan + ".ModelEqualsAndHashcodeTest");
     }};
+    
+    public String getPackageToScan() {
+        return packageToScan;
+    }
+    
+    public Set<String> getExcludedClassNames() { 
+        return excludedClassNames;
+    }    
     
     private Set<Class<?>> getClassesInPackage(String packageToScan) {
         List<ClassLoader> classLoadersList = new LinkedList<ClassLoader>();
@@ -58,7 +66,7 @@ public class ModelEqualsAndHashcodeTest {
 
     @Test
     public void testModelClassesEqualsBehavior() {
-        Set<Class<?>> classes = getClassesInPackage(packageToScan);
+        Set<Class<?>> classes = getClassesInPackage(getPackageToScan());
 
         for (Class clazz : classes) {
             //System.out.println("Now analyzing class " + clazz);
@@ -88,7 +96,7 @@ public class ModelEqualsAndHashcodeTest {
         if (Modifier.isAbstract(clazz.getModifiers())) {
             System.out.println("Oops! Class " + clazz + " is abstract, not able to test it. skipping...");
             return;
-        } else if (excludedClassNames.contains(clazz.getName())) {
+        } else if (getExcludedClassNames().contains(clazz.getName())) {
             System.out.println("Oops! Class " + clazz + " is explicitly excluded, skipping...");
             return;
         }
