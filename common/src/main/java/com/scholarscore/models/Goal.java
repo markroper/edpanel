@@ -1,13 +1,10 @@
 package com.scholarscore.models;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -21,14 +18,15 @@ import java.util.Objects;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "goalType")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = BehaviorGoal.class, name="BEHAVIOR"),
-        @JsonSubTypes.Type(value = AssignmentGoal.class, name = "ASSIGNMENT")
+        @JsonSubTypes.Type(value = AssignmentGoal.class, name = "ASSIGNMENT"),
+        @JsonSubTypes.Type(value = CumulativeGradeGoal.class, name = "CUMULATIVE_GRADE")
 })
 public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 
     private Student student;
     private Teacher teacher;
-    private Float desiredValue;
-    private Float calculatedValue;
+    private Double desiredValue;
+    private Double calculatedValue;
     private Boolean approved;
     private GoalType goalType;
 
@@ -88,12 +86,12 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         return teacher;
     }
 
-    public void setCalculatedValue(Float value) {
+    public void setCalculatedValue(Double value) {
         this.calculatedValue = value;
     }
 
     @Transient
-    public Float getCalculatedValue() {
+    public Double getCalculatedValue() {
         return calculatedValue;
     }
 
@@ -102,11 +100,11 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     }
 
     @Column(name = HibernateConsts.DESIRED_GOAL_VALUE)
-    public Float getDesiredValue() {
+    public Double getDesiredValue() {
         return desiredValue;
     }
 
-    public void setDesiredValue(Float desiredValue) {
+    public void setDesiredValue(Double desiredValue) {
         this.desiredValue = desiredValue;
     }
 

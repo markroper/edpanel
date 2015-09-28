@@ -45,6 +45,7 @@ public class StudentAssignmentJdbc
         return hibernateTemplate.loadAll(StudentAssignment.class);
     }
 
+    //TODO we should be getting using the assignment Id and student ID, not just the student_assignmnet_id
     @Override
     public StudentAssignment select(long assignmentId, long id) {
         return hibernateTemplate.get(StudentAssignment.class, id);
