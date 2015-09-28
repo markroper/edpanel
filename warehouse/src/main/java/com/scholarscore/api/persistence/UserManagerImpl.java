@@ -8,11 +8,13 @@ import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.Identity;
 import com.scholarscore.models.User;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * Created by cwallace on 9/16/2015.
@@ -69,7 +71,21 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public ServiceResponse<String> updateUser(String username, User user) {
-        return new ServiceResponse<String>(userPersistence.replaceUser(username, user));
+        StatusCode code = userExists(username);
+        if (!code.isOK()) {
+            return new ServiceResponse<String>(code);
+        }
+        user.setUsername(username);
+        User savedUser = userPersistence.selectUser(username);
+        // these fields are not null by default and so we must merge manually
+        // ... wait... actually, these need to not be overwritten
+//        user.setEnabled(savedUser.getEnabled());
+//        user.setEmailConfirmed(savedUser.getEmailConfirmed());
+//        user.setPhoneConfirmed(savedUser.getPhoneConfirmed());
+        
+        user.mergePropertiesIfNull(savedUser);
+        userPersistence.replaceUser(username, user);
+        return new ServiceResponse<String>(username);
     }
 
     @Override
@@ -95,21 +111,50 @@ public class UserManagerImpl implements UserManager {
     @Override
     public ServiceResponse<String> startPhoneContactValidation(String username) {
         User user = userPersistence.selectUser(username);
-        if (null != user) {
-//            return new ServiceResponse<User>(user);
+        if (null == user) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, username}));
         }
         // TODO Jordan: implement!
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
+    // TODO Jordan: test!!
+    
+    // TODO Jordan: hash saved code so that even DB hack can't necessarily get it?
+    
     @Override
     public ServiceResponse<String> startEmailContactValidation(String username) {
         User user = userPersistence.selectUser(username);
-        if (null != user) {
-//            return new ServiceResponse<User>(user);
+        if (null == user) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, username}));
+        } else if (StringUtils.isEmpty(user.getEmailAddress())) {
+            // TODO Jordan: this returns "The message with id user has not set email address! could not be found"
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"message","user has not set email address!"}));
+        } else if (user.getEmailConfirmed()) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[] {"email already confirmed"}));
         }
-        // TODO Jordan: implement!
-        throw new UnsupportedOperationException("Not implemented yet");
+
+        // if null user, return <something bad>
+        // if user has null email, return 4?? - "email not set"
+        // if user has already confirmed email, return 2?? - no action "email already confirmed"
+
+        // otherwise, anytime this endpoint is hit and we get this far -
+        // ... generate a NEW code and store it in the DB
+        // ... also store the creation date of the code for expiration purposes
+        // (these first 2 steps can be shared with phone validation)
+        String code = generateCode();
+        Date codeCreated = new Date();
+        user.setEmailConfirmCode(code);
+        user.setEmailConfirmCodeTime(codeCreated);
+
+        // save the changes
+        updateUser(user.getUsername(), user);
+        // ... send an email
+        // TODO Jordan: implement sending an email containing this code to the user!!
+        System.out.println("!! !! !! Here is where an EMAIL would really be sent to " + user.getEmailAddress() + "...");
+        return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[] {"email has been sent"}));
+        
+//        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
@@ -125,10 +170,32 @@ public class UserManagerImpl implements UserManager {
     @Override
     public ServiceResponse<String> completeEmailContactValidation(String username, String code) {
         User user = userPersistence.selectUser(username);
-        if (null != user) {
-//            return new ServiceResponse<User>(user);
+        if (null == user) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, username}));
+        } else if (StringUtils.isEmpty(user.getEmailAddress())) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"email", "email is empty"}));
+        } else if (user.getEmailConfirmed()) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[] {"email already confirmed"}));
         }
-        // TODO Jordan: implement!
-        throw new UnsupportedOperationException("Not implemented yet");
+
+        String userEmailCode = user.getEmailConfirmCode();
+        if (userEmailCode == null) {
+            // TODO Jordan return new type of failure, probably "invalid code"
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"bad code!!"}));
+        }
+        
+        if (userEmailCode.equalsIgnoreCase(code)) {
+            user.setEmailConfirmed(true);
+            updateUser(user.getUsername(), user);
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"validation successful!"}));
+        } else {
+            // !! "invalid code"
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"bad code!!"}));
+        }
+    }
+    
+    private String generateCode() { 
+        // TODO Jordan make this real
+        return "123456";
     }
 }
