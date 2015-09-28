@@ -64,6 +64,7 @@
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
         <property name="assignmentGoalCalc" ref="assignmentCalc"/>
         <property name="behaviorGoalCalc" ref="behaviorCalc"/>
+        <property name="cumulativeGoalCalc" ref="cumulativeGradeCalc"/>
     </bean>
 
     <bean id="teacherPersistence"
@@ -145,6 +146,11 @@
     <bean id="assignmentCalc"
           class="com.scholarscore.api.persistence.goalCalculators.AssignmentGoalCalc">
         <property name="studentAssignmentPersistence" ref="studentAssignmentPersistence"/>
+    </bean>
+
+    <bean id="cumulativeGradeCalc"
+          class="com.scholarscore.api.persistence.goalCalculators.CumulativeGoalCalc">
+        <property name="studentSectionGradePersistence" ref="studentSectionGradePersistence"/>
     </bean>
 
 </beans>
