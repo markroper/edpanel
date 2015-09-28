@@ -7,5 +7,5 @@ import com.scholarscore.models.Goal;
  */
 public interface GoalCalc<T extends Goal> {
 
-    public Float calculateGoal(T goal);
+    public Double calculateGoal(T goal);
 }

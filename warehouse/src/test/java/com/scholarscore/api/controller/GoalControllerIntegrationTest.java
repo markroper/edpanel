@@ -114,7 +114,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
         behaviorGoal.setStartDate(today);
         behaviorGoal.setEndDate(nextYear);
-        behaviorGoal.setDesiredValue(41.5f);
+        behaviorGoal.setDesiredValue(41.5d);
         behaviorGoal.setName("To win them all");
         behaviorGoal.setApproved(false);
 
@@ -124,7 +124,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         assGoal.setName("The final final");
         assGoal.setApproved(false);
         assGoal.setParentId(studentAssignment.getId());
-        assGoal.setDesiredValue(95f);
+        assGoal.setDesiredValue(95d);
 
         CumulativeGradeGoal cumulativeGradeGoal = new CumulativeGradeGoal();
         cumulativeGradeGoal.setStudent(student);
@@ -132,7 +132,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         cumulativeGradeGoal.setName("ALL OF THE As");
         cumulativeGradeGoal.setApproved(false);
         cumulativeGradeGoal.setParentId(section.getId());
-        cumulativeGradeGoal.setDesiredValue(6f);
+        cumulativeGradeGoal.setDesiredValue(6d);
 
         return new Object[][] {
                 {behaviorGoal, "Test failed with a behavior goal"},
@@ -155,7 +155,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
 
     @DataProvider(name = "testCalculatedMethodDataProvider")
     public Object[][] testCalculatedValuesDateMethod() {
-        Float EXPECTED_VALUE = 3F;
+        Double EXPECTED_VALUE = 3D;
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);
@@ -172,7 +172,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
         behaviorGoal.setStartDate(lastYear);
         behaviorGoal.setEndDate(today);
-        behaviorGoal.setDesiredValue(41f);
+        behaviorGoal.setDesiredValue(41d);
         behaviorGoal.setName("To win them all");
         behaviorGoal.setApproved(false);
         behaviorGoal.setCalculatedValue(EXPECTED_VALUE);

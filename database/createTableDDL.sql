@@ -302,7 +302,7 @@ CREATE TABLE `scholar_warehouse`.`goal` (
   `goal_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a goal',
   `approved` INT NOT NULL COMMENT 'Int that should be 0 or 1 indicating if a goal was approved by teha ssigned teacher',
   `parent_fk` BIGINT(20) COMMENT 'Foreign key that could assocaite many different places depending on the. For assignment goals it points to student assignmnet id',
-  `desired_value` FLOAT NOT NULL COMMENT 'The value the student is attempting to reach with this goal',
+  `desired_value` DOUBLE NOT NULL COMMENT 'The value the student is attempting to reach with this goal',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the student this is assigned to',
   `teacher_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the teacher who needs to approve this goal',
     `goal_type` varchar(45) NOT NULL COMMENT ' Correspons to enum GoalType, defines what subclass of goal we are dealing with',
