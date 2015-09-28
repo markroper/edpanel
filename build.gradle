@@ -12,7 +12,20 @@ allprojects {
     jacoco { 
         toolVersion = "0.7.4.201502262128"
     }
+
+    configurations {
+        testArtifacts.extendsFrom testRuntime
+    }
+    task testJar(type: Jar) {
+        classifier "test"
+        from sourceSets.test.output
+    }
+    artifacts {
+        testArtifacts testJar
+    }
 }
+
+
 
 idea {
     project {
