@@ -11,7 +11,7 @@ import javax.persistence.*;
 public interface IGoal {
 
     @Transient
-    public Float getCalculatedValue();
+    public Double getCalculatedValue();
 
 
 

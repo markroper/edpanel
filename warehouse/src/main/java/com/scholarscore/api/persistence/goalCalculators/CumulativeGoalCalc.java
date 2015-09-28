@@ -1,6 +1,5 @@
 package com.scholarscore.api.persistence.goalCalculators;
 
-import com.scholarscore.api.persistence.mysql.StudentAssignmentPersistence;
 import com.scholarscore.api.persistence.mysql.StudentSectionGradePersistence;
 import com.scholarscore.models.*;
 
@@ -15,14 +14,14 @@ public class CumulativeGoalCalc implements GoalCalc<CumulativeGradeGoal> {
         this.studentSectionGradePersistence = studentSectionGradePersistence;
     }
 
-    public Float calculateGoal(CumulativeGradeGoal goal) {
+    public Double calculateGoal(CumulativeGradeGoal goal) {
         StudentSectionGrade studentSectionGrade = studentSectionGradePersistence.select(goal.getParentId(),goal.getStudent().getId());
         Double awardedPoints = studentSectionGrade.getAwardedPoints();
         if (null != awardedPoints) {
-            return awardedPoints.floatValue();
+            return awardedPoints;
         } else {
             //This is an indication that points have not been assigned for a goal
-            return -1f;
+            return -1D;
         }
     }
 }

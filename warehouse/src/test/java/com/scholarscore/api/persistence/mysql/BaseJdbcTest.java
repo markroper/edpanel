@@ -131,7 +131,7 @@ public class BaseJdbcTest {
         behaviorGoal.setApproved(false);
         behaviorGoal.setTeacher(teacher);
         behaviorGoal.setStudent(student);
-        behaviorGoal.setDesiredValue(5f);
+        behaviorGoal.setDesiredValue(5d);
         behaviorGoal.setName("Does this behave as expected");
         behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
         behaviorGoal.setStartDate(new Date());
@@ -140,7 +140,7 @@ public class BaseJdbcTest {
         assignmentGoal.setApproved(false);
         assignmentGoal.setTeacher(teacher);
         assignmentGoal.setStudent(student);
-        assignmentGoal.setDesiredValue(5f);
+        assignmentGoal.setDesiredValue(5d);
         assignmentGoal.setName("Does this behave as expected");
         assignmentGoal.setParentId(1L);
     }
@@ -263,7 +263,7 @@ public class BaseJdbcTest {
             createdBehaviorGoal.setTeacher(createTeacher());
             createdBehaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
             createdBehaviorGoal.setApproved(false);
-            createdBehaviorGoal.setDesiredValue(5f);
+            createdBehaviorGoal.setDesiredValue(5d);
         }
         return createdBehaviorGoal;
     }
@@ -276,7 +276,7 @@ public class BaseJdbcTest {
             createdAssignmentGoal.setTeacher(createTeacher());
             createdAssignmentGoal.setParentId(1L);
             createdAssignmentGoal.setApproved(false);
-            createdAssignmentGoal.setDesiredValue(5f);
+            createdAssignmentGoal.setDesiredValue(5d);
         }
         return createdAssignmentGoal;
     }

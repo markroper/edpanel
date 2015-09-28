@@ -2,9 +2,7 @@ package com.scholarscore.api.persistence.goalCalculators;
 
 import com.scholarscore.api.persistence.mysql.StudentAssignmentPersistence;
 import com.scholarscore.models.AssignmentGoal;
-import com.scholarscore.models.BehaviorGoal;
 import com.scholarscore.models.StudentAssignment;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Calculator class for calculating the value of an assignment goal.
@@ -20,14 +18,14 @@ public class AssignmentGoalCalc implements GoalCalc<AssignmentGoal> {
         this.studentAssignmentPersistence = studentAssignmentPersistence;
     }
 
-    public Float calculateGoal(AssignmentGoal goal) {
+    public Double calculateGoal(AssignmentGoal goal) {
         StudentAssignment goalAssignment = studentAssignmentPersistence.select(goal.getStudent().getId(), goal.getParentId());
         Long awardedPoints = goalAssignment.getAwardedPoints();
                 if (null != awardedPoints) {
-                    return awardedPoints.floatValue();
+                    return awardedPoints.doubleValue();
                 } else {
                     //This is an indication that points have not been assigned for a goal
-                    return -1f;
+                    return -1d;
                 }
     }
 }
