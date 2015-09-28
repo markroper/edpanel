@@ -35,8 +35,8 @@ public class User implements Serializable, IApiModel<User> {
 	private String phoneConfirmCode;
 	private Date phoneConfirmCodeTime;
 
-	private Boolean emailConfirmed = false;
-	private Boolean phoneConfirmed = false;
+	private Boolean emailConfirmed;
+	private Boolean phoneConfirmed;
 	
 	public User() { }
 	
@@ -163,6 +163,9 @@ public class User implements Serializable, IApiModel<User> {
 
 	@Override
 	public void mergePropertiesIfNull(User mergeFrom) {
+		if (null == id) {
+			this.id = mergeFrom.getId();
+		}
         if (null == username) {
         	this.username = mergeFrom.getUsername();
         }

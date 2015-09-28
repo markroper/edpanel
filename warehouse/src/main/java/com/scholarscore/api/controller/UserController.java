@@ -105,8 +105,7 @@ public class UserController extends BaseController {
 	    return respond(pm.getUserManager().deleteUser(username));
 	}
 
-	// TODO Jordan: for these next endpoints, 
-	// ensure that the user logged in is the same as the user being accessed (or possibly, administrator)
+	// TODO Jordan: for these next endpoints, ensure the user being edited is the same as the user logged in (or administrator, maybe)
 	@ApiOperation(
 			value = "Start validation for phone contact info",
 			response = Void.class)

@@ -65,6 +65,16 @@ public class UserJdbc implements UserPersistence {
 
     @Override
     public String createUser(User user) {
+        // these fields are null by default in POJOs but required to not be null in DB
+        if (user.getEnabled() == null) {
+            user.setEnabled(false);
+        }
+        if (user.getEmailConfirmed() == null) {
+            user.setEmailConfirmed(false); 
+        }
+        if (user.getPhoneConfirmed() == null) {
+            user.setPhoneConfirmed(false);
+        }
         hibernateTemplate.merge(user);
         return user.getUsername();
     }
@@ -75,6 +85,14 @@ public class UserJdbc implements UserPersistence {
         User fromDB = selectUser(username);
         fromDB.setPassword(value.getPassword());
         fromDB.setEnabled(value.getEnabled());
+        fromDB.setEmailAddress(value.getEmailAddress());
+        fromDB.setEmailConfirmCode(value.getEmailConfirmCode());
+        fromDB.setEmailConfirmCodeTime(value.getEmailConfirmCodeTime());
+        fromDB.setEmailConfirmed(value.getEmailConfirmed());
+        fromDB.setPhoneNumber(value.getPhoneNumber());
+        fromDB.setPhoneConfirmCode(value.getPhoneConfirmCode());
+        fromDB.setPhoneConfirmCodeTime(value.getPhoneConfirmCodeTime());
+        fromDB.setPhoneConfirmed(value.getPhoneConfirmed());
         hibernateTemplate.merge(fromDB);
         return username;
     }

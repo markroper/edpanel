@@ -33,6 +33,17 @@ public class UserValidatingExecutor {
         if (expectedUser.getId() == null && createdUser.getId() != null) {
             expectedUser.setId(createdUser.getId());
         }
+        // null boolean values will be set to false in the database
+        if (expectedUser.getEnabled() == null) {
+            expectedUser.setEnabled(createdUser.getEnabled());
+        }
+        if (expectedUser.getPhoneConfirmed() == null) {
+            expectedUser.setPhoneConfirmed(createdUser.getPhoneConfirmed());
+        }
+        if (expectedUser.getEmailConfirmed() == null) {
+            expectedUser.setEmailConfirmed(createdUser.getEmailConfirmed());
+        }
+        
         //Keep a reference to the created assignment for later cleanup
         serviceBase.usersCreated.add(createdUser);
         Assert.assertEquals(createdUser, expectedUser, "Unexpected assignment created for case: " + msg);
