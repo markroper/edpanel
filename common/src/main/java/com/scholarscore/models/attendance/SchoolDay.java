@@ -31,7 +31,7 @@ import com.scholarscore.models.School;
 @Table(name = HibernateConsts.SCHOOL_DAY_TABLE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings("serial")
-public class DayOfSchool implements Serializable {
+public class SchoolDay implements Serializable {
     private Long id;
     private School school;
     private Date date;
@@ -69,7 +69,7 @@ public class DayOfSchool implements Serializable {
     if (obj == null || getClass() != obj.getClass()) {
         return false;
     }
-    final DayOfSchool other = (DayOfSchool) obj;
+    final SchoolDay other = (SchoolDay) obj;
     return Objects.equals(this.id, other.id)
             && Objects.equals(this.school, other.school)
             && Objects.equals(this.date, other.date);

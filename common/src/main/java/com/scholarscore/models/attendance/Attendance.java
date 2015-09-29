@@ -29,7 +29,7 @@ import com.scholarscore.models.Student;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings("serial")
 public class Attendance implements Serializable {
-    private DayOfSchool schoolDay;
+    private SchoolDay schoolDay;
     private Long id;
     private Student student;
     private AttendanceStatus status;
@@ -38,10 +38,10 @@ public class Attendance implements Serializable {
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name=HibernateConsts.SCHOOL_DAY_FK)
     @Fetch(FetchMode.JOIN)
-    public DayOfSchool getSchoolDay() {
+    public SchoolDay getSchoolDay() {
         return schoolDay;
     }
-    public void setSchoolDay(DayOfSchool schoolDay) {
+    public void setSchoolDay(SchoolDay schoolDay) {
         this.schoolDay = schoolDay;
     }
     @Id

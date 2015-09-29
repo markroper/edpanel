@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.attendance.DayOfSchool;
+import com.scholarscore.models.attendance.SchoolDay;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
@@ -56,7 +56,7 @@ public class SchoolDayController extends BaseController {
     @ApiOperation(
             value = "Get a school day by ID", 
             notes = "Retrieve a school day by its ID", 
-            response = DayOfSchool.class)
+            response = SchoolDay.class)
     @RequestMapping(
             value = "/{schoolDayId}", 
             method = RequestMethod.GET, 
@@ -81,7 +81,7 @@ public class SchoolDayController extends BaseController {
     public @ResponseBody ResponseEntity createSchoolDay(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @RequestBody @Valid DayOfSchool schoolDay) {
+            @RequestBody @Valid SchoolDay schoolDay) {
         return respond(pm.getSchoolDayManager().createSchoolDay(schoolId, schoolDay));
     }
     
@@ -98,6 +98,6 @@ public class SchoolDayController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "schoolDayId", required = true, value = "School day ID")
             @PathVariable(value="schoolDayId") Long schoolDayId) {
-        return respond(pm.getSchoolDayManager().deleteSchoolYear(schoolId, schoolDayId));
+        return respond(pm.getSchoolDayManager().deleteSchoolDay(schoolId, schoolDayId));
     }
 }

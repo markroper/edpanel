@@ -26,7 +26,9 @@ public class PersistenceManager
     private UserManager userManager;
     private QueryManager queryManager;
     private BehaviorManager behaviorManager;
-             private GoalManager goalManager;
+    private GoalManager goalManager;
+    private SchoolDayManager schoolDayManager;
+    private AttendanceManager attendanceManager;
     
     //Persistence managers for each entity
     private EntityPersistence<Assignment> assignmentPersistence;
@@ -37,14 +39,15 @@ public class PersistenceManager
     private TeacherPersistence teacherPersistence;
     private AdministratorPersistence administratorPersistence;
     private SectionPersistence sectionPersistence;
-             private EntityPersistence<Course> coursePersistence;
+    private EntityPersistence<Course> coursePersistence;
     private StudentAssignmentPersistence studentAssignmentPersistence;
     private StudentSectionGradePersistence studentSectionGradePersistence;
     private UserPersistence userPersistence;
     private AuthorityPersistence authorityPersistence;
     private QueryPersistence queryPersistence;
     private BehaviorPersistence behaviorPersistence;
-
+    private SchoolDayPersistence schoolDayPersistence;
+    private AttendancePersistence attendancePersistence;
 
     public SchoolManager getSchoolManager() {
         return schoolManager;
@@ -66,13 +69,13 @@ public class PersistenceManager
         return termManager;
     }
 
-             public GoalManager getGoalManager() {
-                 return goalManager;
-             }
+    public GoalManager getGoalManager() {
+        return goalManager;
+    }
 
-             public void setGoalManager(GoalManager goalManager) {
-                 this.goalManager = goalManager;
-             }
+    public void setGoalManager(GoalManager goalManager) {
+        this.goalManager = goalManager;
+    }
 
     public void setTermManager(TermManager termManager) {
         this.termManager = termManager;
@@ -146,10 +149,6 @@ public class PersistenceManager
         return userManager;
     }
     
-
-    
-
-
     public void setUserManager(UserManager userManager) {
         this.userManager = userManager;
     }
@@ -174,6 +173,22 @@ public class PersistenceManager
         this.administratorPersistence = adminPersistence;
     }
     
+    public SchoolDayManager getSchoolDayManager() {
+        return schoolDayManager;
+    }
+
+    public void setSchoolDayManager(SchoolDayManager schoolDayManager) {
+        this.schoolDayManager = schoolDayManager;
+    }
+
+    public AttendanceManager getAttendanceManager() {
+        return attendanceManager;
+    }
+
+    public void setAttendanceManager(AttendanceManager attendanceManager) {
+        this.attendanceManager = attendanceManager;
+    }
+
     //Setters for the persistence layer for each entity
     public void setQueryPersistence(QueryPersistence ap) {
         this.queryPersistence = ap;
@@ -191,9 +206,6 @@ public class PersistenceManager
         this.studentAssignmentPersistence = ap;
     }
 
-
-
-    
     public void setCoursePersistence(EntityPersistence<Course> cp) {
         coursePersistence = cp;
     }
@@ -288,14 +300,27 @@ public class PersistenceManager
      }
 
      public AuthorityPersistence getAuthorityPersistence() {
-return authorityPersistence;
-}
+         return authorityPersistence;
+     }
 
 	public void setAuthorityPersistence(AuthorityPersistence authorityPersistence) {
 		this.authorityPersistence = authorityPersistence;
 	}
 
+    public SchoolDayPersistence getSchoolDayPersistence() {
+        return schoolDayPersistence;
+    }
 
+    public void setSchoolDayPersistence(SchoolDayPersistence schoolDayPersistence) {
+        this.schoolDayPersistence = schoolDayPersistence;
+    }
 
+    public AttendancePersistence getAttendancePersistence() {
+        return attendancePersistence;
+    }
 
+    public void setAttendancePersistence(AttendancePersistence attendancePersistence) {
+        this.attendancePersistence = attendancePersistence;
+    }
+	
 }
