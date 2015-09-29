@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.attendance.Attendance;
-import com.scholarscore.models.attendance.DayOfSchool;
+import com.scholarscore.models.attendance.SchoolDay;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
@@ -92,7 +92,7 @@ public class AttendanceController extends BaseController {
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
             @RequestBody @Valid Attendance attendance) {
-        return respond(pm.getAttendanceManager().createAttendanceObject(schoolId, studentId, attendance));
+        return respond(pm.getAttendanceManager().createAttendance(schoolId, studentId, attendance));
     }
     
     @ApiOperation(
