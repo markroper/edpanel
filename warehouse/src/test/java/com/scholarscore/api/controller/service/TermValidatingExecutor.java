@@ -51,7 +51,7 @@ public class TermValidatingExecutor {
                 null);
         ArrayList<Term> terms = serviceBase.validateResponse(response, new TypeReference<ArrayList<Term>>(){});
         Assert.assertNotNull(terms, "Unexpected null term returned for case: " + msg);
-        Assert.assertEquals(terms.size(), numberOfItems, "Unexpected number of items returned for case: " + msg);
+        Assert.assertTrue(terms.size() >= numberOfItems, "Unexpected number of items returned for case: " + msg);
     }
     
     public void getNegative(Long schoolId, Long schoolYearId, Long id, HttpStatus expectedCode, String msg) {

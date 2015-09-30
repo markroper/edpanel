@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
-import com.scholarscore.api.persistence.mysql.DbMappings;
+import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.models.Authority;
 
 public class 

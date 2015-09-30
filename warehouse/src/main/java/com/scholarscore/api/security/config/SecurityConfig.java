@@ -2,10 +2,11 @@ package com.scholarscore.api.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.ApiConsts;
-import com.scholarscore.api.persistence.mysql.AdministratorPersistence;
-import com.scholarscore.api.persistence.mysql.StudentPersistence;
-import com.scholarscore.api.persistence.mysql.TeacherPersistence;
+import com.scholarscore.api.persistence.AdministratorPersistence;
+import com.scholarscore.api.persistence.StudentPersistence;
+import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.models.Identity;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -32,6 +33,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 

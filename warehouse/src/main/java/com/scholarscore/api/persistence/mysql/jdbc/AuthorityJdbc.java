@@ -8,8 +8,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import com.scholarscore.api.persistence.mysql.AuthorityPersistence;
-import com.scholarscore.api.persistence.mysql.DbMappings;
+import com.scholarscore.api.persistence.AuthorityPersistence;
+import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.mysql.mapper.AuthorityMapper;
 import com.scholarscore.models.Authority;
 import com.scholarscore.models.HibernateConsts;
