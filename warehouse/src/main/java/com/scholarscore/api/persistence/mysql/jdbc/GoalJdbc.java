@@ -1,16 +1,17 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
+import com.scholarscore.api.persistence.GoalPersistence;
+import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.goalCalculators.AssignmentGoalCalc;
 import com.scholarscore.api.persistence.goalCalculators.BehaviorGoalCalc;
-import com.scholarscore.api.persistence.mysql.GoalPersistence;
-import com.scholarscore.api.persistence.mysql.StudentPersistence;
-import com.scholarscore.models.AssignmentGoal;
-import com.scholarscore.models.Behavior;
-import com.scholarscore.models.BehaviorGoal;
-import com.scholarscore.models.Goal;
+import com.scholarscore.api.persistence.goalCalculators.CumulativeGoalCalc;
+import com.scholarscore.models.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
+
 import javax.transaction.Transactional;
+
 import java.util.Collection;
 
 /**
@@ -24,10 +25,17 @@ public class GoalJdbc implements GoalPersistence {
     private StudentPersistence studentPersistence;
 
 
+    private CumulativeGoalCalc cumulativeGoalCalc;
+
+
     private BehaviorGoalCalc behaviorGoalCalc;
 
 
     private AssignmentGoalCalc assignmentGoalCalc;
+
+    public void setCumulativeGoalCalc(CumulativeGoalCalc cumulativeGoalCalc) {
+        this.cumulativeGoalCalc = cumulativeGoalCalc;
+    }
 
     public void setBehaviorGoalCalc(BehaviorGoalCalc behaviorGoalCalc) {
         this.behaviorGoalCalc = behaviorGoalCalc;
@@ -62,16 +70,20 @@ public class GoalJdbc implements GoalPersistence {
                 case BEHAVIOR:
                     if (result instanceof BehaviorGoal) {
                         BehaviorGoal behaviorGoal = (BehaviorGoal)result;
-                        result.setCalculatedValue(behaviorGoalCalc.calculateBehaviorGoal(behaviorGoal));
+                        result.setCalculatedValue(behaviorGoalCalc.calculateGoal(behaviorGoal));
                     }
                     break;
                 case ASSIGNMENT:
                     if (result instanceof AssignmentGoal) {
                         AssignmentGoal assignmentGoal = (AssignmentGoal)result;
-                        result.setCalculatedValue(assignmentGoalCalc.calculateAssignmentGoal(assignmentGoal));
+                        result.setCalculatedValue(assignmentGoalCalc.calculateGoal(assignmentGoal));
                     }
                     break;
-                case ATTENDANCE:
+                case CUMULATIVE_GRADE:
+                    if (result instanceof CumulativeGradeGoal) {
+                        CumulativeGradeGoal cumulativeGradeGoal = (CumulativeGradeGoal)result;
+                        result.setCalculatedValue(cumulativeGoalCalc.calculateGoal(cumulativeGradeGoal));
+                    }
                     break;
             }
         }
@@ -114,16 +126,20 @@ public class GoalJdbc implements GoalPersistence {
                 case BEHAVIOR:
                     if (goal instanceof BehaviorGoal) {
                         BehaviorGoal behaviorGoal = (BehaviorGoal)goal;
-                        goal.setCalculatedValue(behaviorGoalCalc.calculateBehaviorGoal(behaviorGoal));
+                        goal.setCalculatedValue(behaviorGoalCalc.calculateGoal(behaviorGoal));
                     }
                     break;
                 case ASSIGNMENT:
                     if (goal instanceof AssignmentGoal) {
                         AssignmentGoal assignmentGoal = (AssignmentGoal)goal;
-                        goal.setCalculatedValue(assignmentGoalCalc.calculateAssignmentGoal(assignmentGoal));
+                        goal.setCalculatedValue(assignmentGoalCalc.calculateGoal(assignmentGoal));
                     }
                     break;
-                case ATTENDANCE:
+                case CUMULATIVE_GRADE:
+                    if (goal instanceof CumulativeGradeGoal) {
+                        CumulativeGradeGoal cumulativeGradeGoal = (CumulativeGradeGoal)goal;
+                        goal.setCalculatedValue(cumulativeGoalCalc.calculateGoal(cumulativeGradeGoal));
+                    }
                     break;
             }
         }

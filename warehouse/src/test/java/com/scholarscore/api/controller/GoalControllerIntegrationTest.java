@@ -26,6 +26,9 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
     private Section section;
     private GradedAssignment sectionAssignment;
     private StudentAssignment studentAssignment;
+    StudentSectionGrade studentSectionGrade;
+
+    private static final Float EXPECTED_SECTION_GRADE = 5.3f;
 
     private int itemsCreated = 0;
 
@@ -87,6 +90,12 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
 
         studentAssignment = studentAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(),
                 section.getId(), sectionAssignment.getId(), studentAssignment, "Initializing assignmnet");
+
+        studentSectionGrade = new StudentSectionGrade();
+        studentSectionGrade.setGrade(EXPECTED_SECTION_GRADE.doubleValue());
+        studentSectionGrade.setComplete(false);
+        studentSectionGrade = studentSectionGradeValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), section.getId(),
+                student.getId(), studentSectionGrade, "update student section grade w/ value " + EXPECTED_SECTION_GRADE);
     }
 
     @DataProvider(name = "createGoalDataProvider")
@@ -105,7 +114,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
         behaviorGoal.setStartDate(today);
         behaviorGoal.setEndDate(nextYear);
-        behaviorGoal.setDesiredValue(41.5f);
+        behaviorGoal.setDesiredValue(41.5d);
         behaviorGoal.setName("To win them all");
         behaviorGoal.setApproved(false);
 
@@ -115,11 +124,20 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         assGoal.setName("The final final");
         assGoal.setApproved(false);
         assGoal.setParentId(studentAssignment.getId());
-        assGoal.setDesiredValue(95f);
+        assGoal.setDesiredValue(95d);
+
+        CumulativeGradeGoal cumulativeGradeGoal = new CumulativeGradeGoal();
+        cumulativeGradeGoal.setStudent(student);
+        cumulativeGradeGoal.setTeacher(teacher);
+        cumulativeGradeGoal.setName("ALL OF THE As");
+        cumulativeGradeGoal.setApproved(false);
+        cumulativeGradeGoal.setParentId(section.getId());
+        cumulativeGradeGoal.setDesiredValue(6d);
 
         return new Object[][] {
                 {behaviorGoal, "Test failed with a behavior goal"},
-                {assGoal, "Test failed with an assignment goal"}
+                {assGoal, "Test failed with an assignment goal"},
+                {cumulativeGradeGoal, "Test failed with a cumulative grade goal"}
         };
     }
 
@@ -137,7 +155,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
 
     @DataProvider(name = "testCalculatedMethodDataProvider")
     public Object[][] testCalculatedValuesDateMethod() {
-        Float EXPECTED_VALUE = 3F;
+        Double EXPECTED_VALUE = 3D;
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);
@@ -154,7 +172,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
         behaviorGoal.setStartDate(lastYear);
         behaviorGoal.setEndDate(today);
-        behaviorGoal.setDesiredValue(41f);
+        behaviorGoal.setDesiredValue(41d);
         behaviorGoal.setName("To win them all");
         behaviorGoal.setApproved(false);
         behaviorGoal.setCalculatedValue(EXPECTED_VALUE);
@@ -200,6 +218,8 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
             updatedGoal = new BehaviorGoal((BehaviorGoal)createdGoal);
         } else if (goal instanceof AssignmentGoal) {
             updatedGoal = new AssignmentGoal((AssignmentGoal)createdGoal);
+        } else if (goal instanceof CumulativeGradeGoal){
+            updatedGoal = new CumulativeGradeGoal((CumulativeGradeGoal)createdGoal);
         } else {
             updatedGoal = null;
         }

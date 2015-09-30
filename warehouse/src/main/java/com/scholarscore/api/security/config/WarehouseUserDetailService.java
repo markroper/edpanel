@@ -2,16 +2,17 @@ package com.scholarscore.api.security.config;
 
 import java.util.List;
 
-import com.scholarscore.api.persistence.mysql.StudentPersistence;
-import com.scholarscore.api.persistence.mysql.TeacherPersistence;
+import com.scholarscore.api.persistence.AuthorityPersistence;
+import com.scholarscore.api.persistence.StudentPersistence;
+import com.scholarscore.api.persistence.TeacherPersistence;
+import com.scholarscore.api.persistence.UserPersistence;
 import com.scholarscore.models.Administrator;
 import com.scholarscore.models.Identity;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.scholarscore.api.persistence.mysql.AuthorityPersistence;
-import com.scholarscore.api.persistence.mysql.UserPersistence;
 import com.scholarscore.models.Authority;
 import com.scholarscore.models.User;
 

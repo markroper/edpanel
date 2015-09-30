@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scholarscore.api.persistence.mysql.DbMappings;
+import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.models.query.Query;
 
 public class QueryMapper implements RowMapper<Query> {
