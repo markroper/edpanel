@@ -10,8 +10,8 @@ import org.testng.Assert;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.SchoolDayList;
 import com.scholarscore.models.attendance.SchoolDay;
+import com.scholarscore.models.attendance.SchoolDayList;
 
 public class SchoolDayValidatingExecutor {
     private final IntegrationBase serviceBase;
