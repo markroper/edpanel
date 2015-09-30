@@ -102,4 +102,15 @@
               <property name="userPersistence" ref="userPersistence"/>
               <property name="pm" ref="PM"/>
        </bean>
+       <bean id="schoolDayManager"
+             class="com.scholarscore.api.persistence.SchoolDayManagerImpl">
+              <property name="dayPersistence" ref="schoolDayPersistence"/>
+              <property name="pm" ref="PM"/>
+       </bean>
+       
+       <bean id="attendanceManager"
+             class="com.scholarscore.api.persistence.AttendanceManagerImpl">
+              <property name="attendancePersistence" ref="attendancePersistence"/>
+              <property name="pm" ref="PM"/>
+       </bean>
 </beans>
