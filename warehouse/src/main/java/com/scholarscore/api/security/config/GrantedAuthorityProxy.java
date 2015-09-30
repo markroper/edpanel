@@ -14,6 +14,13 @@ public class GrantedAuthorityProxy implements GrantedAuthority {
 	
 	@Override
 	public String getAuthority() {
-		return auth.getAuthority();
+		if (auth == null || auth.getAuthority() == null) { return null; }
+		String authValue = auth.getAuthority();
+		// ugh, spring security requires this prefix
+		if (!authValue.startsWith("ROLE_")) {
+			return "ROLE_" + auth.getAuthority();
+		} else {
+			return auth.getAuthority();
+		}
 	}
 }
