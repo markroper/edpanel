@@ -1,7 +1,5 @@
 package com.scholarscore.api.controller.service;
 
-import java.util.ArrayList;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
