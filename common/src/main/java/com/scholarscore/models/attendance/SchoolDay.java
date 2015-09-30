@@ -44,7 +44,6 @@ public class SchoolDay implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    @Id
     @Column(name = HibernateConsts.SCHOOL_DAY_DATE)
     public Date getDate() {
         return date;

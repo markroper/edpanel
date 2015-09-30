@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -61,7 +63,8 @@ public class Attendance implements Serializable {
     public void setStudent(Student student) {
         this.student = student;
     }
-    @Id
+
+    @Enumerated(EnumType.STRING)
     @Column(name = HibernateConsts.ATTENDANCE_STATUS)
     public AttendanceStatus getStatus() {
         return status;
@@ -69,7 +72,7 @@ public class Attendance implements Serializable {
     public void setStatus(AttendanceStatus status) {
         this.status = status;
     }
-    @Id
+
     @Column(name = HibernateConsts.ATTENDANCE_DESCRIPTION)
     public String getDescription() {
         return description;
