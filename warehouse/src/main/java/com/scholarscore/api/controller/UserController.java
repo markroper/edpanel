@@ -141,7 +141,7 @@ public class UserController extends BaseController {
 			response = Void.class)
 	@RequestMapping(
 			value = "/{username}/validation/phone/{phoneCode}",
-			method = RequestMethod.POST,
+			method = RequestMethod.GET,
 			produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity completePhoneContactValidation(
@@ -158,10 +158,12 @@ public class UserController extends BaseController {
 			response = Void.class)
 	@RequestMapping(
 			value = "/{username}/validation/email/{emailCode}",
-			method = RequestMethod.POST,
+			method = RequestMethod.GET,
 			produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity completeEmailContactValidation(
+			// This is made a GET so that it can be accessed directly as a link
+			// from the user's email
 			@ApiParam(name = "username", required = true, value = "User login name")
 			@PathVariable(value="username") String username,
 			@ApiParam(name = "emailCode", required = true, value = "Validation code sent to email")

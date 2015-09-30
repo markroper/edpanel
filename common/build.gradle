@@ -24,7 +24,8 @@ dependencies {
             "commons-io:commons-io:2.4",
             "org.apache.commons:commons-lang3:3.3.2",
             //Guava utils
-            "com.google.guava:guava:18.0"
+            "com.google.guava:guava:18.0",
+            "javax.mail:mail:1.4.7"
 
     testCompile "org.testng:testng:6.8.8",
             "org.apache.httpcomponents:httpclient:$apacheHttpVersion",
