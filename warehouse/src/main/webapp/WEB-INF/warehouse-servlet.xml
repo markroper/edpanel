@@ -81,6 +81,8 @@
         <property name="queryManager" ref="queryManager"/>
         <property name="behaviorManager" ref="behaviorManager"/>
         <property name="goalManager" ref="goalManager"/>
+        <property name="schoolDayManager" ref="schoolDayManager"/>
+        <property name="attendanceManager" ref="attendanceManager"/>
     </bean>
 
 

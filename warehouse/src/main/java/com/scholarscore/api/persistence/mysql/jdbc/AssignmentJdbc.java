@@ -1,6 +1,5 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.sql.Timestamp;
 import java.util.Collection;
 
 import com.scholarscore.models.Assignment;
