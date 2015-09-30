@@ -16,12 +16,11 @@ import java.util.HashSet;
  * Created by cwallace on 9/16/2015.
  */
 public class SchoolYearManagerImpl implements SchoolYearManager {
-
+    private static final String SCHOOL_YEAR = "school year";
+    
     private EntityPersistence<SchoolYear> schoolYearPersistence;
 
     private PersistenceManager pm;
-
-    private static final String SCHOOL_YEAR = "school year";
 
     public void setSchoolYearPersistence(EntityPersistence<SchoolYear> schoolYearPersistence) {
         this.schoolYearPersistence = schoolYearPersistence;
@@ -58,7 +57,7 @@ public class SchoolYearManagerImpl implements SchoolYearManager {
         if(null == schoolYear) {
             return StatusCodes.getStatusCode(
                     StatusCodeType.MODEL_NOT_FOUND,
-                    new Object[]{SCHOOL_YEAR, schoolYearId});
+                    new Object[]{ SCHOOL_YEAR, schoolYearId });
         }
         return StatusCodes.getStatusCode(StatusCodeType.OK);
     }
@@ -100,7 +99,7 @@ public class SchoolYearManagerImpl implements SchoolYearManager {
         }
 
         //Resolve the set of previously existing terms
-        Collection<Term> originalTerms = pm.getTermPersistence().selectAll(schoolYearId);
+        Collection<Term> originalTerms = pm.getTermManager().getAllTerms(schoolId, schoolYearId).getValue();
         HashSet<Long> termIds = new HashSet<>();
         if(null != originalTerms) {
             for(Term t : originalTerms) {
@@ -136,7 +135,7 @@ public class SchoolYearManagerImpl implements SchoolYearManager {
         SchoolYear originalYear =
                 schoolYearPersistence.select(schoolId, schoolYearId);
         originalYear.setTerms(new ArrayList<Term>(
-                pm.getTermPersistence().selectAll(schoolYearId)));
+                pm.getTermManager().getAllTerms(schoolId, schoolYearId).getValue()));
         schoolYear.mergePropertiesIfNull(originalYear);
         return replaceSchoolYear(schoolId, schoolYearId, schoolYear);
     }

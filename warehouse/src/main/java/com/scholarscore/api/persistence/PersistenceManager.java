@@ -1,15 +1,6 @@
 package com.scholarscore.api.persistence;
 
-import com.scholarscore.api.persistence.mysql.*;
-import com.scholarscore.models.Assignment;
-import com.scholarscore.models.Course;
-import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.Term;
-
-
-
-public class PersistenceManager
-         {
+public class PersistenceManager {
 
     //Manager references for each Entity
     private SchoolManager schoolManager;
@@ -29,25 +20,6 @@ public class PersistenceManager
     private GoalManager goalManager;
     private SchoolDayManager schoolDayManager;
     private AttendanceManager attendanceManager;
-    
-    //Persistence managers for each entity
-    private EntityPersistence<Assignment> assignmentPersistence;
-    private SchoolPersistence schoolPersistence;
-    private EntityPersistence<SchoolYear> schoolYearPersistence;
-    private EntityPersistence<Term> termPersistence;
-    private StudentPersistence studentPersistence;
-    private TeacherPersistence teacherPersistence;
-    private AdministratorPersistence administratorPersistence;
-    private SectionPersistence sectionPersistence;
-    private EntityPersistence<Course> coursePersistence;
-    private StudentAssignmentPersistence studentAssignmentPersistence;
-    private StudentSectionGradePersistence studentSectionGradePersistence;
-    private UserPersistence userPersistence;
-    private AuthorityPersistence authorityPersistence;
-    private QueryPersistence queryPersistence;
-    private BehaviorPersistence behaviorPersistence;
-    private SchoolDayPersistence schoolDayPersistence;
-    private AttendancePersistence attendancePersistence;
 
     public SchoolManager getSchoolManager() {
         return schoolManager;
@@ -168,10 +140,6 @@ public class PersistenceManager
     public void setBehaviorManager(BehaviorManager behaviorManager) {
         this.behaviorManager = behaviorManager;
     }
-
-    public void setAdministratorPersistence(AdministratorPersistence adminPersistence) {
-        this.administratorPersistence = adminPersistence;
-    }
     
     public SchoolDayManager getSchoolDayManager() {
         return schoolDayManager;
@@ -188,139 +156,4 @@ public class PersistenceManager
     public void setAttendanceManager(AttendanceManager attendanceManager) {
         this.attendanceManager = attendanceManager;
     }
-
-    //Setters for the persistence layer for each entity
-    public void setQueryPersistence(QueryPersistence ap) {
-        this.queryPersistence = ap;
-    }
-    
-    public void setTeacherPersistence(TeacherPersistence ap) {
-        this.teacherPersistence = ap;
-    }
-    
-    public void setStudentSectionGradePersistence(StudentSectionGradePersistence ap) {
-        this.studentSectionGradePersistence = ap;
-    }
-    
-    public void setStudentAssignmentPersistence(StudentAssignmentPersistence ap) {
-        this.studentAssignmentPersistence = ap;
-    }
-
-    public void setCoursePersistence(EntityPersistence<Course> cp) {
-        coursePersistence = cp;
-    }
-    
-    public void setSectionPersistence(SectionPersistence sectionPersistence) {
-        this.sectionPersistence = sectionPersistence;
-    }
-    
-    public void setStudentPersistence(StudentPersistence studentPersistence) {
-        this.studentPersistence = studentPersistence;
-    }
-    
-    public void setSchoolPersistence(SchoolPersistence schoolPersistence) {
-        this.schoolPersistence = schoolPersistence;
-    }
-
-    public void setSchoolYearPersistence(EntityPersistence<SchoolYear> schoolYearPersistence) {
-        this.schoolYearPersistence = schoolYearPersistence;
-    }
-
-    public void setTermPersistence(EntityPersistence<Term> termPersistence) {
-        this.termPersistence = termPersistence;
-    }
-
-    public void setBehaviorPersistence(BehaviorPersistence behaviorPersistence) {
-        this.behaviorPersistence = behaviorPersistence;
-    }
-
-    public SchoolPersistence getSchoolPersistence() {
-        return schoolPersistence;
-    }
-
-    public EntityPersistence<SchoolYear> getSchoolYearPersistence() {
-        return schoolYearPersistence;
-    }
-
-    public EntityPersistence<Term> getTermPersistence() {
-        return termPersistence;
-    }
-
-    public StudentPersistence getStudentPersistence() {
-        return studentPersistence;
-    }
-
-    public TeacherPersistence getTeacherPersistence() {
-        return teacherPersistence;
-    }
-
-    public AdministratorPersistence getAdministratorPersistence() {
-        return administratorPersistence;
-    }
-
-    public SectionPersistence getSectionPersistence() {
-        return sectionPersistence;
-    }
-
-    public EntityPersistence<Course> getCoursePersistence() {
-        return coursePersistence;
-    }
-
-    public EntityPersistence<Assignment> getAssignmentPersistence() {
-        return assignmentPersistence;
-    }
-
-    public StudentAssignmentPersistence getStudentAssignmentPersistence() {
-        return studentAssignmentPersistence;
-    }
-
-    public StudentSectionGradePersistence getStudentSectionGradePersistence() {
-        return studentSectionGradePersistence;
-    }
-
-    public QueryPersistence getQueryPersistence() {
-        return queryPersistence;
-    }
-
-     public BehaviorPersistence getBehaviorPersistence() {
-         return behaviorPersistence;
-     }
-
-
-     public void setAssignmentPersistence(EntityPersistence<Assignment> assignmentPersistence) {
-         this.assignmentPersistence = assignmentPersistence;
-     }
-
-     public UserPersistence getUserPersistence() {
-         return userPersistence;
-     }
-
-     public void setUserPersistence(UserPersistence userPersistence) {
-         this.userPersistence = userPersistence;
-     }
-
-     public AuthorityPersistence getAuthorityPersistence() {
-         return authorityPersistence;
-     }
-
-	public void setAuthorityPersistence(AuthorityPersistence authorityPersistence) {
-		this.authorityPersistence = authorityPersistence;
-	}
-
-    public SchoolDayPersistence getSchoolDayPersistence() {
-        return schoolDayPersistence;
-    }
-
-    public void setSchoolDayPersistence(SchoolDayPersistence schoolDayPersistence) {
-        this.schoolDayPersistence = schoolDayPersistence;
-    }
-
-    public AttendancePersistence getAttendancePersistence() {
-        return attendancePersistence;
-    }
-
-    public void setAttendancePersistence(AttendancePersistence attendancePersistence) {
-        this.attendancePersistence = attendancePersistence;
-    }
-	
 }

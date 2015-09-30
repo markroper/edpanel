@@ -1,5 +1,6 @@
 package com.scholarscore.api.persistence;
 
+import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.SchoolPersistence;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
@@ -18,6 +19,8 @@ import java.util.HashSet;
 public class SchoolManagerImpl implements SchoolManager {
 
     private SchoolPersistence schoolPersistence;
+    
+    private EntityPersistence<SchoolYear> schoolYearPersistence;
 
     private PersistenceManager pm;
 
@@ -29,6 +32,11 @@ public class SchoolManagerImpl implements SchoolManager {
 
     public void setPm(PersistenceManager pm) {
         this.pm = pm;
+    }
+
+    public void setSchoolYearPersistence(
+            EntityPersistence<SchoolYear> schoolYearPersistence) {
+        this.schoolYearPersistence = schoolYearPersistence;
     }
 
     //SCHOOLS
@@ -88,7 +96,7 @@ public class SchoolManagerImpl implements SchoolManager {
             return new ServiceResponse<Long>(code);
         }
         //Resolve the set of previously existing terms
-        Collection<SchoolYear> originalYears = pm.getSchoolYearPersistence().selectAll(schoolId);
+        Collection<SchoolYear> originalYears = schoolYearPersistence.selectAll(schoolId);
         HashSet<Long> termIds = new HashSet<>();
         if(null != originalYears) {
             for(SchoolYear t : originalYears) {

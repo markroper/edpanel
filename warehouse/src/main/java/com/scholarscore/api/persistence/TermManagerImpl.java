@@ -1,6 +1,7 @@
 package com.scholarscore.api.persistence;
 
 import com.scholarscore.api.persistence.mysql.EntityPersistence;
+import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
@@ -20,6 +21,7 @@ import java.util.Set;
 public class TermManagerImpl implements TermManager {
 
     private EntityPersistence<Term> termPersistence;
+    private StudentPersistence studentPersistence;
 
     private PersistenceManager pm;
 
@@ -31,6 +33,10 @@ public class TermManagerImpl implements TermManager {
 
     public void setPm(PersistenceManager pm) {
         this.pm = pm;
+    }
+
+    public void setStudentPersistence(StudentPersistence studentPersistence) {
+        this.studentPersistence = studentPersistence;
     }
 
     @Override
@@ -117,10 +123,10 @@ public class TermManagerImpl implements TermManager {
         if(!code.isOK()) {
             return new ServiceResponse<Collection<Student>>(code);
         }
-        Collection<Section> sections = pm.getSectionPersistence().selectAllSectionForTeacher(termId, teacherId);
+        Collection<Section> sections = pm.getSectionManager().getAllSectionsByTeacher(schoolId, schoolYearId, termId, teacherId).getValue();
         Set<Student> studentsByTeacherTerm = new HashSet<>();
         for(Section s : sections) {
-            Collection<Student> students = pm.getStudentPersistence().selectAllStudentsInSection(s.getId());
+            Collection<Student> students = studentPersistence.selectAllStudentsInSection(s.getId());
             if(null != students && !students.isEmpty()) {
                 studentsByTeacherTerm.addAll(students);
             }
