@@ -1,11 +1,13 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.sql.Timestamp;
 import java.util.Collection;
 
 import com.scholarscore.models.Assignment;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import com.scholarscore.api.persistence.mysql.EntityPersistence;
+
+import com.scholarscore.api.persistence.EntityPersistence;
+
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;

@@ -1,6 +1,5 @@
 package com.scholarscore.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;

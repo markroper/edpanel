@@ -158,4 +158,16 @@ public class HibernateConsts {
     public static final String BEHAVIOR_GOAL_CATEGORY = "behavior_category";
     public static final String GOAL_NAME = "name";
     public static final String GOAL_SECTION_FK = "section_fk";
+    
+    //School days
+    public static final String SCHOOL_DAY_TABLE = "school_day";
+    public static final String SCHOOL_DAY_ID = "school_day_id";
+    public static final String SCHOOL_DAY_DATE = "school_day_date";
+    
+    //Attendance
+    public static final String ATTENDANCE_TABLE = "attendance";
+    public static final String ATTENDANCE_ID = "attendance_id";
+    public static final String SCHOOL_DAY_FK = "school_day_fk";
+    public static final String ATTENDANCE_STATUS = "attendance_status";
+    public static final String ATTENDANCE_DESCRIPTION = "attendance_description";
 }

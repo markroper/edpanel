@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.scholarscore.api.persistence.mysql.StudentAssignmentPersistence;
+import com.scholarscore.api.persistence.DbMappings;
+import com.scholarscore.api.persistence.EntityPersistence;
+import com.scholarscore.api.persistence.StudentAssignmentPersistence;
 import com.scholarscore.models.Assignment;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +16,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import com.scholarscore.api.persistence.mysql.DbMappings;
-import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.models.StudentAssignment;
 
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -45,6 +45,7 @@ public class StudentAssignmentJdbc
         return hibernateTemplate.loadAll(StudentAssignment.class);
     }
 
+    //TODO we should be getting using the assignment Id and student ID, not just the student_assignmnet_id
     @Override
     public StudentAssignment select(long assignmentId, long id) {
         return hibernateTemplate.get(StudentAssignment.class, id);
