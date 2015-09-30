@@ -236,14 +236,7 @@ public abstract class QuerySqlGenerator {
     }
     
     protected static String generateMeasureFieldSql(MeasureField f) throws SqlGenerationException {
-        String tableName = DbMappings.MEASURE_TO_TABLE_NAME.get(f.getMeasure());
-        String columnName = DbMappings.MEASURE_FIELD_TO_COL_NAME.get(f);
-        if(null == tableName || null == columnName) {
-            throw new SqlGenerationException("Invalid dimension, tableName (" + 
-                    tableName + ") and columnName (" + 
-                    columnName + ") must both be non-null");
-        }
-        return tableName + "." + columnName;
+        return MeasureSqlSerializerFactory.get(f.getMeasure()).generateMeasureFieldSql(f);
     }
     
     protected static String resolveOperatorSql(IOperator op) throws SqlGenerationException {
