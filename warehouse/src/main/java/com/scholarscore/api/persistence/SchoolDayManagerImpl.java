@@ -81,4 +81,20 @@ public class SchoolDayManagerImpl implements SchoolDayManager{
         return StatusCodes.getStatusCode(StatusCodeType.OK);
     }
 
+    public PersistenceManager getPm() {
+        return pm;
+    }
+
+    public void setPm(PersistenceManager pm) {
+        this.pm = pm;
+    }
+
+    public SchoolDayPersistence getDayPersistence() {
+        return dayPersistence;
+    }
+
+    public void setDayPersistence(SchoolDayPersistence dayPersistence) {
+        this.dayPersistence = dayPersistence;
+    }
+
 }
