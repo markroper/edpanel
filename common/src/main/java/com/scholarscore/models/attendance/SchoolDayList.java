@@ -1,8 +1,6 @@
-package com.scholarscore.models;
+package com.scholarscore.models.attendance;
 
 import java.util.ArrayList;
-
-import com.scholarscore.models.attendance.SchoolDay;
 
 @SuppressWarnings("serial")
 public class SchoolDayList extends ArrayList<SchoolDay>{

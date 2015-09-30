@@ -11,6 +11,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.attendance.Attendance;
+import com.scholarscore.models.attendance.AttendanceList;
+import com.scholarscore.models.attendance.SchoolDayList;
 
 public class AttendanceValidatingExecutor {
     private final IntegrationBase serviceBase;
@@ -19,8 +21,26 @@ public class AttendanceValidatingExecutor {
         this.serviceBase = sb;
     }
     
-    public List<Attendance> getAllInYear(Long schoolId, Long schoolyearId, String msg) {
-        return null;
+    public List<Attendance> getAllInTerm(Long schoolId, Long studentId, Long schoolyearId, Long termId, int numItems, String msg) {
+        ResultActions response = serviceBase.makeRequest(
+                HttpMethod.GET, 
+                serviceBase.getAttendanceEndpoint(schoolId, studentId) + "/years/" + schoolyearId + "/terms/" + termId, 
+                null);
+        AttendanceList days = serviceBase.validateResponse(response, new TypeReference<AttendanceList>(){});
+        Assert.assertNotNull(days, "Unexpected null list of days returned for case: " + msg);
+        Assert.assertEquals(days.size(), numItems, "Unexpected number of results returned for case: " + msg);
+        return days;
+    }
+    
+    public List<Attendance> getAll(Long schoolId, Long studentId, int numItems, String msg) {
+        ResultActions response = serviceBase.makeRequest(
+                HttpMethod.GET, 
+                serviceBase.getAttendanceEndpoint(schoolId, studentId), 
+                null);
+        AttendanceList days = serviceBase.validateResponse(response, new TypeReference<AttendanceList>(){});
+        Assert.assertNotNull(days, "Unexpected null list of days returned for case: " + msg);
+        Assert.assertEquals(days.size(), numItems, "Unexpected number of results returned for case: " + msg);
+        return days;
     }
     
     public Attendance get(Long schoolId, Long studentId, Long attendanceId, String msg) {

@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -59,7 +60,6 @@ public class AttendanceControllerIntegrationTest extends IntegrationBase {
         school = schoolValidatingExecutor.get(school.getId(), "caching school");
         
         days = new ArrayList<>();     
-        //Create HW Assignments & Attendance assignments
         for(int i = 0; i < AttendanceStatus.values().length; i++) {
             Calendar c = Calendar.getInstance();
             c.setTime(term.getStartDate()); // Now use today date.
@@ -93,5 +93,21 @@ public class AttendanceControllerIntegrationTest extends IntegrationBase {
     public void createAttendance(String msg, Attendance a) {
         attendanceValidatingExecutor.create(school.getId(), student.getId(), a, msg);
         numAttendanceCreated++;
+    }
+    
+    @Test(dependsOnMethods = { "createAttendance" })
+    public void getAllInYear() {
+        List<Attendance> attendance = attendanceValidatingExecutor.getAllInTerm(school.getId(), student.getId(), schoolYear.getId(), term.getId(), numAttendanceCreated, "Get all in year");
+    }
+    
+    @Test(dependsOnMethods = { "createAttendance" })
+    public void getAllForStudentAllTime() {
+        List<Attendance> attendance = attendanceValidatingExecutor.getAll(school.getId(), student.getId(), numAttendanceCreated, "Get all in year");
+    }
+    
+    @Test(dataProvider = "createAttendanceProvider")
+    public void deleteAttendance(String msg, Attendance a) {
+        Attendance created = attendanceValidatingExecutor.create(school.getId(), student.getId(), a, msg);
+        attendanceValidatingExecutor.delete(school.getId(), student.getId(), created, msg);
     }
 }

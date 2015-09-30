@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import com.scholarscore.api.persistence.mysql.AttendancePersistence;
+import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.SchoolPersistence;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
@@ -21,7 +22,7 @@ import com.scholarscore.models.attendance.SchoolDay;
 public class AttendanceJdbc implements AttendancePersistence {
     @Autowired
     private HibernateTemplate hibernateTemplate;
-    private SchoolPersistence schoolPersistence;
+    private EntityPersistence<Term> termPersistence;
 
     public AttendanceJdbc() {
     }
@@ -72,23 +73,12 @@ public class AttendanceJdbc implements AttendancePersistence {
     public Collection<Attendance> selectAllAttendanceForTerm(Long schoolId,
             Long studentId, Long yearId, Long termId) {
         String[] paramNames = new String[] { "schoolId", "studentId", "startDate", "endDate" }; 
-        
-        School s = schoolPersistence.selectSchool(schoolId);
         Date startDate = null;
         Date endDate = null;
-        if(null != s.getYears()) {
-            for(SchoolYear year: s.getYears()) {
-                if(year.getId().equals(yearId)) {
-                    for(Term t : year.getTerms()) {
-                        if(termId.equals(t.getId())) {
-                            startDate = t.getStartDate();
-                            endDate = t.getEndDate();
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
+        Term t = termPersistence.select(yearId, termId);
+        if(null != t) {
+            startDate = t.getStartDate();
+            endDate = t.getEndDate();
         }
         Object[] paramValues = new Object[]{ schoolId, studentId, startDate, endDate };
         return (Collection<Attendance>) hibernateTemplate.findByNamedParam(
@@ -109,9 +99,9 @@ public class AttendanceJdbc implements AttendancePersistence {
     
     public void setHibernateTemplate(HibernateTemplate template) {
         this.hibernateTemplate = template;
-    }
+    }   
     
-    public void setSchoolPersistence(SchoolPersistence schoolPersistence) {
-        this.schoolPersistence = schoolPersistence;
+    public void setTermPersistence(EntityPersistence<Term> termPersistence) {
+        this.termPersistence = termPersistence;
     }
 }

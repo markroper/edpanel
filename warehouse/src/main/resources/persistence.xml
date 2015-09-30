@@ -162,6 +162,6 @@
     <bean id="attendancePersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.AttendanceJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
-        <property name="schoolPersistence" ref="schoolPersistence"/>
+        <property name="termPersistence" ref="termPersistence"/>
     </bean>
 </beans>
