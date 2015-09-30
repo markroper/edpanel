@@ -1,6 +1,6 @@
 package com.scholarscore.api.persistence.goalCalculators;
 
-import com.scholarscore.api.persistence.mysql.StudentAssignmentPersistence;
+import com.scholarscore.api.persistence.StudentAssignmentPersistence;
 import com.scholarscore.models.AssignmentGoal;
 import com.scholarscore.models.StudentAssignment;
 

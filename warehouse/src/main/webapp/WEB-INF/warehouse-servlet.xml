@@ -53,7 +53,7 @@
 
 
     <bean id="PM"
-          class="com.scholarscore.api.persistence.PersistenceManager">
+          class="com.scholarscore.api.manager.OrchestrationManager">
         <property name="schoolManager" ref="schoolManager"/>
         <property name="schoolYearManager" ref="schoolYearManager"/>
         <property name="termManager" ref="termManager"/>
