@@ -10,6 +10,7 @@ import java.util.List;
 import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.api.persistence.mysql.querygenerator.SqlGenerationException;
 import com.scholarscore.api.persistence.mysql.querygenerator.SqlWithParameters;
+
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -33,6 +34,7 @@ import com.scholarscore.models.query.expressions.operands.MeasureOperand;
 import com.scholarscore.models.query.expressions.operands.NumericOperand;
 import com.scholarscore.models.query.expressions.operators.BinaryOperator;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
+import com.scholarscore.models.query.measure.AttendanceMeasure;
 import com.scholarscore.models.query.measure.BehaviorMeasure;
 
 @Test(groups = { "unit" })
@@ -101,7 +103,6 @@ public class QuerySqlGeneratorUnitTest {
         Query homeworkCompletionQuery  = new Query();
         ArrayList<AggregateMeasure> homeworkMeasures = new ArrayList<>();
         homeworkMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
-        homeworkMeasures.add(new AggregateMeasure(Measure.ATTENDANCE, AggregateFunction.SUM));
         homeworkCompletionQuery.setAggregateMeasures(homeworkMeasures);
         homeworkCompletionQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
         Expression termClause = new Expression(
@@ -119,8 +120,7 @@ public class QuerySqlGeneratorUnitTest {
         Expression comb1 = new Expression(termClause, BinaryOperator.AND, yearClause);
         Expression comb2 = new Expression(comb1, BinaryOperator.AND, sectionClause);
         homeworkCompletionQuery.setFilter(comb2);
-        String homeworkSql = "SELECT student.student_id, AVG( if(assignment.type_fk = 'HOMEWORK', if(student_assignment.completed is true, 1, 0), null)), "
-                + "SUM( if(assignment.type_fk = 'ATTENDANCE', if(student_assignment.completed is true, 0, 1), null)) "
+        String homeworkSql = "SELECT student.student_id, AVG( if(assignment.type_fk = 'HOMEWORK', if(student_assignment.completed is true, 1, 0), null)) "
                 + "FROM student "
                 + "LEFT OUTER JOIN student_assignment ON student.student_id = student_assignment.student_fk "
                 + "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id "
@@ -131,6 +131,28 @@ public class QuerySqlGeneratorUnitTest {
                 + "AND  ( section.section_id  !=  0 ) ) "
                 + "GROUP BY student.student_id";
         
+        
+        Query attendanceQuery  = new Query();
+        ArrayList<AggregateMeasure> attendanceMeasures = new ArrayList<>();
+        attendanceMeasures.add(new AggregateMeasure(Measure.ATTENDANCE, AggregateFunction.SUM));
+        attendanceQuery.setAggregateMeasures(attendanceMeasures);
+        attendanceQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
+        
+        Expression greaterThanDate = new Expression(
+                new MeasureOperand(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.DATE)), 
+                ComparisonOperator.GREATER_THAN_OR_EQUAL, 
+                new DateOperand(date1));
+        Expression lessThanDate = new Expression(
+                new MeasureOperand(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.DATE)), 
+                ComparisonOperator.LESS_THAN_OR_EQUAL, 
+                new DateOperand(date2));
+        Expression attendanceDateRangeExpression = new Expression(greaterThanDate, BinaryOperator.AND, lessThanDate);
+        attendanceQuery.setFilter(attendanceDateRangeExpression);
+        String attendanceSql = "SELECT student.student_id, SUM( if(attendance.attendance_status in ('ABSENT', 'EXCUSED_ABSENT'), 1, 0)) "
+                + "FROM student LEFT OUTER JOIN attendance ON student.student_id = attendance.student_fk "
+                + "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk "
+                + "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  "
+                + "AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) GROUP BY student.student_id";
         
         Query behaviorQuery = new Query();
         ArrayList<AggregateMeasure> behaviorMeasures = new ArrayList<>();
@@ -162,7 +184,8 @@ public class QuerySqlGeneratorUnitTest {
                 { "Course Grade query", courseGradeQuery, courseGradeQuerySql }, 
                 { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql }, 
                 { "Homework query", homeworkCompletionQuery, homeworkSql },
-                { "Behavior query", behaviorQuery, behaviorSql}
+                { "Behavior query", behaviorQuery, behaviorSql},
+                {"Attendance query", attendanceQuery, attendanceSql }
         };
     }
     
