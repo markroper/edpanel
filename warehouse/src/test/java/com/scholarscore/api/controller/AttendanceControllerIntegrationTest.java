@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import org.springframework.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -59,6 +60,7 @@ public class AttendanceControllerIntegrationTest extends IntegrationBase {
         
         school = schoolValidatingExecutor.get(school.getId(), "caching school");
         
+        //Make some school days
         days = new ArrayList<>();     
         for(int i = 0; i < AttendanceStatus.values().length; i++) {
             Calendar c = Calendar.getInstance();
@@ -109,5 +111,10 @@ public class AttendanceControllerIntegrationTest extends IntegrationBase {
     public void deleteAttendance(String msg, Attendance a) {
         Attendance created = attendanceValidatingExecutor.create(school.getId(), student.getId(), a, msg);
         attendanceValidatingExecutor.delete(school.getId(), student.getId(), created, msg);
+    }
+    
+    @Test(dataProvider = "createAttendanceProvider")
+    public void createAttendanceNegative(String msg, Attendance a) {
+        attendanceValidatingExecutor.createNegative(school.getId() + 1, student.getId(), a, HttpStatus.NOT_FOUND, msg);
     }
 }
