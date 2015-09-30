@@ -17,6 +17,7 @@ import com.scholarscore.models.query.dimension.SectionDimension;
 import com.scholarscore.models.query.dimension.StudentDimension;
 import com.scholarscore.models.query.dimension.TeacherDimension;
 import com.scholarscore.models.query.dimension.TermDimension;
+import com.scholarscore.models.query.measure.AttendanceMeasure;
 import com.scholarscore.models.query.measure.BehaviorMeasure;
 
 @SuppressWarnings("serial")
@@ -31,6 +32,7 @@ public class DbMappings {
                put(Measure.MERIT, HibernateConsts.BEHAVIOR_TABLE);
                put(Measure.SUSPENSION, HibernateConsts.BEHAVIOR_TABLE);
                put(Measure.DETENTION, HibernateConsts.BEHAVIOR_TABLE);
+               put(Measure.ATTENDANCE, HibernateConsts.ATTENDANCE_TABLE);
            }};
    public static final Map<Measure, String> MEASURE_TO_COL_NAME = 
            new HashMap<Measure, String>() {{
@@ -40,6 +42,13 @@ public class DbMappings {
            }};
    public static final Map<MeasureField, String> MEASURE_FIELD_TO_COL_NAME = 
            new HashMap<MeasureField, String>() {{
+               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.ID), HibernateConsts.ATTENDANCE_ID);
+               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.DATE), HibernateConsts.SCHOOL_DAY_DATE);
+               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.SCHOOL_FK), HibernateConsts.SCHOOL_FK);
+               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.STATUS), HibernateConsts.ATTENDANCE_STATUS);
+               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.STATUS_DESCRIPTION), HibernateConsts.ATTENDANCE_DESCRIPTION);
+               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
+               
                put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.ID), HibernateConsts.BEHAVIOR_ID);
                put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
                put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.TEACHER_FK), HibernateConsts.TEACHER_FK);
