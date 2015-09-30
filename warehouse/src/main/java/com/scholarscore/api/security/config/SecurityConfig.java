@@ -68,7 +68,7 @@ import java.io.PrintWriter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String USER_ROLE = "USER";
     private static final String OPTIONS_VERB = "OPTIONS";
-    private static final String ADMIN_ROLE = "ROLE";
+    private static final String ADMIN_ROLE = "ADMIN";
     private static final String LOGIN_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/login";
     private static final String LOGOUT_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/logout";
     private static final String ACCESS_DENIED_JSON = "{\"message\":\"You are not privileged to request this resource.\","
@@ -160,7 +160,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        super.configure(http);
+        // This was pasted out of the super.configure(http) as I needed to remove it
+        http.formLogin().and().httpBasic();
         CustomAuthenticationSuccessHandler successHandler = new CustomAuthenticationSuccessHandler();
         CustomAuthenticationFailureHandler failureHandler = new CustomAuthenticationFailureHandler();
         FormLoginConfigurer formLogin = new FormLoginConfigurer();
@@ -199,7 +200,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             antMatchers(HttpMethod.OPTIONS, LOGIN_ENDPOINT).permitAll().
             antMatchers(HttpMethod.OPTIONS, "/**").permitAll().
             antMatchers(HttpMethod.POST, LOGOUT_ENDPOINT).authenticated().
-            antMatchers(HttpMethod.GET, "/**").hasRole(USER_ROLE).
+            antMatchers(HttpMethod.GET, "/**").hasAnyRole(USER_ROLE, ADMIN_ROLE).
             antMatchers(HttpMethod.POST, "/**").hasRole(ADMIN_ROLE).
             antMatchers(HttpMethod.DELETE, "/**").hasRole(ADMIN_ROLE).
             antMatchers(HttpMethod.PUT, "/**").hasRole(ADMIN_ROLE).
