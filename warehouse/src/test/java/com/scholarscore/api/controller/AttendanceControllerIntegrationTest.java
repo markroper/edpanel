@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.springframework.http.HttpStatus;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -25,7 +24,6 @@ import com.scholarscore.models.attendance.SchoolDay;
 
 @Test( groups = { "integration" })
 public class AttendanceControllerIntegrationTest extends IntegrationBase {
-    private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
     private School school;
     private SchoolYear schoolYear;
     private Term term;
@@ -99,12 +97,12 @@ public class AttendanceControllerIntegrationTest extends IntegrationBase {
     
     @Test(dependsOnMethods = { "createAttendance" })
     public void getAllInYear() {
-        List<Attendance> attendance = attendanceValidatingExecutor.getAllInTerm(school.getId(), student.getId(), schoolYear.getId(), term.getId(), numAttendanceCreated, "Get all in year");
+        attendanceValidatingExecutor.getAllInTerm(school.getId(), student.getId(), schoolYear.getId(), term.getId(), numAttendanceCreated, "Get all in year");
     }
     
     @Test(dependsOnMethods = { "createAttendance" })
     public void getAllForStudentAllTime() {
-        List<Attendance> attendance = attendanceValidatingExecutor.getAll(school.getId(), student.getId(), numAttendanceCreated, "Get all in year");
+        attendanceValidatingExecutor.getAll(school.getId(), student.getId(), numAttendanceCreated, "Get all in year");
     }
     
     @Test(dataProvider = "createAttendanceProvider")

@@ -17,11 +17,9 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * Generates synthetic data for school, school years, terms, courses, sections, students, teachers, 
@@ -151,7 +149,6 @@ public class UISyntheticDatagenerator extends IntegrationBase {
             }
         }
         
-        Set<Date> allTermsDates = new HashSet<Date>();
         Date beginDate = new Date();
         Date endDate = new Date();
         for(Map.Entry<Long, List<Term>> yearEntry: terms.entrySet()) {

@@ -3,7 +3,6 @@ package com.scholarscore.api.controller.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.api.security.config.UserDetailsProxy;
-import com.scholarscore.models.Identity;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.ResultActions;
