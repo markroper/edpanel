@@ -316,7 +316,7 @@ CREATE TABLE `scholar_warehouse`.`attendance` (
     `attendance_status` VARCHAR(64) NOT NULL COMMENT 'Maps to POJO enum values PRESENT, EXCUSED_ABSENT, ABSENT, TARDY',
     `attendance_description` VARCHAR(256) NULL COMMENT 'Description of the attendance status, if any',
     PRIMARY KEY (`attendance_id`),
-    FOREIGN KEY (`school_days_fk`) REFERENCES `scholar_warehouse`.`school_day` (`school_day_id`)
+    FOREIGN KEY (`school_day_fk`) REFERENCES `scholar_warehouse`.`school_day` (`school_day_id`)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
     FOREIGN KEY (`student_fk`) REFERENCES `scholar_warehouse`.`student` (`student_id`)
