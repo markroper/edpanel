@@ -66,9 +66,11 @@ import java.io.PrintWriter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String USER_ROLE = "USER";
     private static final String OPTIONS_VERB = "OPTIONS";
-    private static final String ADMIN_ROLE = "ROLE";
+    private static final String ADMIN_ROLE = "ADMIN";
     private static final String LOGIN_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/login";
     private static final String LOGOUT_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/logout";
+    private static final String CONFIRM_EMAIL_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/" + "users" + "/*/validation/email/*";
+    private static final String CONFIRM_PHONE_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/" + "users" + "/*/validation/phone/*";
     private static final String ACCESS_DENIED_JSON = "{\"message\":\"You are not privileged to request this resource.\","
             + " \"access-denied\":true,\"cause\":\"AUTHORIZATION_FAILURE\"}";
     private static final String UNAUTHORIZED_JSON = "{\"message\":\"Authentication is required to access this resource.\","
@@ -158,7 +160,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        super.configure(http);
+        // This was pasted out of the super.configure(http) as I needed to remove it
+        http.formLogin().and().httpBasic();
         CustomAuthenticationSuccessHandler successHandler = new CustomAuthenticationSuccessHandler();
         CustomAuthenticationFailureHandler failureHandler = new CustomAuthenticationFailureHandler();
         FormLoginConfigurer formLogin = new FormLoginConfigurer();
@@ -178,7 +181,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             portMapper().
             http(80).mapsTo(443).
             http(8085).mapsTo(8443).
-            and(). 
+            and().
             csrf().disable().
             logout().
             addLogoutHandler(new CustomLogoutHandler()).
@@ -196,6 +199,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             antMatchers(HttpMethod.POST, LOGIN_ENDPOINT).permitAll().
             antMatchers(HttpMethod.OPTIONS, LOGIN_ENDPOINT).permitAll().
             antMatchers(HttpMethod.OPTIONS, "/**").permitAll().
+            antMatchers(HttpMethod.GET, CONFIRM_EMAIL_ENDPOINT).permitAll().
+            antMatchers(HttpMethod.GET, CONFIRM_PHONE_ENDPOINT).permitAll().
             antMatchers(HttpMethod.POST, LOGOUT_ENDPOINT).authenticated().
             antMatchers(HttpMethod.GET, "/**").hasRole(USER_ROLE).
             antMatchers(HttpMethod.POST, "/**").hasRole(ADMIN_ROLE).

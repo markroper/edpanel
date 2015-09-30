@@ -8,11 +8,15 @@ import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.Identity;
 import com.scholarscore.models.User;
+import com.scholarscore.util.EmailProvider;
+import com.scholarscore.util.EmailService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Date;
 
@@ -151,7 +155,21 @@ public class UserManagerImpl implements UserManager {
         updateUser(user.getUsername(), user);
         // ... send an email
         // TODO Jordan: implement sending an email containing this code to the user!!
-        System.out.println("!! !! !! Here is where an EMAIL would really be sent to " + user.getEmailAddress() + "...");
+//        System.out.println("!! !! !! Here is where an EMAIL would really be sent to " + user.getEmailAddress() + "...");
+
+        // springify after initial testing
+        EmailProvider provider = new EmailService();
+        
+        String toAddress = "jodamn@gmail.com";
+        
+        String subject = "(DEV) email confirmation from EdPanel";
+        
+        String message = "Hello! Please enter this code when prompted by edpanel: ( " + code + " ). "
+                + "\nLater, a link will show up here that can be clicked."
+                + "https://myedpanel.com/warehouse/v1/" + user.getUsername() + "/validation/email/" + code + "";
+        
+        provider.sendEmail(toAddress, subject, message);
+
         return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[] {"email has been sent"}));
         
 //        throw new UnsupportedOperationException("Not implemented yet");
@@ -195,7 +213,8 @@ public class UserManagerImpl implements UserManager {
     }
     
     private String generateCode() { 
-        // TODO Jordan make this real
-        return "123456";
+        // TODO Jordan this is expensive, make it static or something
+        SecureRandom random = new SecureRandom();
+        return new BigInteger(130, random).toString(32);
     }
 }
