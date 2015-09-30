@@ -89,6 +89,7 @@ public class SchoolDayValidatingExecutor {
     
     protected SchoolDay retrieveAndValidateCreatedDay( Long schoolId, SchoolDay submitted, EntityId id, HttpMethod method, String msg) {
         submitted.setId(id.getId());
+        submitted.getSchool().setYears(null);
         SchoolDay created = this.get(schoolId, id.getId(), msg);
         SchoolDay expected = submitted;
         Assert.assertEquals(created, expected, msg);
