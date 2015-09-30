@@ -2,7 +2,6 @@ package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
 
 import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.mysql.querygenerator.SqlGenerationException;
-import com.scholarscore.models.AssignmentType;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.query.AggregateFunction;
@@ -16,7 +15,7 @@ public class AttendanceSqlSerializer implements MeasureSqlSerializer {
     public String toSelectClause(AggregateFunction agg) {
         return agg.name() + 
                 "( if(" + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.ATTENDANCE_STATUS + " in ('" 
-                + AttendanceStatus.ABSENT + "', '" + AttendanceStatus.EXCUSED_ABSENT + "'), 1, 0)"; 
+                + AttendanceStatus.ABSENT + "', '" + AttendanceStatus.EXCUSED_ABSENT + "'), 1, 0))"; 
     }
 
     @Override
@@ -26,12 +25,12 @@ public class AttendanceSqlSerializer implements MeasureSqlSerializer {
             return LEFT_OUTER_JOIN + HibernateConsts.ATTENDANCE_TABLE + ON + dimTableName + DOT + dimTableName + ID_COL_SUFFIX 
                     + EQUALS + HibernateConsts.ATTENDANCE_TABLE + DOT + dimTableName + FK_COL_SUFFIX + " "
                     + LEFT_OUTER_JOIN + HibernateConsts.SCHOOL_DAY_TABLE + ON + HibernateConsts.SCHOOL_DAY_TABLE + DOT + HibernateConsts.SCHOOL_DAY_ID
-                    + EQUALS + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.SCHOOL_DAY_FK;
+                    + EQUALS + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.SCHOOL_DAY_FK + " ";
         } else if(dimToJoinUpon.equals(Dimension.SCHOOL)){
             return LEFT_OUTER_JOIN + HibernateConsts.SCHOOL_DAY_TABLE + ON + dimTableName + DOT + dimTableName + ID_COL_SUFFIX 
                     + EQUALS + HibernateConsts.SCHOOL_DAY_TABLE + DOT + dimTableName + FK_COL_SUFFIX + " "
                     + LEFT_OUTER_JOIN + HibernateConsts.ATTENDANCE_TABLE + ON + HibernateConsts.SCHOOL_DAY_TABLE + DOT + HibernateConsts.SCHOOL_DAY_ID
-                    + EQUALS + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.SCHOOL_DAY_FK;
+                    + EQUALS + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.SCHOOL_DAY_FK + " ";
         }
         return null;
     }
