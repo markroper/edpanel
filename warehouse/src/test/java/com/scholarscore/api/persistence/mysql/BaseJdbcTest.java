@@ -1,7 +1,16 @@
 package com.scholarscore.api.persistence.mysql;
 
+import com.scholarscore.api.persistence.AdministratorPersistence;
+import com.scholarscore.api.persistence.EntityPersistence;
+import com.scholarscore.api.persistence.GoalPersistence;
+import com.scholarscore.api.persistence.SchoolPersistence;
+import com.scholarscore.api.persistence.StudentPersistence;
+import com.scholarscore.api.persistence.StudentSectionGradePersistence;
+import com.scholarscore.api.persistence.TeacherPersistence;
+import com.scholarscore.api.persistence.UserPersistence;
 import com.scholarscore.api.persistence.mysql.jdbc.GoalJdbc;
 import com.scholarscore.models.*;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.testng.annotations.Test;

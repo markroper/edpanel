@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
-import com.scholarscore.api.persistence.mysql.DbMappings;
+import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureSqlSerializer;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureSqlSerializerFactory;
 import com.scholarscore.models.query.AggregateMeasure;

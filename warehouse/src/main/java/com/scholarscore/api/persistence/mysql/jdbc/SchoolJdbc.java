@@ -1,10 +1,13 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
 import java.util.Collection;
+
 import com.scholarscore.models.School;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.scholarscore.api.persistence.mysql.SchoolPersistence;
+import com.scholarscore.api.persistence.SchoolPersistence;
+
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
