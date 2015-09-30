@@ -298,6 +298,33 @@ CREATE TABLE `scholar_warehouse`.`authorities` (
 )
 ENGINE = InnoDB;
 
+CREATE TABLE `scholar_warehouse`.`school_day` (
+    `school_day_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'System generated ID',
+    `school_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The school foreign key',
+    `school_day_date` DATETIME NULL COMMENT 'The date of the school day',
+    PRIMARY KEY (`school_day_id`),
+    FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+)
+ENGINE = InnoDB;
+
+CREATE TABLE `scholar_warehouse`.`attendance` (
+    `attendance_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'System generated ID',
+    `school_day_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the school days table',
+    `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the student table',
+    `attendance_status` VARCHAR(64) NOT NULL COMMENT 'Maps to POJO enum values PRESENT, EXCUSED_ABSENT, ABSENT, TARDY',
+    `attendance_description` VARCHAR(256) NULL COMMENT 'Description of the attendance status, if any',
+    PRIMARY KEY (`attendance_id`),
+    FOREIGN KEY (`school_day_fk`) REFERENCES `scholar_warehouse`.`school_day` (`school_day_id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (`student_fk`) REFERENCES `scholar_warehouse`.`student` (`student_id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+)
+ENGINE = InnoDB;
+
 CREATE TABLE `scholar_warehouse`.`goal` (
   `goal_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a goal',
   `approved` INT NOT NULL COMMENT 'Int that should be 0 or 1 indicating if a goal was approved by teha ssigned teacher',

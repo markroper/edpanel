@@ -153,4 +153,15 @@
         <property name="studentSectionGradePersistence" ref="studentSectionGradePersistence"/>
     </bean>
 
+    <bean id="schoolDayPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.SchoolDayJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="schoolPersistence" ref="schoolPersistence"/>
+    </bean>
+    
+    <bean id="attendancePersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.AttendanceJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="termPersistence" ref="termPersistence"/>
+    </bean>
 </beans>
