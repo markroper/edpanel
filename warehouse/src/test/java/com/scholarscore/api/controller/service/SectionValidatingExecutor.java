@@ -38,7 +38,7 @@ public class SectionValidatingExecutor {
                 null);
         ArrayList<Section> terms = serviceBase.validateResponse(response, new TypeReference<ArrayList<Section>>(){});
         Assert.assertNotNull(terms, "Unexpected null section returned for case: " + msg);
-        Assert.assertEquals(terms.size(), numberOfItems, "Unexpected number of items returned for case: " + msg);
+        Assert.assertTrue(terms.size() >= numberOfItems, "Unexpected number of items returned for case: " + msg);
     }
     
     public void getNegative(Long schoolId, Long schoolYearId, Long termId, Long id, HttpStatus expectedCode, String msg) {

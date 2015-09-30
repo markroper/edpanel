@@ -11,8 +11,8 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scholarscore.api.persistence.mysql.DbMappings;
-import com.scholarscore.api.persistence.mysql.QueryPersistence;
+import com.scholarscore.api.persistence.DbMappings;
+import com.scholarscore.api.persistence.QueryPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.QueryMapper;
 import com.scholarscore.api.persistence.mysql.mapper.QueryResultsMapper;
 import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;

@@ -1,7 +1,8 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
 
-import com.scholarscore.api.persistence.mysql.DbMappings;
+import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.mysql.querygenerator.SqlGenerationException;
+import com.scholarscore.models.AssignmentType;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.query.AggregateFunction;
