@@ -4,8 +4,9 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.scholarscore.api.persistence.CourseManager;
-import com.scholarscore.api.persistence.QueryManager;
+import com.scholarscore.api.manager.CourseManager;
+import com.scholarscore.api.manager.QueryManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
