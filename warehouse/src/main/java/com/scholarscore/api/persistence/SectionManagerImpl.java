@@ -1,7 +1,10 @@
 package com.scholarscore.api.persistence;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.scholarscore.api.persistence.mysql.EntityPersistence;
 import com.scholarscore.api.persistence.mysql.SectionPersistence;
+import com.scholarscore.api.persistence.mysql.StudentPersistence;
+import com.scholarscore.api.persistence.mysql.StudentSectionGradePersistence;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
@@ -19,21 +22,17 @@ import java.util.HashSet;
  * Created by cwallace on 9/16/2015.
  */
 public class SectionManagerImpl implements SectionManager {
-
+    private static final String SECTION = "section";
+    
     SectionPersistence sectionPersistence;
+    
+    StudentPersistence studentPersistence;
+    
+    EntityPersistence<Assignment> assignmentPersistence;
+    
+    StudentSectionGradePersistence studentSectionGradePersistence;
 
     PersistenceManager pm;
-
-
-    private static final String SECTION = "section";
-
-    public void setSectionPersistence(SectionPersistence sectionPersistence) {
-        this.sectionPersistence = sectionPersistence;
-    }
-
-    public void setPm(PersistenceManager pm) {
-        this.pm = pm;
-    }
 
     /**
      * Returns all sections in a given school term, with all section assignments
@@ -52,11 +51,11 @@ public class SectionManagerImpl implements SectionManager {
         }
         Collection<Section> sections = sectionPersistence.selectAll(termId);
         for(Section s : sections) {
-            Collection<Student> students = pm.getStudentPersistence().selectAllStudentsInSection(s.getId());
+            Collection<Student> students = studentPersistence.selectAllStudentsInSection(s.getId());
             if(null != students && !students.isEmpty()) {
                 s.setEnrolledStudents(new ArrayList<Student>(students));
             }
-            Collection<Assignment> assignments = pm.getAssignmentPersistence().selectAll(s.getId());
+            Collection<Assignment> assignments = assignmentPersistence.selectAll(s.getId());
             if(null != assignments && !assignments.isEmpty()) {
                 s.setAssignments(new ArrayList<Assignment>(assignments));
             }
@@ -77,11 +76,11 @@ public class SectionManagerImpl implements SectionManager {
         }
         Collection<Section> sections = sectionPersistence.selectAllSectionForStudent(termId, studentId);
         for(Section s : sections) {
-            Collection<Student> students = pm.getStudentPersistence().selectAllStudentsInSection(s.getId());
+            Collection<Student> students = studentPersistence.selectAllStudentsInSection(s.getId());
             if(null != students && !students.isEmpty()) {
                 s.setEnrolledStudents(new ArrayList<Student>(students));
             }
-            Collection<Assignment> assignments = pm.getAssignmentPersistence().selectAll(s.getId());
+            Collection<Assignment> assignments = assignmentPersistence.selectAll(s.getId());
             if(null != assignments && !assignments.isEmpty()) {
                 s.setAssignments(new ArrayList<Assignment>(assignments));
             }
@@ -119,11 +118,11 @@ public class SectionManagerImpl implements SectionManager {
             return new ServiceResponse<Section>(code);
         }
         Section section = sectionPersistence.select(termId, sectionId);
-        Collection<Student> students = pm.getStudentPersistence().selectAllStudentsInSection(sectionId);
+        Collection<Student> students = studentPersistence.selectAllStudentsInSection(sectionId);
         if(null != students && !students.isEmpty()) {
             section.setEnrolledStudents(new ArrayList<Student>(students));
         }
-        Collection<Assignment> assignments = pm.getAssignmentPersistence().selectAll(sectionId);
+        Collection<Assignment> assignments = assignmentPersistence.selectAll(sectionId);
         if(null != assignments && !assignments.isEmpty()) {
             section.setAssignments(new ArrayList<Assignment>(assignments));
         }
@@ -157,7 +156,7 @@ public class SectionManagerImpl implements SectionManager {
                 if(null != s.getId() &&
                         pm.getStudentManager().studentExists(s.getId()).isOK()) {
                     StudentSectionGrade ssg = new StudentSectionGrade();
-                    pm.getStudentSectionGradePersistence().insert(sectionId, s.getId(), ssg);
+                    studentSectionGradePersistence.insert(sectionId, s.getId(), ssg);
                 } else {
                     sectionPersistence.delete(sectionId);
                     throw new RuntimeException("Invalid section contained enrolled students that don't exist");
@@ -189,7 +188,7 @@ public class SectionManagerImpl implements SectionManager {
         if(!code.isOK()) {
             return new ServiceResponse<Long>(code);
         }
-        Collection<Student> students = pm.getStudentPersistence().selectAllStudentsInSection(sectionId);
+        Collection<Student> students = studentPersistence.selectAllStudentsInSection(sectionId);
         HashSet<Long> studentsInSection = new HashSet<>();
         for(Student s : students) {
             studentsInSection.add(s.getId());
@@ -199,7 +198,7 @@ public class SectionManagerImpl implements SectionManager {
                 if(!studentsInSection.contains(s.getId())) {
                     if(pm.getStudentManager().studentExists(s.getId()).isOK()) {
                         //Add existing student to the section
-                        pm.getStudentSectionGradePersistence().insert(
+                        studentSectionGradePersistence.insert(
                                 sectionId, s.getId(), new StudentSectionGrade());
                     }
                 } else {
@@ -210,7 +209,7 @@ public class SectionManagerImpl implements SectionManager {
         }
         //Remove any students that are no longer in the section
         for(Long id : studentsInSection) {
-            pm.getStudentSectionGradePersistence().delete(sectionId, id);
+            studentSectionGradePersistence.delete(sectionId, id);
         }
         sectionPersistence.update(termId, sectionId, section);
         return new ServiceResponse<Long>(sectionId);
@@ -267,16 +266,36 @@ public class SectionManagerImpl implements SectionManager {
         }
         Collection<Section> sections = sectionPersistence.selectAllSectionForTeacher(termId, teacherId);
         for(Section s : sections) {
-            Collection<Student> students = pm.getStudentPersistence().selectAllStudentsInSection(s.getId());
+            Collection<Student> students = studentPersistence.selectAllStudentsInSection(s.getId());
             if(null != students && !students.isEmpty()) {
                 s.setEnrolledStudents(new ArrayList<Student>(students));
             }
-            Collection<Assignment> assignments = pm.getAssignmentPersistence().selectAll(s.getId());
+            Collection<Assignment> assignments = assignmentPersistence.selectAll(s.getId());
             if(null != assignments && !assignments.isEmpty()) {
                 s.setAssignments(new ArrayList<Assignment>(assignments));
             }
         }
         return new ServiceResponse<Collection<Section>>(sections);
     }
+    
+    public void setSectionPersistence(SectionPersistence sectionPersistence) {
+        this.sectionPersistence = sectionPersistence;
+    }
 
+    public void setPm(PersistenceManager pm) {
+        this.pm = pm;
+    }
+
+    public void setStudentPersistence(StudentPersistence studentPersistence) {
+        this.studentPersistence = studentPersistence;
+    }
+
+    public void setAssignmentPersistence(EntityPersistence<Assignment> assignmentPersistence) {
+        this.assignmentPersistence = assignmentPersistence;
+    }
+
+    public void setStudentSectionGradePersistence(
+            StudentSectionGradePersistence studentSectionGradePersistence) {
+        this.studentSectionGradePersistence = studentSectionGradePersistence;
+    }
 }

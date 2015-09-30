@@ -81,7 +81,7 @@ public class AdminManagerImpl implements  AdminManager {
             return new ServiceResponse<>(code);
         }
         administrator.setId(administratorId);
-        administrator.mergePropertiesIfNull(pm.getTeacherPersistence().select(administratorId));
+        administrator.mergePropertiesIfNull(administratorPersistence.select(administratorId));
         replaceAdministrator(administratorId, administrator);
         return new ServiceResponse<>(administratorId);
 

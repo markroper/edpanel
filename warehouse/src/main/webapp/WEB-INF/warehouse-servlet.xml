@@ -54,19 +54,6 @@
 
     <bean id="PM"
           class="com.scholarscore.api.persistence.PersistenceManager">
-        <property name="schoolPersistence" ref="schoolPersistence"/>
-        <property name="schoolYearPersistence" ref="schoolYearPersistence"/>
-        <property name="termPersistence" ref="termPersistence"/>
-        <property name="studentPersistence" ref="studentPersistence"/>
-        <property name="sectionPersistence" ref="sectionPersistence"/>
-        <property name="coursePersistence" ref="coursePersistence"/>
-        <property name="assignmentPersistence" ref="assignmentPersistence"/>
-        <property name="studentAssignmentPersistence" ref="studentAssignmentPersistence"/>
-        <property name="studentSectionGradePersistence" ref="studentSectionGradePersistence"/>
-        <property name="teacherPersistence" ref="teacherPersistence"/>
-        <property name="userPersistence" ref="userPersistence"/>
-        <property name="queryPersistence" ref="queryPersistence"/>
-        <property name="behaviorPersistence" ref="behaviorPersistence"/>
         <property name="schoolManager" ref="schoolManager"/>
         <property name="schoolYearManager" ref="schoolYearManager"/>
         <property name="termManager" ref="termManager"/>

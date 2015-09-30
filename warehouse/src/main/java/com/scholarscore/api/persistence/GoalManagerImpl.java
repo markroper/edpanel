@@ -1,11 +1,14 @@
 package com.scholarscore.api.persistence;
 
 import com.scholarscore.api.persistence.mysql.GoalPersistence;
+import com.scholarscore.api.persistence.mysql.StudentAssignmentPersistence;
+import com.scholarscore.api.persistence.mysql.StudentSectionGradePersistence;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
@@ -14,16 +17,20 @@ import java.util.Collection;
  * Created by cwallace on 9/17/2015.
  */
 public class GoalManagerImpl implements GoalManager {
-
     private static final String STUDENT_ASSIGNMENT = "student assignment";
     private static final String STUDENT_SECTION_GRADE = "student section grade";
-
 
     @Autowired
     private PersistenceManager pm;
 
     @Autowired
     private GoalPersistence goalPersistence;
+    
+    @Autowired
+    private StudentAssignmentPersistence studentAssignmentPersistence;
+    
+    @Autowired
+    private StudentSectionGradePersistence studentSectionGradePersistence;
 
     private static final String GOAL = "goal";
 
@@ -44,7 +51,7 @@ public class GoalManagerImpl implements GoalManager {
         if (goal.getGoalType() == GoalType.ASSIGNMENT) {
             AssignmentGoal assignmentGoal = (AssignmentGoal)goal;
             // The first parameter is not used.
-            StudentAssignment assignment = pm.getStudentAssignmentPersistence().select(1L,assignmentGoal.getParentId());
+            StudentAssignment assignment = studentAssignmentPersistence.select(1L,assignmentGoal.getParentId());
             if(null == assignment) {
                 return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
                         new Object[]{STUDENT_ASSIGNMENT, assignmentGoal.getParentId()}));
@@ -52,7 +59,7 @@ public class GoalManagerImpl implements GoalManager {
             //TODO I don't like this duplication of code from the JDBC to the managers
         } else if (goal.getGoalType() == GoalType.CUMULATIVE_GRADE){
             CumulativeGradeGoal cumulativeGradeGoal = (CumulativeGradeGoal)goal;
-            StudentSectionGrade ssg = pm.getStudentSectionGradePersistence().select(cumulativeGradeGoal.getParentId(),studentId);
+            StudentSectionGrade ssg = studentSectionGradePersistence.select(cumulativeGradeGoal.getParentId(),studentId);
             if(null == ssg) {
                 return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
                         new Object[]{STUDENT_SECTION_GRADE,
@@ -134,5 +141,19 @@ public class GoalManagerImpl implements GoalManager {
         }
         goalPersistence.delete(studentId, goalId);
         return new ServiceResponse<Long>((Long) null);
+    }
+
+    public StudentAssignmentPersistence getStudentAssignmentPersistence() {
+        return studentAssignmentPersistence;
+    }
+
+    public void setStudentAssignmentPersistence(
+            StudentAssignmentPersistence studentAssignmentPersistence) {
+        this.studentAssignmentPersistence = studentAssignmentPersistence;
+    }
+
+    public void setStudentSectionGradePersistence(
+            StudentSectionGradePersistence studentSectionGradePersistence) {
+        this.studentSectionGradePersistence = studentSectionGradePersistence;
     }
 }
