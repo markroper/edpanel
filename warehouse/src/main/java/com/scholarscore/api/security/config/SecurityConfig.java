@@ -202,7 +202,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             antMatchers(HttpMethod.GET, CONFIRM_EMAIL_ENDPOINT).permitAll().
             antMatchers(HttpMethod.GET, CONFIRM_PHONE_ENDPOINT).permitAll().
             antMatchers(HttpMethod.POST, LOGOUT_ENDPOINT).authenticated().
-            antMatchers(HttpMethod.GET, "/**").hasRole(USER_ROLE).
+            antMatchers(HttpMethod.GET, "/**").hasAnyRole(USER_ROLE, ADMIN_ROLE).
             antMatchers(HttpMethod.POST, "/**").hasRole(ADMIN_ROLE).
             antMatchers(HttpMethod.DELETE, "/**").hasRole(ADMIN_ROLE).
             antMatchers(HttpMethod.PUT, "/**").hasRole(ADMIN_ROLE).
