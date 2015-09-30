@@ -183,7 +183,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             portMapper().
             http(80).mapsTo(443).
             http(8085).mapsTo(8443).
-            and().
+            and(). 
             csrf().disable().
             logout().
             addLogoutHandler(new CustomLogoutHandler()).

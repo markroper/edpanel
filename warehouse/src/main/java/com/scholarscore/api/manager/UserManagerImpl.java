@@ -6,7 +6,6 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.Identity;
 import com.scholarscore.models.User;
 
 import com.scholarscore.util.EmailProvider;
