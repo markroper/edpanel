@@ -41,7 +41,7 @@ public class BehaviorValidatingExecutor {
                 null);
         ArrayList<Behavior> behaviors = serviceBase.validateResponse(response, new TypeReference<ArrayList<Behavior>>(){});
         Assert.assertNotNull(behaviors, "Unexpected null behavior returned for case: " + msg);
-        Assert.assertEquals(behaviors.size(), numberOfItems, "Unexpected number of items returned for case: " + msg);
+        Assert.assertTrue(behaviors.size() >= numberOfItems, "Unexpected number of items returned for case: " + msg);
     }
 
     public void getNegative(Long studentId, Long behaviorId, HttpStatus expectedCode, String msg) {

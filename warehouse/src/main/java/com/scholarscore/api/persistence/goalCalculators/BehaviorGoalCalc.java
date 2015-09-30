@@ -1,6 +1,6 @@
 package com.scholarscore.api.persistence.goalCalculators;
 
-import com.scholarscore.api.persistence.mysql.BehaviorPersistence;
+import com.scholarscore.api.persistence.BehaviorPersistence;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.BehaviorGoal;
 

@@ -1,5 +1,6 @@
 package com.scholarscore.api.controller;
 
+import com.scholarscore.api.manager.OrchestrationManager;
 import com.scholarscore.api.persistence.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public abstract class BaseController {
     public static final String JSON_ACCEPT_HEADER = "application/json";
 
     @Autowired
-    protected PersistenceManager pm;
+    protected OrchestrationManager pm;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected ResponseEntity respond(Object obj) {

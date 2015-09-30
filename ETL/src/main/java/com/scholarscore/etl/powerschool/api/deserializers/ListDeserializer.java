@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.scholarscore.etl.powerschool.api.model.Staffs;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -131,14 +132,14 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
      * @return
      */
     private Long asLong(JsonNode node, String fieldName) {
-        return Optional.of(node)
+        return (Long) Optional.of(node)
                 .flatMap(n ->
                         Optional.ofNullable(n.findValue(fieldName))
                                 .flatMap(o -> Optional.ofNullable(o.asLong()))).orElse(null);
     }
 
     private String asText(JsonNode node, String fieldName) {
-        return Optional.ofNullable(node)
+        return (String) Optional.ofNullable(node)
                 .flatMap(n ->
                         Optional.ofNullable(n.findValue(fieldName))
                                 .flatMap(o -> Optional.ofNullable(o.asText()))).orElse(null);
