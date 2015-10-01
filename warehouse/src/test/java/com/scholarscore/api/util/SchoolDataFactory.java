@@ -12,23 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
-import com.scholarscore.models.Assignment;
-import com.scholarscore.models.AssignmentType;
-import com.scholarscore.models.AttendanceAssignment;
-import com.scholarscore.models.Behavior;
-import com.scholarscore.models.BehaviorCategory;
-import com.scholarscore.models.Course;
-import com.scholarscore.models.Gender;
-import com.scholarscore.models.GradeFormula;
-import com.scholarscore.models.GradedAssignment;
-import com.scholarscore.models.School;
-import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.Section;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.StudentAssignment;
-import com.scholarscore.models.Teacher;
-import com.scholarscore.models.Term;
+import com.scholarscore.models.*;
 import com.scholarscore.models.query.Measure;
 
 /**
@@ -384,5 +370,44 @@ public class SchoolDataFactory {
             }
         }
         return studentBehaviors;
+    }
+
+    public static Map<Long, ArrayList<Goal>> generateGoalEvents(
+            Collection<Student> students,
+            Teacher teacher,
+            Date beginDate,
+            Date endDate,
+            Map<Long, List<Long>> studentToSSGId
+    ) {
+        Map<Long, ArrayList<Goal>> studentGoals = new HashMap<Long, ArrayList<Goal>>();
+        for (Student s: students) {
+            List<Long> enrolledSections = studentToSSGId.get(s.getId());
+            int index = ThreadLocalRandom.current().nextInt(enrolledSections.size());
+            ArrayList<Goal> studentGoalList = new ArrayList<Goal>();
+
+            CumulativeGradeGoal sectionGradeGoal = new CumulativeGradeGoal();
+            sectionGradeGoal.setParentId(enrolledSections.get(index));
+            sectionGradeGoal.setStudent(s);
+            sectionGradeGoal.setTeacher(teacher);
+            sectionGradeGoal.setApproved(false);
+            sectionGradeGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(75, 101)));
+            sectionGradeGoal.setName("Section Grade Goal");
+            studentGoalList.add(sectionGradeGoal);
+
+            BehaviorGoal behaviorGoal = new BehaviorGoal();
+            behaviorGoal.setStudent(s);
+            behaviorGoal.setTeacher(teacher);
+            behaviorGoal.setApproved(false);
+            behaviorGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(0, 11)));
+            behaviorGoal.setName("Weekly Demerit Goal");
+            behaviorGoal.setEndDate(endDate);
+            behaviorGoal.setStartDate(beginDate);
+            behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
+            studentGoalList.add(behaviorGoal);
+
+            studentGoals.put(s.getId(),studentGoalList);
+
+        }
+        return studentGoals;
     }
 }
