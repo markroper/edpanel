@@ -13,9 +13,14 @@ import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Teacher;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.attendance.Attendance;
+import com.scholarscore.models.attendance.AttendanceStatus;
+import com.scholarscore.models.attendance.SchoolDay;
+
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +61,40 @@ public class UISyntheticDatagenerator extends IntegrationBase {
         for(SchoolYear year: SchoolDataFactory.generateSchoolYears()) {
             generatedSchoolYears.add(
                     schoolYearValidatingExecutor.create(school.getId(), year, year.getName()));
+        }
+        
+        for(SchoolYear y : generatedSchoolYears) {
+            Date currentDate = y.getStartDate();
+            Calendar c = Calendar.getInstance();
+            
+            //Create the school days
+            while(currentDate.compareTo(y.getEndDate()) < 0) {
+                c.setTime(currentDate);
+                int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+                if(dayOfWeek != 1 && dayOfWeek != 7) {
+                    //create a school day!
+                    SchoolDay day = new SchoolDay();
+                    day.setSchool(school);
+                    day.setDate(currentDate);
+                    day = schoolDayValidatingExecutor.create(school.getId(), day, "Creating a school date for synthetic data generator");
+                    for(Student s : generatedStudents) {
+                        int val = new Random().nextInt(100);
+                        AttendanceStatus status = AttendanceStatus.PRESENT;
+                        //one in ten times, choose a random attendance status
+                        if(val != 0 && val % 10 == 0) {
+                            status = AttendanceStatus.values()[new Random().nextInt(AttendanceStatus.values().length - 1)];
+                        }
+                        Attendance a = new Attendance();
+                        a.setSchoolDay(day);
+                        a.setStudent(s);
+                        a.setStatus(status);
+                        attendanceValidatingExecutor.create(school.getId(), s.getId(), a, "creating attendance");
+                    }
+                }
+                //Increment the date
+                c.add(Calendar.DATE, 1);
+                currentDate = c.getTime();
+            }
         }
         
         //Create courses
