@@ -5,10 +5,10 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.scholarscore.api.persistence.SectionManager;
-import com.scholarscore.api.persistence.StudentAssignmentManager;
-import com.scholarscore.api.persistence.StudentManager;
-import com.scholarscore.api.persistence.StudentSectionGradeManager;
+import com.scholarscore.api.manager.SectionManager;
+import com.scholarscore.api.manager.StudentAssignmentManager;
+import com.scholarscore.api.manager.StudentManager;
+import com.scholarscore.api.manager.StudentSectionGradeManager;
 import com.scholarscore.models.WeightedGradable;
 import com.scholarscore.util.GradeUtil;
 

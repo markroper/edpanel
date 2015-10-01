@@ -1,18 +1,20 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import com.scholarscore.api.persistence.mysql.AdministratorPersistence;
-import com.scholarscore.api.persistence.mysql.StudentPersistence;
-import com.scholarscore.api.persistence.mysql.TeacherPersistence;
-import com.scholarscore.api.persistence.mysql.UserPersistence;
+import com.scholarscore.api.persistence.AdministratorPersistence;
+import com.scholarscore.api.persistence.StudentPersistence;
+import com.scholarscore.api.persistence.TeacherPersistence;
+import com.scholarscore.api.persistence.UserPersistence;
 import com.scholarscore.models.Administrator;
 import com.scholarscore.models.Identity;
 import com.scholarscore.models.Student;
 import com.scholarscore.models.Teacher;
 import com.scholarscore.models.User;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
+
 import java.util.Collection;
 import java.util.List;
 

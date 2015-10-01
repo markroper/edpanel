@@ -1,14 +1,17 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
+import com.scholarscore.api.persistence.GoalPersistence;
+import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.goalCalculators.AssignmentGoalCalc;
 import com.scholarscore.api.persistence.goalCalculators.BehaviorGoalCalc;
 import com.scholarscore.api.persistence.goalCalculators.CumulativeGoalCalc;
-import com.scholarscore.api.persistence.mysql.GoalPersistence;
-import com.scholarscore.api.persistence.mysql.StudentPersistence;
 import com.scholarscore.models.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
+
 import javax.transaction.Transactional;
+
 import java.util.Collection;
 
 /**

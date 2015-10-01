@@ -1,7 +1,5 @@
 package com.scholarscore.api.controller.service;
 
-import java.util.ArrayList;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
@@ -39,7 +37,7 @@ public class AssignmentValidatingExecutor {
                 null);
         AssignmentList terms = serviceBase.validateResponse(response, new TypeReference<AssignmentList>(){});
         Assert.assertNotNull(terms, "Unexpected null term returned for case: " + msg);
-        Assert.assertEquals(terms.size(), numberOfItems, "Unexpected number of items returned for case: " + msg);
+        Assert.assertTrue(terms.size() >= numberOfItems, "Unexpected number of items returned for case: " + msg);
     }
     
     public void getNegative(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long id, HttpStatus expectedCode, String msg) {

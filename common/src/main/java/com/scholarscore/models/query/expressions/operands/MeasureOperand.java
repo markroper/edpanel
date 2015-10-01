@@ -9,13 +9,14 @@ import com.scholarscore.models.query.MeasureField;
 @SuppressWarnings("serial")
 public class MeasureOperand implements Serializable, IOperand {
     protected MeasureField value;
-    protected OperandType type;
-    
+    protected final OperandType type;
+
     public MeasureOperand() {
-        this.type = OperandType.DIMENSION;
+        this.type = OperandType.MEASURE;
     }
     
     public MeasureOperand(MeasureField measure) {
+        this();
         this.value = measure;
     }
     
@@ -29,7 +30,7 @@ public class MeasureOperand implements Serializable, IOperand {
     
     @Override
     public OperandType getType() {
-        return OperandType.MEASURE;
+        return type;
     }
 
     @Override

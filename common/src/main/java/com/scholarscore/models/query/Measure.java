@@ -1,6 +1,7 @@
 package com.scholarscore.models.query;
 
 import com.scholarscore.models.query.measure.AssignmentGradeMeasure;
+import com.scholarscore.models.query.measure.AttendanceMeasure;
 import com.scholarscore.models.query.measure.CourseGradeMeasure;
 import com.scholarscore.models.query.measure.DemeritMeasure;
 import com.scholarscore.models.query.measure.DetentionMeasure;
@@ -65,6 +66,8 @@ public enum Measure {
                 return new DetentionMeasure();
             case SUSPENSION:
                 return new SuspensionMeasure();
+            case ATTENDANCE:
+                return new AttendanceMeasure();
             default:
                 return null;   
         }
