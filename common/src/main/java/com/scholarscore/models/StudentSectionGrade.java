@@ -124,12 +124,14 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
         final StudentSectionGrade other = (StudentSectionGrade) obj;
         return Objects.equals(this.id, other.id) && 
                 Objects.equals(this.complete, other.complete) &&
-                Objects.equals(this.grade, other.grade);
+                Objects.equals(this.grade, other.grade) &&
+                Objects.equals(this.student, other.student) &&
+                Objects.equals(this.section, other.section);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(id, complete, grade);
+        return 31 * super.hashCode() + Objects.hash(id, complete, grade, student, section);
     }
 
     @Override
