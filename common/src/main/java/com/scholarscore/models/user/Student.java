@@ -235,6 +235,11 @@ public class Student extends User implements Serializable {
     public void setCurrentSchoolId(Long currentSchoolId) {
         this.currentSchoolId = currentSchoolId;
     }
+    
+    @Override
+    public UserType getType() {
+        return UserType.STUDENT;
+    }
 
     @Override
     public boolean equals(Object obj) {

@@ -113,6 +113,11 @@ public class Administrator extends User implements Serializable, IStaff<Administ
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
     }
+    
+    @Override
+    public UserType getType() {
+        return UserType.ADMINISTRATOR;
+    }
 
     @Override
     public String toString() {
