@@ -6,7 +6,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.Teacher;
+import com.scholarscore.models.user.Teacher;
 
 @Test(groups = { "integration" })
 public class TeacherControllerIntegrationTest extends IntegrationBase {

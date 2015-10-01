@@ -10,7 +10,7 @@ import org.testng.Assert;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.Teacher;
+import com.scholarscore.models.user.Teacher;
 
 public class TeacherValidatingExecutor {
     private final IntegrationBase serviceBase;

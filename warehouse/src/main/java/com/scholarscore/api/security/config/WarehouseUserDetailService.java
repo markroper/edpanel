@@ -6,7 +6,6 @@ import com.scholarscore.api.persistence.AuthorityPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.persistence.UserPersistence;
-import com.scholarscore.models.Administrator;
 import com.scholarscore.models.Identity;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +13,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.scholarscore.models.Authority;
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.User;
 
 public class WarehouseUserDetailService implements UserDetailsService {
 

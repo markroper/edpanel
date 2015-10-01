@@ -25,11 +25,11 @@ import com.scholarscore.models.GradedAssignment;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
-import com.scholarscore.models.Teacher;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.query.Measure;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
 
 /**
  * Generates arbitrary school data for use in testing and developing the UI.

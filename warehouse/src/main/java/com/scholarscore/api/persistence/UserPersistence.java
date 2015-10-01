@@ -3,7 +3,7 @@ package com.scholarscore.api.persistence;
 import java.util.Collection;
 
 import com.scholarscore.models.Identity;
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.User;
 
 /**
  * User management interface - provides basic crud operations on users for both internal persistence

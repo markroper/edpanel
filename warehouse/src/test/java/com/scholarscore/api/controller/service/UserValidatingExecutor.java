@@ -2,7 +2,8 @@ package com.scholarscore.api.controller.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.User;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.ResultActions;
 import org.testng.Assert;

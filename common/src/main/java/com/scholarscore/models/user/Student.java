@@ -1,6 +1,10 @@
-package com.scholarscore.models;
+package com.scholarscore.models.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.Address;
+import com.scholarscore.models.Gender;
+import com.scholarscore.models.HibernateConsts;
+
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -12,7 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
@@ -30,7 +34,7 @@ import java.util.Objects;
 @Table(name = HibernateConsts.STUDENT_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Student extends Identity implements Serializable, IApiModel<Student>{
+public class Student extends User implements Serializable {
     
     public Student() {
         
@@ -84,52 +88,44 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     private Long currentSchoolId;
     
     @Override
-    public void mergePropertiesIfNull(Student mergeFrom) {
+    public void mergePropertiesIfNull(User mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);     
-        if (null == getUser()) {
-            setUser(mergeFrom.getUser());
+        if(mergeFrom instanceof Student) {
+            Student merge = (Student) mergeFrom;
+            if (null == getSourceSystemId()) {
+                setSourceSystemId(merge.getSourceSystemId());
+            }
+            if (null == getMailingAddress()) {
+                setMailingAddress(merge.getMailingAddress());
+            }
+            if (null == getHomeAddress()) {
+                setHomeAddress(merge.getHomeAddress());
+            }
+            if (null == getGender()) {
+                setGender(merge.getGender());
+            }
+            if (null == getBirthDate()) {
+                setBirthDate(merge.getBirthDate());
+            }
+            if (null == getDistrictEntryDate()) {
+                setDistrictEntryDate(merge.getDistrictEntryDate());
+            }
+            if (null == getProjectedGraduationYear()) {
+                setProjectedGraduationYear(merge.getProjectedGraduationYear());
+            }
+            if (null == getSocialSecurityNumber()) {
+                setSocialSecurityNumber(merge.getSocialSecurityNumber());
+            }
+            if (null == getFederalRace()) {
+                setFederalRace(merge.getFederalRace());
+            }
+            if (null == getFederalEthnicity()) {
+                setFederalEthnicity(merge.getFederalEthnicity());
+            }
+            if(null == getCurrentSchoolId()) {
+                setCurrentSchoolId(merge.getCurrentSchoolId());
+            }
         }
-        if (null == getSourceSystemId()) {
-            setSourceSystemId(mergeFrom.getSourceSystemId());
-        }
-        if (null == getMailingAddress()) {
-            setMailingAddress(mergeFrom.getMailingAddress());
-        }
-        if (null == getHomeAddress()) {
-            setHomeAddress(mergeFrom.getHomeAddress());
-        }
-        if (null == getGender()) {
-            setGender(mergeFrom.getGender());
-        }
-        if (null == getBirthDate()) {
-            setBirthDate(mergeFrom.getBirthDate());
-        }
-        if (null == getDistrictEntryDate()) {
-            setDistrictEntryDate(mergeFrom.getDistrictEntryDate());
-        }
-        if (null == getProjectedGraduationYear()) {
-            setProjectedGraduationYear(mergeFrom.getProjectedGraduationYear());
-        }
-        if (null == getSocialSecurityNumber()) {
-            setSocialSecurityNumber(mergeFrom.getSocialSecurityNumber());
-        }
-        if (null == getFederalRace()) {
-            setFederalRace(mergeFrom.getFederalRace());
-        }
-        if (null == getFederalEthnicity()) {
-            setFederalEthnicity(mergeFrom.getFederalEthnicity());
-        }
-        if(null == getCurrentSchoolId()) {
-            setCurrentSchoolId(mergeFrom.getCurrentSchoolId());
-        }
-    }
-
-    @Override
-    @OneToOne(optional = true)
-    @Cascade(CascadeType.ALL)
-    @JoinColumn(name=HibernateConsts.STUDENT_USER_FK)
-    public User getUser() {
-        return super.getUser();
     }
 
     @Column(name = HibernateConsts.STUDENT_SOURCE_SYSTEM_ID)
@@ -246,8 +242,7 @@ public class Student extends Identity implements Serializable, IApiModel<Student
             return false;
         }
         final Student other = (Student) obj;
-        return Objects.equals(this.user, other.user)
-                && Objects.equals(this.sourceSystemId, other.sourceSystemId)
+        return Objects.equals(this.sourceSystemId, other.sourceSystemId)
                 && Objects.equals(this.mailingAddress, other.mailingAddress)
                 && Objects.equals(this.homeAddress, other.homeAddress)
                 && Objects.equals(this.gender, other.gender)
@@ -263,14 +258,13 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(user, sourceSystemId, mailingAddress, homeAddress, gender, birthDate,
+                + Objects.hash(sourceSystemId, mailingAddress, homeAddress, gender, birthDate,
                         districtEntryDate, projectedGraduationYear, socialSecurityNumber, federalRace, federalEthnicity, currentSchoolId);
     }
 
     @Override
     public String toString() {
         return "Student{" +
-                ", user=" + user +
                 ", sourceSystemId='" + sourceSystemId + '\'' +
                 ", mailingAddress=" + mailingAddress +
                 ", homeAddress=" + homeAddress +

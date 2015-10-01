@@ -1,9 +1,12 @@
-package com.scholarscore.models;
+package com.scholarscore.models.user;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.ApiModel;
+import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.IApiModel;
 
 import javax.persistence.*;
 
@@ -15,14 +18,11 @@ import javax.persistence.*;
 @Entity(name = "user")
 @Table(name = HibernateConsts.USERS_TABLE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class User implements Serializable, IApiModel<User> {
-	// v1
+public abstract class User extends ApiModel implements Serializable, IApiModel<User> {
 	private static final long serialVersionUID = 1L;
-
 	// login name
 	private String username;
 	private String password;
-
 	// Indicates whether the user is a login user and can login (by default this is disabled until the user has set a username/password)
 	private Boolean enabled;
 	private Long id;

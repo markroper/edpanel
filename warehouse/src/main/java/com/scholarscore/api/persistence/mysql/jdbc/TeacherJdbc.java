@@ -1,7 +1,7 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
 import com.scholarscore.api.persistence.TeacherPersistence;
-import com.scholarscore.models.Teacher;
+import com.scholarscore.models.user.Teacher;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;

@@ -5,7 +5,7 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.Administrator;
+import com.scholarscore.models.user.Administrator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

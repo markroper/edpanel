@@ -2,9 +2,13 @@ package com.scholarscore.models;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+
 import java.util.Objects;
 
 /**

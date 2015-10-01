@@ -6,7 +6,7 @@ import javax.validation.Valid;
 
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.manager.UserManager;
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.User;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 

@@ -20,7 +20,7 @@ import org.hibernate.annotations.FetchMode;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
-import com.scholarscore.models.Student;
+import com.scholarscore.models.user.Student;
 
 /**
  * Represents school attendance for a single student on a single day.

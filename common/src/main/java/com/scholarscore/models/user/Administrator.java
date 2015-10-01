@@ -1,8 +1,12 @@
-package com.scholarscore.models;
+package com.scholarscore.models.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.Address;
+import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.IStaff;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
+
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 
@@ -10,6 +14,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
 import javax.persistence.*;
 import javax.persistence.Entity;
 
@@ -19,7 +24,7 @@ import javax.persistence.Entity;
 @Entity(name = HibernateConsts.ADMIN_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Administrator extends Identity implements Serializable, IStaff<Administrator> {
+public class Administrator extends User implements Serializable, IStaff<Administrator> {
     public static final DimensionField ID = new DimensionField(Dimension.ADMINISTRATOR, "ID");
     public static final DimensionField NAME = new DimensionField(Dimension.ADMINISTRATOR, "Name");
     public static final DimensionField EMAIL_ADDRESS = new DimensionField(Dimension.ADMINISTRATOR, "Address");
@@ -28,34 +33,36 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
         add(NAME);
         add(EMAIL_ADDRESS);
     }};
-
+    
+    private String sourceSystemId;
+    private Address homeAddress;
+    private String homePhone;
+    
     public Administrator() {
     }
 
     public Administrator(Administrator admin) {
         super(admin);
-        this.setUser(admin.getUser());
         this.setSourceSystemId(admin.getSourceSystemId());
         this.setName(admin.getName());
         this.setHomeAddress(admin.getHomeAddress());
         this.setHomePhone(admin.getHomePhone());
     }
 
-    private String sourceSystemId;
-    private Address homeAddress;
-    private String homePhone;
-
     @Override
-    public void mergePropertiesIfNull(Administrator mergeFrom) {
+    public void mergePropertiesIfNull(User mergeFrom) {
         // MJG: do we merge address properties if null too?
-        if (null == this.getHomeAddress()) {
-            this.setHomeAddress(mergeFrom.getHomeAddress());
-        }
-        if (null == this.getHomePhone()) {
-            this.setHomePhone(mergeFrom.getHomePhone());
-        }
-        if (null == this.getSourceSystemId()) {
-            this.setSourceSystemId(mergeFrom.getSourceSystemId());
+        if(mergeFrom instanceof Administrator) {
+            Administrator from = (Administrator) mergeFrom;
+            if (null == this.getHomeAddress()) {
+                this.setHomeAddress(from.getHomeAddress());
+            }
+            if (null == this.getHomePhone()) {
+                this.setHomePhone(from.getHomePhone());
+            }
+            if (null == this.getSourceSystemId()) {
+                this.setSourceSystemId(from.getSourceSystemId());
+            }
         }
         super.mergePropertiesIfNull(mergeFrom);
     }
@@ -96,14 +103,6 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
         return sourceSystemId;
     }
 
-    @Override
-    @OneToOne(optional = true)
-    @Cascade(CascadeType.ALL)
-    @JoinColumn(name=HibernateConsts.ADMIN_USER_FK)
-    public User getUser() {
-        return super.getUser();
-    }
-
     public void setHomePhone(String homePhone) {
         this.homePhone = homePhone;
     }
@@ -114,8 +113,6 @@ public class Administrator extends Identity implements Serializable, IStaff<Admi
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
     }
-
-    public void setUser(User user) { super.setUser(user); }
 
     @Override
     public String toString() {
