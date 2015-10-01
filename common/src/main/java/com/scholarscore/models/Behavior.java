@@ -1,6 +1,9 @@
 package com.scholarscore.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 

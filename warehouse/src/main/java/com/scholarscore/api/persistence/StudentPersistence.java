@@ -2,7 +2,7 @@ package com.scholarscore.api.persistence;
 
 import java.util.Collection;
 
-import com.scholarscore.models.Student;
+import com.scholarscore.models.user.Student;
 
 public interface StudentPersistence {
     Collection<Student> selectAll();

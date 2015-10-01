@@ -1,8 +1,9 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.User;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 

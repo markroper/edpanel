@@ -10,6 +10,10 @@ import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.persistence.UserPersistence;
 import com.scholarscore.api.persistence.mysql.jdbc.GoalJdbc;
 import com.scholarscore.models.*;
+import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.User;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

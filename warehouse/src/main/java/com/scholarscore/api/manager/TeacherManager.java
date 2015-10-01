@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
-import com.scholarscore.models.Teacher;
+import com.scholarscore.models.user.Teacher;
 
 public interface TeacherManager {
     ServiceResponse<Collection<Teacher>> getAllTeachers();

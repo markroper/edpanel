@@ -6,7 +6,7 @@ import com.scholarscore.api.security.config.UserDetailsProxy;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.Identity;
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.User;
 
 /**
  * Allows for the creation of users

@@ -1,6 +1,7 @@
 package com.scholarscore.api.persistence.mysql;
 
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.User;
+
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;

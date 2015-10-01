@@ -1,13 +1,12 @@
-package com.scholarscore.models;
+package com.scholarscore.models.user;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.query.Dimension;
-import com.scholarscore.models.query.DimensionField;
+import com.scholarscore.models.Address;
+import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.IStaff;
+
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -16,14 +15,13 @@ import javax.persistence.*;
 @Entity(name = HibernateConsts.TEACHER_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
+public class Teacher extends User implements Serializable, IStaff<Teacher> {
     
     public Teacher() {
     }
     
     public Teacher(Teacher t) {
         super(t);
-        this.setUser(t.getUser());
         this.setSourceSystemId(t.getSourceSystemId());
         this.setHomeAddress(t.getHomeAddress());
         this.setHomePhone(t.getHomePhone());
@@ -35,16 +33,18 @@ public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
     private String homePhone;
 
     @Override
-    public void mergePropertiesIfNull(Teacher mergeFrom) {
-        // MJG: do we merge address properties if null too?
-        if (null == this.getHomeAddress()) {
-            this.setHomeAddress(mergeFrom.getHomeAddress());
-        }
-        if (null == this.getHomePhone()) {
-            this.setHomePhone(mergeFrom.getHomePhone());
-        }
-        if (null == this.getSourceSystemId()) {
-            this.setSourceSystemId(mergeFrom.getSourceSystemId());
+    public void mergePropertiesIfNull(User mergeFrom) {
+        if(mergeFrom instanceof Teacher) {
+            Teacher merge = (Teacher) mergeFrom;
+            if (null == this.getHomeAddress()) {
+                this.setHomeAddress(merge.getHomeAddress());
+            }
+            if (null == this.getHomePhone()) {
+                this.setHomePhone(merge.getHomePhone());
+            }
+            if (null == this.getSourceSystemId()) {
+                this.setSourceSystemId(merge.getSourceSystemId());
+            }
         }
         super.mergePropertiesIfNull(mergeFrom);
     }    
@@ -78,15 +78,6 @@ public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
         return sourceSystemId;
     }
 
-    @Override
-    @OneToOne(optional = true)
-    @Cascade(CascadeType.ALL)
-    @JoinColumn(name=HibernateConsts.TEACHER_USER_FK)
-    public User getUser() {
-        return super.getUser();
-    }
-
-
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
     }
@@ -104,10 +95,7 @@ public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
         if (this == o) { return true; }
         if (!(o instanceof Teacher)) { return false; }
         if (!super.equals(o)) { return false; }
-
         Teacher teacher = (Teacher) o;
-
-        if (getUser() != null ? !getUser().equals(teacher.getUser()) : teacher.getUser() != null) { return false; }
         if (getSourceSystemId() != null ? !getSourceSystemId().equals(teacher.getSourceSystemId()) : teacher.getSourceSystemId() != null) {
             return false;
         }
@@ -120,7 +108,6 @@ public class Teacher extends Identity implements Serializable, IStaff<Teacher> {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (getUser() != null ? getUser().hashCode() : 0);
         result = 31 * result + (getSourceSystemId() != null ? getSourceSystemId().hashCode() : 0);
         result = 31 * result + (getHomeAddress() != null ? getHomeAddress().hashCode() : 0);
         result = 31 * result + (getHomePhone() != null ? getHomePhone().hashCode() : 0);

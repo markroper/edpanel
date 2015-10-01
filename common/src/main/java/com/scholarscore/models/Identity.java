@@ -1,20 +1,20 @@
 package com.scholarscore.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.user.User;
 
 /**
  * Created by mattg on 9/14/15.
  */
 public class Identity extends ApiModel {
-
+    protected User user;
+    
     public Identity() {}
 
     public Identity(Identity identity) {
         super(identity);
         this.user = identity.user;
     }
-
-    protected User user;
 
     public User getUser() {
         return user;

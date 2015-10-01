@@ -4,11 +4,11 @@ import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.persistence.UserPersistence;
-import com.scholarscore.models.Administrator;
 import com.scholarscore.models.Identity;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.Teacher;
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
