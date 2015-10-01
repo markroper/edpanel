@@ -78,7 +78,7 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
         namedStudentSectionGrade.setComplete(false);
         
         return new Object[][] {
-//                { "Empty section assignment", emptyStudentSectionGrade, emptyStudent },
+                { "Empty section assignment", emptyStudentSectionGrade, emptyStudent },
                 { "Populated section assignment", namedStudentSectionGrade, namedStudent },
         };
     }
