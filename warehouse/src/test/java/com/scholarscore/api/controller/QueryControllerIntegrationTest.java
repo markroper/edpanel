@@ -1,13 +1,10 @@
 package com.scholarscore.api.controller;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.School;
 import com.scholarscore.models.query.AggregateFunction;

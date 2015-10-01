@@ -8,7 +8,7 @@ import com.scholarscore.models.query.DimensionField;
 @SuppressWarnings("serial")
 public class DimensionOperand implements Serializable, IOperand {
     protected DimensionField value;
-    protected OperandType type;
+    protected final OperandType type;
 
     public DimensionOperand() {
         this.type = OperandType.DIMENSION;

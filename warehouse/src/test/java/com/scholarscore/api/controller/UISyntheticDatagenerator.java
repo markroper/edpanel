@@ -100,7 +100,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                             sectionIds.add(section.getId());
                             studentToSectionId.put(s.getId(),sectionIds);
                         } else {
-                            studentToSectionId.get(s.getId()).add(section.getId());
+                            studentToSectionId.get(s.getId()).add(createdSection.getId());
                         }
                         if(null == savedGrade) {
                             System.out.println("failed to update SSG");

@@ -39,7 +39,7 @@ public class SchoolYearValidatingExecutor {
                 null);
         ArrayList<SchoolYear> schoolYears = serviceBase.validateResponse(response, new TypeReference<ArrayList<SchoolYear>>(){});
         Assert.assertNotNull(schoolYears, "Unexpected null schoolYear returned for case: " + msg);
-        Assert.assertEquals(schoolYears.size(), numberOfItems, "Unexpected number of items returned for case: " + msg);
+        Assert.assertTrue(schoolYears.size() >= numberOfItems, "Unexpected number of items returned for case: " + msg);
     }
     
     public void getNegative(Long schoolId, Long schoolYearId, HttpStatus expectedCode, String msg) {

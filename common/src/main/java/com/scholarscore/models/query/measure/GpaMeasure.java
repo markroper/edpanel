@@ -10,8 +10,8 @@ import com.scholarscore.models.query.Measure;
 
 @SuppressWarnings("serial")
 public class GpaMeasure implements IMeasure {
-    Set<Measure> compatibleMeasures = Collections.unmodifiableSet(new HashSet<Measure>());
-    Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR, 
+    final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(new HashSet<Measure>());
+    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR,
             Dimension.STUDENT, Dimension.SCHOOL, Dimension.GRADE_LEVEL);
     
     @Override

@@ -69,6 +69,8 @@ public class IntegrationBase {
     private static final String AUTH_ENDPOINT = "/auth";
     private static final String USERS_ENDPOINT = "/users";
     private static final String GOAL_ENDPOINT = "/goals";
+    private static final String SCHOOL_DAY_ENDPOINT = "/days";
+    private static final String ATTENDANCE_ENDPOINT = "/attendance";
 
     public LocaleServiceUtil localeServiceUtil;
     public CourseValidatingExecutor courseValidatingExecutor;
@@ -86,6 +88,8 @@ public class IntegrationBase {
     public AuthValidatingExecutor authValidatingExecutor;
     public UserValidatingExecutor userValidatingExecutor;
     public GoalValidatingExecutor goalValidatingExecutor;
+    public SchoolDayValidatingExecutor schoolDayValidatingExecutor;
+    public AttendanceValidatingExecutor attendanceValidatingExecutor;
 
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Student> studentsCreated = new CopyOnWriteArrayList<>();
@@ -143,6 +147,8 @@ public class IntegrationBase {
         authValidatingExecutor = new AuthValidatingExecutor(this);
         userValidatingExecutor = new UserValidatingExecutor(this);
         goalValidatingExecutor = new GoalValidatingExecutor(this);
+        attendanceValidatingExecutor = new AttendanceValidatingExecutor(this);
+        schoolDayValidatingExecutor = new SchoolDayValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -184,6 +190,8 @@ public class IntegrationBase {
         Assert.assertNotNull(queryValidatingExecutor, "Unable to configure query service");
         Assert.assertNotNull(authValidatingExecutor, "Unable to configure auth service");
         Assert.assertNotNull(userValidatingExecutor, "Unable to configure user service");
+        Assert.assertNotNull(attendanceValidatingExecutor, "Unable to configure auth service");
+        Assert.assertNotNull(schoolDayValidatingExecutor, "Unable to configure user service");
     }
 
     /**
@@ -543,6 +551,22 @@ public class IntegrationBase {
      */
     public String getSchoolEndpoint(Long schoolId) {
         return getSchoolEndpoint() + pathify(schoolId);
+    }
+    
+    public String getSchoolDayEndpoint(Long schoolId) {
+        return getSchoolEndpoint(schoolId) + SCHOOL_DAY_ENDPOINT;
+    }
+    
+    public String getSchoolDayEndpoint(Long schoolId, Long schoolDayId) {
+        return getSchoolDayEndpoint(schoolId) + pathify(schoolDayId);
+    }
+    
+    public String getAttendanceEndpoint(Long schoolId, Long studentId) {
+        return getSchoolEndpoint(schoolId) + STUDENT_ENDPOINT + pathify(studentId) + ATTENDANCE_ENDPOINT;
+    }
+    
+    public String getAttendanceEndpoint(Long schoolId, Long studentId, Long attendanceId) {
+        return getAttendanceEndpoint(schoolId, studentId) + pathify(attendanceId);
     }
     
     /**
