@@ -91,6 +91,11 @@ public class Teacher extends User implements Serializable, IStaff<Teacher> {
     }
     
     @Override
+    public UserType getType() {
+        return UserType.TEACHER;
+    }
+    
+    @Override
     public boolean equals(Object o) {
         if (this == o) { return true; }
         if (!(o instanceof Teacher)) { return false; }

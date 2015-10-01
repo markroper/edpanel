@@ -71,6 +71,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		this.enabled = enabled;
 	}
 
+	public abstract UserType getType();
 	@Override
 	public void mergePropertiesIfNull(User mergeFrom) {
         if (null == username) {
