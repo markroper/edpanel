@@ -46,7 +46,7 @@ public class Identity extends ApiModel {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (getUser() != null ? getUser().hashCode() : 0);
+        result = 31 * result + (getUser() != null ? getUser().hashCode() : 0); 
         return result;
     }
 }

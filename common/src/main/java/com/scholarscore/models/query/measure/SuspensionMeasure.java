@@ -8,8 +8,8 @@ import com.scholarscore.models.query.Measure;
 
 @SuppressWarnings("serial")
 public class SuspensionMeasure extends BehaviorMeasure implements IMeasure {
-    Set<Measure> compatibleMeasures = ImmutableSet.of(Measure.DEMERIT, Measure.MERIT, Measure.DETENTION);
-    Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR, 
+    final Set<Measure> compatibleMeasures = ImmutableSet.of(Measure.DEMERIT, Measure.MERIT, Measure.DETENTION);
+    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR, 
             Dimension.STUDENT, Dimension.TEACHER, Dimension.SCHOOL, Dimension.GRADE_LEVEL);
     @Override
     public Set<Dimension> getCompatibleDimensions() {
