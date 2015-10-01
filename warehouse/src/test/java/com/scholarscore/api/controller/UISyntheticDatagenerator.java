@@ -2,26 +2,10 @@ package com.scholarscore.api.controller;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.api.util.SchoolDataFactory;
-import com.scholarscore.models.Assignment;
-import com.scholarscore.models.Behavior;
-import com.scholarscore.models.Course;
-import com.scholarscore.models.School;
-import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.Section;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.StudentAssignment;
-import com.scholarscore.models.StudentSectionGrade;
-import com.scholarscore.models.Teacher;
-import com.scholarscore.models.Term;
+import com.scholarscore.models.*;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Generates synthetic data for school, school years, terms, courses, sections, students, teachers, 
@@ -69,6 +53,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
         
         //Create terms
         Map<Long, List<Term>> terms = SchoolDataFactory.generateTerms(generatedSchoolYears);
+        Map<Long, List<Long>> studentToSectionId = new HashMap<Long, List<Long>>();
         for(Map.Entry<Long, List<Term>> termEntry : terms.entrySet()) {
             List<Term> createdTerms = new ArrayList<Term>();
             for(Term currentTerm : termEntry.getValue()) {
@@ -83,8 +68,10 @@ public class UISyntheticDatagenerator extends IntegrationBase {
             //Create the sections for courses in the school and the terms in the current schoolYear
             Map<Long, List<Section>> sections = 
                     SchoolDataFactory.generateSections(createdTerms, generatedCourses, generatedStudents, createdTeachers);
+
             for(Map.Entry<Long, List<Section>> sectionEntry : sections.entrySet()) {
                 List<Section> createdSections = new ArrayList<Section>();
+
                 for(Section section : sectionEntry.getValue()) {
                     Section createdSection = sectionValidatingExecutor.create(
                             school.getId(),
@@ -107,6 +94,14 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                                 s.getId(),
                                 ssg,
                                 "Updating student section grade");
+                        //Needed for giving goals
+                        if (null == studentToSectionId.get(s.getId())) {
+                            List<Long> sectionIds = new ArrayList<Long>();
+                            sectionIds.add(section.getId());
+                            studentToSectionId.put(s.getId(),sectionIds);
+                        } else {
+                            studentToSectionId.get(s.getId()).add(section.getId());
+                        }
                         if(null == savedGrade) {
                             System.out.println("failed to update SSG");
                         }
@@ -131,22 +126,22 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                     }
                     
                     //Create the student assignments for each student for list of assignments in term sections
-                    Map<Long, List<StudentAssignment>> studentAssignments = 
-                            SchoolDataFactory.generateStudentAssignments(createdAssignments, generatedStudents);
-                    for(Map.Entry<Long, List<StudentAssignment>> studentAssignmentEntry : studentAssignments.entrySet()) {
-                        List<StudentAssignment> createdStudentAssignments = new ArrayList<StudentAssignment>();
-                        for(StudentAssignment sa : studentAssignmentEntry.getValue()) {
-                            createdStudentAssignments.add(
-                                    studentAssignmentValidatingExecutor.create(
-                                            school.getId(), 
-                                            termEntry.getKey(), 
-                                            sectionEntry.getKey(), 
-                                            assignmentEntry.getKey(),
-                                            sa.getAssignment().getId(), 
-                                            sa, 
-                                            sa.getName()));
-                        }
-                    }  
+//                    Map<Long, List<StudentAssignment>> studentAssignments =
+//                            SchoolDataFactory.generateStudentAssignments(createdAssignments, generatedStudents);
+//                    for(Map.Entry<Long, List<StudentAssignment>> studentAssignmentEntry : studentAssignments.entrySet()) {
+//                        List<StudentAssignment> createdStudentAssignments = new ArrayList<StudentAssignment>();
+//                        for(StudentAssignment sa : studentAssignmentEntry.getValue()) {
+//                            createdStudentAssignments.add(
+//                                    studentAssignmentValidatingExecutor.create(
+//                                            school.getId(),
+//                                            termEntry.getKey(),
+//                                            sectionEntry.getKey(),
+//                                            assignmentEntry.getKey(),
+//                                            sa.getAssignment().getId(),
+//                                            sa,
+//                                            sa.getName()));
+//                        }
+//                    }
                 }
             }
         }
@@ -172,6 +167,21 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                         studentBehaviorEntry.getKey(), 
                         b, 
                         "Creating randomly generated student");
+            }
+        }
+
+        Map<Long, ArrayList<Goal>> goals = SchoolDataFactory.generateGoalEvents(generatedStudents,
+                teachersCreated.get(0),
+                beginDate,
+                endDate,
+                studentToSectionId);
+        for(Map.Entry<Long, ArrayList<Goal>> studentGoalEntry : goals.entrySet()) {
+            for (Goal goal : studentGoalEntry.getValue()) {
+                goalValidatingExecutor.create(
+                        studentGoalEntry.getKey(),
+                        goal,
+                        "Creating randomly generated goal"
+                );
             }
         }
     }
