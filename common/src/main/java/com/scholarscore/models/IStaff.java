@@ -17,4 +17,8 @@ public interface IStaff<T> {
     String getSourceSystemId();
 
     void setName(String name);
+
+    void setEnabled(Boolean b);
+
+    void setUsername(String username);
 }

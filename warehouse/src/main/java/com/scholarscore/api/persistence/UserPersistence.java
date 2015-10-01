@@ -15,7 +15,7 @@ import com.scholarscore.models.user.User;
 public interface UserPersistence {
     Collection<User> selectAllUsers();
 
-    Identity getIdentity(String username);
+//    Identity getIdentity(String username);
     
     User selectUser(String username);
 

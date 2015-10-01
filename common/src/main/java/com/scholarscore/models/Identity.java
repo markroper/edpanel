@@ -1,6 +1,5 @@
 package com.scholarscore.models;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.user.User;
 
 /**

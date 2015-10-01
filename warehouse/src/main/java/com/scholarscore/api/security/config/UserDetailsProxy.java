@@ -3,6 +3,7 @@ package com.scholarscore.api.security.config;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.Authority;
 import com.scholarscore.models.Identity;
+import com.scholarscore.models.user.User;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,14 +21,14 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDetailsProxy implements UserDetails {
 
-	private Identity identity;
+	private User identity;
 	private List<Authority> authorities;
 
 	public UserDetailsProxy() {
 	    
 	}
 	
-	public UserDetailsProxy(Identity identity, List<Authority> authorities) {
+	public UserDetailsProxy(User identity, List<Authority> authorities) {
 		this.identity = identity;
 		this.authorities = authorities;
 	}
@@ -43,12 +44,12 @@ public class UserDetailsProxy implements UserDetails {
 
 	@Override
 	public String getPassword() {
-		return identity.getUser().getPassword();
+		return identity.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		return identity.getUser().getUsername();
+		return identity.getUsername();
 	}
 
 	/**
@@ -82,10 +83,10 @@ public class UserDetailsProxy implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return identity.getUser().getEnabled();
+		return identity.getEnabled();
 	}
 
-	public Identity getIdentity() {
+	public User getIdentity() {
 		return identity;
 	}
 }

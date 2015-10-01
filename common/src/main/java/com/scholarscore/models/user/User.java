@@ -17,6 +17,7 @@ import javax.persistence.*;
  */
 @Entity(name = "user")
 @Table(name = HibernateConsts.USERS_TABLE)
+@Inheritance(strategy=InheritanceType.JOINED)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class User extends ApiModel implements Serializable, IApiModel<User> {
 	private static final long serialVersionUID = 1L;
@@ -70,8 +71,16 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
+	
+    public abstract void setSourceSystemId(String string);
+    
+    public abstract String getSourceSystemId();
 
+	@Transient
 	public abstract UserType getType();
+	
+	public void setType(UserType t){}
+	
 	@Override
 	public void mergePropertiesIfNull(User mergeFrom) {
         if (null == username) {

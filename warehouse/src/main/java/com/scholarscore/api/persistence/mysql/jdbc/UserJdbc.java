@@ -40,20 +40,20 @@ public class UserJdbc implements UserPersistence {
         return hibernateTemplate.loadAll(User.class);
     }
 
-    @Override
-    public Identity getIdentity(String username) {
-
-        Teacher teacher = teacherPersistence.select(username);
-        if (null != teacher) { return teacher; }
-
-        Administrator administrator = administratorPersistence.select(username);
-        if (null != administrator) { return administrator; }
-        
-        Student student = studentPersistence.select(username);
-        if (null != student) { return student; }
-        
-        return null;
-    }
+//    @Override
+//    public Identity getIdentity(String username) {
+//
+//        Teacher teacher = teacherPersistence.select(username);
+//        if (null != teacher) { return teacher; }
+//
+//        Administrator administrator = administratorPersistence.select(username);
+//        if (null != administrator) { return administrator; }
+//        
+//        Student student = studentPersistence.select(username);
+//        if (null != student) { return student; }
+//        
+//        return null;
+//    }
 
     @Override
     @SuppressWarnings("unchecked")
