@@ -30,7 +30,7 @@ public class WarehouseUserDetailService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username)
 			throws UsernameNotFoundException {
-		Identity identity = userPersistence.getIdentity(username);
+		User identity = userPersistence.selectUser(username);
 		if (null != identity) {
 			List<Authority> authorities = authorityPersistence.selectAuthorities(username);
 			UserDetailsProxy proxy = new UserDetailsProxy(identity, authorities);

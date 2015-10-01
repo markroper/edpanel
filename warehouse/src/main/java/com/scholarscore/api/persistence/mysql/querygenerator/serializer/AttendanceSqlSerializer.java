@@ -1,6 +1,7 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
 
 import com.scholarscore.api.persistence.DbMappings;
+import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.api.persistence.mysql.querygenerator.SqlGenerationException;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.attendance.AttendanceStatus;
@@ -22,12 +23,12 @@ public class AttendanceSqlSerializer implements MeasureSqlSerializer {
     public String toJoinClause(Dimension dimToJoinUpon) {
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         if(dimToJoinUpon.equals(Dimension.STUDENT)) {
-            return LEFT_OUTER_JOIN + HibernateConsts.ATTENDANCE_TABLE + ON + dimTableName + DOT + dimTableName + ID_COL_SUFFIX 
+            return LEFT_OUTER_JOIN + HibernateConsts.ATTENDANCE_TABLE + ON + dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) 
                     + EQUALS + HibernateConsts.ATTENDANCE_TABLE + DOT + dimTableName + FK_COL_SUFFIX + " "
                     + LEFT_OUTER_JOIN + HibernateConsts.SCHOOL_DAY_TABLE + ON + HibernateConsts.SCHOOL_DAY_TABLE + DOT + HibernateConsts.SCHOOL_DAY_ID
                     + EQUALS + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.SCHOOL_DAY_FK + " ";
         } else if(dimToJoinUpon.equals(Dimension.SCHOOL)){
-            return LEFT_OUTER_JOIN + HibernateConsts.SCHOOL_DAY_TABLE + ON + dimTableName + DOT + dimTableName + ID_COL_SUFFIX 
+            return LEFT_OUTER_JOIN + HibernateConsts.SCHOOL_DAY_TABLE + ON + dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) 
                     + EQUALS + HibernateConsts.SCHOOL_DAY_TABLE + DOT + dimTableName + FK_COL_SUFFIX + " "
                     + LEFT_OUTER_JOIN + HibernateConsts.ATTENDANCE_TABLE + ON + HibernateConsts.SCHOOL_DAY_TABLE + DOT + HibernateConsts.SCHOOL_DAY_ID
                     + EQUALS + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.SCHOOL_DAY_FK + " ";

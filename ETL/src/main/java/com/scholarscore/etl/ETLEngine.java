@@ -7,7 +7,10 @@ import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.*;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
-import com.scholarscore.models.Student;
+import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.User;
 
 import java.util.*;
 
@@ -27,7 +30,7 @@ public class ETLEngine implements IETLEngine {
 
     // Collections by schoolId
     private Map<Long, List<Course>> courses;
-    private Map<Long, List<IStaff>> staff;
+    private Map<Long, List<User>> staff;
     private Map<Long, List<Student>> students;
 
     public void setPowerSchool(IPowerSchoolClient powerSchool) {
@@ -94,26 +97,21 @@ public class ETLEngine implements IETLEngine {
      * Create the user entry along side the teacher and administrator entries
      * @return
      */
-    public Map<Long, List<IStaff>> createStaff() {
-        Map<Long, List<IStaff>> staffBySchool = new HashMap<>();
+    public Map<Long, List<User>> createStaff() {
+        Map<Long, List<User>> staffBySchool = new HashMap<>();
         for (School school : schools) {
             Staffs response = powerSchool.getStaff(Long.valueOf(school.getSourceSystemId()));
 
-            List<IStaff> apiListOfStaff = response.toInternalModel();
+            List<User> apiListOfStaff = response.toInternalModel();
 
 
             apiListOfStaff.forEach(staff -> {
-                // Create a login for the user
-                if (null != staff.getUser()) {
-                    User login = staff.getUser();
-                    // Generate a random password
-                    login.setPassword(UUID.randomUUID().toString());
-                    try {
-                        User result = scholarScore.createUser(login);
-                        staff.getUser().setId(result.getId());
-                    }
-                    catch (Exception e) {
-                    }
+                staff.setPassword(UUID.randomUUID().toString());
+                try {
+                    User result = scholarScore.createUser(staff);
+                    staff.setId(result.getId());
+                }
+                catch (Exception e) {
                 }
                 if (staff instanceof Teacher) {
                     Teacher teacher = (Teacher)staff;

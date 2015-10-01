@@ -3,6 +3,7 @@ package com.scholarscore.api.controller;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.User;
+import com.scholarscore.models.user.UserType;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -28,17 +29,12 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
     public void testStudentLogin() {
         
         
-        User user = new User();
+        Student user = new Student();
         user.setPassword("password");
         user.setEnabled(true);
         user.setUsername("studentUser");
         User studentUser = userValidatingExecutor.create(user, "Creating test student user");
-
-        Student student = new Student();
-        student.setUser(studentUser);
-        student.setName("Billy Student");
-        Student result = studentValidatingExecutor.create(student, "Create student for authentication");
-        assertNotNull(result);
+        assertNotNull(studentUser);
     }
 
 }
