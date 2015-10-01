@@ -171,6 +171,8 @@ public class StudentSectionGradeValidatingExecutor {
             returnStudentSectionGrade.mergePropertiesIfNull(created);
         }
         returnStudentSectionGrade.setId(created.getId());
+        returnStudentSectionGrade.setStudent(created.getStudent());
+        returnStudentSectionGrade.setSection(created.getSection());
         return returnStudentSectionGrade;
     }
 }
