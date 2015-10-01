@@ -44,17 +44,9 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
         course.setName(localeServiceUtil.generateName());
         course = courseValidatingExecutor.create(school.getId(), course, "create base course");
         
-        student = new Student();
-        student.setName(localeServiceUtil.generateName());
-        student = studentValidatingExecutor.create(student, "create base student");
-        
-        student3 = new Student();
-        student3.setName(localeServiceUtil.generateName());
-        student3 = studentValidatingExecutor.create(student3, "create base student");
-        
-        student2 = new Student();
-        student2.setName(localeServiceUtil.generateName());
-        student2 = studentValidatingExecutor.create(student2, "create base student");
+        student = generateNewStudent();
+        student2 = generateNewStudent();
+        student3 = generateNewStudent();
         
         section = new Section();
         section.setCourse(course);
@@ -62,18 +54,32 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
     }
     
+    private Student generateNewStudent() { 
+        Student student = new Student();
+        student.setName(localeServiceUtil.generateName());
+        return studentValidatingExecutor.create(student, "create base student");
+    }
+    
     //Positive test cases
     @DataProvider
     public Object[][] createStudentSectionGradeProvider() {
+
+        Student emptyStudent = generateNewStudent();
+        // 'empty' in that there is no grade
         StudentSectionGrade emptyStudentSectionGrade = new StudentSectionGrade();
+        emptyStudentSectionGrade.setSection(section);
+        emptyStudentSectionGrade.setStudent(emptyStudent);
         
+        Student namedStudent = generateNewStudent();
         StudentSectionGrade namedStudentSectionGrade = new StudentSectionGrade(emptyStudentSectionGrade);
         namedStudentSectionGrade.setGrade(5.3);
+        namedStudentSectionGrade.setStudent(namedStudent);
+        namedStudentSectionGrade.setSection(section);
         namedStudentSectionGrade.setComplete(false);
         
         return new Object[][] {
-                { "Empty section assignment", emptyStudentSectionGrade, student },
-                { "Populated section assignment", namedStudentSectionGrade, student2 },
+//                { "Empty section assignment", emptyStudentSectionGrade, emptyStudent },
+                { "Populated section assignment", namedStudentSectionGrade, namedStudent },
         };
     }
     
@@ -86,34 +92,35 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
     @Test
     public void deleteStudentSectionGradeTest() {
         StudentSectionGrade emptyStudentSectionGrade = new StudentSectionGrade();
+        emptyStudentSectionGrade.setStudent(student3);
+        emptyStudentSectionGrade.setSection(section);
         studentSectionGradeValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student3.getId(), emptyStudentSectionGrade, "delete");
         studentSectionGradeValidatingExecutor.delete(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student3.getId(), "delete");
     }
     
     @Test(dataProvider = "createStudentSectionGradeProvider")
     public void replaceStudentSectionGradeTest(String msg, StudentSectionGrade studentSectionGrade, Student stud) {
-        Student student4 = new Student();
-        student4.setName(localeServiceUtil.generateName());
-        student4 = studentValidatingExecutor.create(student4, "create base student");
         studentSectionGradeValidatingExecutor.create(
-                school.getId(), schoolYear.getId(), term.getId(), section.getId(), student4.getId(), studentSectionGrade, msg);
+                school.getId(), schoolYear.getId(), term.getId(), section.getId(), stud.getId(), studentSectionGrade, msg);
         StudentSectionGrade replaceGrade = new StudentSectionGrade();
+        replaceGrade.setStudent(stud);
+        replaceGrade.setSection(section);
         studentSectionGradeValidatingExecutor.replace(
-                school.getId(), schoolYear.getId(), term.getId(), section.getId(), student4.getId(), replaceGrade, msg);
+                school.getId(), schoolYear.getId(), term.getId(), section.getId(), stud.getId(), replaceGrade, msg);
         numCreated++;
     }
     
     @Test(dataProvider = "createStudentSectionGradeProvider")
     public void updateStudentSectionGradeTest(String msg, StudentSectionGrade studentSectionGrade, Student stud) {
-        Student student5 = new Student();
-        student5.setName(localeServiceUtil.generateName());
-        student5 = studentValidatingExecutor.create(student5, "create base student");
+//        Student student5 = new Student();
+//        student5.setName(localeServiceUtil.generateName());
+//        student5 = studentValidatingExecutor.create(student5, "create base student");
         studentSectionGradeValidatingExecutor.create(
-                school.getId(), schoolYear.getId(), term.getId(), section.getId(), student5.getId(), studentSectionGrade, msg);
+                school.getId(), schoolYear.getId(), term.getId(), section.getId(), stud.getId(), studentSectionGrade, msg);
         StudentSectionGrade updatedSection = new StudentSectionGrade();
         updatedSection.setComplete(true);
         //PATCH the existing record with a new name.
-        studentSectionGradeValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student5.getId(), updatedSection, msg);
+        studentSectionGradeValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), section.getId(), stud.getId(), updatedSection, msg);
         numCreated++;
     }
     

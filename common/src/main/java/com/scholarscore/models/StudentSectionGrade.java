@@ -50,6 +50,8 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
         this.id = grade.id;
         this.complete = grade.complete;
         this.grade = grade.grade;
+        this.student = grade.student;
+        this.section = grade.section;
     }
     
     @Override
@@ -62,6 +64,12 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
         }
         if(null == grade) {
             grade = mergeFrom.grade;
+        }
+        if (student == null) {
+            student = mergeFrom.student;
+        }
+        if (section == null) {
+            section = mergeFrom.section;
         }
     }
 
@@ -154,5 +162,16 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
     @Transient
     public int getWeight() {
         return 1;
+    }
+
+    @Override
+    public String toString() {
+        return "StudentSectionGrade{" +
+                "id=" + id +
+                ", complete=" + complete +
+                ", grade=" + grade +
+                ", section=" + section +
+                ", student=" + student +
+                '}';
     }
 }
