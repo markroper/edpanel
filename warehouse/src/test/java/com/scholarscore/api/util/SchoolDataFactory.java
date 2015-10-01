@@ -107,8 +107,8 @@ public class SchoolDataFactory {
      */
     public static List<SchoolYear> generateSchoolYears() {
         int year = 115;
-        int startMonth = 9;
-        int endMonth = 6;
+        int startMonth = 8;
+        int endMonth = 5;
         int day = 1;
         ArrayList<SchoolYear> years = new ArrayList<SchoolYear>();
         for(int i = 0; i < 1; i++) {
