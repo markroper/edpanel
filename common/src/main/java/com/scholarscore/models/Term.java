@@ -115,4 +115,12 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         return 31 * super.hashCode() + Objects.hash(startDate, endDate, schoolYear);
     }
 
+    @Override
+    public String toString() {
+        return "Term{" + "(super:{" + super.toString() + "})" + 
+                "startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", schoolYear=" + schoolYear +
+                '}';
+    }
 }
