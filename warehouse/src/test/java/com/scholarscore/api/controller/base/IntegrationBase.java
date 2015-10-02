@@ -797,4 +797,6 @@ public class IntegrationBase {
         return BASE_API_ENDPOINT + USERS_ENDPOINT + "/" + username;
     }
 
+    protected void invalidateCookie() { mockMvc.setjSessionId(null); }
+    
 }

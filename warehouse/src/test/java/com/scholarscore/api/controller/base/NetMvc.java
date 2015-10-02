@@ -103,6 +103,9 @@ public class NetMvc {
                 case HttpDelete.METHOD_NAME:
                     httpRequest = new HttpDelete(uri);
                     break;
+                case HttpOptions.METHOD_NAME:
+                    httpRequest = new HttpOptions(uri);
+                    break;
                 default:
                     throw new IllegalStateException("Unsupported HTTP method: " + httpMethod);
             }

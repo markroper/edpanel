@@ -12,6 +12,20 @@ public class UserRolesTest extends IntegrationBase {
     
     @Test
     public void testUserRoles() { 
+        // positive anon - do something that anyone can do (permissed as anon)
+        // negative anon - do something that anon is not allowed to do and confirm they can't
+        
+        invalidateCookie();
+        
+        // positive user
+        // negative user
+        authenticate("user", "user");
+        invalidateCookie();
+        
+        // positive admin
+        // negative admin
+        authenticate("mroper", "admin");
+        invalidateCookie();
         
     }
 }
