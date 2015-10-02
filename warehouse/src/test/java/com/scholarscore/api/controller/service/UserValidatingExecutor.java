@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.User;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
 import org.testng.Assert;
 
@@ -37,6 +38,15 @@ public class UserValidatingExecutor {
         Assert.assertEquals(createdUser, expectedUser, "Unexpected assignment created for case: " + msg);
         return createdUser;
     }
+
+    public void delete(String username, String msg) {
+        //Delete the user
+        ResultActions response = serviceBase.makeRequest(HttpMethod.DELETE,
+                serviceBase.getUsersEndpoint(username));
+        Assert.assertEquals(response.andReturn().getResponse().getStatus(), HttpStatus.OK.value(),
+                "Non 200 HttpStatus returned on delete for case: " + msg);
+    }
+
 
     private User get(String username, String msg) {
         ResultActions response = serviceBase.makeRequest(
