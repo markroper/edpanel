@@ -40,13 +40,12 @@ CREATE TABLE `scholar_warehouse`.`users` (
 ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`student` (
-  `student_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `student_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `source_system_id` VARCHAR(256) NULL COMMENT 'The identifier from the source system, if any',
   `mailing_fk` BIGINT UNSIGNED NULL COMMENT 'The address FK for mailing address',
   `home_fk` BIGINT UNSIGNED NULL COMMENT 'The address FK for home address',
   `gender` INT NULL COMMENT 'The gender of the student',
-  `student_user_fk` BIGINT UNSIGNED NULL COMMENT 'The user FK of the student',
+  `student_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user FK of the student',
   `birth_date` DATETIME NULL COMMENT 'The birth date of the student',
   `district_entry_date` DATETIME NULL COMMENT 'The date the student entered the school district',
   `projected_graduation_year` BIGINT UNSIGNED NULL COMMENT 'The projected year of graduation for the student. For example: 2020',
@@ -54,7 +53,6 @@ CREATE TABLE `scholar_warehouse`.`student` (
   `federal_race` VARCHAR(512) NULL COMMENT 'The student\'s race according to the federal gov\'t',
   `federal_ethnicity` VARCHAR(512) NULL COMMENT 'The student\'s ethnicity according to the federal gov\'t',
   `school_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the current school the student is enrolled in within the district',
-  PRIMARY KEY (`student_id`),
   CONSTRAINT `school_fk$student`
   FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
     ON DELETE SET NULL
@@ -75,13 +73,11 @@ CREATE TABLE `scholar_warehouse`.`student` (
 ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`teacher` (
-  `teacher_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `teacher_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `teacher_source_system_id` VARCHAR(256) NULL,
-  `teacher_user_fk` BIGINT UNSIGNED NULL COMMENT 'The user_fk of the teacher',
+  `teacher_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user_fk of the teacher',
   `teacher_home_phone` VARCHAR(256) NULL COMMENT 'Home phone number for teacher',
   `teacher_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
-  PRIMARY KEY (`teacher_id`),
   CONSTRAINT `teacher_homeAddress_fk$teacher`
   FOREIGN KEY (`teacher_homeAddress_fk`) REFERENCES `scholar_warehouse`.`address`(`address_id`)
     ON DELETE SET NULL
@@ -93,13 +89,11 @@ CREATE TABLE `scholar_warehouse`.`teacher` (
   ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`administrator` (
-  `administrator_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `administrator_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `administrator_home_phone` VARCHAR(256) NULL,
   `administrator_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
   `administrator_source_system_id` VARCHAR(256) NULL,
-  `administrator_user_fk` BIGINT UNSIGNED NULL COMMENT 'The user_fk of the teacher',
-  PRIMARY KEY (`administrator_id`),
+  `administrator_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user_fk of the teacher',
   CONSTRAINT `administrator_homeAddress_fk$administrator`
   FOREIGN KEY (`administrator_homeAddress_fk`)
     REFERENCES `scholar_warehouse`.`address`(`address_id`)
@@ -183,7 +177,7 @@ CREATE TABLE `scholar_warehouse`.`teacher_section` (
   PRIMARY KEY (`teacher_section_id`),
   CONSTRAINT `teacher_section_teacher_fk`
     FOREIGN KEY(`teacher_fk`)
-    REFERENCES `scholar_warehouse`.`teacher`(`teacher_id`)
+    REFERENCES `scholar_warehouse`.`teacher`(`teacher_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `teacher_section_section_fk`
@@ -226,7 +220,7 @@ CREATE TABLE `scholar_warehouse`.`student_assignment` (
     ON UPDATE CASCADE,
   CONSTRAINT `fk_student$student_assignment`
     FOREIGN KEY (`student_fk`)
-    REFERENCES `scholar_warehouse`.`student`(`student_id`)
+    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
@@ -247,7 +241,7 @@ CREATE TABLE `scholar_warehouse`.`student_section_grade` (
     ON UPDATE CASCADE,
   CONSTRAINT `fk_student$student_section_grade`
     FOREIGN KEY (`student_fk`)
-    REFERENCES `scholar_warehouse`.`student`(`student_id`)
+    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
@@ -279,12 +273,12 @@ CREATE TABLE `scholar_warehouse`.`behavior` (
   PRIMARY KEY (`behavior_id`),
   CONSTRAINT `fk_student$behavior`
     FOREIGN KEY (`student_fk`)
-    REFERENCES `scholar_warehouse`.`student`(`student_id`)
+    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_teacher$behavior`
     FOREIGN KEY (`teacher_fk`)
-    REFERENCES `scholar_warehouse`.`teacher`(`teacher_id`)
+    REFERENCES `scholar_warehouse`.`teacher`(`teacher_user_fk`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
   UNIQUE KEY `remote_system_composite` (`remote_system`, `remote_behavior_id`)
@@ -324,7 +318,7 @@ CREATE TABLE `scholar_warehouse`.`attendance` (
     FOREIGN KEY (`school_day_fk`) REFERENCES `scholar_warehouse`.`school_day` (`school_day_id`)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    FOREIGN KEY (`student_fk`) REFERENCES `scholar_warehouse`.`student` (`student_id`)
+    FOREIGN KEY (`student_fk`) REFERENCES `scholar_warehouse`.`student` (`student_user_fk`)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 )
@@ -345,12 +339,12 @@ CREATE TABLE `scholar_warehouse`.`goal` (
 PRIMARY KEY (`goal_id`),
   CONSTRAINT `fk_student_goal`
     FOREIGN KEY (`student_fk`)
-    REFERENCES `scholar_warehouse`.`student`(`student_id`)
+    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_teacher_goal`
     FOREIGN KEY (`teacher_fk`)
-    REFERENCES `scholar_warehouse`.`teacher`(`teacher_id`)
+    REFERENCES `scholar_warehouse`.`teacher`(`teacher_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;

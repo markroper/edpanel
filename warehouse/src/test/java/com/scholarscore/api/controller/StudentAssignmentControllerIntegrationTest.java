@@ -7,10 +7,11 @@ import com.scholarscore.models.GradedAssignment;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
-import com.scholarscore.models.Teacher;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+
 import org.springframework.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;

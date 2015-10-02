@@ -12,7 +12,6 @@ public class HibernateConsts {
     
     //Administrator consts
     public static final String ADMIN_TABLE = "administrator";
-    public static final String ADMIN_ID = "administrator_id";
     public static final String ADMIN_NAME = "administrator_name";
     public static final String ADMIN_ADDRESS_FK = "administrator_homeAddress_fk";
     public static final String ADMIN_HOME_PHONE = "administrator_home_phone";
@@ -90,7 +89,6 @@ public class HibernateConsts {
     
     //Student constants
     public static final String STUDENT_TABLE = "student";
-    public static final String STUDENT_ID = "student_id";
     public static final String STUDENT_SOURCE_SYSTEM_ID = "source_system_id";
     public static final String STUDENT_NAME = "student_name";
     public static final String STUDENT_MAILING_FK = "mailing_fk";
@@ -113,7 +111,6 @@ public class HibernateConsts {
     //Teacher constants
     public static final String TEACHER_TABLE = "teacher";
     public static final String TEACHER_NAME = "teacher_name";
-    public static final String TEACHER_ID = "teacher_id";
     public static final String TEACHER_ADDRESS_FK = "teacher_homeAddress_fk";
     public static final String TEACHER_HOME_PHONE = "teacher_home_phone";
     public static final String TEACHER_SOURCE_SYSTEM_ID = "teacher_source_system_id";
@@ -133,6 +130,7 @@ public class HibernateConsts {
     public static final String USER_NAME = "username";
     public static final String USER_PASSWORD = "password";
     public static final String USER_ENABLED = "enabled";
+    public static final String USER_TYPE = "user_type";
     public static final String USER_EMAIL_ADDRESS = "email_address";
     public static final String USER_EMAIL_CONFIRM_CODE = "email_confirm_code";
     public static final String USER_EMAIL_CONFIRM_CODE_GENERATED_TIME = "email_confirm_code_creation_time";

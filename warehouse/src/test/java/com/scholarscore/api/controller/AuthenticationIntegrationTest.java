@@ -1,11 +1,12 @@
 package com.scholarscore.api.controller;
 
+import java.util.UUID;
+
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.School;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.User;
 import org.springframework.http.HttpStatus;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -36,21 +37,12 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
 
     @Test
     public void testStudentLogin() {
-        
-        // delete this user, just in case -
-        userValidatingExecutor.delete("studentUser", "deleting user");
-        
-        User user = new User();
+        Student user = new Student();
         user.setPassword("password");
         user.setEnabled(true);
-        user.setUsername("studentUser");
+        user.setUsername(UUID.randomUUID().toString());
         User studentUser = userValidatingExecutor.create(user, "Creating test student user");
-
-        Student student = new Student();
-        student.setUser(studentUser);
-        student.setName("Billy Student");
-        Student result = studentValidatingExecutor.create(student, "Create student for authentication");
-        assertNotNull(result);
+        assertNotNull(studentUser);
     }
     
     @Test
@@ -67,9 +59,6 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
 
         invalidateCookie();
         authenticate(USER_PERMISSIONS_LOGIN, USER_PERMISSIONS_PASS);
-        // positive user test
-        // (e.g. list all users)
-//        studentValidatingExecutor.getAll("regular user can get all students");
         // negative user test
         // (e.g. create school) 
         School school = new School();

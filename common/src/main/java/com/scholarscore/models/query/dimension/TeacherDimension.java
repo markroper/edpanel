@@ -4,8 +4,8 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.ImmutableSet;
-import com.scholarscore.models.Teacher;
 import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.user.Teacher;
 
 @SuppressWarnings("serial")
 public class TeacherDimension implements IDimension {

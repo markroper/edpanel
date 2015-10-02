@@ -96,14 +96,14 @@ public class DbMappings {
         put(new DimensionField(Dimension.STUDENT, StudentDimension.AGE), HibernateConsts.STUDENT_BIRTH_DATE);
         put(new DimensionField(Dimension.STUDENT, StudentDimension.GENDER), HibernateConsts.STUDENT_GENDER);
         put(new DimensionField(Dimension.STUDENT, StudentDimension.NAME), HibernateConsts.STUDENT_NAME);
-        put(new DimensionField(Dimension.STUDENT, StudentDimension.ID), HibernateConsts.STUDENT_ID);
+        put(new DimensionField(Dimension.STUDENT, StudentDimension.ID), HibernateConsts.STUDENT_USER_FK);
         put(new DimensionField(Dimension.STUDENT, StudentDimension.ETHNICITY), HibernateConsts.STUDENT_FEDERAL_ETHNICITY);
         put(new DimensionField(Dimension.STUDENT, StudentDimension.RACE), HibernateConsts.STUDENT_FEDERAL_RACE);
         put(new DimensionField(Dimension.STUDENT, StudentDimension.HOME_ADDRESS), STUDENT_HOME_STREET_COL);
         put(new DimensionField(Dimension.STUDENT, StudentDimension.CITY_OF_RESIDENCE), STUDENT_HOME_CITY_COL);
         //Teacher dimension field to DB column name lookup
         put(new DimensionField(Dimension.TEACHER, TeacherDimension.NAME), HibernateConsts.TEACHER_NAME);
-        put(new DimensionField(Dimension.TEACHER, TeacherDimension.ID), HibernateConsts.TEACHER_ID);
+        put(new DimensionField(Dimension.TEACHER, TeacherDimension.ID), HibernateConsts.TEACHER_USER_FK);
 
         //School dimension field to DB column name lookup
         put(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME), HibernateConsts.SCHOOL_NAME);

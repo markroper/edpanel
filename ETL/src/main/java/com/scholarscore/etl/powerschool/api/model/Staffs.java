@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.scholarscore.etl.powerschool.api.deserializers.StaffsDeserializer;
 import com.scholarscore.etl.powerschool.api.response.ITranslateCollection;
 import com.scholarscore.models.*;
+import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,20 +15,31 @@ import java.util.List;
  * Created by mattg on 7/3/15.
  */
 @JsonDeserialize(using = StaffsDeserializer.class)
-public class Staffs extends ArrayList<Staff> implements ITranslateCollection<IStaff> {
+public class Staffs extends ArrayList<Staff> implements ITranslateCollection<User> {
 
     @Override
-    public List<IStaff> toInternalModel() {
-        List<IStaff> collection = new ArrayList<>();
+    public List<User> toInternalModel() {
+        List<User> collection = new ArrayList<>();
         for (Staff staff : this) {
 
             // MJG: Should we have a notion of an administrator?
-            IStaff entity;
+            com.scholarscore.models.user.Staff entity;
             if (staff.isAdmin()) {
                 entity = new Administrator();
-            }
-            else {
+            } else {
                 entity = new Teacher();
+            }
+            
+            if (null != staff.phones && null != staff.phones.home_phone) {
+                ((Teacher)entity).setHomePhone(staff.phones.home_phone);
+            }
+            if (null != staff.addresses && null != staff.addresses.home) {
+                Address homeAddress = new Address();
+                homeAddress.setCity(staff.addresses.home.city);
+                homeAddress.setPostalCode(staff.addresses.home.postal_code);
+                homeAddress.setState(staff.addresses.home.state_province);
+                homeAddress.setStreet(staff.addresses.home.street);
+                ((Teacher)entity).setHomeAddress(homeAddress);
             }
 
             entity.setName(staff.name.toString());
@@ -34,24 +48,8 @@ public class Staffs extends ArrayList<Staff> implements ITranslateCollection<ISt
             }
 
             // Define the login user so we can create that as well via the API
-            User user = new User();
-            user.setEnabled(true);
-            user.setUsername(staff.getUsername());
-
-            // Create linkage between user and teacher/admin
-            entity.setUser(user);
-
-            if (null != staff.phones && null != staff.phones.home_phone) {
-                entity.setHomePhone(staff.phones.home_phone);
-            }
-            if (null != staff.addresses && null != staff.addresses.home) {
-                Address homeAddress = new Address();
-                homeAddress.setCity(staff.addresses.home.city);
-                homeAddress.setPostalCode(staff.addresses.home.postal_code);
-                homeAddress.setState(staff.addresses.home.state_province);
-                homeAddress.setStreet(staff.addresses.home.street);
-                entity.setHomeAddress(homeAddress);
-            }
+            entity.setEnabled(true);
+            entity.setUsername(staff.getUsername());
             collection.add(entity);
         }
         return collection;
