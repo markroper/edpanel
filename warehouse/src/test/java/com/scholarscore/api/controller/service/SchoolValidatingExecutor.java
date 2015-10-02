@@ -54,7 +54,6 @@ public class SchoolValidatingExecutor {
                 serviceBase.getSchoolEndpoint(),
                 null);
         serviceBase.validateResponse(response, new TypeReference<ArrayList<School>>(){});
-//        Assert.assertNotNull(schools, "Unexpected null school returned for case: " + msg);
     }
     
     public void getNegative(Long schoolId, HttpStatus expectedCode, String msg) {
