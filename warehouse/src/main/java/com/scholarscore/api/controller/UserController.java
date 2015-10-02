@@ -173,6 +173,6 @@ public class UserController extends BaseController {
 			@PathVariable(value="emailCode") String emailCode) {
 		return respond(pm.getUserManager().completeEmailContactValidation(userId, emailCode));
 	}
-
+	
 
 }
