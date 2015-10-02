@@ -115,6 +115,9 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	
 	@Override
     public boolean equals(Object obj) {
+	    if (!super.equals(obj)) {
+            return false;
+        }
 		if (this == obj) return true;
 		if (obj == null || getClass() != obj.getClass()) return false;
 
