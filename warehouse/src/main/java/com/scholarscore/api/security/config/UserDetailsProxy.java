@@ -20,15 +20,15 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDetailsProxy implements UserDetails {
 
-	private User identity;
+	private User user;
 	private List<Authority> authorities;
 
 	public UserDetailsProxy() {
 	    
 	}
 	
-	public UserDetailsProxy(User identity, List<Authority> authorities) {
-		this.identity = identity;
+	public UserDetailsProxy(User user, List<Authority> authorities) {
+		this.user = user;
 		this.authorities = authorities;
 	}
 	
@@ -43,12 +43,12 @@ public class UserDetailsProxy implements UserDetails {
 
 	@Override
 	public String getPassword() {
-		return identity.getPassword();
+		return user.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		return identity.getUsername();
+		return user.getUsername();
 	}
 
 	/**
@@ -82,10 +82,10 @@ public class UserDetailsProxy implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return identity.getEnabled();
+		return user.getEnabled();
 	}
 
-	public User getIdentity() {
-		return identity;
+	public User getUser() {
+		return user;
 	}
 }
