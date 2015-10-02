@@ -139,7 +139,7 @@ public class HibernateConsts {
     public static final String USER_PHONE_CONFIRM_CODE = "phone_confirm_code";
     public static final String USER_PHONE_CONFIRM_CODE_GENERATED_TIME = "phone_confirm_code_creation_time";
     public static final String USER_PHONE_CONFIRMED = "phone_confirmed";
-
+    
     //Section to Teacher table
     public static final String TEACHER_SECTION_TABLE = "teacher_section";
     public static final String TEACHER_SECTION_ROLE = "role";
