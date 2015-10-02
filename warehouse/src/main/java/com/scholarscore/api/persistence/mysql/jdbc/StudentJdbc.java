@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Transactional
 public class StudentJdbc implements StudentPersistence {
@@ -69,6 +70,7 @@ public class StudentJdbc implements StudentPersistence {
 
     @Override
     public Long createStudent(Student student) {
+        assignDefaults(student);
         Student out = hibernateTemplate.merge(student);
         student.setId(out.getId());
         return out.getId();
@@ -76,6 +78,7 @@ public class StudentJdbc implements StudentPersistence {
 
     @Override
     public Long replaceStudent(long studentId, Student student) {
+        assignDefaults(student);
         hibernateTemplate.merge(student);
         return studentId;
     }
@@ -87,5 +90,14 @@ public class StudentJdbc implements StudentPersistence {
             hibernateTemplate.delete(student);
         }
         return studentId;
+    }
+    
+    private static void assignDefaults(Student student) {
+        if(null == student.getPassword()) {
+            student.setPassword(UUID.randomUUID().toString());
+        }
+        if(null == student.getUsername()) {
+            student.setUsername(UUID.randomUUID().toString());
+        }
     }
 }

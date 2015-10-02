@@ -6,8 +6,6 @@ import com.scholarscore.api.persistence.AuthorityPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.persistence.UserPersistence;
-import com.scholarscore.models.Identity;
-
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,7 +28,7 @@ public class WarehouseUserDetailService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username)
 			throws UsernameNotFoundException {
-		User identity = userPersistence.selectUser(username);
+		User identity = userPersistence.selectUserByName(username);
 		if (null != identity) {
 			List<Authority> authorities = authorityPersistence.selectAuthorities(username);
 			UserDetailsProxy proxy = new UserDetailsProxy(identity, authorities);

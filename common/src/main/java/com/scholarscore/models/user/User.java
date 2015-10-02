@@ -3,8 +3,13 @@ package com.scholarscore.models.user;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.scholarscore.models.ApiModel;
+import com.scholarscore.models.AttendanceAssignment;
+import com.scholarscore.models.GradedAssignment;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
 
@@ -19,21 +24,29 @@ import javax.persistence.*;
 @Table(name = HibernateConsts.USERS_TABLE)
 @Inheritance(strategy=InheritanceType.JOINED)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = Student.class, name="STUDENT"),
+    @JsonSubTypes.Type(value = Administrator.class, name = "ADMINISTRATOR"),
+    @JsonSubTypes.Type(value = Teacher.class, name = "TEACHER")
+})
 public abstract class User extends ApiModel implements Serializable, IApiModel<User> {
 	private static final long serialVersionUID = 1L;
 	// login name
 	private String username;
 	private String password;
 	// Indicates whether the user is a login user and can login (by default this is disabled until the user has set a username/password)
-	private Boolean enabled;
+	private Boolean enabled = false;
 	private Long id;
 	
 	public User() { }
 	
 	public User(User value) {
+	    super(value);
 		this.username = value.username;
 		this.password = value.password;
 		this.enabled = value.enabled;
+		this.id = value.id;
 	}
 
 	@Id
@@ -72,10 +85,11 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		this.enabled = enabled;
 	}
 	
-    public abstract void setSourceSystemId(String string);
-    
+	@Transient
     public abstract String getSourceSystemId();
 
+    public abstract void setSourceSystemId(String string);
+    
 	@Transient
 	public abstract UserType getType();
 	

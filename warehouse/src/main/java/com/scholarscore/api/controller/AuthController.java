@@ -3,7 +3,6 @@ package com.scholarscore.api.controller;
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.security.config.UserDetailsProxy;
 import com.scholarscore.api.util.ServiceResponse;
-import com.scholarscore.models.Identity;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,7 @@ public class AuthController extends BaseController {
     @ApiOperation(
             value = "Get current user by authentication token",
             notes = "If the user is presently signed in, return the type of user associated with the identity (teacher, administrator, student)",
-            response = Identity.class)
+            response = UserDetailsProxy.class)
     @RequestMapping(
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })

@@ -4,7 +4,7 @@ import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.persistence.UserPersistence;
-import com.scholarscore.models.Identity;
+import com.scholarscore.models.Term;
 import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
@@ -40,55 +40,43 @@ public class UserJdbc implements UserPersistence {
         return hibernateTemplate.loadAll(User.class);
     }
 
-//    @Override
-//    public Identity getIdentity(String username) {
-//
-//        Teacher teacher = teacherPersistence.select(username);
-//        if (null != teacher) { return teacher; }
-//
-//        Administrator administrator = administratorPersistence.select(username);
-//        if (null != administrator) { return administrator; }
-//        
-//        Student student = studentPersistence.select(username);
-//        if (null != student) { return student; }
-//        
-//        return null;
-//    }
+    @Override
+    public User selectUser(Long userId) {
+        return hibernateTemplate.get(User.class, userId);
+    }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public User selectUser(String username) {
-        List values = hibernateTemplate.findByNamedParam("from user u where u.username = :username", "username", username);
+    public User selectUserByName(String username) {
+        List<?> values = hibernateTemplate.findByNamedParam("from user u where u.username = :username", "username", username);
         if (values.size() == 1) {
             return (User)values.get(0);
         }
         return null;
     }
-
+    
     @Override
-    public String createUser(User user) {
-        hibernateTemplate.merge(user);
-        return user.getUsername();
+    public Long createUser(User user) {
+        User out = hibernateTemplate.merge(user);
+        return out.getId();
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public String replaceUser(String username, User value) {
-        User fromDB = selectUser(username);
-//        fromDB.setName(value.getName());
+    public Long replaceUser(Long userId, User value) {
+        User fromDB = selectUser(userId);
         fromDB.setPassword(value.getPassword());
         fromDB.setEnabled(value.getEnabled());
         hibernateTemplate.merge(fromDB);
-        return username;
+        return userId;
     }
 
     @Override
-    public String deleteUser(String username) {
-        User fromDB = selectUser(username);
+    public Long deleteUser(Long userId) {
+        User fromDB = selectUser(userId);
         if (null != fromDB) {
             hibernateTemplate.delete(fromDB);
         }
-        return username;
+        return userId;
     }
 
     public HibernateTemplate getHibernateTemplate() {

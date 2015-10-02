@@ -41,18 +41,18 @@ public class UserController extends BaseController {
 	}
 
 	@ApiOperation(
-	        value = "Get a user by username", 
-	        notes = "Given a user username, the endpoint returns the user", 
+	        value = "Get a user by user ID", 
+	        notes = "Given a user ID, the endpoint returns the user", 
 	        response = User.class)
 	@RequestMapping(
-	        value = "/{username}", 
+	        value = "/{userId}", 
 	        method = RequestMethod.GET, 
 	        produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity get(
-	        @ApiParam(name = "username", required = true, value = "User login name")
-	        @PathVariable(value="username") String username) {
-	    return respond(pm.getUserManager().getUser(username));
+	        @ApiParam(name = "userId", required = true, value = "User ID")
+	        @PathVariable(value="userId") Long userId) {
+	    return respond(pm.getUserManager().getUser(userId));
 	}
 	
 	@ApiOperation(
@@ -72,15 +72,15 @@ public class UserController extends BaseController {
 	        notes = "Overwrites an existing user entity",
 	        response = String.class)
 	@RequestMapping(
-	        value = "/{username}", 
+	        value = "/{userId}", 
 	        method = RequestMethod.PUT, 
 	        produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity replace(
-	        @ApiParam(name = "username", required = true, value = "User login name")
-	        @PathVariable(value="username") String username,
+	        @ApiParam(name = "userId", required = true, value = "User ID")
+	        @PathVariable(value="userId") Long userId,
 	        @RequestBody @Valid User user) {
-	    return respond(pm.getUserManager().replaceUser(username, user));
+	    return respond(pm.getUserManager().replaceUser(userId, user));
 	}
 	
 	@ApiOperation(
@@ -88,29 +88,29 @@ public class UserController extends BaseController {
 	        notes = "Updates an existing user properties. Will not overwrite existing values with null.",
 	        response = String.class)
 	@RequestMapping(
-	        value = "/{username}", 
+	        value = "/{userId}", 
 	        method = RequestMethod.PATCH, 
 	        produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity update(
-	        @ApiParam(name = "username", required = true, value = "User login name")
-	        @PathVariable(value="username") String username,
+	        @ApiParam(name = "userId", required = true, value = "User ID")
+	        @PathVariable(value="userId") Long userId,
 	        @RequestBody @Valid User user) {
-	    return respond(pm.getUserManager().updateUser(username, user));
+	    return respond(pm.getUserManager().updateUser(userId, user));
 	}
 	
 	@ApiOperation(
 	        value = "Delete a user", 
 	        response = Void.class)
 	@RequestMapping(
-	        value = "/{username}", 
+	        value = "/{userId}", 
 	        method = RequestMethod.DELETE, 
 	        produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity delete(
-	        @ApiParam(name = "username", required = true, value = "User login name")
-	        @PathVariable(value="username") String username) {
-	    return respond(pm.getUserManager().deleteUser(username));
+	        @ApiParam(name = "userId", required = true, value = "User ID")
+	        @PathVariable(value="userId") Long userId) {
+	    return respond(pm.getUserManager().deleteUser(userId));
 	}
 	
 

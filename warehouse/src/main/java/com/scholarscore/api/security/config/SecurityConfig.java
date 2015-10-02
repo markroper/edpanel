@@ -5,8 +5,6 @@ import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
-import com.scholarscore.models.Identity;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -309,12 +307,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 identity.setPassword(null);
                 String value = mapper.writeValueAsString(proxyUser);
                 out.print(value);
-            }
-            else if (authentication.getPrincipal() instanceof Identity) {
-                Identity principal = (Identity) authentication.getPrincipal();
-                out.print(mapper.writeValueAsString(principal));
-            }
-            else {
+            } else {
                 User principal = (User)authentication.getPrincipal();
                 out.print(mapper.writeValueAsString(principal));
             }

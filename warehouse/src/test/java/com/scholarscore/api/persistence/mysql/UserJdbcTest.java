@@ -20,7 +20,7 @@ public class UserJdbcTest extends BaseJdbcTest {
 
         assertTrue(userDao.selectAllUsers().contains(user), "Expect user to exist in all users list");
 
-        User out = userDao.selectUser(user.getUsername());
+        User out = userDao.selectUserByName(user.getUsername());
         assertEquals(out, user, "Expect user identifies to be equal from select method call");
     }
 
