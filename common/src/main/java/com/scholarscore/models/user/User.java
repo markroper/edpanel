@@ -51,8 +51,8 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	private String phoneConfirmCode;
 	private Date phoneConfirmCodeTime;
 
-	private Boolean emailConfirmed;
-	private Boolean phoneConfirmed;
+	private Boolean emailConfirmed = false;
+	private Boolean phoneConfirmed = false;
 	
 	public User() { }
 	
@@ -227,8 +227,11 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	
 	@Override
     public boolean equals(Object obj) {
+	    if (!super.equals(obj)) {
+            return false;
+        }
 		if (this == obj) return true;
-		if (obj == null || getClass() != obj.getClass()) return false;
+		if (getClass() != obj.getClass()) return false;
 
         final User other = (User) obj;
 		return Objects.equals(this.enabled, other.enabled)
@@ -259,7 +262,6 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 				", password='" + password + '\'' +
 				", username='" + username + '\'' +
 				", enabled=" + enabled +
-				", id=" + id +
 				", emailAddress='" + emailAddress + '\'' +
 				", phoneNumber='" + phoneNumber + '\'' +
 				", emailConfirmed=" + emailConfirmed +

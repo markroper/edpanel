@@ -113,28 +113,28 @@ public class UserController extends BaseController {
 			value = "Start validation for phone contact info",
 			response = Void.class)
 	@RequestMapping(
-			value = "/{username}/validation/phone",
+			value = "/{userId}/validation/phone",
 			method = RequestMethod.POST,
 			produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity startPhoneContactValidation(
-			@ApiParam(name = "username", required = true, value = "User login name")
-			@PathVariable(value="username") String username) {
-		return respond(pm.getUserManager().startPhoneContactValidation(username));
+			@ApiParam(name = "userId", required = true, value = "User ID")
+			@PathVariable(value="userId") Long userId) {
+		return respond(pm.getUserManager().startPhoneContactValidation(userId));
 	}
 
 	@ApiOperation(
 			value = "Start validation for email contact info",
 			response = Void.class)
 	@RequestMapping(
-			value = "/{username}/validation/email",
+			value = "/{userId}/validation/email",
 			method = RequestMethod.POST,
 			produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity startEmailContactValidation(
-			@ApiParam(name = "username", required = true, value = "User login name")
-			@PathVariable(value="username") String username) {
-		return respond(pm.getUserManager().startEmailContactValidation(username));
+			@ApiParam(name = "userId", required = true, value = "User ID")
+			@PathVariable(value="userId") Long userId) {
+		return respond(pm.getUserManager().startEmailContactValidation(userId));
 	}
 
 	// TODO Jordan: I guess the user doesn't have to be logged in for these next endpoints?
@@ -143,35 +143,35 @@ public class UserController extends BaseController {
 			value = "Complete validation for phone contact info",
 			response = Void.class)
 	@RequestMapping(
-			value = "/{username}/validation/phone/{phoneCode}",
+			value = "/{userId}/validation/phone/{phoneCode}",
 			method = RequestMethod.GET,
 			produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity completePhoneContactValidation(
-			@ApiParam(name = "username", required = true, value = "User login name")
-			@PathVariable(value="username") String username,
+			@ApiParam(name = "userId", required = true, value = "User ID")
+			@PathVariable(value="userId") Long userId,
 			@ApiParam(name = "phoneCode", required = true, value = "Validation code sent to phone")
 			@PathVariable(value="phoneCode") String phoneCode
 			) {
-		return respond(pm.getUserManager().completePhoneContactValidation(username, phoneCode));
+		return respond(pm.getUserManager().completePhoneContactValidation(userId, phoneCode));
 	}
 
 	@ApiOperation(
 			value = "Complete validation for email contact info",
 			response = Void.class)
 	@RequestMapping(
-			value = "/{username}/validation/email/{emailCode}",
+			value = "/{userId}/validation/email/{emailCode}",
 			method = RequestMethod.GET,
 			produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity completeEmailContactValidation(
 			// This is made a GET so that it can be accessed directly as a link
 			// from the user's email
-			@ApiParam(name = "username", required = true, value = "User login name")
-			@PathVariable(value="username") String username,
+			@ApiParam(name = "userId", required = true, value = "User ID")
+			@PathVariable(value="userId") Long userId,
 			@ApiParam(name = "emailCode", required = true, value = "Validation code sent to email")
 			@PathVariable(value="emailCode") String emailCode) {
-		return respond(pm.getUserManager().completeEmailContactValidation(username, emailCode));
+		return respond(pm.getUserManager().completeEmailContactValidation(userId, emailCode));
 	}
 
 
