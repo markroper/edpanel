@@ -22,12 +22,7 @@ public class Teacher extends Staff implements Serializable, IStaff<Teacher> {
     
     public Teacher(Teacher t) {
         super(t);
-    }
-
-    @Override
-    public void mergePropertiesIfNull(User mergeFrom) {
-        super.mergePropertiesIfNull(mergeFrom);
-    }    
+    }  
     
     @Column(name = HibernateConsts.TEACHER_NAME)
     public String getName() {
@@ -38,22 +33,22 @@ public class Teacher extends Staff implements Serializable, IStaff<Teacher> {
     @Cascade(CascadeType.ALL)
     @JoinColumn(name=HibernateConsts.TEACHER_ADDRESS_FK)
     public Address getHomeAddress() {
-        return super.getHomeAddress();
+        return homeAddress;
     }
 
     @Column(name = HibernateConsts.TEACHER_HOME_PHONE)
     public String getHomePhone() {
-        return super.getHomePhone();
+        return homePhone;
     }
 
     @Column(name = HibernateConsts.TEACHER_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
-        return super.getSourceSystemId();
+        return sourceSystemId;
     }
     
     @Column(name = HibernateConsts.TEACHER_USER_FK, insertable = false, updatable = false)
     public Long getUserId() {
-        return super.getUserId();
+        return getId();
     }
     
     @Override

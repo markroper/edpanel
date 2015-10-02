@@ -46,11 +46,6 @@ public class Administrator extends Staff implements Serializable, IStaff<Adminis
     }
 
     @Override
-    public void mergePropertiesIfNull(User mergeFrom) {
-        super.mergePropertiesIfNull(mergeFrom);
-    }
-
-    @Override
     @Column(name = HibernateConsts.ADMIN_NAME)
     public String getName() {
         return super.getName();
@@ -60,22 +55,22 @@ public class Administrator extends Staff implements Serializable, IStaff<Adminis
     @Cascade(CascadeType.ALL)
     @JoinColumn(name= HibernateConsts.ADMIN_ADDRESS_FK)
     public Address getHomeAddress() {
-        return super.getHomeAddress();
+        return homeAddress;
     }
 
     @Column(name = HibernateConsts.ADMIN_HOME_PHONE)
     public String getHomePhone() {
-        return super.getHomePhone();
+        return homePhone;
     }
 
     @Column(name = HibernateConsts.ADMIN_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
-        return super.getSourceSystemId();
+        return sourceSystemId;
     }
 
     @Column(name = HibernateConsts.ADMIN_USER_FK, insertable = false, updatable = false)
     public Long getUserId() {
-        return super.getUserId();
+        return getId();
     }
     
     @Override
