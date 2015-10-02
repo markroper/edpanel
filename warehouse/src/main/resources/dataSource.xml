@@ -12,13 +12,6 @@
                      http://www.springframework.org/schema/util/spring-util.xsd">
 
     <import resource="classpath:persistence.xml"/>
-
-   <!-- Required so that we can inject an instance into Spring Security -->
-
-   <bean id="authorityPersistence"
-   		 class="com.scholarscore.api.persistence.mysql.jdbc.AuthorityJdbc">
-   	  <property name="dataSource" ref="dataSource"/>
-   </bean>
    
    <bean id="userDetailService"
     	class="com.scholarscore.api.security.config.WarehouseUserDetailService">

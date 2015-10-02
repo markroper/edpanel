@@ -57,6 +57,7 @@
     <bean id="administratorPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.AdministratorJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="authorityPersistence" ref="authorityPersistence"/>
     </bean>
 
     <bean id="goalPersistence"
@@ -70,10 +71,12 @@
     <bean id="teacherPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.TeacherJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="authorityPersistence" ref="authorityPersistence"/>
     </bean>
     <bean id="studentPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.StudentJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="authorityPersistence" ref="authorityPersistence"/>
     </bean>
 
     <bean id="schoolPersistence"
@@ -164,4 +167,11 @@
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
         <property name="termPersistence" ref="termPersistence"/>
     </bean>
+    
+       <!-- Required so that we can inject an instance into Spring Security -->
+
+   <bean id="authorityPersistence"
+         class="com.scholarscore.api.persistence.mysql.jdbc.AuthorityJdbc">
+      <property name="dataSource" ref="dataSource"/>
+   </bean>
 </beans>

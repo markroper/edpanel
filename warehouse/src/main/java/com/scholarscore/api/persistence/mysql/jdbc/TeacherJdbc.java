@@ -1,6 +1,9 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
+import com.scholarscore.api.persistence.AuthorityPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
+import com.scholarscore.api.util.RoleConstants;
+import com.scholarscore.models.Authority;
 import com.scholarscore.models.user.Teacher;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,8 @@ public class TeacherJdbc implements TeacherPersistence {
 
     @Autowired
     private HibernateTemplate hibernateTemplate;
+    
+    private AuthorityPersistence authorityPersistence;
 
     public TeacherJdbc() {
     }
@@ -53,6 +58,10 @@ public class TeacherJdbc implements TeacherPersistence {
     public Long createTeacher(Teacher teacher) {
         assignDefaults(teacher);
         Teacher out = hibernateTemplate.merge(teacher);
+        Authority auth = new Authority();
+        auth.setAuthority(RoleConstants.TEACHER);
+        auth.setUserId(out.getId());
+        authorityPersistence.createAuthority(auth);
         return out.getId();
     }
 
@@ -76,5 +85,9 @@ public class TeacherJdbc implements TeacherPersistence {
         if(null == teacher.getUsername()) {
             teacher.setUsername(UUID.randomUUID().toString());
         }
+    }
+    
+    public void setAuthorityPersistence(AuthorityPersistence authorityPersistence) {
+        this.authorityPersistence = authorityPersistence;
     }
 }
