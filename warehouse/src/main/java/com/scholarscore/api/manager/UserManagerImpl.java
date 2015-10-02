@@ -85,7 +85,7 @@ public class UserManagerImpl implements UserManager {
             Object principal = authentication.getPrincipal();
             if (principal instanceof UserDetailsProxy) {
                 UserDetailsProxy proxy = (UserDetailsProxy)principal;
-                return new ServiceResponse<User>(proxy.getIdentity());
+                return new ServiceResponse<User>(proxy.getUser());
             }
         }
         return new ServiceResponse<User>(new StatusCode(StatusCodes.NOT_AUTHENTICATED,
