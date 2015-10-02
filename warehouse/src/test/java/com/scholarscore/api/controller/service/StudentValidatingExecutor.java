@@ -182,6 +182,14 @@ public class StudentValidatingExecutor {
         } else if(null != returnStudent && null == returnStudent.getId()) {
             returnStudent.setId(created.getId());
         }
+        if(null == returnStudent.getPassword()) {
+            returnStudent.setPassword(created.getPassword());
+        }
+        if(null == returnStudent.getUsername()) {
+            returnStudent.setUsername(created.getUsername());
+        }
+        returnStudent.setUserId(created.getUserId());
+        returnStudent.setId(created.getId());
         return returnStudent;
     }
 }

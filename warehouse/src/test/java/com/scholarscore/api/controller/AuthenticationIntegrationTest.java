@@ -1,10 +1,10 @@
 package com.scholarscore.api.controller;
 
+import java.util.UUID;
+
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.User;
-import com.scholarscore.models.user.UserType;
-
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -27,12 +27,10 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
     }
 
     public void testStudentLogin() {
-        
-        
         Student user = new Student();
         user.setPassword("password");
         user.setEnabled(true);
-        user.setUsername("studentUser");
+        user.setUsername(UUID.randomUUID().toString());
         User studentUser = userValidatingExecutor.create(user, "Creating test student user");
         assertNotNull(studentUser);
     }

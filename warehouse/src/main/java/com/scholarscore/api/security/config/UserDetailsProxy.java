@@ -2,7 +2,6 @@ package com.scholarscore.api.security.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.Authority;
-import com.scholarscore.models.Identity;
 import com.scholarscore.models.user.User;
 
 import org.springframework.security.core.GrantedAuthority;

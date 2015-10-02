@@ -790,8 +790,8 @@ public class IntegrationBase {
         return BASE_API_ENDPOINT + USERS_ENDPOINT;
     }
 
-    public String getUsersEndpoint(String username) {
-        return BASE_API_ENDPOINT + USERS_ENDPOINT + "/" + username;
+    public String getUsersEndpoint(Long userId) {
+        return BASE_API_ENDPOINT + USERS_ENDPOINT + pathify(userId);
     }
 
 }
