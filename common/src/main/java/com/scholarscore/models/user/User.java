@@ -42,7 +42,6 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	private String password;
 	// Indicates whether the user is a login user and can login (by default this is disabled until the user has set a username/password)
 	private Boolean enabled = false;
-	private Long id;
 	
 	public User() { }
 	
@@ -51,18 +50,13 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		this.username = value.username;
 		this.password = value.password;
 		this.enabled = value.enabled;
-		this.id = value.id;
 	}
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name = HibernateConsts.USER_ID)
 	public Long getId() {
-		return id;
-	}
-	
-	public void setId(Long id) { 
-		this.id = id;
+		return super.getId();
 	}
 
 	@Column(name = HibernateConsts.USER_PASSWORD)
@@ -126,8 +120,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		if (obj == null || getClass() != obj.getClass()) return false;
 
         final User other = (User) obj;
-		return  Objects.equals(this.id, other.id)
-        		&& Objects.equals(this.enabled, other.enabled)
+		return Objects.equals(this.enabled, other.enabled)
                 && Objects.equals(this.password, other.password)
                 && Objects.equals(this.username, other.username);
     }
@@ -135,14 +128,13 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	@Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(id, username, enabled, password);
+                + Objects.hash(username, enabled, password);
     }
 
 	@Override
 	public String toString() {
 		return super.toString() + "\n" +
 				"User{" +
-				"id='" + id + "\'" +
 				"password='" + password + '\'' +
 				", username='" + username + '\'' +
 				", enabled=" + enabled +
