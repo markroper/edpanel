@@ -1,20 +1,35 @@
 package com.scholarscore.models;
 
+import java.util.Objects;
+
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 
-import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-
-import java.util.Objects;
-
 /**
  * Abstract class defining common fields and methods that exist across all goals.
  * Created by cwallace on 9/20/2015.
  */
+@SuppressWarnings("serial")
 @Entity(name = HibernateConsts.GOAL_TABLE)
 @Table(name = HibernateConsts.GOAL_TABLE)
 @DiscriminatorColumn(name=HibernateConsts.GOAL_TYPE, discriminatorType = DiscriminatorType.STRING)

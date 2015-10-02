@@ -2,7 +2,6 @@ package com.scholarscore.models.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.Address;
-import com.scholarscore.models.Course;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings("serial")
