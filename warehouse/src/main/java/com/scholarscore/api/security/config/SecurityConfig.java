@@ -5,6 +5,8 @@ import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
+import com.scholarscore.api.util.RoleConstants;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -26,6 +28,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,9 +66,7 @@ import java.io.PrintWriter;
 @ImportResource({"classpath:/dataSource.xml", "classpath:/persistence.xml"})
 @EnableWebMvcSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private static final String USER_ROLE = "USER";
     private static final String OPTIONS_VERB = "OPTIONS";
-    private static final String ADMIN_ROLE = "ADMIN";
     private static final String LOGIN_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/login";
     private static final String LOGOUT_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/logout";
     private static final String CONFIRM_EMAIL_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/" + "users" + "/*/validation/email/*";
@@ -201,12 +202,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             antMatchers(HttpMethod.GET, CONFIRM_EMAIL_ENDPOINT).permitAll().
             antMatchers(HttpMethod.GET, CONFIRM_PHONE_ENDPOINT).permitAll().
             antMatchers(HttpMethod.POST, LOGOUT_ENDPOINT).authenticated().
-            antMatchers(HttpMethod.GET, "/**").hasAnyRole(USER_ROLE, ADMIN_ROLE).
-            antMatchers(HttpMethod.POST, "/**").hasRole(ADMIN_ROLE).
-            antMatchers(HttpMethod.DELETE, "/**").hasRole(ADMIN_ROLE).
-            antMatchers(HttpMethod.PUT, "/**").hasRole(ADMIN_ROLE).
-            antMatchers(HttpMethod.PATCH, "/**").hasRole(ADMIN_ROLE).
-            anyRequest().authenticated();
+            antMatchers(HttpMethod.GET, "/**").authenticated().
+            antMatchers(HttpMethod.POST, "/**").hasRole(RoleConstants.ADMINISTRATOR).
+            antMatchers(HttpMethod.DELETE, "/**").hasRole(RoleConstants.ADMINISTRATOR).
+            antMatchers(HttpMethod.PUT, "/**").hasRole(RoleConstants.ADMINISTRATOR).
+            antMatchers(HttpMethod.PATCH, "/**").hasRole(RoleConstants.ADMINISTRATOR).
+            anyRequest().denyAll();
     }
 
     private static class CustomLogoutHandler implements LogoutHandler {
