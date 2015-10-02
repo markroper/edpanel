@@ -23,34 +23,23 @@ public class Staffs extends ArrayList<Staff> implements ITranslateCollection<Use
         for (Staff staff : this) {
 
             // MJG: Should we have a notion of an administrator?
-            User entity;
+            com.scholarscore.models.user.Staff entity;
             if (staff.isAdmin()) {
                 entity = new Administrator();
-                if (null != staff.phones && null != staff.phones.home_phone) {
-                    ((Administrator)entity).setHomePhone(staff.phones.home_phone);
-                }
-                if (null != staff.addresses && null != staff.addresses.home) {
-                    Address homeAddress = new Address();
-                    homeAddress.setCity(staff.addresses.home.city);
-                    homeAddress.setPostalCode(staff.addresses.home.postal_code);
-                    homeAddress.setState(staff.addresses.home.state_province);
-                    homeAddress.setStreet(staff.addresses.home.street);
-                    ((Administrator)entity).setHomeAddress(homeAddress);
-                }
-            }
-            else {
+            } else {
                 entity = new Teacher();
-                if (null != staff.phones && null != staff.phones.home_phone) {
-                    ((Teacher)entity).setHomePhone(staff.phones.home_phone);
-                }
-                if (null != staff.addresses && null != staff.addresses.home) {
-                    Address homeAddress = new Address();
-                    homeAddress.setCity(staff.addresses.home.city);
-                    homeAddress.setPostalCode(staff.addresses.home.postal_code);
-                    homeAddress.setState(staff.addresses.home.state_province);
-                    homeAddress.setStreet(staff.addresses.home.street);
-                    ((Teacher)entity).setHomeAddress(homeAddress);
-                }
+            }
+            
+            if (null != staff.phones && null != staff.phones.home_phone) {
+                ((Teacher)entity).setHomePhone(staff.phones.home_phone);
+            }
+            if (null != staff.addresses && null != staff.addresses.home) {
+                Address homeAddress = new Address();
+                homeAddress.setCity(staff.addresses.home.city);
+                homeAddress.setPostalCode(staff.addresses.home.postal_code);
+                homeAddress.setState(staff.addresses.home.state_province);
+                homeAddress.setStreet(staff.addresses.home.street);
+                ((Teacher)entity).setHomeAddress(homeAddress);
             }
 
             entity.setName(staff.name.toString());

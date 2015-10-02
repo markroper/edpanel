@@ -25,7 +25,7 @@ import javax.persistence.Entity;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @PrimaryKeyJoinColumn(name=HibernateConsts.ADMIN_USER_FK, referencedColumnName = HibernateConsts.USER_ID)
-public class Administrator extends User implements Serializable, IStaff<Administrator> {
+public class Administrator extends Staff implements Serializable, IStaff<Administrator> {
     public static final DimensionField ID = new DimensionField(Dimension.ADMINISTRATOR, "ID");
     public static final DimensionField NAME = new DimensionField(Dimension.ADMINISTRATOR, "Name");
     public static final DimensionField EMAIL_ADDRESS = new DimensionField(Dimension.ADMINISTRATOR, "Address");
@@ -35,41 +35,15 @@ public class Administrator extends User implements Serializable, IStaff<Administ
         add(EMAIL_ADDRESS);
     }};
     
-    private String sourceSystemId;
-    private Address homeAddress;
-    private String homePhone;
-    private Long userId;
-    
     public Administrator() {
     }
 
     public Administrator(Administrator admin) {
         super(admin);
-        this.setUserId(admin.getUserId());
-        this.setSourceSystemId(admin.getSourceSystemId());
-        this.setName(admin.getName());
-        this.setHomeAddress(admin.getHomeAddress());
-        this.setHomePhone(admin.getHomePhone());
     }
 
     @Override
     public void mergePropertiesIfNull(User mergeFrom) {
-        // MJG: do we merge address properties if null too?
-        if(mergeFrom instanceof Administrator) {
-            Administrator from = (Administrator) mergeFrom;
-            if(null == this.getUserId()) {
-                this.setUserId(from.getUserId());
-            }
-            if (null == this.getHomeAddress()) {
-                this.setHomeAddress(from.getHomeAddress());
-            }
-            if (null == this.getHomePhone()) {
-                this.setHomePhone(from.getHomePhone());
-            }
-            if (null == this.getSourceSystemId()) {
-                this.setSourceSystemId(from.getSourceSystemId());
-            }
-        }
         super.mergePropertiesIfNull(mergeFrom);
     }
 
@@ -83,37 +57,22 @@ public class Administrator extends User implements Serializable, IStaff<Administ
     @Cascade(CascadeType.ALL)
     @JoinColumn(name= HibernateConsts.ADMIN_ADDRESS_FK)
     public Address getHomeAddress() {
-        return homeAddress;
+        return super.getHomeAddress();
     }
 
     @Column(name = HibernateConsts.ADMIN_HOME_PHONE)
     public String getHomePhone() {
-        return homePhone;
+        return super.getHomePhone();
     }
 
     @Column(name = HibernateConsts.ADMIN_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
-        return sourceSystemId;
+        return super.getSourceSystemId();
     }
 
     @Column(name = HibernateConsts.ADMIN_USER_FK, insertable = false, updatable = false)
     public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public void setHomePhone(String homePhone) {
-        this.homePhone = homePhone;
-    }
-    public void setHomeAddress(Address homeAddress) {
-        this.homeAddress = homeAddress;
-    }
-
-    public void setSourceSystemId(String sourceSystemId) {
-        this.sourceSystemId = sourceSystemId;
+        return super.getUserId();
     }
     
     @Override
@@ -124,34 +83,6 @@ public class Administrator extends User implements Serializable, IStaff<Administ
 
     @Override
     public String toString() {
-        return"Administrator{" + "(super):{" + super.toString() + "} " +
-                "sourceSystemId='" + sourceSystemId + '\'' +
-                ", userId=" + userId +
-                ", homeAddress=" + homeAddress +
-                ", homePhone='" + homePhone + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-
-        Administrator that = (Administrator) o;
-
-        if (homeAddress != null ? !homeAddress.equals(that.homeAddress) : that.homeAddress != null) return false;
-        if (userId != null ? !userId.equals(that.userId) : that.userId != null) return false;
-        if (homePhone != null ? !homePhone.equals(that.homePhone) : that.homePhone != null) return false;
-        if (sourceSystemId != null ? !sourceSystemId.equals(that.sourceSystemId) : that.sourceSystemId != null)
-            return false;
-
-        return true;
-    }
-    
-    @Override
-    public int hashCode() {
-        return 31 * super.hashCode()
-                + Objects.hash(homeAddress, homePhone, sourceSystemId, userId);
+        return"Administrator{" + "(super):{" + super.toString() + "} ";
     }
 }
