@@ -5,8 +5,6 @@ import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
-import com.scholarscore.models.Identity;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -28,7 +26,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -305,17 +302,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             // cases and emit the appropriate JSON there as well.
             if (authentication.getPrincipal() instanceof UserDetailsProxy) {
                 UserDetailsProxy proxyUser = (UserDetailsProxy)authentication.getPrincipal();
-                Identity identity = proxyUser.getIdentity();
+                com.scholarscore.models.user.User identity = proxyUser.getIdentity();
                 // don't bother sending the password value to the client
-                identity.getUser().setPassword(null);
+                identity.setPassword(null);
                 String value = mapper.writeValueAsString(proxyUser);
                 out.print(value);
-            }
-            else if (authentication.getPrincipal() instanceof Identity) {
-                Identity principal = (Identity) authentication.getPrincipal();
-                out.print(mapper.writeValueAsString(principal));
-            }
-            else {
+            } else {
                 User principal = (User)authentication.getPrincipal();
                 out.print(mapper.writeValueAsString(principal));
             }

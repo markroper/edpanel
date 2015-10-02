@@ -1,6 +1,7 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
 
 import com.scholarscore.api.persistence.DbMappings;
+import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.Dimension;
@@ -19,7 +20,7 @@ public class DemeritSqlSerializer implements MeasureSqlSerializer {
     public String toJoinClause(Dimension dimToJoinUpon) {
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         return LEFT_OUTER_JOIN + HibernateConsts.BEHAVIOR_TABLE + ON +
-                dimTableName + DOT + dimTableName + ID_COL_SUFFIX +
+                dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) +
                 EQUALS + HibernateConsts.BEHAVIOR_TABLE + DOT + dimTableName + FK_COL_SUFFIX + " ";
     }
 

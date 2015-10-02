@@ -1,18 +1,21 @@
 package com.scholarscore.api.controller;
 
+import java.util.UUID;
+
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
+
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.Student;
+import com.scholarscore.models.user.Student;
 
 import static org.testng.Assert.assertEquals;
 
@@ -27,11 +30,9 @@ public class StudentControllerIntegrationTest extends IntegrationBase {
     //Positive test cases
     @DataProvider
     public Object[][] createStudentProvider() {
-        Student emptyStudent = new Student();
         Student namedStudent = new Student();
         namedStudent.setName(localeServiceUtil.generateName());
         return new Object[][] {
-                { "Empty student", emptyStudent },
                 { "Named student", namedStudent }
         };
     }
@@ -57,6 +58,10 @@ public class StudentControllerIntegrationTest extends IntegrationBase {
     public void updateStudentTest(String msg, Student student) {
         Student createdStudent = studentValidatingExecutor.create(student, msg);
         Student updatedStudent = new Student();
+        updatedStudent.setUsername(createdStudent.getUsername());
+        updatedStudent.setPassword(createdStudent.getPassword());
+        updatedStudent.setId(createdStudent.getUserId());
+        updatedStudent.setUserId(createdStudent.getUserId());
         updatedStudent.setName(localeServiceUtil.generateName());
         //PATCH the existing record with a new name.
         studentValidatingExecutor.update(createdStudent.getId(), updatedStudent, msg);
@@ -129,7 +134,9 @@ public class StudentControllerIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createStudentNegativeProvider")
     public void replaceStudentNegativeTest(String msg, Student student, HttpStatus expectedStatus) {
-        Student created = studentValidatingExecutor.create(new Student(), msg);
+        Student s = new Student();
+        s.setName(UUID.randomUUID().toString());
+        Student created = studentValidatingExecutor.create(s, msg);
         studentValidatingExecutor.replaceNegative(created.getId(), student, expectedStatus, msg);
     }
 }

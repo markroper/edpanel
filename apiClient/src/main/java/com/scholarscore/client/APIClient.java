@@ -3,6 +3,12 @@ package com.scholarscore.client;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.models.*;
+import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.User;
+import com.scholarscore.models.user.UserType;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
@@ -144,7 +150,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     @Override
     public User createUser(User login) {
         EntityId id = create(login, USERS_ENDPOINT);
-        User response = new User(login);
+        User response = UserType.clone(login);
         response.setId(login.getId());
         return response;
     }

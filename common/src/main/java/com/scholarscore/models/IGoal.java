@@ -1,9 +1,6 @@
 package com.scholarscore.models;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
+import javax.persistence.Transient;
 
 /**
  * Created by cwallace on 9/20/2015.

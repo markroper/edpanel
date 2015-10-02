@@ -3,12 +3,14 @@ package com.scholarscore.api.controller;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.BehaviorCategory;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.Teacher;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
 import java.util.Calendar;
 
 /**

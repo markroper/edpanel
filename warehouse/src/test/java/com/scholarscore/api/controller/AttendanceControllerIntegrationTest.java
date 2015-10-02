@@ -16,11 +16,11 @@ import org.testng.annotations.Test;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.Student;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.SchoolDay;
+import com.scholarscore.models.user.Student;
 
 @Test( groups = { "integration" })
 public class AttendanceControllerIntegrationTest extends IntegrationBase {

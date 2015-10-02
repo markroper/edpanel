@@ -9,9 +9,10 @@ import com.google.common.collect.ImmutableMap;
 import com.scholarscore.api.controller.service.*;
 import com.scholarscore.models.LoginRequest;
 import com.scholarscore.models.School;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.Teacher;
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.User;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -793,8 +794,8 @@ public class IntegrationBase {
         return BASE_API_ENDPOINT + USERS_ENDPOINT;
     }
 
-    public String getUsersEndpoint(String username) {
-        return BASE_API_ENDPOINT + USERS_ENDPOINT + "/" + username;
+    public String getUsersEndpoint(Long userId) {
+        return BASE_API_ENDPOINT + USERS_ENDPOINT + pathify(userId);
     }
 
     protected void invalidateCookie() { mockMvc.setjSessionId(null); }

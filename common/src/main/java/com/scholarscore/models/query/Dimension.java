@@ -4,10 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.scholarscore.models.*;
-import com.scholarscore.models.query.dimension.*;
+import com.scholarscore.models.query.dimension.AdministratorDimension;
+import com.scholarscore.models.query.dimension.CourseDimension;
+import com.scholarscore.models.query.dimension.GradeLevelDimension;
+import com.scholarscore.models.query.dimension.IDimension;
+import com.scholarscore.models.query.dimension.SchoolDimension;
+import com.scholarscore.models.query.dimension.SchoolYearDimension;
+import com.scholarscore.models.query.dimension.SectionDimension;
+import com.scholarscore.models.query.dimension.StudentDimension;
+import com.scholarscore.models.query.dimension.SubjectAreaDimension;
+import com.scholarscore.models.query.dimension.TeacherDimension;
+import com.scholarscore.models.query.dimension.TermDimension;
 
 /**
  * Enumerates the supported dimensions of the warehouse report and querying model.

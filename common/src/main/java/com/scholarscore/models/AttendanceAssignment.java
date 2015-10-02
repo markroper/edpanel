@@ -47,7 +47,6 @@ public class AttendanceAssignment extends Assignment implements Serializable {
         if(!super.equals(obj)) {
             return false;
         }
-        final AttendanceAssignment other = (AttendanceAssignment) obj;
         return true;
     }
     

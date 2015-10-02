@@ -1,7 +1,7 @@
 package com.scholarscore.etl;
 
 import com.scholarscore.models.School;
-import com.scholarscore.models.Student;
+import com.scholarscore.models.user.Student;
 
 import java.util.List;
 
