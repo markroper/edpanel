@@ -10,6 +10,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureSqlSerializer;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureSqlSerializerFactory;
+import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.query.AggregateMeasure;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
@@ -141,11 +142,30 @@ public abstract class QuerySqlGenerator {
                     throw new SqlGenerationException("Unable to generate JOIN clause due to null table name");
                 }
                 sqlBuilder.append(LEFT_OUTER_JOIN + joinTableName + " " + ON + " ");
-                sqlBuilder.append(joinTableName + "." + joinTableName + ID_SUFFIX + " = ");
+                sqlBuilder.append(joinTableName + "." + resolvePrimaryKeyField(joinTableName) + " = ");
                 sqlBuilder.append(currentTableName + "." + joinTableName + FK_SUFFIX + " ");
                 currTable = joinDim;
             }
         }
+    }
+    
+    /**
+     * Breaking with our pattern for all other tables in the system, the Student, Teacher & Administrator
+     * tables do not have a primary key field called TABLENAME_id.  This is because they have a unique FK
+     * to the users table which serves as the ID.  Therefore, we have to special case the generation of the join
+     * SQL for these tables because they don't follow the pattern :(.
+     * 
+     * @param tableName
+     * @return
+     */
+    public static String resolvePrimaryKeyField(String tableName) {
+        String primaryKeyFieldReference = tableName + ID_SUFFIX;
+        if(tableName.equals(HibernateConsts.STUDENT_TABLE) ||
+                tableName.equals(HibernateConsts.TEACHER_TABLE) ||
+                tableName.equals(HibernateConsts.ADMIN_TABLE)) {
+            primaryKeyFieldReference = tableName + "_user_fk";
+        }
+        return primaryKeyFieldReference;
     }
     
     protected static void populateWhereClause(StringBuilder sqlBuilder, Map<String, Object> params, Query q) 

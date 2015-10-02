@@ -3,6 +3,7 @@ package com.scholarscore.api.controller.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.api.security.config.UserDetailsProxy;
+import com.scholarscore.models.user.User;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.ResultActions;
@@ -28,9 +29,9 @@ public class AuthValidatingExecutor {
                 serviceBase.getCurrentUserEndpoint(),
                 null);
         assertNotNull(response, "Expected non-null response from getCurrentUser");
-        UserDetailsProxy identity = serviceBase.validateResponse(response, new TypeReference<UserDetailsProxy>(){});
+        User identity = serviceBase.validateResponse(response, new TypeReference<User>(){});
         assertNotNull(identity, "Expected non-null identity returned from getCurrentUser");
-        assertNotNull(identity.getIdentity().getUser(), "Expected non-null identity.getLogin() from getCurrentUser");
-        assertEquals(identity.getIdentity().getUser().getUsername(), expectUsername, "Expected the username to equal the expected username");
+        assertNotNull(identity, "Expected non-null identity.getLogin() from getCurrentUser");
+        assertEquals(identity.getUsername(), expectUsername, "Expected the username to equal the expected username");
     }
 }

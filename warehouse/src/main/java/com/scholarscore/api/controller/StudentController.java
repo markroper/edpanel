@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.Student;
+import com.scholarscore.models.user.Student;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 

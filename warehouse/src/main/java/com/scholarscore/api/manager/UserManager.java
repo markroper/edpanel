@@ -5,8 +5,7 @@ import java.util.Collection;
 import com.scholarscore.api.security.config.UserDetailsProxy;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
-import com.scholarscore.models.Identity;
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.User;
 
 /**
  * Allows for the creation of users
@@ -16,25 +15,25 @@ import com.scholarscore.models.User;
 public interface UserManager {
     ServiceResponse<Collection<User>> getAllUsers();
 
-    StatusCode userExists(String username);
+    StatusCode userExists(Long userId);
     
-    ServiceResponse<User> getUser(String username);
+    ServiceResponse<User> getUser(Long userId);
 
-    ServiceResponse<String> createUser(User value);
+    ServiceResponse<Long> createUser(User value);
 
-    ServiceResponse<String> replaceUser(String username, User user);
+    ServiceResponse<Long> replaceUser(Long userId, User user);
     
-    ServiceResponse<String> updateUser(String username, User user);
+    ServiceResponse<Long> updateUser(Long userId, User user);
 
-    ServiceResponse<String> deleteUser(String username);
+    ServiceResponse<Long> deleteUser(Long userId);
 
-    ServiceResponse<UserDetailsProxy> getCurrentUser();
+    ServiceResponse<User> getCurrentUser();
     
-    ServiceResponse<String> startPhoneContactValidation(String username);
+    ServiceResponse<String> startPhoneContactValidation(Long userId);
     
-    ServiceResponse<String> completePhoneContactValidation(String username, String code);
+    ServiceResponse<String> completePhoneContactValidation(Long userId, String code);
     
-    ServiceResponse<String> startEmailContactValidation(String username);
+    ServiceResponse<String> startEmailContactValidation(Long userId);
     
-    ServiceResponse<String> completeEmailContactValidation(String username, String code);
+    ServiceResponse<String> completeEmailContactValidation(Long userId, String code);
 }

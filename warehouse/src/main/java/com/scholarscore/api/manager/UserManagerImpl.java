@@ -6,7 +6,7 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.User;
 
 import com.scholarscore.util.EmailProvider;
 import com.scholarscore.util.EmailService;
@@ -46,77 +46,63 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public StatusCode userExists(String username) {
-        User user = userPersistence.selectUser(username);
+    public StatusCode userExists(Long userId) {
+        User user = userPersistence.selectUser(userId);
         if(null == user) {
-            return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, username});
+            return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId});
         };
         return StatusCodes.getStatusCode(StatusCodeType.OK);
     }
 
     @Override
-    public ServiceResponse<User> getUser(String username) {
-        User user = userPersistence.selectUser(username);
+    public ServiceResponse<User> getUser(Long userId) {
+        User user = userPersistence.selectUser(userId);
         if (null != user) {
             return new ServiceResponse<User>(user);
         }
-        return new ServiceResponse<User>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { USER, username } ));
+        return new ServiceResponse<User>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { USER, userId } ));
     }
 
     @Override
-    public ServiceResponse<String> createUser(User value) {
-        return new ServiceResponse<String>(userPersistence.createUser(value));
+    public ServiceResponse<Long> createUser(User value) {
+        return new ServiceResponse<Long>(userPersistence.createUser(value));
     }
 
     @Override
-    public ServiceResponse<String> replaceUser(String username, User user) {
-        return new ServiceResponse<String>(userPersistence.replaceUser(username, user));
+    public ServiceResponse<Long> replaceUser(Long userId, User user) {
+        return new ServiceResponse<Long>(userPersistence.replaceUser(userId, user));
     }
 
     @Override
-    public ServiceResponse<String> updateUser(String username, User user) {
-        StatusCode code = userExists(username);
-        if (!code.isOK()) {
-            return new ServiceResponse<String>(code);
-        }
-        user.setUsername(username);
-        User savedUser = userPersistence.selectUser(username);
-        // these fields are not null by default and so we must merge manually
-        // ... wait... actually, these need to not be overwritten
-//        user.setEnabled(savedUser.getEnabled());
-//        user.setEmailConfirmed(savedUser.getEmailConfirmed());
-//        user.setPhoneConfirmed(savedUser.getPhoneConfirmed());
-        
-        user.mergePropertiesIfNull(savedUser);
-        userPersistence.replaceUser(username, user);
-        return new ServiceResponse<String>(username);
+    public ServiceResponse<Long> updateUser(Long userId, User user) {
+        return new ServiceResponse<Long>(userPersistence.replaceUser(userId, user));
     }
 
     @Override
-    public ServiceResponse<String> deleteUser(String username) {
-        return new ServiceResponse<String>(userPersistence.deleteUser(username));
+    public ServiceResponse<Long> deleteUser(Long userId) {
+        return new ServiceResponse<Long>(userPersistence.deleteUser(userId));
     }
 
     @Override
-    public ServiceResponse<UserDetailsProxy> getCurrentUser() {
+    public ServiceResponse<User> getCurrentUser() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         if (authentication != null) {
             Object principal = authentication.getPrincipal();
             if (principal instanceof UserDetailsProxy) {
                 UserDetailsProxy proxy = (UserDetailsProxy)principal;
-                return new ServiceResponse<UserDetailsProxy>(proxy);
+                return new ServiceResponse<User>(proxy.getUser());
             }
         }
-        return new ServiceResponse<UserDetailsProxy>(new StatusCode(StatusCodes.NOT_AUTHENTICATED,
-                "Not Authenticated"));
+        return new ServiceResponse<User>(new StatusCode(StatusCodes.NOT_AUTHENTICATED,
+                "{\"error\": \"Not Authenticated\"}"));
     }
 
     @Override
-    public ServiceResponse<String> startPhoneContactValidation(String username) {
-        User user = userPersistence.selectUser(username);
+    public ServiceResponse<String> startPhoneContactValidation(Long userId) {
+        User user = userPersistence.selectUser(userId);
         if (null == user) {
-            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, username}));
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
         }
         // TODO Jordan: implement!
         throw new UnsupportedOperationException("Not implemented yet");
@@ -127,10 +113,10 @@ public class UserManagerImpl implements UserManager {
     // TODO Jordan: hash saved code so that even DB hack can't necessarily get it?
     
     @Override
-    public ServiceResponse<String> startEmailContactValidation(String username) {
-        User user = userPersistence.selectUser(username);
+    public ServiceResponse<String> startEmailContactValidation(Long userId) {
+        User user = userPersistence.selectUser(userId);
         if (null == user) {
-            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, username}));
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
         } else if (StringUtils.isEmpty(user.getEmailAddress())) {
             // TODO Jordan: this returns "The message with id user has not set email address! could not be found"
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"message","user has not set email address!"}));
@@ -152,7 +138,7 @@ public class UserManagerImpl implements UserManager {
         user.setEmailConfirmCodeTime(codeCreated);
 
         // save the changes
-        updateUser(user.getUsername(), user);
+        updateUser(user.getId(), user);
         // ... send an email
         // TODO Jordan: implement sending an email containing this code to the user!!
 //        System.out.println("!! !! !! Here is where an EMAIL would really be sent to " + user.getEmailAddress() + "...");
@@ -176,9 +162,10 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public ServiceResponse<String> completePhoneContactValidation(String username, String code) {
-        User user = userPersistence.selectUser(username);
+    public ServiceResponse<String> completePhoneContactValidation(Long userId, String code) {
+        User user = userPersistence.selectUser(userId);
         if (null != user) {
+            throw new UnsupportedOperationException("Not implemented yet");
 //            return new ServiceResponse<User>(user);
         }
         // TODO Jordan: implement!
@@ -186,10 +173,10 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public ServiceResponse<String> completeEmailContactValidation(String username, String code) {
-        User user = userPersistence.selectUser(username);
+    public ServiceResponse<String> completeEmailContactValidation(Long userId, String code) {
+        User user = userPersistence.selectUser(userId);
         if (null == user) {
-            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, username}));
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
         } else if (StringUtils.isEmpty(user.getEmailAddress())) {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"email", "email is empty"}));
         } else if (user.getEmailConfirmed()) {
@@ -204,7 +191,7 @@ public class UserManagerImpl implements UserManager {
         
         if (userEmailCode.equalsIgnoreCase(code)) {
             user.setEmailConfirmed(true);
-            updateUser(user.getUsername(), user);
+            updateUser(user.getId(), user);
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"validation successful!"}));
         } else {
             // !! "invalid code"

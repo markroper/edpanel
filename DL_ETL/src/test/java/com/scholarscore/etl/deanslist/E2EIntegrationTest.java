@@ -1,10 +1,7 @@
 package com.scholarscore.etl.deanslist;
 
-import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.IETLEngine;
 import com.scholarscore.etl.MigrationResult;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.Teacher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

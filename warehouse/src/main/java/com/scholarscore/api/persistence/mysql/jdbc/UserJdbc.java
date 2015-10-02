@@ -4,11 +4,11 @@ import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.persistence.UserPersistence;
-import com.scholarscore.models.Administrator;
-import com.scholarscore.models.Identity;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.Teacher;
-import com.scholarscore.models.User;
+import com.scholarscore.models.Term;
+import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -41,50 +41,29 @@ public class UserJdbc implements UserPersistence {
     }
 
     @Override
-    public Identity getIdentity(String username) {
-
-        Teacher teacher = teacherPersistence.select(username);
-        if (null != teacher) { return teacher; }
-
-        Administrator administrator = administratorPersistence.select(username);
-        if (null != administrator) { return administrator; }
-        
-        Student student = studentPersistence.select(username);
-        if (null != student) { return student; }
-        
-        return null;
+    public User selectUser(Long userId) {
+        return hibernateTemplate.get(User.class, userId);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public User selectUser(String username) {
-        List values = hibernateTemplate.findByNamedParam("from user u where u.username = :username", "username", username);
+    public User selectUserByName(String username) {
+        List<?> values = hibernateTemplate.findByNamedParam("from user u where u.username = :username", "username", username);
         if (values.size() == 1) {
             return (User)values.get(0);
         }
         return null;
     }
-
+    
     @Override
-    public String createUser(User user) {
-        // these fields are null by default in POJOs but required to not be null in DB
-        if (user.getEnabled() == null) {
-            user.setEnabled(false);
-        }
-        if (user.getEmailConfirmed() == null) {
-            user.setEmailConfirmed(false); 
-        }
-        if (user.getPhoneConfirmed() == null) {
-            user.setPhoneConfirmed(false);
-        }
-        hibernateTemplate.merge(user);
-        return user.getUsername();
+    public Long createUser(User user) {
+        User out = hibernateTemplate.merge(user);
+        return out.getId();
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public String replaceUser(String username, User value) {
-        User fromDB = selectUser(username);
+    public Long replaceUser(Long userId, User value) {
+        User fromDB = selectUser(userId);
         fromDB.setPassword(value.getPassword());
         fromDB.setEnabled(value.getEnabled());
         fromDB.setEmailAddress(value.getEmailAddress());
@@ -96,16 +75,16 @@ public class UserJdbc implements UserPersistence {
         fromDB.setPhoneConfirmCodeTime(value.getPhoneConfirmCodeTime());
         fromDB.setPhoneConfirmed(value.getPhoneConfirmed());
         hibernateTemplate.merge(fromDB);
-        return username;
+        return userId;
     }
 
     @Override
-    public String deleteUser(String username) {
-        User fromDB = selectUser(username);
+    public Long deleteUser(Long userId) {
+        User fromDB = selectUser(userId);
         if (null != fromDB) {
             hibernateTemplate.delete(fromDB);
         }
-        return username;
+        return userId;
     }
 
     public HibernateTemplate getHibernateTemplate() {

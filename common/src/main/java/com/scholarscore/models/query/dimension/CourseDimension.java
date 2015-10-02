@@ -1,6 +1,5 @@
 package com.scholarscore.models.query.dimension;
 
-import java.beans.Transient;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
