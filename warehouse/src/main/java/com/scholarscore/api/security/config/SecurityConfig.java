@@ -302,10 +302,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             // cases and emit the appropriate JSON there as well.
             if (authentication.getPrincipal() instanceof UserDetailsProxy) {
                 UserDetailsProxy proxyUser = (UserDetailsProxy)authentication.getPrincipal();
-                com.scholarscore.models.user.User identity = proxyUser.getUser();
+                com.scholarscore.models.user.User user = proxyUser.getUser();
                 // don't send the password value to the client
-                identity.setPassword(null);
-                String value = mapper.writeValueAsString(proxyUser.getUser());
+                user.setPassword(null);
+                String value = mapper.writeValueAsString(user);
                 out.print(value);
             } else {
                 User principal = (User)authentication.getPrincipal();
