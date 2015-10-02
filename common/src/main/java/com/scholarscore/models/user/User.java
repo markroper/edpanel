@@ -98,6 +98,10 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	@Transient
 	public abstract UserType getType();
 	
+	/**
+	 * This prevents a jackson exception but is a no-op
+	 * @param t
+	 */
 	public void setType(UserType t){}
 	
 	@Override

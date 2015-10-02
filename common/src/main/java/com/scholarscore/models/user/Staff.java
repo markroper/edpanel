@@ -6,10 +6,9 @@ import com.scholarscore.models.Address;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings("serial")
 public abstract class Staff extends User {
-    private String sourceSystemId;
-    private Address homeAddress;
-    private String homePhone;
-    private Long userId;
+    protected String sourceSystemId;
+    protected Address homeAddress;
+    protected String homePhone;
     
     public Staff() {
         
@@ -35,36 +34,43 @@ public abstract class Staff extends User {
             if(null == this.homePhone) {
                 this.homePhone = staff.homePhone;
             }
-            if(null == this.userId) {
-                this.userId = staff.userId;
-            }
         }
     }
     
-    public String getSourceSystemId() {
-        return sourceSystemId;
-    }
+    /**
+     * Abstract to force subclasses to implement along with hibernate annotations
+     */
+    public abstract String getSourceSystemId();
+    
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
     }
-    public Address getHomeAddress() {
-        return homeAddress;
-    }
+    
+    /**
+     * Abstract to force subclasses to implement along with hibernate annotations
+     */
+    public abstract Address getHomeAddress();
+    
     public void setHomeAddress(Address homeAddress) {
         this.homeAddress = homeAddress;
     }
-    public String getHomePhone() {
-        return homePhone;
-    }
+    
+    /**
+     * Abstract to force subclasses to implement along with hibernate annotations
+     */
+    public abstract String getHomePhone();
+    
     public void setHomePhone(String homePhone) {
         this.homePhone = homePhone;
     }
-    public Long getUserId() {
-        return userId;
-    }
+    
+    /**
+     * Abstract to force subclasses to implement along with hibernate annotations
+     */
+    public abstract Long getUserId();
 
     public void setUserId(Long userId) {
-        this.userId = userId;
+        setId(userId);
     }
     
     @Override
@@ -77,7 +83,6 @@ public abstract class Staff extends User {
 
         if (homePhone != null ? !homePhone.equals(staff.homePhone) : staff.homePhone != null) { return false; }
         if (homeAddress != null ? !homeAddress.equals(staff.homeAddress) : staff.homeAddress != null) { return false; }
-        if (userId != null ? !userId.equals(staff.userId) : staff.userId != null) { return false; }
         if (sourceSystemId != null ? !sourceSystemId.equals(staff.sourceSystemId) : staff.sourceSystemId != null) {
             return false;
         }
@@ -89,7 +94,6 @@ public abstract class Staff extends User {
     public int hashCode() {
         int result = super.hashCode();
         result = 31 * result + (homePhone != null ? homePhone.hashCode() : 0);
-        result = 31 * result + (userId != null ? userId.hashCode() : 0);
         result = 31 * result + (sourceSystemId != null ? sourceSystemId.hashCode() : 0);
         result = 31 * result + (homeAddress != null ? homeAddress.hashCode() : 0);
         return result;

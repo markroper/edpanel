@@ -48,7 +48,6 @@ public class Student extends User implements Serializable {
     private String federalRace;
     private String federalEthnicity;
     private Long currentSchoolId;
-    private Long userId;
     
     public Student() {
         
@@ -56,7 +55,6 @@ public class Student extends User implements Serializable {
     
     public Student(Student student) {
         super(student);
-        this.userId = student.userId;
         this.sourceSystemId = student.sourceSystemId;
         this.mailingAddress = student.mailingAddress;
         this.homeAddress = student.homeAddress;
@@ -239,11 +237,11 @@ public class Student extends User implements Serializable {
 
     @Column(name = HibernateConsts.STUDENT_USER_FK, insertable = false, updatable = false)
     public Long getUserId() {
-        return userId;
+        return getId();
     }
 
     public void setUserId(Long userId) {
-        this.userId = userId;
+        setId(userId);
     }
 
     @Override
@@ -262,8 +260,7 @@ public class Student extends User implements Serializable {
                 && Objects.equals(this.socialSecurityNumber, other.socialSecurityNumber)
                 && Objects.equals(this.federalRace, other.federalRace)
                 && Objects.equals(this.federalEthnicity, other.federalEthnicity)
-                && Objects.equals(this.currentSchoolId, other.currentSchoolId)
-                && Objects.equals(this.userId, other.userId);
+                && Objects.equals(this.currentSchoolId, other.currentSchoolId);
     }
 
     @Override
@@ -271,7 +268,7 @@ public class Student extends User implements Serializable {
         return 31 * super.hashCode()
                 + Objects.hash(sourceSystemId, mailingAddress, homeAddress, gender, birthDate,
                         districtEntryDate, projectedGraduationYear, socialSecurityNumber, 
-                        federalRace, federalEthnicity, currentSchoolId, userId);
+                        federalRace, federalEthnicity, currentSchoolId);
     }
 
     @Override
@@ -288,7 +285,6 @@ public class Student extends User implements Serializable {
                 ", federalRace='" + federalRace + '\'' +
                 ", federalEthnicity='" + federalEthnicity + '\'' +
                 ", currentSchoolId=" + currentSchoolId +
-                ", userId=" + userId +
                 '}';
     }
 }
