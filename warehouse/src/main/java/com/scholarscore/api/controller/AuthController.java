@@ -1,15 +1,15 @@
 package com.scholarscore.api.controller;
 
-import com.scholarscore.api.ApiConsts;
-import com.scholarscore.api.security.config.UserDetailsProxy;
-import com.scholarscore.api.util.ServiceResponse;
-import com.wordnik.swagger.annotations.ApiOperation;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.util.ServiceResponse;
+import com.scholarscore.models.user.User;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 /**
  * Defines methods for getting stats on the authenticated user
@@ -20,16 +20,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/auth")
 public class AuthController extends BaseController {
 
+    @SuppressWarnings("rawtypes")
     @ApiOperation(
             value = "Get current user by authentication token",
             notes = "If the user is presently signed in, return the type of user associated with the identity (teacher, administrator, student)",
-            response = UserDetailsProxy.class)
+            response = User.class)
     @RequestMapping(
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     public @ResponseBody
     ResponseEntity getCurrentIdentity() {
-        ServiceResponse<UserDetailsProxy> identity = pm.getUserManager().getCurrentUser();
+        ServiceResponse<User> identity = pm.getUserManager().getCurrentUser();
         return respond(identity);
     }
 }

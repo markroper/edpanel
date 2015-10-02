@@ -27,5 +27,5 @@ public interface UserManager {
 
     ServiceResponse<Long> deleteUser(Long userId);
 
-    ServiceResponse<UserDetailsProxy> getCurrentUser();
+    ServiceResponse<User> getCurrentUser();
 }
