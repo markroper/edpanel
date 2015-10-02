@@ -1,29 +1,23 @@
 package com.scholarscore.models.user;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.Address;
-import com.scholarscore.models.Gender;
-import com.scholarscore.models.HibernateConsts;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Objects;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.Address;
+import com.scholarscore.models.Gender;
+import com.scholarscore.models.HibernateConsts;
 
 /**
  * The student class expresses a single student with a unique ID per school district.
