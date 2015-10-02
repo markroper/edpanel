@@ -1,6 +1,9 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
+import com.scholarscore.api.persistence.AuthorityPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
+import com.scholarscore.api.util.RoleConstants;
+import com.scholarscore.models.Authority;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.user.Student;
 
@@ -20,6 +23,8 @@ public class StudentJdbc implements StudentPersistence {
     @Autowired
     private HibernateTemplate hibernateTemplate;
 
+    private AuthorityPersistence authorityPersistence;
+    
     public StudentJdbc() {
     }
 
@@ -73,6 +78,10 @@ public class StudentJdbc implements StudentPersistence {
         assignDefaults(student);
         Student out = hibernateTemplate.merge(student);
         student.setId(out.getId());
+        Authority auth = new Authority();
+        auth.setAuthority(RoleConstants.STUDENT);
+        auth.setUserId(out.getId());
+        authorityPersistence.createAuthority(auth);
         return out.getId();
     }
 
@@ -100,4 +109,10 @@ public class StudentJdbc implements StudentPersistence {
             student.setUsername(UUID.randomUUID().toString());
         }
     }
+
+    public void setAuthorityPersistence(AuthorityPersistence authorityPersistence) {
+        this.authorityPersistence = authorityPersistence;
+    }
+    
+    
 }

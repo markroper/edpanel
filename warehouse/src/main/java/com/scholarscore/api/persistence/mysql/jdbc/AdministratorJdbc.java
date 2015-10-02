@@ -1,6 +1,9 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
 import com.scholarscore.api.persistence.AdministratorPersistence;
+import com.scholarscore.api.persistence.AuthorityPersistence;
+import com.scholarscore.api.util.RoleConstants;
+import com.scholarscore.models.Authority;
 import com.scholarscore.models.user.Administrator;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,8 @@ public class AdministratorJdbc implements AdministratorPersistence {
 
     @Autowired
     private HibernateTemplate hibernateTemplate;
+    
+    private AuthorityPersistence authorityPersistence;
 
     public AdministratorJdbc() {
     }
@@ -54,6 +59,10 @@ public class AdministratorJdbc implements AdministratorPersistence {
         setDefaultsIfNull(administrator);
         Administrator adminOut = hibernateTemplate.merge(administrator);
         administrator.setId(adminOut.getId());
+        Authority auth = new Authority();
+        auth.setAuthority(RoleConstants.ADMINISTRATOR);
+        auth.setUserId(adminOut.getId());
+        authorityPersistence.createAuthority(auth);
         return adminOut.getId();
     }
 
@@ -76,5 +85,9 @@ public class AdministratorJdbc implements AdministratorPersistence {
         if(null == administrator.getUsername()) {
             administrator.setUsername(UUID.randomUUID().toString());
         }
+    }
+    
+    public void setAuthorityPersistence(AuthorityPersistence authorityPersistence) {
+        this.authorityPersistence = authorityPersistence;
     }
 }

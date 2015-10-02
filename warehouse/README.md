@@ -36,3 +36,8 @@ To execute unit tests only, you don't need to have the API deployed to a contain
 gradle clean test
 </code>
 
+###Troubleshooting
+
+* If you try to deploy the service to tomcat but tests are failing or the endpoints are all returning errors, 
+try running `grade refillDatabase`. This task blows away and recreates the database tables and re-seeds the
+new instance with some test users.
