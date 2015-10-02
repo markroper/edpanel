@@ -88,7 +88,7 @@ CREATE TABLE `scholar_warehouse`.`administrator` (
   `administrator_home_phone` VARCHAR(256) NULL,
   `administrator_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
   `administrator_source_system_id` VARCHAR(256) NULL,
-  `administrator_user_fk` BIGINT UNSIGNED NULL COMMENT 'The user_fk of the teacher',
+  `administrator_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user_fk of the teacher',
   CONSTRAINT `administrator_homeAddress_fk$administrator`
   FOREIGN KEY (`administrator_homeAddress_fk`)
     REFERENCES `scholar_warehouse`.`address`(`address_id`)
