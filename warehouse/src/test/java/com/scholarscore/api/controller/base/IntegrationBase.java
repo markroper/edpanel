@@ -158,11 +158,15 @@ public class IntegrationBase {
      * A method to authenticate a user and store the returned auth cookie for subsequent requests.
      * Called by all integration test classes that are testing protected endpoints.
      */
-    protected void authenticate() { 
+    protected void authenticate() {
         //TODO: still a temporary solution for test user but no worse than before
+        authenticate("mroper", "admin");
+    }
+    
+    protected void authenticate(String username, String password) {
         LoginRequest loginReq = new LoginRequest();
-        loginReq.setUsername("mroper");
-        loginReq.setPassword("admin");
+        loginReq.setUsername(username);
+        loginReq.setPassword(password);
         makeRequest(
                 HttpMethod.POST,
                 BASE_API_ENDPOINT + LOGIN_ENDPOINT,
@@ -794,4 +798,6 @@ public class IntegrationBase {
         return BASE_API_ENDPOINT + USERS_ENDPOINT + pathify(userId);
     }
 
+    protected void invalidateCookie() { mockMvc.setjSessionId(null); }
+    
 }

@@ -106,6 +106,8 @@ public class StudentControllerIntegrationTest extends IntegrationBase {
             
             StudentSectionGrade studentSectionGrade = new StudentSectionGrade();
             studentSectionGrade.setGrade(grade);
+            studentSectionGrade.setStudent(student);
+            studentSectionGrade.setSection(section);
             studentSectionGradeValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(),
                     student.getId(), studentSectionGrade, "create student section grade w/ value " + grade);
         }

@@ -9,6 +9,7 @@ import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
 import org.testng.Assert;
 
@@ -51,6 +52,15 @@ public class UserValidatingExecutor {
         Assert.assertEquals(createdUser, expectedUser, "Unexpected assignment created for case: " + msg);
         return createdUser;
     }
+
+    public void delete(Long userId, String msg) {
+        //Delete the user
+        ResultActions response = serviceBase.makeRequest(HttpMethod.DELETE,
+                serviceBase.getUsersEndpoint(userId));
+        Assert.assertEquals(response.andReturn().getResponse().getStatus(), HttpStatus.OK.value(),
+                "Non 200 HttpStatus returned on delete for case: " + msg);
+    }
+
 
     private User get(Long userId, String msg) {
         ResultActions response = serviceBase.makeRequest(

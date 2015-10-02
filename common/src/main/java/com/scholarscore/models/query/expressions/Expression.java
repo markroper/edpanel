@@ -11,7 +11,7 @@ import com.scholarscore.models.query.expressions.operators.IOperator;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Expression implements Serializable, IOperand {
-    protected OperandType type;
+    final protected OperandType type;
     protected IOperand leftHandSide;
     protected IOperator operator;
     protected IOperand rightHandSide;
@@ -55,10 +55,6 @@ public class Expression implements Serializable, IOperand {
     @Override
     public OperandType getType() {
         return type;
-    }
-
-    public void setType(OperandType type) {
-        this.type = type;
     }
     
     @Override
