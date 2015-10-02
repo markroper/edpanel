@@ -38,6 +38,23 @@ public class SchoolValidatingExecutor {
         ArrayList<School> schools = serviceBase.validateResponse(response, new TypeReference<ArrayList<School>>(){});
         Assert.assertNotNull(schools, "Unexpected null school returned for case: " + msg);
     }
+
+    public void getAllNegative(HttpStatus expectedCode, String msg) {
+        ResultActions response = serviceBase.makeRequest(
+                HttpMethod.GET,
+                serviceBase.getSchoolEndpoint(),
+                null);
+        Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(),
+                "Unexpected status code returned while retrieving all schools: " + msg);
+    }
+
+    public void getAllOptions(String msg) {
+        ResultActions response = serviceBase.makeRequest(
+                HttpMethod.OPTIONS,
+                serviceBase.getSchoolEndpoint(),
+                null);
+        serviceBase.validateResponse(response, new TypeReference<ArrayList<School>>(){});
+    }
     
     public void getNegative(Long schoolId, HttpStatus expectedCode, String msg) {
         ResultActions response = serviceBase.makeRequest(

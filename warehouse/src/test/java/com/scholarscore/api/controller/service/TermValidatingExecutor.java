@@ -174,8 +174,11 @@ public class TermValidatingExecutor {
         Term returnTerm = new Term(submitted);
         if(method == HttpMethod.PATCH) {
             returnTerm.mergePropertiesIfNull(created);
-        } else if(null != returnTerm && null == returnTerm.getId()) {
+        } else if(null == returnTerm.getId()) {
             returnTerm.setId(created.getId());
+        }
+        if (null == returnTerm.getSchoolYear()) {
+            returnTerm.setSchoolYear(created.getSchoolYear());
         }
         return returnTerm;
     }

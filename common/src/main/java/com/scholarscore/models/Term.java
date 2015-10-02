@@ -105,12 +105,22 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
             return false;
         }
         final Term other = (Term) obj;
-        return Objects.equals(this.startDate, other.startDate) && Objects.equals(this.endDate, other.endDate);
+        return Objects.equals(this.startDate, other.startDate) 
+                && Objects.equals(this.endDate, other.endDate)
+                && Objects.equals(this.schoolYear, other.schoolYear);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(startDate, endDate);
+        return 31 * super.hashCode() + Objects.hash(startDate, endDate, schoolYear);
     }
 
+    @Override
+    public String toString() {
+        return "Term{" + "(super:{" + super.toString() + "})" + 
+                "startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", schoolYear=" + schoolYear +
+                '}';
+    }
 }
