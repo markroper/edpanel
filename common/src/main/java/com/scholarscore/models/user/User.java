@@ -1,11 +1,24 @@
-package com.scholarscore.models;
+package com.scholarscore.models.user;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.scholarscore.models.ApiModel;
+import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.IApiModel;
 
 /**
  * Defines the base identity to attach to spring security with a username (primary key) and password
@@ -14,25 +27,31 @@ import javax.persistence.*;
  */
 @Entity(name = "user")
 @Table(name = HibernateConsts.USERS_TABLE)
+@Inheritance(strategy=InheritanceType.JOINED)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class User implements Serializable, IApiModel<User> {
-	// v1
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = Student.class, name="STUDENT"),
+    @JsonSubTypes.Type(value = Administrator.class, name = "ADMINISTRATOR"),
+    @JsonSubTypes.Type(value = Teacher.class, name = "TEACHER")
+})
+public abstract class User extends ApiModel implements Serializable, IApiModel<User> {
 	private static final long serialVersionUID = 1L;
-
 	// login name
 	private String username;
 	private String password;
-
 	// Indicates whether the user is a login user and can login (by default this is disabled until the user has set a username/password)
-	private Boolean enabled;
+	private Boolean enabled = false;
 	private Long id;
 	
 	public User() { }
 	
 	public User(User value) {
+	    super(value);
 		this.username = value.username;
 		this.password = value.password;
 		this.enabled = value.enabled;
+		this.id = value.id;
 	}
 
 	@Id
@@ -70,7 +89,17 @@ public class User implements Serializable, IApiModel<User> {
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
+	
+	@Transient
+    public abstract String getSourceSystemId();
 
+    public abstract void setSourceSystemId(String string);
+    
+	@Transient
+	public abstract UserType getType();
+	
+	public void setType(UserType t){}
+	
 	@Override
 	public void mergePropertiesIfNull(User mergeFrom) {
         if (null == username) {

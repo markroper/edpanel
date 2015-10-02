@@ -3,12 +3,8 @@ package com.scholarscore.models;
 /**
  * Created by mattg on 7/19/15.
  */
-public interface IStaff<T> extends IApiModel<T> {
+public interface IStaff<T> {
     void setSourceSystemId(String sourceSystemId);
-
-    void setUser(User user);
-
-    User getUser();
 
     Address getHomeAddress();
 
@@ -21,4 +17,8 @@ public interface IStaff<T> extends IApiModel<T> {
     String getSourceSystemId();
 
     void setName(String name);
+
+    void setEnabled(Boolean b);
+
+    void setUsername(String username);
 }

@@ -10,9 +10,9 @@ import org.testng.Assert;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.Student;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.EntityId;
+import com.scholarscore.models.user.Student;
 
 public class TermValidatingExecutor {
 

@@ -1,21 +1,23 @@
-package com.scholarscore.models;
+package com.scholarscore.models.user;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.Address;
+import com.scholarscore.models.Gender;
+import com.scholarscore.models.HibernateConsts;
 
 /**
  * The student class expresses a single student with a unique ID per school district.
@@ -27,46 +29,10 @@ import java.util.Objects;
  *
  */
 @Entity(name = HibernateConsts.STUDENT_TABLE)
-@Table(name = HibernateConsts.STUDENT_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Student extends Identity implements Serializable, IApiModel<Student>{
-    
-    public Student() {
-        
-    }
-    
-    public Student(Student student) {
-        super(student);
-        this.sourceSystemId = student.sourceSystemId;
-        this.mailingAddress = student.mailingAddress;
-        this.homeAddress = student.homeAddress;
-        this.gender = student.gender;
-        this.birthDate = student.birthDate;
-        this.districtEntryDate = student.districtEntryDate;
-        this.projectedGraduationYear = student.projectedGraduationYear;
-        this.socialSecurityNumber = student.socialSecurityNumber;
-        this.federalRace = student.federalRace;
-        this.federalEthnicity = student.federalEthnicity;
-        this.currentSchoolId = student.currentSchoolId;
-    }
-
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name = HibernateConsts.STUDENT_ID)
-    public Long getId() {
-        return super.getId();
-    }
-    
-    public Student(String race, String ethnicity, Long currentSchoolId, Gender gender, String name, Long expectedGraduationYear) {
-        this.federalRace = race;
-        this.federalEthnicity = ethnicity;
-        this.currentSchoolId = currentSchoolId;
-        this.gender = gender;
-        this.name = name;
-        this.projectedGraduationYear = expectedGraduationYear;
-    }
-    
+@PrimaryKeyJoinColumn(name=HibernateConsts.STUDENT_USER_FK, referencedColumnName = HibernateConsts.USER_ID)
+public class Student extends User implements Serializable {
     //Source system identifier. E.g. powerschool ID
     private String sourceSystemId;
     //Addresses
@@ -82,54 +48,79 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     private String federalRace;
     private String federalEthnicity;
     private Long currentSchoolId;
+    private Long userId;
+    
+    public Student() {
+        
+    }
+    
+    public Student(Student student) {
+        super(student);
+        this.userId = student.userId;
+        this.sourceSystemId = student.sourceSystemId;
+        this.mailingAddress = student.mailingAddress;
+        this.homeAddress = student.homeAddress;
+        this.gender = student.gender;
+        this.birthDate = student.birthDate;
+        this.districtEntryDate = student.districtEntryDate;
+        this.projectedGraduationYear = student.projectedGraduationYear;
+        this.socialSecurityNumber = student.socialSecurityNumber;
+        this.federalRace = student.federalRace;
+        this.federalEthnicity = student.federalEthnicity;
+        this.currentSchoolId = student.currentSchoolId;
+    }
+    
+    public Student(String race, String ethnicity, Long currentSchoolId, Gender gender, String name, Long expectedGraduationYear) {
+        this.federalRace = race;
+        this.federalEthnicity = ethnicity;
+        this.currentSchoolId = currentSchoolId;
+        this.gender = gender;
+        this.name = name;
+        this.projectedGraduationYear = expectedGraduationYear;
+    }
     
     @Override
-    public void mergePropertiesIfNull(Student mergeFrom) {
+    public void mergePropertiesIfNull(User mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);     
-        if (null == getUser()) {
-            setUser(mergeFrom.getUser());
+        if(mergeFrom instanceof Student) {
+            Student merge = (Student) mergeFrom;
+            if (null == getSourceSystemId()) {
+                setSourceSystemId(merge.getSourceSystemId());
+            }
+            if (null == getMailingAddress()) {
+                setMailingAddress(merge.getMailingAddress());
+            }
+            if (null == getHomeAddress()) {
+                setHomeAddress(merge.getHomeAddress());
+            }
+            if (null == getGender()) {
+                setGender(merge.getGender());
+            }
+            if (null == getBirthDate()) {
+                setBirthDate(merge.getBirthDate());
+            }
+            if (null == getDistrictEntryDate()) {
+                setDistrictEntryDate(merge.getDistrictEntryDate());
+            }
+            if (null == getProjectedGraduationYear()) {
+                setProjectedGraduationYear(merge.getProjectedGraduationYear());
+            }
+            if (null == getSocialSecurityNumber()) {
+                setSocialSecurityNumber(merge.getSocialSecurityNumber());
+            }
+            if (null == getFederalRace()) {
+                setFederalRace(merge.getFederalRace());
+            }
+            if (null == getFederalEthnicity()) {
+                setFederalEthnicity(merge.getFederalEthnicity());
+            }
+            if(null == getCurrentSchoolId()) {
+                setCurrentSchoolId(merge.getCurrentSchoolId());
+            }
+            if(null == getUserId()) {
+                setUserId(merge.getUserId());
+            }
         }
-        if (null == getSourceSystemId()) {
-            setSourceSystemId(mergeFrom.getSourceSystemId());
-        }
-        if (null == getMailingAddress()) {
-            setMailingAddress(mergeFrom.getMailingAddress());
-        }
-        if (null == getHomeAddress()) {
-            setHomeAddress(mergeFrom.getHomeAddress());
-        }
-        if (null == getGender()) {
-            setGender(mergeFrom.getGender());
-        }
-        if (null == getBirthDate()) {
-            setBirthDate(mergeFrom.getBirthDate());
-        }
-        if (null == getDistrictEntryDate()) {
-            setDistrictEntryDate(mergeFrom.getDistrictEntryDate());
-        }
-        if (null == getProjectedGraduationYear()) {
-            setProjectedGraduationYear(mergeFrom.getProjectedGraduationYear());
-        }
-        if (null == getSocialSecurityNumber()) {
-            setSocialSecurityNumber(mergeFrom.getSocialSecurityNumber());
-        }
-        if (null == getFederalRace()) {
-            setFederalRace(mergeFrom.getFederalRace());
-        }
-        if (null == getFederalEthnicity()) {
-            setFederalEthnicity(mergeFrom.getFederalEthnicity());
-        }
-        if(null == getCurrentSchoolId()) {
-            setCurrentSchoolId(mergeFrom.getCurrentSchoolId());
-        }
-    }
-
-    @Override
-    @OneToOne(optional = true)
-    @Cascade(CascadeType.ALL)
-    @JoinColumn(name=HibernateConsts.STUDENT_USER_FK)
-    public User getUser() {
-        return super.getUser();
     }
 
     @Column(name = HibernateConsts.STUDENT_SOURCE_SYSTEM_ID)
@@ -239,6 +230,21 @@ public class Student extends Identity implements Serializable, IApiModel<Student
     public void setCurrentSchoolId(Long currentSchoolId) {
         this.currentSchoolId = currentSchoolId;
     }
+    
+    @Override
+    @Transient
+    public UserType getType() {
+        return UserType.STUDENT;
+    }
+
+    @Column(name = HibernateConsts.STUDENT_USER_FK, insertable = false, updatable = false)
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -246,8 +252,7 @@ public class Student extends Identity implements Serializable, IApiModel<Student
             return false;
         }
         final Student other = (Student) obj;
-        return Objects.equals(this.user, other.user)
-                && Objects.equals(this.sourceSystemId, other.sourceSystemId)
+        return Objects.equals(this.sourceSystemId, other.sourceSystemId)
                 && Objects.equals(this.mailingAddress, other.mailingAddress)
                 && Objects.equals(this.homeAddress, other.homeAddress)
                 && Objects.equals(this.gender, other.gender)
@@ -257,20 +262,21 @@ public class Student extends Identity implements Serializable, IApiModel<Student
                 && Objects.equals(this.socialSecurityNumber, other.socialSecurityNumber)
                 && Objects.equals(this.federalRace, other.federalRace)
                 && Objects.equals(this.federalEthnicity, other.federalEthnicity)
-                && Objects.equals(this.currentSchoolId, other.currentSchoolId);
+                && Objects.equals(this.currentSchoolId, other.currentSchoolId)
+                && Objects.equals(this.userId, other.userId);
     }
 
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(user, sourceSystemId, mailingAddress, homeAddress, gender, birthDate,
-                        districtEntryDate, projectedGraduationYear, socialSecurityNumber, federalRace, federalEthnicity, currentSchoolId);
+                + Objects.hash(sourceSystemId, mailingAddress, homeAddress, gender, birthDate,
+                        districtEntryDate, projectedGraduationYear, socialSecurityNumber, 
+                        federalRace, federalEthnicity, currentSchoolId, userId);
     }
 
     @Override
     public String toString() {
         return "Student{" +
-                ", user=" + user +
                 ", sourceSystemId='" + sourceSystemId + '\'' +
                 ", mailingAddress=" + mailingAddress +
                 ", homeAddress=" + homeAddress +
@@ -282,6 +288,7 @@ public class Student extends Identity implements Serializable, IApiModel<Student
                 ", federalRace='" + federalRace + '\'' +
                 ", federalEthnicity='" + federalEthnicity + '\'' +
                 ", currentSchoolId=" + currentSchoolId +
+                ", userId=" + userId +
                 '}';
     }
 }

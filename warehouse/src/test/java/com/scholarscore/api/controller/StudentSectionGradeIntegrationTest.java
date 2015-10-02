@@ -9,9 +9,9 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.user.Student;
 
 @Test(groups = { "integration" })
 public class StudentSectionGradeIntegrationTest extends IntegrationBase {

@@ -12,7 +12,7 @@ import org.testng.Assert;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.Student;
+import com.scholarscore.models.user.Student;
 
 public class StudentValidatingExecutor {
     private final IntegrationBase serviceBase;
@@ -182,6 +182,14 @@ public class StudentValidatingExecutor {
         } else if(null != returnStudent && null == returnStudent.getId()) {
             returnStudent.setId(created.getId());
         }
+        if(null == returnStudent.getPassword()) {
+            returnStudent.setPassword(created.getPassword());
+        }
+        if(null == returnStudent.getUsername()) {
+            returnStudent.setUsername(created.getUsername());
+        }
+        returnStudent.setUserId(created.getUserId());
+        returnStudent.setId(created.getId());
         return returnStudent;
     }
 }

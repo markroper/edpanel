@@ -2,8 +2,7 @@ package com.scholarscore.api.persistence;
 
 import java.util.Collection;
 
-import com.scholarscore.models.Identity;
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.User;
 
 /**
  * User management interface - provides basic crud operations on users for both internal persistence
@@ -14,14 +13,14 @@ import com.scholarscore.models.User;
  */
 public interface UserPersistence {
     Collection<User> selectAllUsers();
-
-    Identity getIdentity(String username);
     
-    User selectUser(String username);
+    User selectUser(Long userId);
 
-    String createUser(User user);
+    Long createUser(User user);
 
-    String replaceUser(String username, User value);
+    Long replaceUser(Long userId, User value);
 
-    String deleteUser(String username);
+    Long deleteUser(Long userId);
+
+    User selectUserByName(String username);
 }

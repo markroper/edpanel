@@ -25,11 +25,11 @@ import com.scholarscore.models.GradedAssignment;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.Student;
 import com.scholarscore.models.StudentAssignment;
-import com.scholarscore.models.Teacher;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.query.Measure;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
 
 /**
  * Generates arbitrary school data for use in testing and developing the UI.
@@ -86,16 +86,16 @@ public class SchoolDataFactory {
     @SuppressWarnings("serial")
     public static List<Student> generateStudents(final Long currentSchoolId) {
         return new ArrayList<Student>(){{
-            add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Student One", 2017L));
-            add(new Student(BLACK, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Studette Two", 2018L));
-            add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Studette Three", 2017L));
-            add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Studette Four", 2018L));
-            add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Studette Five", 2018L));
-            add(new Student(BLACK, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Studette Six", 2018L));
-            add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Studette Seven", 2018L));
-            add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Studette Eight", 2017L));
-            add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Studette Nine", 2016L));
-            add(new Student(BLACK, PACIFIC_ISLANDER, currentSchoolId, Gender.MALE, "Student Ten", 2016L));
+            add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Carlos Vasquez", 2017L));
+            add(new Student(BLACK, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Tanya Segel", 2018L));
+            add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Ashley Brown", 2017L));
+            add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Bernard Slim", 2018L));
+            add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Bernadette Slim", 2018L));
+            add(new Student(BLACK, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Jason Carter", 2018L));
+            add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Yasmine Fort", 2018L));
+            add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Alexander Panagopalous", 2017L));
+            add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Claire Martinez", 2016L));
+            add(new Student(BLACK, PACIFIC_ISLANDER, currentSchoolId, Gender.MALE, "Otto Porter", 2016L));
         }};
     }
     
