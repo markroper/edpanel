@@ -114,6 +114,7 @@ public class UserManagerImpl implements UserManager {
     
     @Override
     public ServiceResponse<String> startEmailContactValidation(Long userId) {
+        /*
         User user = userPersistence.selectUser(userId);
         if (null == user) {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
@@ -157,8 +158,8 @@ public class UserManagerImpl implements UserManager {
         provider.sendEmail(toAddress, subject, message);
 
         return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[] {"email has been sent"}));
-        
-//        throw new UnsupportedOperationException("Not implemented yet");
+        */
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
@@ -174,6 +175,7 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public ServiceResponse<String> completeEmailContactValidation(Long userId, String code) {
+        /*
         User user = userPersistence.selectUser(userId);
         if (null == user) {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
@@ -197,6 +199,8 @@ public class UserManagerImpl implements UserManager {
             // !! "invalid code"
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"bad code!!"}));
         }
+        */
+        throw new UnsupportedOperationException("not implemented right now");
     }
     
     private String generateCode() { 

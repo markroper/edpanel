@@ -28,19 +28,25 @@ CREATE TABLE `scholar_warehouse`.`users` (
     `enabled` BOOLEAN NOT NULL COMMENT 'if the user has ever logged in and created a password',
     `onetime_pass` varchar(50) CHARACTER SET UTF8 NULL COMMENT 'one-time access token used for initial user setup and forgot password', 
     `onetime_pass_created` DATETIME NULL COMMENT 'when the one time pass was last generated', 
-    `email_address` varchar(256) NULL COMMENT 'the contact email of the user',
-    `email_confirm_code` varchar(64) NULL COMMENT 'the confirmation code sent to the user\'s email',
-    `email_confirm_code_creation_time` DATETIME NULL COMMENT 'the time this confirmation code was generated and sent',
-    `email_confirmed` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'if this email has been confirmed as belonging to the user',
-    `phone_number` varchar(256) NULL COMMENT 'the contact phone of the user',
-    `phone_confirm_code` varchar(64) NULL COMMENT 'the confirmation code sent to the user\'s phone',
-    `phone_confirm_code_creation_time` DATETIME NULL COMMENT 'the time this confirmation code was generated and sent',
-    `phone_confirmed` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'if this phone number has been confirmed as belonging to the user',
     PRIMARY KEY (`user_id`),
     UNIQUE(`username`)
 )
 ENGINE = InnoDB;
 
+CREATE TABLE `scholar_warehouse`.`contact_method` (
+  `contact_method_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
+  `contact_type` varchar(32) NOT NULL COMMENT 'the contact medium (e.g. phone, email)',
+  `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'the fk to the users table',
+  `contact_value` varchar(256) NOT NULL COMMENT 'the actual contact info - the email address, phone number, etc',
+  `confirm_code` varchar(64) NULL COMMENT 'the confirmation code sent to the user via the specified medium',
+  `confirm_code_created` DATETIME NULL COMMENT 'the time this confirmation code was generated and sent',
+  `confirmed` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'if this email has been confirmed as belonging to the user',
+    PRIMARY KEY (`contact_method_id`),
+  CONSTRAINT `uniq_contact_type$user`
+  UNIQUE (`contact_type`,`user_fk`)
+)
+ENGINE = InnoDB;
+  
 CREATE TABLE `scholar_warehouse`.`student` (
   `student_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `source_system_id` VARCHAR(256) NULL COMMENT 'The identifier from the source system, if any',

@@ -66,6 +66,7 @@ public class UserJdbc implements UserPersistence {
         User fromDB = selectUser(userId);
         fromDB.setPassword(value.getPassword());
         fromDB.setEnabled(value.getEnabled());
+/*
         fromDB.setEmailAddress(value.getEmailAddress());
         fromDB.setEmailConfirmCode(value.getEmailConfirmCode());
         fromDB.setEmailConfirmCodeTime(value.getEmailConfirmCodeTime());
@@ -74,6 +75,7 @@ public class UserJdbc implements UserPersistence {
         fromDB.setPhoneConfirmCode(value.getPhoneConfirmCode());
         fromDB.setPhoneConfirmCodeTime(value.getPhoneConfirmCodeTime());
         fromDB.setPhoneConfirmed(value.getPhoneConfirmed());
+        */
         hibernateTemplate.merge(fromDB);
         return userId;
     }

@@ -3,6 +3,7 @@ package com.scholarscore.models.user;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -20,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Fetch;
 
 /**
  * Defines the base identity to attach to spring security with a username (primary key) and password
@@ -43,16 +48,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	private String password;
 	// Indicates whether the user is a login user and can login (by default this is disabled until the user has set a username/password)
 	private Boolean enabled = false;
-	
-	private String emailAddress;
-	private String emailConfirmCode;
-	private Date emailConfirmCodeTime;
-	private String phoneNumber;
-	private String phoneConfirmCode;
-	private Date phoneConfirmCodeTime;
-
-	private Boolean emailConfirmed = false;
-	private Boolean phoneConfirmed = false;
+	private Set<ContactMethod> contactMethods;
 	
 	public User() { }
 	
@@ -61,14 +57,17 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		this.username = value.username;
 		this.password = value.password;
 		this.enabled = value.enabled;
-		this.emailAddress = value.emailAddress;
-		this.emailConfirmCode = value.emailConfirmCode;
-		this.emailConfirmCodeTime = value.emailConfirmCodeTime;
-		this.phoneNumber = value.phoneNumber;
-		this.phoneConfirmCode = value.phoneConfirmCode;
-		this.phoneConfirmCodeTime = value.phoneConfirmCodeTime;
-		this.emailConfirmed = value.emailConfirmed;
-		this.phoneConfirmed = value.phoneConfirmed;
+	}
+
+	@OneToMany
+	@JoinColumn(name = HibernateConsts.CONTACT_METHOD_USER_FK)
+	@Fetch(FetchMode.JOIN)
+	public Set<ContactMethod> getContactMethods() {
+		return contactMethods;
+	}
+
+	public void setContactMethods(Set<ContactMethod> contactMethods) {
+		this.contactMethods = contactMethods;
 	}
 
 	@Id
@@ -117,77 +116,6 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	 */
 	public void setType(UserType t){}
 	
-	@Column(name = HibernateConsts.USER_EMAIL_ADDRESS)
-	public String getEmailAddress() {
-		return emailAddress;
-	}
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
-
-	@Column(name = HibernateConsts.USER_PHONE_NUMBER)
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-
-	@Column(name = HibernateConsts.USER_EMAIL_CONFIRMED)
-	public Boolean getEmailConfirmed() {
-		return emailConfirmed;
-	}
-
-	public void setEmailConfirmed(Boolean emailConfirmed) {
-		this.emailConfirmed = emailConfirmed;
-	}
-
-	@Column(name = HibernateConsts.USER_PHONE_CONFIRMED)
-	public Boolean getPhoneConfirmed() {
-		return phoneConfirmed;
-	}
-
-	public void setPhoneConfirmed(Boolean phoneConfirmed) {
-		this.phoneConfirmed = phoneConfirmed;
-	}
-
-	@Column(name = HibernateConsts.USER_EMAIL_CONFIRM_CODE)
-	public String getEmailConfirmCode() {
-		return emailConfirmCode;
-	}
-
-	public void setEmailConfirmCode(String emailConfirmCode) {
-		this.emailConfirmCode = emailConfirmCode;
-	}
-
-	@Column(name = HibernateConsts.USER_EMAIL_CONFIRM_CODE_GENERATED_TIME)
-	public Date getEmailConfirmCodeTime() {
-		return emailConfirmCodeTime;
-	}
-
-	public void setEmailConfirmCodeTime(Date emailConfirmCodeTime) {
-		this.emailConfirmCodeTime = emailConfirmCodeTime;
-	}
-
-	@Column(name = HibernateConsts.USER_PHONE_CONFIRM_CODE)
-	public String getPhoneConfirmCode() {
-		return phoneConfirmCode;
-	}
-
-	public void setPhoneConfirmCode(String phoneConfirmCode) {
-		this.phoneConfirmCode = phoneConfirmCode;
-	}
-
-	@Column(name = HibernateConsts.USER_PHONE_CONFIRM_CODE_GENERATED_TIME)
-	public Date getPhoneConfirmCodeTime() {
-		return phoneConfirmCodeTime;
-	}
-
-	public void setPhoneConfirmCodeTime(Date phoneConfirmCodeTime) {
-		this.phoneConfirmCodeTime = phoneConfirmCodeTime;
-	}
-
 	@Override
 	public void mergePropertiesIfNull(User mergeFrom) {
         if (null == username) {
@@ -199,30 +127,6 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
         if (null == enabled) {
         	this.enabled = mergeFrom.getEnabled();
         }
-		if (null == emailAddress) {
-			this.emailAddress = mergeFrom.getEmailAddress();
-		}
-		if (null == emailConfirmCode) {
-			this.emailConfirmCode = mergeFrom.getEmailConfirmCode();
-		}
-		if (null == emailConfirmCodeTime) {
-			this.emailConfirmCodeTime = mergeFrom.getEmailConfirmCodeTime();
-		}
-		if (null == phoneNumber) {
-			this.phoneNumber = mergeFrom.getPhoneNumber();
-		}
-		if (null == phoneConfirmCode) {
-			this.phoneConfirmCode = mergeFrom.getPhoneConfirmCode();
-		}
-		if (null == phoneConfirmCodeTime) {
-			this.phoneConfirmCodeTime = mergeFrom.getPhoneConfirmCodeTime();
-		}
-		if (null == emailConfirmed) {
-			this.emailConfirmed = mergeFrom.getEmailConfirmed();
-		}
-		if (null == phoneConfirmed) {
-			this.phoneConfirmed = mergeFrom.getPhoneConfirmed();
-		}
     }
 	
 	@Override
@@ -237,22 +141,13 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		return Objects.equals(this.enabled, other.enabled)
                 && Objects.equals(this.password, other.password)
                 && Objects.equals(this.username, other.username)
-				&& Objects.equals(this.emailAddress, other.emailAddress)
-				&& Objects.equals(this.emailConfirmCode, other.emailConfirmCode)
-				&& Objects.equals(this.emailConfirmCodeTime, other.emailConfirmCodeTime)
-				&& Objects.equals(this.phoneNumber, other.phoneNumber)
-				&& Objects.equals(this.phoneConfirmCode, other.phoneConfirmCode)
-				&& Objects.equals(this.phoneConfirmCodeTime, other.phoneConfirmCodeTime)
-				&& Objects.equals(this.emailConfirmed, other.emailConfirmed)
-				&& Objects.equals(this.phoneConfirmed, other.phoneConfirmed)
 				;
     }
 
 	@Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(username, enabled, password, emailAddress, emailConfirmCode, emailConfirmCodeTime, 
-				phoneNumber, phoneConfirmCode, phoneConfirmCodeTime, emailConfirmed, phoneConfirmed);
+                + Objects.hash(username, enabled, password);
     }
 
 	@Override
@@ -262,10 +157,6 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 				", password='" + password + '\'' +
 				", username='" + username + '\'' +
 				", enabled=" + enabled +
-				", emailAddress='" + emailAddress + '\'' +
-				", phoneNumber='" + phoneNumber + '\'' +
-				", emailConfirmed=" + emailConfirmed +
-				", phoneConfirmed=" + phoneConfirmed +
 				'}';
 	}
 }
