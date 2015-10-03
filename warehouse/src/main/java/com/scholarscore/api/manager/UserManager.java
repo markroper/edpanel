@@ -5,6 +5,7 @@ import java.util.Collection;
 import com.scholarscore.api.security.config.UserDetailsProxy;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
+import com.scholarscore.models.user.ContactType;
 import com.scholarscore.models.user.User;
 
 /**
@@ -29,11 +30,7 @@ public interface UserManager {
 
     ServiceResponse<User> getCurrentUser();
     
-    ServiceResponse<String> startPhoneContactValidation(Long userId);
+    ServiceResponse<String> startContactValidation(Long userId, ContactType contactType);
     
-    ServiceResponse<String> completePhoneContactValidation(Long userId, String code);
-    
-    ServiceResponse<String> startEmailContactValidation(Long userId);
-    
-    ServiceResponse<String> completeEmailContactValidation(Long userId, String code);
+    ServiceResponse<String> confirmContactValidation(Long userId, ContactType contactType, String code);
 }
