@@ -130,7 +130,20 @@ public class HibernateConsts {
     public static final String USER_NAME = "username";
     public static final String USER_PASSWORD = "password";
     public static final String USER_ENABLED = "enabled";
+    public static final String USER_ONETIME_PASS = "onetime_pass";
+    public static final String USER_ONETIME_PASS_CREATED = "onetime_pass_created";
     public static final String USER_TYPE = "user_type";
+
+    public static final String CONTACT_METHOD_TABLE = "contact_method";
+    public static final String CONTACT_METHOD_ID = "contact_method_id";
+    public static final String CONTACT_METHOD_TYPE = "contact_type";
+    public static final String CONTACT_METHOD_USER_FK = "user_fk";
+    public static final String CONTACT_METHOD_CONTACT_VALUE = "contact_value";
+    public static final String CONTACT_METHOD_CONFIRM_CODE = "confirm_code";
+    public static final String CONTACT_METHOD_CONFIRM_CODE_CREATED = "confirm_code_created";
+    public static final String CONTACT_METHOD_CONFIRMED = "confirmed";
+
+    /*
     public static final String USER_EMAIL_ADDRESS = "email_address";
     public static final String USER_EMAIL_CONFIRM_CODE = "email_confirm_code";
     public static final String USER_EMAIL_CONFIRM_CODE_GENERATED_TIME = "email_confirm_code_creation_time";
@@ -139,6 +152,7 @@ public class HibernateConsts {
     public static final String USER_PHONE_CONFIRM_CODE = "phone_confirm_code";
     public static final String USER_PHONE_CONFIRM_CODE_GENERATED_TIME = "phone_confirm_code_creation_time";
     public static final String USER_PHONE_CONFIRMED = "phone_confirmed";
+    */
     
     //Section to Teacher table
     public static final String TEACHER_SECTION_TABLE = "teacher_section";
