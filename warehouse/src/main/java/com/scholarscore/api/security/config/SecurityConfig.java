@@ -68,6 +68,7 @@ import java.io.PrintWriter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String OPTIONS_VERB = "OPTIONS";
     private static final String LOGIN_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/login";
+    private static final String QUERY_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/schools/*/queries/results";
     private static final String LOGOUT_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/logout";
     private static final String ACCESS_DENIED_JSON = "{\"message\":\"You are not privileged to request this resource.\","
             + " \"access-denied\":true,\"cause\":\"AUTHORIZATION_FAILURE\"}";
@@ -199,6 +200,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             antMatchers(HttpMethod.OPTIONS, "/**").permitAll().
             antMatchers(HttpMethod.POST, LOGOUT_ENDPOINT).authenticated().
             antMatchers(HttpMethod.GET, "/**").authenticated().
+            antMatchers(HttpMethod.POST, QUERY_ENDPOINT).hasAnyRole(
+                    RoleConstants.ADMINISTRATOR, 
+                    RoleConstants.TEACHER, 
+                    RoleConstants.STUDENT, 
+                    RoleConstants.GUARDIAN, 
+                    RoleConstants.SUPER_ADMINISTRATOR).
             antMatchers(HttpMethod.POST, "/**").hasRole(RoleConstants.ADMINISTRATOR).
             antMatchers(HttpMethod.DELETE, "/**").hasRole(RoleConstants.ADMINISTRATOR).
             antMatchers(HttpMethod.PUT, "/**").hasRole(RoleConstants.ADMINISTRATOR).
