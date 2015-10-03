@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Fetch;
 
@@ -62,6 +64,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	@OneToMany
 	@JoinColumn(name = HibernateConsts.CONTACT_METHOD_USER_FK)
 	@Fetch(FetchMode.JOIN)
+	@Cascade(CascadeType.ALL)
 	public Set<ContactMethod> getContactMethods() {
 		return contactMethods;
 	}

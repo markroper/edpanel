@@ -6,25 +6,36 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
+import com.scholarscore.models.user.ContactMethod;
+import com.scholarscore.models.user.ContactType;
 import com.scholarscore.models.user.User;
 
 import com.scholarscore.util.EmailProvider;
 import com.scholarscore.util.EmailService;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import javax.validation.constraints.Null;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * Created by cwallace on 9/16/2015.
  */
 public class UserManagerImpl implements UserManager {
 
+    final static Logger logger = LoggerFactory.getLogger(UserManagerImpl.class);
+    
+    private static boolean IGNORE_CASE_ON_CONFIRM_CONTACT = true;
+    private static boolean IGNORE_CASE_ON_ONE_TIME_PASSWORD = false;
+    
     private UserPersistence userPersistence;
 
     private OrchestrationManager pm;
@@ -99,112 +110,89 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public ServiceResponse<String> startPhoneContactValidation(Long userId) {
+    public ServiceResponse<String> startContactValidation(Long userId, ContactType contactType) {
+        // TODO Jordan: test!!
+        // TODO Jordan: clean up these returns, right now they return mashed-up messages
         User user = userPersistence.selectUser(userId);
         if (null == user) {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
         }
-        // TODO Jordan: implement!
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    // TODO Jordan: test!!
-    
-    // TODO Jordan: hash saved code so that even DB hack can't necessarily get it?
-    
-    @Override
-    public ServiceResponse<String> startEmailContactValidation(Long userId) {
-        /*
-        User user = userPersistence.selectUser(userId);
-        if (null == user) {
-            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
-        } else if (StringUtils.isEmpty(user.getEmailAddress())) {
-            // TODO Jordan: this returns "The message with id user has not set email address! could not be found"
-            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"message","user has not set email address!"}));
-        } else if (user.getEmailConfirmed()) {
-            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[] {"email already confirmed"}));
+        ContactMethod selectedContactMethod = getContactMethod(user.getContactMethods(), contactType);
+        if (selectedContactMethod == null) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"contact method with type not found", contactType}));
+        } else if (selectedContactMethod.getConfirmed()) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"contact of type " + contactType + " already confirmed."}));
         }
-
-        // if null user, return <something bad>
-        // if user has null email, return 4?? - "email not set"
-        // if user has already confirmed email, return 2?? - no action "email already confirmed"
-
-        // otherwise, anytime this endpoint is hit and we get this far -
-        // ... generate a NEW code and store it in the DB
-        // ... also store the creation date of the code for expiration purposes
-        // (these first 2 steps can be shared with phone validation)
+        
+        // OK, we have everything we need to proceed with contact validation. Now, we need to....
+        // ... generate a NEW code and store it in the DB along with a timestamp
         String code = generateCode();
         Date codeCreated = new Date();
-        user.setEmailConfirmCode(code);
-        user.setEmailConfirmCodeTime(codeCreated);
-
-        // save the changes
+        selectedContactMethod.setConfirmCode(code);
+        selectedContactMethod.setConfirmCodeCreated(codeCreated);
         updateUser(user.getId(), user);
-        // ... send an email
-        // TODO Jordan: implement sending an email containing this code to the user!!
-//        System.out.println("!! !! !! Here is where an EMAIL would really be sent to " + user.getEmailAddress() + "...");
+
+        // ... provide this code to the user via the specific medium of the contact
+        // TODO Jordan: implement message dispatch here (email, sms, etc) containing this code to the user!!
+        // make it abstract and springified so it's relatively easy to add new message types in the future
+        System.out.println("!! !! !! Here is where a " + selectedContactMethod.getContactType() 
+                +  " message would really be sent to " + selectedContactMethod.getContactValue() + "...");
 
         // springify after initial testing
         EmailProvider provider = new EmailService();
-        
         String toAddress = "jodamn@gmail.com";
-        
         String subject = "(DEV) email confirmation from EdPanel";
-        
         String message = "Hello! Please enter this code when prompted by edpanel: ( " + code + " ). "
                 + "\nLater, a link will show up here that can be clicked."
                 + "https://myedpanel.com/warehouse/v1/" + user.getUsername() + "/validation/email/" + code + "";
-        
         provider.sendEmail(toAddress, subject, message);
 
         return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[] {"email has been sent"}));
-        */
-        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    private @Null ContactMethod getContactMethod(@Null Set<ContactMethod> contactMethods, @Null ContactType contactType) {
+        if (contactMethods == null || contactMethods.size() <= 0 || contactType == null) { return null; } 
+        for (ContactMethod method : contactMethods) {
+            if (contactType.name().equalsIgnoreCase(method.getContactValue())) {
+                return method;
+            }
+        }
+        return null;
     }
 
     @Override
-    public ServiceResponse<String> completePhoneContactValidation(Long userId, String code) {
+    public ServiceResponse<String> confirmContactValidation(Long userId, ContactType contactType, String providedCode) {
         User user = userPersistence.selectUser(userId);
-        if (null != user) {
-            throw new UnsupportedOperationException("Not implemented yet");
-//            return new ServiceResponse<User>(user);
-        }
-        // TODO Jordan: implement!
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    @Override
-    public ServiceResponse<String> completeEmailContactValidation(Long userId, String code) {
-        /*
-        User user = userPersistence.selectUser(userId);
-        if (null == user) {
-            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
-        } else if (StringUtils.isEmpty(user.getEmailAddress())) {
-            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"email", "email is empty"}));
-        } else if (user.getEmailConfirmed()) {
-            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[] {"email already confirmed"}));
+        // this endpoint may not require authentication, so return generic errors so it cannot be used to glean information about existing users or validations
+        ServiceResponse<String> genericError =  
+                new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"oops... something went wrong."}));
+        if (null == user) { return genericError; }
+        ContactMethod selectedContactMethod = getContactMethod(user.getContactMethods(), contactType);
+        if (selectedContactMethod == null || selectedContactMethod.getConfirmCode() == null) {
+            return genericError;
         }
 
-        String userEmailCode = user.getEmailConfirmCode();
-        if (userEmailCode == null) {
-            // TODO Jordan return new type of failure, probably "invalid code"
-            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"bad code!!"}));
-        }
+        String confirmCode = selectedContactMethod.getConfirmCode();
         
-        if (userEmailCode.equalsIgnoreCase(code)) {
-            user.setEmailConfirmed(true);
+        boolean codeMatched = IGNORE_CASE_ON_CONFIRM_CONTACT ? confirmCode.equalsIgnoreCase(providedCode) : confirmCode.equals(providedCode);
+        if (codeMatched) {
+            if (selectedContactMethod.getConfirmed()) {
+                // weird, this shouldn't happen as the contact has already been already confirmed. -- could log something here
+                logger.warn("User somehow has valid confirm code for an already-confirmed contact. Clearing these values...");
+            } else {
+                selectedContactMethod.setConfirmed(true);
+            }
+            selectedContactMethod.setConfirmCodeCreated(null);
+            selectedContactMethod.setConfirmCode(null);
             updateUser(user.getId(), user);
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"validation successful!"}));
         } else {
-            // !! "invalid code"
-            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"bad code!!"}));
+            return genericError;
         }
-        */
-        throw new UnsupportedOperationException("not implemented right now");
     }
     
     private String generateCode() { 
-        // TODO Jordan this is expensive, make it static or something
+        // TODO Jordan I believe this is expensive so optimize it if possible
         SecureRandom random = new SecureRandom();
         return new BigInteger(130, random).toString(32);
     }

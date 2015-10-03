@@ -3,10 +3,6 @@ package com.scholarscore.models.user;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,9 +11,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
@@ -63,17 +56,6 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
     public void setContactType(ContactType contactType) {
         this.contactType = contactType;
     }
-
-//    @ManyToOne(optional = false)
-//    @JoinColumn(name=HibernateConsts.CONTACT_METHOD_USER_FK)
-//    @Fetch(FetchMode.JOIN)
-//    public User getUser() {
-//        return user;
-//    }
-
-//    public void setUser(User user) {
-//        this.user = user;
-//    }
 
     @Column(name = HibernateConsts.CONTACT_METHOD_CONTACT_VALUE)
     public String getContactValue() {
