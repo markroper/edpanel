@@ -68,6 +68,7 @@ import java.io.PrintWriter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String OPTIONS_VERB = "OPTIONS";
     private static final String LOGIN_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/login";
+    private static final String QUERY_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/schools/*/queries/results";
     private static final String LOGOUT_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/logout";
     private static final String CONFIRM_EMAIL_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/" + "users" + "/*/validation/email/*";
     private static final String CONFIRM_PHONE_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/" + "users" + "/*/validation/phone/*";
@@ -203,6 +204,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             antMatchers(HttpMethod.GET, CONFIRM_PHONE_ENDPOINT).permitAll().
             antMatchers(HttpMethod.POST, LOGOUT_ENDPOINT).authenticated().
             antMatchers(HttpMethod.GET, "/**").authenticated().
+            antMatchers(HttpMethod.POST, QUERY_ENDPOINT).hasAnyRole(
+                    RoleConstants.ADMINISTRATOR, 
+                    RoleConstants.TEACHER, 
+                    RoleConstants.STUDENT, 
+                    RoleConstants.GUARDIAN, 
+                    RoleConstants.SUPER_ADMINISTRATOR).
             antMatchers(HttpMethod.POST, "/**").hasRole(RoleConstants.ADMINISTRATOR).
             antMatchers(HttpMethod.DELETE, "/**").hasRole(RoleConstants.ADMINISTRATOR).
             antMatchers(HttpMethod.PUT, "/**").hasRole(RoleConstants.ADMINISTRATOR).
