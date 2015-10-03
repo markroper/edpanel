@@ -74,6 +74,11 @@ public class SchoolDataFactory {
         teachers.add(teacher1);
         teachers.add(teacher2);
         teachers.add(teacher3);
+        for(Teacher s : teachers) {
+            s.setUsername(s.getName().split("\\s+")[1]);
+            s.setPassword("password");
+            s.setEnabled(true);
+        }
         return teachers;
     }
     
@@ -85,18 +90,23 @@ public class SchoolDataFactory {
      */
     @SuppressWarnings("serial")
     public static List<Student> generateStudents(final Long currentSchoolId) {
-        return new ArrayList<Student>(){{
-            add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Carlos Vasquez", 2017L));
-            add(new Student(BLACK, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Tanya Segel", 2018L));
-            add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Ashley Brown", 2017L));
-            add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Bernard Slim", 2018L));
-            add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Bernadette Slim", 2018L));
-            add(new Student(BLACK, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Jason Carter", 2018L));
-            add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Yasmine Fort", 2018L));
-            add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Alexander Panagopalous", 2017L));
-            add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Claire Martinez", 2016L));
-            add(new Student(BLACK, PACIFIC_ISLANDER, currentSchoolId, Gender.MALE, "Otto Porter", 2016L));
-        }};
+        List<Student> students = new ArrayList<>();
+        students.add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Carlos Vasquez", 2017L));
+        students.add(new Student(BLACK, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Tanya Segel", 2018L));
+        students.add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Ashley Brown", 2017L));
+        students.add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Bernard Slim", 2018L));
+        students.add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Bernadette Slim", 2018L));
+        students.add(new Student(BLACK, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Jason Carter", 2018L));
+        students.add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Yasmine Fort", 2018L));
+        students.add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Alexander Panagopalous", 2017L));
+        students.add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Claire Martinez", 2016L));
+        students.add(new Student(BLACK, PACIFIC_ISLANDER, currentSchoolId, Gender.MALE, "Otto Porter", 2016L));
+        for(Student s : students) {
+            s.setUsername(s.getName().split("\\s+")[0]);
+            s.setPassword("password");
+            s.setEnabled(true);
+        }
+        return students;
     }
     
     /**
