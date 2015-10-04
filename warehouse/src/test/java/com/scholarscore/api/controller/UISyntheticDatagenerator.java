@@ -165,22 +165,22 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                     }
                     
                     //Create the student assignments for each student for list of assignments in term sections
-//                    Map<Long, List<StudentAssignment>> studentAssignments =
-//                            SchoolDataFactory.generateStudentAssignments(createdAssignments, generatedStudents);
-//                    for(Map.Entry<Long, List<StudentAssignment>> studentAssignmentEntry : studentAssignments.entrySet()) {
-//                        List<StudentAssignment> createdStudentAssignments = new ArrayList<StudentAssignment>();
-//                        for(StudentAssignment sa : studentAssignmentEntry.getValue()) {
-//                            createdStudentAssignments.add(
-//                                    studentAssignmentValidatingExecutor.create(
-//                                            school.getId(),
-//                                            termEntry.getKey(),
-//                                            sectionEntry.getKey(),
-//                                            assignmentEntry.getKey(),
-//                                            sa.getAssignment().getId(),
-//                                            sa,
-//                                            sa.getName()));
-//                        }
-//                    }
+                    Map<Long, List<StudentAssignment>> studentAssignments =
+                            SchoolDataFactory.generateStudentAssignments(createdAssignments, generatedStudents);
+                    for(Map.Entry<Long, List<StudentAssignment>> studentAssignmentEntry : studentAssignments.entrySet()) {
+                        List<StudentAssignment> createdStudentAssignments = new ArrayList<StudentAssignment>();
+                        for(StudentAssignment sa : studentAssignmentEntry.getValue()) {
+                            createdStudentAssignments.add(
+                                    studentAssignmentValidatingExecutor.create(
+                                            school.getId(),
+                                            termEntry.getKey(),
+                                            sectionEntry.getKey(),
+                                            assignmentEntry.getKey(),
+                                            sa.getAssignment().getId(),
+                                            sa,
+                                            sa.getName()));
+                        }
+                    }
                 }
             }
         }
