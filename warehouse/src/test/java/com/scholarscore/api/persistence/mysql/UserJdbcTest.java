@@ -1,6 +1,7 @@
 package com.scholarscore.api.persistence.mysql;
 
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.User;
+
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -19,7 +20,7 @@ public class UserJdbcTest extends BaseJdbcTest {
 
         assertTrue(userDao.selectAllUsers().contains(user), "Expect user to exist in all users list");
 
-        User out = userDao.selectUser(user.getUsername());
+        User out = userDao.selectUserByName(user.getUsername());
         assertEquals(out, user, "Expect user identifies to be equal from select method call");
     }
 

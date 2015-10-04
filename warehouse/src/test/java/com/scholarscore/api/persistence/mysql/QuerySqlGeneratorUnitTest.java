@@ -77,7 +77,7 @@ public class QuerySqlGeneratorUnitTest {
         courseGradeQuery.setFilter(whereClause);   
         String courseGradeQuerySql = "SELECT student.birth_date, student.federal_ethnicity, school.school_address, SUM(student_section_grade.grade) "
                 + "FROM student "
-                + "LEFT OUTER JOIN student_section_grade ON student.student_id = student_section_grade.student_fk "
+                + "LEFT OUTER JOIN student_section_grade ON student.student_user_fk = student_section_grade.student_fk "
                 + "LEFT OUTER JOIN section ON section.section_id = student_section_grade.section_fk "
                 + "LEFT OUTER JOIN school ON school.school_id = student.school_fk "
                 + "WHERE  ( ( '2014-09-01 00:00:00.0'  >=  section.section_start_date )  "
@@ -95,7 +95,7 @@ public class QuerySqlGeneratorUnitTest {
         assignmentGradesQuery.setFilter(assignmentWhereClause);
         String assignmentGradesQuerySql = "SELECT student.student_name, AVG(student_assignment.awarded_points / assignment.available_points) "
                 + "FROM student "
-                + "LEFT OUTER JOIN student_assignment ON student.student_id = student_assignment.student_fk "
+                + "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk "
                 + "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id "
                 + "LEFT OUTER JOIN section ON section.section_id = student_assignment.section_fk "
                 + "WHERE  ( section.section_id  =  4 ) "
@@ -120,16 +120,16 @@ public class QuerySqlGeneratorUnitTest {
         Expression comb1 = new Expression(termClause, BinaryOperator.AND, yearClause);
         Expression comb2 = new Expression(comb1, BinaryOperator.AND, sectionClause);
         homeworkCompletionQuery.setFilter(comb2);
-        String homeworkSql = "SELECT student.student_id, AVG( if(assignment.type_fk = 'HOMEWORK', if(student_assignment.completed is true, 1, 0), null)) "
+        String homeworkSql = "SELECT student.student_user_fk, AVG( if(assignment.type_fk = 'HOMEWORK', if(student_assignment.completed is true, 1, 0), null)) "
                 + "FROM student "
-                + "LEFT OUTER JOIN student_assignment ON student.student_id = student_assignment.student_fk "
+                + "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk "
                 + "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id "
                 + "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk "
                 + "LEFT OUTER JOIN term ON term.term_id = section.term_fk "
                 + "LEFT OUTER JOIN school_year ON school_year.school_year_id = term.school_year_fk "
                 + "WHERE  ( ( ( term.term_id  =  1 )  AND  ( school_year.school_year_id  =  1 ) )  "
                 + "AND  ( section.section_id  !=  0 ) ) "
-                + "GROUP BY student.student_id";
+                + "GROUP BY student.student_user_fk";
         
         
         Query attendanceQuery  = new Query();
@@ -148,11 +148,11 @@ public class QuerySqlGeneratorUnitTest {
                 new DateOperand(date2));
         Expression attendanceDateRangeExpression = new Expression(greaterThanDate, BinaryOperator.AND, lessThanDate);
         attendanceQuery.setFilter(attendanceDateRangeExpression);
-        String attendanceSql = "SELECT student.student_id, SUM( if(attendance.attendance_status in ('ABSENT', 'EXCUSED_ABSENT'), 1, 0)) "
-                + "FROM student LEFT OUTER JOIN attendance ON student.student_id = attendance.student_fk "
+        String attendanceSql = "SELECT student.student_user_fk, SUM( if(attendance.attendance_status in ('ABSENT', 'EXCUSED_ABSENT'), 1, 0)) "
+                + "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk "
                 + "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk "
                 + "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  "
-                + "AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) GROUP BY student.student_id";
+                + "AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) GROUP BY student.student_user_fk";
         
         Query behaviorQuery = new Query();
         ArrayList<AggregateMeasure> behaviorMeasures = new ArrayList<>();
@@ -175,11 +175,11 @@ public class QuerySqlGeneratorUnitTest {
                 new DateOperand(afterDate));
         Expression topClause = new Expression(dateClause, BinaryOperator.AND, studentIdClause);
         behaviorQuery.setFilter(topClause);
-        String behaviorSql = "SELECT student.student_id, SUM(if(behavior.category = 'DEMERIT', 1, 0)) "
-                + "FROM student LEFT OUTER JOIN behavior ON student.student_id = behavior.student_fk "
+        String behaviorSql = "SELECT student.student_user_fk, SUM(if(behavior.category = 'DEMERIT', 1, 0)) "
+                + "FROM student LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk "
                 + "WHERE  ( ( behavior.date  >  '2014-09-01 00:00:00.0' )  "
-                + "AND  ( student.student_id  =  1 ) ) "
-                + "GROUP BY student.student_id";
+                + "AND  ( student.student_user_fk  =  1 ) ) "
+                + "GROUP BY student.student_user_fk";
         return new Object[][] {
                 { "Course Grade query", courseGradeQuery, courseGradeQuerySql }, 
                 { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql }, 

@@ -6,8 +6,7 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.Identity;
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.User;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -41,55 +40,55 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public StatusCode userExists(String username) {
-        User user = userPersistence.selectUser(username);
+    public StatusCode userExists(Long userId) {
+        User user = userPersistence.selectUser(userId);
         if(null == user) {
-            return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, username});
+            return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId});
         };
         return StatusCodes.getStatusCode(StatusCodeType.OK);
     }
 
     @Override
-    public ServiceResponse<User> getUser(String username) {
-        User user = userPersistence.selectUser(username);
+    public ServiceResponse<User> getUser(Long userId) {
+        User user = userPersistence.selectUser(userId);
         if (null != user) {
             return new ServiceResponse<User>(user);
         }
-        return new ServiceResponse<User>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { USER, username } ));
+        return new ServiceResponse<User>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { USER, userId } ));
     }
 
     @Override
-    public ServiceResponse<String> createUser(User value) {
-        return new ServiceResponse<String>(userPersistence.createUser(value));
+    public ServiceResponse<Long> createUser(User value) {
+        return new ServiceResponse<Long>(userPersistence.createUser(value));
     }
 
     @Override
-    public ServiceResponse<String> replaceUser(String username, User user) {
-        return new ServiceResponse<String>(userPersistence.replaceUser(username, user));
+    public ServiceResponse<Long> replaceUser(Long userId, User user) {
+        return new ServiceResponse<Long>(userPersistence.replaceUser(userId, user));
     }
 
     @Override
-    public ServiceResponse<String> updateUser(String username, User user) {
-        return new ServiceResponse<String>(userPersistence.replaceUser(username, user));
+    public ServiceResponse<Long> updateUser(Long userId, User user) {
+        return new ServiceResponse<Long>(userPersistence.replaceUser(userId, user));
     }
 
     @Override
-    public ServiceResponse<String> deleteUser(String username) {
-        return new ServiceResponse<String>(userPersistence.deleteUser(username));
+    public ServiceResponse<Long> deleteUser(Long userId) {
+        return new ServiceResponse<Long>(userPersistence.deleteUser(userId));
     }
 
     @Override
-    public ServiceResponse<UserDetailsProxy> getCurrentUser() {
+    public ServiceResponse<User> getCurrentUser() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         if (authentication != null) {
             Object principal = authentication.getPrincipal();
             if (principal instanceof UserDetailsProxy) {
                 UserDetailsProxy proxy = (UserDetailsProxy)principal;
-                return new ServiceResponse<UserDetailsProxy>(proxy);
+                return new ServiceResponse<User>(proxy.getUser());
             }
         }
-        return new ServiceResponse<UserDetailsProxy>(new StatusCode(StatusCodes.NOT_AUTHENTICATED,
-                "Not Authenticated"));
+        return new ServiceResponse<User>(new StatusCode(StatusCodes.NOT_AUTHENTICATED,
+                "{\"error\": \"Not Authenticated\"}"));
     }
 }

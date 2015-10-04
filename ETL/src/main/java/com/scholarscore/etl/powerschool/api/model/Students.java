@@ -1,12 +1,10 @@
 package com.scholarscore.etl.powerschool.api.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.scholarscore.etl.powerschool.api.deserializers.StaffsDeserializer;
 import com.scholarscore.etl.powerschool.api.deserializers.StudentsDeserializer;
 import com.scholarscore.etl.powerschool.api.response.ITranslateCollection;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.Gender;
-import com.scholarscore.models.IStaff;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,15 +13,15 @@ import java.util.Collection;
  * Created by mattg on 7/3/15.
  */
 @JsonDeserialize(using = StudentsDeserializer.class)
-public class Students extends ArrayList<Student> implements ITranslateCollection<com.scholarscore.models.Student> {
+public class Students extends ArrayList<Student> implements ITranslateCollection<com.scholarscore.models.user.Student> {
 
     @Override
-    public Collection<com.scholarscore.models.Student> toInternalModel() {
+    public Collection<com.scholarscore.models.user.Student> toInternalModel() {
 
-        Collection<com.scholarscore.models.Student> response = new ArrayList<>();
+        Collection<com.scholarscore.models.user.Student> response = new ArrayList<>();
 
         this.forEach(student -> {
-            com.scholarscore.models.Student model = new com.scholarscore.models.Student();
+            com.scholarscore.models.user.Student model = new com.scholarscore.models.user.Student();
             if (null != student.name) {
                 model.setName(student.name.toString());
             }

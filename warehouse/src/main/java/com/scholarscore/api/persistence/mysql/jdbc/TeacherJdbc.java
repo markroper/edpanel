@@ -1,7 +1,10 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
+import com.scholarscore.api.persistence.AuthorityPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
-import com.scholarscore.models.Teacher;
+import com.scholarscore.api.util.RoleConstants;
+import com.scholarscore.models.Authority;
+import com.scholarscore.models.user.Teacher;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -10,12 +13,15 @@ import javax.transaction.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Transactional
 public class TeacherJdbc implements TeacherPersistence {
 
     @Autowired
     private HibernateTemplate hibernateTemplate;
+    
+    private AuthorityPersistence authorityPersistence;
 
     public TeacherJdbc() {
     }
@@ -50,12 +56,18 @@ public class TeacherJdbc implements TeacherPersistence {
 
     @Override
     public Long createTeacher(Teacher teacher) {
+        assignDefaults(teacher);
         Teacher out = hibernateTemplate.merge(teacher);
+        Authority auth = new Authority();
+        auth.setAuthority(RoleConstants.TEACHER);
+        auth.setUserId(out.getId());
+        authorityPersistence.createAuthority(auth);
         return out.getId();
     }
 
     @Override
     public void replaceTeacher(long id, Teacher teacher) {
+        assignDefaults(teacher);
         hibernateTemplate.merge(teacher);
     }
 
@@ -64,5 +76,18 @@ public class TeacherJdbc implements TeacherPersistence {
         Teacher teacher = hibernateTemplate.get(Teacher.class, id);
         hibernateTemplate.delete(teacher);
         return id;
+    }
+    
+    private static void assignDefaults(Teacher teacher) {
+        if(null == teacher.getPassword()) {
+            teacher.setPassword(UUID.randomUUID().toString());
+        }
+        if(null == teacher.getUsername()) {
+            teacher.setUsername(UUID.randomUUID().toString());
+        }
+    }
+    
+    public void setAuthorityPersistence(AuthorityPersistence authorityPersistence) {
+        this.authorityPersistence = authorityPersistence;
     }
 }

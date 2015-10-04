@@ -1,7 +1,10 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
 import com.scholarscore.api.persistence.AdministratorPersistence;
-import com.scholarscore.models.Administrator;
+import com.scholarscore.api.persistence.AuthorityPersistence;
+import com.scholarscore.api.util.RoleConstants;
+import com.scholarscore.models.Authority;
+import com.scholarscore.models.user.Administrator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -16,6 +19,8 @@ public class AdministratorJdbc implements AdministratorPersistence {
 
     @Autowired
     private HibernateTemplate hibernateTemplate;
+    
+    private AuthorityPersistence authorityPersistence;
 
     public AdministratorJdbc() {
     }
@@ -51,13 +56,19 @@ public class AdministratorJdbc implements AdministratorPersistence {
 
     @Override
     public Long createAdministrator(Administrator administrator) {
+        setDefaultsIfNull(administrator);
         Administrator adminOut = hibernateTemplate.merge(administrator);
         administrator.setId(adminOut.getId());
+        Authority auth = new Authority();
+        auth.setAuthority(RoleConstants.ADMINISTRATOR);
+        auth.setUserId(adminOut.getId());
+        authorityPersistence.createAuthority(auth);
         return adminOut.getId();
     }
 
     @Override
     public void replaceAdministrator(long administratorId, Administrator administrator) {
+        setDefaultsIfNull(administrator);
         hibernateTemplate.merge(administrator);
     }
 
@@ -66,5 +77,17 @@ public class AdministratorJdbc implements AdministratorPersistence {
         Administrator admin = hibernateTemplate.get(Administrator.class, administratorId);
         hibernateTemplate.delete(admin);
         return administratorId;
+    }
+    private void setDefaultsIfNull(Administrator administrator) {
+        if(null == administrator.getPassword()) {
+            administrator.setPassword(UUID.randomUUID().toString());
+        }
+        if(null == administrator.getUsername()) {
+            administrator.setUsername(UUID.randomUUID().toString());
+        }
+    }
+    
+    public void setAuthorityPersistence(AuthorityPersistence authorityPersistence) {
+        this.authorityPersistence = authorityPersistence;
     }
 }

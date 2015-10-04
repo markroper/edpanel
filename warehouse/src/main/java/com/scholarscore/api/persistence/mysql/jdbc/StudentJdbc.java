@@ -1,8 +1,11 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
+import com.scholarscore.api.persistence.AuthorityPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
-import com.scholarscore.models.Student;
+import com.scholarscore.api.util.RoleConstants;
+import com.scholarscore.models.Authority;
 import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.user.Student;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -12,6 +15,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Transactional
 public class StudentJdbc implements StudentPersistence {
@@ -19,6 +23,8 @@ public class StudentJdbc implements StudentPersistence {
     @Autowired
     private HibernateTemplate hibernateTemplate;
 
+    private AuthorityPersistence authorityPersistence;
+    
     public StudentJdbc() {
     }
 
@@ -69,13 +75,19 @@ public class StudentJdbc implements StudentPersistence {
 
     @Override
     public Long createStudent(Student student) {
+        assignDefaults(student);
         Student out = hibernateTemplate.merge(student);
         student.setId(out.getId());
+        Authority auth = new Authority();
+        auth.setAuthority(RoleConstants.STUDENT);
+        auth.setUserId(out.getId());
+        authorityPersistence.createAuthority(auth);
         return out.getId();
     }
 
     @Override
     public Long replaceStudent(long studentId, Student student) {
+        assignDefaults(student);
         hibernateTemplate.merge(student);
         return studentId;
     }
@@ -88,4 +100,19 @@ public class StudentJdbc implements StudentPersistence {
         }
         return studentId;
     }
+    
+    private static void assignDefaults(Student student) {
+        if(null == student.getPassword()) {
+            student.setPassword(UUID.randomUUID().toString());
+        }
+        if(null == student.getUsername()) {
+            student.setUsername(UUID.randomUUID().toString());
+        }
+    }
+
+    public void setAuthorityPersistence(AuthorityPersistence authorityPersistence) {
+        this.authorityPersistence = authorityPersistence;
+    }
+    
+    
 }

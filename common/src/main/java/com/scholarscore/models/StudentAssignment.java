@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.user.Student;
 
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;

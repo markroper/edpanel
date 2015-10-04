@@ -3,8 +3,8 @@ package com.scholarscore.api.persistence;
 import java.util.Collection;
 
 import com.scholarscore.api.util.StatusCode;
-import com.scholarscore.models.Administrator;
-import com.scholarscore.models.Teacher;
+import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Teacher;
 
 public interface TeacherPersistence {
     Collection<Teacher> selectAll();

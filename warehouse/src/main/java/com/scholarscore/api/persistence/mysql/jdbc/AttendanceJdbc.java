@@ -13,10 +13,10 @@ import com.scholarscore.api.persistence.EntityPersistence;
 import com.scholarscore.api.persistence.SchoolPersistence;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.Student;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.SchoolDay;
+import com.scholarscore.models.user.Student;
 
 @Transactional
 public class AttendanceJdbc implements AttendancePersistence {

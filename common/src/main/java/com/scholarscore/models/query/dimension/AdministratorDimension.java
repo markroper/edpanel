@@ -2,8 +2,8 @@ package com.scholarscore.models.query.dimension;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.ImmutableSet;
-import com.scholarscore.models.Teacher;
 import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.user.Teacher;
 
 import java.util.Set;
 

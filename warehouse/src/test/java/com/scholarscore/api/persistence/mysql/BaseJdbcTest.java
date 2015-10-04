@@ -10,6 +10,10 @@ import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.persistence.UserPersistence;
 import com.scholarscore.api.persistence.mysql.jdbc.GoalJdbc;
 import com.scholarscore.models.*;
+import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.User;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -94,24 +98,21 @@ public class BaseJdbcTest {
         school.setSourceSystemId("1");
         school.setMainPhone("555-555-1212");
 
-        User adminUser = new User();
+        Administrator adminUser = new Administrator();
         adminUser.setUsername("mattg");
-        admin.setUser(adminUser);
         admin.setHomePhone("555-1212");
         admin.setName("Matt Greenwood");
         admin.setSourceSystemId("1");
         admin.setHomeAddress(address);
 
-        User studentUser = new User();
+        Student studentUser = new Student();
         studentUser.setUsername("mattg");
-        student.setUser(studentUser);
         student.setName("Matt Greenwood");
         student.setSourceSystemId("1234");
         student.setHomeAddress(address);
 
-        User teacherUser = new User();
+        Teacher teacherUser = new Teacher();
         teacherUser.setUsername("mattg");
-        teacher.setUser(teacherUser);
         teacher.setHomePhone("555-1212");
         teacher.setSourceSystemId("abc");
         teacher.setHomeAddress(address);
@@ -212,7 +213,7 @@ public class BaseJdbcTest {
 
     public User createUser() {
         if (null == createdUser) {
-            User user = new User();
+            Administrator user = new Administrator();
             user.setUsername("foobar" + System.currentTimeMillis());
             user.setPassword("testPassword");
             user.setEnabled(true);
@@ -225,7 +226,6 @@ public class BaseJdbcTest {
     public Student createStudent() {
         if (null == createdStudent) {
             createdStudent = new Student(student);
-            createdStudent.setUser(createUser());
             Address homeAddress = new Address(address);
             Address mailingAddress = new Address(address);
             homeAddress.setId(null);

@@ -1,6 +1,7 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
 
 import com.scholarscore.api.persistence.DbMappings;
+import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.models.AssignmentType;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.query.AggregateFunction;
@@ -19,7 +20,7 @@ public class HomeworkCompletionSqlSerializer implements MeasureSqlSerializer {
     public String toJoinClause(Dimension dimToJoinUpon) {
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         return LEFT_OUTER_JOIN + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + ON +
-                dimTableName + DOT + dimTableName + ID_COL_SUFFIX + 
+                dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) + 
                 EQUALS + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + dimTableName + FK_COL_SUFFIX +
                 " " + LEFT_OUTER_JOIN + HibernateConsts.ASSIGNMENT_TABLE + ON + 
                 HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_FK + 
