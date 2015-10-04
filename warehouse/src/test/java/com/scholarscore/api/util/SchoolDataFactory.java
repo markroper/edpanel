@@ -390,7 +390,7 @@ public class SchoolDataFactory {
             sectionGradeGoal.setStudent(s);
             sectionGradeGoal.setTeacher(teacher);
             sectionGradeGoal.setApproved(false);
-            sectionGradeGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(75, 101)));
+            sectionGradeGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(75, 100)));
             sectionGradeGoal.setName("Section Grade Goal");
             studentGoalList.add(sectionGradeGoal);
 
