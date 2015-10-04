@@ -1,6 +1,10 @@
 package com.scholarscore.client;
 
 import com.scholarscore.models.*;
+import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.User;
 
 import java.util.Collection;
 

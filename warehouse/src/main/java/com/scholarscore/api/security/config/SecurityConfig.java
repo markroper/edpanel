@@ -5,7 +5,7 @@ import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
-import com.scholarscore.models.Identity;
+import com.scholarscore.api.util.RoleConstants;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -66,10 +66,9 @@ import java.io.PrintWriter;
 @ImportResource({"classpath:/dataSource.xml", "classpath:/persistence.xml"})
 @EnableWebMvcSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private static final String USER_ROLE = "USER";
     private static final String OPTIONS_VERB = "OPTIONS";
-    private static final String ADMIN_ROLE = "ADMIN";
     private static final String LOGIN_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/login";
+    private static final String QUERY_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/schools/*/queries/results";
     private static final String LOGOUT_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/logout";
     private static final String ACCESS_DENIED_JSON = "{\"message\":\"You are not privileged to request this resource.\","
             + " \"access-denied\":true,\"cause\":\"AUTHORIZATION_FAILURE\"}";
@@ -200,12 +199,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             antMatchers(HttpMethod.OPTIONS, LOGIN_ENDPOINT).permitAll().
             antMatchers(HttpMethod.OPTIONS, "/**").permitAll().
             antMatchers(HttpMethod.POST, LOGOUT_ENDPOINT).authenticated().
-            antMatchers(HttpMethod.GET, "/**").hasAnyRole(USER_ROLE, ADMIN_ROLE).
-            antMatchers(HttpMethod.POST, "/**").hasRole(ADMIN_ROLE).
-            antMatchers(HttpMethod.DELETE, "/**").hasRole(ADMIN_ROLE).
-            antMatchers(HttpMethod.PUT, "/**").hasRole(ADMIN_ROLE).
-            antMatchers(HttpMethod.PATCH, "/**").hasRole(ADMIN_ROLE).
-            anyRequest().authenticated();
+            antMatchers(HttpMethod.GET, "/**").authenticated().
+            antMatchers(HttpMethod.POST, QUERY_ENDPOINT).hasAnyRole(
+                    RoleConstants.ADMINISTRATOR, 
+                    RoleConstants.TEACHER, 
+                    RoleConstants.STUDENT, 
+                    RoleConstants.GUARDIAN, 
+                    RoleConstants.SUPER_ADMINISTRATOR).
+            antMatchers(HttpMethod.POST, "/**").hasRole(RoleConstants.ADMINISTRATOR).
+            antMatchers(HttpMethod.DELETE, "/**").hasRole(RoleConstants.ADMINISTRATOR).
+            antMatchers(HttpMethod.PUT, "/**").hasRole(RoleConstants.ADMINISTRATOR).
+            antMatchers(HttpMethod.PATCH, "/**").hasRole(RoleConstants.ADMINISTRATOR).
+            anyRequest().denyAll();
     }
 
     private static class CustomLogoutHandler implements LogoutHandler {
@@ -305,17 +310,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             // cases and emit the appropriate JSON there as well.
             if (authentication.getPrincipal() instanceof UserDetailsProxy) {
                 UserDetailsProxy proxyUser = (UserDetailsProxy)authentication.getPrincipal();
-                Identity identity = proxyUser.getIdentity();
-                // don't bother sending the password value to the client
-                identity.getUser().setPassword(null);
-                String value = mapper.writeValueAsString(proxyUser);
+                com.scholarscore.models.user.User user = proxyUser.getUser();
+                // don't send the password value to the client
+                user.setPassword(null);
+                String value = mapper.writeValueAsString(user);
                 out.print(value);
-            }
-            else if (authentication.getPrincipal() instanceof Identity) {
-                Identity principal = (Identity) authentication.getPrincipal();
-                out.print(mapper.writeValueAsString(principal));
-            }
-            else {
+            } else {
                 User principal = (User)authentication.getPrincipal();
                 out.print(mapper.writeValueAsString(principal));
             }

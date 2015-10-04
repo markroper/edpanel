@@ -1,6 +1,9 @@
 package com.scholarscore.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 
@@ -38,8 +41,8 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     private String pointValue;
     @Size(min=1, max=256)
     private String roster; // the class the behavior event occurred within
-    private transient Student student;
-    private transient Teacher teacher;
+    private Student student;
+    private Teacher teacher;
     
     public Behavior() { }
     

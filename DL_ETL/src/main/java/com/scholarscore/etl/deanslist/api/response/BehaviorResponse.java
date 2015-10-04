@@ -71,11 +71,11 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
             }
 
             // mostly-empty student with just student name (it's all we have)
-            com.scholarscore.models.Student student = new com.scholarscore.models.Student();
+            com.scholarscore.models.user.Student student = new com.scholarscore.models.user.Student();
             student.setName(getStudentName(behavior));
             out.setStudent(student);
             // mostly-empty teacher with just teacher name (it's all we have)
-            com.scholarscore.models.Teacher teacher = new com.scholarscore.models.Teacher();
+            com.scholarscore.models.user.Teacher teacher = new com.scholarscore.models.user.Teacher();
             teacher.setName(getStaffName(behavior));
             out.setTeacher(teacher);
 

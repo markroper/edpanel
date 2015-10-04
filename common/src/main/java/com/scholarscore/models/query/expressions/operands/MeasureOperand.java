@@ -3,7 +3,6 @@ package com.scholarscore.models.query.expressions.operands;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.scholarscore.models.query.Measure;
 import com.scholarscore.models.query.MeasureField;
 
 @SuppressWarnings("serial")

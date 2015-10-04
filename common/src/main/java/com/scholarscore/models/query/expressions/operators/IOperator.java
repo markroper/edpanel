@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  */
 @JsonDeserialize(using = IOperator.OperatorDeserializer.class)
 public interface IOperator {
-    public static final String OPERATOR = "operator";
     
     public String name();
     

@@ -15,7 +15,8 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.scholarscore.models.*;
-import com.scholarscore.models.query.Measure;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
 
 /**
  * Generates arbitrary school data for use in testing and developing the UI.
@@ -60,6 +61,11 @@ public class SchoolDataFactory {
         teachers.add(teacher1);
         teachers.add(teacher2);
         teachers.add(teacher3);
+        for(Teacher s : teachers) {
+            s.setUsername(s.getName().split("\\s+")[1]);
+            s.setPassword("password");
+            s.setEnabled(true);
+        }
         return teachers;
     }
     
@@ -71,24 +77,28 @@ public class SchoolDataFactory {
      */
     @SuppressWarnings("serial")
     public static List<Student> generateStudents(final Long currentSchoolId) {
-        return new ArrayList<Student>(){{
-            add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Student One", 2017L));
-            add(new Student(BLACK, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Studette Two", 2018L));
-            add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Studette Three", 2017L));
-            add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Studette Four", 2018L));
-            add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Studette Five", 2018L));
-            add(new Student(BLACK, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Studette Six", 2018L));
-            add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Studette Seven", 2018L));
-            add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Studette Eight", 2017L));
-            add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Studette Nine", 2016L));
-            add(new Student(BLACK, PACIFIC_ISLANDER, currentSchoolId, Gender.MALE, "Student Ten", 2016L));
-        }};
+        List<Student> students = new ArrayList<>();
+        students.add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Carlos Vasquez", 2017L));
+        students.add(new Student(BLACK, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Tanya Segel", 2018L));
+        students.add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Ashley Brown", 2017L));
+        students.add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Bernard Slim", 2018L));
+        students.add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Bernadette Slim", 2018L));
+        students.add(new Student(BLACK, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Jason Carter", 2018L));
+        students.add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Yasmine Fort", 2018L));
+        students.add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Alexander Panagopalous", 2017L));
+        students.add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Claire Martinez", 2016L));
+        students.add(new Student(BLACK, PACIFIC_ISLANDER, currentSchoolId, Gender.MALE, "Otto Porter", 2016L));
+        for(Student s : students) {
+            s.setUsername(s.getName().split("\\s+")[0]);
+            s.setPassword("password");
+            s.setEnabled(true);
+        }
+        return students;
     }
     
     /**
      * Generates and returns a list of contiguous school years, from the present year 
      * backward in time, associates with the school ID passed in as parameter.
-     * @param schoolId
      * @return
      */
     public static List<SchoolYear> generateSchoolYears() {
@@ -342,7 +352,6 @@ public class SchoolDataFactory {
      * student ID.
      * @param students
      * @param teachers
-     * @param dates
      * @return
      */
     public static Map<Long, ArrayList<Behavior>> generateBehaviorEvents(

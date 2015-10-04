@@ -7,8 +7,8 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.Student;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.user.Student;
 
 import java.util.ArrayList;
 import java.util.Collection;

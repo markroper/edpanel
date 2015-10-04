@@ -9,9 +9,10 @@ import com.google.common.collect.ImmutableMap;
 import com.scholarscore.api.controller.service.*;
 import com.scholarscore.models.LoginRequest;
 import com.scholarscore.models.School;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.Teacher;
-import com.scholarscore.models.User;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.User;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -157,11 +158,15 @@ public class IntegrationBase {
      * A method to authenticate a user and store the returned auth cookie for subsequent requests.
      * Called by all integration test classes that are testing protected endpoints.
      */
-    protected void authenticate() { 
+    protected void authenticate() {
         //TODO: still a temporary solution for test user but no worse than before
+        authenticate("mroper", "admin");
+    }
+    
+    protected void authenticate(String username, String password) {
         LoginRequest loginReq = new LoginRequest();
-        loginReq.setUsername("mroper");
-        loginReq.setPassword("admin");
+        loginReq.setUsername(username);
+        loginReq.setPassword(password);
         makeRequest(
                 HttpMethod.POST,
                 BASE_API_ENDPOINT + LOGIN_ENDPOINT,
@@ -789,8 +794,10 @@ public class IntegrationBase {
         return BASE_API_ENDPOINT + USERS_ENDPOINT;
     }
 
-    public String getUsersEndpoint(String username) {
-        return BASE_API_ENDPOINT + USERS_ENDPOINT + "/" + username;
+    public String getUsersEndpoint(Long userId) {
+        return BASE_API_ENDPOINT + USERS_ENDPOINT + pathify(userId);
     }
 
+    protected void invalidateCookie() { mockMvc.setjSessionId(null); }
+    
 }

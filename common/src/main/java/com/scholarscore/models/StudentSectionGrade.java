@@ -1,11 +1,7 @@
 package com.scholarscore.models;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,8 +13,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.io.Serializable;
-import java.util.Objects;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.user.Student;
 
 /**
  * Represents a single student's grade in a specific course.  The complete boolean
@@ -50,6 +51,8 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
         this.id = grade.id;
         this.complete = grade.complete;
         this.grade = grade.grade;
+        this.student = grade.student;
+        this.section = grade.section;
     }
     
     @Override
@@ -62,6 +65,12 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
         }
         if(null == grade) {
             grade = mergeFrom.grade;
+        }
+        if (student == null) {
+            student = mergeFrom.student;
+        }
+        if (section == null) {
+            section = mergeFrom.section;
         }
     }
 
@@ -124,12 +133,14 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
         final StudentSectionGrade other = (StudentSectionGrade) obj;
         return Objects.equals(this.id, other.id) && 
                 Objects.equals(this.complete, other.complete) &&
-                Objects.equals(this.grade, other.grade);
+                Objects.equals(this.grade, other.grade) &&
+                Objects.equals(this.student, other.student) &&
+                Objects.equals(this.section, other.section);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(id, complete, grade);
+        return 31 * super.hashCode() + Objects.hash(id, complete, grade, student, section);
     }
 
     @Override
@@ -152,5 +163,16 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
     @Transient
     public int getWeight() {
         return 1;
+    }
+
+    @Override
+    public String toString() {
+        return "StudentSectionGrade{" +
+                "id=" + id +
+                ", complete=" + complete +
+                ", grade=" + grade +
+                ", section=" + section +
+                ", student=" + student +
+                '}';
     }
 }

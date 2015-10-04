@@ -5,8 +5,8 @@ import com.scholarscore.etl.deanslist.api.response.BehaviorResponse;
 import com.scholarscore.etl.deanslist.client.IDeansListClient;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.Behavior;
-import com.scholarscore.models.Student;
-import com.scholarscore.models.Teacher;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

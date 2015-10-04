@@ -1,7 +1,6 @@
 package com.scholarscore.etl.powerschool.api.response;
 
 import com.scholarscore.models.IApiModel;
-import com.scholarscore.models.Student;
 
 import java.util.Collection;
 import java.util.List;

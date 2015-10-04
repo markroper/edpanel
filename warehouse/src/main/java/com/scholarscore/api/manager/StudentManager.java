@@ -2,7 +2,7 @@ package com.scholarscore.api.manager;
 
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
-import com.scholarscore.models.Student;
+import com.scholarscore.models.user.Student;
 
 import java.util.Collection;
 
