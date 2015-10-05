@@ -17,6 +17,7 @@
 
     <import resource="classpath:/dataSource.xml"/>
     <import resource="classpath:/managers.xml"/>
+    <import resource="classpath:/services.xml"/>
     
     <mvc:interceptors>
         <bean class="com.scholarscore.api.interceptor.AuthenticationInterceptor" />

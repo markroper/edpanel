@@ -1,4 +1,4 @@
-package com.scholarscore.util;
+package com.scholarscore.api.service;
 
 import java.util.*;
 import javax.mail.*;
@@ -9,7 +9,7 @@ import javax.mail.internet.*;
  * Date: 9/28/15
  * Time: 5:45 PM
  */
-public class EmailService implements EmailProvider {
+public class SingleAccountGmailService implements EmailService {
 
     // This implementation is quick and dirty (stolen from SO link below) because it'll probably change in PROD
     // http://stackoverflow.com/questions/46663/how-can-i-send-an-email-by-java-application-using-gmail-yahoo-or-hotmail?rq=1
@@ -19,9 +19,9 @@ public class EmailService implements EmailProvider {
     private static String RECIPIENT = "jodamn@gmail.com";
 
     @Override
-    public void sendEmail(String toAddress, 
-                          String subject,
-                          String msg) {
+    public void sendMessage(String toAddress,
+                            String subject,
+                            String msg) {
             String from = USER_NAME;
             String pass = PASSWORD;
             String[] to = { RECIPIENT }; // list of recipient email addresses

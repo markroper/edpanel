@@ -50,7 +50,11 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	private String password;
 	// Indicates whether the user is a login user and can login (by default this is disabled until the user has set a username/password)
 	private Boolean enabled = false;
+	private String oneTimePass;
+	private Date oneTimePassCreated;
+	
 	private Set<ContactMethod> contactMethods;
+	
 	
 	public User() { }
 	
@@ -104,7 +108,23 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
-	
+
+	public String getOneTimePass() {
+		return oneTimePass;
+	}
+
+	public void setOneTimePass(String oneTimePass) {
+		this.oneTimePass = oneTimePass;
+	}
+
+	public Date getOneTimePassCreated() {
+		return oneTimePassCreated;
+	}
+
+	public void setOneTimePassCreated(Date oneTimePassCreated) {
+		this.oneTimePassCreated = oneTimePassCreated;
+	}
+
 	@Transient
     public abstract String getSourceSystemId();
 
