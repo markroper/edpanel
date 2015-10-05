@@ -85,7 +85,7 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
     }
 
     @Column(name = HibernateConsts.CONTACT_METHOD_CONFIRMED)
-    public Boolean getConfirmed() {
+    public Boolean confirmed() {
         return confirmed;
     }
 

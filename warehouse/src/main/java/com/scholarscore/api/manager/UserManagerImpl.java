@@ -11,7 +11,6 @@ import com.scholarscore.models.user.ContactType;
 import com.scholarscore.models.user.User;
 
 import com.scholarscore.api.service.EmailService;
-import com.scholarscore.api.service.SingleAccountGmailService;
 import com.scholarscore.api.service.TextMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,7 +129,7 @@ public class UserManagerImpl implements UserManager {
         ContactMethod selectedContactMethod = getContactMethod(user.getContactMethods(), contactType);
         if (selectedContactMethod == null) {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"contact method with type not found", contactType}));
-        } else if (selectedContactMethod.getConfirmed()) {
+        } else if (selectedContactMethod.confirmed()) {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"contact of type " + contactType + " already confirmed."}));
         }
         
@@ -143,10 +142,10 @@ public class UserManagerImpl implements UserManager {
         updateUser(user.getId(), user);
 
         // TODO: this could be unified into a generic messaging service that encapsulates the differences 
-        // of different contact mediums and messages... if/else statements on Enums like this are bad because 
-        // problems arise quietly (or silently) when new enum values are added 
+        // of different contact mediums and messages... I don't like too many if/else statements on an Enum type like this 
+        // because it's easy to overlook later when new enum values are added 
         if (ContactType.EMAIL.equals(selectedContactMethod.getContactType())) {
-            String toAddress = "jodamn@gmail.com";
+            String toAddress = selectedContactMethod.getContactValue();
             String subject = "(DEV) email confirmation from EdPanel";
             String message = "Hello! Please enter this code when prompted by edpanel: ( " + code + " ). "
                     + "\n -- OR --"
@@ -154,19 +153,15 @@ public class UserManagerImpl implements UserManager {
 //            EmailService emailService = new SingleAccountGmailService();
             emailService.sendMessage(toAddress, subject, message);
         } else if (ContactType.PHONE.equals(selectedContactMethod.getContactType())) {
-            // TODO Jordan: implement phone message dispatch here
             // ... provide this code to the user via the specific medium of the contact
             // make it abstract and springified so it's relatively easy to add new message types in the future
-            System.out.println("!! !! !! Here is where a " + selectedContactMethod.getContactType()
-                    +  " message would really be sent to " + selectedContactMethod.getContactValue() + "...");
-            String toPhoneNumber = "";
-            
-            String toNumber = "9785400002";
+            String toNumber = selectedContactMethod.getContactValue();
             String msg = "Confirm code from EdPanel: " + code;
             textService.sendMessage(toNumber, msg);
         } else {
             // this sucks - see above 
             logger.error("ERROR! Unknown enum type seen in switch statement in UserManagerImpl");
+            throw new UnsupportedOperationException("Cannot start contact validation for unknown contact type: " + contactType);
         }
         
         return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[] {"email has been sent"}));
@@ -198,7 +193,7 @@ public class UserManagerImpl implements UserManager {
         
         boolean codeMatched = IGNORE_CASE_ON_CONFIRM_CONTACT ? confirmCode.equalsIgnoreCase(providedCode) : confirmCode.equals(providedCode);
         if (codeMatched) {
-            if (selectedContactMethod.getConfirmed()) {
+            if (selectedContactMethod.confirmed()) {
                 logger.warn("User somehow has valid confirm code for an already-confirmed contact. Clearing these values...");
             } else {
                 selectedContactMethod.setConfirmed(true);
@@ -209,6 +204,39 @@ public class UserManagerImpl implements UserManager {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"validation successful!"}));
         } else {
             return genericError;
+        }
+    }
+    
+    public ServiceResponse<String> startPasswordReset(Long userId) {
+        User user = userPersistence.selectUser(userId);
+        if (null == user) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
+        }
+
+        String code = generateCode();
+        Date codeCreated = new Date();
+        user.setOneTimePass(code);
+        user.setOneTimePassCreated(codeCreated);
+        updateUser(user.getId(), user);
+
+        boolean passwordSent = false;
+        // if we can find a validated/confirmed contact, send OTP there.
+        if (user.getContactMethods() != null) { 
+            for (ContactMethod method : user.getContactMethods()) {
+                if (method.confirmed()) {
+                    // TODO Jordan: send password here;
+                    passwordSent = true;
+                    break;
+                }
+            }
+        }
+        
+        if (!passwordSent) {
+            // if no validated contact, notify admin 
+            // -- NOTE: notifying admins in this situation is blocked until we implement notifications at all.
+            // but admins will see the OTP in their list of 'users needing passwords' since the user doesn't have a valid contact.
+            logger.i("Username " + user.getUsername() + " requested password reset but has no valid contact."
+                    + "\n The admin will now see this user's one-time password on their administration list." );
         }
     }
     
