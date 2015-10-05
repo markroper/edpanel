@@ -10,11 +10,12 @@ import com.scholarscore.models.user.ContactMethod;
 import com.scholarscore.models.user.ContactType;
 import com.scholarscore.models.user.User;
 
-import com.scholarscore.util.EmailProvider;
-import com.scholarscore.util.EmailService;
-import org.apache.commons.lang3.StringUtils;
+import com.scholarscore.api.service.EmailService;
+import com.scholarscore.api.service.SingleAccountGmailService;
+import com.scholarscore.api.service.TextMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,6 +32,8 @@ import java.util.Set;
  */
 public class UserManagerImpl implements UserManager {
 
+    
+    
     final static Logger logger = LoggerFactory.getLogger(UserManagerImpl.class);
     
     private static boolean IGNORE_CASE_ON_CONFIRM_CONTACT = true;
@@ -38,9 +41,16 @@ public class UserManagerImpl implements UserManager {
     
     private UserPersistence userPersistence;
 
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private TextMessageService textService;
+    
     private OrchestrationManager pm;
 
     private static final String USER = "user";
+
+    private SecureRandom random = new SecureRandom();
 
     public void setUserPersistence(UserPersistence userPersistence) {
         this.userPersistence = userPersistence;
@@ -71,7 +81,7 @@ public class UserManagerImpl implements UserManager {
         if (null != user) {
             return new ServiceResponse<User>(user);
         }
-        return new ServiceResponse<User>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[] { USER, userId } ));
+        return new ServiceResponse<User>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
     }
 
     @Override
@@ -132,21 +142,33 @@ public class UserManagerImpl implements UserManager {
         selectedContactMethod.setConfirmCodeCreated(codeCreated);
         updateUser(user.getId(), user);
 
-        // ... provide this code to the user via the specific medium of the contact
-        // TODO Jordan: implement message dispatch here (email, sms, etc) containing this code to the user!!
-        // make it abstract and springified so it's relatively easy to add new message types in the future
-        System.out.println("!! !! !! Here is where a " + selectedContactMethod.getContactType() 
-                +  " message would really be sent to " + selectedContactMethod.getContactValue() + "...");
-
-        // springify after initial testing
-        EmailProvider provider = new EmailService();
-        String toAddress = "jodamn@gmail.com";
-        String subject = "(DEV) email confirmation from EdPanel";
-        String message = "Hello! Please enter this code when prompted by edpanel: ( " + code + " ). "
-                + "\nLater, a link will show up here that can be clicked."
-                + "https://myedpanel.com/warehouse/v1/" + user.getUsername() + "/validation/email/" + code + "";
-        provider.sendEmail(toAddress, subject, message);
-
+        // TODO: this could be unified into a generic messaging service that encapsulates the differences 
+        // of different contact mediums and messages... if/else statements on Enums like this are bad because 
+        // problems arise quietly (or silently) when new enum values are added 
+        if (ContactType.EMAIL.equals(selectedContactMethod.getContactType())) {
+            String toAddress = "jodamn@gmail.com";
+            String subject = "(DEV) email confirmation from EdPanel";
+            String message = "Hello! Please enter this code when prompted by edpanel: ( " + code + " ). "
+                    + "\n -- OR --"
+                    + "\n click here to confirm: https://myedpanel.com/warehouse/v1/" + user.getUsername() + "/validation/email/" + code + "";
+//            EmailService emailService = new SingleAccountGmailService();
+            emailService.sendMessage(toAddress, subject, message);
+        } else if (ContactType.PHONE.equals(selectedContactMethod.getContactType())) {
+            // TODO Jordan: implement phone message dispatch here
+            // ... provide this code to the user via the specific medium of the contact
+            // make it abstract and springified so it's relatively easy to add new message types in the future
+            System.out.println("!! !! !! Here is where a " + selectedContactMethod.getContactType()
+                    +  " message would really be sent to " + selectedContactMethod.getContactValue() + "...");
+            String toPhoneNumber = "";
+            
+            String toNumber = "9785400002";
+            String msg = "Confirm code from EdPanel: " + code;
+            textService.sendMessage(toNumber, msg);
+        } else {
+            // this sucks - see above 
+            logger.error("ERROR! Unknown enum type seen in switch statement in UserManagerImpl");
+        }
+        
         return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[] {"email has been sent"}));
     }
 
@@ -177,7 +199,6 @@ public class UserManagerImpl implements UserManager {
         boolean codeMatched = IGNORE_CASE_ON_CONFIRM_CONTACT ? confirmCode.equalsIgnoreCase(providedCode) : confirmCode.equals(providedCode);
         if (codeMatched) {
             if (selectedContactMethod.getConfirmed()) {
-                // weird, this shouldn't happen as the contact has already been already confirmed. -- could log something here
                 logger.warn("User somehow has valid confirm code for an already-confirmed contact. Clearing these values...");
             } else {
                 selectedContactMethod.setConfirmed(true);
@@ -192,8 +213,6 @@ public class UserManagerImpl implements UserManager {
     }
     
     private String generateCode() { 
-        // TODO Jordan I believe this is expensive so optimize it if possible
-        SecureRandom random = new SecureRandom();
         return new BigInteger(130, random).toString(32);
     }
 }
