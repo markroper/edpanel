@@ -1,9 +1,12 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
 import java.util.Collection;
+import java.util.List;
 
 import com.scholarscore.models.Assignment;
 
+import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.StudentSectionGrade;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.scholarscore.api.persistence.EntityPersistence;
@@ -38,6 +41,17 @@ public class AssignmentJdbc implements EntityPersistence<Assignment> {
     @Override
     public Assignment select(long parentId, long id) {
         return hibernateTemplate.get(Assignment.class, id);
+    }
+
+    @SuppressWarnings("unchecked")
+    public StudentAssignment selectByComponents(long assignmentId, long studentId) {
+        List<StudentAssignment> assignmentList = (List<StudentAssignment>) hibernateTemplate.findByNamedParam(
+                "from assignments assign where assign.student.id = " + String.valueOf(studentId) +
+                        " and assign.assignment.id = :assignmentId", "assignmentId", assignmentId);
+        if (null != assignmentList && assignmentList.size() > 0) {
+            return assignmentList.get(0);
+        }
+        return null;
     }
 
     @Override
