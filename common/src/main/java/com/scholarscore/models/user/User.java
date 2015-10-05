@@ -109,6 +109,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		this.enabled = enabled;
 	}
 
+	@Column(name = HibernateConsts.USER_ONETIME_PASS)
 	public String getOneTimePass() {
 		return oneTimePass;
 	}
@@ -117,6 +118,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		this.oneTimePass = oneTimePass;
 	}
 
+	@Column(name = HibernateConsts.USER_ONETIME_PASS_CREATED)
 	public Date getOneTimePassCreated() {
 		return oneTimePassCreated;
 	}
