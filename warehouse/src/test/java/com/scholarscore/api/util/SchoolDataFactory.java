@@ -386,16 +386,25 @@ public class SchoolDataFactory {
             Teacher teacher,
             Date beginDate,
             Date endDate,
-            Map<Long, List<Long>> studentToSSGId
+            Map<Long, List<Long>> studentToSSGId,
+            Map<Long, List<Long>> studentToAssignmentId
     ) {
         Map<Long, ArrayList<Goal>> studentGoals = new HashMap<Long, ArrayList<Goal>>();
         for (Student s: students) {
             List<Long> enrolledSections = studentToSSGId.get(s.getId());
-            int index = ThreadLocalRandom.current().nextInt(enrolledSections.size());
+            List<Long> studentAssignments = studentToAssignmentId.get(s.getId());
+            int index = ThreadLocalRandom.current().nextInt(enrolledSections.size() - 1);
+            int assignmentIndex = ThreadLocalRandom.current().nextInt(studentAssignments.size()-1);
             ArrayList<Goal> studentGoalList = new ArrayList<Goal>();
 
             CumulativeGradeGoal sectionGradeGoal = new CumulativeGradeGoal();
-            sectionGradeGoal.setParentId(enrolledSections.get(index));
+
+            if (null == enrolledSections.get(index)) {
+                sectionGradeGoal.setParentId(enrolledSections.get(0));
+            } else {
+                sectionGradeGoal.setParentId(enrolledSections.get(index));
+            }
+
             sectionGradeGoal.setStudent(s);
             sectionGradeGoal.setTeacher(teacher);
             sectionGradeGoal.setApproved(false);
@@ -407,12 +416,27 @@ public class SchoolDataFactory {
             behaviorGoal.setStudent(s);
             behaviorGoal.setTeacher(teacher);
             behaviorGoal.setApproved(false);
-            behaviorGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(0, 11)));
+            behaviorGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(0, 60)));
             behaviorGoal.setName("Weekly Demerit Goal");
             behaviorGoal.setEndDate(endDate);
             behaviorGoal.setStartDate(beginDate);
             behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
             studentGoalList.add(behaviorGoal);
+
+            AssignmentGoal assignmentGoal = new AssignmentGoal();
+            if (studentAssignments.get(assignmentIndex) == null) {
+                assignmentGoal.setParentId(studentAssignments.get(0));
+            } else {
+                assignmentGoal.setParentId(studentAssignments.get(assignmentIndex));
+            }
+
+
+            assignmentGoal.setStudent(s);
+            assignmentGoal.setTeacher(teacher);
+            assignmentGoal.setApproved(false);
+            assignmentGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(75, 100)));
+            assignmentGoal.setName("Bio Final Goal");
+            studentGoalList.add(assignmentGoal);
 
             studentGoals.put(s.getId(),studentGoalList);
 
