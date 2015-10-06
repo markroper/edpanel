@@ -12,22 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
-import com.scholarscore.models.Assignment;
-import com.scholarscore.models.AssignmentType;
-import com.scholarscore.models.AttendanceAssignment;
-import com.scholarscore.models.Behavior;
-import com.scholarscore.models.BehaviorCategory;
-import com.scholarscore.models.Course;
-import com.scholarscore.models.Gender;
-import com.scholarscore.models.GradeFormula;
-import com.scholarscore.models.GradedAssignment;
-import com.scholarscore.models.School;
-import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentAssignment;
-import com.scholarscore.models.Term;
-import com.scholarscore.models.query.Measure;
+import com.scholarscore.models.*;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 
@@ -112,7 +99,6 @@ public class SchoolDataFactory {
     /**
      * Generates and returns a list of contiguous school years, from the present year 
      * backward in time, associates with the school ID passed in as parameter.
-     * @param schoolId
      * @return
      */
     public static List<SchoolYear> generateSchoolYears() {
@@ -366,7 +352,6 @@ public class SchoolDataFactory {
      * student ID.
      * @param students
      * @param teachers
-     * @param dates
      * @return
      */
     public static Map<Long, ArrayList<Behavior>> generateBehaviorEvents(
@@ -394,5 +379,68 @@ public class SchoolDataFactory {
             }
         }
         return studentBehaviors;
+    }
+
+    public static Map<Long, ArrayList<Goal>> generateGoalEvents(
+            Collection<Student> students,
+            Teacher teacher,
+            Date beginDate,
+            Date endDate,
+            Map<Long, List<Long>> studentToSSGId,
+            Map<Long, List<Long>> studentToAssignmentId
+    ) {
+        Map<Long, ArrayList<Goal>> studentGoals = new HashMap<Long, ArrayList<Goal>>();
+        for (Student s: students) {
+            List<Long> enrolledSections = studentToSSGId.get(s.getId());
+            List<Long> studentAssignments = studentToAssignmentId.get(s.getId());
+            int index = ThreadLocalRandom.current().nextInt(enrolledSections.size() - 1);
+            int assignmentIndex = ThreadLocalRandom.current().nextInt(studentAssignments.size()-1);
+            ArrayList<Goal> studentGoalList = new ArrayList<Goal>();
+
+            CumulativeGradeGoal sectionGradeGoal = new CumulativeGradeGoal();
+
+            if (null == enrolledSections.get(index)) {
+                sectionGradeGoal.setParentId(enrolledSections.get(0));
+            } else {
+                sectionGradeGoal.setParentId(enrolledSections.get(index));
+            }
+
+            sectionGradeGoal.setStudent(s);
+            sectionGradeGoal.setTeacher(teacher);
+            sectionGradeGoal.setApproved(false);
+            sectionGradeGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(75, 100)));
+            sectionGradeGoal.setName("Section Grade Goal");
+            studentGoalList.add(sectionGradeGoal);
+
+            BehaviorGoal behaviorGoal = new BehaviorGoal();
+            behaviorGoal.setStudent(s);
+            behaviorGoal.setTeacher(teacher);
+            behaviorGoal.setApproved(false);
+            behaviorGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(0, 60)));
+            behaviorGoal.setName("Weekly Demerit Goal");
+            behaviorGoal.setEndDate(endDate);
+            behaviorGoal.setStartDate(beginDate);
+            behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
+            studentGoalList.add(behaviorGoal);
+
+            AssignmentGoal assignmentGoal = new AssignmentGoal();
+            if (studentAssignments.get(assignmentIndex) == null) {
+                assignmentGoal.setParentId(studentAssignments.get(0));
+            } else {
+                assignmentGoal.setParentId(studentAssignments.get(assignmentIndex));
+            }
+
+
+            assignmentGoal.setStudent(s);
+            assignmentGoal.setTeacher(teacher);
+            assignmentGoal.setApproved(false);
+            assignmentGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(75, 100)));
+            assignmentGoal.setName("Bio Final Goal");
+            studentGoalList.add(assignmentGoal);
+
+            studentGoals.put(s.getId(),studentGoalList);
+
+        }
+        return studentGoals;
     }
 }
