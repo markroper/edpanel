@@ -100,22 +100,29 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public ServiceResponse<Long> deleteUser(Long userId) {
-        return new ServiceResponse<Long>(userPersistence.deleteUser(userId));
+        return new ServiceResponse<>(userPersistence.deleteUser(userId));
     }
 
     @Override
     public ServiceResponse<User> getCurrentUser() {
+        UserDetailsProxy proxy = getCurrentUserDetails();
+        if (proxy != null) {
+            return new ServiceResponse<>(proxy.getUser());
+        }
+        return new ServiceResponse<>(new StatusCode(StatusCodes.NOT_AUTHENTICATED,
+                "{\"error\": \"Not Authenticated\"}"));
+    }
+
+    private UserDetailsProxy getCurrentUserDetails() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         if (authentication != null) {
             Object principal = authentication.getPrincipal();
             if (principal instanceof UserDetailsProxy) {
-                UserDetailsProxy proxy = (UserDetailsProxy)principal;
-                return new ServiceResponse<User>(proxy.getUser());
+                return (UserDetailsProxy)principal;
             }
         }
-        return new ServiceResponse<User>(new StatusCode(StatusCodes.NOT_AUTHENTICATED,
-                "{\"error\": \"Not Authenticated\"}"));
+        return null;
     }
 
     @Override
@@ -207,12 +214,21 @@ public class UserManagerImpl implements UserManager {
         }
     }
     
+   /* Initiates a password reset for a particular user. This method is intended to be invoked without  
+    * authentication and thus it does not return any information regarding if a username exists and, if it does, 
+    * if the newly-generated one-time password has been sent to a user's contact method (email, text) or delivered
+    * to a school administrator for manual delivery.
+    * 
+    * Generates a one-time password and saves it in the database, then either (a) delivers it to the user, if the user
+    * has a validated contact method on file, or if not (b) alerts the school administrator that a user needs
+    * a one-time password delivered to them.
+    */
     public ServiceResponse<String> startPasswordReset(Long userId) {
         User user = userPersistence.selectUser(userId);
         if (null == user) {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
         }
-
+        
         String code = generateCode();
         Date codeCreated = new Date();
         user.setOneTimePass(code);
@@ -224,7 +240,7 @@ public class UserManagerImpl implements UserManager {
         if (user.getContactMethods() != null) { 
             for (ContactMethod method : user.getContactMethods()) {
                 if (method.confirmed()) {
-                    // TODO Jordan: send password here;
+                    // TODO Jordan: (Reset Password) send password via confirmed method here;
                     passwordSent = true;
                     break;
                 }
@@ -235,9 +251,31 @@ public class UserManagerImpl implements UserManager {
             // if no validated contact, notify admin 
             // -- NOTE: notifying admins in this situation is blocked until we implement notifications at all.
             // but admins will see the OTP in their list of 'users needing passwords' since the user doesn't have a valid contact.
-            logger.i("Username " + user.getUsername() + " requested password reset but has no valid contact."
-                    + "\n The admin will now see this user's one-time password on their administration list." );
+            logger.info("Username " + user.getUsername() + " requested password reset but has no valid contact."
+                    + "\n The admin will now see this user's one-time password on their administration list.");
         }
+
+        // since this is an unauthenticated endpoint,
+        // return no data so as to not reveal anything about which usernames are valid
+        return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"No Data"}));
+    }
+
+    /* Resets the user's password.
+     */
+    public ServiceResponse<String> resetPassword(Long userId, String newPassword) {
+        User user = userPersistence.selectUser(userId);
+        if (null == user) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
+        }
+        // TODO Jordan: right here we need more than just "logged-in person is user vs admin" level permissions
+        // we need to be able to say, the userId we are resetting the password for is the logged in user
+        // for now, assume this comment will be replaced with a block that returns a service response if the 
+        // user logged in is not the userId that the password reset is for. maybe just take no id?
+        
+        user.setPassword(newPassword);
+        updateUser(user.getId(), user);
+        
+        return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"Password successfully reset"}));
     }
     
     private String generateCode() { 
