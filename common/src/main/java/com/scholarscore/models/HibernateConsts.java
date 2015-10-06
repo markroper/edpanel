@@ -142,17 +142,6 @@ public class HibernateConsts {
     public static final String CONTACT_METHOD_CONFIRM_CODE = "confirm_code";
     public static final String CONTACT_METHOD_CONFIRM_CODE_CREATED = "confirm_code_created";
     public static final String CONTACT_METHOD_CONFIRMED = "confirmed";
-
-    /*
-    public static final String USER_EMAIL_ADDRESS = "email_address";
-    public static final String USER_EMAIL_CONFIRM_CODE = "email_confirm_code";
-    public static final String USER_EMAIL_CONFIRM_CODE_GENERATED_TIME = "email_confirm_code_creation_time";
-    public static final String USER_EMAIL_CONFIRMED = "email_confirmed";
-    public static final String USER_PHONE_NUMBER = "phone_number";
-    public static final String USER_PHONE_CONFIRM_CODE = "phone_confirm_code";
-    public static final String USER_PHONE_CONFIRM_CODE_GENERATED_TIME = "phone_confirm_code_creation_time";
-    public static final String USER_PHONE_CONFIRMED = "phone_confirmed";
-    */
     
     //Section to Teacher table
     public static final String TEACHER_SECTION_TABLE = "teacher_section";

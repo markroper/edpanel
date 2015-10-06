@@ -146,4 +146,7 @@ public class UserController extends BaseController {
 	) {
 		return respond(pm.getUserManager().confirmContactValidation(userId, contactType, confirmCode));
 	}
+	
+	
+	
 }
