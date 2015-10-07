@@ -33,5 +33,4 @@ dependencies {
             "org.apache.httpcomponents:httpmime:$apacheHttpVersion",
             "org.springframework:spring-test:$springVersion",
             "org.reflections:reflections:0.9.9-RC1"
-
 }

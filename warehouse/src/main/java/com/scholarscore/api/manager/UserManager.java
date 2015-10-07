@@ -33,4 +33,8 @@ public interface UserManager {
     ServiceResponse<String> startContactValidation(Long userId, ContactType contactType);
     
     ServiceResponse<String> confirmContactValidation(Long userId, ContactType contactType, String code);
+
+    ServiceResponse<String> startPasswordReset(String username);
+
+    ServiceResponse<String> resetPassword(Long userId, String newPassword);
 }
