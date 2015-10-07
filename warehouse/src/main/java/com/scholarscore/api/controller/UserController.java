@@ -108,7 +108,8 @@ public class UserController extends BaseController {
 	    return respond(pm.getUserManager().deleteUser(userId));
 	}
 
-	// TODO Jordan: for these next endpoints, ensure the user being edited is the same as the user logged in - fine grained permissions needed (or administrator, maybe)
+	// TODO Jordan: for this endpoint, ensure the user being edited is the same as the user logged in 
+	// fine grained permissions needed (or administrator, maybe)
 	@ApiOperation(
 			value = "Start validation for phone contact info",
 			response = Void.class)
@@ -146,7 +147,44 @@ public class UserController extends BaseController {
 	) {
 		return respond(pm.getUserManager().confirmContactValidation(userId, contactType, confirmCode));
 	}
-	
-	
+
+	// TODO Jordan: permissions should be set to allow anyone to hit this endpoint
+	@ApiOperation(
+			value = "Start password reset",
+			response = Void.class)
+	@RequestMapping(
+			value = "/requestPasswordReset/{username}",
+			// This is made a GET so that it can be accessed directly as a link
+			// from the user's email
+			method = RequestMethod.POST,
+			produces = { JSON_ACCEPT_HEADER })
+	@SuppressWarnings("rawtypes")
+	public @ResponseBody ResponseEntity startPasswordReset(
+			@ApiParam(name = "username", required = true, value = "username")
+			@PathVariable(value = "username") String username
+	) {
+		return respond(pm.getUserManager().startPasswordReset(username));
+	}
+
+	// TODO Jordan: permissions should be set to allow ROLE_MUST_CHANGE_PASSWORD to hit (only) this endpoint
+	// however we ALSO need to check to make sure the user who is signed in is the user whose password is being changed
+	@ApiOperation(
+			value = "Set new password",
+			response = Void.class)
+	@RequestMapping(
+			value = "/passwordReset/{userId}/{password}",
+			// This is made a GET so that it can be accessed directly as a link
+			// from the user's email
+			method = RequestMethod.PUT,
+			produces = { JSON_ACCEPT_HEADER })
+	@SuppressWarnings("rawtypes")
+	public @ResponseBody ResponseEntity submitPassword(
+			@ApiParam(name = "userId", required = true, value = "User ID")
+			@PathVariable(value = "userId") Long userId,
+			@ApiParam(name = "password", required = true, value = "password")
+			@PathVariable(value = "password") String password
+	) {
+		return respond(pm.getUserManager().resetPassword(userId, password) );
+	}
 	
 }

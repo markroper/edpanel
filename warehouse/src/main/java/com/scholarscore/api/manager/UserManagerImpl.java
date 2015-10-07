@@ -223,10 +223,11 @@ public class UserManagerImpl implements UserManager {
     * has a validated contact method on file, or if not (b) alerts the school administrator that a user needs
     * a one-time password delivered to them.
     */
-    public ServiceResponse<String> startPasswordReset(Long userId) {
-        User user = userPersistence.selectUser(userId);
+    @Override
+    public ServiceResponse<String> startPasswordReset(String username) {
+        User user = userPersistence.selectUserByName(username);
         if (null == user) {
-            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, username}));
         }
         
         String code = generateCode();
@@ -262,6 +263,7 @@ public class UserManagerImpl implements UserManager {
 
     /* Resets the user's password.
      */
+    @Override
     public ServiceResponse<String> resetPassword(Long userId, String newPassword) {
         User user = userPersistence.selectUser(userId);
         if (null == user) {
@@ -271,9 +273,15 @@ public class UserManagerImpl implements UserManager {
         // we need to be able to say, the userId we are resetting the password for is the logged in user
         // for now, assume this comment will be replaced with a block that returns a service response if the 
         // user logged in is not the userId that the password reset is for. maybe just take no id?
-        
+
+        // always clear onetime password + creation date when password is reset
+        user.setOneTimePass(null);
+        user.setOneTimePassCreated(null);
         user.setPassword(newPassword);
         updateUser(user.getId(), user);
+        
+        // TODO Jordan: right here, if the user is logged in with temporary password (ROLE_ONLY_CHANGE_PASSWORD) 
+        // should switch them to basically login with their real password
         
         return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"Password successfully reset"}));
     }
