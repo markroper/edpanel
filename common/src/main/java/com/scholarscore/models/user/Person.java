@@ -5,16 +5,16 @@ import com.scholarscore.models.Address;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings("serial")
-public abstract class Staff extends User {
+public abstract class Person extends User {
     protected String sourceSystemId;
     protected Address homeAddress;
     protected String homePhone;
     
-    public Staff() {
+    public Person() {
         
     }
     
-    public Staff(Staff s) {
+    public Person(Person s) {
         super(s);
         this.sourceSystemId = s.sourceSystemId;
         this.homeAddress = s.homeAddress;
@@ -23,8 +23,8 @@ public abstract class Staff extends User {
     
     @Override
     public void mergePropertiesIfNull(User mergeFrom) {
-        if(mergeFrom instanceof Staff) {
-            Staff staff = (Staff) mergeFrom;
+        if(mergeFrom instanceof Person) {
+            Person staff = (Person) mergeFrom;
             if(null == this.sourceSystemId) {
                 this.sourceSystemId = staff.sourceSystemId;
             }
@@ -79,7 +79,7 @@ public abstract class Staff extends User {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
 
-        Staff staff = (Staff) o;
+        Person staff = (Person) o;
 
         if (homePhone != null ? !homePhone.equals(staff.homePhone) : staff.homePhone != null) { return false; }
         if (homeAddress != null ? !homeAddress.equals(staff.homeAddress) : staff.homeAddress != null) { return false; }
