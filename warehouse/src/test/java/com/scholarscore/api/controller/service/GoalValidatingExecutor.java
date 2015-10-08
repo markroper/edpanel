@@ -99,6 +99,8 @@ public class GoalValidatingExecutor {
                 returnGoal = new AssignmentGoal((AssignmentGoal)submitted);
             } else if (submitted instanceof CumulativeGradeGoal){
                 returnGoal =  new CumulativeGradeGoal((CumulativeGradeGoal)submitted);
+            } else if (submitted instanceof AttendanceGoal){
+                returnGoal = new AttendanceGoal((AttendanceGoal)submitted);
             } else {
                 return null;
             }

@@ -34,6 +34,7 @@ public class AssignmentJdbc implements EntityPersistence<Assignment> {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Assignment> selectAll(long assignmentId) {
+        Assignment ass;
         return (Collection<Assignment>)hibernateTemplate.findByNamedParam("from assignment a where a.sectionFK = :id",
                 "id", assignmentId);
     }
@@ -43,16 +44,7 @@ public class AssignmentJdbc implements EntityPersistence<Assignment> {
         return hibernateTemplate.get(Assignment.class, id);
     }
 
-    @SuppressWarnings("unchecked")
-    public StudentAssignment selectByComponents(long assignmentId, long studentId) {
-        List<StudentAssignment> assignmentList = (List<StudentAssignment>) hibernateTemplate.findByNamedParam(
-                "from assignments assign where assign.student.id = " + String.valueOf(studentId) +
-                        " and assign.assignment.id = :assignmentId", "assignmentId", assignmentId);
-        if (null != assignmentList && assignmentList.size() > 0) {
-            return assignmentList.get(0);
-        }
-        return null;
-    }
+
 
     @Override
     public Long insert(long parentId, Assignment entity) {

@@ -3,6 +3,7 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 import com.scholarscore.api.persistence.GoalPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.goalCalculators.AssignmentGoalCalc;
+import com.scholarscore.api.persistence.goalCalculators.AttendanceGoalCalc;
 import com.scholarscore.api.persistence.goalCalculators.BehaviorGoalCalc;
 import com.scholarscore.api.persistence.goalCalculators.CumulativeGoalCalc;
 import com.scholarscore.models.*;
@@ -12,6 +13,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -22,16 +24,17 @@ public class GoalJdbc implements GoalPersistence {
 
     @Autowired
     private HibernateTemplate hibernateTemplate;
+
     private StudentPersistence studentPersistence;
 
-
     private CumulativeGoalCalc cumulativeGoalCalc;
-
-
     private BehaviorGoalCalc behaviorGoalCalc;
-
-
     private AssignmentGoalCalc assignmentGoalCalc;
+    private AttendanceGoalCalc attendanceGoalCalc;
+
+    public void setAttendanceGoalCalc(AttendanceGoalCalc attendanceGoalCalc) {
+        this.attendanceGoalCalc = attendanceGoalCalc;
+    }
 
     public void setCumulativeGoalCalc(CumulativeGoalCalc cumulativeGoalCalc) {
         this.cumulativeGoalCalc = cumulativeGoalCalc;
@@ -66,26 +69,7 @@ public class GoalJdbc implements GoalPersistence {
     public Goal select(long studentId, long goalId) {
         Goal result = hibernateTemplate.get(Goal.class, goalId);
         if (null != result) {
-            switch (result.getGoalType()) {
-                case BEHAVIOR:
-                    if (result instanceof BehaviorGoal) {
-                        BehaviorGoal behaviorGoal = (BehaviorGoal)result;
-                        result.setCalculatedValue(behaviorGoalCalc.calculateGoal(behaviorGoal));
-                    }
-                    break;
-                case ASSIGNMENT:
-                    if (result instanceof AssignmentGoal) {
-                        AssignmentGoal assignmentGoal = (AssignmentGoal)result;
-                        result.setCalculatedValue(assignmentGoalCalc.calculateGoal(assignmentGoal));
-                    }
-                    break;
-                case CUMULATIVE_GRADE:
-                    if (result instanceof CumulativeGradeGoal) {
-                        CumulativeGradeGoal cumulativeGradeGoal = (CumulativeGradeGoal)result;
-                        result.setCalculatedValue(cumulativeGoalCalc.calculateGoal(cumulativeGradeGoal));
-                    }
-                    break;
-            }
+            return addCalculatedValue(result);
         }
 
         return result;
@@ -121,30 +105,40 @@ public class GoalJdbc implements GoalPersistence {
     }
 
     private Collection<Goal> addCalculatedValue(Collection<Goal> goals) {
+        Collection<Goal> calculatedGoals = new ArrayList<Goal>();
         for (Goal goal : goals) {
-            switch (goal.getGoalType()) {
-                case BEHAVIOR:
-                    if (goal instanceof BehaviorGoal) {
-                        BehaviorGoal behaviorGoal = (BehaviorGoal)goal;
-                        goal.setCalculatedValue(behaviorGoalCalc.calculateGoal(behaviorGoal));
-                    }
-                    break;
-                case ASSIGNMENT:
-                    if (goal instanceof AssignmentGoal) {
-                        AssignmentGoal assignmentGoal = (AssignmentGoal)goal;
-                        goal.setCalculatedValue(assignmentGoalCalc.calculateGoal(assignmentGoal));
-                    }
-                    break;
-                case CUMULATIVE_GRADE:
-                    if (goal instanceof CumulativeGradeGoal) {
-                        CumulativeGradeGoal cumulativeGradeGoal = (CumulativeGradeGoal)goal;
-                        goal.setCalculatedValue(cumulativeGoalCalc.calculateGoal(cumulativeGradeGoal));
-                    }
-                    break;
-            }
+            calculatedGoals.add(addCalculatedValue(goal));
         }
+        return calculatedGoals;
+    }
 
-        return goals;
+    private Goal addCalculatedValue(Goal goal) {
+        switch (goal.getGoalType()) {
+            case BEHAVIOR:
+                if (goal instanceof BehaviorGoal) {
+                    BehaviorGoal behaviorGoal = (BehaviorGoal)goal;
+                    goal.setCalculatedValue(behaviorGoalCalc.calculateGoal(behaviorGoal));
+                }
+                break;
+            case ASSIGNMENT:
+                if (goal instanceof AssignmentGoal) {
+                    AssignmentGoal assignmentGoal = (AssignmentGoal)goal;
+                    goal.setCalculatedValue(assignmentGoalCalc.calculateGoal(assignmentGoal));
+                }
+                break;
+            case CUMULATIVE_GRADE:
+                if (goal instanceof CumulativeGradeGoal) {
+                    CumulativeGradeGoal cumulativeGradeGoal = (CumulativeGradeGoal)goal;
+                    goal.setCalculatedValue(cumulativeGoalCalc.calculateGoal(cumulativeGradeGoal));
+                }
+                break;
+            case ATTENDANCE:
+                if (goal instanceof AttendanceGoal) {
+                    AttendanceGoal attendanceGoal = (AttendanceGoal)goal;
+                    goal.setCalculatedValue(attendanceGoalCalc.calculateGoal(attendanceGoal));
+                }
+        }
+        return goal;
     }
 
 }
