@@ -8,7 +8,7 @@ package com.scholarscore.api.util;
  *
  */
 public class RoleConstants {
-    public static final String ROLE_MUST_CHANGE_PASSWORD = "ROLE_MUST_CHANGE_PASSWORD";
+    public static final String ROLE_MUST_CHANGE_PASSWORD = "MUST_CHANGE_PASSWORD";
             
     public static final String TEACHER = "TEACHER";
     public static final String STUDENT = "STUDENT";

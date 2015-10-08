@@ -15,6 +15,8 @@ import com.scholarscore.api.service.TextMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,6 +46,9 @@ public class UserManagerImpl implements UserManager {
     private EmailService emailService;
     @Autowired
     private TextMessageService textService;
+
+    @Autowired
+    protected AuthenticationManager authenticationManager;
     
     private OrchestrationManager pm;
 
@@ -149,19 +154,16 @@ public class UserManagerImpl implements UserManager {
         updateUser(user.getId(), user);
 
         // TODO: this could be unified into a generic messaging service that encapsulates the differences 
-        // of different contact mediums and messages... I don't like too many if/else statements on an Enum type like this 
-        // because it's easy to overlook later when new enum values are added 
+        // of different contact mediums and messages... too many if/else statements on an Enum type like this 
+        // become easy to overlook later when new enum values are added 
         if (ContactType.EMAIL.equals(selectedContactMethod.getContactType())) {
             String toAddress = selectedContactMethod.getContactValue();
             String subject = "(DEV) email confirmation from EdPanel";
             String message = "Hello! Please enter this code when prompted by edpanel: ( " + code + " ). "
                     + "\n -- OR --"
                     + "\n click here to confirm: https://myedpanel.com/warehouse/v1/" + user.getUsername() + "/validation/email/" + code + "";
-//            EmailService emailService = new SingleAccountGmailService();
             emailService.sendMessage(toAddress, subject, message);
         } else if (ContactType.PHONE.equals(selectedContactMethod.getContactType())) {
-            // ... provide this code to the user via the specific medium of the contact
-            // make it abstract and springified so it's relatively easy to add new message types in the future
             String toNumber = selectedContactMethod.getContactValue();
             String msg = "Confirm code from EdPanel: " + code;
             textService.sendMessage(toNumber, msg);
@@ -282,6 +284,21 @@ public class UserManagerImpl implements UserManager {
         
         // TODO Jordan: right here, if the user is logged in with temporary password (ROLE_ONLY_CHANGE_PASSWORD) 
         // should switch them to basically login with their real password
+//        SecurityContext securityContext = SecurityContextHolder.getContext();
+//        Authentication authentication = securityContext.getAuthentication();
+
+//        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user, user.setPassword(););
+ 
+         Authentication authRequest = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+        Authentication authenticated = authenticationManager.authenticate(authRequest);
+        if (authenticated.isAuthenticated()) {
+            logger.info("!! !! !! Oh hell yes. Reauthenticated user after password change");
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            securityContext.setAuthentication(authenticated);
+        } else {
+            // oh boy...
+            throw new RuntimeException("Failed to re-authenticate user after change of password");
+        }
         
         return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"Password successfully reset"}));
     }

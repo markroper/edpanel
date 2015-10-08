@@ -8,10 +8,12 @@ import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.util.RoleConstants;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -73,9 +75,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String LOGIN_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/login";
     private static final String QUERY_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/schools/*/queries/results";
     private static final String LOGOUT_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/logout";
-    private static final String CONFIRM_EMAIL_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/" + "users" + "/*/validation/email/*";
-    private static final String CONFIRM_PHONE_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/" + "users" + "/*/validation/phone/*";
-    private static final String CHANGE_PASSWORD_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/passwordReset/*/*";
+    private static final String CONFIRM_EMAIL_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/users/*/validation/email/*";
+    private static final String CONFIRM_PHONE_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/users/*/validation/phone/*";
+    private static final String CHANGE_PASSWORD_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/users/passwordReset/*/*";
     private static final String ACCESS_DENIED_JSON = "{\"message\":\"You are not privileged to request this resource.\","
             + " \"access-denied\":true,\"cause\":\"AUTHORIZATION_FAILURE\"}";
     private static final String UNAUTHORIZED_JSON = "{\"message\":\"Authentication is required to access this resource.\","
@@ -123,6 +125,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .userDetailsService(customUserDetailService);
     }
 
+    @Bean(name="authenticationManager")
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+    
     /**
      * Let’s examine the configure method step by step.
      * 
@@ -206,18 +214,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             accessDeniedHandler(new CustomAccessDeniedHandler()).
             authenticationEntryPoint(new CustomAuthenticationEntryPoint()).
             and().
-                // TODO Jordan: can this be right? don't we need to specify what requests to authorize?
-                authenticationProvider(oneTimePassAuthProvider).authorizeRequests().
-//                antMatchers(HttpMethod.POST, LOGIN_ENDPOINT).permitAll().
+                // also check user's password against one-time password (which is used for initial setup and password reset flow)
+                        authenticationProvider(oneTimePassAuthProvider).
+                authorizeRequests().
             and().
-                
         authorizeRequests().
             antMatchers(HttpMethod.POST, LOGIN_ENDPOINT).permitAll().
             antMatchers(HttpMethod.OPTIONS, LOGIN_ENDPOINT).permitAll().
             antMatchers(HttpMethod.OPTIONS, "/**").permitAll().
             antMatchers(HttpMethod.GET, CONFIRM_EMAIL_ENDPOINT).permitAll().
             antMatchers(HttpMethod.GET, CONFIRM_PHONE_ENDPOINT).permitAll().
-            antMatchers(HttpMethod.POST, CHANGE_PASSWORD_ENDPOINT).hasAnyRole(append(AUTHENTICATED, RoleConstants.ROLE_MUST_CHANGE_PASSWORD)).
+            antMatchers(HttpMethod.PUT, CHANGE_PASSWORD_ENDPOINT).hasAnyRole(append(AUTHENTICATED, RoleConstants.ROLE_MUST_CHANGE_PASSWORD)).
             antMatchers(HttpMethod.POST, LOGOUT_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.GET, "/**").hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.POST, QUERY_ENDPOINT).hasAnyRole(AUTHENTICATED).
@@ -351,7 +358,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 User principal = (User)authentication.getPrincipal();
                 out.print(mapper.writeValueAsString(principal));
             } else {
-
+                logger.error("authentication.getPrincipal() is not instanceof UserDetailsProxy or User");
+                throw new ClassCastException("authentication.getPrincipal() is not instanceof UserDetailsProxy or User");
             }
             out.flush();
             out.close(); 
