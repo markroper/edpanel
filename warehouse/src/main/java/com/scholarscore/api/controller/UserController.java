@@ -173,8 +173,6 @@ public class UserController extends BaseController {
 			response = Void.class)
 	@RequestMapping(
 			value = "/passwordReset/{userId}/{password}",
-			// This is made a GET so that it can be accessed directly as a link
-			// from the user's email
 			method = RequestMethod.PUT,
 			produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")

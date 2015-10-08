@@ -63,9 +63,10 @@ public class UserJdbc implements UserPersistence {
     @Override
     @SuppressWarnings("unchecked")
     public Long replaceUser(Long userId, User value) {
-        User fromDB = selectUser(userId);
-        fromDB.setPassword(value.getPassword());
-        fromDB.setEnabled(value.getEnabled());
+        value.setId(userId);
+//        User fromDB = selectUser(userId);
+//        fromDB.setPassword(value.getPassword());
+//        fromDB.setEnabled(value.getEnabled());
 /*
         fromDB.setEmailAddress(value.getEmailAddress());
         fromDB.setEmailConfirmCode(value.getEmailConfirmCode());
@@ -76,7 +77,7 @@ public class UserJdbc implements UserPersistence {
         fromDB.setPhoneConfirmCodeTime(value.getPhoneConfirmCodeTime());
         fromDB.setPhoneConfirmed(value.getPhoneConfirmed());
         */
-        hibernateTemplate.merge(fromDB);
+        hibernateTemplate.merge(value);
         return userId;
     }
 
