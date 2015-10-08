@@ -276,6 +276,8 @@ public class UserManagerImpl implements UserManager {
         return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"No Data"}));
     }
 
+    // TODO Jordan: don't take password in the URL, take it in the payload
+    
     /* Resets the user's password.
      */
     @Override
@@ -296,12 +298,7 @@ public class UserManagerImpl implements UserManager {
         updateUser(user.getId(), user);
         
         // TODO Jordan: right here, if the user is logged in with temporary password (ROLE_ONLY_CHANGE_PASSWORD) 
-        // should switch them to basically login with their real password
-//        SecurityContext securityContext = SecurityContextHolder.getContext();
-//        Authentication authentication = securityContext.getAuthentication();
-
-//        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user, user.setPassword(););
- 
+        // should switch them to  login with their real password
          Authentication authRequest = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
         Authentication authenticated = authenticationManager.authenticate(authRequest);
         if (authenticated.isAuthenticated()) {
