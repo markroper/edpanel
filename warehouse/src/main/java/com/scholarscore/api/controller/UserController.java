@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
@@ -36,7 +37,15 @@ public class UserController extends BaseController {
 	        method = RequestMethod.GET, 
 	        produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
-	public @ResponseBody ResponseEntity getAll() {
+	public @ResponseBody ResponseEntity getAll(
+	        @RequestParam(value = "schoolId") Long schoolId,
+            @RequestParam(value = "enabled") Boolean enabled) {
+	    if(null != schoolId) {
+	        if(null != enabled) {
+	            return respond(pm.getUserManager().getAllUsersInSchool(schoolId, enabled));
+	        }
+	        return respond(pm.getUserManager().getAllUsersInSchool(schoolId));
+	    }
 	    return respond(pm.getUserManager().getAllUsers());
 	}
 
