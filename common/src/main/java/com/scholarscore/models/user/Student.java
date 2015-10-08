@@ -14,6 +14,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.Gender;
@@ -32,12 +33,8 @@ import com.scholarscore.models.HibernateConsts;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @PrimaryKeyJoinColumn(name=HibernateConsts.STUDENT_USER_FK, referencedColumnName = HibernateConsts.USER_ID)
-public class Student extends User implements Serializable {
-    //Source system identifier. E.g. powerschool ID
-    private String sourceSystemId;
-    //Addresses
+public class Student extends Person implements Serializable {
     private Address mailingAddress;
-    private Address homeAddress;
     //Demographics
     private Gender gender;
     private Date birthDate;
@@ -55,9 +52,7 @@ public class Student extends User implements Serializable {
     
     public Student(Student student) {
         super(student);
-        this.sourceSystemId = student.sourceSystemId;
         this.mailingAddress = student.mailingAddress;
-        this.homeAddress = student.homeAddress;
         this.gender = student.gender;
         this.birthDate = student.birthDate;
         this.districtEntryDate = student.districtEntryDate;
@@ -82,14 +77,8 @@ public class Student extends User implements Serializable {
         super.mergePropertiesIfNull(mergeFrom);     
         if(mergeFrom instanceof Student) {
             Student merge = (Student) mergeFrom;
-            if (null == getSourceSystemId()) {
-                setSourceSystemId(merge.getSourceSystemId());
-            }
             if (null == getMailingAddress()) {
                 setMailingAddress(merge.getMailingAddress());
-            }
-            if (null == getHomeAddress()) {
-                setHomeAddress(merge.getHomeAddress());
             }
             if (null == getGender()) {
                 setGender(merge.getGender());
@@ -138,10 +127,6 @@ public class Student extends User implements Serializable {
         return mailingAddress;
     }
 
-    public void setSourceSystemId(String sourceSystemId) {
-        this.sourceSystemId = sourceSystemId;
-    }
-
     public void setMailingAddress(Address mailingAddress) {
         this.mailingAddress = mailingAddress;
     }
@@ -151,10 +136,6 @@ public class Student extends User implements Serializable {
     @JoinColumn(name=HibernateConsts.STUDENT_HOME_FK)
     public Address getHomeAddress() {
         return homeAddress;
-    }
-
-    public void setHomeAddress(Address homeAddress) {
-        this.homeAddress = homeAddress;
     }
 
     @Column(name = HibernateConsts.STUDENT_GENDER)
@@ -243,6 +224,16 @@ public class Student extends User implements Serializable {
     public void setUserId(Long userId) {
         setId(userId);
     }
+    
+    /**
+     * TODO: Student's don't actually have this field persisted yet. Add to model & enable
+     */
+    @Override
+    @Transient
+    @JsonIgnore
+    public String getHomePhone() {
+        return homePhone;
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -250,9 +241,7 @@ public class Student extends User implements Serializable {
             return false;
         }
         final Student other = (Student) obj;
-        return Objects.equals(this.sourceSystemId, other.sourceSystemId)
-                && Objects.equals(this.mailingAddress, other.mailingAddress)
-                && Objects.equals(this.homeAddress, other.homeAddress)
+        return Objects.equals(this.mailingAddress, other.mailingAddress)
                 && Objects.equals(this.gender, other.gender)
                 && Objects.equals(this.birthDate, other.birthDate)
                 && Objects.equals(this.districtEntryDate, other.districtEntryDate)
@@ -266,7 +255,7 @@ public class Student extends User implements Serializable {
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(sourceSystemId, mailingAddress, homeAddress, gender, birthDate,
+                + Objects.hash(mailingAddress, gender, birthDate,
                         districtEntryDate, projectedGraduationYear, socialSecurityNumber, 
                         federalRace, federalEthnicity, currentSchoolId);
     }
@@ -274,9 +263,7 @@ public class Student extends User implements Serializable {
     @Override
     public String toString() {
         return "Student{" +
-                ", sourceSystemId='" + sourceSystemId + '\'' +
                 ", mailingAddress=" + mailingAddress +
-                ", homeAddress=" + homeAddress +
                 ", gender=" + gender +
                 ", birthDate=" + birthDate +
                 ", districtEntryDate=" + districtEntryDate +

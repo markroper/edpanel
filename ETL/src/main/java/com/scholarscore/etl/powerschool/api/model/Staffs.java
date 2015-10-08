@@ -23,7 +23,7 @@ public class Staffs extends ArrayList<Staff> implements ITranslateCollection<Use
         for (Staff staff : this) {
 
             // MJG: Should we have a notion of an administrator?
-            com.scholarscore.models.user.Staff entity;
+            com.scholarscore.models.user.Person entity;
             if (staff.isAdmin()) {
                 entity = new Administrator();
             } else {
