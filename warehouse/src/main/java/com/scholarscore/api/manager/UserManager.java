@@ -14,6 +14,10 @@ import com.scholarscore.models.user.User;
  */
 public interface UserManager {
     ServiceResponse<Collection<User>> getAllUsers();
+    
+    ServiceResponse<Collection<User>> getAllUsersInSchool(Long schoolId);
+    
+    ServiceResponse<Collection<User>> getAllUsersInSchool(Long schoolId, boolean enabled);
 
     StatusCode userExists(Long userId);
     

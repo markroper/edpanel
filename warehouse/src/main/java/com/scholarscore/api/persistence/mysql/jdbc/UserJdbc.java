@@ -4,10 +4,7 @@ import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.persistence.UserPersistence;
-import com.scholarscore.models.Term;
-import com.scholarscore.models.user.Administrator;
-import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.Person;
 import com.scholarscore.models.user.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +12,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,6 +37,22 @@ public class UserJdbc implements UserPersistence {
     public Collection<User> selectAllUsers() {
         return hibernateTemplate.loadAll(User.class);
     }
+    
+    @Override
+    public Collection<User> selectAllUsersInSchool(Long schoolId) {
+        List<User> values = hibernateTemplate.loadAll(User.class);
+        return filterUsersBySchool(values, schoolId);
+    }
+
+    @Override
+    public Collection<User> selectAllUsersInSchool(
+            Long schoolId,
+            boolean enabled) {
+        @SuppressWarnings("unchecked")
+        List<User> values = 
+                (List<User>) hibernateTemplate.findByNamedParam("from user u where u.enabled = :enabled", "enabled", enabled);
+        return filterUsersBySchool(values, schoolId);
+    }
 
     @Override
     public User selectUser(Long userId) {
@@ -61,7 +75,6 @@ public class UserJdbc implements UserPersistence {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Long replaceUser(Long userId, User value) {
         User fromDB = selectUser(userId);
         fromDB.setPassword(value.getPassword());
@@ -77,6 +90,20 @@ public class UserJdbc implements UserPersistence {
             hibernateTemplate.delete(fromDB);
         }
         return userId;
+    }
+    
+    private static Collection<User> filterUsersBySchool(Collection<User> users, Long schoolId) {
+        if(null == users || null == schoolId) {
+            return null;
+        }
+        Collection<User> filteredValues = new ArrayList<User>();
+        for(User u: users) {
+            Person p = (Person) u;
+            if(null != p.getCurrentSchoolId() && p.getCurrentSchoolId().equals(schoolId)) {
+                filteredValues.add(p);
+            }  
+        }
+        return filteredValues;
     }
 
     public HibernateTemplate getHibernateTemplate() {

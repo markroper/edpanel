@@ -40,6 +40,19 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
+    public ServiceResponse<Collection<User>> getAllUsersInSchool(Long schoolId) {
+        return new ServiceResponse<Collection<User>>(
+                userPersistence.selectAllUsersInSchool(schoolId));
+    }
+
+    @Override
+    public ServiceResponse<Collection<User>> getAllUsersInSchool(Long schoolId,
+            boolean enabled) {
+        return new ServiceResponse<Collection<User>>(
+                userPersistence.selectAllUsersInSchool(schoolId, enabled));
+    }
+    
+    @Override
     public StatusCode userExists(Long userId) {
         User user = userPersistence.selectUser(userId);
         if(null == user) {
