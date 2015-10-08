@@ -349,9 +349,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             if (authentication.getPrincipal() instanceof UserDetailsProxy) {
                 UserDetailsProxy proxyUser = (UserDetailsProxy)authentication.getPrincipal();
                 com.scholarscore.models.user.User user = proxyUser.getUser();
-                // don't send the password value to the client
+                // don't include any of these user details
                 user.setPassword(null);
                 user.setOneTimePass(null);
+                user.setOneTimePassCreated(null);
                 String value = mapper.writeValueAsString(user);
                 out.print(value);
             } else if (authentication.getPrincipal() instanceof User) {
