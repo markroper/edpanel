@@ -16,6 +16,8 @@ public class UserRolesTest extends IntegrationBase {
         // negative anon - do something that anon is not allowed to do and confirm they can't
         
         invalidateCookie();
+            
+        // TODO Jordan: finish this test 
         
         // positive user
         // negative user

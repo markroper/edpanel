@@ -55,6 +55,11 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	
 	private Set<ContactMethod> contactMethods;
 	
+	// this optional boolean is usually null, but will be set to true in the special case 
+	// where the user has logged in with a temporary/one-time password. 
+	// If this value is true, this user will be severely limited in the endpoints
+	// they are capable of accessing (until they call the resetPassword endpoint)
+	private Boolean mustResetPassword; 
 	
 	public User() { }
 	
