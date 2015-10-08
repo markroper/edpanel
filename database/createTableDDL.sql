@@ -86,8 +86,13 @@ CREATE TABLE `scholar_warehouse`.`teacher` (
   `teacher_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user_fk of the teacher',
   `teacher_home_phone` VARCHAR(256) NULL COMMENT 'Home phone number for teacher',
   `teacher_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
+  `school_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the current primary school the teacher teaches at',
   CONSTRAINT `teacher_homeAddress_fk$teacher`
   FOREIGN KEY (`teacher_homeAddress_fk`) REFERENCES `scholar_warehouse`.`address`(`address_id`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+  CONSTRAINT `school_fk$teacher`
+  FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
   FOREIGN KEY (`teacher_user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
@@ -102,11 +107,16 @@ CREATE TABLE `scholar_warehouse`.`administrator` (
   `administrator_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
   `administrator_source_system_id` VARCHAR(256) NULL,
   `administrator_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user_fk of the teacher',
+  `school_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the current school the administrator actively works for',
   CONSTRAINT `administrator_homeAddress_fk$administrator`
   FOREIGN KEY (`administrator_homeAddress_fk`)
     REFERENCES `scholar_warehouse`.`address`(`address_id`)
-  ON DELETE SET NULL
-  ON UPDATE CASCADE,
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+  CONSTRAINT `school_fk$administrator`
+  FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
   FOREIGN KEY (`administrator_user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
   ON DELETE SET NULL
   ON UPDATE CASCADE
