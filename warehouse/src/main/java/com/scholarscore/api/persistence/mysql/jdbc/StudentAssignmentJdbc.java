@@ -45,7 +45,8 @@ public class StudentAssignmentJdbc
         return hibernateTemplate.loadAll(StudentAssignment.class);
     }
 
-    //TODO we should be getting using the assignment Id and student ID, not just the student_assignmnet_id
+
+
     @Override
     public StudentAssignment select(long assignmentId, long id) {
         return hibernateTemplate.get(StudentAssignment.class, id);
@@ -96,6 +97,20 @@ public class StudentAssignmentJdbc
                         + "where a.sectionFK = :sectionId and s.id = :studentId", 
                         paramNames, 
                         paramValues);
+        return studentAssignments;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Collection<StudentAssignment> selectAllAttendanceSection(long sectionId, long studentId) {
+        String[] paramNames = new String[]{ "sectionId", "studentId" };
+        Object[] paramValues = new Object[]{ new Long(sectionId), new Long(studentId) };
+        List<StudentAssignment> studentAssignments = (List<StudentAssignment>)
+                hibernateTemplate.findByNamedParam(
+                        "select sa from student_assignment sa inner join fetch sa.assignment a inner join fetch sa.student s "
+                                + "where a.sectionFK = :sectionId and s.id = :studentId and a.type = 1",
+                        paramNames,
+                        paramValues);
+        //Would it be better to filter for the data range here as oppose to in java code later?
         return studentAssignments;
     }
 }
