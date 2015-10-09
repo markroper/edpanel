@@ -438,7 +438,22 @@ public class SchoolDataFactory {
             assignmentGoal.setName("Bio Final Goal");
             studentGoalList.add(assignmentGoal);
 
-            studentGoals.put(s.getId(),studentGoalList);
+            studentGoals.put(s.getId(), studentGoalList);
+
+            AttendanceGoal attendanceGoal = new AttendanceGoal();
+            if (null == enrolledSections.get(index)) {
+                attendanceGoal.setParentId(enrolledSections.get(0));
+            } else {
+                attendanceGoal.setParentId(enrolledSections.get(index));
+            }
+
+            attendanceGoal.setStudent(s);
+            attendanceGoal.setTeacher(teacher);
+            attendanceGoal.setApproved(false);
+            attendanceGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(0, 4)));
+            attendanceGoal.setName("Weekly Attendance Goal");
+            attendanceGoal.setEndDate(endDate);
+            attendanceGoal.setStartDate(beginDate);
 
         }
         return studentGoals;
