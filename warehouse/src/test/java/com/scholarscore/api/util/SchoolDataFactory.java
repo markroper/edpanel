@@ -393,7 +393,7 @@ public class SchoolDataFactory {
         for (Student s: students) {
             List<Long> enrolledSections = studentToSSGId.get(s.getId());
             List<Long> studentAssignments = studentToAssignmentId.get(s.getId());
-            int index = ThreadLocalRandom.current().nextInt(enrolledSections.size() - 1);
+            int index = ThreadLocalRandom.current().nextInt(1, enrolledSections.size() - 1);
             int assignmentIndex = ThreadLocalRandom.current().nextInt(studentAssignments.size()-1);
             ArrayList<Goal> studentGoalList = new ArrayList<Goal>();
 
@@ -454,6 +454,8 @@ public class SchoolDataFactory {
             attendanceGoal.setName("Weekly Attendance Goal");
             attendanceGoal.setEndDate(endDate);
             attendanceGoal.setStartDate(beginDate);
+
+            studentGoalList.add(attendanceGoal);
 
         }
         return studentGoals;
