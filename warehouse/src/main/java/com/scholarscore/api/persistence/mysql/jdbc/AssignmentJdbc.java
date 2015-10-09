@@ -34,7 +34,6 @@ public class AssignmentJdbc implements EntityPersistence<Assignment> {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Assignment> selectAll(long assignmentId) {
-        Assignment ass;
         return (Collection<Assignment>)hibernateTemplate.findByNamedParam("from assignment a where a.sectionFK = :id",
                 "id", assignmentId);
     }
