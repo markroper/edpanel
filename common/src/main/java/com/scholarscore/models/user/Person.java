@@ -25,6 +25,7 @@ public abstract class Person extends User {
     
     @Override
     public void mergePropertiesIfNull(User mergeFrom) {
+        super.mergePropertiesIfNull(mergeFrom);
         if(mergeFrom instanceof Person) {
             Person staff = (Person) mergeFrom;
             if(null == this.sourceSystemId) {

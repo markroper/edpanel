@@ -60,7 +60,6 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	private Date oneTimePassCreated;
 
 	private Set<ContactMethod> contactMethods;
-//	private Map<ContactType, ContactMethod> contactMethods;
 	
 	// this optional boolean is usually null, but will be set to true in the special case 
 	// where the user has logged in with a temporary/one-time password. 
@@ -78,7 +77,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	}
 
 	@OneToMany
-	@JoinColumn(name = HibernateConsts.CONTACT_METHOD_USER_FK)
+	@JoinColumn(name = HibernateConsts.CONTACT_METHOD_USER_FK, nullable = false)
 	@Fetch(FetchMode.JOIN)
 	@Cascade(CascadeType.ALL)
 	public Set<ContactMethod> getContactMethods() {
@@ -87,16 +86,6 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 
 	public void setContactMethods(Set<ContactMethod> contactMethods) {
 		this.contactMethods = contactMethods;
-		/*
-		if (contactMethods == null) { 
-			this.contactMethods = null;
-		} else {
-			this.contactMethods = new HashMap<>();
-			for (ContactMethod contactMethod : contactMethods) {
-				this.contactMethods.put(contactMethod.getContactType(), contactMethod);
-			}
-		}
-		*/
 	}
 
 	@Transient
@@ -110,13 +99,14 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	
 	public void setEmail(String newEmail) { 
 		if (contactMethods == null) {
-//			contactMethods = new HashMap<>();
 			contactMethods = new HashSet<>();
 		}
 		
 		// initialize in case we don't have an email record
 		ContactMethod emailContactMethod = new ContactMethod();
 		emailContactMethod.setContactType(ContactType.EMAIL);
+//		emailContactMethod
+//		emailContactMethod.setId();
 
 		ContactMethod existingEmailContact = getEmailContact();
 		boolean emailExistsInContactMethods = (existingEmailContact != null);
@@ -216,6 +206,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	
 	@Override
 	public void mergePropertiesIfNull(User mergeFrom) {
+		super.mergePropertiesIfNull(mergeFrom);
         if (null == username) {
         	this.username = mergeFrom.getUsername();
         }

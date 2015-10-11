@@ -112,9 +112,29 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public ServiceResponse<Long> updateUser(Long userId, User user) {
-        return new ServiceResponse<Long>(userPersistence.replaceUser(userId, user));
+    public ServiceResponse<Long> updateUser(Long userId, User partialUser) {
+        ServiceResponse<User> sr = getUser(userId);
+        if(null == sr.getValue()) {
+            return new ServiceResponse<Long>(sr.getCode());
+        }
+        partialUser.mergePropertiesIfNull(userPersistence.selectUser(userId));
+        replaceUser(userId, partialUser);
+        return new ServiceResponse<Long>(userId);
+//        return new ServiceResponse<Long>(userPersistence.updateUser(userId, user));
     }
+    
+    /* 
+    *     @Override
+    public ServiceResponse<Long> updateSchool(long schoolId, School partialSchool) {
+        ServiceResponse<School> sr = getSchool(schoolId);
+        if(null == sr.getValue()) {
+            return new ServiceResponse<Long>(sr.getCode());
+        }
+        partialSchool.mergePropertiesIfNull(schoolPersistence.selectSchool(schoolId));
+        replaceSchool(schoolId, partialSchool);
+        return new ServiceResponse<Long>(schoolId);
+    }*
+     */
 
     @Override
     public ServiceResponse<Long> deleteUser(Long userId) {
