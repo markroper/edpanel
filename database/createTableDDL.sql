@@ -376,6 +376,9 @@ insert into `scholar_warehouse`.`authorities` (user_id, authority) values (1, 'A
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (2, 'ADMINISTRATOR');
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (3, 'STUDENT');
 
-insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk) values ('Mark Roper', 1);
-insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk) values ('Matt Greenwood', 2);
-insert into `scholar_warehouse`.`student`       (student_name, student_user_fk)             values ('StudentUser', 3);
+insert into `scholar_warehouse`.`school` (school_name) values ('FirstSchool');
+
+insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Mark Roper', 1, 1);
+insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Matt Greenwood', 2, 1);
+insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser', 3, 1);
+
