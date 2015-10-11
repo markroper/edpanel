@@ -1,6 +1,7 @@
     package com.scholarscore.models;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -53,5 +54,22 @@ public class AttendanceAssignment extends Assignment implements Serializable {
     @Override
     public int hashCode() {
         return 31 * super.hashCode();
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class AttendanceAssignmentBuilder extends AssignmentBuilder<AttendanceAssignment>{
+
+        public AttendanceAssignment build(){
+            return super.build();
+        }
+
+        @Override
+        public AttendanceAssignment getInstance() {
+            return new AttendanceAssignment();
+        }
     }
 }

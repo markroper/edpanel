@@ -367,7 +367,19 @@ public class Student extends User implements Serializable {
         }
 
         public Student build(){
-            return super.build();
+            Student student = super.build();
+            student.setSourceSystemId(sourceSystemId);
+            student.setMailingAddress(mailingAddress);
+            student.setHomeAddress(homeAddress);
+            student.setGender(gender);
+            student.setBirthDate(birthDate);
+            student.setDistrictEntryDate(districtEntryDate);
+            student.setProjectedGraduationYear(projectedGraduationYear);
+            student.setSocialSecurityNumber(socialSecurityNumber);
+            student.setFederalRace(federalRace);
+            student.setFederalEthnicity(federalEthnicity);
+            student.setCurrentSchoolId(currentSchoolId);
+            return student;
         }
 
         public Student getInstance(){

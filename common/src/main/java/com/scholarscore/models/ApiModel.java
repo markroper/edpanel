@@ -78,5 +78,35 @@ public abstract class ApiModel implements Serializable {
                 ", name='" + name + '\'' +
                 '}';
     }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public abstract class ApiModelBuilder<T extends ApiModel> {
+
+        private Long id;
+        protected String name;
+
+        public ApiModelBuilder<T> withId(final Long id){
+            this.id = id;
+            return this;
+        }
+
+        public ApiModelBuilder<T> withCity(final String name){
+            this.name = name;
+            return this;
+        }
+
+        public T build(){
+            T apiModel = getInstance();
+            apiModel.setId(id);
+            apiModel.setName(name);
+            return apiModel;
+        }
+
+        public abstract T getInstance();
+    }
 }
 

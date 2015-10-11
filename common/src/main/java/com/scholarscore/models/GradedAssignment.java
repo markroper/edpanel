@@ -67,4 +67,29 @@ public class GradedAssignment extends Assignment implements Serializable {
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(assignedDate);
     }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class GradedAssignmentBuilder extends AssignmentBuilder<GradedAssignment>{
+        private Date assignedDate;
+
+        public GradedAssignmentBuilder withAssignedDate(final Date assignedDate){
+            this.assignedDate = assignedDate;
+            return this;
+        }
+        
+        public GradedAssignment build(){
+            GradedAssignment gradedAssignment = super.build();
+            gradedAssignment.setAssignedDate(assignedDate);
+            return gradedAssignment;
+        }
+
+        @Override
+        public GradedAssignment getInstance() {
+            return new GradedAssignment();
+        }
+    }
 }

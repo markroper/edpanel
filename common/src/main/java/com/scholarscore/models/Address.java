@@ -1,5 +1,7 @@
 package com.scholarscore.models;
 
+import com.scholarscore.models.user.Staff;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -103,5 +105,53 @@ public class Address implements Serializable {
                 ", postalCode='" + postalCode + '\'' +
                 ", id=" + id +
                 '}';
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class AddressBuilder {
+
+        private String street;
+        private String city;
+        private String state;
+        private String postalCode;
+        private Long id;
+
+        public AddressBuilder withStreet(final String street){
+            this.street = street;
+            return this;
+        }
+
+        public AddressBuilder withCity(final String city){
+            this.city = city;
+            return this;
+        }
+
+        public AddressBuilder withState(final String state){
+            this.state = state;
+            return this;
+        }
+
+        public AddressBuilder withPostalCode(final String postalCode){
+            this.postalCode = postalCode;
+            return this;
+        }
+
+        public AddressBuilder withId(final Long id){
+            this.id = id;
+            return this;
+        }
+
+        public Address build(){
+            Address address = new Address();
+            address.setStreet(street);
+            address.setCity(city);
+            address.setState(state);
+            address.setPostalCode(postalCode);
+            return address;
+        }
     }
 }
