@@ -76,8 +76,13 @@ public class UserJdbc implements UserPersistence {
 
     @Override
     public Long replaceUser(Long userId, User value) {
+
+        User fromDB = selectUser(userId);
+        
         value.setId(userId);
-//        User fromDB = selectUser(userId);
+        value.setType(fromDB.getType());
+        value.setPassword(fromDB.getPassword());
+        value.setEnabled(fromDB.getEnabled());
 //        fromDB.setPassword(value.getPassword());
 //        fromDB.setEnabled(value.getEnabled());
 /*
