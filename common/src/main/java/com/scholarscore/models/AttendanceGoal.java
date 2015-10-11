@@ -22,6 +22,7 @@ public class AttendanceGoal extends Goal {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+    //References the sectionId of the section we have an attendance goal in
     private Long parentId;
     private Date startDate;
     private Date endDate;
