@@ -99,7 +99,7 @@ public class UserController extends BaseController {
 	public @ResponseBody ResponseEntity update(
 	        @ApiParam(name = "userId", required = true, value = "User ID")
 	        @PathVariable(value="userId") Long userId,
-	        @RequestBody @Valid User user) {
+	        @RequestBody User user) {
 	    return respond(pm.getUserManager().updateUser(userId, user));
 	}
 	
