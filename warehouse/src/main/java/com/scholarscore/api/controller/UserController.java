@@ -117,8 +117,6 @@ public class UserController extends BaseController {
 	    return respond(pm.getUserManager().deleteUser(userId));
 	}
 
-	// TODO Jordan: for this endpoint, ensure the user being edited is the same as the user logged in 
-	// fine grained permissions needed (or administrator, maybe)
 	@ApiOperation(
 			value = "Start validation for phone contact info",
 			response = Void.class)
@@ -157,7 +155,6 @@ public class UserController extends BaseController {
 		return respond(pm.getUserManager().confirmContactValidation(userId, contactType, confirmCode));
 	}
 
-	// TODO Jordan: permissions should be set to allow anyone to hit this endpoint
 	@ApiOperation(
 			value = "Start password reset",
 			response = Void.class)
@@ -175,8 +172,6 @@ public class UserController extends BaseController {
 		return respond(pm.getUserManager().startPasswordReset(username));
 	}
 
-	// TODO Jordan: permissions should be set to allow ROLE_MUST_CHANGE_PASSWORD to hit (only) this endpoint
-	// however we ALSO need to check to make sure the user who is signed in is the user whose password is being changed
 	@ApiOperation(
 			value = "Set new password",
 			response = Void.class)
