@@ -34,9 +34,11 @@ public class UserControllerIntegrationTest extends IntegrationBase {
         user.setName("newName");
         user.setUsername(user.getUsername()+"updated");
         user.setPassword("newPassword");
+//        userValidatingExecutor
+        
     }
     
-    // TODO Jordan: update test
+    // TODO Jordan: finish replace and update test
     
     // TODO Jordan: test validate, confirmvalidate, request reset password, reset password
     // Also test user roles with CHANGE_PASSWORD_PERMISSION
