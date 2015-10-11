@@ -2,6 +2,9 @@ package com.scholarscore.models.user;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -17,6 +20,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -37,6 +42,7 @@ import org.hibernate.annotations.Fetch;
 @Table(name = HibernateConsts.USERS_TABLE)
 @Inheritance(strategy=InheritanceType.JOINED)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties( { "contactMethods" })
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = Student.class, name="STUDENT"),
@@ -52,8 +58,9 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	private Boolean enabled = false;
 	private String oneTimePass;
 	private Date oneTimePassCreated;
-	
+
 	private Set<ContactMethod> contactMethods;
+//	private Map<ContactType, ContactMethod> contactMethods;
 	
 	// this optional boolean is usually null, but will be set to true in the special case 
 	// where the user has logged in with a temporary/one-time password. 
@@ -80,8 +87,69 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 
 	public void setContactMethods(Set<ContactMethod> contactMethods) {
 		this.contactMethods = contactMethods;
+		/*
+		if (contactMethods == null) { 
+			this.contactMethods = null;
+		} else {
+			this.contactMethods = new HashMap<>();
+			for (ContactMethod contactMethod : contactMethods) {
+				this.contactMethods.put(contactMethod.getContactType(), contactMethod);
+			}
+		}
+		*/
 	}
 
+	@Transient
+	public String getEmail() {
+		if (contactMethods != null) {
+			ContactMethod email = getEmailContact();
+			return email == null ? null : email.getContactValue();
+		}
+		return null;
+	}
+	
+	public void setEmail(String newEmail) { 
+		if (contactMethods == null) {
+//			contactMethods = new HashMap<>();
+			contactMethods = new HashSet<>();
+		}
+		
+		// initialize in case we don't have an email record
+		ContactMethod emailContactMethod = new ContactMethod();
+		emailContactMethod.setContactType(ContactType.EMAIL);
+
+		ContactMethod existingEmailContact = getEmailContact();
+		boolean emailExistsInContactMethods = (existingEmailContact != null);
+
+		if (emailExistsInContactMethods) { 
+			emailContactMethod = existingEmailContact;
+		}
+
+		emailContactMethod.setContactValue(newEmail);
+
+		if (!emailExistsInContactMethods) {
+			contactMethods.add(emailContactMethod);
+		}
+
+		// TODO JORDAN will a change here propagate thru hibernate?
+		setContactMethods(contactMethods);
+		
+//		contactMethods.put(emailContact.getContactType(), emailContact);
+	}
+	
+	@JsonIgnore
+	@Transient
+	// TODO Jordan: move it out of this class, or better yet get rid of it
+	private ContactMethod getEmailContact() {
+		if (getContactMethods() == null) { return null; }
+		for (ContactMethod method : getContactMethods()) {
+			if (method.getContactType().equals(ContactType.EMAIL)) {
+				return method;
+			}
+		}
+		return null;
+	}
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name = HibernateConsts.USER_ID)

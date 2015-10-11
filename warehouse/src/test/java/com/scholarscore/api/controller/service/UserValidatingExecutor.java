@@ -61,7 +61,6 @@ public class UserValidatingExecutor {
                 "Non 200 HttpStatus returned on delete for case: " + msg);
     }
 
-
     private User get(Long userId, String msg) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.GET,
@@ -70,5 +69,16 @@ public class UserValidatingExecutor {
         User user = serviceBase.validateResponse(response, new TypeReference<User>(){});
         Assert.assertNotNull(user, "Unexpected null user returned for case: " + msg);
         return user;
+    }
+    
+    private User replace(Long userId, User user, String msg) { 
+        ResultActions response = serviceBase.makeRequest(
+                HttpMethod.PUT,
+                serviceBase.getUsersEndpoint(userId),
+                null);
+        EntityId returnedUserId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
+        Assert.assertNotNull(returnedUserId, "unexpected null app returned from create call for case: " + msg);
+//        return retrieveAndValidateCreatedUser(returnedUserId, user, )
+        throw new RuntimeException("not implemented");
     }
 }
