@@ -1,9 +1,11 @@
 package com.scholarscore.models.user;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.Address;
+import com.scholarscore.models.Gender;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IStaff;
 
@@ -55,5 +57,21 @@ public class Teacher extends Staff implements Serializable, IStaff<Teacher> {
     @Transient
     public UserType getType() {
         return UserType.TEACHER;
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class TeacherBuilder extends StaffBuilder<Teacher> {
+
+        public Teacher build(){
+            return super.build();
+        }
+
+        public Teacher getInstance(){
+            return new Teacher();
+        }
     }
 }

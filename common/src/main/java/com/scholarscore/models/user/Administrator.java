@@ -83,4 +83,20 @@ public class Administrator extends Staff implements Serializable, IStaff<Adminis
     public String toString() {
         return"Administrator{" + "(super):{" + super.toString() + "} ";
     }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class AdministratorBuilder extends StaffBuilder<Administrator>{
+
+        public Administrator build(){
+            return super.build();
+        }
+
+        public Administrator getInstance(){
+            return new Administrator();
+        }
+    }
 }

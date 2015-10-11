@@ -78,4 +78,42 @@ public class SchoolDay implements Serializable {
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(id, date, school);
     }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class Builder {
+        private Long id;
+        private School school;
+        private Date date;
+
+        protected Builder me(){
+            return this;
+        }
+
+        public Builder withId(final Long id){
+            this.id = id;
+            return this;
+        }
+
+        public Builder withSchool(final School school){
+            this.school = school;
+            return this;
+        }
+
+        public Builder withDate(final Date date){
+            this.date = date;
+            return this;
+        }
+
+        public SchoolDay build(){
+            SchoolDay schoolDay = new SchoolDay();
+            schoolDay.setId(id);
+            schoolDay.setSchool(school);
+            schoolDay.setDate(date);
+            return schoolDay;
+        }
+    }
 }
