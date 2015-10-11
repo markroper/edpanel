@@ -13,7 +13,8 @@ public enum StatusCodeType {
     UNSUPPORTED_ASSIGNMENT_TYPE(StatusCodes.UNSUPPORTED_VALUE_CODE, ""),
     ENTITY_INVALID_IN_CONTEXT(StatusCodes.INVALID_ENTITY, "warehouse.api.error.invalidcontext"),
     INVALID_QUERY(StatusCodes.INVALID_ENTITY, "warehouse.api.error.invalidquery"),
-    NOT_AUTHENTICATED(StatusCodes.NOT_AUTHENTICATED, "warehouse.api.error.auth_failure");
+    NOT_AUTHENTICATED(StatusCodes.NOT_AUTHENTICATED, "warehouse.api.error.auth_failure"),
+    FORBIDDEN(StatusCodes.FORBIDDEN_ERROR_CODE, "warehouse.api.error.permissionfailure");
 
     private int code;
     private String key;

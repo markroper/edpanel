@@ -2,6 +2,7 @@ package com.scholarscore.api.manager;
 
 import com.scholarscore.api.persistence.UserPersistence;
 import com.scholarscore.api.security.config.UserDetailsProxy;
+import com.scholarscore.api.util.RoleConstants;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -165,11 +167,14 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public ServiceResponse<String> startContactValidation(Long userId, ContactType contactType) {
-        // TODO Jordan: test!!
+        // TODO Jordan: test!! (including different user should get FORBIDDEN)
         // TODO Jordan: clean up these returns, right now they return mashed-up messages
         User user = userPersistence.selectUser(userId);
         if (null == user) {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
+        }
+        if (!isCurrentUser(userId)) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.FORBIDDEN, new Object[]{USER, userId}));
         }
         ContactMethod selectedContactMethod = getContactMethod(user.getContactMethods(), contactType);
         if (selectedContactMethod == null) {
@@ -274,9 +279,23 @@ public class UserManagerImpl implements UserManager {
         boolean passwordSent = false;
         // if we can find a validated/confirmed contact, send OTP there.
         if (user.getContactMethods() != null) { 
-            for (ContactMethod method : user.getContactMethods()) {
-                if (method.confirmed()) {
-                    // TODO Jordan: (Reset Password) send password via confirmed method here;
+            for (ContactMethod selectedContactMethod : user.getContactMethods()) {
+                if (selectedContactMethod.confirmed()) {
+                    if (ContactType.EMAIL.equals(selectedContactMethod.getContactType())) {
+                        String toAddress = selectedContactMethod.getContactValue();
+                        String subject = "(DEV) password reset @ EdPanel";
+                        String message = "Hello! Please login with this one-time password @ edpanel: ( " + code + " ). ";
+                        emailService.sendMessage(toAddress, subject, message);
+                    } else if (ContactType.PHONE.equals(selectedContactMethod.getContactType())) {
+                        String toNumber = selectedContactMethod.getContactValue();
+                        String msg = "Temp Password from EdPanel: " + code;
+                        textService.sendMessage(toNumber, msg);
+                    } else {
+                        // this sucks - see above 
+                        logger.error("ERROR! Unknown enum type seen in switch statement in UserManagerImpl");
+                        throw new UnsupportedOperationException("Cannot start contact validation for unknown contact type: " + selectedContactMethod.getContactType());
+                    }
+                    
                     passwordSent = true;
                     break;
                 }
@@ -306,7 +325,11 @@ public class UserManagerImpl implements UserManager {
         if (null == user) {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
         }
-        // TODO Jordan: right here we need more than just "logged-in person is user vs admin" level permissions
+        if (!isCurrentUser(userId)) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.FORBIDDEN, new Object[]{USER, userId}));
+        }
+        
+        // TODO Jordan: (DONE, GOTTA TEST!) right here we need more than just "logged-in person is user vs admin" level permissions
         // we need to be able to say, the userId we are resetting the password for is the logged in user
         // for now, assume this comment will be replaced with a block that returns a service response if the 
         // user logged in is not the userId that the password reset is for. maybe just take no id?
@@ -317,20 +340,56 @@ public class UserManagerImpl implements UserManager {
         user.setPassword(newPassword);
         updateUser(user.getId(), user);
         
-        // TODO Jordan: right here, if the user is logged in with temporary password (ROLE_ONLY_CHANGE_PASSWORD) 
-        // should switch them to  login with their real password
-         Authentication authRequest = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
-        Authentication authenticated = authenticationManager.authenticate(authRequest);
-        if (authenticated.isAuthenticated()) {
-            logger.info("!! !! !! Oh hell yes. Reauthenticated user after password change");
-            SecurityContext securityContext = SecurityContextHolder.getContext();
-            securityContext.setAuthentication(authenticated);
-        } else {
-            // oh boy...
-            throw new RuntimeException("Failed to re-authenticate user after change of password");
+        // TODO Jordan: (DONE, GOTTA TEST!) right here, if the user is logged in with temporary password (ROLE_ONLY_CHANGE_PASSWORD) 
+        // should switch them to  login with their real password -- we are doing this now.
+        // However, we should only bother to do this if the user has ROLE_MUST_CHANGE_PASSWORD and not something normal.
+        if (currentUserHasRole(RoleConstants.ROLE_MUST_CHANGE_PASSWORD)) {
+            logger.info("!! !! yes! The user has ROLE_MUST_CHANGE_PASSWORD so switching their auth back to normal.");
+
+            Authentication authRequest = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+            Authentication authenticated = authenticationManager.authenticate(authRequest);
+            if (authenticated.isAuthenticated()) {
+                logger.info("!! !! !! Oh hell yes. Reauthenticated user after password change");
+                SecurityContext securityContext = SecurityContextHolder.getContext();
+                securityContext.setAuthentication(authenticated);
+            } else {
+                // oh boy...
+                throw new RuntimeException("Failed to re-authenticate user after change of password");
+            }
         }
         
         return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"Password successfully reset"}));
+    }
+    
+    
+    
+    private boolean isCurrentUser(Long userId) { 
+        if (userId == null) { return false; } 
+        UserDetailsProxy detailsProxy = getCurrentUserDetails();
+        if (detailsProxy != null) {
+            User user = detailsProxy.getUser();
+            if (user != null) {
+                return (userId.equals(user.getId()));
+            }
+        }
+        return false;
+    }
+    
+    private boolean currentUserHasRole(String role) { 
+        if (role == null) { return false; }
+        UserDetailsProxy detailsProxy = getCurrentUserDetails();
+        if (detailsProxy != null) {
+            Collection<? extends GrantedAuthority> authorities = detailsProxy.getAuthorities();
+            for (GrantedAuthority authority : authorities) {
+                if (role.toString().equals(authority.getAuthority())) {
+                    logger.info("!! !! !! Matched on authority " + role.toString() );
+                    return true;
+                } else {
+                    logger.info("!! !! !! Faile to match GrantedAuthority " + authority.getAuthority() + " with " + role.toString());
+                }
+            }
+        }
+        return false;
     }
     
     private String generateCode() { 

@@ -74,6 +74,8 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		this.username = value.username;
 		this.password = value.password;
 		this.enabled = value.enabled;
+		this.oneTimePass = value.oneTimePass;
+		this.oneTimePassCreated = value.oneTimePassCreated;
 	}
 
 	@OneToMany
@@ -91,12 +93,13 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	@Transient
 	public String getEmail() {
 		if (contactMethods != null) {
-			ContactMethod email = getEmailContact();
+			ContactMethod email = getContact(ContactType.EMAIL);
 			return email == null ? null : email.getContactValue();
 		}
 		return null;
 	}
 	
+	// TODO Jordan: test this!
 	public void setEmail(String newEmail) { 
 		if (contactMethods == null) {
 			contactMethods = new HashSet<>();
@@ -105,10 +108,8 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		// initialize in case we don't have an email record
 		ContactMethod emailContactMethod = new ContactMethod();
 		emailContactMethod.setContactType(ContactType.EMAIL);
-//		emailContactMethod
-//		emailContactMethod.setId();
 
-		ContactMethod existingEmailContact = getEmailContact();
+		ContactMethod existingEmailContact = getContact(ContactType.EMAIL);
 		boolean emailExistsInContactMethods = (existingEmailContact != null);
 
 		if (emailExistsInContactMethods) { 
@@ -120,20 +121,16 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		if (!emailExistsInContactMethods) {
 			contactMethods.add(emailContactMethod);
 		}
-
-		// TODO JORDAN will a change here propagate thru hibernate?
 		setContactMethods(contactMethods);
-		
-//		contactMethods.put(emailContact.getContactType(), emailContact);
 	}
 	
 	@JsonIgnore
 	@Transient
-	// TODO Jordan: move it out of this class, or better yet get rid of it
-	private ContactMethod getEmailContact() {
+	// this util method is used to directly access the email/phone field from within the contact methods
+	private ContactMethod getContact(ContactType contactType) {
 		if (getContactMethods() == null) { return null; }
 		for (ContactMethod method : getContactMethods()) {
-			if (method.getContactType().equals(ContactType.EMAIL)) {
+			if (method.getContactType().equals(contactType)) {
 				return method;
 			}
 		}

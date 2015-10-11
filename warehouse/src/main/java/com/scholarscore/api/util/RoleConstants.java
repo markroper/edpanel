@@ -7,7 +7,7 @@ package com.scholarscore.api.util;
  * @author markroper
  *
  */
-public class RoleConstants {
+public abstract class RoleConstants {
     public static final String ROLE_MUST_CHANGE_PASSWORD = "MUST_CHANGE_PASSWORD";
             
     public static final String TEACHER = "TEACHER";
