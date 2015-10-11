@@ -16,6 +16,7 @@ import javax.persistence.Transient;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.scholarscore.models.Address;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
@@ -139,5 +140,42 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 				", username='" + username + '\'' +
 				", enabled=" + enabled +
 				'}';
+	}
+
+	/**
+	 * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+	 * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+	 * chain setting attributes together.
+	 */
+	public abstract class UserBuilder<T extends User> {
+		// login name
+		private String username;
+		private String password;
+		private Boolean enabled = false;
+
+		public UserBuilder withUsername(final String username){
+			this.username = username;
+			return this;
+		}
+
+		public UserBuilder withPassword(final String password){
+			this.password = password;
+			return this;
+		}
+
+		public UserBuilder withEnabled(final Boolean enabled){
+			this.enabled = enabled;
+			return this;
+		}
+
+		public T build(){
+			T user = getInstance();
+			user.setUsername(username);
+			user.setPassword(password);
+			user.setEnabled(enabled);
+			return user;
+		}
+
+		public abstract T getInstance();
 	}
 }
