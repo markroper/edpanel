@@ -160,5 +160,55 @@ public abstract class Assignment
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(type, dueDate, availablePoints);
     }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public abstract class AssignmentBuilder<T extends Assignment> extends ApiModelBuilder<T>{
+
+        private AssignmentType type;
+        private Date dueDate;
+        private Long availablePoints;
+        protected transient Section section;
+        protected Long sectionFK;
+
+
+        public AssignmentBuilder<T> withType(final AssignmentType type){
+            this.type = type;
+            return this;
+        }
+
+        public AssignmentBuilder<T> withDueDate(final Date dueDate){
+            this.dueDate = dueDate;
+            return this;
+        }
+
+        public AssignmentBuilder<T> withAvailablePoints(final Long availablePoints){
+            this.availablePoints = availablePoints;
+            return this;
+        }
+
+        public AssignmentBuilder<T> withSection(final Section section){
+            this.section = section;
+            return this;
+        }
+
+        public AssignmentBuilder<T> withSectionFK(final Long sectionFK){
+            this.sectionFK = sectionFK;
+            return this;
+        }
+
+        public T build(){
+            T assignment = super.build();
+            assignment.setType(type);
+            assignment.setDueDate(dueDate);
+            assignment.setAvailablePoints(availablePoints);
+            assignment.setSection(section);
+            assignment.setSectionFK(sectionFK);
+            return assignment;
+        }
+    }
     
 }

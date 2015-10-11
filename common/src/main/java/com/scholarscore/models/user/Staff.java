@@ -125,7 +125,7 @@ public abstract class Staff extends User {
         }
 
         public T build(){
-            T staff = getInstance();
+            T staff = super.build();
             staff.setSourceSystemId(sourceSystemId);
             staff.setHomeAddress(homeAddress);
             staff.setHomePhone(homePhone);
