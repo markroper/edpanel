@@ -27,6 +27,15 @@ import javax.validation.constraints.Size;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Course extends ApiModel implements Serializable, IApiModel<Course> {
+
+    @Size(min = 0, max=255)
+    private String number;
+
+    @Size(min = 0, max=255)
+    private String sourceSystemId;
+
+    private School school;
+
     public Course() {
         super();
     }
@@ -37,14 +46,6 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
         this.number = clone.number;
         this.school = clone.school;
     }
-
-    @Size(min = 0, max=255)
-    private String number;
-
-    @Size(min = 0, max=255)
-    private String sourceSystemId;
-
-    private School school;
 
     @Override
     public void mergePropertiesIfNull(Course mergeFrom) {
@@ -136,5 +137,45 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
                 ", sourceSystemId='" + sourceSystemId + '\'' +
                 ", school=" + school +
                 '}';
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class CourseBuilder extends ApiModelBuilder<Course> {
+
+        private String number;
+        private String sourceSystemId;
+        private School school;
+
+        public CourseBuilder withNumber(final String number){
+            this.number = number;
+            return this;
+        }
+
+        public CourseBuilder withSourceSystemId(final String sourceSystemId){
+            this.sourceSystemId = sourceSystemId;
+            return this;
+        }
+
+        public CourseBuilder withSchool(final School school){
+            this.school = school;
+            return this;
+        }
+
+        public Course build(){
+            Course course = super.build();
+            course.setNumber(number);
+            course.setSourceSystemId(sourceSystemId);
+            course.setSchool(school);
+            return course;
+        }
+
+        @Override
+        public Course getInstance() {
+            return new Course();
+        }
     }
 }

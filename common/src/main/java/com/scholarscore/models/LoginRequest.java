@@ -37,4 +37,32 @@ public class LoginRequest implements Serializable {
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(username, password);
     }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class LoginRequestBuilder {
+
+        private String username;
+        private String password;
+
+        public LoginRequestBuilder withUsername(final String username){
+            this.username = username;
+            return this;
+        }
+
+        public LoginRequestBuilder withPassword(final String password){
+            this.password = password;
+            return this;
+        }
+
+        public LoginRequest build(){
+            LoginRequest request = new LoginRequest();
+            request.setUsername(username);
+            request.setPassword(password);
+            return request;
+        }
+    }
 }

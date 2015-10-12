@@ -29,7 +29,6 @@ public class BehaviorGoal extends Goal {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-
     private Date startDate;
     private Date endDate;
     private BehaviorCategory behaviorCategory;
@@ -46,7 +45,8 @@ public class BehaviorGoal extends Goal {
         this.behaviorCategory = goal.behaviorCategory;
 
     }
-    @Column(name = HibernateConsts.GOAL_START_DATE, columnDefinition="DATE")
+
+    @Column(name = HibernateConsts.GOAL_START_DATE, columnDefinition = "DATE")
     public Date getStartDate() {
         return startDate;
     }
@@ -55,7 +55,7 @@ public class BehaviorGoal extends Goal {
         this.startDate = startDate;
     }
 
-    @Column(name = HibernateConsts.GOAL_END_DATE, columnDefinition="DATE")
+    @Column(name = HibernateConsts.GOAL_END_DATE, columnDefinition = "DATE")
     public Date getEndDate() {
         return endDate;
     }
@@ -79,7 +79,7 @@ public class BehaviorGoal extends Goal {
     public void mergePropertiesIfNull(Goal mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
         if (mergeFrom instanceof BehaviorGoal) {
-            BehaviorGoal mergeFromBehavior = (BehaviorGoal)mergeFrom;
+            BehaviorGoal mergeFromBehavior = (BehaviorGoal) mergeFrom;
             if (null == this.startDate) {
                 this.startDate = mergeFromBehavior.startDate;
             }
@@ -112,8 +112,8 @@ public class BehaviorGoal extends Goal {
                 "GOAL " + "\n"
                         + "Id  : " + getId() + "\n"
                         + "Name: " + getName() + "\n"
-                        + "BehaviorCategory: " + getBehaviorCategory() +"\n"
-                        + "DesiredValue: " + getDesiredValue() +"\n"
+                        + "BehaviorCategory: " + getBehaviorCategory() + "\n"
+                        + "DesiredValue: " + getDesiredValue() + "\n"
                         + "CalculatedValue: " + getCalculatedValue() + "\n"
                         + "Approved: " + getApproved() + "\n"
                         + "GoalType: " + getGoalType() + "\n"
@@ -121,5 +121,45 @@ public class BehaviorGoal extends Goal {
                         + "Teacher: " + getTeacher() + "\n"
                         + "StartDate" + dateFormat.format(getStartDate()) + "\n"
                         + "EndDate" + dateFormat.format(getEndDate());
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class BehaviorGoalBuilder extends GoalBuilder<BehaviorGoal> {
+
+        private Date startDate;
+        private Date endDate;
+        private BehaviorCategory behaviorCategory;
+
+        public BehaviorGoalBuilder withStartDate(final Date startDate){
+            this.startDate = startDate;
+            return this;
+        }
+
+        public BehaviorGoalBuilder withEndDate(final Date endDate){
+            this.endDate = endDate;
+            return this;
+        }
+
+        public BehaviorGoalBuilder withBehaviorCategory(final BehaviorCategory behaviorCategory){
+            this.behaviorCategory = behaviorCategory;
+            return this;
+        }
+
+        public BehaviorGoal build(){
+            BehaviorGoal goal = super.build();
+            goal.setStartDate(startDate);
+            goal.setEndDate(endDate);
+            goal.setBehaviorCategory(behaviorCategory);
+            return goal;
+        }
+
+        @Override
+        public BehaviorGoal getInstance() {
+            return new BehaviorGoal();
+        }
     }
 }

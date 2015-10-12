@@ -73,4 +73,30 @@ public class CumulativeGradeGoal extends Goal {
                         + "Teacher: " + getTeacher() + "\n"
                         + "ParentId: " + getParentId();
     }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class CumulativeGradeGoalBuilder extends GoalBuilder<CumulativeGradeGoal>{
+
+        private Long parentId;
+
+        public CumulativeGradeGoalBuilder withParentId(final Long parentId){
+            this.parentId = parentId;
+            return this;
+        }
+
+        public CumulativeGradeGoal build(){
+            CumulativeGradeGoal goal = super.build();
+            goal.setParentId(parentId);
+            return goal;
+        }
+
+        @Override
+        public CumulativeGradeGoal getInstance() {
+            return new CumulativeGradeGoal();
+        }
+    }
 }

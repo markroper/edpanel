@@ -66,4 +66,30 @@ public class AssignmentGoal extends Goal {
                         + "Teacher: " + getTeacher() + "\n"
                         + "ParentId: " + getParentId();
     }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class AssignmentGoalBuilder extends GoalBuilder<AssignmentGoal>{
+
+        private Long parentId;
+
+        public AssignmentGoalBuilder withParentId(final Long parentId){
+            this.parentId = parentId;
+            return this;
+        }
+
+        public AssignmentGoal build(){
+            AssignmentGoal goal = super.build();
+            goal.setParentId(parentId);
+            return goal;
+        }
+
+        @Override
+        public AssignmentGoal getInstance() {
+            return new AssignmentGoal();
+        }
+    }
 }

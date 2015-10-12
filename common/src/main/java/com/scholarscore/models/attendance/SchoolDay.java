@@ -44,6 +44,7 @@ public class SchoolDay implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
+
     @Column(name = HibernateConsts.SCHOOL_DAY_DATE)
     public Date getDate() {
         return date;
@@ -51,6 +52,7 @@ public class SchoolDay implements Serializable {
     public void setDate(Date date) {
         this.date = date;
     }
+
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name=HibernateConsts.SCHOOL_FK)
     @Fetch(FetchMode.JOIN)
@@ -60,23 +62,24 @@ public class SchoolDay implements Serializable {
     public void setSchool(School school) {
         this.school = school;
     }
-    @Override
-    public boolean equals(Object obj) {
-    if (this == obj) {
-        return true;
-    }
-    if (obj == null || getClass() != obj.getClass()) {
-        return false;
-    }
-    final SchoolDay other = (SchoolDay) obj;
-    return Objects.equals(this.id, other.id)
-            && Objects.equals(this.school, other.school)
-            && Objects.equals(this.date, other.date);
-    }
-    
+
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(id, date, school);
+        return Objects.hash(id, school, date);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final SchoolDay other = (SchoolDay) obj;
+        return Objects.equals(this.id, other.id)
+                && Objects.equals(this.school, other.school)
+                && Objects.equals(this.date, other.date);
     }
 
     /**
@@ -84,26 +87,26 @@ public class SchoolDay implements Serializable {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class Builder {
+    public static class SchoolDayBuilder {
         private Long id;
         private School school;
         private Date date;
 
-        protected Builder me(){
+        protected SchoolDayBuilder me(){
             return this;
         }
 
-        public Builder withId(final Long id){
+        public SchoolDayBuilder withId(final Long id){
             this.id = id;
             return this;
         }
 
-        public Builder withSchool(final School school){
+        public SchoolDayBuilder withSchool(final School school){
             this.school = school;
             return this;
         }
 
-        public Builder withDate(final Date date){
+        public SchoolDayBuilder withDate(final Date date){
             this.date = date;
             return this;
         }

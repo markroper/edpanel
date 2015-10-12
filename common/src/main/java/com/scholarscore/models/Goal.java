@@ -190,4 +190,61 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
                         + "Student: " + getStudent() + "\n"
                         + "Teacher: " + getTeacher() + "\n";
     }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public abstract class GoalBuilder<T extends Goal> extends ApiModelBuilder<T>{
+
+        private Student student;
+        private Teacher teacher;
+        private Double desiredValue;
+        private Double calculatedValue;
+        private Boolean approved;
+        private GoalType goalType;
+
+        public GoalBuilder withStudent(final Student student){
+            this.student = student;
+            return this;
+        }
+
+        public GoalBuilder withTeacher(final Teacher teacher){
+            this.teacher = teacher;
+            return this;
+        }
+
+        public GoalBuilder withDesiredValue(final Double desiredValue){
+            this.desiredValue = desiredValue;
+            return this;
+        }
+
+        public GoalBuilder withCalculatedValue(final Double calculatedValue){
+            this.calculatedValue = calculatedValue;
+            return this;
+        }
+
+        public GoalBuilder withApproved(final Boolean approved){
+            this.approved = approved;
+            return this;
+        }
+
+        public GoalBuilder withGoalType(final GoalType goalType){
+            this.goalType = goalType;
+            return this;
+        }
+
+        public T build(){
+            T goal = super.build();
+            goal.setStudent(student);
+            goal.setTeacher(teacher);
+            goal.setDesiredValue(desiredValue);
+            goal.setCalculatedValue(calculatedValue);
+            goal.setApproved(approved);
+            goal.setGoalType(goalType);
+            return goal;
+        }
+    }
+
 }

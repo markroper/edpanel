@@ -123,4 +123,43 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
                 ", schoolYear=" + schoolYear +
                 '}';
     }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class TermBuilder extends ApiModelBuilder<Term>{
+        protected Date startDate;
+        protected Date endDate;
+        protected SchoolYear schoolYear;
+
+        public TermBuilder withStartDate(final Date startDate){
+            this.startDate = startDate;
+            return this;
+        }
+
+        public TermBuilder withEndDate(final Date endDate){
+            this.endDate = endDate;
+            return this;
+        }
+
+        public TermBuilder withSchoolYear(final SchoolYear schoolYear){
+            this.schoolYear = schoolYear;
+            return this;
+        }
+
+        public Term build(){
+            Term term = super.build();
+            term.setStartDate(startDate);
+            term.setEndDate(endDate);
+            term.setSchoolYear(schoolYear);
+            return term;
+        }
+
+        @Override
+        public Term getInstance() {
+            return null;
+        }
+    }
 }

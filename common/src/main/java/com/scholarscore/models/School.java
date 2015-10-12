@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.common.collect.Lists;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -19,8 +20,8 @@ import javax.persistence.*;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class School extends ApiModel implements Serializable, IApiModel<School>{
-    
-    List<SchoolYear> years;
+
+    private List<SchoolYear> years;
     private String sourceSystemId;
     private String principalName;
     private String principalEmail;
@@ -163,5 +164,75 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class SchoolBuilder extends ApiModelBuilder<School> {
+
+        private List<SchoolYear> years;
+        private String sourceSystemId;
+        private String principalName;
+        private String principalEmail;
+        private Address address;
+        private String mainPhone;
+
+        public SchoolBuilder(){
+            years = Lists.newLinkedList();
+        }
+
+        public SchoolBuilder withYear(final SchoolYear year){
+            years.add(year);
+            return this;
+        }
+
+        public SchoolBuilder withYears(final List<SchoolYear> years){
+            this.years.addAll(years);
+            return this;
+        }
+
+        public SchoolBuilder withSourceSystemId(final String sourceSystemId){
+            this.sourceSystemId = sourceSystemId;
+            return this;
+        }
+
+        public SchoolBuilder withPrincipalName(final String principalName){
+            this.principalName = principalName;
+            return this;
+        }
+
+        public SchoolBuilder withPrincipalEmail(final String principalEmail){
+            this.principalEmail = principalEmail;
+            return this;
+        }
+
+        public SchoolBuilder withAddress(final Address address){
+            this.address = address;
+            return this;
+        }
+
+        public SchoolBuilder withMainPhone(final String mainPhone){
+            this.mainPhone = mainPhone;
+            return this;
+        }
+
+        public School build(){
+            School school = super.build();
+            school.setYears(years);
+            school.setSourceSystemId(sourceSystemId);
+            school.setPrincipalName(principalName);
+            school.setPrincipalEmail(principalEmail);
+            school.setAddress(address);
+            school.setMainPhone(mainPhone);
+            return school;
+        }
+
+        @Override
+        public School getInstance() {
+            return new School();
+        }
     }
 }
