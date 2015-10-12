@@ -6,9 +6,13 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.scholarscore.util.ObjectNodeConverter;
@@ -17,6 +21,7 @@ import com.scholarscore.util.ObjectNodeConverter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UiAttributes implements Serializable {
     private static final long serialVersionUID = 1L;
+    protected Long id;
     protected School school;
     protected ObjectNode attributes;
     
@@ -45,6 +50,18 @@ public class UiAttributes implements Serializable {
         return serialVersionUID;
     }
     
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    @Column(name = HibernateConsts.UI_ATTRIBUTES_ID)
+    @JsonIgnore
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object obj) {
     if (this == obj) {
@@ -55,11 +72,12 @@ public class UiAttributes implements Serializable {
     }
     final UiAttributes other = (UiAttributes) obj;
     return Objects.equals(this.school, other.school)
-            && Objects.equals(this.attributes, other.attributes);
+            && Objects.equals(this.attributes, other.attributes)
+            && Objects.equals(this.id, other.id);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(school, attributes);
+        return 31 * super.hashCode() + Objects.hash(school, attributes, id);
     }
 }
