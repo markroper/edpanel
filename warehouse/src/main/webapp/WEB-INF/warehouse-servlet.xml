@@ -71,6 +71,7 @@
         <property name="goalManager" ref="goalManager"/>
         <property name="schoolDayManager" ref="schoolDayManager"/>
         <property name="attendanceManager" ref="attendanceManager"/>
+        <property name="uiAttributesManager" ref="uiAttributesManager"/>
     </bean>
 
 

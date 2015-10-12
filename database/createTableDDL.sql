@@ -367,6 +367,13 @@ PRIMARY KEY (`goal_id`),
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
+CREATE TABLE `scholar_warehouse`.`ui_attributes` (
+    `school_fk` BIGINT UNSIGNED NOT NULL UNIQUE COMMENT 'Unique foreign key to the school table',
+    `attributes` VARCHAR(32768) NULL COMMENT 'Client-side attributes as unmanaged JSON',
+    FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE)
+ENGINE = InnoDB;
 
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mroper', 'admin', 1);
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mattg', 'admin', 1);

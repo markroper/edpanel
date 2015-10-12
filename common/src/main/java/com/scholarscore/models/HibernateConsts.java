@@ -171,4 +171,9 @@ public class HibernateConsts {
     public static final String SCHOOL_DAY_FK = "school_day_fk";
     public static final String ATTENDANCE_STATUS = "attendance_status";
     public static final String ATTENDANCE_DESCRIPTION = "attendance_description";
+    
+    //UI attributes
+    public static final String UI_ATTRIBUTES_TABLE = "ui_attributes";
+    public static final String UI_ATTRIBUTES = "attributes";
+    
 }
