@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
-import com.scholarscore.api.persistence.UiAttributePersistence;
+import com.scholarscore.api.persistence.UiAttributesPersistence;
 import com.scholarscore.models.UiAttributes;
 
-public class UiAttributesJdbc implements UiAttributePersistence {
+public class UiAttributesJdbc implements UiAttributesPersistence {
     @Autowired
     private HibernateTemplate hibernateTemplate;
 

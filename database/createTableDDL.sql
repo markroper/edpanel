@@ -368,8 +368,10 @@ PRIMARY KEY (`goal_id`),
 ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`ui_attributes` (
+    `ui_attributes_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a UI Attributes bag',
     `school_fk` BIGINT UNSIGNED NOT NULL UNIQUE COMMENT 'Unique foreign key to the school table',
     `attributes` VARCHAR(32768) NULL COMMENT 'Client-side attributes as unmanaged JSON',
+    PRIMARY KEY (`ui_attributes_id`),
     FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
         ON DELETE CASCADE
         ON UPDATE CASCADE)

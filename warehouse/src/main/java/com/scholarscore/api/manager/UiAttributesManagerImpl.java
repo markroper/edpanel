@@ -1,9 +1,6 @@
 package com.scholarscore.api.manager;
 
-import java.util.List;
-
-import com.scholarscore.api.persistence.TeacherPersistence;
-import com.scholarscore.api.persistence.UiAttributePersistence;
+import com.scholarscore.api.persistence.UiAttributesPersistence;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
@@ -11,14 +8,14 @@ import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.UiAttributes;
 
 public class UiAttributesManagerImpl implements UiAttributesManager {
-    private UiAttributePersistence uiAttributePersistence;
+    private UiAttributesPersistence uiAttributesPersistence;
 
     private OrchestrationManager pm;
 
     private static final String UI_ATTRIBUTES = "UI attributes";
 
-    public void setTeacherPersistence(UiAttributePersistence uiAttributePersistence) {
-        this.uiAttributePersistence = uiAttributePersistence;
+    public void setUiAttributesPersistence(UiAttributesPersistence uiAttributesPersistence) {
+        this.uiAttributesPersistence = uiAttributesPersistence;
     }
 
     public void setPm(OrchestrationManager pm) {
@@ -31,7 +28,7 @@ public class UiAttributesManagerImpl implements UiAttributesManager {
         if(!code.isOK()) {
             return new ServiceResponse<UiAttributes>(code);
         }
-        UiAttributes attrs = uiAttributePersistence.select(schoolId);
+        UiAttributes attrs = uiAttributesPersistence.select(schoolId);
         if(null == attrs) {
             code = StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{UI_ATTRIBUTES, schoolId});
             return new ServiceResponse<UiAttributes>(code);
@@ -46,7 +43,7 @@ public class UiAttributesManagerImpl implements UiAttributesManager {
         if(!code.isOK()) {
             return new ServiceResponse<Long>(code);
         }
-        uiAttributePersistence.createUiAttributes(schoolId, attrs);
+        uiAttributesPersistence.createUiAttributes(schoolId, attrs);
         return new ServiceResponse<Long>((Long)null);
     }
 
@@ -57,7 +54,7 @@ public class UiAttributesManagerImpl implements UiAttributesManager {
         if(!code.isOK()) {
             return new ServiceResponse<Long>(code);
         }
-        uiAttributePersistence.replaceUiAttributes(schoolId, attrs);
+        uiAttributesPersistence.replaceUiAttributes(schoolId, attrs);
         return new ServiceResponse<Long>((Long)null);
     }
 
