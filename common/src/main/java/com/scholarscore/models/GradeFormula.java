@@ -113,4 +113,46 @@ public class GradeFormula implements Serializable {
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(assignmentTypeWeights);
     }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class GradeFormulaBuilder{
+        Map<AssignmentType, Integer> assignmentTypeWeights;
+
+        public GradeFormulaBuilder(){
+            assignmentTypeWeights = new HashMap<>();
+        }
+
+        /**
+         * Add a single assignmentType to a map
+         * This will override the assignmentType's weight if it already exists in the map
+         * @param type the AssignmentType as key
+         * @param weight the weight to assign this AssignmentType
+         * @return this builder object
+         */
+        public GradeFormulaBuilder withAssignmentTypeWeight(final AssignmentType type, final int weight){
+            assignmentTypeWeights.put(type, weight);
+            return this;
+        }
+
+        /**
+         * Put all of the items in the passed map into this map - this method is additive
+         * @param assignmentTypeWeights the weights for each assignment type in the map
+         * @return this builder
+         */
+        public GradeFormulaBuilder withAssignmentTypeWeights(final Map<AssignmentType, Integer> assignmentTypeWeights){
+            this.assignmentTypeWeights.putAll(assignmentTypeWeights);
+            return this;
+        }
+
+        public GradeFormula build(){
+            GradeFormula formula = new GradeFormula();
+            formula.setAssignmentTypeWeights(assignmentTypeWeights);
+            return formula;
+        }
+
+    }
 }

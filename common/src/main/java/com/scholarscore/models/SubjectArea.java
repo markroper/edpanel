@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import javax.security.auth.Subject;
+
 /**
  * The class represents a school subject area, for example history, or biology.
  * An instance of a subject area within a school will have an ID that is unique 
@@ -35,5 +37,18 @@ public class SubjectArea extends ApiModel implements Serializable, IApiModel<Sub
     @Override
     public int hashCode() {
         return 31 * super.hashCode();
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class SubjectAreaBuilder extends ApiModelBuilder<SubjectArea>{
+
+        @Override
+        public SubjectArea getInstance() {
+            return new SubjectArea();
+        }
     }
 }

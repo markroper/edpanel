@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 
@@ -311,6 +313,129 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(course, startDate, endDate, 
                 room, enrolledStudents, assignments, gradeFormula, studentSectionGrades);
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class SectionBuilder extends ApiModelBuilder<Section> {
+
+        protected Date startDate;
+        protected Date endDate;
+        protected String room;
+        protected GradeFormula gradeFormula;
+        protected String gradeFormulaString;
+        protected Term term;
+        protected transient Course course;
+        protected transient List<Student> enrolledStudents;
+        protected transient List<Assignment> assignments;
+        protected List<StudentSectionGrade> studentSectionGrades;
+        protected Set<Teacher> teachers;
+
+        public SectionBuilder(){
+            enrolledStudents = Lists.newLinkedList();
+            assignments = Lists.newLinkedList();
+            studentSectionGrades = Lists.newLinkedList();
+            teachers = Sets.newHashSet();
+        }
+
+        public SectionBuilder withStartDate(final Date startDate){
+            this.startDate = startDate;
+            return this;
+        }
+
+        public SectionBuilder withEndDate(final Date endDate){
+            this.endDate = endDate;
+            return this;
+        }
+
+        public SectionBuilder withRoom(final String room){
+            this.room = room;
+            return this;
+        }
+
+        public SectionBuilder withGradeFormula(final GradeFormula formula){
+            this.gradeFormula = formula;
+            return this;
+        }
+
+        public SectionBuilder withGradeFormulaString(final String formula){
+            this.gradeFormulaString = formula;
+            return this;
+        }
+
+        public SectionBuilder withTerm(final Term term){
+            this.term = term;
+            return this;
+        }
+
+        public SectionBuilder withCourse(final Course course){
+            this.course = course;
+            return this;
+        }
+
+        public SectionBuilder withEnrolledStudent(final Student student){
+            enrolledStudents.add(student);
+            return this;
+        }
+
+        public SectionBuilder withEnrolledStudents(final List<Student> students){
+            enrolledStudents.addAll(students);
+            return this;
+        }
+
+        public SectionBuilder withAssignment(final Assignment assignment){
+            assignments.add(assignment);
+            return this;
+        }
+
+        public SectionBuilder withAssignments(final List<Assignment> assignments){
+            this.assignments.addAll(assignments);
+            return this;
+        }
+
+        public SectionBuilder withStudentSectionGrade(final StudentSectionGrade studentSectionGrade){
+            studentSectionGrades.add(studentSectionGrade);
+            return this;
+        }
+
+        public SectionBuilder withStudentSectionGrades(final List<StudentSectionGrade> studentSectionGrades){
+            this.studentSectionGrades.addAll(studentSectionGrades);
+            return this;
+        }
+
+        public SectionBuilder withTeacher(final Teacher teacher){
+            teachers.add(teacher);
+            return this;
+        }
+
+        public SectionBuilder withTeachers(final List<Teacher> teachers){
+            this.teachers.addAll(teachers);
+            return this;
+        }
+
+        public Section build(){
+            Section section = super.build();
+            section.setStartDate(startDate);
+            section.setEndDate(endDate);
+            section.setRoom(room);
+            section.setGradeFormula(gradeFormula);
+            section.setGradeFormulaString(gradeFormulaString);
+            section.setTerm(term);
+            section.setCourse(course);
+            section.setEnrolledStudents(enrolledStudents);
+            section.setAssignments(assignments);
+            section.setStudentSectionGrades(studentSectionGrades);
+            section.setTeachers(teachers);
+            return section;
+        }
+
+        @Override
+        public Section getInstance() {
+            return new Section();
+        }
     }
     
 }

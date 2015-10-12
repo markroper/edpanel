@@ -112,13 +112,15 @@ public class Attendance implements Serializable {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class AttendanceBuilder {
+    public static class AttendanceBuilder {
 
         private SchoolDay schoolDay;
         private Long id;
         private Student student;
         private AttendanceStatus status;
         private String description;
+
+        public AttendanceBuilder(){}
 
         public AttendanceBuilder withSchoolDay(final SchoolDay schoolDay){
             this.schoolDay = schoolDay;

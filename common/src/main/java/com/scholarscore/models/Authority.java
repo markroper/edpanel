@@ -25,4 +25,31 @@ public class Authority {
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
+
+	/**
+	 * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+	 * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+	 * chain setting attributes together.
+	 */
+	public class AuthorityBuilder{
+		private Long userId;
+		private String authority;
+
+		public AuthorityBuilder withUserId(final Long userId){
+			this.userId = userId;
+			return this;
+		}
+
+		public AuthorityBuilder withAuthority(final String authority){
+			this.authority = authority;
+			return this;
+		}
+
+		public Authority build(){
+			Authority authIntstance = new Authority();
+			authIntstance.setUserId(userId);
+			authIntstance.setAuthority(authority);
+			return authIntstance;
+		}
+	}
 }

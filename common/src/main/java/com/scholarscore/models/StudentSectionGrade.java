@@ -32,8 +32,8 @@ import com.scholarscore.models.user.Student;
 @Table(name = HibernateConsts.STUDENT_SECTION_GRADE_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StudentSectionGrade implements Serializable, WeightedGradable, IApiModel<StudentSectionGrade> {
-    protected Long id;
+public class StudentSectionGrade extends ApiModel implements Serializable, WeightedGradable, IApiModel<StudentSectionGrade> {
+
     protected Boolean complete;
     protected Double grade;
     protected Section section;
@@ -174,5 +174,51 @@ public class StudentSectionGrade implements Serializable, WeightedGradable, IApi
                 ", section=" + section +
                 ", student=" + student +
                 '}';
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class StudentSectionGradeBuilder extends ApiModelBuilder<StudentSectionGrade>{
+        protected Boolean complete;
+        protected Double grade;
+        protected Section section;
+        protected Student student;
+
+        public StudentSectionGradeBuilder withComplete(final Boolean complete){
+            this.complete = complete;
+            return this;
+        }
+
+        public StudentSectionGradeBuilder withGrade(final Double grade){
+            this.grade = grade;
+            return this;
+        }
+
+        public StudentSectionGradeBuilder withSection(final Section section){
+            this.section = section;
+            return this;
+        }
+
+        public StudentSectionGradeBuilder withStudent(final Student student){
+            this.student = student;
+            return this;
+        }
+
+        public StudentSectionGrade build(){
+            StudentSectionGrade sectionGrade = super.build();
+            sectionGrade.setComplete(complete);
+            sectionGrade.setGrade(grade);
+            sectionGrade.setSection(section);
+            sectionGrade.setStudent(student);
+            return sectionGrade;
+        }
+
+        @Override
+        public StudentSectionGrade getInstance() {
+            return null;
+        }
     }
 }

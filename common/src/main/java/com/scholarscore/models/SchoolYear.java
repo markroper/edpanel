@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.common.collect.Lists;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 
@@ -140,5 +141,61 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(startDate, endDate, terms);
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class SchoolYearBuilder extends ApiModelBuilder<SchoolYear> {
+
+        protected Date startDate;
+        protected Date endDate;
+        protected List<Term> terms;
+        protected School school;
+
+        public SchoolYearBuilder(){
+            terms = Lists.newLinkedList();
+        }
+
+        public SchoolYearBuilder withStartDate(final Date startDate){
+            this.startDate = startDate;
+            return this;
+        }
+
+        public SchoolYearBuilder withEndDate(final Date endDate){
+            this.endDate = endDate;
+            return this;
+        }
+
+        public SchoolYearBuilder withTerm(final Term term){
+            terms.add(term);
+            return this;
+        }
+
+        public SchoolYearBuilder withTerms(final List<Term> terms){
+            this.terms.addAll(terms);
+            return this;
+        }
+
+        public SchoolYearBuilder withSchool(final School school){
+            this.school = school;
+            return this;
+        }
+
+        public SchoolYear build(){
+            SchoolYear schoolYear = super.build();
+            schoolYear.setStartDate(startDate);
+            schoolYear.setEndDate(endDate);
+            schoolYear.setTerms(terms);
+            schoolYear.setSchool(school);
+            return schoolYear;
+        }
+
+        @Override
+        public SchoolYear getInstance() {
+            return new SchoolYear();
+        }
     }
 }

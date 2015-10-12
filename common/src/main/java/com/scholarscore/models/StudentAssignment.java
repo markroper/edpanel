@@ -167,4 +167,56 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(assignment, completed, awardedPoints, student, completionDate);
     }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class StudentAssignmentBuilder extends ApiModelBuilder<StudentAssignment> {
+        private Boolean completed;
+        private Date completionDate;
+        private Long awardedPoints;
+        private Assignment assignment;
+        private Student student;
+
+        public StudentAssignmentBuilder withCompleted(final Boolean completed){
+            this.completed = completed;
+            return this;
+        }
+
+        public StudentAssignmentBuilder withCompletionDate(final Date completionDate){
+            this.completionDate = completionDate;
+            return this;
+        }
+
+        public StudentAssignmentBuilder withAwardedPoints(final Long awardedPoints){
+            this.awardedPoints = awardedPoints;
+            return this;
+        }
+
+        public StudentAssignmentBuilder withAssignment(final Assignment assignment){
+            this.assignment = assignment;
+            return this;
+        }
+
+        public StudentAssignmentBuilder withStudent(final Student student){
+            this.student = student;
+            return this;
+        }
+
+        public StudentAssignment build(){
+            StudentAssignment assignment = super.build();
+            assignment.setCompleted(completed);
+            assignment.setCompletionDate(completionDate);
+            assignment.setAwardedPoints(awardedPoints);
+            assignment.setStudent(student);
+            return assignment;
+        }
+
+        @Override
+        public StudentAssignment getInstance() {
+            return new StudentAssignment();
+        }
+    }
 }

@@ -80,7 +80,7 @@ public class GradedAssignment extends Assignment implements Serializable {
             this.assignedDate = assignedDate;
             return this;
         }
-        
+
         public GradedAssignment build(){
             GradedAssignment gradedAssignment = super.build();
             gradedAssignment.setAssignedDate(assignedDate);

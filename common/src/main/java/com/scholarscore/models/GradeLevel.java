@@ -44,4 +44,17 @@ public class GradeLevel extends ApiModel implements Serializable, IApiModel<Grad
         return 31 * super.hashCode();
     }
 
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class GradeLevelBuilder extends ApiModelBuilder<GradeLevel>{
+
+        @Override
+        public GradeLevel getInstance() {
+            return new GradeLevel();
+        }
+    }
+
 }

@@ -221,4 +221,86 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
                 + "Student: " + getStudent() + "\n"
                 + "Teacher: " + getTeacher() + "\n";
     }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public class BehaviorBuilder extends ApiModelBuilder<Behavior>{
+        private String remoteSystem;
+        private String remoteBehaviorId;
+        private String remoteStudentId;
+        private Date behaviorDate;
+        private BehaviorCategory behaviorCategory;
+        private String pointValue;
+        private String roster;
+        private Student student;
+        private Teacher teacher;
+
+        public BehaviorBuilder withRemoteSystem(final String remoteSystem){
+            this.remoteSystem = remoteSystem;
+            return this;
+        }
+
+        public BehaviorBuilder withRemoteBehaviorId(final String remoteBehaviorId){
+            this.remoteBehaviorId = remoteBehaviorId;
+            return this;
+        }
+
+        public BehaviorBuilder withRemoteStudentId(final String remoteStudentId){
+            this.remoteStudentId = remoteStudentId;
+            return this;
+        }
+
+        public BehaviorBuilder withBehaviorDate(final Date behaviorDate){
+            this.behaviorDate = behaviorDate;
+            return this;
+        }
+
+        public BehaviorBuilder withBehaviorCategory(final BehaviorCategory behaviorCategory){
+            this.behaviorCategory = behaviorCategory;
+            return this;
+        }
+
+        public BehaviorBuilder withPointValue(final String pointValue){
+            this.pointValue = pointValue;
+            return this;
+        }
+
+        public BehaviorBuilder withRoster(final String roster){
+            this.roster = roster;
+            return this;
+        }
+
+        public BehaviorBuilder withStudent(final Student student){
+            this.student = student;
+            return this;
+        }
+
+        public BehaviorBuilder withTeacher(final Teacher teacher){
+            this.teacher = teacher;
+            return this;
+        }
+
+        public Behavior build(){
+            Behavior behavior = super.build();
+            behavior.setRemoteSystem(remoteSystem);
+            behavior.setRemoteBehaviorId(remoteBehaviorId);
+            behavior.setRemoteStudentId(remoteStudentId);
+            behavior.setBehaviorDate(behaviorDate);
+            behavior.setBehaviorCategory(behaviorCategory);
+            behavior.setPointValue(pointValue);
+            behavior.setRoster(roster);
+            behavior.setStudent(student);
+            behavior.setTeacher(teacher);
+            return behavior;
+        }
+
+        @Override
+        public Behavior getInstance() {
+            return new Behavior();
+        }
+
+    }
 }
