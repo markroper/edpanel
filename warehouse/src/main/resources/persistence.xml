@@ -66,6 +66,7 @@
         <property name="assignmentGoalCalc" ref="assignmentCalc"/>
         <property name="behaviorGoalCalc" ref="behaviorCalc"/>
         <property name="cumulativeGoalCalc" ref="cumulativeGradeCalc"/>
+        <property name="attendanceGoalCalc" ref="attendenceGoalCalc"/>
     </bean>
 
     <bean id="teacherPersistence"
@@ -154,6 +155,11 @@
     <bean id="cumulativeGradeCalc"
           class="com.scholarscore.api.persistence.goalCalculators.CumulativeGoalCalc">
         <property name="studentSectionGradePersistence" ref="studentSectionGradePersistence"/>
+    </bean>
+
+    <bean id="attendenceGoalCalc"
+          class="com.scholarscore.api.persistence.goalCalculators.AttendanceGoalCalc">
+        <property name="studentAssignmentPersistence" ref="studentAssignmentPersistence"/>
     </bean>
 
     <bean id="schoolDayPersistence"
