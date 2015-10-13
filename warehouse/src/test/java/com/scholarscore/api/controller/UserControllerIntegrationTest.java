@@ -30,33 +30,39 @@ public class UserControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "userProvider")
     public void replaceUserTest(String msg, User user) { 
         User createdUser = userValidatingExecutor.create(user, "error creating user: " + msg);
-//        createdUser.setName("newName");
-        user.setName("newName");
-        user.setUsername(user.getUsername()+"updated");
-        user.setPassword("newPassword");
-//        userValidatingExecutor
+
+        createdUser.setName("newName");
+        createdUser.setUsername(user.getUsername()+"updated");
+        createdUser.setEmail("new_email_address@something.com");
         
+        userValidatingExecutor.replace(createdUser.getId(), createdUser, "error replacing user: " + msg);
+        userValidatingExecutor.delete(createdUser.getId(), "error deleting user: " + msg);
     }
     
-    // TODO Jordan: finish replace and update test
+//    public void replaceUserShouldNotAllow
     
-    // TODO Jordan: test validate, confirmvalidate, request reset password, reset password
-    // Also test user roles with CHANGE_PASSWORD_PERMISSION
+    // TODO Jordan: a bunch of tests here...
+    // - a bunch of testing specific to the email/phone weirdness facade
+    // - finish 'update' test
+    // - do 'negative' update/replace testing on anything specific to 'user' that should be internal 
+    // (e.g. enabled, password + verification fields... should these just be JSON ignored entirely except in special requests?)
+    // - test more role stuff (like with user role CHANGE_PASSWORD_PERMISSION)
+    // - test new stuff -- validate, confirmvalidate, request reset password, reset password
     
     @DataProvider
     public Object[][] userProvider() {
         User studentUser = new Student();
-        studentUser.setUsername("somestudentuser");
+        studentUser.setUsername(localeServiceUtil.generateName(12));
         studentUser.setPassword("abcdef");
         studentUser.setName("student user");
         
         User teacherUser = new Teacher();
-        teacherUser.setName("teacher user");
+        teacherUser.setName(localeServiceUtil.generateName(12));
         teacherUser.setPassword("abcdef");
         teacherUser.setUsername("someteacheruser");
         
         User adminUser = new Administrator();
-        adminUser.setName("admin user");
+        adminUser.setName(localeServiceUtil.generateName(12));
         adminUser.setPassword("abcdef");
         adminUser.setUsername("someadminuser");
 
@@ -66,5 +72,7 @@ public class UserControllerIntegrationTest extends IntegrationBase {
                 { "Administrator User", adminUser },
         };
     }
+    
+    
     
 }
