@@ -79,7 +79,7 @@ public class AttendanceGoal extends Goal {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), parentId);
+        return Objects.hash(super.hashCode(), parentId, startDate, endDate);
     }
 
     @Override
