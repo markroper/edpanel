@@ -35,27 +35,34 @@ public class UiAttributesManagerImpl implements UiAttributesManager {
         }
         return new ServiceResponse<UiAttributes>(attrs);
     }
-
+    
     @Override
-    public ServiceResponse<Long> createUiAttributes(Long schoolId,
-            UiAttributes attrs) {
-        StatusCode code = pm.getSchoolManager().schoolExists(schoolId);
-        if(!code.isOK()) {
-            return new ServiceResponse<Long>(code);
-        }
-        uiAttributesPersistence.createUiAttributes(schoolId, attrs);
-        return new ServiceResponse<Long>((Long)null);
+    public ServiceResponse<UiAttributes> getUiAttributes(Long schoolId, Long attrsId) {
+        return getUiAttributes(schoolId);
     }
 
     @Override
-    public ServiceResponse<Long> replaceUiAttributes(Long schoolId,
+    public ServiceResponse<Long> createUiAttributes(
+            Long schoolId,
             UiAttributes attrs) {
         StatusCode code = pm.getSchoolManager().schoolExists(schoolId);
         if(!code.isOK()) {
             return new ServiceResponse<Long>(code);
         }
-        uiAttributesPersistence.replaceUiAttributes(schoolId, attrs);
-        return new ServiceResponse<Long>((Long)null);
+        Long result = uiAttributesPersistence.createUiAttributes(schoolId, attrs);
+        return new ServiceResponse<Long>(result);
+    }
+
+    @Override
+    public ServiceResponse<Long> replaceUiAttributes(
+            Long schoolId,
+            UiAttributes attrs) {
+        StatusCode code = pm.getSchoolManager().schoolExists(schoolId);
+        if(!code.isOK()) {
+            return new ServiceResponse<Long>(code);
+        }
+        Long result = uiAttributesPersistence.replaceUiAttributes(schoolId, attrs);
+        return new ServiceResponse<Long>(result);
     }
 
 }
