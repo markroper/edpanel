@@ -5,8 +5,8 @@ import com.scholarscore.models.UiAttributes;
 public interface UiAttributesPersistence {
     public UiAttributes select(long studentId);
 
-    public void createUiAttributes(long schoolId, UiAttributes student);
+    public Long createUiAttributes(long schoolId, UiAttributes attrs);
 
-    public void replaceUiAttributes(long schoolId, UiAttributes student);
+    public Long replaceUiAttributes(long schoolId, UiAttributes attrs);
 
 }
