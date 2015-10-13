@@ -137,10 +137,21 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         cumulativeGradeGoal.setParentId(section.getId());
         cumulativeGradeGoal.setDesiredValue(6d);
 
+        AttendanceGoal attendanceGoal = new AttendanceGoal();
+        attendanceGoal.setStudent(student);
+        attendanceGoal.setTeacher(teacher);
+        attendanceGoal.setName("Weekly attendance goal");
+        attendanceGoal.setApproved(false);
+        attendanceGoal.setParentId(section.getId());
+        attendanceGoal.setDesiredValue(5D);
+        attendanceGoal.setStartDate(today);
+        attendanceGoal.setEndDate(nextYear);
+
         return new Object[][] {
                 {behaviorGoal, "Test failed with a behavior goal"},
                 {assGoal, "Test failed with an assignment goal"},
-                {cumulativeGradeGoal, "Test failed with a cumulative grade goal"}
+                {cumulativeGradeGoal, "Test failed with a cumulative grade goal"},
+                {attendanceGoal, "Test failed with an attendance goal"}
         };
     }
 
@@ -223,6 +234,8 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
             updatedGoal = new AssignmentGoal((AssignmentGoal)createdGoal);
         } else if (goal instanceof CumulativeGradeGoal){
             updatedGoal = new CumulativeGradeGoal((CumulativeGradeGoal)createdGoal);
+        } else if (goal instanceof AttendanceGoal ){
+            updatedGoal = new AttendanceGoal((AttendanceGoal)createdGoal);
         } else {
             updatedGoal = null;
         }
