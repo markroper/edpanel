@@ -1,9 +1,12 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
 import java.util.Collection;
+import java.util.List;
 
 import com.scholarscore.models.Assignment;
 
+import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.StudentSectionGrade;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.scholarscore.api.persistence.EntityPersistence;
@@ -39,6 +42,8 @@ public class AssignmentJdbc implements EntityPersistence<Assignment> {
     public Assignment select(long parentId, long id) {
         return hibernateTemplate.get(Assignment.class, id);
     }
+
+
 
     @Override
     public Long insert(long parentId, Assignment entity) {

@@ -99,7 +99,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		return null;
 	}
 	
-	// TODO Jordan: test this!
+	// TODO Jordan: test this! (also make it generic so both phone and email can use
 	public void setEmail(String newEmail) { 
 		if (contactMethods == null) {
 			contactMethods = new HashSet<>();
