@@ -85,6 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             + " \"access-denied\":true,\"cause\":\"NOT AUTHENTICATED\"}";
     private static final String INVALID_CREDENTIALS_JSON = "{\"error\":\"Invalid credentials supplied\"}";
 
+    private static final ObjectMapper mapper = new ObjectMapper();
     /**
      * Adds CORS headers to the HTTP response provided.
      * 
@@ -341,7 +342,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                             Authentication authentication) throws ServletException, IOException {
             SecurityConfig.addCorsHeaders(response);
-            ObjectMapper mapper = new ObjectMapper();
             PrintWriter out = response.getWriter();
 
             // This mode should be the only active mode at this point, but in the event the other
