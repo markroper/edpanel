@@ -10,7 +10,6 @@ import javax.persistence.Converter;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,9 +77,7 @@ public class JsonAttributes implements Serializable  {
     }
     
     @Converter
-    public static class JsonAttributesConverter implements AttributeConverter<JsonAttributes, String> {
-        protected ObjectMapper mapper = new ObjectMapper();
-        
+    public static class JsonAttributesConverter implements AttributeConverter<JsonAttributes, String> {   
         public String convertToDatabaseColumn(JsonAttributes attribute) {
             String returnValue = null;
             if(null != attribute) {

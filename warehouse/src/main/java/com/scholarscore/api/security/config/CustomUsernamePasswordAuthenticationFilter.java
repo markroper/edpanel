@@ -24,7 +24,7 @@ import com.scholarscore.models.LoginRequest;
  */
 public class CustomUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private static final String HTTP_VERB = "POST";
-    
+    private static final ObjectMapper mapper = new ObjectMapper();
     private LoginRequest resolveLoginRequest(HttpServletRequest req) {
         LoginRequest loginRequest = null;
         try {
@@ -36,9 +36,6 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
             while ((line = reader.readLine()) != null){
                 sb.append(line);
             }
-
-            //json transformation   
-            ObjectMapper mapper = new ObjectMapper();
             loginRequest = mapper.readValue(sb.toString(), LoginRequest.class);
         } catch (Exception e) {
         }
