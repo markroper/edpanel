@@ -129,6 +129,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                             sectionEntry.getKey(),
                             section,
                             section.getName());
+
                     createdSections.add(createdSection);
                     for(Student s : section.getEnrolledStudents()) {
                         StudentSectionGrade ssg = new StudentSectionGrade();
