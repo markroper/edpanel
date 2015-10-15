@@ -1,10 +1,21 @@
 package com.scholarscore.models.goal;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.HibernateConsts;
+
+import javax.persistence.*;
 import java.util.Objects;
 
 /**
  * Created by cwallace on 10/14/2015.
  */
+
+@Entity
+@Table(name = HibernateConsts.GOAL_TABLE)
+@SuppressWarnings("serial")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@DiscriminatorValue(value = "COMPLEX")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class ComplexGoal extends Goal {
 
     private GoalAggregate goalAggregate;
@@ -18,6 +29,8 @@ public class ComplexGoal extends Goal {
         this.goalAggregate = goal.goalAggregate;
     }
 
+
+    @Column(name = HibernateConsts.GOAL_AGGREGATE,columnDefinition="blob")
     public GoalAggregate getGoalAggregate() {
         return goalAggregate;
     }

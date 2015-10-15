@@ -10,14 +10,17 @@ import java.util.Objects;
 /**
  * Created by cwallace on 10/14/2015.
  */
-public class BehaviorComponent implements GoalComponent, CalculatableBehavior {
+public class BehaviorComponent extends GoalComponent implements CalculatableBehavior {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 
     private BehaviorCategory behaviorCategory;
     private Date startDate;
     private Date endDate;
-    private Student student;
+
+    public  BehaviorComponent() {
+        setComponentType(GoalType.BEHAVIOR);
+    }
 
     public BehaviorCategory getBehaviorCategory() {
         return behaviorCategory;
@@ -43,15 +46,6 @@ public class BehaviorComponent implements GoalComponent, CalculatableBehavior {
         this.endDate = endDate;
     }
 
-    @Override
-    public Student getStudent() {
-        return student;
-    }
-
-    @Override
-    public void setStudent(Student student) {
-        this.student = student;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -61,13 +55,12 @@ public class BehaviorComponent implements GoalComponent, CalculatableBehavior {
         BehaviorComponent that = (BehaviorComponent) o;
         return Objects.equals(startDate, that.startDate) &&
                 Objects.equals(endDate, that.endDate) &&
-                Objects.equals(behaviorCategory, that.behaviorCategory) &&
-                Objects.equals(student, that.student);
+                Objects.equals(behaviorCategory, that.behaviorCategory);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), startDate, endDate, behaviorCategory, student);
+        return Objects.hash(super.hashCode(), startDate, endDate, behaviorCategory);
     }
 
     @Override
@@ -75,6 +68,7 @@ public class BehaviorComponent implements GoalComponent, CalculatableBehavior {
         return
                 "GOAL " + "\n"
                         + "BehaviorCategory: " + getBehaviorCategory() +"\n"
+                        + "ComponentType:" + getComponentType() + "\n"
                         + "Student: " + getStudent() + "\n"
                         + "StartDate: " + dateFormat.format(getStartDate()) + "\n"
                         + "EndDate: " + dateFormat.format(getEndDate());
