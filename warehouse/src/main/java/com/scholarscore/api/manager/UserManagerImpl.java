@@ -122,22 +122,8 @@ public class UserManagerImpl implements UserManager {
         partialUser.mergePropertiesIfNull(userPersistence.selectUser(userId));
         replaceUser(userId, partialUser);
         return new ServiceResponse<Long>(userId);
-//        return new ServiceResponse<Long>(userPersistence.updateUser(userId, user));
     }
     
-    /* 
-    *     @Override
-    public ServiceResponse<Long> updateSchool(long schoolId, School partialSchool) {
-        ServiceResponse<School> sr = getSchool(schoolId);
-        if(null == sr.getValue()) {
-            return new ServiceResponse<Long>(sr.getCode());
-        }
-        partialSchool.mergePropertiesIfNull(schoolPersistence.selectSchool(schoolId));
-        replaceSchool(schoolId, partialSchool);
-        return new ServiceResponse<Long>(schoolId);
-    }*
-     */
-
     @Override
     public ServiceResponse<Long> deleteUser(Long userId) {
         return new ServiceResponse<>(userPersistence.deleteUser(userId));
@@ -344,12 +330,12 @@ public class UserManagerImpl implements UserManager {
         // should switch them to  login with their real password -- we are doing this now.
         // However, we should only bother to do this if the user has ROLE_MUST_CHANGE_PASSWORD and not something normal.
         if (currentUserHasRole(RoleConstants.ROLE_MUST_CHANGE_PASSWORD)) {
-            logger.info("!! !! yes! The user has ROLE_MUST_CHANGE_PASSWORD so switching their auth back to normal.");
+            logger.debug("The user has ROLE_MUST_CHANGE_PASSWORD so switching their auth back to normal.");
 
             Authentication authRequest = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
             Authentication authenticated = authenticationManager.authenticate(authRequest);
             if (authenticated.isAuthenticated()) {
-                logger.info("!! !! !! Oh hell yes. Reauthenticated user after password change");
+                logger.info("Reauthenticated user after password change");
                 SecurityContext securityContext = SecurityContextHolder.getContext();
                 securityContext.setAuthentication(authenticated);
             } else {

@@ -65,6 +65,10 @@ public class UserValidatingExecutor {
     }
     
     public User replace(Long userId, User user, String msg) { 
+        return replace(userId, user, msg, true);
+    }
+    
+    public User replace(Long userId, User user, String msg, boolean shouldValidate) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.PUT,
                 serviceBase.getUsersEndpoint(userId),
@@ -72,11 +76,17 @@ public class UserValidatingExecutor {
                 user);
         EntityId returnedUserId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
         Assert.assertNotNull(returnedUserId, "unexpected null app returned from create call for case: " + msg);
-        return retrieveAndValidateCreatedUser(returnedUserId, user, HttpMethod.PUT, msg);
+        User userToReturn;
+        if (shouldValidate) {
+            userToReturn = retrieveAndValidateCreatedUser(returnedUserId, user, HttpMethod.PUT, msg);
+        } else {
+            userToReturn = get(returnedUserId.getId(), msg); 
+        }
+        return userToReturn;
     }
     
-    /* 
-    *     public void replaceNegative(Long schoolId, School school, HttpStatus expectedCode, String msg) {
+    
+     public void replaceNegative(Long schoolId, School school, HttpStatus expectedCode, String msg) {
         //Create the school
         ResultActions response = serviceBase.makeRequest(HttpMethod.PUT, 
                 serviceBase.getSchoolEndpoint(schoolId), 
@@ -85,8 +95,6 @@ public class UserValidatingExecutor {
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(),
                 "Unexpected Http status code returned for negative test case for PUT: " + msg);
     }
-
-    * * * */
     
     protected User generateExpectationUser(User submitted, User created, HttpMethod method) {
         if (submitted == null || created == null) { return null; }

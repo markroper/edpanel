@@ -95,6 +95,21 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
 
     @Override
     public void mergePropertiesIfNull(ContactMethod mergeFrom) {
-        throw new UnsupportedOperationException("not implemented right now");
+        if (mergeFrom == null) { return; }
+        if (id == null) {
+            this.id = mergeFrom.id;
+        }
+        if (contactType == null) {
+            this.contactType = mergeFrom.contactType;
+        }
+        if (contactValue == null) {
+            this.contactValue = mergeFrom.contactValue;
+        }
+        if (confirmCode == null) {
+            this.confirmCode = mergeFrom.confirmCode;
+        }
+        if (confirmCodeCreated == null) {
+            this.confirmCodeCreated = mergeFrom.confirmCodeCreated;
+        }
     }
 }

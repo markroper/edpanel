@@ -18,7 +18,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.scholarscore.models.attendance.Attendance;
 import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;

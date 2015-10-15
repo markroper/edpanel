@@ -23,7 +23,9 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,7 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
+import static org.testng.AssertJUnit.assertNotNull;
 
 /**
  * User: jordan
@@ -42,18 +46,21 @@ import static org.testng.Assert.assertNotEquals;
  * Time: 5:50 PM
  */
 @Test(groups = { "unit" })
-public class ModelEqualsAndHashcodeTest {
+public class ModelReflectionTests {
 
+//    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    
     private int numberOfFailedDefaultFieldAttempts = 0;
     private Set<String> fieldsThatNeedDefaults = new HashSet<>();
     
-    private boolean debugLogging = false;
-//    private boolean debugLogging = true;
+    private boolean loggingEnabled = false;
+//    private boolean loggingEnabled = true;
     
-    private final String packageToScan = "com.scholarscore.models";
+    private final String packageToScan = this.getClass().getPackage().getName();
+    private final String testClassName = this.getClass().getSimpleName();   // class name without packagename
     private final Set<String> excludedClassNames = new HashSet<String>() {{
-        // if you want to exclude a model class from this test, add it here. e.g...
-        add(packageToScan + ".ModelEqualsAndHashcodeTest");
+        // if you want to exclude a model class from this test, add it here (including packageToScan)...
+        add(packageToScan + "." + testClassName);
     }};
     
     public String getPackageToScan() {
@@ -65,7 +72,7 @@ public class ModelEqualsAndHashcodeTest {
     }    
     
     private Set<Class<?>> getClassesInPackage(String packageToScan) {
-        List<ClassLoader> classLoadersList = new LinkedList<ClassLoader>();
+        List<ClassLoader> classLoadersList = new LinkedList<>();
         classLoadersList.add(ClasspathHelper.contextClassLoader());
         classLoadersList.add(ClasspathHelper.staticClassLoader());
 
@@ -81,62 +88,106 @@ public class ModelEqualsAndHashcodeTest {
     }
 
     @Test
-    public void testModelClassesEqualsBehavior() {
+    public void testClassesInPackage() {
         Set<Class<?>> classes = getClassesInPackage(getPackageToScan());
 
         for (Class clazz : classes) {
-            if (debugLogging) { System.out.println("Now analyzing class " + clazz); }
-            checkEqualsForClass(clazz);
-             if (debugLogging) { System.out.println(""); } 
+            logDebug("Now analyzing class " + clazz);
+            if (Modifier.isAbstract(clazz.getModifiers())) {
+                logDebug("Oops! Class " + clazz + " is abstract, not able to test it. skipping...");                continue;
+            } else if (getExcludedClassNames().contains(clazz.getName())) {
+                logDebug("Oops! Class " + clazz + " is explicitly excluded, skipping...");
+                continue;
+            }
+
+            checkEqualsAndHashCodeForClass(clazz);
+            checkCopyConstructorForClass(clazz);
+            checkMergePropertiesIfNullForApiModel(clazz);
+            logDebug("");
         }
         if (numberOfFailedDefaultFieldAttempts <= 0) {
-            System.out.println("DONE. No problems.");
+            logDebug("DONE. No problems.");
         } else {
-            System.out.println("DONE. " 
-                    + "But encountered "
-                    + fieldsThatNeedDefaults.size() + " unique failures " 
-                    + "(" + numberOfFailedDefaultFieldAttempts + " total)"
-                    + " to construct objects with sensible default values."
-                    + "\n(To fix this, please add a line to each method getSensibleValueForType and getAnotherValueForType)"
-                    + "\n\n!!!!!!!!!!!!!!!!!!!!!!!!\n" +
-                    "The following fields need sensible defaults defined in getValueForType in ModelEqualsAndHashcodeTest class:"
-                    + "\n!!!!!!!!!!!!!!!!!!!!!!!!"
+            logDebug("DONE. "
+                            + "But encountered "
+                            + fieldsThatNeedDefaults.size() + " unique failures "
+                            + "(" + numberOfFailedDefaultFieldAttempts + " total)"
+                            + " to construct objects with sensible default values."
+                            + "\n(To fix this, please add a line to each method getSensibleValueForType and getAnotherValueForType)"
+                            + "\n\n!!!!!!!!!!!!!!!!!!!!!!!!\n" +
+                            "The following fields need sensible defaults defined in getValueForType in ModelEqualsAndHashcodeTest class:"
+                            + "\n!!!!!!!!!!!!!!!!!!!!!!!!"
             );
             for (String field : fieldsThatNeedDefaults) {
-                System.out.println(field);
+                logDebug(field);
             }
         }
     }
 
-    private void checkEqualsForClass(Class clazz) {
-        if (Modifier.isAbstract(clazz.getModifiers())) {
-            if (debugLogging) { System.out.println("Oops! Class " + clazz + " is abstract, not able to test it. skipping..."); }
-            return;
-        } else if (getExcludedClassNames().contains(clazz.getName())) {
-            System.out.println("Oops! Class " + clazz + " is explicitly excluded, skipping...");
-            return;
+    private void checkMergePropertiesIfNullForApiModel(Class<?> clazz) {
+        // this test is only applicable to classes that implement IApiModel
+        if (IApiModel.class.isAssignableFrom(clazz)) { 
+            System.out.println("Class " + clazz + " found to implement IApiModel");
+            try {
+                IApiModel populatedObject = (IApiModel)buildPopulatedObjectAndThrowExceptions(clazz);
+                IApiModel emptyObject = (IApiModel)clazz.newInstance();
+                assertNotNull("empty object is null!", emptyObject);
+                assertNotNull("populated object is null!", populatedObject);
+                
+                emptyObject.mergePropertiesIfNull(populatedObject);
+                assertEquals(populatedObject, emptyObject, "A new object of class " + clazz 
+                        + " had mergePropertiesIfNull invoked with a populated instance of the object.\n" 
+                        + "After merging, the new object was not equal to to the populated object.");
+            } catch (InstantiationException|IllegalAccessException e) {
+                System.out.println("Error constructing class, skipping...");
+                e.printStackTrace();
+            } 
+        } else {
+            logDebug("Class " + clazz + " does not implement IApiModel, skipping...");
         }
+    }
 
+    private void checkCopyConstructorForClass(Class<?> clazz) {
+        final Object firstInstance = buildPopulatedObject(clazz);
+        try {
+            Constructor constructor = clazz.getDeclaredConstructor(clazz);
+            logDebug("Found constructor for class " + clazz + ", building copy now.");
+
+            try {
+                Object secondInstance = constructor.newInstance(firstInstance);
+                logDebug("Got copied object... " + secondInstance);
+                assertEquals(secondInstance, firstInstance, "New Instance of " + clazz.getName() + " doesn't equal original it was copy constructed from!");
+                
+            } catch (InstantiationException|IllegalAccessException|InvocationTargetException e) {
+                logDebug("WARN: could not invoke copy constructor for " + clazz + ", moving on.");
+            }
+        } catch (NoSuchMethodException e) {
+            logDebug("WARN: could not find copy constructor for class " + clazz + ", moving on.");
+        }
+    }
+
+    private void checkEqualsAndHashCodeForClass(Class clazz) {
         final Object unmodifiedInstance = buildPopulatedObject(clazz);
         Field[] fields = clazz.getDeclaredFields();
     
         for (Field field : fields) {
             if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
-                if (debugLogging) { System.out.println("Skipping field " + field + " because it's static/final."); }
+                logDebug("Skipping field " + field + " because it's static/final.");
                 continue;
             }
             Object instanceWithTweakedField = buildPopulatedObject(clazz, field.getName());
             if (instanceWithTweakedField == null) {
-                if (debugLogging) { System.out.println("Couldn't build object with tweaked field " + field.getName() + ", skipping this check."); }
+                logDebug("Couldn't build object with tweaked field " + field.getName() + ", skipping this check.");
                 continue;
             }
-            // System.out.println("Checking equals() and hashcode() on " + clazz.getName() + " with field " + field.getName() + " modified...");
+            // logDebug("Checking equals() and hashcode() on " + clazz.getName() + " with field " + field.getName() + " modified...");
             String both = "original: " + unmodifiedInstance + ", tweaked: " + instanceWithTweakedField;
             String objMsg = "For class " + clazz + ", ";
             String equalsMsg = objMsg + "Equals() returned true even though objects have different values for field " + field.getName() + "\n" + both;
             String hashMsg = objMsg + "hashcode() returned identical values even though objects have different values for field " + field.getName() + "\n" + both;
             assertNotEquals(unmodifiedInstance, instanceWithTweakedField, equalsMsg);
             assertNotEquals(unmodifiedInstance.hashCode(), instanceWithTweakedField.hashCode(), hashMsg);
+            
         }
     }
     
@@ -152,18 +203,31 @@ public class ModelEqualsAndHashcodeTest {
     private Object buildPopulatedObject(Class clazz) {
         return buildPopulatedObject(clazz, null);
     }
+
+    private Object buildPopulatedObject(Class clazz, String fieldNameToModify) { 
+        try {
+            return buildPopulatedObjectAndThrowExceptions(clazz, fieldNameToModify);
+        } catch (IllegalAccessException|InstantiationException e) {
+            logDebug("ERROR building populated object... swallowing exception.");
+            return null;
+        }
+    }
     
-    private Object buildPopulatedObject(Class clazz, String fieldNameToModify) {
+    private Object buildPopulatedObjectAndThrowExceptions(Class clazz) throws IllegalAccessException, InstantiationException {
+        return buildPopulatedObjectAndThrowExceptions(clazz, null);
+    }
+
+    private Object buildPopulatedObjectAndThrowExceptions(Class clazz, String fieldNameToModify) throws IllegalAccessException, InstantiationException {
         try {
             Object instance = clazz.newInstance();
-
+            
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields) {
                 if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
                     // ignore static/final
                     continue;
                 }
-                if (debugLogging) {  System.out.println("Discovered field [" + field + "] on class " + clazz); }
+                logDebug("Discovered field [" + field + "] on class " + clazz);
 
                 Object value;
                 if (field.getName().equals(fieldNameToModify)) {
@@ -172,10 +236,7 @@ public class ModelEqualsAndHashcodeTest {
                     value = getSensibleValueForType(field.getType());
                 }
 
-              //  System.out.println("About to set field " + field + /*" on " + instance +*/ " to value " + value);
                 if (value == null) {
-                    // System.out.println("WARNING - default value for field " + field + " appears to be null." 
-                    // + " Returning NULL because test case is void.");
                     fieldsThatNeedDefaults.add(field.toString());
                     numberOfFailedDefaultFieldAttempts++;
                     // if can't get default for any fields, assume the test is screwed for this instance
@@ -186,9 +247,8 @@ public class ModelEqualsAndHashcodeTest {
             }
             return instance;
         } catch (InstantiationException|IllegalAccessException e) {
-//            e.printStackTrace();
+            throw e;
         }
-        return null;
     }
 
     private Object getSensibleValueForType(Class<?> type) {
@@ -231,7 +291,7 @@ public class ModelEqualsAndHashcodeTest {
                 }
                 return apiModel;
             } catch (InstantiationException e) {
-                System.out.println("!! ERROR Trying to construct new instance of " + type + " to cast to type ApiModel.");
+                logDebug("ERROR Trying to construct new instance of " + type + " to cast to type ApiModel.");
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -275,6 +335,15 @@ public class ModelEqualsAndHashcodeTest {
         if (type.isAssignableFrom(Measure.class)) { return alt ? Measure.DEMERIT : Measure.MERIT; }
         if (type.isAssignableFrom(AttendanceStatus.class)) { return alt ? AttendanceStatus.PRESENT : AttendanceStatus.ABSENT; }
 
-            else return null;
+        System.out.println("Could not find sensible value for field type " + type);
+        return null;
+    }
+    
+    private void logDebug(String msg) { 
+        if (loggingEnabled) {
+            // TODO: figure out why logging isn't showing up on common tests, only System.out
+            // logger.debug(msg);
+            System.out.println(msg);
+        }
     }
 }
