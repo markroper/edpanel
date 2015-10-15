@@ -15,7 +15,8 @@ import java.util.Objects;
         @JsonSubTypes.Type(value = BehaviorComponent.class, name="BEHAVIOR"),
         @JsonSubTypes.Type(value = AttendanceComponent.class, name = "ATTENDANCE"),
         @JsonSubTypes.Type(value = ComplexComponent.class, name = "COMPLEX"),
-        @JsonSubTypes.Type(value = CumulativeGradeComponent.class, name = "CUMULATIVE_GRADE")
+        @JsonSubTypes.Type(value = CumulativeGradeComponent.class, name = "CUMULATIVE_GRADE"),
+        @JsonSubTypes.Type(value = AssignmentComponent.class, name = "ASSIGNMENT")
 
 })
 public abstract class GoalComponent implements Serializable {
