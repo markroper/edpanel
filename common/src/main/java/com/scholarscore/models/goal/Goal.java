@@ -40,7 +40,8 @@ import com.scholarscore.models.user.Teacher;
         @JsonSubTypes.Type(value = BehaviorGoal.class, name="BEHAVIOR"),
         @JsonSubTypes.Type(value = AssignmentGoal.class, name = "ASSIGNMENT"),
         @JsonSubTypes.Type(value = CumulativeGradeGoal.class, name = "CUMULATIVE_GRADE"),
-        @JsonSubTypes.Type(value = AttendanceGoal.class, name = "ATTENDANCE")
+        @JsonSubTypes.Type(value = AttendanceGoal.class, name = "ATTENDANCE"),
+        @JsonSubTypes.Type(value = ComplexGoal.class, name = "COMPLEX")
 })
 public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 

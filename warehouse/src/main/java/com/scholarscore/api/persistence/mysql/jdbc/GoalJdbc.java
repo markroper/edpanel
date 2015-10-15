@@ -143,7 +143,7 @@ public class GoalJdbc implements GoalPersistence {
             case COMPLEX:
                 if (goal instanceof ComplexGoal) {
                     ComplexGoal complexGoal = (ComplexGoal)goal;
-                    goal.setCalculatedValue();
+                    goal.setCalculatedValue(complexGoalCalc.calculateGoal(complexGoal));
                 }
         }
         return goal;

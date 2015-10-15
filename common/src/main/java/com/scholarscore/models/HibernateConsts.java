@@ -148,6 +148,7 @@ public class HibernateConsts {
     public static final String BEHAVIOR_GOAL_CATEGORY = "behavior_category";
     public static final String GOAL_NAME = "name";
     public static final String GOAL_SECTION_FK = "section_fk";
+    public static final String GOAL_AGGREGATE = "goal_aggregate";
     
     //School days
     public static final String SCHOOL_DAY_TABLE = "school_day";

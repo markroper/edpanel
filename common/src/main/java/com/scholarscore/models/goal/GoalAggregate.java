@@ -16,6 +16,10 @@ public class GoalAggregate extends ApiModel implements Serializable, IApiModel<G
 
     private List<GoalComponent> goalComponents;
 
+    public GoalAggregate() {
+
+    }
+
     @Override
     public void mergePropertiesIfNull(GoalAggregate mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
