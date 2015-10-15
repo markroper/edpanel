@@ -104,24 +104,24 @@ public abstract class Staff extends User {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public abstract class StaffBuilder<T extends Staff> extends UserBuilder<T>{
+    public static abstract class StaffBuilder<U extends StaffBuilder<U, T>,T extends Staff> extends UserBuilder<U,T>{
         private String sourceSystemId;
         private Address homeAddress;
         private String homePhone;
 
-        public StaffBuilder withSourceSystemid(final String sourceSystemId){
+        public U withSourceSystemid(final String sourceSystemId){
             this.sourceSystemId = sourceSystemId;
-            return this;
+            return me();
         }
 
-        public StaffBuilder withHomeAddress(final Address homeAddress){
+        public U withHomeAddress(final Address homeAddress){
             this.homeAddress = homeAddress;
-            return this;
+            return me();
         }
 
-        public StaffBuilder withHomePhone(final String homePhone){
+        public U withHomePhone(final String homePhone){
             this.homePhone = homePhone;
-            return this;
+            return me();
         }
 
         public T build(){

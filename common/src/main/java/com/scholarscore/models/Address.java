@@ -112,7 +112,7 @@ public class Address implements Serializable {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class AddressBuilder {
+    public static class AddressBuilder {
 
         private String street;
         private String city;

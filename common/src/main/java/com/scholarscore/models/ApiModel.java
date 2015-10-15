@@ -84,19 +84,23 @@ public abstract class ApiModel implements Serializable {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public abstract class ApiModelBuilder<T extends ApiModel> {
+    public static abstract class ApiModelBuilder<U extends ApiModelBuilder<U,T>, T extends ApiModel> {
 
         private Long id;
         protected String name;
 
-        public ApiModelBuilder<T> withId(final Long id){
+        public abstract U me();
+
+        public abstract T getInstance();
+
+        public U withId(final Long id){
             this.id = id;
-            return this;
+            return me();
         }
 
-        public ApiModelBuilder<T> withCity(final String name){
+        public U withName(final String name){
             this.name = name;
-            return this;
+            return me();
         }
 
         public T build(){
@@ -106,7 +110,6 @@ public abstract class ApiModel implements Serializable {
             return apiModel;
         }
 
-        public abstract T getInstance();
     }
 }
 

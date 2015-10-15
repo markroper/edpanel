@@ -147,25 +147,25 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	 * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
 	 * chain setting attributes together.
 	 */
-	public abstract class UserBuilder<T extends User> {
+	public static abstract class UserBuilder<U extends UserBuilder<U, T>, T extends User> extends ApiModelBuilder<U, T>{
 		// login name
 		private String username;
 		private String password;
 		private Boolean enabled = false;
 
-		public UserBuilder withUsername(final String username){
+		public U withUsername(final String username){
 			this.username = username;
-			return this;
+			return me();
 		}
 
-		public UserBuilder withPassword(final String password){
+		public U withPassword(final String password){
 			this.password = password;
-			return this;
+			return me();
 		}
 
-		public UserBuilder withEnabled(final Boolean enabled){
+		public U withEnabled(final Boolean enabled){
 			this.enabled = enabled;
-			return this;
+			return me();
 		}
 
 		public T build(){
