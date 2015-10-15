@@ -2,6 +2,7 @@ package com.scholarscore.api.controller;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.*;
+import com.scholarscore.models.goal.*;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 

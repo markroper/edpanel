@@ -2,12 +2,9 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 
 import com.scholarscore.api.persistence.GoalPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
-import com.scholarscore.api.persistence.goalCalculators.AssignmentGoalCalc;
-import com.scholarscore.api.persistence.goalCalculators.AttendanceGoalCalc;
-import com.scholarscore.api.persistence.goalCalculators.BehaviorGoalCalc;
-import com.scholarscore.api.persistence.goalCalculators.CumulativeGoalCalc;
-import com.scholarscore.models.*;
+import com.scholarscore.api.persistence.goalCalculators.*;
 
+import com.scholarscore.models.goal.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
@@ -31,6 +28,11 @@ public class GoalJdbc implements GoalPersistence {
     private BehaviorGoalCalc behaviorGoalCalc;
     private AssignmentGoalCalc assignmentGoalCalc;
     private AttendanceGoalCalc attendanceGoalCalc;
+    private ComplexGoalCalc complexGoalCalc;
+
+    public void setComplexGoalCalc(ComplexGoalCalc complexGoalCalc) {
+        this.complexGoalCalc = complexGoalCalc;
+    }
 
     public void setAttendanceGoalCalc(AttendanceGoalCalc attendanceGoalCalc) {
         this.attendanceGoalCalc = attendanceGoalCalc;
@@ -136,6 +138,12 @@ public class GoalJdbc implements GoalPersistence {
                 if (goal instanceof AttendanceGoal) {
                     AttendanceGoal attendanceGoal = (AttendanceGoal)goal;
                     goal.setCalculatedValue(attendanceGoalCalc.calculateGoal(attendanceGoal));
+                }
+                break;
+            case COMPLEX:
+                if (goal instanceof ComplexGoal) {
+                    ComplexGoal complexGoal = (ComplexGoal)goal;
+                    goal.setCalculatedValue();
                 }
         }
         return goal;

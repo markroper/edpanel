@@ -1,4 +1,4 @@
-package com.scholarscore.models;
+package com.scholarscore.models.goal;
 
 import javax.persistence.Transient;
 
