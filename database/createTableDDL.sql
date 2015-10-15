@@ -343,7 +343,6 @@ PRIMARY KEY (`goal_id`),
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
-CREATE INDEX `ix_auth_userid` on `scholar_warehouse`.`authorities`(`user_id`,`authority`);
 
 
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mroper', 'admin', 1);

@@ -18,6 +18,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.scholarscore.models.attendance.Attendance;
 import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -38,7 +39,8 @@ import com.scholarscore.models.user.Teacher;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = BehaviorGoal.class, name="BEHAVIOR"),
         @JsonSubTypes.Type(value = AssignmentGoal.class, name = "ASSIGNMENT"),
-        @JsonSubTypes.Type(value = CumulativeGradeGoal.class, name = "CUMULATIVE_GRADE")
+        @JsonSubTypes.Type(value = CumulativeGradeGoal.class, name = "CUMULATIVE_GRADE"),
+        @JsonSubTypes.Type(value = AttendanceGoal.class, name = "ATTENDANCE")
 })
 public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 

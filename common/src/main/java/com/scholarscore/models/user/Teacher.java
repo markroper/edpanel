@@ -18,7 +18,7 @@ import javax.persistence.*;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @PrimaryKeyJoinColumn(name=HibernateConsts.TEACHER_USER_FK, referencedColumnName = HibernateConsts.USER_ID)
-public class Teacher extends Staff implements Serializable, IStaff<Teacher> {
+public class Teacher extends Person implements Serializable, IStaff<Teacher> {
     public Teacher() {
     }
     
