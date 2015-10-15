@@ -42,7 +42,8 @@ public class ComplexGoalCalc implements GoalCalc<ComplexGoal> {
                 BehaviorComponent behaviorComponent = (BehaviorComponent) component;
                 return behaviorGoalCalc.calculateGoal(behaviorComponent) * component.getModifier();
             case ASSIGNMENT:
-                break;
+                AssignmentComponent assignmentComponent = (AssignmentComponent) component;
+                return assignmentGoalCalc.calculateGoal(assignmentComponent) * component.getModifier();
             case ATTENDANCE:
                 AttendanceComponent attendanceComponent = (AttendanceComponent) component;
                 return attendanceGoalCalc.calculateGoal(attendanceComponent) * component.getModifier();

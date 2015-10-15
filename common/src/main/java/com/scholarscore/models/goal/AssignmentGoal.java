@@ -16,7 +16,7 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @DiscriminatorValue(value = "ASSIGNMENT")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class AssignmentGoal extends Goal {
+public class AssignmentGoal extends Goal implements CalculatableAssignment {
 
     private Long parentId;
 
@@ -25,6 +25,10 @@ public class AssignmentGoal extends Goal {
         return parentId;
     }
 
+    /**
+     * This should identify the composite ID of the student assignmnet we wish to set a goal for
+     * @param parentId
+     */
     public void setParentId(Long parentId) {
         this.parentId = parentId;
     }
