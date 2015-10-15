@@ -1,10 +1,13 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -21,7 +24,7 @@ import javax.persistence.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class School extends ApiModel implements Serializable, IApiModel<School>{
 
-    private List<SchoolYear> years;
+    private Set<SchoolYear> years;
     private String sourceSystemId;
     private String principalName;
     private String principalEmail;
@@ -30,6 +33,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
     
     public School() {
         super();
+        years = Sets.newHashSet();
     }
     
     public School(School clone) {
@@ -53,13 +57,18 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
     public String getName() { return super.getName(); }
 
     @Transient
-    public List<SchoolYear> getYears() {
+    public Set<SchoolYear> getYears() {
         return years;
     }
 
-    public void setYears(List<SchoolYear> years) {
+    public void setYears(Set<SchoolYear> years) {
         this.years = years;
     }
+
+    public void addYear(SchoolYear year){
+        years.add(year);
+    }
+
 
     @Override
     public void mergePropertiesIfNull(School mergeFrom) {
@@ -171,9 +180,9 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class SchoolBuilder extends ApiModelBuilder<School> {
+    public static class SchoolBuilder extends ApiModelBuilder<SchoolBuilder, School> {
 
-        private List<SchoolYear> years;
+        private Set<SchoolYear> years;
         private String sourceSystemId;
         private String principalName;
         private String principalEmail;
@@ -181,7 +190,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         private String mainPhone;
 
         public SchoolBuilder(){
-            years = Lists.newLinkedList();
+            years = Sets.newHashSet();
         }
 
         public SchoolBuilder withYear(final SchoolYear year){
@@ -221,13 +230,22 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
 
         public School build(){
             School school = super.build();
+            //make sure this is a reciprocal relationship
             school.setYears(years);
+            for(SchoolYear year : years){
+                year.setSchool(school);
+            }
             school.setSourceSystemId(sourceSystemId);
             school.setPrincipalName(principalName);
             school.setPrincipalEmail(principalEmail);
             school.setAddress(address);
             school.setMainPhone(mainPhone);
             return school;
+        }
+
+        @Override
+        public SchoolBuilder me() {
+            return this;
         }
 
         @Override

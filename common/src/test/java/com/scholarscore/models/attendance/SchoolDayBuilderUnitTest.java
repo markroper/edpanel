@@ -25,9 +25,13 @@ public class SchoolDayBuilderUnitTest extends AbstractBuilderUnitTest<SchoolDay>
 
         Long id = RandomUtils.nextLong(0L, Long.MAX_VALUE);
         School school = new School();
+        Date date = new Date();
         SchoolDay fullSchoolDay = new SchoolDay();
+        fullSchoolDay.setSchool(school);
+        fullSchoolDay.setId(id);
+        fullSchoolDay.setDate(date);
         SchoolDay fullSchoolDayByBuilder = new SchoolDay.SchoolDayBuilder().
-                withId(id).withSchool(school).withDate(new Date()).build();
+                withId(id).withSchool(school).withDate(date).build();
         return new Object[][]{
                 {"Empty schoolDay", emptySchoolDayByBuilder, emptySchoolDay},
                 {"Full schoolDay", fullSchoolDayByBuilder, fullSchoolDay}

@@ -1,12 +1,11 @@
 package com.scholarscore.models;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 
@@ -29,21 +28,24 @@ import javax.persistence.Table;
 public class SchoolYear extends ApiModel implements Serializable, IApiModel<SchoolYear>{
     protected Date startDate;
     protected Date endDate;
-    protected List<Term> terms;
+    protected Set<Term> terms;
     protected School school;
     
     public SchoolYear() {
-        
+        super();
+        terms = Sets.newHashSet();
     }
     
     public SchoolYear(SchoolYear year) {
         super(year);
+        terms = Sets.newHashSet();
         this.startDate = year.startDate;
         this.endDate = year.endDate;
         this.terms = year.terms;
     }
     
     public SchoolYear(Date startDate, Date endDate) {
+        this();
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -92,13 +94,18 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
     }
 
     @Transient
-    public List<Term> getTerms() {
+    public Set<Term> getTerms() {
         return terms;
     }
 
-    public void setTerms(List<Term> terms) {
+    public void setTerms(Set<Term> terms) {
         this.terms = terms;
     }
+
+    public void addTerm(final Term term){
+        terms.add(term);
+    }
+
 
     public Term findTermById(Long id) {
         Term termWithTermId = null;
@@ -148,15 +155,15 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class SchoolYearBuilder extends ApiModelBuilder<SchoolYear> {
+    public static class SchoolYearBuilder extends ApiModelBuilder<SchoolYearBuilder, SchoolYear> {
 
         protected Date startDate;
         protected Date endDate;
-        protected List<Term> terms;
+        protected Set<Term> terms;
         protected School school;
 
         public SchoolYearBuilder(){
-            terms = Lists.newLinkedList();
+            terms = Sets.newHashSet();
         }
 
         public SchoolYearBuilder withStartDate(final Date startDate){
@@ -189,8 +196,15 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
             schoolYear.setStartDate(startDate);
             schoolYear.setEndDate(endDate);
             schoolYear.setTerms(terms);
+            //make sure this is reciprocal
             schoolYear.setSchool(school);
+            school.addYear(schoolYear);
             return schoolYear;
+        }
+
+        @Override
+        public SchoolYearBuilder me() {
+            return this;
         }
 
         @Override

@@ -79,6 +79,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
 
     public void setSchoolYear(SchoolYear schoolYear) {
         this.schoolYear = schoolYear;
+        this.schoolYear.addTerm(this);
     }
 
     public void setEndDate(Date endDate) {
@@ -129,7 +130,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class TermBuilder extends ApiModelBuilder<Term>{
+    public static class TermBuilder extends ApiModelBuilder<TermBuilder, Term>{
         protected Date startDate;
         protected Date endDate;
         protected SchoolYear schoolYear;
@@ -153,8 +154,15 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
             Term term = super.build();
             term.setStartDate(startDate);
             term.setEndDate(endDate);
+            //make this reciprocal
             term.setSchoolYear(schoolYear);
+            schoolYear.addTerm(term);
             return term;
+        }
+
+        @Override
+        public TermBuilder me() {
+            return this;
         }
 
         @Override

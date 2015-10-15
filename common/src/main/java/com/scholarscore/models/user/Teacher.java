@@ -64,10 +64,15 @@ public class Teacher extends Staff implements Serializable, IStaff<Teacher> {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class TeacherBuilder extends StaffBuilder<Teacher> {
+    public static class TeacherBuilder extends StaffBuilder<TeacherBuilder, Teacher> {
 
         public Teacher build(){
             return super.build();
+        }
+
+        @Override
+        public TeacherBuilder me() {
+            return this;
         }
 
         public Teacher getInstance(){
