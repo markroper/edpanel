@@ -72,6 +72,7 @@ public class IntegrationBase {
     private static final String GOAL_ENDPOINT = "/goals";
     private static final String SCHOOL_DAY_ENDPOINT = "/days";
     private static final String ATTENDANCE_ENDPOINT = "/attendance";
+    private static final String UI_ATTRIBUTES_ENDPOINT = "/uiattributes";
 
     public LocaleServiceUtil localeServiceUtil;
     public CourseValidatingExecutor courseValidatingExecutor;
@@ -91,6 +92,7 @@ public class IntegrationBase {
     public GoalValidatingExecutor goalValidatingExecutor;
     public SchoolDayValidatingExecutor schoolDayValidatingExecutor;
     public AttendanceValidatingExecutor attendanceValidatingExecutor;
+    public UiAttributesValidatingExecutor uiAttributesValidatingExecutor;
 
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Student> studentsCreated = new CopyOnWriteArrayList<>();
@@ -150,6 +152,7 @@ public class IntegrationBase {
         goalValidatingExecutor = new GoalValidatingExecutor(this);
         attendanceValidatingExecutor = new AttendanceValidatingExecutor(this);
         schoolDayValidatingExecutor = new SchoolDayValidatingExecutor(this);
+        uiAttributesValidatingExecutor = new UiAttributesValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
     }
@@ -197,6 +200,7 @@ public class IntegrationBase {
         Assert.assertNotNull(userValidatingExecutor, "Unable to configure user service");
         Assert.assertNotNull(attendanceValidatingExecutor, "Unable to configure auth service");
         Assert.assertNotNull(schoolDayValidatingExecutor, "Unable to configure user service");
+        Assert.assertNotNull(uiAttributesValidatingExecutor, "Unable to configure ui attrs service");
     }
 
     /**
@@ -556,6 +560,10 @@ public class IntegrationBase {
      */
     public String getSchoolEndpoint(Long schoolId) {
         return getSchoolEndpoint() + pathify(schoolId);
+    }
+    
+    public String getUiAttributesEndpoint(Long schoolId) {
+        return getSchoolEndpoint(schoolId) + UI_ATTRIBUTES_ENDPOINT;
     }
     
     public String getSchoolDayEndpoint(Long schoolId) {

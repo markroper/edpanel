@@ -3,7 +3,6 @@ package com.scholarscore.api.manager;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.user.Administrator;
-import com.scholarscore.models.user.Teacher;
 
 import java.util.Collection;
 
