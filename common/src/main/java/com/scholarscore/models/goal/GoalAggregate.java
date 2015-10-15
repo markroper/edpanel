@@ -12,8 +12,6 @@ import java.util.Objects;
  */
 public class GoalAggregate extends ApiModel implements Serializable, IApiModel<GoalAggregate> {
 
-    private List<Long> modifiers;
-
     private List<GoalComponent> goalComponents;
 
     public GoalAggregate() {
@@ -27,21 +25,11 @@ public class GoalAggregate extends ApiModel implements Serializable, IApiModel<G
             return;
         }
         GoalAggregate goalAggregate = (GoalAggregate) mergeFrom;
-        if (null == this.modifiers) {
-            this.modifiers = goalAggregate.modifiers;
-        }
         if (null == this.goalComponents) {
             this.goalComponents = goalAggregate.goalComponents;
         }
     }
 
-    public List<Long> getModifiers() {
-        return modifiers;
-    }
-
-    public void setModifiers(List<Long> modifiers) {
-        this.modifiers = modifiers;
-    }
 
     public List<GoalComponent> getGoalComponents() {
         return goalComponents;
@@ -57,13 +45,12 @@ public class GoalAggregate extends ApiModel implements Serializable, IApiModel<G
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         GoalAggregate that = (GoalAggregate) o;
-        return Objects.equals(modifiers, that.modifiers) &&
-                Objects.equals(goalComponents, that.goalComponents);
+        return Objects.equals(goalComponents, that.goalComponents);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), modifiers, goalComponents);
+        return Objects.hash(super.hashCode(), goalComponents);
     }
 
     @Override
@@ -72,7 +59,6 @@ public class GoalAggregate extends ApiModel implements Serializable, IApiModel<G
                 "GOAL_AGGREGATE " + "\n"
                         + "Id  : " + getId() + "\n"
                         + "Name: " + getName() + "\n"
-                        + "GoalComponents: " + getGoalComponents() + "\n"
-                        + "Modifiers: " + getModifiers();
+                        + "GoalComponents: " + getGoalComponents();
     }
 }
