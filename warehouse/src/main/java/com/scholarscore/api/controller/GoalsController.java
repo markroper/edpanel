@@ -3,7 +3,7 @@ package com.scholarscore.api.controller;
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.Goal;
+import com.scholarscore.models.goal.Goal;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.scholarscore.api.persistence;
 
-import com.scholarscore.models.Goal;
+import com.scholarscore.models.goal.Goal;
 
 import java.util.Collection;
 

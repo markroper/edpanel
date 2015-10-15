@@ -1,8 +1,8 @@
-package com.scholarscore.models;
+package com.scholarscore.models.goal;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.attendance.Attendance;
+import com.scholarscore.models.HibernateConsts;
 
 import javax.persistence.*;
 import java.text.SimpleDateFormat;

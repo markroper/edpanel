@@ -2,6 +2,7 @@ package com.scholarscore.api.persistence.goalCalculators;
 
 import com.scholarscore.api.persistence.StudentSectionGradePersistence;
 import com.scholarscore.models.*;
+import com.scholarscore.models.goal.CumulativeGradeGoal;
 
 /**
  * Created by cwallace on 9/25/2015.

@@ -1,4 +1,4 @@
-package com.scholarscore.models;
+package com.scholarscore.models.goal;
 
 import java.util.Objects;
 
@@ -18,7 +18,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.scholarscore.models.attendance.Attendance;
+import com.scholarscore.models.*;
 import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;

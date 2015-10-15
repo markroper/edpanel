@@ -1,4 +1,4 @@
-package com.scholarscore.models;
+package com.scholarscore.models.goal;
 
 import java.io.Serializable;
 
@@ -11,6 +11,7 @@ public enum GoalType implements Serializable {
     ATTENDANCE,
     BEHAVIOR,
     CUMULATIVE_GRADE,
-    ASSIGNMENT
+    ASSIGNMENT,
+    COMPLEX
 
 }
