@@ -35,6 +35,7 @@ public class BehaviorGoal extends Goal {
     private BehaviorCategory behaviorCategory;
 
     public BehaviorGoal() {
+        super();
         setGoalType(GoalType.BEHAVIOR);
     }
 

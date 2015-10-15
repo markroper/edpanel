@@ -79,10 +79,13 @@ public class UserJdbc implements UserPersistence {
 
         User fromDB = selectUser(userId);
         
-        // a subset of a fields are 'internal' to the user object and preserved even when the object is otherwise replaced
+        // a subset of a fields are 'internal' to the state of the user object and are preserved 
+        // even when the rest of the object is replaced.
         value.setId(userId);
         value.setType(fromDB.getType());
         value.setPassword(fromDB.getPassword());
+        value.setOneTimePass(fromDB.getOneTimePass());
+        value.setOneTimePassCreated(fromDB.getOneTimePassCreated());
         value.setEnabled(fromDB.getEnabled());
 
         hibernateTemplate.merge(value);
