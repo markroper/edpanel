@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * User: jordan
@@ -27,7 +28,6 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
     
     private Long id;
     private ContactType contactType;
-//    private User user;
     @Size(min=1, max=256)
     private String contactValue;
     @Size(min=1, max=64)
@@ -111,5 +111,42 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
         if (confirmCodeCreated == null) {
             this.confirmCodeCreated = mergeFrom.confirmCodeCreated;
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final ContactMethod other = (ContactMethod) obj;
+        return Objects.equals(this.id, other.id) 
+                && Objects.equals(this.contactType, other.contactType)
+                && Objects.equals(this.contactValue, other.contactValue)
+                && Objects.equals(this.confirmCode, other.confirmCode)
+                && Objects.equals(this.confirmCodeCreated, other.confirmCodeCreated)
+                && Objects.equals(this.confirmed, other.confirmed);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, contactType,
+                contactValue,
+                confirmCode,
+                confirmCodeCreated,
+                confirmed);
+    }
+
+    @Override
+    public String toString() {
+        return "ContactMethod{" +
+                "id=" + id +
+                ", contactType=" + contactType +
+                ", contactValue='" + contactValue + '\'' +
+                ", confirmCode='" + confirmCode + '\'' +
+                ", confirmCodeCreated=" + confirmCodeCreated +
+                ", confirmed=" + confirmed +
+                '}';
     }
 }
