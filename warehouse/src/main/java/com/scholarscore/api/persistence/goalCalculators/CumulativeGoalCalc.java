@@ -2,12 +2,13 @@ package com.scholarscore.api.persistence.goalCalculators;
 
 import com.scholarscore.api.persistence.StudentSectionGradePersistence;
 import com.scholarscore.models.*;
+import com.scholarscore.models.goal.CalculatableCumulative;
 import com.scholarscore.models.goal.CumulativeGradeGoal;
 
 /**
  * Created by cwallace on 9/25/2015.
  */
-public class CumulativeGoalCalc implements GoalCalc<CumulativeGradeGoal> {
+public class CumulativeGoalCalc implements GoalCalc<CalculatableCumulative> {
 
     private StudentSectionGradePersistence studentSectionGradePersistence;
 
@@ -15,7 +16,7 @@ public class CumulativeGoalCalc implements GoalCalc<CumulativeGradeGoal> {
         this.studentSectionGradePersistence = studentSectionGradePersistence;
     }
 
-    public Double calculateGoal(CumulativeGradeGoal goal) {
+    public Double calculateGoal(CalculatableCumulative goal) {
         StudentSectionGrade studentSectionGrade = studentSectionGradePersistence.select(goal.getParentId(),goal.getStudent().getId());
         Double awardedPoints = studentSectionGrade.getAwardedPoints();
         if (null != awardedPoints) {

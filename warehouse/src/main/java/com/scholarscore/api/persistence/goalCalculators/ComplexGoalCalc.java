@@ -47,7 +47,8 @@ public class ComplexGoalCalc implements GoalCalc<ComplexGoal> {
                 AttendanceComponent attendanceComponent = (AttendanceComponent) component;
                 return attendanceGoalCalc.calculateGoal(attendanceComponent) * component.getModifier();
             case CUMULATIVE_GRADE:
-                break;
+                CumulativeGradeComponent cumulativeGradeComponent = (CumulativeGradeComponent) component;
+                return cumulativeGoalCalc.calculateGoal(cumulativeGradeComponent);
             case COMPLEX:
                 break;
 
