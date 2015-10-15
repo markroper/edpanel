@@ -13,6 +13,7 @@ import com.scholarscore.models.query.expressions.operands.IOperand;
 import com.scholarscore.models.query.expressions.operands.OperandType;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
+import com.scholarscore.models.user.ContactType;
 import com.scholarscore.models.user.User;
 
 import org.reflections.Reflections;
@@ -38,7 +39,6 @@ import java.util.Set;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
-import static org.testng.AssertJUnit.assertNotNull;
 
 /**
  * User: jordan
@@ -53,8 +53,8 @@ public class ModelReflectionTests {
     private int numberOfFailedDefaultFieldAttempts = 0;
     private Set<String> fieldsThatNeedDefaults = new HashSet<>();
     
+//    private boolean loggingEnabled = false;
     private boolean loggingEnabled = false;
-//    private boolean loggingEnabled = true;
     
     private final String packageToScan = this.getClass().getPackage().getName();
     private final String testClassName = this.getClass().getSimpleName();   // class name without packagename
@@ -92,12 +92,16 @@ public class ModelReflectionTests {
         Set<Class<?>> classes = getClassesInPackage(getPackageToScan());
 
         for (Class clazz : classes) {
-            logDebug("Now analyzing class " + clazz);
             if (Modifier.isAbstract(clazz.getModifiers())) {
-                logDebug("Oops! Class " + clazz + " is abstract, not able to test it. skipping...");                continue;
-            } else if (getExcludedClassNames().contains(clazz.getName())) {
-                logDebug("Oops! Class " + clazz + " is explicitly excluded, skipping...");
+                logDebug("Skipping Class " + clazz + " as it is abstract...");
+                logDebug("");
                 continue;
+            } else if (getExcludedClassNames().contains(clazz.getName())) {
+                logDebug("Skipping Class " + clazz + " as it is explicitly excluded...");
+                logDebug("");
+                continue;
+            } else {
+                logDebug("Now analyzing class " + clazz + "...");
             }
 
             checkEqualsAndHashCodeForClass(clazz);
@@ -106,44 +110,73 @@ public class ModelReflectionTests {
             logDebug("");
         }
         if (numberOfFailedDefaultFieldAttempts <= 0) {
-            logDebug("DONE. No problems.");
+            logDebug("\nDONE. No problems.");
         } else {
-            logDebug("DONE. "
-                            + "But encountered "
-                            + fieldsThatNeedDefaults.size() + " unique failures "
-                            + "(" + numberOfFailedDefaultFieldAttempts + " total)"
-                            + " to construct objects with sensible default values."
-                            + "\n(To fix this, please add a line to each method getSensibleValueForType and getAnotherValueForType)"
-                            + "\n\n!!!!!!!!!!!!!!!!!!!!!!!!\n" +
-                            "The following fields need sensible defaults defined in getValueForType in ModelEqualsAndHashcodeTest class:"
-                            + "\n!!!!!!!!!!!!!!!!!!!!!!!!"
-            );
+            StringBuilder debugStringBuilder = new StringBuilder();
+            debugStringBuilder.append("\nDONE. \n"
+                    + "One or more test(s) (" + numberOfFailedDefaultFieldAttempts + ", " + fieldsThatNeedDefaults.size() + " unique) were skipped because \n"
+                    + "of an inability to construct objects with sensible default values."
+                    + "\n(To fix this, please see the " + this.getClass().getSimpleName() + ".getValueForType method "
+                    + "and follow the example there.)\n\n"
+                    + "The following fields need sensible defaults defined in getValueForType...\n");
             for (String field : fieldsThatNeedDefaults) {
-                logDebug(field);
+                debugStringBuilder.append("\n" + field);
             }
+            // show this final output regardless of logging flags
+            System.out.println(debugStringBuilder.toString());
         }
     }
 
     private void checkMergePropertiesIfNullForApiModel(Class<?> clazz) {
         // this test is only applicable to classes that implement IApiModel
-        if (IApiModel.class.isAssignableFrom(clazz)) { 
-            System.out.println("Class " + clazz + " found to implement IApiModel");
+        if (IApiModel.class.isAssignableFrom(clazz)) {
+            logDebug("*Class " + clazz + " implements IApiModel, checking mergePropertiesIfNull...");
             try {
-                IApiModel populatedObject = (IApiModel)buildPopulatedObjectAndThrowExceptions(clazz);
+                IApiModel populatedObject = (IApiModel)buildPopulatedObject(clazz);
                 IApiModel emptyObject = (IApiModel)clazz.newInstance();
-                assertNotNull("empty object is null!", emptyObject);
-                assertNotNull("populated object is null!", populatedObject);
+  
+                if (emptyObject == null || populatedObject == null) {
+                    System.out.println("Failed to construct " + clazz.getSimpleName() + ", aborting this test...");
+                    return;
+                }
+//                assertNotNull("empty object is null!", emptyObject);
+//                assertNotNull("populated object is null!", populatedObject);
                 
-                emptyObject.mergePropertiesIfNull(populatedObject);
+                // if any fields on emptyObject actually aren't null, we need to know that 
+                // or we'll get a false failure because the objects won't be equal
+                Field[] fields = clazz.getDeclaredFields();
+                for (Field field : fields) {
+                    if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
+                        continue;
+                    }
+                    field.setAccessible(true);
+                    Object initialFieldValue = field.get(emptyObject);
+
+                    // in order for the test to pass, the two objects (populated and empty) need to pass an equality test
+                    // after mergePropertiesIfNull is called on the empty object with the populated one passed in.
+                    // in cases when the so-called 'empty' object has a default value in a given field, 
+                    // mergePropertiesIfNull will not succeed in merging this field to the emptyObject and 
+                    // the equality test will fail. To work around this, find any fields that have non-null default
+                    // values and set those same values onto the populated object so the equality test will work.
+                    if (initialFieldValue != null) {
+                        logDebug("Found non-null default value in field " 
+                                + field.getName() + " (value: " + initialFieldValue + ")"
+                                + " after constructing object " + emptyObject.getClass().getSimpleName());
+                        field.set(populatedObject, initialFieldValue);
+                    }
+                }
+
+                    emptyObject.mergePropertiesIfNull(populatedObject);
                 assertEquals(populatedObject, emptyObject, "A new object of class " + clazz 
                         + " had mergePropertiesIfNull invoked with a populated instance of the object.\n" 
                         + "After merging, the new object was not equal to to the populated object.");
-            } catch (InstantiationException|IllegalAccessException e) {
-                System.out.println("Error constructing class, skipping...");
+                logDebug("*Successfully tested mergePropertiesIfNull(..)");
+            } catch (InstantiationException | IllegalAccessException e) {
+                logDebug("Error constructing class, skipping...");
                 e.printStackTrace();
             } 
         } else {
-            logDebug("Class " + clazz + " does not implement IApiModel, skipping...");
+//            logVerbose("-Class " + clazz + " does not implement IApiModel, skipping mergePropertiesIfNull test.");
         }
     }
 
@@ -151,18 +184,17 @@ public class ModelReflectionTests {
         final Object firstInstance = buildPopulatedObject(clazz);
         try {
             Constructor constructor = clazz.getDeclaredConstructor(clazz);
-            logDebug("Found constructor for class " + clazz + ", building copy now.");
+            logDebug("*Found copy constructor for " + clazz.getName() + ", building copy now.");
 
             try {
                 Object secondInstance = constructor.newInstance(firstInstance);
-                logDebug("Got copied object... " + secondInstance);
                 assertEquals(secondInstance, firstInstance, "New Instance of " + clazz.getName() + " doesn't equal original it was copy constructed from!");
-                
+                logDebug("*Successfully copied object and confirmed field values match");
             } catch (InstantiationException|IllegalAccessException|InvocationTargetException e) {
                 logDebug("WARN: could not invoke copy constructor for " + clazz + ", moving on.");
             }
         } catch (NoSuchMethodException e) {
-            logDebug("WARN: could not find copy constructor for class " + clazz + ", moving on.");
+            logDebug("-Did not find single-argument copy constructor for class " + clazz + ", skipping copy constructor check.");
         }
     }
 
@@ -170,14 +202,17 @@ public class ModelReflectionTests {
         final Object unmodifiedInstance = buildPopulatedObject(clazz);
         Field[] fields = clazz.getDeclaredFields();
     
+        logDebug("*Checking equals and hashcode for " + clazz.getName() + "...");
+        
         for (Field field : fields) {
             if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
-                logDebug("Skipping field " + field + " because it's static/final.");
+//                logVerbose("Skipping field " + field + " because it's static/final.");
                 continue;
             }
             Object instanceWithTweakedField = buildPopulatedObject(clazz, field.getName());
             if (instanceWithTweakedField == null) {
                 logDebug("Couldn't build object with tweaked field " + field.getName() + ", skipping this check.");
+                // TODO: make a note of this?
                 continue;
             }
             // logDebug("Checking equals() and hashcode() on " + clazz.getName() + " with field " + field.getName() + " modified...");
@@ -187,8 +222,8 @@ public class ModelReflectionTests {
             String hashMsg = objMsg + "hashcode() returned identical values even though objects have different values for field " + field.getName() + "\n" + both;
             assertNotEquals(unmodifiedInstance, instanceWithTweakedField, equalsMsg);
             assertNotEquals(unmodifiedInstance.hashCode(), instanceWithTweakedField.hashCode(), hashMsg);
-            
         }
+        logDebug("*Equals and HashCode are good (assuming no problems were just displayed)");
     }
     
     // ad hoc (saves a bunch of lines in a method below)
@@ -203,21 +238,8 @@ public class ModelReflectionTests {
     private Object buildPopulatedObject(Class clazz) {
         return buildPopulatedObject(clazz, null);
     }
-
-    private Object buildPopulatedObject(Class clazz, String fieldNameToModify) { 
-        try {
-            return buildPopulatedObjectAndThrowExceptions(clazz, fieldNameToModify);
-        } catch (IllegalAccessException|InstantiationException e) {
-            logDebug("ERROR building populated object... swallowing exception.");
-            return null;
-        }
-    }
     
-    private Object buildPopulatedObjectAndThrowExceptions(Class clazz) throws IllegalAccessException, InstantiationException {
-        return buildPopulatedObjectAndThrowExceptions(clazz, null);
-    }
-
-    private Object buildPopulatedObjectAndThrowExceptions(Class clazz, String fieldNameToModify) throws IllegalAccessException, InstantiationException {
+    private Object buildPopulatedObject(Class clazz, String fieldNameToModify) {
         try {
             Object instance = clazz.newInstance();
             
@@ -227,7 +249,6 @@ public class ModelReflectionTests {
                     // ignore static/final
                     continue;
                 }
-                logDebug("Discovered field [" + field + "] on class " + clazz);
 
                 Object value;
                 if (field.getName().equals(fieldNameToModify)) {
@@ -247,7 +268,9 @@ public class ModelReflectionTests {
             }
             return instance;
         } catch (InstantiationException|IllegalAccessException e) {
-            throw e;
+//            logDebug("exception trying to build populated object...");
+//            throw e;
+            return null;
         }
     }
 
@@ -334,8 +357,9 @@ public class ModelReflectionTests {
         if (type.isAssignableFrom(Gender.class)) { return alt ? Gender.FEMALE : Gender.MALE; }
         if (type.isAssignableFrom(Measure.class)) { return alt ? Measure.DEMERIT : Measure.MERIT; }
         if (type.isAssignableFrom(AttendanceStatus.class)) { return alt ? AttendanceStatus.PRESENT : AttendanceStatus.ABSENT; }
+        if (type.isAssignableFrom(ContactType.class)) { return alt ? ContactType.EMAIL : ContactType.PHONE; }
 
-        System.out.println("Could not find sensible value for field type " + type);
+        // System.out.println("Could not find sensible value for field type " + type);
         return null;
     }
     
@@ -346,4 +370,5 @@ public class ModelReflectionTests {
             System.out.println(msg);
         }
     }
+    
 }

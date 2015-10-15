@@ -87,6 +87,9 @@ public class BehaviorGoal extends Goal {
             if (null == endDate) {
                 this.endDate = mergeFromBehavior.endDate;
             }
+            if (null == behaviorCategory) {
+                this.behaviorCategory = mergeFromBehavior.behaviorCategory;
+            }
         }
 
     }
