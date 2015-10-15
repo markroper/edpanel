@@ -12,12 +12,23 @@ import java.util.Objects;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "componentType")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = BehaviorComponent.class, name="BEHAVIOR")
+        @JsonSubTypes.Type(value = BehaviorComponent.class, name="BEHAVIOR"),
+        @JsonSubTypes.Type(value = AttendanceComponent.class, name = "ATTENDANCE"),
+        @JsonSubTypes.Type(value = ComplexComponent.class, name = "COMPLEX")
 })
 public abstract class GoalComponent implements Serializable {
 
     private Student student;
     private GoalType componentType;
+    private Long modifier;
+
+    public Long getModifier() {
+        return modifier;
+    }
+
+    public void setModifier(Long modifier) {
+        this.modifier = modifier;
+    }
 
     public Student getStudent() {
         return student;
@@ -42,11 +53,12 @@ public abstract class GoalComponent implements Serializable {
         if (!super.equals(o)) return false;
         GoalComponent that = (GoalComponent) o;
         return Objects.equals(student, that.student) &&
+                Objects.equals(modifier, that.modifier) &&
                 Objects.equals(componentType, that.componentType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), componentType, student);
+        return Objects.hash(super.hashCode(), componentType, student, modifier);
     }
 }

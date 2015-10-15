@@ -18,7 +18,7 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @DiscriminatorValue(value = "ATTENDANCE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class AttendanceGoal extends Goal {
+public class AttendanceGoal extends Goal implements CalculatableAttendance{
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 

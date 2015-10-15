@@ -1,35 +1,25 @@
 package com.scholarscore.models.goal;
 
-import com.scholarscore.models.BehaviorCategory;
-import com.scholarscore.models.user.Student;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
 /**
- * Created by cwallace on 10/14/2015.
+ * Created by cwallace on 10/15/2015.
  */
-public class BehaviorComponent extends GoalComponent implements CalculatableBehavior {
+public class AttendanceComponent extends GoalComponent implements CalculatableAttendance {
+
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-
-    private BehaviorCategory behaviorCategory;
     private Date startDate;
     private Date endDate;
+    private Long parentId;
 
-    public  BehaviorComponent() {
-        setComponentType(GoalType.BEHAVIOR);
+    public AttendanceComponent() {
+        setComponentType(GoalType.ATTENDANCE);
     }
 
-    public BehaviorCategory getBehaviorCategory() {
-        return behaviorCategory;
-    }
-
-    public void setBehaviorCategory(BehaviorCategory behaviorCategory) {
-        this.behaviorCategory = behaviorCategory;
-    }
-
+    @Override
     public Date getStartDate() {
         return startDate;
     }
@@ -38,6 +28,7 @@ public class BehaviorComponent extends GoalComponent implements CalculatableBeha
         this.startDate = startDate;
     }
 
+    @Override
     public Date getEndDate() {
         return endDate;
     }
@@ -46,28 +37,36 @@ public class BehaviorComponent extends GoalComponent implements CalculatableBeha
         this.endDate = endDate;
     }
 
+    @Override
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        BehaviorComponent that = (BehaviorComponent) o;
+        AttendanceComponent that = (AttendanceComponent) o;
         return Objects.equals(startDate, that.startDate) &&
                 Objects.equals(endDate, that.endDate) &&
-                Objects.equals(behaviorCategory, that.behaviorCategory);
+                Objects.equals(parentId, that.parentId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), startDate, endDate, behaviorCategory);
+        return Objects.hash(super.hashCode(), startDate, endDate, parentId);
     }
 
     @Override
     public String toString() {
         return
                 "GOAL " + "\n"
-                        + "BehaviorCategory: " + getBehaviorCategory() +"\n"
+                        + "ParentId: " + getParentId() +"\n"
                         + "ComponentType:" + getComponentType() + "\n"
                         + "Student: " + getStudent() + "\n"
                         + "Modifier: " + getModifier() + "\n"

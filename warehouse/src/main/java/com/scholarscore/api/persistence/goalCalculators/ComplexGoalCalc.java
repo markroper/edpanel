@@ -32,19 +32,43 @@ public class ComplexGoalCalc implements GoalCalc<ComplexGoal> {
     @Override
     public Double calculateGoal(ComplexGoal goal) {
         GoalAggregate subGoals = goal.getGoalAggregate();
-        Double total = 0D;
-        for (int i = 0; i < subGoals.getGoalComponents().size(); i++) {
-            total += calculateComponent(subGoals.getGoalComponents().get(i), subGoals.getModifiers().get(i));
-        }
-        return total;
+        return calculateGoalAggregate(subGoals);
     }
 
-    private Double calculateComponent(GoalComponent component, Long modifier) {
+    private Double calculateComponent(GoalComponent component) {
 
-       if (component instanceof BehaviorComponent) {
-           BehaviorComponent behaviorComponent = (BehaviorComponent) component;
-           return behaviorGoalCalc.calculateGoal(behaviorComponent) * modifier;
-       }
+        switch (component.getComponentType()){
+            case BEHAVIOR:
+                BehaviorComponent behaviorComponent = (BehaviorComponent) component;
+                return behaviorGoalCalc.calculateGoal(behaviorComponent) * component.getModifier();
+            case ASSIGNMENT:
+                break;
+            case ATTENDANCE:
+                AttendanceComponent attendanceComponent = (AttendanceComponent) component;
+                return attendanceGoalCalc.calculateGoal(attendanceComponent) * component.getModifier();
+            case CUMULATIVE_GRADE:
+                break;
+            case COMPLEX:
+                break;
+
+
+        }
+
         return -1D;
+    }
+
+    private Double calculateGoalAggregate(GoalAggregate subGoals) {
+        Double total = 0D;
+        for (int i = 0; i < subGoals.getGoalComponents().size(); i++) {
+            GoalComponent goalComponent = subGoals.getGoalComponents().get(i);
+            if (goalComponent instanceof ComplexComponent) {
+                ComplexComponent complexComponent = (ComplexComponent) goalComponent;
+                total += calculateGoalAggregate(complexComponent.getGoalAggregate()) * complexComponent.getModifier();
+            } else {
+                total += calculateComponent(goalComponent);
+            }
+
+        }
+        return total;
     }
 }
