@@ -28,7 +28,7 @@ import com.scholarscore.models.query.DimensionField;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @PrimaryKeyJoinColumn(name=HibernateConsts.ADMIN_USER_FK, referencedColumnName = HibernateConsts.USER_ID)
-public class Administrator extends Staff implements Serializable, IStaff<Administrator> {
+public class Administrator extends Person implements Serializable, IStaff<Administrator> {
     public static final DimensionField ID = new DimensionField(Dimension.ADMINISTRATOR, "ID");
     public static final DimensionField NAME = new DimensionField(Dimension.ADMINISTRATOR, "Name");
     public static final DimensionField EMAIL_ADDRESS = new DimensionField(Dimension.ADMINISTRATOR, "Address");

@@ -119,8 +119,8 @@ public class BehaviorGoal extends Goal {
                         + "GoalType: " + getGoalType() + "\n"
                         + "Student: " + getStudent() + "\n"
                         + "Teacher: " + getTeacher() + "\n"
-                        + "StartDate" + dateFormat.format(getStartDate()) + "\n"
-                        + "EndDate" + dateFormat.format(getEndDate());
+                        + "StartDate: " + dateFormat.format(getStartDate()) + "\n"
+                        + "EndDate: " + dateFormat.format(getEndDate());
     }
 
     /**
