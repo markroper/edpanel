@@ -5,6 +5,8 @@ import com.scholarscore.models.user.Student;
 import java.util.Date;
 
 /**
+ * Interface for defining that a goal/component
+ * based on attendance is calculatable
  * Created by cwallace on 10/15/2015.
  */
 public interface CalculatableAttendance {

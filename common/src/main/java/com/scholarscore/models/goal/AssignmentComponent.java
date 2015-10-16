@@ -2,6 +2,7 @@ package com.scholarscore.models.goal;
 import java.util.Objects;
 
 /**
+ * Component for complex goal that is for assignments
  * Created by cwallace on 10/15/2015.
  */
 public class AssignmentComponent extends GoalComponent implements CalculatableAssignment {

@@ -3,6 +3,8 @@ package com.scholarscore.models.goal;
 import java.util.Objects;
 
 /**
+ * Component with a constant value. Used in case you want a student
+ * to start with an arbitrary amount of weekly points
  * Created by cwallace on 10/15/2015.
  */
 public class CumulativeGradeComponent extends GoalComponent implements CalculatableCumulative{

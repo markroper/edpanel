@@ -6,6 +6,7 @@ import com.scholarscore.models.user.Student;
 import java.util.Date;
 
 /**
+ * Interface for defining a goal/component based on behavior is calculatable
  * Created by cwallace on 10/14/2015.
  */
 public interface CalculatableBehavior {
