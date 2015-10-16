@@ -1,6 +1,5 @@
 package com.scholarscore.api.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.api.util.SchoolDataFactory;
 import com.scholarscore.models.*;
@@ -26,7 +25,6 @@ import java.util.*;
 @Test(groups = { "datagen" })
 public class UISyntheticDatagenerator extends IntegrationBase {
     School school;
-    private static final ObjectMapper mapper = new ObjectMapper();
     
     public void seedDatabase() {
         authenticate();
