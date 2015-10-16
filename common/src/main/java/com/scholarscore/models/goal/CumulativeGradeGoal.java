@@ -61,6 +61,17 @@ public class CumulativeGradeGoal extends Goal implements CalculatableCumulative 
     }
 
     @Override
+    public void mergePropertiesIfNull(Goal mergeFrom) {
+        super.mergePropertiesIfNull(mergeFrom);
+        if (mergeFrom instanceof CumulativeGradeGoal) {
+            CumulativeGradeGoal mergeFromBehavior = (CumulativeGradeGoal)mergeFrom;
+            if (null == this.parentId) {
+                this.parentId = mergeFromBehavior.parentId;
+            }
+        }
+
+    }    
+    @Override
     public String toString() {
         return
                 "GOAL " + "\n"

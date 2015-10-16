@@ -37,6 +37,7 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
     private BehaviorCategory behaviorCategory;
 
     public BehaviorGoal() {
+        super();
         setGoalType(GoalType.BEHAVIOR);
     }
 
@@ -88,6 +89,9 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
             }
             if (null == endDate) {
                 this.endDate = mergeFromBehavior.endDate;
+            }
+            if (null == behaviorCategory) {
+                this.behaviorCategory = mergeFromBehavior.behaviorCategory;
             }
         }
 

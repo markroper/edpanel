@@ -67,6 +67,24 @@ public class AttendanceGoal extends Goal implements CalculatableAttendance{
     }
 
     @Override
+    public void mergePropertiesIfNull(Goal mergeFrom) {
+        super.mergePropertiesIfNull(mergeFrom);
+        if (mergeFrom instanceof AttendanceGoal) {
+            AttendanceGoal mergeFromBehavior = (AttendanceGoal)mergeFrom;
+            if (null == this.startDate) {
+                this.startDate = mergeFromBehavior.startDate;
+            }
+            if (null == endDate) {
+                this.endDate = mergeFromBehavior.endDate;
+            }
+            if (null == parentId) {
+                this.parentId = mergeFromBehavior.parentId;
+            }
+        }
+
+    }
+    
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

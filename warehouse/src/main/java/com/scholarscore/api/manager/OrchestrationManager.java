@@ -29,6 +29,16 @@ public class OrchestrationManager {
     private GoalManager goalManager;
     private SchoolDayManager schoolDayManager;
     private AttendanceManager attendanceManager;
+    private UiAttributesManager uiAttributesManager;
+
+    
+    public UiAttributesManager getUiAttributesManager() {
+        return uiAttributesManager;
+    }
+
+    public void setUiAttributesManager(UiAttributesManager uiAttributesManager) {
+        this.uiAttributesManager = uiAttributesManager;
+    }
 
     public SchoolManager getSchoolManager() {
         return schoolManager;

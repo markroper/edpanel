@@ -24,6 +24,7 @@ import com.scholarscore.models.query.QueryResults;
 import com.scholarscore.models.query.Record;
 
 public class QueryJdbc extends BaseJdbc implements QueryPersistence {
+    private static final ObjectMapper mapper = new ObjectMapper();
     private static String INSERT_REPORT_SQL = "INSERT INTO `"+ 
             DbMappings.DATABASE +"`.`" + DbMappings.REPORT_TABLE + "` " +
             "(" + HibernateConsts.SCHOOL_FK + ", " + DbMappings.REPORT_COL + ")" +
@@ -72,7 +73,6 @@ public class QueryJdbc extends BaseJdbc implements QueryPersistence {
     public Long createQuery(Long schoolId, Query query) 
             throws JsonProcessingException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> params = new HashMap<>();     
         params.put("schoolfk", schoolId);
         params.put("report", mapper.writeValueAsString(query));

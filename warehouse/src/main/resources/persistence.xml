@@ -183,6 +183,11 @@
         <property name="termPersistence" ref="termPersistence"/>
     </bean>
     
+    <bean id="uiAttributesPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.UiAttributesJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+    
        <!-- Required so that we can inject an instance into Spring Security -->
 
    <bean id="authorityPersistence"
