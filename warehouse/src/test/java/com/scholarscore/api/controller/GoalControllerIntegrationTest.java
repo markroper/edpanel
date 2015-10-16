@@ -145,28 +145,54 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         attendanceGoal.setStartDate(today);
         attendanceGoal.setEndDate(nextYear);
 
-        ComplexGoal complexGoal = new ComplexGoal();
-        complexGoal.setStudent(student);
-        complexGoal.setTeacher(teacher);
-        complexGoal.setName("Formula Goal");
-        complexGoal.setApproved(false);
-        complexGoal.setDesiredValue(100D);
-
+        //Generate goal Components for complex goal
+        GoalAggregate aggregate = new GoalAggregate();
         List<GoalComponent> goalComponents = new ArrayList<GoalComponent>();
+        aggregate.setGoalComponents(goalComponents);
 
+        //Behavior component
         BehaviorComponent behaviorComponent = new BehaviorComponent();
         behaviorComponent.setBehaviorCategory(BehaviorCategory.DEMERIT);
         behaviorComponent.setStartDate(today);
         behaviorComponent.setEndDate(nextYear);
         behaviorComponent.setModifier(2D);
         behaviorComponent.setStudent(student);
-
         goalComponents.add(behaviorComponent);
 
-        GoalAggregate aggregate = new GoalAggregate();
-        aggregate.setGoalComponents(goalComponents);
-        aggregate.setName("Weekly goals");
+        //Assignment Component
+        AssignmentComponent assignmentComponent = new AssignmentComponent();
+        assignmentComponent.setParentId(studentAssignment.getId());
+        assignmentComponent.setModifier(1D);
+        assignmentComponent.setStudent(student);
+        goalComponents.add(assignmentComponent);
 
+        //Attendance Component
+        AttendanceComponent attendanceComponent = new AttendanceComponent();
+        attendanceComponent.setStartDate(today);
+        attendanceComponent.setEndDate(nextYear);
+        attendanceComponent.setParentId(section.getId());
+        attendanceComponent.setStudent(student);
+        attendanceComponent.setModifier(3D);
+        goalComponents.add(attendanceComponent);
+
+        //Cumulative Component
+        CumulativeGradeComponent cumulativeGradeComponent = new CumulativeGradeComponent();
+        cumulativeGradeComponent.setStudent(student);
+        cumulativeGradeComponent.setParentId(section.getId());
+        cumulativeGradeComponent.setModifier(4D);
+        goalComponents.add(cumulativeGradeComponent);
+
+
+
+
+
+        //Generate complex goal
+        ComplexGoal complexGoal = new ComplexGoal();
+        complexGoal.setStudent(student);
+        complexGoal.setTeacher(teacher);
+        complexGoal.setName("Formula Goal");
+        complexGoal.setApproved(false);
+        complexGoal.setDesiredValue(100D);
         complexGoal.setGoalAggregate(aggregate);
 
 
@@ -204,7 +230,19 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         cal.add(Calendar.MONTH, 1);
         Date midDate = cal.getTime();
 
+        //Generate behaviors so we can test that calculatedValue matches
+        Behavior namedBehavior = new Behavior();
+        namedBehavior.setStudent(student);
+        namedBehavior.setTeacher(teacher);
+        namedBehavior.setName("BehaviorEvent");
+        namedBehavior.setBehaviorCategory(BehaviorCategory.DEMERIT);
+        namedBehavior.setPointValue("1");
+        namedBehavior.setBehaviorDate(midDate);
+        for (int i = 0; i < EXPECTED_VALUE; i++) {
+            behaviorValidatingExecutor.create(student.getId(), namedBehavior, "Beahvior creation failed");
+        }
 
+        //Generate behavior goal
         BehaviorGoal behaviorGoal = new BehaviorGoal();
         behaviorGoal.setStudent(student);
         behaviorGoal.setTeacher(teacher);
@@ -216,19 +254,31 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         behaviorGoal.setApproved(false);
         behaviorGoal.setCalculatedValue(EXPECTED_VALUE);
 
-        Behavior namedBehavior = new Behavior();
-        // teacher is always required or constraint exception
-        namedBehavior.setStudent(student);
-        namedBehavior.setTeacher(teacher);
-        namedBehavior.setName("BehaviorEvent");
-        namedBehavior.setBehaviorCategory(BehaviorCategory.DEMERIT);
-        namedBehavior.setPointValue("1");
-        namedBehavior.setBehaviorDate(midDate);
-        for (int i = 0; i < EXPECTED_VALUE; i++) {
-            behaviorValidatingExecutor.create(student.getId(), namedBehavior, "Beahvior creation failed");
-        }
+        //Generate goal components that make up our complex goal
+        List<GoalComponent> goalComponents = new ArrayList<GoalComponent>();
+        BehaviorComponent behaviorComponent = new BehaviorComponent();
+        behaviorComponent.setBehaviorCategory(BehaviorCategory.DEMERIT);
+        behaviorComponent.setStartDate(today);
+        behaviorComponent.setEndDate(lastYear);
+        behaviorComponent.setModifier(2D);
+        behaviorComponent.setStudent(student);
+        goalComponents.add(behaviorComponent);
+        GoalAggregate aggregate = new GoalAggregate();
+        aggregate.setGoalComponents(goalComponents);
+
+        //Generate Complex Goal with expected value of twice the behavior goal
+        ComplexGoal complexGoal = new ComplexGoal();
+        complexGoal.setStudent(student);
+        complexGoal.setTeacher(teacher);
+        complexGoal.setName("Formula Goal");
+        complexGoal.setApproved(false);
+        complexGoal.setDesiredValue(100D);
+        complexGoal.setCalculatedValue(EXPECTED_VALUE * 2);
+        complexGoal.setGoalAggregate(aggregate);
+
         return new Object[][]{
-                {behaviorGoal,"We did not receive teh expected value from your goal"}
+                {behaviorGoal, "We did not receive teh expected value from your goal"},
+                {complexGoal, "We did not receive expected value for complex goal"}
         };
 
     }
@@ -251,7 +301,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createGoalDataProvider")
     public void updateAssignmentTest(Goal goal, String msg) {
         Goal createdGoal = goalValidatingExecutor.create(student.getId(), goal, msg);
-        
+
         createdGoal.setName(localeServiceUtil.generateName());
         //PATCH the existing record with a new name.
         goalValidatingExecutor.update(student.getId(), createdGoal.getId(), goal, msg);

@@ -38,6 +38,9 @@ public class ComplexGoalCalc implements GoalCalc<ComplexGoal> {
     private Double calculateComponent(GoalComponent component) {
 
         switch (component.getComponentType()){
+            case CONSTANT:
+                ConstantComponent constantComponent = (ConstantComponent) component;
+                return constantComponent.getInitialValue();
             case BEHAVIOR:
                 BehaviorComponent behaviorComponent = (BehaviorComponent) component;
                 return behaviorGoalCalc.calculateGoal(behaviorComponent) * component.getModifier();
