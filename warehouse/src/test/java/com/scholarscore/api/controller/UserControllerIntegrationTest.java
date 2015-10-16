@@ -8,17 +8,15 @@ import com.scholarscore.models.user.User;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import java.util.Date;
-
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 /**
+ * Integration tests for the CRUD operations on User instances and subclasses
  * User: jordan
  * Date: 10/8/15
  * Time: 2:35 PM
  */
+@Test(groups = { "integration" })
 public class UserControllerIntegrationTest extends IntegrationBase {
 
     @BeforeClass
