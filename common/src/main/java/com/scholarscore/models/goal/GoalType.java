@@ -12,6 +12,7 @@ public enum GoalType implements Serializable {
     BEHAVIOR,
     CUMULATIVE_GRADE,
     ASSIGNMENT,
-    COMPLEX
+    COMPLEX,
+    CONSTANT
 
 }
