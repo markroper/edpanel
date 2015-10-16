@@ -1,5 +1,6 @@
 package com.scholarscore.models.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
@@ -8,13 +9,18 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * User: jordan
@@ -34,8 +40,15 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
     private String confirmCode;
     private Date confirmCodeCreated;
 
+    private User user;
+    
     private Boolean confirmed = false;
 
+    
+    public ContactMethod() { 
+    
+    }
+    
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     @Column(name = HibernateConsts.CONTACT_METHOD_ID)
@@ -93,6 +106,16 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
         this.confirmed = confirmed;
     }
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = HibernateConsts.CONTACT_METHOD_USER_FK, nullable = false)
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     @Override
     public void mergePropertiesIfNull(ContactMethod mergeFrom) {
         if (mergeFrom == null) { return; }
@@ -148,5 +171,33 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
                 ", confirmCodeCreated=" + confirmCodeCreated +
                 ", confirmed=" + confirmed +
                 '}';
+    }
+
+    @Transient
+    @JsonIgnore
+    // email and phone are just a facade on ContactMethods so special handling is needed.
+    // This method should be called instead of directly replacing existing contacts with new ones.
+    public static void mergeContactMethods(Set<ContactMethod> newContactMethods, Set<ContactMethod> existingContactMethods) {
+        if (existingContactMethods != null) {
+            // any non-null fields on this object are, in the spirit of this method, supposed to
+            // overwrite values previously existing on the object. However in this case,
+            for (ContactMethod existingMethod : existingContactMethods) {
+                boolean contactMethodUpdated = false;
+                ContactType existingContactType = existingMethod.getContactType();
+                for (ContactMethod newMethod : newContactMethods) {
+                    if (newMethod.getContactType().equals(existingContactType)) {
+                        // the user has submitted a new value for a contact that already exists (this one)
+                        // take the ID from this contact and merge it to the new value so it will update instead of create
+                        newMethod.setId(existingMethod.getId());
+                        contactMethodUpdated = true;
+                        break;
+                    }
+                }
+                if (!contactMethodUpdated) {
+                    // this old contact method was not given a new value, so merge it
+                    newContactMethods.add(existingMethod);
+                }
+            }
+        }
     }
 }

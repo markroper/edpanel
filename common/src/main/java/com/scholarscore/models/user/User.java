@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -76,10 +77,11 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		this.enabled = value.enabled;
 		this.oneTimePass = value.oneTimePass;
 		this.oneTimePassCreated = value.oneTimePassCreated;
+		this.contactMethods = value.contactMethods;
 	}
 
-	@OneToMany
-	@JoinColumn(name = HibernateConsts.CONTACT_METHOD_USER_FK, nullable = false)
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+//	@JoinColumn(name = HibernateConsts.CONTACT_METHOD_USER_FK, nullable = false)
 	@Fetch(FetchMode.JOIN)
 	@Cascade(CascadeType.ALL)
 	public Set<ContactMethod> getContactMethods() {
@@ -92,36 +94,20 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 
 	@Transient
 	public String getEmail() {
-		if (contactMethods != null) {
-			ContactMethod email = getContact(ContactType.EMAIL);
-			return email == null ? null : email.getContactValue();
-		}
-		return null;
+		return getContactValue(ContactType.EMAIL);
 	}
 	
-	// TODO Jordan: test this! (also make it generic so both phone and email can use
 	public void setEmail(String newEmail) { 
-		if (contactMethods == null) {
-			contactMethods = new HashSet<>();
-		}
-		
-		// initialize in case we don't have an email record
-		ContactMethod emailContactMethod = new ContactMethod();
-		emailContactMethod.setContactType(ContactType.EMAIL);
-
-		ContactMethod existingEmailContact = getContact(ContactType.EMAIL);
-		boolean emailExistsInContactMethods = (existingEmailContact != null);
-
-		if (emailExistsInContactMethods) { 
-			emailContactMethod = existingEmailContact;
-		}
-
-		emailContactMethod.setContactValue(newEmail);
-
-		if (!emailExistsInContactMethods) {
-			contactMethods.add(emailContactMethod);
-		}
-		setContactMethods(contactMethods);
+		setContactValue(newEmail, ContactType.EMAIL);
+	}
+	
+	@Transient
+	public String getPhone() { 
+		return getContactValue(ContactType.PHONE);
+	}
+	
+	public void setPhone(String newPhone) { 
+		setContactValue(newPhone, ContactType.PHONE);
 	}
 	
 	@JsonIgnore
@@ -135,6 +121,41 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 			}
 		}
 		return null;
+	}
+
+	@Transient
+	@JsonIgnore
+	private String getContactValue(ContactType contactType) {
+		ContactMethod contactMethod = getContact(contactType);
+		return contactMethod == null ? null : contactMethod.getContactValue();
+	}
+
+	@Transient
+	@JsonIgnore
+	public void setContactValue(String newContactValue, ContactType contactType) {
+		if (contactMethods == null) {
+			contactMethods = new HashSet<>();
+		}
+
+		// initialize in case we don't have an email record
+		ContactMethod contactMethod = new ContactMethod();
+		contactMethod.setContactType(contactType);
+
+		ContactMethod existingContact = getContact(contactType);
+		boolean contactWithTypeAlreadyExists = (existingContact != null);
+
+		if (contactWithTypeAlreadyExists) {
+			// reuse the existing record ID
+			contactMethod.setId(existingContact.getId());
+		}
+
+		contactMethod.setContactValue(newContactValue);
+		contactMethod.setUser(this);
+
+		if (!contactWithTypeAlreadyExists) {
+			contactMethods.add(contactMethod);
+		}
+		setContactMethods(contactMethods);
 	}
 	
 	@Id
@@ -213,6 +234,19 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
         if (null == enabled) {
         	this.enabled = mergeFrom.getEnabled();
         }
+		if (null == oneTimePass) {
+			this.oneTimePass = mergeFrom.getOneTimePass();
+		}
+		if (null == oneTimePassCreated) {
+			this.oneTimePassCreated = mergeFrom.getOneTimePassCreated();
+		}
+		
+		if (null == contactMethods) {
+			this.contactMethods = mergeFrom.getContactMethods();
+		} else {
+			// contact methods require special handling
+			ContactMethod.mergeContactMethods(this.contactMethods, mergeFrom.getContactMethods());
+		}
     }
 	
 	@Override
