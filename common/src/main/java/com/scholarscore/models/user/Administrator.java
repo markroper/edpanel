@@ -89,14 +89,14 @@ public class Administrator extends Person implements Serializable, IStaff<Admini
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public static class AdministratorBuilder extends StaffBuilder<AdministratorBuilder, Administrator>{
+    public static class AdministratorBuilder extends PersonBuilder<AdministratorBuilder, Administrator> {
 
         public Administrator build(){
             return super.build();
         }
 
         @Override
-        public AdministratorBuilder me() {
+        protected AdministratorBuilder me() {
             return this;
         }
 

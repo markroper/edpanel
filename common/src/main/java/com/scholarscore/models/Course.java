@@ -144,7 +144,7 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class CourseBuilder extends ApiModelBuilder<Course> {
+    public static class CourseBuilder extends ApiModelBuilder<CourseBuilder, Course> {
 
         private String number;
         private String sourceSystemId;
@@ -171,6 +171,11 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
             course.setSourceSystemId(sourceSystemId);
             course.setSchool(school);
             return course;
+        }
+
+        @Override
+        protected CourseBuilder me() {
+            return this;
         }
 
         @Override

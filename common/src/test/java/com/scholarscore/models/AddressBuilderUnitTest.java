@@ -15,8 +15,8 @@ public class AddressBuilderUnitTest extends AbstractBuilderUnitTest<Address>{
     @DataProvider
     @Override
     public Object[][] builderProvider() {
-        Address emptySchoolDay = new Address();
-        Address emptySchoolDayByBuilder = new Address.AddressBuilder().build();
+        Address emptyAddress = new Address();
+        Address emptyAddressByBuilder = new Address.AddressBuilder().build();
 
         Long id = RandomUtils.nextLong(0L, Long.MAX_VALUE);
         String state = RandomStringUtils.randomAlphabetic(10);
@@ -39,7 +39,7 @@ public class AddressBuilderUnitTest extends AbstractBuilderUnitTest<Address>{
                 withId(id).
                 build();
         return new Object[][]{
-                {"Empty schoolDay", emptySchoolDayByBuilder, emptySchoolDay},
+                {"Empty schoolDay", emptyAddressByBuilder, emptyAddress},
                 {"Full schoolDay", fullAddressByBuilder, fullAddress}
         };
     }

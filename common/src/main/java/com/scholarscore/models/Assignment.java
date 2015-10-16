@@ -63,6 +63,7 @@ public abstract class Assignment
 
     public void setSection(Section section) {
         this.section = section;
+        this.section.addAssignment(this);
     }
 
     @Column(name = HibernateConsts.SECTION_FK)
@@ -166,7 +167,7 @@ public abstract class Assignment
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public abstract class AssignmentBuilder<T extends Assignment> extends ApiModelBuilder<T>{
+    public static abstract class AssignmentBuilder<U extends AssignmentBuilder<U, T>, T extends Assignment> extends ApiModelBuilder<U,T>{
 
         private AssignmentType type;
         private Date dueDate;
@@ -175,29 +176,29 @@ public abstract class Assignment
         protected Long sectionFK;
 
 
-        public AssignmentBuilder<T> withType(final AssignmentType type){
+        public U withType(final AssignmentType type){
             this.type = type;
-            return this;
+            return me();
         }
 
-        public AssignmentBuilder<T> withDueDate(final Date dueDate){
+        public U withDueDate(final Date dueDate){
             this.dueDate = dueDate;
-            return this;
+            return me();
         }
 
-        public AssignmentBuilder<T> withAvailablePoints(final Long availablePoints){
+        public U withAvailablePoints(final Long availablePoints){
             this.availablePoints = availablePoints;
-            return this;
+            return me();
         }
 
-        public AssignmentBuilder<T> withSection(final Section section){
+        public U withSection(final Section section){
             this.section = section;
-            return this;
+            return me();
         }
 
-        public AssignmentBuilder<T> withSectionFK(final Long sectionFK){
+        public U withSectionFK(final Long sectionFK){
             this.sectionFK = sectionFK;
-            return this;
+            return me();
         }
 
         public T build(){
@@ -206,6 +207,7 @@ public abstract class Assignment
             assignment.setDueDate(dueDate);
             assignment.setAvailablePoints(availablePoints);
             assignment.setSection(section);
+            section.addAssignment(assignment);
             assignment.setSectionFK(sectionFK);
             return assignment;
         }

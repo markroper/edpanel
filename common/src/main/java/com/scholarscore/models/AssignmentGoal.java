@@ -72,7 +72,7 @@ public class AssignmentGoal extends Goal {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class AssignmentGoalBuilder extends GoalBuilder<AssignmentGoal>{
+    public static class AssignmentGoalBuilder extends GoalBuilder<AssignmentGoalBuilder, AssignmentGoal>{
 
         private Long parentId;
 
@@ -85,6 +85,11 @@ public class AssignmentGoal extends Goal {
             AssignmentGoal goal = super.build();
             goal.setParentId(parentId);
             return goal;
+        }
+
+        @Override
+        protected AssignmentGoalBuilder me() {
+            return this;
         }
 
         @Override

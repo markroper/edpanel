@@ -280,7 +280,7 @@ public class Student extends Person implements Serializable {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public static class StudentBuilder extends UserBuilder<StudentBuilder, Student> {
+    public static class StudentBuilder extends PersonBuilder<StudentBuilder, Student> {
 
         //Source system identifier. E.g. powerschool ID
         private String sourceSystemId;
@@ -370,7 +370,7 @@ public class Student extends Person implements Serializable {
         }
 
         @Override
-        public StudentBuilder me() {
+        protected StudentBuilder me() {
             return this;
         }
 
