@@ -10,10 +10,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * Created by cwallace on 9/21/2015.
@@ -148,11 +145,38 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         attendanceGoal.setStartDate(today);
         attendanceGoal.setEndDate(nextYear);
 
+        ComplexGoal complexGoal = new ComplexGoal();
+        complexGoal.setStudent(student);
+        complexGoal.setTeacher(teacher);
+        complexGoal.setName("Formula Goal");
+        complexGoal.setApproved(false);
+        complexGoal.setDesiredValue(100D);
+
+        List<GoalComponent> goalComponents = new ArrayList<GoalComponent>();
+
+        BehaviorComponent behaviorComponent = new BehaviorComponent();
+        behaviorComponent.setBehaviorCategory(BehaviorCategory.DEMERIT);
+        behaviorComponent.setStartDate(today);
+        behaviorComponent.setEndDate(nextYear);
+        behaviorComponent.setModifier(2D);
+        behaviorComponent.setStudent(student);
+
+        goalComponents.add(behaviorComponent);
+
+        GoalAggregate aggregate = new GoalAggregate();
+        aggregate.setGoalComponents(goalComponents);
+        aggregate.setName("Weekly goals");
+
+        complexGoal.setGoalAggregate(aggregate);
+
+
+
         return new Object[][] {
                 {behaviorGoal, "Test failed with a behavior goal"},
                 {assGoal, "Test failed with an assignment goal"},
                 {cumulativeGradeGoal, "Test failed with a cumulative grade goal"},
-                {attendanceGoal, "Test failed with an attendance goal"}
+                {attendanceGoal, "Test failed with an attendance goal"},
+                {complexGoal, "Test failed with a complex goal"}
         };
     }
 
@@ -227,21 +251,8 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createGoalDataProvider")
     public void updateAssignmentTest(Goal goal, String msg) {
         Goal createdGoal = goalValidatingExecutor.create(student.getId(), goal, msg);
-
-        Goal updatedGoal;
-        if (goal instanceof BehaviorGoal) {
-            updatedGoal = new BehaviorGoal((BehaviorGoal)createdGoal);
-        } else if (goal instanceof AssignmentGoal) {
-            updatedGoal = new AssignmentGoal((AssignmentGoal)createdGoal);
-        } else if (goal instanceof CumulativeGradeGoal){
-            updatedGoal = new CumulativeGradeGoal((CumulativeGradeGoal)createdGoal);
-        } else if (goal instanceof AttendanceGoal ){
-            updatedGoal = new AttendanceGoal((AttendanceGoal)createdGoal);
-        } else {
-            updatedGoal = null;
-        }
-
-        updatedGoal.setName(localeServiceUtil.generateName());
+        
+        createdGoal.setName(localeServiceUtil.generateName());
         //PATCH the existing record with a new name.
         goalValidatingExecutor.update(student.getId(), createdGoal.getId(), goal, msg);
         itemsCreated++;

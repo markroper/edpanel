@@ -56,7 +56,7 @@ public class GoalAggregate extends ApiModel implements Serializable, IApiModel<G
     @Override
     public String toString() {
         return
-                "GOAL_AGGREGATE " + "\n"
+                "GoalAggregate " + "\n"
                         + "Id  : " + getId() + "\n"
                         + "Name: " + getName() + "\n"
                         + "GoalComponents: " + getGoalComponents();

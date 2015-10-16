@@ -23,13 +23,13 @@ public abstract class GoalComponent implements Serializable {
 
     private Student student;
     private GoalType componentType;
-    private Long modifier;
+    private Double modifier;
 
-    public Long getModifier() {
+    public Double getModifier() {
         return modifier;
     }
 
-    public void setModifier(Long modifier) {
+    public void setModifier(Double modifier) {
         this.modifier = modifier;
     }
 
@@ -53,7 +53,6 @@ public abstract class GoalComponent implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         GoalComponent that = (GoalComponent) o;
         return Objects.equals(student, that.student) &&
                 Objects.equals(modifier, that.modifier) &&
