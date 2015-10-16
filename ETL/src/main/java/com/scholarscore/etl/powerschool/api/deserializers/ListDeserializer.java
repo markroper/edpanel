@@ -22,7 +22,7 @@ import java.util.Optional;
  * Created by mattg on 7/15/15.
  */
 public abstract class ListDeserializer<T extends List, E> extends JsonDeserializer<T> {
-
+    private static final ObjectMapper mapper = new ObjectMapper();
     abstract String getEntityName();
 
     @Override
@@ -147,7 +147,6 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
 
     public static void main(String args[]) throws IOException {
         String json = FileUtils.readFileToString(new File("/home/mattg/dev/scholarscore/ETL/src/test/resources/staff.json"));
-        ObjectMapper mapper = new ObjectMapper();
         List staffs = mapper.readValue(json, Staffs.class);
         System.out.println(staffs);
     }

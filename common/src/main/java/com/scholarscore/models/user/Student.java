@@ -44,7 +44,6 @@ public class Student extends Person implements Serializable {
     //EthnicityRace
     private String federalRace;
     private String federalEthnicity;
-    private Long currentSchoolId;
     
     public Student() {
         
@@ -60,16 +59,15 @@ public class Student extends Person implements Serializable {
         this.socialSecurityNumber = student.socialSecurityNumber;
         this.federalRace = student.federalRace;
         this.federalEthnicity = student.federalEthnicity;
-        this.currentSchoolId = student.currentSchoolId;
     }
     
     public Student(String race, String ethnicity, Long currentSchoolId, Gender gender, String name, Long expectedGraduationYear) {
         this.federalRace = race;
         this.federalEthnicity = ethnicity;
-        this.currentSchoolId = currentSchoolId;
         this.gender = gender;
         this.name = name;
         this.projectedGraduationYear = expectedGraduationYear;
+        this.currentSchoolId = currentSchoolId;
     }
     
     @Override
@@ -100,9 +98,6 @@ public class Student extends Person implements Serializable {
             }
             if (null == getFederalEthnicity()) {
                 setFederalEthnicity(merge.getFederalEthnicity());
-            }
-            if(null == getCurrentSchoolId()) {
-                setCurrentSchoolId(merge.getCurrentSchoolId());
             }
             if(null == getUserId()) {
                 setUserId(merge.getUserId());
@@ -205,10 +200,6 @@ public class Student extends Person implements Serializable {
     public Long getCurrentSchoolId() {
         return currentSchoolId;
     }
-
-    public void setCurrentSchoolId(Long currentSchoolId) {
-        this.currentSchoolId = currentSchoolId;
-    }
     
     @Override
     @Transient
@@ -262,7 +253,7 @@ public class Student extends Person implements Serializable {
 
     @Override
     public String toString() {
-        return "Student{" +
+        return "Student{" + "(super: " + super.toString() + ")" +
                 ", mailingAddress=" + mailingAddress +
                 ", gender=" + gender +
                 ", birthDate=" + birthDate +

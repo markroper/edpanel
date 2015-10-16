@@ -17,6 +17,7 @@
 
     <import resource="classpath:/dataSource.xml"/>
     <import resource="classpath:/managers.xml"/>
+    <import resource="classpath:/services.xml"/>
     
     <mvc:interceptors>
         <bean class="com.scholarscore.api.interceptor.AuthenticationInterceptor" />
@@ -70,6 +71,7 @@
         <property name="goalManager" ref="goalManager"/>
         <property name="schoolDayManager" ref="schoolDayManager"/>
         <property name="attendanceManager" ref="attendanceManager"/>
+        <property name="uiAttributesManager" ref="uiAttributesManager"/>
     </bean>
 
 
