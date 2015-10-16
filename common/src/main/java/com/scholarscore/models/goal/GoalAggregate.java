@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Holder class for storing the list of goal components that belongs on a complexGoal
  * Created by cwallace on 10/14/2015.
  */
 public class GoalAggregate extends ApiModel implements Serializable, IApiModel<GoalAggregate> {

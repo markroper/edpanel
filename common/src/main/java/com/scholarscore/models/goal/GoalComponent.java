@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
+ * Abstract class defining functionality that must exists across a goal component.
  * Created by cwallace on 10/15/2015.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "componentType")
@@ -16,7 +17,8 @@ import java.util.Objects;
         @JsonSubTypes.Type(value = AttendanceComponent.class, name = "ATTENDANCE"),
         @JsonSubTypes.Type(value = ComplexComponent.class, name = "COMPLEX"),
         @JsonSubTypes.Type(value = CumulativeGradeComponent.class, name = "CUMULATIVE_GRADE"),
-        @JsonSubTypes.Type(value = AssignmentComponent.class, name = "ASSIGNMENT")
+        @JsonSubTypes.Type(value = AssignmentComponent.class, name = "ASSIGNMENT"),
+        @JsonSubTypes.Type(value = ConstantComponent.class, name = "CONSTANT")
 
 })
 public abstract class GoalComponent implements Serializable {

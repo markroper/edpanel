@@ -3,6 +3,8 @@ package com.scholarscore.models.goal;
 import java.util.Objects;
 
 /**
+ * Component indicating that the component is also a complex component and could be made up of several
+ * other commponents
  * Created by cwallace on 10/15/2015.
  */
 public class ComplexComponent extends  GoalComponent {

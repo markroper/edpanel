@@ -13,6 +13,8 @@ public class ConstantComponent extends GoalComponent {
 
     public ConstantComponent() {
         setComponentType(GoalType.CONSTANT);
+        //This should just be 1.
+        setModifier(1D);
     }
 
     public Double getInitialValue() {

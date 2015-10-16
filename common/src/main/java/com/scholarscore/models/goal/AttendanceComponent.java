@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Objects;
 
 /**
+ * Component for a complex goal that measures attendance in a particular class
  * Created by cwallace on 10/15/2015.
  */
 public class AttendanceComponent extends GoalComponent implements CalculatableAttendance {

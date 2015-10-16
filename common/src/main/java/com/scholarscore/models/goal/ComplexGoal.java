@@ -7,6 +7,8 @@ import javax.persistence.*;
 import java.util.Objects;
 
 /**
+ * Goal that can be made of an arbitrary number of components that
+ * each have their own modifier allowing for variable waiting
  * Created by cwallace on 10/14/2015.
  */
 

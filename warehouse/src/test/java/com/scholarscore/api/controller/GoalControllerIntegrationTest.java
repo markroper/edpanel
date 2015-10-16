@@ -182,8 +182,11 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         cumulativeGradeComponent.setModifier(4D);
         goalComponents.add(cumulativeGradeComponent);
 
-
-
+        //Constant Component
+        ConstantComponent constantComponent = new ConstantComponent();
+        constantComponent.setStudent(student);
+        constantComponent.setInitialValue(50D);
+        goalComponents.add(constantComponent);
 
 
         //Generate complex goal

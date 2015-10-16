@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Objects;
 
 /**
+ * Component for complex goal that is for behavior goal.
  * Created by cwallace on 10/14/2015.
  */
 public class BehaviorComponent extends GoalComponent implements CalculatableBehavior {
