@@ -358,6 +358,7 @@ CREATE TABLE `scholar_warehouse`.`goal` (
   `start_date` datetime DEFAULT NULL COMMENT ' Certain goals occur over a time range, this indicates that starting point',
   `end_date` datetime DEFAULT NULL COMMENT ' Certain goals occur over a time range, this indicates the end date',
   `behavior_category` varchar(45) DEFAULT NULL COMMENT 'In behavior goals we need a more specific category. Corresponds to enum BehaviorType so show what type of behavior goal',
+  `goal_aggregate`  BLOB DEFAULT NULL COMMENT 'Blob to store the JSON needed for formula goals',
   `name` varchar(45) NOT NULL COMMENT 'The name of the goal',
 PRIMARY KEY (`goal_id`),
   CONSTRAINT `fk_student_goal`
@@ -375,7 +376,7 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`ui_attributes` (
     `ui_attributes_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a UI Attributes bag',
     `school_fk` BIGINT UNSIGNED NOT NULL UNIQUE COMMENT 'Unique foreign key to the school table',
-    `attributes` VARCHAR(32768) NULL COMMENT 'Client-side attributes as unmanaged JSON',
+    `attributes` BLOB NULL COMMENT 'Client-side attributes as unmanaged JSON',
     PRIMARY KEY (`ui_attributes_id`),
     FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
         ON DELETE CASCADE

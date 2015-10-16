@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.scholarscore.models.*;
+import com.scholarscore.models.goal.*;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 
