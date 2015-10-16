@@ -1,6 +1,7 @@
 package com.scholarscore.api.persistence.mysql;
 
-import com.scholarscore.models.*;
+import com.scholarscore.models.goal.AssignmentGoal;
+import com.scholarscore.models.goal.BehaviorGoal;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertNotNull;

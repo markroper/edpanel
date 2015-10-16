@@ -41,7 +41,7 @@ public class UiAttributes implements Serializable {
         this.school = school;
     }
     
-    @Column(name = HibernateConsts.UI_ATTRIBUTES)
+    @Column(name = HibernateConsts.UI_ATTRIBUTES, columnDefinition="blob")
     @Convert(converter = JsonAttributes.JsonAttributesConverter.class)
     public JsonAttributes getAttributes() {
         return attributes;

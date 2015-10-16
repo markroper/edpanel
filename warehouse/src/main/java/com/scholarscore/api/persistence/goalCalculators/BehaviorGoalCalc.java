@@ -2,7 +2,8 @@ package com.scholarscore.api.persistence.goalCalculators;
 
 import com.scholarscore.api.persistence.BehaviorPersistence;
 import com.scholarscore.models.Behavior;
-import com.scholarscore.models.BehaviorGoal;
+import com.scholarscore.models.goal.BehaviorGoal;
+import com.scholarscore.models.goal.CalculatableBehavior;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
  * Created by cwallace on 9/20/2015.
  */
 
-public class BehaviorGoalCalc implements GoalCalc<BehaviorGoal> {
+public class BehaviorGoalCalc implements GoalCalc<CalculatableBehavior> {
 
 
     private BehaviorPersistence behaviorPersistence;
@@ -23,7 +24,7 @@ public class BehaviorGoalCalc implements GoalCalc<BehaviorGoal> {
         this.behaviorPersistence = behaviorPersistence;
     }
 
-    public Double calculateGoal(BehaviorGoal goal) {
+    public Double calculateGoal(CalculatableBehavior goal) {
         Collection<Behavior> studentBehaviors = behaviorPersistence.selectAll(goal.getStudent().getId());
         //Make sure behavior category matches and it is within the dates specified.
         Collection<Behavior> relevantBehaviors = studentBehaviors.stream().filter(bg -> bg.getBehaviorCategory().equals(goal.getBehaviorCategory()))
