@@ -9,6 +9,10 @@ import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.*;
 
+import com.scholarscore.models.goal.AssignmentGoal;
+import com.scholarscore.models.goal.CumulativeGradeGoal;
+import com.scholarscore.models.goal.Goal;
+import com.scholarscore.models.goal.GoalType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
