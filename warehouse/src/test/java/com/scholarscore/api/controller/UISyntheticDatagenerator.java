@@ -56,11 +56,8 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                  "}," +
                  "\"homework\":{" +
                         "\"name\":\"Attendance\"," +
-                        "\"isTemporal\":true," +
-                        "\"thresholdChar\":\"%\"," +
-                        "\"green\":92," +
-                        "\"yellow\":89," +
-                        "\"period\":\"term\"" +
+                        "\"isTemporal\":false," +
+                        "\"thresholdChar\":\"%\"" +
                  "}," +
                  "\"gpa\":{" +
                         "\"name\":\"Attendance\"," +
