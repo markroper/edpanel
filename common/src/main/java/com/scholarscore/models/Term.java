@@ -161,7 +161,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         }
 
         @Override
-        public TermBuilder me() {
+        protected TermBuilder me() {
             return this;
         }
 

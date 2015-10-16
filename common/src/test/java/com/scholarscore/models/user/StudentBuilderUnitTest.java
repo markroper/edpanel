@@ -58,8 +58,11 @@ public class StudentBuilderUnitTest extends AbstractBuilderUnitTest<Student> {
         fullStudent.setFederalRace(federalRace);
         fullStudent.setFederalEthnicity(federalEthnicity);
         fullStudent.setCurrentSchoolId(currentSchoolId);
+        fullStudent.setHomePhone(homePhone);
+        fullStudent.setUsername(username);
+        fullStudent.setPassword(password);
 
-        Student fullTeacherByBuilder = new Student.StudentBuilder().
+        Student fullStudentBuilder = new Student.StudentBuilder().
                 withId(id).
                 withSourceSystemId(sourceSystemId).
                 withMailingAddress(mailingAddress).
@@ -72,11 +75,14 @@ public class StudentBuilderUnitTest extends AbstractBuilderUnitTest<Student> {
                 withFederalEthnicity(federalEthnicity).
                 withFederalRace(federalRace).
                 withCurrentSchoolId(currentSchoolId).
+                withHomePhone(homePhone).
+                withUsername(username).
+                withPassword(password).
                 build();
 
         return new Object[][]{
                 {"Empty student", emptyTeacherByBuilder, emptyTeacher},
-                {"Full student", fullTeacherByBuilder, fullStudent}
+                {"Full student", fullStudentBuilder, fullStudent}
         };
     }
 }

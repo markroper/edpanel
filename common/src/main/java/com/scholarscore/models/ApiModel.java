@@ -89,7 +89,7 @@ public abstract class ApiModel implements Serializable {
         private Long id;
         protected String name;
 
-        public abstract U me();
+        protected abstract U me();
 
         public abstract T getInstance();
 

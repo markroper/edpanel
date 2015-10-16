@@ -119,7 +119,7 @@ public class GradeFormula implements Serializable {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class GradeFormulaBuilder{
+    public static class GradeFormulaBuilder{
         Map<AssignmentType, Integer> assignmentTypeWeights;
 
         public GradeFormulaBuilder(){

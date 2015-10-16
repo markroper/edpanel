@@ -203,7 +203,7 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         }
 
         @Override
-        public SchoolYearBuilder me() {
+        protected SchoolYearBuilder me() {
             return this;
         }
 

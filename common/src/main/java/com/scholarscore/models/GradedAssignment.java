@@ -73,7 +73,7 @@ public class GradedAssignment extends Assignment implements Serializable {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class GradedAssignmentBuilder extends AssignmentBuilder<GradedAssignment>{
+    public static class GradedAssignmentBuilder extends AssignmentBuilder<GradedAssignmentBuilder, GradedAssignment>{
         private Date assignedDate;
 
         public GradedAssignmentBuilder withAssignedDate(final Date assignedDate){
@@ -85,6 +85,11 @@ public class GradedAssignment extends Assignment implements Serializable {
             GradedAssignment gradedAssignment = super.build();
             gradedAssignment.setAssignedDate(assignedDate);
             return gradedAssignment;
+        }
+
+        @Override
+        protected GradedAssignmentBuilder me() {
+            return this;
         }
 
         @Override

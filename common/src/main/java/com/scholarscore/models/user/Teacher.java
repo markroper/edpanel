@@ -1,11 +1,9 @@
 package com.scholarscore.models.user;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.Address;
-import com.scholarscore.models.Gender;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IStaff;
 
@@ -64,14 +62,14 @@ public class Teacher extends Person implements Serializable, IStaff<Teacher> {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public static class TeacherBuilder extends StaffBuilder<TeacherBuilder, Teacher> {
+    public static class TeacherBuilder extends PersonBuilder<TeacherBuilder, Teacher> {
 
         public Teacher build(){
             return super.build();
         }
 
         @Override
-        public TeacherBuilder me() {
+        protected TeacherBuilder me() {
             return this;
         }
 

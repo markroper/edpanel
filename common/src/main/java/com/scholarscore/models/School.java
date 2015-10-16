@@ -244,7 +244,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         }
 
         @Override
-        public SchoolBuilder me() {
+        protected SchoolBuilder me() {
             return this;
         }
 

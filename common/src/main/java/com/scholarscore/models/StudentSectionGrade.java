@@ -83,6 +83,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
 
     public void setSection(Section section) {
         this.section = section;
+        section.addStudentSectionGrade(this);
     }
 
     @ManyToOne(optional = true, fetch=FetchType.LAZY)
@@ -181,7 +182,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class StudentSectionGradeBuilder extends ApiModelBuilder<StudentSectionGrade>{
+    public static class StudentSectionGradeBuilder extends ApiModelBuilder<StudentSectionGradeBuilder, StudentSectionGrade>{
         protected Boolean complete;
         protected Double grade;
         protected Section section;
@@ -212,8 +213,14 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
             sectionGrade.setComplete(complete);
             sectionGrade.setGrade(grade);
             sectionGrade.setSection(section);
+            section.addStudentSectionGrade(sectionGrade);
             sectionGrade.setStudent(student);
             return sectionGrade;
+        }
+
+        @Override
+        protected StudentSectionGradeBuilder me() {
+            return this;
         }
 
         @Override

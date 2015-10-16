@@ -61,10 +61,15 @@ public class AttendanceAssignment extends Assignment implements Serializable {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class AttendanceAssignmentBuilder extends AssignmentBuilder<AttendanceAssignment>{
+    public static class AttendanceAssignmentBuilder extends AssignmentBuilder<AttendanceAssignmentBuilder, AttendanceAssignment>{
 
         public AttendanceAssignment build(){
             return super.build();
+        }
+
+        @Override
+        protected AttendanceAssignmentBuilder me() {
+            return this;
         }
 
         @Override

@@ -104,7 +104,7 @@ public abstract class Person extends User {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public static abstract class StaffBuilder<U extends StaffBuilder<U, T>,T extends Staff> extends UserBuilder<U,T>{
+    public static abstract class PersonBuilder<U extends PersonBuilder<U, T>,T extends Person> extends UserBuilder<U,T>{
         private String sourceSystemId;
         private Address homeAddress;
         private String homePhone;

@@ -198,7 +198,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public abstract class GoalBuilder<T extends Goal> extends ApiModelBuilder<T>{
+    public static abstract class GoalBuilder<U extends GoalBuilder<U, T>, T extends Goal> extends ApiModelBuilder<U,T>{
 
         private Student student;
         private Teacher teacher;
@@ -207,34 +207,34 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         private Boolean approved;
         private GoalType goalType;
 
-        public GoalBuilder withStudent(final Student student){
+        public U withStudent(final Student student){
             this.student = student;
-            return this;
+            return me();
         }
 
-        public GoalBuilder withTeacher(final Teacher teacher){
+        public U withTeacher(final Teacher teacher){
             this.teacher = teacher;
-            return this;
+            return me();
         }
 
-        public GoalBuilder withDesiredValue(final Double desiredValue){
+        public U withDesiredValue(final Double desiredValue){
             this.desiredValue = desiredValue;
-            return this;
+            return me();
         }
 
-        public GoalBuilder withCalculatedValue(final Double calculatedValue){
+        public U withCalculatedValue(final Double calculatedValue){
             this.calculatedValue = calculatedValue;
-            return this;
+            return me();
         }
 
-        public GoalBuilder withApproved(final Boolean approved){
+        public U withApproved(final Boolean approved){
             this.approved = approved;
-            return this;
+            return me();
         }
 
-        public GoalBuilder withGoalType(final GoalType goalType){
+        public U withGoalType(final GoalType goalType){
             this.goalType = goalType;
-            return this;
+            return me();
         }
 
         public T build(){

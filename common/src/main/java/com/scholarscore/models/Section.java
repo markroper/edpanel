@@ -5,41 +5,25 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
-
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
+import javax.persistence.*;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * A Section is a temporal instance of a Course.  Where a course defines that which is to be taught, a Section has
  * a reference to a course, and in addition, a start and end date, a set of enrolled students, a room, a grade book,
  * and so on.
- * 
+ *
  * @author markroper
  *
  */
@@ -48,7 +32,7 @@ import java.util.Set;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Section extends ApiModel implements Serializable, IApiModel<Section> {
-    private static final ObjectMapper MAPPER = new ObjectMapper(); 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     protected Date startDate;
     protected Date endDate;
     protected String room;
@@ -61,19 +45,24 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected transient List<Student> enrolledStudents;
     protected transient List<Assignment> assignments;
     protected List<StudentSectionGrade> studentSectionGrades;
-    protected Set<Teacher> teachers;
-    
+    protected List<Teacher> teachers;
+
     public Section() {
         super();
+        enrolledStudents = Lists.newArrayList();
+        assignments = Lists.newArrayList();
+        studentSectionGrades = Lists.newArrayList();
+        teachers = Lists.newArrayList();
     }
-    
+
     public Section(Date startDate, Date endDate, String room, GradeFormula gradeFormula) {
+        this();
         this.startDate = startDate;
         this.endDate = endDate;
         this.room = room;
         this.gradeFormula = gradeFormula;
     }
-    
+
     public Section(Section sect) {
         super(sect);
         course = sect.course;
@@ -87,16 +76,20 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
 
     @ManyToMany(fetch = FetchType.EAGER)
     @Cascade(CascadeType.ALL)
-    @JoinTable(name = HibernateConsts.TEACHER_SECTION_TABLE, 
-        joinColumns = { @JoinColumn(name = HibernateConsts.SECTION_FK, nullable = false, updatable = false) }, 
-        inverseJoinColumns = { @JoinColumn(name = HibernateConsts.TEACHER_FK, nullable = false, updatable = false) })
+    @JoinTable(name = HibernateConsts.TEACHER_SECTION_TABLE,
+            joinColumns = { @JoinColumn(name = HibernateConsts.SECTION_FK, nullable = false, updatable = false) },
+            inverseJoinColumns = { @JoinColumn(name = HibernateConsts.TEACHER_FK, nullable = false, updatable = false) })
     @Fetch(FetchMode.JOIN)
-    public Set<Teacher> getTeachers() {
+    public List<Teacher> getTeachers() {
         return teachers;
     }
 
-    public void setTeachers(Set<Teacher> teachers) {
+    public void setTeachers(List<Teacher> teachers) {
         this.teachers = teachers;
+    }
+
+    public void addTeacher(Teacher teacher) {
+        this.teachers.add(teacher);
     }
 
     @Id
@@ -163,7 +156,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     public void setRoom(String room) {
         this.room = room;
     }
-    
+
     @JsonIgnore
     @Column(name = HibernateConsts.SECTION_GRADE_FORMULA)
     public String getGradeFormulaString() {
@@ -194,7 +187,11 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     public void setEnrolledStudents(List<Student> enrolledStudents) {
         this.enrolledStudents = enrolledStudents;
     }
-    
+
+    public void addEnrolledStudent(Student enrolledStudent){
+        enrolledStudents.add(enrolledStudent);
+    }
+
     @OneToMany(mappedBy = "section", fetch=FetchType.LAZY)
     @Cascade(CascadeType.SAVE_UPDATE)
     @Fetch(FetchMode.JOIN)
@@ -206,6 +203,11 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     @JsonIgnore
     public void setStudentSectionGrades(List<StudentSectionGrade> grades) {
         this.studentSectionGrades = grades;
+    }
+
+    @JsonIgnore
+    public void addStudentSectionGrade(StudentSectionGrade grade) {
+        this.studentSectionGrades.add(grade);
     }
 
     public Student findEnrolledStudentById(Long id) {
@@ -225,7 +227,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     public List<Assignment> getAssignments() {
         return assignments;
     }
-    
+
     public Assignment findAssignmentById(Long id) {
         Assignment assignment = null;
         if(null != id && null != assignments && !assignments.isEmpty()) {
@@ -241,6 +243,10 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
 
     public void setAssignments(List<Assignment> assignments) {
         this.assignments = assignments;
+    }
+
+    public void addAssignment(Assignment assignment) {
+        this.assignments.add(assignment);
     }
 
     @Transient
@@ -292,15 +298,15 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             studentSectionGrades = mergeFrom.studentSectionGrades;
         }
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if(!super.equals(obj)) {
             return false;
         }
         final Section other = (Section) obj;
-        return Objects.equals(this.course, other.course) && 
-                Objects.equals(this.startDate, other.startDate) && 
+        return Objects.equals(this.course, other.course) &&
+                Objects.equals(this.startDate, other.startDate) &&
                 Objects.equals(this.endDate, other.endDate) &&
                 Objects.equals(this.room, other.room) &&
                 Objects.equals(this.enrolledStudents, other.enrolledStudents) &&
@@ -308,10 +314,10 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 Objects.equals(this.studentSectionGrades, other.studentSectionGrades) &&
                 Objects.equals(this.gradeFormula, other.gradeFormula);
     }
-    
+
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(course, startDate, endDate, 
+        return 31 * super.hashCode() + Objects.hash(course, startDate, endDate,
                 room, enrolledStudents, assignments, gradeFormula, studentSectionGrades);
     }
 
@@ -320,7 +326,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class SectionBuilder extends ApiModelBuilder<Section> {
+    public static class SectionBuilder extends ApiModelBuilder<SectionBuilder, Section> {
 
         protected Date startDate;
         protected Date endDate;
@@ -332,13 +338,13 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         protected transient List<Student> enrolledStudents;
         protected transient List<Assignment> assignments;
         protected List<StudentSectionGrade> studentSectionGrades;
-        protected Set<Teacher> teachers;
+        protected List<Teacher> teachers;
 
         public SectionBuilder(){
-            enrolledStudents = Lists.newLinkedList();
-            assignments = Lists.newLinkedList();
-            studentSectionGrades = Lists.newLinkedList();
-            teachers = Sets.newHashSet();
+            enrolledStudents = Lists.newArrayList();
+            assignments = Lists.newArrayList();
+            studentSectionGrades = Lists.newArrayList();
+            teachers = Lists.newArrayList();
         }
 
         public SectionBuilder withStartDate(final Date startDate){
@@ -433,9 +439,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         }
 
         @Override
+        protected SectionBuilder me() {
+            return this;
+        }
+
+        @Override
         public Section getInstance() {
             return new Section();
         }
     }
-    
+
 }
