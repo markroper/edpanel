@@ -39,8 +39,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
         UiAttributes attrs = new UiAttributes();
         attrs.setSchool(school);
         try {
-            attrs.setAttributes(new JsonAttributes("{\"attributes\":{" +
-               "\"jsonNode\":{" +
+            attrs.setAttributes(new JsonAttributes("{" +
                  "\"attendance\":{" +
                         "\"name\":\"Attendance\"," +
                         "\"isTemporal\":true," +
@@ -72,8 +71,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                         "\"green\":3.3," +
                         "\"yellow\":2.8" +
                  "}" +
-               "}" +
-              "}}"));
+               "}"));
         } catch (IOException e) {
             Assert.fail("failed to parse UI attrs");
         }
