@@ -35,6 +35,7 @@ public class BehaviorGoal extends Goal {
     private BehaviorCategory behaviorCategory;
 
     public BehaviorGoal() {
+        super();
         setGoalType(GoalType.BEHAVIOR);
     }
 
@@ -85,6 +86,9 @@ public class BehaviorGoal extends Goal {
             }
             if (null == endDate) {
                 this.endDate = mergeFromBehavior.endDate;
+            }
+            if (null == behaviorCategory) {
+                this.behaviorCategory = mergeFromBehavior.behaviorCategory;
             }
         }
 

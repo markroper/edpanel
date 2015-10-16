@@ -39,6 +39,17 @@ public class AssignmentGoal extends Goal {
     }
 
     @Override
+    public void mergePropertiesIfNull(Goal mergeFrom) {
+        super.mergePropertiesIfNull(mergeFrom);
+        if (mergeFrom instanceof AssignmentGoal) {
+            AssignmentGoal mergeFromBehavior = (AssignmentGoal)mergeFrom;
+            if (null == this.parentId) {
+                this.parentId = mergeFromBehavior.parentId;
+            }
+        }
+    }
+    
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
