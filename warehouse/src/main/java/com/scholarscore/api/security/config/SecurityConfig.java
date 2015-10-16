@@ -8,10 +8,13 @@ import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.util.RoleConstants;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -19,6 +22,7 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -36,6 +40,7 @@ import javax.sql.DataSource;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 
 /**
  * Use MVC Security with JDBC Authentication as oppose to static authentication using username/password
@@ -70,12 +75,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String LOGIN_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/login";
     private static final String QUERY_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/schools/*/queries/results";
     private static final String LOGOUT_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/logout";
+    private static final String CONFIRM_EMAIL_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/users/*/validation/email/*";
+    private static final String CONFIRM_PHONE_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/users/*/validation/phone/*";
+    private static final String INITIATE_CHANGE_PASSWORD_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/users/requestPasswordReset/*";
+    private static final String CHANGE_PASSWORD_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/users/passwordReset/*/*";
     private static final String ACCESS_DENIED_JSON = "{\"message\":\"You are not privileged to request this resource.\","
             + " \"access-denied\":true,\"cause\":\"AUTHORIZATION_FAILURE\"}";
     private static final String UNAUTHORIZED_JSON = "{\"message\":\"Authentication is required to access this resource.\","
             + " \"access-denied\":true,\"cause\":\"NOT AUTHENTICATED\"}";
     private static final String INVALID_CREDENTIALS_JSON = "{\"error\":\"Invalid credentials supplied\"}";
 
+    private static final ObjectMapper mapper = new ObjectMapper();
     /**
      * Adds CORS headers to the HTTP response provided.
      * 
@@ -84,7 +94,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public static void addCorsHeaders(HttpServletResponse response) {
         //TODO: move the allow-origin host to a spring injected config file
         response.setHeader("Access-Control-Allow-Origin", "https://localhost:3000");
-        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PATCH, PUT");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
@@ -107,6 +117,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService customUserDetailService;
 
     @Autowired
+    private OneTimePassAuthProvider oneTimePassAuthProvider;
+    
+    @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication()
                 .dataSource(dataSource)
@@ -114,6 +127,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .userDetailsService(customUserDetailService);
     }
 
+    @Bean(name="authenticationManager")
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+    
     /**
      * Let’s examine the configure method step by step.
      * 
@@ -170,7 +189,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             loginProcessingUrl(LOGIN_ENDPOINT);
         http.apply(formLogin);
         
+        
+        
         http.
+//            addFilterBefore(new )
             addFilterBefore(new CustomUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class).
             //Require https:
             requiresChannel().
@@ -194,23 +216,42 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             accessDeniedHandler(new CustomAccessDeniedHandler()).
             authenticationEntryPoint(new CustomAuthenticationEntryPoint()).
             and().
-            authorizeRequests().
+                // also check user's password against one-time password (which is used for initial setup and password reset flow)
+                        authenticationProvider(oneTimePassAuthProvider).
+                authorizeRequests().
+            and().
+        authorizeRequests().
             antMatchers(HttpMethod.POST, LOGIN_ENDPOINT).permitAll().
             antMatchers(HttpMethod.OPTIONS, LOGIN_ENDPOINT).permitAll().
             antMatchers(HttpMethod.OPTIONS, "/**").permitAll().
-            antMatchers(HttpMethod.POST, LOGOUT_ENDPOINT).authenticated().
-            antMatchers(HttpMethod.GET, "/**").authenticated().
-            antMatchers(HttpMethod.POST, QUERY_ENDPOINT).hasAnyRole(
-                    RoleConstants.ADMINISTRATOR, 
-                    RoleConstants.TEACHER, 
-                    RoleConstants.STUDENT, 
-                    RoleConstants.GUARDIAN, 
-                    RoleConstants.SUPER_ADMINISTRATOR).
+            antMatchers(HttpMethod.GET, CONFIRM_EMAIL_ENDPOINT).permitAll().
+            antMatchers(HttpMethod.GET, CONFIRM_PHONE_ENDPOINT).permitAll().
+            antMatchers(HttpMethod.GET, INITIATE_CHANGE_PASSWORD_ENDPOINT).permitAll().
+            antMatchers(HttpMethod.PUT, CHANGE_PASSWORD_ENDPOINT).hasAnyRole(append(AUTHENTICATED, RoleConstants.ROLE_MUST_CHANGE_PASSWORD)).
+            antMatchers(HttpMethod.POST, LOGOUT_ENDPOINT).hasAnyRole(AUTHENTICATED).
+            antMatchers(HttpMethod.GET, "/**").hasAnyRole(AUTHENTICATED).
+            antMatchers(HttpMethod.POST, QUERY_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.POST, "/**").hasRole(RoleConstants.ADMINISTRATOR).
             antMatchers(HttpMethod.DELETE, "/**").hasRole(RoleConstants.ADMINISTRATOR).
             antMatchers(HttpMethod.PUT, "/**").hasRole(RoleConstants.ADMINISTRATOR).
             antMatchers(HttpMethod.PATCH, "/**").hasRole(RoleConstants.ADMINISTRATOR).
             anyRequest().denyAll();
+    }
+    
+    // use this instead of 'authenticated()' to exclude special-purpose roles
+    // like ROLE_MUST_CHANGE_PASSWORD
+    private static final String[] AUTHENTICATED = { 
+            RoleConstants.ADMINISTRATOR,
+            RoleConstants.TEACHER,
+            RoleConstants.STUDENT,
+            RoleConstants.GUARDIAN,
+            RoleConstants.SUPER_ADMINISTRATOR };
+
+    private static <T> T[] append(T[] arr, T lastElement) {
+        final int N = arr.length;
+        arr = java.util.Arrays.copyOf(arr, N+1);
+        arr[N] = lastElement;
+        return arr;
     }
 
     private static class CustomLogoutHandler implements LogoutHandler {
@@ -301,7 +342,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                             Authentication authentication) throws ServletException, IOException {
             SecurityConfig.addCorsHeaders(response);
-            ObjectMapper mapper = new ObjectMapper();
             PrintWriter out = response.getWriter();
 
             // This mode should be the only active mode at this point, but in the event the other
@@ -311,13 +351,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             if (authentication.getPrincipal() instanceof UserDetailsProxy) {
                 UserDetailsProxy proxyUser = (UserDetailsProxy)authentication.getPrincipal();
                 com.scholarscore.models.user.User user = proxyUser.getUser();
-                // don't send the password value to the client
+                // don't include any of these user details
                 user.setPassword(null);
+                user.setOneTimePass(null);
+                user.setOneTimePassCreated(null);
                 String value = mapper.writeValueAsString(user);
                 out.print(value);
-            } else {
+            } else if (authentication.getPrincipal() instanceof User) {
                 User principal = (User)authentication.getPrincipal();
                 out.print(mapper.writeValueAsString(principal));
+            } else {
+                logger.error("authentication.getPrincipal() is not instanceof UserDetailsProxy or User");
+                throw new ClassCastException("authentication.getPrincipal() is not instanceof UserDetailsProxy or User");
             }
             out.flush();
             out.close(); 

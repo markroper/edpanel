@@ -1,16 +1,9 @@
 package com.scholarscore.api.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.api.util.SchoolDataFactory;
-import com.scholarscore.models.Assignment;
-import com.scholarscore.models.Behavior;
-import com.scholarscore.models.Course;
-import com.scholarscore.models.School;
-import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentAssignment;
-import com.scholarscore.models.StudentSectionGrade;
-import com.scholarscore.models.Term;
+import com.scholarscore.models.*;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.SchoolDay;
@@ -18,8 +11,10 @@ import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -32,6 +27,7 @@ import java.util.*;
 @Test(groups = { "datagen" })
 public class UISyntheticDatagenerator extends IntegrationBase {
     School school;
+    private static final ObjectMapper mapper = new ObjectMapper();
     
     public void seedDatabase() {
         authenticate();
@@ -39,6 +35,50 @@ public class UISyntheticDatagenerator extends IntegrationBase {
         //Create school
         school = schoolValidatingExecutor.create(
                 SchoolDataFactory.generateSchool(), "Create base school");
+        
+        //create UI attributes for school
+        UiAttributes attrs = new UiAttributes();
+        attrs.setSchool(school);
+        try {
+            attrs.setAttributes(new JsonAttributes("{\"attributes\":{" +
+               "\"jsonNode\":{" +
+                 "\"attendance\":{" +
+                        "\"name\":\"Attendance\"," +
+                        "\"isTemporal\":true," +
+                        "\"thresholdChar\":\"#\"," +
+                        "\"green\":3," +
+                        "\"yellow\":6," +
+                        "\"period\":\"year\"" +
+                 "}," +
+                 "\"behavior\":{" +
+                        "\"name\":\"Attendance\"," +
+                        "\"isTemporal\":true," +
+                        "\"thresholdChar\":\"#\"," +
+                        "\"period\":\"week\"," +
+                        "\"green\":35," +
+                        "\"yellow\":55" +
+                 "}," +
+                 "\"homework\":{" +
+                        "\"name\":\"Attendance\"," +
+                        "\"isTemporal\":true," +
+                        "\"thresholdChar\":\"%\"," +
+                        "\"green\":92," +
+                        "\"yellow\":89," +
+                        "\"period\":\"term\"" +
+                 "}," +
+                 "\"gpa\":{" +
+                        "\"name\":\"Attendance\"," +
+                        "\"isTemporal\":false," +
+                        "\"thresholdChar\":\"#\"," +
+                        "\"green\":3.3," +
+                        "\"yellow\":2.8" +
+                 "}" +
+               "}" +
+              "}}"));
+        } catch (IOException e) {
+            Assert.fail("failed to parse UI attrs");
+        }
+        attrs = uiAttributesValidatingExecutor.create(school.getId(), attrs, "attrs to create");
         
         //Create teachers
         List<Teacher> createdTeachers = new ArrayList<Teacher>();

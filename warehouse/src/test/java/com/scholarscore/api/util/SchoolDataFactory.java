@@ -89,10 +89,15 @@ public class SchoolDataFactory {
         students.add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Alexander Panagopalous", 2017L));
         students.add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Claire Martinez", 2016L));
         students.add(new Student(BLACK, PACIFIC_ISLANDER, currentSchoolId, Gender.MALE, "Otto Porter", 2016L));
+        int i = 0;
         for(Student s : students) {
             s.setUsername(s.getName().split("\\s+")[0]);
             s.setPassword("password");
             s.setEnabled(true);
+            if(i % 3 == 0) {
+                s.setEnabled(false);
+            }
+            i++;
         }
         return students;
     }

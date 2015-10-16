@@ -49,6 +49,7 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     private final String clientSecret;
     private final String clientId;
 
+    private static final ObjectMapper mapper = new ObjectMapper();
     private OAuthResponse oauthToken;
 
     public PowerSchoolClient(String clientId, String clientSecret, URI uri) {
@@ -122,7 +123,6 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
             setupCommonHeaders(get);
             get.setURI(uri.resolve(path));
             String json = getJSON(get);
-            ObjectMapper mapper = new ObjectMapper();
             return mapper.readValue(json, clazz);
         } catch (IOException e) {
             throw new HttpClientException(e);

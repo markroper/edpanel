@@ -5,23 +5,19 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.scholarscore.api.ApiConsts;
-import com.scholarscore.api.manager.UserManager;
+import com.scholarscore.models.user.ContactType;
 import com.scholarscore.models.user.User;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.validation.Valid;
-
-import java.util.List;
 
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/users")
@@ -36,7 +32,15 @@ public class UserController extends BaseController {
 	        method = RequestMethod.GET, 
 	        produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
-	public @ResponseBody ResponseEntity getAll() {
+	public @ResponseBody ResponseEntity getAll(
+	        @RequestParam(value = "schoolId") Long schoolId,
+            @RequestParam(value = "enabled") Boolean enabled) {
+	    if(null != schoolId) {
+	        if(null != enabled) {
+	            return respond(pm.getUserManager().getAllUsersInSchool(schoolId, enabled));
+	        }
+	        return respond(pm.getUserManager().getAllUsersInSchool(schoolId));
+	    }
 	    return respond(pm.getUserManager().getAllUsers());
 	}
 
@@ -95,7 +99,7 @@ public class UserController extends BaseController {
 	public @ResponseBody ResponseEntity update(
 	        @ApiParam(name = "userId", required = true, value = "User ID")
 	        @PathVariable(value="userId") Long userId,
-	        @RequestBody @Valid User user) {
+	        @RequestBody User user) {
 	    return respond(pm.getUserManager().updateUser(userId, user));
 	}
 	
@@ -112,6 +116,77 @@ public class UserController extends BaseController {
 	        @PathVariable(value="userId") Long userId) {
 	    return respond(pm.getUserManager().deleteUser(userId));
 	}
-	
 
+	@ApiOperation(
+			value = "Start validation for phone contact info",
+			response = Void.class)
+	@RequestMapping(
+			value = "/{userId}/validation/{contactType}",
+			method = RequestMethod.POST,
+			produces = { JSON_ACCEPT_HEADER })
+	@SuppressWarnings("rawtypes")
+	public @ResponseBody ResponseEntity startContactValidation(
+			@ApiParam(name = "userId", required = true, value = "User ID")
+			@PathVariable(value="userId") Long userId,
+			@ApiParam(name = "contactType", required = true, value = "Contact Type")
+			@PathVariable(value="contactType") ContactType contactType)
+	{
+		return respond(pm.getUserManager().startContactValidation(userId, contactType));
+	}
+
+	@ApiOperation(
+			value = "Complete validation for contact info",
+			response = Void.class)
+	@RequestMapping(
+			value = "/{userId}/validation/{contactType}/{confirmCode}",
+			// This is made a GET so that it can be accessed directly as a link
+			// from the user's email
+			method = RequestMethod.GET,
+			produces = { JSON_ACCEPT_HEADER })
+	@SuppressWarnings("rawtypes")
+	public @ResponseBody ResponseEntity confirmContactValidation(
+			@ApiParam(name = "userId", required = true, value = "User ID")
+			@PathVariable(value = "userId") Long userId,
+			@ApiParam(name = "contactType", required = true, value = "Contact Type")
+			@PathVariable(value="contactType") ContactType contactType,
+			@ApiParam(name = "confirmCode", required = true, value = "Validation code sent to phone")
+			@PathVariable(value = "confirmCode") String confirmCode
+	) {
+		return respond(pm.getUserManager().confirmContactValidation(userId, contactType, confirmCode));
+	}
+
+	@ApiOperation(
+			value = "Start password reset",
+			response = Void.class)
+	@RequestMapping(
+			value = "/requestPasswordReset/{username}",
+			// This is made a GET so that it can be accessed directly as a link
+			// from the user's email
+			method = RequestMethod.POST,
+			produces = { JSON_ACCEPT_HEADER })
+	@SuppressWarnings("rawtypes")
+	public @ResponseBody ResponseEntity startPasswordReset(
+			@ApiParam(name = "username", required = true, value = "username")
+			@PathVariable(value = "username") String username
+	) {
+		return respond(pm.getUserManager().startPasswordReset(username));
+	}
+
+	@ApiOperation(
+			value = "Set new password",
+			response = Void.class)
+	@RequestMapping(
+			value = "/passwordReset/{userId}/{password}",
+			method = RequestMethod.PUT,
+			produces = { JSON_ACCEPT_HEADER })
+	@SuppressWarnings("rawtypes")
+	public @ResponseBody ResponseEntity submitPassword(
+			@ApiParam(name = "userId", required = true, value = "User ID")
+			@PathVariable(value = "userId") Long userId,
+			@ApiParam(name = "password", required = true, value = "password")
+			@PathVariable(value = "password") String password
+	) {
+		return respond(pm.getUserManager().resetPassword(userId, password) );
+	}
+	
 }

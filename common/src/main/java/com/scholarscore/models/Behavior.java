@@ -78,6 +78,12 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     @Override
     public void mergePropertiesIfNull(Behavior mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
+        if (null == this.remoteSystem) {
+            this.remoteSystem = mergeFrom.remoteSystem;
+        }
+        if (null == this.remoteBehaviorId) {
+            this.remoteBehaviorId = mergeFrom.remoteBehaviorId;
+        }
         if (null == this.remoteStudentId) {
             this.remoteStudentId = mergeFrom.remoteStudentId;
         }
@@ -92,6 +98,12 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
         }
         if (null == roster) {
             this.roster = mergeFrom.roster;
+        }
+        if (null == student) {
+            this.student = mergeFrom.student;
+        }
+        if (null == teacher) {
+            this.teacher = mergeFrom.teacher;
         }
     }
 

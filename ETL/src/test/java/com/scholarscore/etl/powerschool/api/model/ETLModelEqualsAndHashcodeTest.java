@@ -1,6 +1,6 @@
 package com.scholarscore.etl.powerschool.api.model;
 
-import com.scholarscore.models.ModelEqualsAndHashcodeTest;
+import com.scholarscore.models.ModelReflectionTests;
 import org.testng.annotations.Test;
 
 import java.util.HashSet;
@@ -12,7 +12,7 @@ import java.util.Set;
  * Time: 8:54 PM
  */
 @Test(groups = { "unit" })
-public class ETLModelEqualsAndHashcodeTest extends ModelEqualsAndHashcodeTest {
+public class ETLModelEqualsAndHashcodeTest extends ModelReflectionTests {
 
     @Override
     public String getPackageToScan() {

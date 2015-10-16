@@ -105,4 +105,14 @@ public class Attendance implements Serializable {
         return 31 * super.hashCode() + Objects.hash(schoolDay, id, student, status, description);
     }
     
+    @Override
+    public String toString() {
+        return "Attendance{" +
+                "schoolDay=" + schoolDay +
+                ", id=" + id +
+                ", student=" + student +
+                ", status=" + status +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }
