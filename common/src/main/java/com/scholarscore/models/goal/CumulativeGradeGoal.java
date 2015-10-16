@@ -1,6 +1,7 @@
-package com.scholarscore.models;
+package com.scholarscore.models.goal;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.HibernateConsts;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -18,7 +19,7 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @DiscriminatorValue(value = "CUMULATIVE_GRADE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class CumulativeGradeGoal extends Goal {
+public class CumulativeGradeGoal extends Goal implements CalculatableCumulative {
 
     private Long parentId;
 

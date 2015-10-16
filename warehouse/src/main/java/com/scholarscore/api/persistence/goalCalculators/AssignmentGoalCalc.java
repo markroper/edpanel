@@ -1,15 +1,16 @@
 package com.scholarscore.api.persistence.goalCalculators;
 
 import com.scholarscore.api.persistence.StudentAssignmentPersistence;
-import com.scholarscore.models.AssignmentGoal;
+import com.scholarscore.models.goal.AssignmentGoal;
 import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.goal.CalculatableAssignment;
 
 /**
  * Calculator class for calculating the value of an assignment goal.
  * Returns the awarded points of the assignment that the goal references.
  * Created by cwallace on 9/21/2015.
  */
-public class AssignmentGoalCalc implements GoalCalc<AssignmentGoal> {
+public class AssignmentGoalCalc implements GoalCalc<CalculatableAssignment> {
 
 
     private StudentAssignmentPersistence studentAssignmentPersistence;
@@ -18,7 +19,7 @@ public class AssignmentGoalCalc implements GoalCalc<AssignmentGoal> {
         this.studentAssignmentPersistence = studentAssignmentPersistence;
     }
 
-    public Double calculateGoal(AssignmentGoal goal) {
+    public Double calculateGoal(CalculatableAssignment goal) {
         StudentAssignment goalAssignment = studentAssignmentPersistence.select(goal.getStudent().getId(), goal.getParentId());
         Long awardedPoints = goalAssignment.getAwardedPoints();
                 if (null != awardedPoints) {
