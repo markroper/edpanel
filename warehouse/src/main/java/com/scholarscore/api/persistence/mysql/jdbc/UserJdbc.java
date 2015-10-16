@@ -4,6 +4,7 @@ import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.persistence.UserPersistence;
+import com.scholarscore.models.user.ContactMethod;
 import com.scholarscore.models.user.Person;
 import com.scholarscore.models.user.User;
 
@@ -87,7 +88,8 @@ public class UserJdbc implements UserPersistence {
         value.setOneTimePass(fromDB.getOneTimePass());
         value.setOneTimePassCreated(fromDB.getOneTimePassCreated());
         value.setEnabled(fromDB.getEnabled());
-
+        ContactMethod.mergeContactMethods(value.getContactMethods(), fromDB.getContactMethods());
+                
         hibernateTemplate.merge(value);
         return userId;
     }

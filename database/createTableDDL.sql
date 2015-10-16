@@ -42,8 +42,13 @@ CREATE TABLE `scholar_warehouse`.`contact_method` (
   `confirm_code_created` DATETIME NULL COMMENT 'the time this confirmation code was generated and sent',
   `confirmed` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'if this email has been confirmed as belonging to the user',
     PRIMARY KEY (`contact_method_id`),
+  CONSTRAINT `user_fk$contact_method`
+  FOREIGN KEY (`user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
   CONSTRAINT `uniq_contact_type$user`
   UNIQUE (`contact_type`,`user_fk`)
+
 )
 ENGINE = InnoDB;
   
