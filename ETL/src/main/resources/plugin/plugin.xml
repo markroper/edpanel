@@ -14,16 +14,16 @@
 
     <access_request>
 
-	<field table="ROOM" field="Building" access="ViewOnly"/>
-	<field table="ROOM" field="Department" access="ViewOnly"/>
-	<field table="ROOM" field="facilities" access="ViewOnly"/>
-	<field table="ROOM" field="House" access="ViewOnly"/>
-	<field table="ROOM" field="ID" access="ViewOnly"/>
-	<field table="ROOM" field="Name" access="ViewOnly"/>
-	<field table="ROOM" field="Occupancy_Maximum" access="ViewOnly"/>
-	<field table="ROOM" field="Room_Number" access="ViewOnly"/>
-	<field table="ROOM" field="RoomInfo_guid" access="ViewOnly"/>
-	<field table="ROOM" field="SchoolID" access="ViewOnly"/>
+        <field table="ROOM" field="Building" access="ViewOnly"/>
+        <field table="ROOM" field="Department" access="ViewOnly"/>
+        <field table="ROOM" field="facilities" access="ViewOnly"/>
+        <field table="ROOM" field="House" access="ViewOnly"/>
+        <field table="ROOM" field="ID" access="ViewOnly"/>
+        <field table="ROOM" field="Name" access="ViewOnly"/>
+        <field table="ROOM" field="Occupancy_Maximum" access="ViewOnly"/>
+        <field table="ROOM" field="Room_Number" access="ViewOnly"/>
+        <field table="ROOM" field="RoomInfo_guid" access="ViewOnly"/>
+        <field table="ROOM" field="SchoolID" access="ViewOnly"/>
 
     </access_request>
 </plugin>

@@ -1,4 +1,6 @@
 apply plugin: 'java'
+apply plugin: 'distribution'
+
 
 //Dependencies section:
 ext {
@@ -42,4 +44,12 @@ dependencies {
         "org.springframework:spring-test:$springVersion", 
         project (path: ":common", configuration: 'testArtifacts')
 
+}
+
+task createPlugin(type:Zip){
+    from ('src/main/resources/plugin/') {
+        include '**/*.xml'
+    }
+    baseName = "myedpanel"
+    //from "src/main/resources/plugin"
 }
