@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://plugin.powerschool.pearson.com"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation='http://plugin.powerschool.pearson.com plugin.xsd'
+        name="MyEdPanel"
+        version="1.0.0"
+        description="MyEdPanel">
+
+    <oauth></oauth>
+    
+    <publisher name="Example Publisher">
+        <contact email="publisher@example.com" />
+    </publisher>	
+
+    <access_request>
+	<field table="ATTENDANCE" field="ADA_Value_Time" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="ADM_Value" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="Att_Comment" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="Att_Date" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="Att_Flags" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="Att_Interval" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="Att_Mode_Code" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="Attendance_CodeID" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="Calendar_DayID" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="CCID" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="ID" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="ip_address" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="PeriodID" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="ProgramID" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="StudentID" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="Total_Minutes" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="YearID" access="ViewOnly"/>
+	<field table="ATTENDANCE" field="ADA_Value_Code" access="ViewOnly"/>
+
+
+	<field table="ATTENDANCE_CODE" field="Alternate_Code" access="ViewOnly"/>
+	<field table="ATTENDANCE_CODE" field="Att_Code" access="ViewOnly"/>
+	<field table="ATTENDANCE_CODE" field="Course_Credit_Points" access="ViewOnly"/>
+	<field table="ATTENDANCE_CODE" field="Description" access="ViewOnly"/>
+	<field table="ATTENDANCE_CODE" field="ID" access="ViewOnly"/>
+	<field table="ATTENDANCE_CODE" field="Presence_Status_CD" access="ViewOnly"/>
+	<field table="ATTENDANCE_CODE" field="SchoolID" access="ViewOnly"/>
+	<field table="ATTENDANCE_CODE" field="SortOrder" access="ViewOnly"/>
+	<field table="ATTENDANCE_CODE" field="YearID" access="ViewOnly"/>
+
+
+	<field table="PGASSIGNMENTS" field="Abbreviation" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="AssignmentID" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="DateDue" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="Description" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="GradebookType" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="ID" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="IncludeInFinalGrades" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="Name" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="PGCategoriesID" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="PointsPossible" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="PublishDaysBeforeDue" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="PublishOnSpecificDate" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="PublishScores" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="PublishState" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="SectionID" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="Type" access="ViewOnly"/>
+	<field table="PGASSIGNMENTS" field="Weight" access="ViewOnly"/>
+
+	<field table="PGCATEGORIES" field="Abbreviation" access="ViewOnly"/>
+	<field table="PGCATEGORIES" field="DefaultPtsPoss" access="ViewOnly"/>
+	<field table="PGCATEGORIES" field="Description" access="ViewOnly"/>
+	<field table="PGCATEGORIES" field="ID" access="ViewOnly"/>
+	<field table="PGCATEGORIES" field="Name" access="ViewOnly"/>
+	<field table="PGCATEGORIES" field="SectionID" access="ViewOnly"/>
+
+	<field table="ROOM" field="Building" access="ViewOnly"/>
+	<field table="ROOM" field="Department" access="ViewOnly"/>
+	<field table="ROOM" field="facilities" access="ViewOnly"/>
+	<field table="ROOM" field="House" access="ViewOnly"/>
+	<field table="ROOM" field="ID" access="ViewOnly"/>
+	<field table="ROOM" field="Name" access="ViewOnly"/>
+	<field table="ROOM" field="Occupancy_Maximum" access="ViewOnly"/>
+	<field table="ROOM" field="Room_Number" access="ViewOnly"/>
+	<field table="ROOM" field="RoomInfo_guid" access="ViewOnly"/>
+	<field table="ROOM" field="SchoolID" access="ViewOnly"/>
+
+    </access_request>
+</plugin>
