@@ -47,6 +47,12 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
         }
     }
 
+    public void testExecuteNamedQueryRoom() {
+        String json = client.executeNamedQuery("room");
+        System.out.println(json);
+        assertNotNull(json);
+    }
+
     public void testGetSectionsBySchool() {
         for (School school : client.getSchools().schools.school) {
             SectionResponse sectionResponse = client.getSectionsBySchoolId(school.id);

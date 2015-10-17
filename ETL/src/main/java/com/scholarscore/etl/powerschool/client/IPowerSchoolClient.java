@@ -25,4 +25,6 @@ public interface IPowerSchoolClient {
     TermResponse getTermsBySchoolId(Long schoolId);
 
     SectionResponse getSectionsBySchoolId(Long schoolId);
+
+    String executeNamedQuery(String tableName);
 }
