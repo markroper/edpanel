@@ -1,161 +1,4 @@
 <queries>
-	<!-- DO NOT MODIFY GENERATED FROM plugin.xml -->
-	<query name="com.edpanel.queries.attendance" coreTable="" flattened="false">
-		<args></args>
-		<columns>
-			<column column="ATTENDANCE.ADA_Value_Time">ADA_Value_Time</column>
-			<column column="ATTENDANCE.ADM_Value">ADM_Value</column>
-			<column column="ATTENDANCE.Att_Comment">Att_Comment</column>
-			<column column="ATTENDANCE.Att_Date">Att_Date</column>
-			<column column="ATTENDANCE.Att_Flags">Att_Flags</column>
-			<column column="ATTENDANCE.Att_Interval">Att_Interval</column>
-			<column column="ATTENDANCE.Att_Mode_Code">Att_Mode_Code</column>
-			<column column="ATTENDANCE.Attendance_CodeID">Attendance_CodeID</column>
-			<column column="ATTENDANCE.Calendar_DayID">Calendar_DayID</column>
-			<column column="ATTENDANCE.CCID">CCID</column>
-			<column column="ATTENDANCE.ID">ID</column>
-			<column column="ATTENDANCE.ip_address">ip_address</column>
-			<column column="ATTENDANCE.PeriodID">PeriodID</column>
-			<column column="ATTENDANCE.ProgramID">ProgramID</column>
-			<column column="ATTENDANCE.StudentID">StudentID</column>
-			<column column="ATTENDANCE.Total_Minutes">Total_Minutes</column>
-			<column column="ATTENDANCE.YearID">YearID</column>
-			<column column="ATTENDANCE.ADA_Value_Code">ADA_Value_Code</column>
-		</columns>
-		<sql>
-			<![CDATA[
-			SELECT
-				ADA_Value_Time,
-				ADM_Value,
-				Att_Comment,
-				Att_Date,
-				Att_Flags,
-				Att_Interval,
-				Att_Mode_Code,
-				Attendance_CodeID,
-				Calendar_DayID,
-				CCID,
-				ID,
-				ip_address,
-				PeriodID,
-				ProgramID,
-				StudentID,
-				Total_Minutes,
-				YearID,
-				ADA_Value_Code
-			FROM
-				ATTENDANCE
-			ORDER BY ID;
-			]]>
-		</sql>
-
-	</query>
-	<query name="com.edpanel.queries.attendanceCode" coreTable="" flattened="false">
-		<args></args>
-		<columns>
-			<column column="ATTENDANCE_CODE.Alternate_Code">Alternate_Code</column>
-			<column column="ATTENDANCE_CODE.Att_Code">Att_Code</column>
-			<column column="ATTENDANCE_CODE.Course_Credit_Points">Course_Credit_Points</column>
-			<column column="ATTENDANCE_CODE.Description">Description</column>
-			<column column="ATTENDANCE_CODE.ID">ID</column>
-			<column column="ATTENDANCE_CODE.Presence_Status_CD">Presence_Status_CD</column>
-			<column column="ATTENDANCE_CODE.SchoolID">SchoolID</column>
-			<column column="ATTENDANCE_CODE.SortOrder">SortOrder</column>
-			<column column="ATTENDANCE_CODE.YearID">YearID</column>
-		</columns>
-		<sql>
-			<![CDATA[
-			SELECT
-				Alternate_Code,
-				Att_Code,
-				Course_Credit_Points,
-				Description,
-				ID,
-				Presence_Status_CD,
-				SchoolID,
-				SortOrder,
-				YearID
-			FROM
-				ATTENDANCE_CODE
-			ORDER BY ID;
-			]]>
-		</sql>
-
-	</query>
-	<query name="com.edpanel.queries.assignments" coreTable="" flattened="false">
-		<args></args>
-		<columns>
-			<column column="PGASSIGNMENTS.Abbreviation">Abbreviation</column>
-			<column column="PGASSIGNMENTS.AssignmentID">AssignmentID</column>
-			<column column="PGASSIGNMENTS.DateDue">DateDue</column>
-			<column column="PGASSIGNMENTS.Description">Description</column>
-			<column column="PGASSIGNMENTS.GradebookType">GradebookType</column>
-			<column column="PGASSIGNMENTS.ID">ID</column>
-			<column column="PGASSIGNMENTS.IncludeInFinalGrades">IncludeInFinalGrades</column>
-			<column column="PGASSIGNMENTS.Name">Name</column>
-			<column column="PGASSIGNMENTS.PGCategoriesID">PGCategoriesID</column>
-			<column column="PGASSIGNMENTS.PointsPossible">PointsPossible</column>
-			<column column="PGASSIGNMENTS.PublishDaysBeforeDue">PublishDaysBeforeDue</column>
-			<column column="PGASSIGNMENTS.PublishOnSpecificDate">PublishOnSpecificDate</column>
-			<column column="PGASSIGNMENTS.PublishScores">PublishScores</column>
-			<column column="PGASSIGNMENTS.PublishState">PublishState</column>
-			<column column="PGASSIGNMENTS.SectionID">SectionID</column>
-			<column column="PGASSIGNMENTS.Type">Type</column>
-			<column column="PGASSIGNMENTS.Weight">Weight</column>
-		</columns>
-		<sql>
-			<![CDATA[
-			SELECT
-				Abbreviation,
-				AssignmentID,
-				DateDue,
-				Description,
-				GradebookType,
-				ID,
-				IncludeInFinalGrades,
-				Name,
-				PGCategoriesID,
-				PointsPossible,
-				PublishDaysBeforeDue,
-				PublishOnSpecificDate,
-				PublishScores,
-				PublishState,
-				SectionID,
-				Type,
-				Weight
-			FROM
-				PGASSIGNMENTS
-			ORDER BY ID;
-			]]>
-		</sql>
-
-	</query>
-	<query name="com.edpanel.queries.assignmentCategories" coreTable="" flattened="false">
-		<args></args>
-		<columns>
-			<column column="PGCATEGORIES.Abbreviation">Abbreviation</column>
-			<column column="PGCATEGORIES.DefaultPtsPoss">DefaultPtsPoss</column>
-			<column column="PGCATEGORIES.Description">Description</column>
-			<column column="PGCATEGORIES.ID">ID</column>
-			<column column="PGCATEGORIES.Name">Name</column>
-			<column column="PGCATEGORIES.SectionID">SectionID</column>
-		</columns>
-		<sql>
-			<![CDATA[
-			SELECT
-				Abbreviation,
-				DefaultPtsPoss,
-				Description,
-				ID,
-				Name,
-				SectionID
-			FROM
-				PGCATEGORIES
-			ORDER BY ID;
-			]]>
-		</sql>
-
-	</query>
 	<query name="com.edpanel.queries.room" coreTable="" flattened="false">
 		<args></args>
 		<columns>
@@ -163,29 +6,27 @@
 			<column column="ROOM.Department">Department</column>
 			<column column="ROOM.facilities">facilities</column>
 			<column column="ROOM.House">House</column>
-			<column column="ROOM.ID">ID</column>
+			<column column="ROOM.id">id</column>
 			<column column="ROOM.Name">Name</column>
 			<column column="ROOM.Occupancy_Maximum">Occupancy_Maximum</column>
 			<column column="ROOM.Room_Number">Room_Number</column>
-			<column column="ROOM.RoomInfo_guid">RoomInfo_guid</column>
 			<column column="ROOM.SchoolID">SchoolID</column>
 		</columns>
 		<sql>
 			<![CDATA[
-			SELECT
+			select
+				id,
 				Building,
 				Department,
 				facilities,
 				House,
-				ID,
 				Name,
 				Occupancy_Maximum,
 				Room_Number,
-				RoomInfo_guid,
 				SchoolID
 			FROM
 				ROOM
-			ORDER BY ID;
+			order by id;
 			]]>
 		</sql>
 

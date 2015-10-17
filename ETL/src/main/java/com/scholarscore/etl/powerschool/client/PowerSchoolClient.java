@@ -46,6 +46,10 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
 
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";
     private static final String URI_PATH_OATH = "/oauth/access_token";
+
+    // Invoke a named query - the query name originates from the file myedpanel.named_queries.xml, {0} below is the table
+    // name to query against
+    private static final String PATH_NAMED_QUERY = "/ws/schema/query/com.edpanel.queries.{0}";
     private final String clientSecret;
     private final String clientId;
 
@@ -127,6 +131,11 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
         } catch (IOException e) {
             throw new HttpClientException(e);
         }
+    }
+
+    public String executeNamedQuery(String tableName) {
+        String path = getPath(PATH_NAMED_QUERY, tableName);
+        return post("{ }".getBytes(), path);
     }
 
     @Override
