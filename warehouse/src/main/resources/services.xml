@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc
+                     http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                     http://www.springframework.org/schema/beans
+                     http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--
+    <bean id="attendanceManager"
+          class="com.scholarscore.api.manager.AttendanceManagerImpl">
+        <property name="attendancePersistence" ref="attendancePersistence"/>
+        <property name="pm" ref="PM"/>
+    </bean>
+    -->
+    <bean id="textMessageService" 
+            class="com.scholarscore.api.service.TextMessageServiceImpl" />
+    
+    <bean id="emailService"
+          class="com.scholarscore.api.service.SingleAccountGmailService" />
+    
+</beans>

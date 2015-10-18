@@ -130,7 +130,18 @@ public class HibernateConsts {
     public static final String USER_NAME = "username";
     public static final String USER_PASSWORD = "password";
     public static final String USER_ENABLED = "enabled";
+    public static final String USER_ONETIME_PASS = "onetime_pass";
+    public static final String USER_ONETIME_PASS_CREATED = "onetime_pass_created";
     public static final String USER_TYPE = "user_type";
+
+    public static final String CONTACT_METHOD_TABLE = "contact_method";
+    public static final String CONTACT_METHOD_ID = "contact_method_id";
+    public static final String CONTACT_METHOD_TYPE = "contact_type";
+    public static final String CONTACT_METHOD_USER_FK = "user_fk";
+    public static final String CONTACT_METHOD_CONTACT_VALUE = "contact_value";
+    public static final String CONTACT_METHOD_CONFIRM_CODE = "confirm_code";
+    public static final String CONTACT_METHOD_CONFIRM_CODE_CREATED = "confirm_code_created";
+    public static final String CONTACT_METHOD_CONFIRMED = "confirmed";
     
     //Section to Teacher table
     public static final String TEACHER_SECTION_TABLE = "teacher_section";
@@ -148,6 +159,7 @@ public class HibernateConsts {
     public static final String BEHAVIOR_GOAL_CATEGORY = "behavior_category";
     public static final String GOAL_NAME = "name";
     public static final String GOAL_SECTION_FK = "section_fk";
+    public static final String GOAL_AGGREGATE = "goal_aggregate";
     
     //School days
     public static final String SCHOOL_DAY_TABLE = "school_day";
@@ -160,4 +172,10 @@ public class HibernateConsts {
     public static final String SCHOOL_DAY_FK = "school_day_fk";
     public static final String ATTENDANCE_STATUS = "attendance_status";
     public static final String ATTENDANCE_DESCRIPTION = "attendance_description";
+    
+    //UI attributes
+    public static final String UI_ATTRIBUTES_TABLE = "ui_attributes";
+    public static final String UI_ATTRIBUTES = "attributes";
+    public static final String UI_ATTRIBUTES_ID = "ui_attributes_id";
+    
 }

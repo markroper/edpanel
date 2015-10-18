@@ -1,8 +1,8 @@
-package com.scholarscore.models;
+package com.scholarscore.models.goal;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.attendance.Attendance;
+import com.scholarscore.models.HibernateConsts;
 
 import javax.persistence.*;
 import java.text.SimpleDateFormat;
@@ -18,7 +18,7 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @DiscriminatorValue(value = "ATTENDANCE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class AttendanceGoal extends Goal {
+public class AttendanceGoal extends Goal implements CalculatableAttendance{
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -66,6 +66,24 @@ public class AttendanceGoal extends Goal {
         this.endDate = endDate;
     }
 
+    @Override
+    public void mergePropertiesIfNull(Goal mergeFrom) {
+        super.mergePropertiesIfNull(mergeFrom);
+        if (mergeFrom instanceof AttendanceGoal) {
+            AttendanceGoal mergeFromBehavior = (AttendanceGoal)mergeFrom;
+            if (null == this.startDate) {
+                this.startDate = mergeFromBehavior.startDate;
+            }
+            if (null == endDate) {
+                this.endDate = mergeFromBehavior.endDate;
+            }
+            if (null == parentId) {
+                this.parentId = mergeFromBehavior.parentId;
+            }
+        }
+
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

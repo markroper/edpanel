@@ -14,6 +14,10 @@ import com.scholarscore.models.user.User;
 public interface UserPersistence {
     Collection<User> selectAllUsers();
     
+    Collection<User> selectAllUsersInSchool(Long schoolId);
+    
+    Collection<User> selectAllUsersInSchool(Long schoolId, boolean enabled);
+    
     User selectUser(Long userId);
 
     Long createUser(User user);

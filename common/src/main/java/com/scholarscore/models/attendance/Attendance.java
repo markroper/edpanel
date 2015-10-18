@@ -106,6 +106,17 @@ public class Attendance implements Serializable {
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(schoolDay, id, student, status, description);
     }
+    
+    @Override
+    public String toString() {
+        return "Attendance{" +
+                "schoolDay=" + schoolDay +
+                ", id=" + id +
+                ", student=" + student +
+                ", status=" + status +
+                ", description='" + description + '\'' +
+                '}';
+    }
 
     /**
      * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using

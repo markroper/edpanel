@@ -1,6 +1,7 @@
-package com.scholarscore.models;
+package com.scholarscore.models.goal;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.HibernateConsts;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -15,7 +16,7 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @DiscriminatorValue(value = "ASSIGNMENT")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class AssignmentGoal extends Goal {
+public class AssignmentGoal extends Goal implements CalculatableAssignment {
 
     private Long parentId;
 
@@ -24,6 +25,10 @@ public class AssignmentGoal extends Goal {
         return parentId;
     }
 
+    /**
+     * This should identify the composite ID of the student assignmnet we wish to set a goal for
+     * @param parentId
+     */
     public void setParentId(Long parentId) {
         this.parentId = parentId;
     }
@@ -38,6 +43,17 @@ public class AssignmentGoal extends Goal {
         this.parentId = goal.parentId;
     }
 
+    @Override
+    public void mergePropertiesIfNull(Goal mergeFrom) {
+        super.mergePropertiesIfNull(mergeFrom);
+        if (mergeFrom instanceof AssignmentGoal) {
+            AssignmentGoal mergeFromBehavior = (AssignmentGoal)mergeFrom;
+            if (null == this.parentId) {
+                this.parentId = mergeFromBehavior.parentId;
+            }
+        }
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

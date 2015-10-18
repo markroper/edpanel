@@ -18,5 +18,9 @@
     	<constructor-arg index="0" ref="userPersistence"/>
     	<constructor-arg index="1" ref="authorityPersistence"/>
     </bean>
-                     
+    
+    <bean id="oneTimePassAuthProvider"
+          class="com.scholarscore.api.security.config.OneTimePassAuthProvider">
+        <property name="userPersistence" ref="userPersistence"/>
+    </bean>
 </beans>
