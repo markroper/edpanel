@@ -9,6 +9,7 @@ public abstract class Person extends User {
     protected String sourceSystemId;
     protected Address homeAddress;
     protected String homePhone;
+    protected Long currentSchoolId;
     
     public Person() {
         
@@ -19,10 +20,12 @@ public abstract class Person extends User {
         this.sourceSystemId = s.sourceSystemId;
         this.homeAddress = s.homeAddress;
         this.homePhone = s.homePhone;
+        this.currentSchoolId = s.currentSchoolId;
     }
     
     @Override
     public void mergePropertiesIfNull(User mergeFrom) {
+        super.mergePropertiesIfNull(mergeFrom);
         if(mergeFrom instanceof Person) {
             Person staff = (Person) mergeFrom;
             if(null == this.sourceSystemId) {
@@ -33,6 +36,9 @@ public abstract class Person extends User {
             }
             if(null == this.homePhone) {
                 this.homePhone = staff.homePhone;
+            }
+            if(null == this.currentSchoolId) {
+                this.currentSchoolId = staff.currentSchoolId;
             }
         }
     }
@@ -73,6 +79,16 @@ public abstract class Person extends User {
         setId(userId);
     }
     
+    /**
+     * Abstract to force the subclass to implement the method along with the hibernate annotations
+     * @return
+     */
+    public abstract Long getCurrentSchoolId();
+
+    public void setCurrentSchoolId(Long currentSchoolId) {
+        this.currentSchoolId = currentSchoolId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -67,6 +67,7 @@
         <property name="behaviorGoalCalc" ref="behaviorCalc"/>
         <property name="cumulativeGoalCalc" ref="cumulativeGradeCalc"/>
         <property name="attendanceGoalCalc" ref="attendenceGoalCalc"/>
+        <property name="complexGoalCalc" ref="complexGoalCalc"/>
     </bean>
 
     <bean id="teacherPersistence"
@@ -162,6 +163,14 @@
         <property name="studentAssignmentPersistence" ref="studentAssignmentPersistence"/>
     </bean>
 
+    <bean id="complexGoalCalc"
+          class="com.scholarscore.api.persistence.goalCalculators.ComplexGoalCalc">
+        <property name="attendanceGoalCalc" ref="attendenceGoalCalc"/>
+        <property name="cumulativeGoalCalc" ref="cumulativeGradeCalc"/>
+        <property name="assignmentGoalCalc" ref="assignmentCalc"/>
+        <property name="behaviorGoalCalc" ref="behaviorCalc"/>
+    </bean>
+
     <bean id="schoolDayPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.SchoolDayJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
@@ -172,6 +181,11 @@
           class="com.scholarscore.api.persistence.mysql.jdbc.AttendanceJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
         <property name="termPersistence" ref="termPersistence"/>
+    </bean>
+    
+    <bean id="uiAttributesPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.UiAttributesJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
     </bean>
     
        <!-- Required so that we can inject an instance into Spring Security -->

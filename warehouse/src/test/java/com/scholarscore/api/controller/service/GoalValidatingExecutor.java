@@ -3,6 +3,7 @@ package com.scholarscore.api.controller.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.*;
+import com.scholarscore.models.goal.*;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
@@ -63,9 +64,6 @@ public class GoalValidatingExecutor {
     /**
      * Given an ID and the value submitted to a GET/PUT endpoint, retrieve the behavior via GET, validate it, and
      * return it to the caller.
-     *
-     * @param schoolYearId
-     * @param submittedSchoolYear
      * @param msg
      * @return
      */
@@ -93,16 +91,25 @@ public class GoalValidatingExecutor {
         protected Goal generateExpectationGoal(Goal submitted, Goal created, HttpMethod method) {
 
             Goal returnGoal;
-            if (submitted instanceof BehaviorGoal) {
-                returnGoal = new BehaviorGoal((BehaviorGoal)submitted);
-            } else if (submitted instanceof AssignmentGoal) {
-                returnGoal = new AssignmentGoal((AssignmentGoal)submitted);
-            } else if (submitted instanceof CumulativeGradeGoal){
-                returnGoal =  new CumulativeGradeGoal((CumulativeGradeGoal)submitted);
-            } else if (submitted instanceof AttendanceGoal){
-                returnGoal = new AttendanceGoal((AttendanceGoal)submitted);
-            } else {
-                return null;
+            switch (submitted.getGoalType()) {
+                case BEHAVIOR:
+                    returnGoal = new BehaviorGoal((BehaviorGoal)submitted);
+                    break;
+                case ASSIGNMENT:
+                    returnGoal = new AssignmentGoal((AssignmentGoal)submitted);
+                    break;
+                case CUMULATIVE_GRADE:
+                    returnGoal =  new CumulativeGradeGoal((CumulativeGradeGoal)submitted);
+                    break;
+                case ATTENDANCE:
+                    returnGoal = new AttendanceGoal((AttendanceGoal)submitted);
+                    break;
+                case COMPLEX:
+                    returnGoal = new ComplexGoal((ComplexGoal)submitted);
+                    break;
+                default:
+                    returnGoal = null;
+                    break;
             }
             //TODO Should make a factory constructor for goals
 

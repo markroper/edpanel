@@ -23,17 +23,35 @@ ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`users` (
     `user_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
-    `username` varchar(50) NOT NULL,
-    `password` varchar(50) CHARACTER SET UTF8 NOT NULL,
-    `enabled` BOOLEAN NOT NULL,
--- TODO: for password flow, we need...
--- `email_address`
--- `phone_number`
+    `username` varchar(50) NOT NULL COMMENT 'the username used to login',
+    `password` varchar(50) CHARACTER SET UTF8 NOT NULL COMMENT 'the password',
+    `enabled` BOOLEAN NOT NULL COMMENT 'if the user has ever logged in and created a password',
+    `onetime_pass` varchar(50) CHARACTER SET UTF8 NULL COMMENT 'one-time access token used for initial user setup and forgot password', 
+    `onetime_pass_created` DATETIME NULL COMMENT 'when the one time pass was last generated', 
     PRIMARY KEY (`user_id`),
     UNIQUE(`username`)
 )
 ENGINE = InnoDB;
 
+CREATE TABLE `scholar_warehouse`.`contact_method` (
+  `contact_method_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
+  `contact_type` varchar(32) NOT NULL COMMENT 'the contact medium (e.g. phone, email)',
+  `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'the fk to the users table',
+  `contact_value` varchar(256) NOT NULL COMMENT 'the actual contact info - the email address, phone number, etc',
+  `confirm_code` varchar(64) NULL COMMENT 'the confirmation code sent to the user via the specified medium',
+  `confirm_code_created` DATETIME NULL COMMENT 'the time this confirmation code was generated and sent',
+  `confirmed` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'if this email has been confirmed as belonging to the user',
+    PRIMARY KEY (`contact_method_id`),
+  CONSTRAINT `user_fk$contact_method`
+  FOREIGN KEY (`user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
+  CONSTRAINT `uniq_contact_type$user`
+  UNIQUE (`contact_type`,`user_fk`)
+
+)
+ENGINE = InnoDB;
+  
 CREATE TABLE `scholar_warehouse`.`student` (
   `student_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `source_system_id` VARCHAR(256) NULL COMMENT 'The identifier from the source system, if any',
@@ -73,8 +91,13 @@ CREATE TABLE `scholar_warehouse`.`teacher` (
   `teacher_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user_fk of the teacher',
   `teacher_home_phone` VARCHAR(256) NULL COMMENT 'Home phone number for teacher',
   `teacher_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
+  `school_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the current primary school the teacher teaches at',
   CONSTRAINT `teacher_homeAddress_fk$teacher`
   FOREIGN KEY (`teacher_homeAddress_fk`) REFERENCES `scholar_warehouse`.`address`(`address_id`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+  CONSTRAINT `school_fk$teacher`
+  FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
   FOREIGN KEY (`teacher_user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
@@ -89,11 +112,16 @@ CREATE TABLE `scholar_warehouse`.`administrator` (
   `administrator_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
   `administrator_source_system_id` VARCHAR(256) NULL,
   `administrator_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user_fk of the teacher',
+  `school_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the current school the administrator actively works for',
   CONSTRAINT `administrator_homeAddress_fk$administrator`
   FOREIGN KEY (`administrator_homeAddress_fk`)
     REFERENCES `scholar_warehouse`.`address`(`address_id`)
-  ON DELETE SET NULL
-  ON UPDATE CASCADE,
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+  CONSTRAINT `school_fk$administrator`
+  FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
   FOREIGN KEY (`administrator_user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
   ON DELETE SET NULL
   ON UPDATE CASCADE
@@ -321,15 +349,16 @@ ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`goal` (
   `goal_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a goal',
-  `approved` INT NOT NULL COMMENT 'Int that should be 0 or 1 indicating if a goal was approved by teha ssigned teacher',
-  `parent_fk` BIGINT(20) COMMENT 'Foreign key that could assocaite many different places depending on the. For assignment goals it points to student assignmnet id',
+  `approved` INT NOT NULL COMMENT 'Int that should be 0 or 1 indicating if a goal was approved by the assigned teacher',
+  `parent_fk` BIGINT(20) COMMENT 'Foreign key that could associate many different places depending on the goal. For assignment goals it points to student assignmnet id',
   `desired_value` DOUBLE NOT NULL COMMENT 'The value the student is attempting to reach with this goal',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the student this is assigned to',
   `teacher_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the teacher who needs to approve this goal',
-    `goal_type` varchar(45) NOT NULL COMMENT ' Correspons to enum GoalType, defines what subclass of goal we are dealing with',
+  `goal_type` varchar(45) NOT NULL COMMENT ' Corresponds to enum GoalType, defines what subclass of goal we are dealing with',
   `start_date` datetime DEFAULT NULL COMMENT ' Certain goals occur over a time range, this indicates that starting point',
   `end_date` datetime DEFAULT NULL COMMENT ' Certain goals occur over a time range, this indicates the end date',
   `behavior_category` varchar(45) DEFAULT NULL COMMENT 'In behavior goals we need a more specific category. Corresponds to enum BehaviorType so show what type of behavior goal',
+  `goal_aggregate`  BLOB DEFAULT NULL COMMENT 'Blob to store the JSON needed for formula goals',
   `name` varchar(45) NOT NULL COMMENT 'The name of the goal',
 PRIMARY KEY (`goal_id`),
   CONSTRAINT `fk_student_goal`
@@ -344,6 +373,15 @@ PRIMARY KEY (`goal_id`),
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
+CREATE TABLE `scholar_warehouse`.`ui_attributes` (
+    `ui_attributes_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a UI Attributes bag',
+    `school_fk` BIGINT UNSIGNED NOT NULL UNIQUE COMMENT 'Unique foreign key to the school table',
+    `attributes` BLOB NULL COMMENT 'Client-side attributes as unmanaged JSON',
+    PRIMARY KEY (`ui_attributes_id`),
+    FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE)
+ENGINE = InnoDB;
 
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mroper', 'admin', 1);
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mattg', 'admin', 1);
@@ -353,6 +391,9 @@ insert into `scholar_warehouse`.`authorities` (user_id, authority) values (1, 'A
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (2, 'ADMINISTRATOR');
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (3, 'STUDENT');
 
-insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk) values ('Mark Roper', 1);
-insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk) values ('Matt Greenwood', 2);
-insert into `scholar_warehouse`.`student`       (student_name, student_user_fk)             values ('StudentUser', 3);
+insert into `scholar_warehouse`.`school` (school_name) values ('FirstSchool');
+
+insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Mark Roper', 1, 1);
+insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Matt Greenwood', 2, 1);
+insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser', 3, 1);
+

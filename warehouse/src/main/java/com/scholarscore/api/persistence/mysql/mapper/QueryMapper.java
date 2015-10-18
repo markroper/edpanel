@@ -11,10 +11,9 @@ import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.models.query.Query;
 
 public class QueryMapper implements RowMapper<Query> {
-
+    private static final ObjectMapper mapper = new ObjectMapper();
     @Override
     public Query mapRow(ResultSet rs, int rowNum) throws SQLException {
-        ObjectMapper mapper = new ObjectMapper();
         Query query;
         try {
             query = mapper.readValue(rs.getString(DbMappings.REPORT_COL), Query.class);

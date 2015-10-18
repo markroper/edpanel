@@ -1,3 +1,4 @@
+package com.scholarscore.models.goal;
 package com.scholarscore.models;
 
 import java.text.SimpleDateFormat;
@@ -14,6 +15,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.BehaviorCategory;
+import com.scholarscore.models.HibernateConsts;
 
 /**
  * Goal type for goals that are behavior related
@@ -25,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @DiscriminatorValue(value = "BEHAVIOR")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class BehaviorGoal extends Goal {
+public class BehaviorGoal extends Goal implements CalculatableBehavior {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -34,6 +37,7 @@ public class BehaviorGoal extends Goal {
     private BehaviorCategory behaviorCategory;
 
     public BehaviorGoal() {
+        super();
         setGoalType(GoalType.BEHAVIOR);
     }
 
@@ -46,7 +50,7 @@ public class BehaviorGoal extends Goal {
 
     }
 
-    @Column(name = HibernateConsts.GOAL_START_DATE, columnDefinition = "DATE")
+    @Column(name = HibernateConsts.GOAL_START_DATE, columnDefinition="DATE")
     public Date getStartDate() {
         return startDate;
     }
@@ -85,6 +89,9 @@ public class BehaviorGoal extends Goal {
             }
             if (null == endDate) {
                 this.endDate = mergeFromBehavior.endDate;
+            }
+            if (null == behaviorCategory) {
+                this.behaviorCategory = mergeFromBehavior.behaviorCategory;
             }
         }
 
