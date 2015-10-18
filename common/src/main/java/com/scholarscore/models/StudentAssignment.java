@@ -173,7 +173,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class StudentAssignmentBuilder extends ApiModelBuilder<StudentAssignment> {
+    public static class StudentAssignmentBuilder extends ApiModelBuilder<StudentAssignmentBuilder, StudentAssignment> {
         private Boolean completed;
         private Date completionDate;
         private Long awardedPoints;
@@ -212,6 +212,11 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
             assignment.setAwardedPoints(awardedPoints);
             assignment.setStudent(student);
             return assignment;
+        }
+
+        @Override
+        protected StudentAssignmentBuilder me() {
+            return this;
         }
 
         @Override

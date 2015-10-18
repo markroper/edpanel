@@ -44,7 +44,12 @@ public class SubjectArea extends ApiModel implements Serializable, IApiModel<Sub
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class SubjectAreaBuilder extends ApiModelBuilder<SubjectArea>{
+    public static class SubjectAreaBuilder extends ApiModelBuilder<SubjectAreaBuilder, SubjectArea>{
+
+        @Override
+        protected SubjectAreaBuilder me() {
+            return this;
+        }
 
         @Override
         public SubjectArea getInstance() {

@@ -227,7 +227,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class BehaviorBuilder extends ApiModelBuilder<Behavior>{
+    public static class BehaviorBuilder extends ApiModelBuilder<BehaviorBuilder, Behavior>{
         private String remoteSystem;
         private String remoteBehaviorId;
         private String remoteStudentId;
@@ -295,6 +295,11 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
             behavior.setStudent(student);
             behavior.setTeacher(teacher);
             return behavior;
+        }
+
+        @Override
+        protected BehaviorBuilder me() {
+            return this;
         }
 
         @Override
