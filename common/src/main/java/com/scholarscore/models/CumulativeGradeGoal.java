@@ -79,7 +79,7 @@ public class CumulativeGradeGoal extends Goal {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class CumulativeGradeGoalBuilder extends GoalBuilder<CumulativeGradeGoal>{
+    public static class CumulativeGradeGoalBuilder extends GoalBuilder<CumulativeGradeGoalBuilder, CumulativeGradeGoal>{
 
         private Long parentId;
 
@@ -92,6 +92,11 @@ public class CumulativeGradeGoal extends Goal {
             CumulativeGradeGoal goal = super.build();
             goal.setParentId(parentId);
             return goal;
+        }
+
+        @Override
+        protected CumulativeGradeGoalBuilder me() {
+            return this;
         }
 
         @Override

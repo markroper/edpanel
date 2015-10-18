@@ -31,7 +31,7 @@ public class Authority {
 	 * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
 	 * chain setting attributes together.
 	 */
-	public class AuthorityBuilder{
+	public static class AuthorityBuilder{
 		private Long userId;
 		private String authority;
 

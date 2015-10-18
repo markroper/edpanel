@@ -128,7 +128,7 @@ public class BehaviorGoal extends Goal {
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class BehaviorGoalBuilder extends GoalBuilder<BehaviorGoal> {
+    public static class BehaviorGoalBuilder extends GoalBuilder<BehaviorGoalBuilder, BehaviorGoal> {
 
         private Date startDate;
         private Date endDate;
@@ -155,6 +155,11 @@ public class BehaviorGoal extends Goal {
             goal.setEndDate(endDate);
             goal.setBehaviorCategory(behaviorCategory);
             return goal;
+        }
+
+        @Override
+        protected BehaviorGoalBuilder me() {
+            return this;
         }
 
         @Override
