@@ -39,8 +39,8 @@ public class AddressBuilderUnitTest extends AbstractBuilderUnitTest<Address>{
                 withId(id).
                 build();
         return new Object[][]{
-                {"Empty schoolDay", emptyAddressByBuilder, emptyAddress},
-                {"Full schoolDay", fullAddressByBuilder, fullAddress}
+                {"Empty address", emptyAddressByBuilder, emptyAddress},
+                {"Full address", fullAddressByBuilder, fullAddress}
         };
     }
 }

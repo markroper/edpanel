@@ -17,7 +17,7 @@ public class AuthorityBuilderUnitTest extends AbstractBuilderUnitTest<Authority>
         Authority emptyAuthority = new Authority();
         Authority emptyAuthorityByBuilder = new Authority.AuthorityBuilder().build();
 
-        Long userId = RandomUtils.nextLong();
+        Long userId = RandomUtils.nextLong(0L, Long.MAX_VALUE);
         String authority = RandomStringUtils.randomAlphabetic(10);
 
         Authority fullAuthority = new Authority();
@@ -30,8 +30,8 @@ public class AuthorityBuilderUnitTest extends AbstractBuilderUnitTest<Authority>
                 build();
 
         return new Object[][]{
-                {"Empty schoolDay", emptyAuthorityByBuilder, emptyAuthority},
-                {"Full schoolDay", fullAuthorityByBuilder, fullAuthority}
+                {"Empty authority", emptyAuthorityByBuilder, emptyAuthority},
+                {"Full authority", fullAuthorityByBuilder, fullAuthority}
         };
     }
 }
