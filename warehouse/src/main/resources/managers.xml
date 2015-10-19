@@ -13,11 +13,11 @@
                      http://www.springframework.org/schema/tx
                      http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
-       <bean id="adminManager"
-             class="com.scholarscore.api.manager.AdminManagerImpl">
-              <property name="administratorPersistence" ref="administratorPersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
+    <bean id="adminManager"
+          class="com.scholarscore.api.manager.AdminManagerImpl">
+           <property name="administratorPersistence" ref="administratorPersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
 
     <bean id="goalManager"
           class="com.scholarscore.api.manager.GoalManagerImpl">
@@ -27,103 +27,103 @@
         <property name="studentSectionGradePersistence" ref="studentSectionGradePersistence"/>
     </bean>
 
-       <bean id="assignmentManager"
-             class="com.scholarscore.api.manager.AssignmentManagerImpl">
-              <property name="assignmentPersistence" ref="assignmentPersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
+    <bean id="assignmentManager"
+          class="com.scholarscore.api.manager.AssignmentManagerImpl">
+           <property name="assignmentPersistence" ref="assignmentPersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
 
-       <bean id="behaviorManager"
-             class="com.scholarscore.api.manager.BehaviorManagerImpl">
-              <property name="behaviorPersistence" ref="behaviorPersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
+    <bean id="behaviorManager"
+          class="com.scholarscore.api.manager.BehaviorManagerImpl">
+           <property name="behaviorPersistence" ref="behaviorPersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
 
-       <bean id="courseManager"
-             class="com.scholarscore.api.manager.CourseManagerImpl">
-              <property name="coursePersistence" ref="coursePersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
+    <bean id="courseManager"
+          class="com.scholarscore.api.manager.CourseManagerImpl">
+           <property name="coursePersistence" ref="coursePersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
 
-       <bean id="queryManager"
-             class="com.scholarscore.api.manager.QueryManagerImpl">
-              <property name="queryPersistence" ref="queryPersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
+    <bean id="queryManager"
+          class="com.scholarscore.api.manager.QueryManagerImpl">
+           <property name="queryPersistence" ref="queryPersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
 
-       <bean id="schoolManager"
-             class="com.scholarscore.api.manager.SchoolManagerImpl">
-              <property name="schoolPersistence" ref="schoolPersistence"/>
-              <property name="schoolYearPersistence" ref="schoolYearPersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
+    <bean id="schoolManager"
+          class="com.scholarscore.api.manager.SchoolManagerImpl">
+           <property name="schoolPersistence" ref="schoolPersistence"/>
+           <property name="schoolYearPersistence" ref="schoolYearPersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
 
-       <bean id="schoolYearManager"
-             class="com.scholarscore.api.manager.SchoolYearManagerImpl">
-              <property name="schoolYearPersistence" ref="schoolYearPersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
+    <bean id="schoolYearManager"
+          class="com.scholarscore.api.manager.SchoolYearManagerImpl">
+           <property name="schoolYearPersistence" ref="schoolYearPersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
 
-       <bean id="sectionManager"
-             class="com.scholarscore.api.manager.SectionManagerImpl">
-              <property name="sectionPersistence" ref="sectionPersistence"/>
-              <property name="studentPersistence" ref="studentPersistence"/>
-              <property name="assignmentPersistence" ref="assignmentPersistence"/>
-              <property name="studentSectionGradePersistence" ref="studentSectionGradePersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
+    <bean id="sectionManager"
+          class="com.scholarscore.api.manager.SectionManagerImpl">
+           <property name="sectionPersistence" ref="sectionPersistence"/>
+           <property name="studentPersistence" ref="studentPersistence"/>
+           <property name="assignmentPersistence" ref="assignmentPersistence"/>
+           <property name="studentSectionGradePersistence" ref="studentSectionGradePersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
 
-       <bean id="studentAssignmentManager"
-             class="com.scholarscore.api.manager.StudentAssignmentManagerImpl">
-              <property name="studentAssignmentPersistence" ref="studentAssignmentPersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
+    <bean id="studentAssignmentManager"
+          class="com.scholarscore.api.manager.StudentAssignmentManagerImpl">
+           <property name="studentAssignmentPersistence" ref="studentAssignmentPersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
 
-       <bean id="studentManager"
-             class="com.scholarscore.api.manager.StudentManagerImpl">
-              <property name="studentPersistence" ref="studentPersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
+    <bean id="studentManager"
+          class="com.scholarscore.api.manager.StudentManagerImpl">
+           <property name="studentPersistence" ref="studentPersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
 
-       <bean id="studentSectionGradeManager"
-             class="com.scholarscore.api.manager.StudentSectionGradeManagerImpl">
-              <property name="studentSectionGradePersistence" ref="studentSectionGradePersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
+    <bean id="studentSectionGradeManager"
+          class="com.scholarscore.api.manager.StudentSectionGradeManagerImpl">
+           <property name="studentSectionGradePersistence" ref="studentSectionGradePersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
 
-       <bean id="teacherManager"
-             class="com.scholarscore.api.manager.TeacherManagerImpl">
-              <property name="teacherPersistence" ref="teacherPersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
+    <bean id="teacherManager"
+          class="com.scholarscore.api.manager.TeacherManagerImpl">
+           <property name="teacherPersistence" ref="teacherPersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
 
-       <bean id="termManager"
-             class="com.scholarscore.api.manager.TermManagerImpl">
-              <property name="termPersistence" ref="termPersistence"/>
-              <property name="studentPersistence" ref="studentPersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
+    <bean id="termManager"
+          class="com.scholarscore.api.manager.TermManagerImpl">
+           <property name="termPersistence" ref="termPersistence"/>
+           <property name="studentPersistence" ref="studentPersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
 
-       <bean id="userManager"
-             class="com.scholarscore.api.manager.UserManagerImpl">
-              <property name="userPersistence" ref="userPersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
-       <bean id="schoolDayManager"
-             class="com.scholarscore.api.manager.SchoolDayManagerImpl">
-              <property name="dayPersistence" ref="schoolDayPersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
-       
-       <bean id="attendanceManager"
-             class="com.scholarscore.api.manager.AttendanceManagerImpl">
-              <property name="attendancePersistence" ref="attendancePersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
-       
-       <bean id="uiAttributesManager"
-             class="com.scholarscore.api.manager.UiAttributesManagerImpl">
-              <property name="uiAttributesPersistence" ref="uiAttributesPersistence"/>
-              <property name="pm" ref="PM"/>
-       </bean>
+    <bean id="userManager"
+          class="com.scholarscore.api.manager.UserManagerImpl">
+           <property name="userPersistence" ref="userPersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
+    <bean id="schoolDayManager"
+          class="com.scholarscore.api.manager.SchoolDayManagerImpl">
+           <property name="dayPersistence" ref="schoolDayPersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
+    
+    <bean id="attendanceManager"
+          class="com.scholarscore.api.manager.AttendanceManagerImpl">
+           <property name="attendancePersistence" ref="attendancePersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
+    
+    <bean id="uiAttributesManager"
+          class="com.scholarscore.api.manager.UiAttributesManagerImpl">
+           <property name="uiAttributesPersistence" ref="uiAttributesPersistence"/>
+           <property name="pm" ref="PM"/>
+    </bean>
 </beans>

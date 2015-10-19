@@ -113,16 +113,6 @@ public class ETLEngine implements IETLEngine {
                 }
                 catch (Exception e) {
                 }
-                if (staff instanceof Teacher) {
-                    Teacher teacher = (Teacher)staff;
-                    Teacher teacherResponse = scholarScore.createTeacher(teacher);
-                    teacher.setId(teacherResponse.getId());
-                }
-                else if (staff instanceof Administrator) {
-                    Administrator administrator = (Administrator)staff;
-                    Administrator adminResponse = scholarScore.createAdministrator(administrator);
-                    administrator.setId(adminResponse.getId());
-                }
             });
 
             staffBySchool.put(school.getId(), apiListOfStaff);

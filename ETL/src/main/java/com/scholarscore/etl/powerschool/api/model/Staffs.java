@@ -31,7 +31,7 @@ public class Staffs extends ArrayList<Staff> implements ITranslateCollection<Use
             }
             
             if (null != staff.phones && null != staff.phones.home_phone) {
-                ((Teacher)entity).setHomePhone(staff.phones.home_phone);
+                ((com.scholarscore.models.user.Person)entity).setHomePhone(staff.phones.home_phone);
             }
             if (null != staff.addresses && null != staff.addresses.home) {
                 Address homeAddress = new Address();
@@ -39,7 +39,7 @@ public class Staffs extends ArrayList<Staff> implements ITranslateCollection<Use
                 homeAddress.setPostalCode(staff.addresses.home.postal_code);
                 homeAddress.setState(staff.addresses.home.state_province);
                 homeAddress.setStreet(staff.addresses.home.street);
-                ((Teacher)entity).setHomeAddress(homeAddress);
+                ((com.scholarscore.models.user.Person)entity).setHomeAddress(homeAddress);
             }
 
             entity.setName(staff.name.toString());
