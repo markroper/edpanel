@@ -1,7 +1,6 @@
-    package com.scholarscore.models;
+    package com.scholarscore.models.assignment;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -10,12 +9,13 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.HibernateConsts;
 
-/**
+    /**
  * Expresses attendance to a single class on a specific date as a subclass of Assignment.
  * 
  * @author markroper
- * @see com.scholarscore.models.Assignment
+ * @see Assignment
  *
  */
 @Entity

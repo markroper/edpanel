@@ -1,4 +1,4 @@
-package com.scholarscore.models;
+package com.scholarscore.models.assignment;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -6,6 +6,10 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.ApiModel;
+import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.IApiModel;
+import com.scholarscore.models.WeightedGradable;
 import com.scholarscore.models.user.Student;
 
 import org.hibernate.annotations.*;

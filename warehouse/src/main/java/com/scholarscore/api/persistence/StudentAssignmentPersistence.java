@@ -2,7 +2,7 @@ package com.scholarscore.api.persistence;
 
 import java.util.Collection;
 
-import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.assignment.StudentAssignment;
 
 public interface StudentAssignmentPersistence extends EntityPersistence<StudentAssignment> {
 

@@ -1,10 +1,11 @@
-package com.scholarscore.models;
+package com.scholarscore.models.assignment;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.HibernateConsts;
 
 import javax.persistence.*;
 

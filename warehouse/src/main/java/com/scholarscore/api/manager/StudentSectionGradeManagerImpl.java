@@ -7,7 +7,7 @@ import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.GradeFormula;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.StudentSectionGrade;
 
 import java.util.Collection;

@@ -3,6 +3,8 @@ package com.scholarscore.api.controller;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.api.util.SchoolDataFactory;
 import com.scholarscore.models.*;
+import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.SchoolDay;
@@ -194,7 +196,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                 
                 //Create the assignments for each of the sections in the current term
 
-                Map<Long, List<Assignment>> assignments = 
+                Map<Long, List<Assignment>> assignments =
                         SchoolDataFactory.generateAssignments(createdSections);
                 for(Map.Entry<Long, List<Assignment>> assignmentEntry: assignments.entrySet()) {
                     List<Assignment> createdAssignments = new ArrayList<Assignment>();

@@ -9,13 +9,13 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.AssignmentType;
+import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.Course;
-import com.scholarscore.models.GradedAssignment;
+import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.Assignment;
+import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.Term;
 
 @Test(groups = { "integration" })

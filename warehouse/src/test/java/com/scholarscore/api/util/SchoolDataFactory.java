@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.scholarscore.models.*;
+import com.scholarscore.models.assignment.*;
 import com.scholarscore.models.goal.*;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
@@ -326,7 +327,7 @@ public class SchoolDataFactory {
      * @param students
      * @return
      */
-    public static Map<Long, List<StudentAssignment>> 
+    public static Map<Long, List<StudentAssignment>>
             generateStudentAssignments(List<Assignment> assignments, List<Student> students) {
         Map<Long, List<StudentAssignment>> assIdToStudAss = 
                 new HashMap<Long, List<StudentAssignment>>();

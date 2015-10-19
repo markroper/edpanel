@@ -1,22 +1,15 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.EntityPersistence;
 import com.scholarscore.api.persistence.StudentAssignmentPersistence;
-import com.scholarscore.models.Assignment;
+import com.scholarscore.models.assignment.Assignment;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 
-import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.assignment.StudentAssignment;
 
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
