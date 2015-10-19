@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.util.GradeUtil;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

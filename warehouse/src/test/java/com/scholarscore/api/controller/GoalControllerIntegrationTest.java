@@ -2,6 +2,9 @@ package com.scholarscore.api.controller;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.*;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.GradedAssignment;
+import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.goal.*;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;

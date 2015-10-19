@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
-import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.assignment.StudentAssignment;
 
 public interface StudentAssignmentManager {
     /**

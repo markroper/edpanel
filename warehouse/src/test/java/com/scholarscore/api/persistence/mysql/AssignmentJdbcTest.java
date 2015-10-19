@@ -1,7 +1,7 @@
 package com.scholarscore.api.persistence.mysql;
 
-import com.scholarscore.models.AssignmentType;
-import com.scholarscore.models.GradedAssignment;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.Section;
 import org.testng.annotations.Test;
 

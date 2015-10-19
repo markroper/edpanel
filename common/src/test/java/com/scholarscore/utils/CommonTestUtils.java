@@ -1,6 +1,10 @@
 package com.scholarscore.utils;
 
 import com.scholarscore.models.*;
+import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.AttendanceAssignment;
+import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.goal.GoalType;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
@@ -170,10 +174,16 @@ public class CommonTestUtils {
     }
 
     public static Term generateTerm(Date startDate, Date endDate, SchoolYear schoolYear){
+        Term term = generateTermWithoutSchoolYear(startDate, endDate);
+        term.setSchoolYear(schoolYear);
+
+        return term;
+    }
+
+    public static Term generateTermWithoutSchoolYear(Date startDate, Date endDate){
         return new Term.TermBuilder()
                 .withStartDate(startDate)
                 .withEndDate(endDate)
-                .withSchoolYear(schoolYear)
                 .withId(RandomUtils.nextLong(0L, Long.MAX_VALUE))
                 .build();
     }

@@ -1,4 +1,4 @@
-package com.scholarscore.models;
+package com.scholarscore.models.assignment;
 
 import java.util.ArrayList;
 

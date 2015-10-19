@@ -9,6 +9,7 @@ import com.scholarscore.api.persistence.StudentSectionGradePersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.persistence.UserPersistence;
 import com.scholarscore.models.*;
+import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.goal.AssignmentGoal;
 import com.scholarscore.models.goal.BehaviorGoal;
 import com.scholarscore.models.goal.Goal;

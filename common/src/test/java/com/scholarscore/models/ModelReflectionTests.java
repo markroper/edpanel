@@ -1,5 +1,9 @@
 package com.scholarscore.models;
 
+import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.AttendanceAssignment;
+import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.query.AggregateFunction;

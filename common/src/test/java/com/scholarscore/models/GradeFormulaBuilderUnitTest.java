@@ -1,5 +1,6 @@
 package com.scholarscore.models;
 
+import com.scholarscore.models.assignment.AssignmentType;
 import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;

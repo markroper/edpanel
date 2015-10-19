@@ -1,5 +1,9 @@
-package com.scholarscore.models;
+package com.scholarscore.models.assignment;
 
+import com.scholarscore.models.AbstractBuilderUnitTest;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.utils.CommonTestUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
@@ -13,7 +17,7 @@ import java.util.Date;
  * Created by cschneider on 10/11/15.
  */
 @Test
-public class GradedAssignmentBuilderUnitTest extends AbstractBuilderUnitTest<GradedAssignment>{
+public class GradedAssignmentBuilderUnitTest extends AbstractBuilderUnitTest<GradedAssignment> {
 
     @DataProvider
     @Override

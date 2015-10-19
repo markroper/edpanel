@@ -4,9 +4,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.scholarscore.api.manager.AssignmentManager;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scholarscore.api.ApiConsts;
-import com.scholarscore.models.Assignment;
+import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.EntityId;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;

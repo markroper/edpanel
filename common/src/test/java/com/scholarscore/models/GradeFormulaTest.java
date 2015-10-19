@@ -5,6 +5,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.AttendanceAssignment;
+import com.scholarscore.models.assignment.GradedAssignment;
+import com.scholarscore.models.assignment.StudentAssignment;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
