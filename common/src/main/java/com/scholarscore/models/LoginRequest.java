@@ -23,19 +23,23 @@ public class LoginRequest implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, password);
+    }
+
     @Override
     public boolean equals(Object obj) {
-        if(!super.equals(obj)) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
         final LoginRequest other = (LoginRequest) obj;
-        return Objects.equals(this.username, other.username) && Objects.equals(this.password, other.password);
-    }
-    
-    @Override
-    public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(username, password);
+        return Objects.equals(this.username, other.username)
+                && Objects.equals(this.password, other.password);
     }
 
     /**

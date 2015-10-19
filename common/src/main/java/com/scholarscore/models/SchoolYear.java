@@ -181,7 +181,7 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
             return this;
         }
 
-        public SchoolYearBuilder withTerms(final List<Term> terms){
+        public SchoolYearBuilder withTerms(final Set<Term> terms){
             this.terms.addAll(terms);
             return this;
         }
@@ -196,9 +196,8 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
             schoolYear.setStartDate(startDate);
             schoolYear.setEndDate(endDate);
             schoolYear.setTerms(terms);
-            //make sure this is reciprocal
+            //TODO: does this need to be reciprocal here? how do we want to handle this?
             schoolYear.setSchool(school);
-            school.addYear(schoolYear);
             return schoolYear;
         }
 

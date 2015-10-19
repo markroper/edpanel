@@ -1,7 +1,5 @@
 package com.scholarscore.models;
 
-import com.scholarscore.models.user.Staff;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
