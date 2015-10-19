@@ -1,9 +1,11 @@
-package com.scholarscore.models;
+package com.scholarscore.models.goal;
 
+import com.scholarscore.models.AbstractBuilderUnitTest;
+import com.scholarscore.models.goal.AssignmentGoal;
+import com.scholarscore.models.goal.GoalType;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.utils.CommonTestUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -13,7 +15,7 @@ import org.testng.annotations.Test;
  * Created by cschneider on 10/11/15.
  */
 @Test
-public class AssignmentGoalBuilderUnitTest extends AbstractBuilderUnitTest<AssignmentGoal>{
+public class AssignmentGoalBuilderUnitTest extends AbstractBuilderUnitTest<AssignmentGoal> {
 
     @DataProvider
     @Override
@@ -54,8 +56,8 @@ public class AssignmentGoalBuilderUnitTest extends AbstractBuilderUnitTest<Assig
                 build();
 
         return new Object[][]{
-                {"Empty schoolDay", emptyAssignmentGoalByBuilder, emptyAssignmentGoal},
-                {"Full schoolDay", fullAssignmentGoalByBuilder, fullAssignmentGoal}
+                {"Empty assignment goal", emptyAssignmentGoalByBuilder, emptyAssignmentGoal},
+                {"Full assignment goal", fullAssignmentGoalByBuilder, fullAssignmentGoal}
         };
     }
 }

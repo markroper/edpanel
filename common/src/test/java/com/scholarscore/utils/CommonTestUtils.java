@@ -1,6 +1,7 @@
 package com.scholarscore.utils;
 
 import com.scholarscore.models.*;
+import com.scholarscore.models.goal.GoalType;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -129,6 +130,11 @@ public class CommonTestUtils {
     public static AssignmentType getRandomAssignmentType(){
         int assignmentIndex = RandomUtils.nextInt(0, AssignmentType.values().length);
         return AssignmentType.values()[assignmentIndex];
+    }
+
+    public static BehaviorCategory getRandomBehaviorCategory(){
+        int behaviorIndex = RandomUtils.nextInt(0, BehaviorCategory.values().length);
+        return BehaviorCategory.values()[behaviorIndex];
     }
 
     public static boolean getRandomBoolean(){

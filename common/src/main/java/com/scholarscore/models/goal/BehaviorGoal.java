@@ -1,5 +1,4 @@
 package com.scholarscore.models.goal;
-package com.scholarscore.models;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,7 +21,7 @@ import com.scholarscore.models.HibernateConsts;
  * Goal type for goals that are behavior related
  * Created by cwallace on 9/20/2015.
  */
-@Entity
+@javax.persistence.Entity
 @Table(name = HibernateConsts.GOAL_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)

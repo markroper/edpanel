@@ -1,7 +1,5 @@
 package com.scholarscore.models;
 
-import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.utils.CommonTestUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
@@ -10,6 +8,7 @@ import org.testng.annotations.Test;
 import java.util.Date;
 
 /**
+ * AttendanceAssignmentBuilderUnitTest tests that we can build equivalent objects with setters and a builder
  * Created by cschneider on 10/11/15.
  */
 @Test
@@ -50,8 +49,8 @@ public class AttendanceAssignmentBuilderUnitTest extends AbstractBuilderUnitTest
                 build();
 
         return new Object[][]{
-                {"Empty schoolDay", emptyAttendanceAssignmentByBuilder, emptyAttendanceAssignment},
-                {"Full schoolDay", fullAttendanceAssignmentBuilder, fullAttendanceAssignment}
+                {"Empty attendance assignment", emptyAttendanceAssignmentByBuilder, emptyAttendanceAssignment},
+                {"Full attendance assignment", fullAttendanceAssignmentBuilder, fullAttendanceAssignment}
         };
     }
 }
