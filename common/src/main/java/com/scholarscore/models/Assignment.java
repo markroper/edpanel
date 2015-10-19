@@ -63,7 +63,8 @@ public abstract class Assignment
 
     public void setSection(Section section) {
         this.section = section;
-        this.section.addAssignment(this);
+        //TODO: should we have this here to make it reciprocal?
+        //this.section.addAssignment(this);
     }
 
     @Column(name = HibernateConsts.SECTION_FK)
@@ -207,7 +208,8 @@ public abstract class Assignment
             assignment.setDueDate(dueDate);
             assignment.setAvailablePoints(availablePoints);
             assignment.setSection(section);
-            section.addAssignment(assignment);
+            //TODO: should we make this reciprocal?
+            //section.addAssignment(assignment);
             assignment.setSectionFK(sectionFK);
             return assignment;
         }

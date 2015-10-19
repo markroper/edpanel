@@ -8,11 +8,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 /**
  * This holds a bunch of test generation methods to help easily generate test cases
@@ -110,7 +106,7 @@ public class CommonTestUtils {
     }
 
     public static Date getRandomDate(){
-        return new Date(RandomUtils.nextLong(Instant.MIN.toEpochMilli(), Instant.MAX.toEpochMilli()));
+        return new Date(RandomUtils.nextLong(0L, Long.MAX_VALUE));
     }
 
     public static String generateSocialSecurityNumber(){
@@ -142,8 +138,13 @@ public class CommonTestUtils {
         return coinFlip == 1;
     }
 
+    /**
+     * Generates a random School year with random values. This method will not fill in child values dependent on it - mainly
+     * school years
+     * @return a new populated school instance
+     */
     public static School generateSchool(){
-        School school = new School.SchoolBuilder()
+        return new School.SchoolBuilder()
                 .withAddress(generateAddress())
                 .withMainPhone(generatePhoneNumber())
                 .withSourceSystemId(RandomStringUtils.randomAlphanumeric(10))
@@ -152,17 +153,20 @@ public class CommonTestUtils {
                 .withName(RandomStringUtils.randomAlphabetic(15))
                 .withId(RandomUtils.nextLong(0L, Long.MAX_VALUE))
                 .build();
-        generateSchoolYear(school);
-        return school;
     }
 
     public static SchoolYear generateSchoolYear(final School parentSchool){
         Date startDate = new Date();
-        SchoolYear schoolYear = new SchoolYear.SchoolYearBuilder().withSchool(parentSchool).withStartDate(startDate).withEndDate(DateUtils.addMonths(startDate, 9)).build();
+        SchoolYear schoolYear = generateSchoolYearWithoutTerms(parentSchool);
         schoolYear.addTerm(generateTerm(startDate, DateUtils.addMonths(startDate, 3), schoolYear));
         schoolYear.addTerm(generateTerm(DateUtils.addMonths(startDate, 3), DateUtils.addMonths(startDate, 6), schoolYear));
         schoolYear.addTerm(generateTerm(DateUtils.addMonths(startDate, 6), DateUtils.addMonths(startDate, 9), schoolYear));
         return schoolYear;
+    }
+
+    public static SchoolYear generateSchoolYearWithoutTerms(final School parentSchool){
+        Date startDate = new Date();
+        return new SchoolYear.SchoolYearBuilder().withSchool(parentSchool).withStartDate(startDate).withEndDate(DateUtils.addMonths(startDate, 9)).build();
     }
 
     public static Term generateTerm(Date startDate, Date endDate, SchoolYear schoolYear){
@@ -284,6 +288,7 @@ public class CommonTestUtils {
         switch (type){
             case ATTENDANCE:
                 builder = new AttendanceAssignment.AttendanceAssignmentBuilder();
+                break;
             default:
                 builder = new GradedAssignment.GradedAssignmentBuilder().withAssignedDate(getRandomDate());
 
@@ -297,11 +302,44 @@ public class CommonTestUtils {
                 build();
     }
 
+    public static Assignment generateRandomAssignmentWithoutSection(){
+        AssignmentType type = getRandomAssignmentType();
+        return generateAssignmentWithoutSection(type);
+    }
+
+    public static Assignment generateAssignmentWithoutSection(AssignmentType type){
+        Assignment.AssignmentBuilder<? extends Assignment.AssignmentBuilder, ? extends Assignment> builder;
+        switch (type){
+            case ATTENDANCE:
+                builder = new AttendanceAssignment.AttendanceAssignmentBuilder();
+                break;
+            default:
+                builder = new GradedAssignment.GradedAssignmentBuilder().withAssignedDate(getRandomDate());
+
+        }
+        return (Assignment)builder.
+                withName(generateName()).
+                withAvailablePoints(RandomUtils.nextLong(0L, Long.MAX_VALUE)).
+                withDueDate(getRandomDate()).
+                withName(generateName()).
+                build();
+    }
+
     public static StudentSectionGrade generateSectionGrade(Section section, Student student){
         return new StudentSectionGrade.StudentSectionGradeBuilder().
                 withGrade(RandomUtils.nextDouble(0d, 100d)).
                 withComplete(getRandomBoolean()).
                 withSection(section).
+                withStudent(student).
+                withId(RandomUtils.nextLong(0L, Long.MAX_VALUE)).
+                withName(generateName()).
+                build();
+    }
+
+    public static StudentSectionGrade generateSectionGradeWithoutSection(Student student){
+        return new StudentSectionGrade.StudentSectionGradeBuilder().
+                withGrade(RandomUtils.nextDouble(0d, 100d)).
+                withComplete(getRandomBoolean()).
                 withStudent(student).
                 withId(RandomUtils.nextLong(0L, Long.MAX_VALUE)).
                 withName(generateName()).

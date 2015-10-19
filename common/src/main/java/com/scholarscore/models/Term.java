@@ -154,9 +154,8 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
             Term term = super.build();
             term.setStartDate(startDate);
             term.setEndDate(endDate);
-            //make this reciprocal
+            //TODO: make this reciprocal?
             term.setSchoolYear(schoolYear);
-            schoolYear.addTerm(term);
             return term;
         }
 
@@ -167,7 +166,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
 
         @Override
         public Term getInstance() {
-            return null;
+            return new Term();
         }
     }
 }

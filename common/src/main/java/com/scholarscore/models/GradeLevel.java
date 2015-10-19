@@ -49,7 +49,12 @@ public class GradeLevel extends ApiModel implements Serializable, IApiModel<Grad
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    public class GradeLevelBuilder extends ApiModelBuilder<GradeLevel>{
+    public static class GradeLevelBuilder extends ApiModelBuilder<GradeLevelBuilder, GradeLevel>{
+
+        @Override
+        protected GradeLevelBuilder me() {
+            return this;
+        }
 
         @Override
         public GradeLevel getInstance() {

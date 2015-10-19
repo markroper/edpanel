@@ -29,7 +29,7 @@ public class GradedAssignmentBuilderUnitTest extends AbstractBuilderUnitTest<Gra
         AssignmentType type = CommonTestUtils.getRandomAssignmentType();
         Section section = CommonTestUtils.generateSection();
         Date assignedDate = CommonTestUtils.getRandomDate();
-        
+
         GradedAssignment fullGradedAssignment = new GradedAssignment();
 
         fullGradedAssignment.setId(id);

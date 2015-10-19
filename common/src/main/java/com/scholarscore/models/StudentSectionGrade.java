@@ -83,7 +83,8 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
 
     public void setSection(Section section) {
         this.section = section;
-        section.addStudentSectionGrade(this);
+        //TODO: should we do this to make sure that if you call the setter, the section also contains this sectionGrade?
+        //section.addStudentSectionGrade(this);
     }
 
     @ManyToOne(optional = true, fetch=FetchType.LAZY)
@@ -213,7 +214,8 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
             sectionGrade.setComplete(complete);
             sectionGrade.setGrade(grade);
             sectionGrade.setSection(section);
-            section.addStudentSectionGrade(sectionGrade);
+            //TODO: should we make this reciprocal?
+            //section.addStudentSectionGrade(sectionGrade);
             sectionGrade.setStudent(student);
             return sectionGrade;
         }
@@ -225,7 +227,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
 
         @Override
         public StudentSectionGrade getInstance() {
-            return null;
+            return new StudentSectionGrade();
         }
     }
 }
