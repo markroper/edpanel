@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.scholarscore.client.BaseHttpClient;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
+import com.scholarscore.etl.powerschool.api.deserializers.NaturalDeserializer;
 import com.scholarscore.etl.powerschool.api.model.Courses;
 import com.scholarscore.etl.powerschool.api.model.Staffs;
 import com.scholarscore.etl.powerschool.api.model.Students;
@@ -19,8 +20,11 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.message.BasicHeader;
 
+import com.scholarscore.etl.powerschool.api.deserializers.IDeserialize;
+
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 /**
  * Created by mattg on 7/2/15.
@@ -136,6 +140,36 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     public String executeNamedQuery(String tableName) {
         String path = getPath(PATH_NAMED_QUERY, tableName);
         return post("{ }".getBytes(), path);
+    }
+
+    /**
+     * Generic transformer that converts a named query (table sturcture) into a object of type T which must extend
+     * ApiModel.
+     *
+     * @param clazz
+     *      The class to return
+     *
+     * @param tableName
+     *      The table name to query
+     *
+     * @param deserializer
+     *      The implementation of the deserializer which does the transformation direct to the API model
+     *
+     * @return
+     *      A list of type T, for example if the table is a room, then each T is a room but running a named query
+     *      returns multiple rooms thus this method returns List<T>
+     */
+    @Override
+    public <T> List<T> namedQuery(Class<T> clazz, String tableName, IDeserialize<T> deserializer) {
+        String json = executeNamedQuery(tableName);
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Object.class, new NaturalDeserializer());
+        Gson gson = gsonBuilder.create();
+
+        Object natural = gson.fromJson(json, Object.class);
+
+        return deserializer.deserialize(clazz, natural);
     }
 
     @Override
