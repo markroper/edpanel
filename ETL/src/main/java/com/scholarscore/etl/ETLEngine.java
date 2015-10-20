@@ -3,16 +3,20 @@ package com.scholarscore.etl;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.api.model.*;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
+import com.scholarscore.etl.powerschool.api.response.TermResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.*;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
+import com.scholarscore.models.Term;
 import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 
 import java.util.*;
+
+import org.apache.commons.lang3.tuple.MutablePair;
 
 /**
  * This is the E2E flow for powerschool import to scholarScore export - we have references to both clients and
@@ -26,7 +30,9 @@ public class ETLEngine implements IETLEngine {
 
     private IPowerSchoolClient powerSchool;
     private IAPIClient scholarScore;
-    private List<School> schools;
+    private List<com.scholarscore.models.School> schools;
+    private List<com.scholarscore.models.SchoolYear> schoolYears;
+    private List<com.scholarscore.models.Term> terms;
 
     // Collections by schoolId
     private Map<Long, List<Course>> courses;
@@ -53,12 +59,85 @@ public class ETLEngine implements IETLEngine {
     public MigrationResult migrateDistrict() {
         MigrationResult result = new MigrationResult();
         this.schools = createSchools();
+        createSchoolYearsAndTerms();  
         this.staff = createStaff();
         this.students = createStudents();
         this.courses = createCourses();
         return result;
     }
-
+    
+    /**
+     * Creates the all school years and terms for each of the schools on the instance
+     * collection this.schools.  Returns void but populated the collections this.terms
+     * and this.schoolYears as part of execution.
+     */
+    private void createSchoolYearsAndTerms() {
+        if(null != schools) {
+            this.terms = new ArrayList<Term>();
+            this.schoolYears = new ArrayList<SchoolYear>();    
+            for(School s: schools) {
+                //Get all the terms from PowerSchool for the current School
+                String sourceSystemIdString = s.getSourceSystemId();
+                Long sourceSystemSchoolId = new Long(sourceSystemIdString);
+                TermResponse tr = powerSchool.getTermsBySchoolId(sourceSystemSchoolId);
+                if(null != tr && null != tr.terms && null != tr.terms.term) {
+                    Map<Long, List<com.scholarscore.models.Term>> yearToTerms = new HashMap<>();
+                    Map<Long, com.scholarscore.models.SchoolYear> edPanelYears = new HashMap<>();
+                    List<com.scholarscore.etl.powerschool.api.model.Term> terms = tr.terms.term;
+                    //First we build up the term and deduce from this, how many school years there are...
+                    for(com.scholarscore.etl.powerschool.api.model.Term t : terms) {
+                        com.scholarscore.models.Term edpanelTerm = new com.scholarscore.models.Term();
+                        edpanelTerm.setStartDate(t.getStart_date());
+                        edpanelTerm.setEndDate(t.getEnd_date());
+                        edpanelTerm.setName(t.getName());
+                        if(null == yearToTerms.get(t.getStart_year())) {
+                            yearToTerms.put(t.getStart_year(), new ArrayList<>());
+                        }
+                        yearToTerms.get(t.getStart_year()).add(edpanelTerm);
+                    }     
+                    //Then we create the needed school years in EdPanel given the terms from PowerSchool
+                    Iterator<Map.Entry<Long, List<Term>>> it = 
+                            yearToTerms.entrySet().iterator();
+                    while(it.hasNext()) {
+                        Map.Entry<Long, List<Term>> entry = it.next();
+                        SchoolYear schoolYear = new SchoolYear();
+                        schoolYear.setSchool(s);
+                        schoolYear.setName(entry.getKey().toString());
+                        //For each school year, we need to set the start & end dates as the smallest 
+                        //of the terms' start dates and the largest of the terms' end dates
+                        for(Term t: entry.getValue()) {
+                            if(null == schoolYear.getStartDate() || 
+                                    schoolYear.getStartDate().compareTo(t.getStartDate()) > 0) {
+                                schoolYear.setStartDate(t.getStartDate());
+                            }
+                            if(null == schoolYear.getEndDate() || 
+                                    schoolYear.getEndDate().compareTo(t.getEndDate()) < 0) {
+                                schoolYear.setEndDate(t.getEndDate());
+                            }
+                        }
+                        //Create the school year in EdPanel!
+                        SchoolYear createdSchoolYear = scholarScore.createSchoolYear(s.getId(), schoolYear);
+                        this.schoolYears.add(createdSchoolYear);
+                        edPanelYears.put(entry.getKey(), createdSchoolYear);
+                    }
+                    //Finally, having created the EdPanel SchoolYears, we can create the terms in EdPanel
+                    it = yearToTerms.entrySet().iterator();
+                    while(it.hasNext()) {
+                        Map.Entry<Long, List<Term>> entry = it.next();
+                        for(Term t: entry.getValue()) {
+                            //Now that the school Year has been created, cache it on the 
+                            SchoolYear y = edPanelYears.get(entry.getKey());
+                            t.setSchoolYear(y);
+                            //Create the term in EdPanel!
+                            Term createdTerm = scholarScore.createTerm(s.getId(), y.getId(), t);
+                            this.terms.add(createdTerm);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     private Map<Long, List<Course>> createCourses() {
 
         Map<Long, List<Course>> result = new HashMap<>();

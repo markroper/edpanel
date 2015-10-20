@@ -162,6 +162,23 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         response.setId(id.getId());
         return response;
     }
+    
+
+    @Override
+    public SchoolYear createSchoolYear(Long schoolId, SchoolYear year) {
+        SchoolYear response = new SchoolYear(year);
+        EntityId id = create(year, SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT);
+        response.setId(id.getId());
+        return response;
+    }
+
+    @Override
+    public Term createTerm(Long schoolId, Long schoolYearId, Term term) {
+        Term response = new Term(term);
+        EntityId id = create(term, SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId + TERM_ENDPOINT);
+        response.setId(id.getId());
+        return response;
+    }
 
     /**
      * A method to authenticate a user and store the returned auth cookie for subsequent requests.
@@ -218,6 +235,4 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         }
         return out;
     }
-
-
 }
