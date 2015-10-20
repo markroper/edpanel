@@ -25,7 +25,7 @@ There are a few Attendance related tables in powerschool, Attendance, DailyAtten
 For example, a query to return attendance records, 3 per page, page number two, all columns on or after Oct. 18 2015 would be:
 
     https://excelacademy.powerschool.com/ws/schema/table/attendance?q=Att_Date=ge=2015-10-18&pagesize=3&page=2&projection=*
-PowerSchool offers an extension query for Attendane with some extra fields joined in, of the form:
+PowerSchool offers an extension query for Attendance with some extra fields joined in, of the form:
 
     POST /ws/schema/query/com.pearson.core.attendance.student_attendance_detail?page={page}&pagesize={pagesize}
     
