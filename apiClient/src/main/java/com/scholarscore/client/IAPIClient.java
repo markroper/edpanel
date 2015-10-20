@@ -28,4 +28,6 @@ public interface IAPIClient {
     Administrator createAdministrator(Administrator administrator);
     User createUser(User login);
     Course createCourse(Long schoolId, Course course);
+    SchoolYear createSchoolYear(Long schoolId, SchoolYear year);
+    Term createTerm(Long schoolId, Long schoolYearId, Term year);
 }

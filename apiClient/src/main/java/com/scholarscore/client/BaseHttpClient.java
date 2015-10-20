@@ -1,6 +1,8 @@
 package com.scholarscore.client;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -50,7 +52,7 @@ public abstract class BaseHttpClient {
     }
 
     protected Gson createGsonParser() {
-        return new Gson();
+        return new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
     }
 
     protected CloseableHttpClient createClient() {
