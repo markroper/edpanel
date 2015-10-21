@@ -1,6 +1,7 @@
 package com.scholarscore.etl;
 
 import com.google.gson.JsonSyntaxException;
+import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.api.model.*;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignment;
@@ -38,6 +39,8 @@ public class ETLEngine implements IETLEngine {
     private IAPIClient scholarScore;
     private List<com.scholarscore.models.School> schools;
     private List<com.scholarscore.models.SchoolYear> schoolYears;
+    //SourceSystemStudentId to student
+    private Map<Long, Student> students;
     
     //Collections are by sourceSystemSchoolId and if there are nested maps, 
     //the keys are always sourceSystemIds of sub-entities
@@ -45,7 +48,6 @@ public class ETLEngine implements IETLEngine {
     private Map<Long, Map<Long, com.scholarscore.models.Section>> sections;
     private Map<Long, List<Course>> courses;
     private Map<Long, List<User>> staff;
-    private Map<Long, Map<Long, Student>> students;
 
     public void setPowerSchool(IPowerSchoolClient powerSchool) {
         this.powerSchool = powerSchool;
@@ -148,11 +150,14 @@ public class ETLEngine implements IETLEngine {
                         if(null != enrollments && null != enrollments.section_enrollments 
                                 && null != enrollments.section_enrollments.section_enrollment) {
                             for(SectionEnrollment se : enrollments.section_enrollments.section_enrollment) {
-                                Student edpanelStudent = this.students.get(new Long(s.getSourceSystemId())).get(se.getStudent_id());
-                                if(null != se) {
+                                Student edpanelStudent = this.students.get(se.getStudent_id());
+                                if(null == edpanelStudent) {
+                                    System.out.println("null Student!");
+                                }
+                                if(null != se && null != edpanelStudent) {
                                     StudentSectionGrade ssg = new StudentSectionGrade();
                                     ssg.setStudent(edpanelStudent);
-                                    ssg.setSection(edpanelSection);
+                                    ssg.setSection(createdSection);
                                     if(createdSection.getEndDate().compareTo(new Date()) < 0) {
                                         //TODO: figure out if the section is over and if so, resolve the student grade
                                         ssg.setComplete(true);
@@ -160,13 +165,18 @@ public class ETLEngine implements IETLEngine {
                                         ssg.setComplete(false);
                                     }
                                     //CREATE THE ENROLLMENT IN EDPANEL
-//                                    scholarScore.createStudentSectionGrade(
-//                                            s.getId(), 
-//                                            sectionTerm.getSchoolYear().getId(),
-//                                            sectionTerm.getId(),
-//                                            createdSection.getId(),
-//                                            edpanelStudent.getId(),
-//                                            ssg);
+                                    StudentSectionGrade createdSsg = null;
+                                    try { 
+                                        createdSsg = scholarScore.createStudentSectionGrade(
+                                            s.getId(), 
+                                            sectionTerm.getSchoolYear().getId(),
+                                            sectionTerm.getId(),
+                                            createdSection.getId(),
+                                            edpanelStudent.getId(),
+                                            ssg);
+                                    } catch (HttpClientException e) {
+                                        System.out.println("failed to create ssg!");
+                                    }
                                     ssgs.add(ssg);
                                 }
                             }
@@ -176,15 +186,15 @@ public class ETLEngine implements IETLEngine {
                         //CREATE THE ASSIGNMENTS FOR THE SECTION:
                         //TODO: first resolve the assignment categories, so we can construct the appropriate EdPanel assignment subclass
                         //Now iterate over all the assignments and construct the correct type of EdPanel assignment
-                        PGAssignments powerAssignments = powerSchool.getAssignmentsBySectionId(powerSection.getId());
-                        if(null != powerAssignments && null != powerAssignments.records) {
-                            for(PGAssignment powerAssignment : powerAssignments.records) {
-                                com.scholarscore.etl.powerschool.api.model.assignment.Assignment pa = 
-                                        powerAssignment.tables.pgassignments;
-                                //TODO: impl toEdPanelModel()...
-                            }
-                            
-                        }
+//                        PGAssignments powerAssignments = powerSchool.getAssignmentsBySectionId(powerSection.getId());
+//                        if(null != powerAssignments && null != powerAssignments.records) {
+//                            for(PGAssignment powerAssignment : powerAssignments.records) {
+//                                com.scholarscore.etl.powerschool.api.model.assignment.Assignment pa = 
+//                                        powerAssignment.tables.pgassignments;
+//                                //TODO: impl toEdPanelModel()...
+//                            }
+//                            
+//                        }
                     }
                 }
             }
@@ -282,20 +292,19 @@ public class ETLEngine implements IETLEngine {
         return result;
     }
 
-    private Map<Long, Map<Long, Student>> createStudents() {
-        Map<Long, Map<Long, Student>> studentsBySchoolAndId = new HashMap<>();
+    private Map<Long, Student> createStudents() {
+        Map<Long, Student> studentsBySchoolAndId = new HashMap<>();
         for (School school : schools) {
             Long schoolId = Long.valueOf(school.getSourceSystemId());
             Students response = powerSchool.getStudentsBySchool(schoolId);
             Collection<Student> apiListOfStudents = response.toInternalModel();
 
             List<Student> students = new ArrayList<>();
-            studentsBySchoolAndId.put(schoolId, new HashMap<>());
             apiListOfStudents.forEach(student -> {
                 student.setCurrentSchoolId(school.getId());
                 Student createdStudent = scholarScore.createStudent(student);
                 student.setId(createdStudent.getId());
-                studentsBySchoolAndId.get(schoolId).put(new Long(student.getSourceSystemId()), student);
+                studentsBySchoolAndId.put(new Long(student.getSourceSystemId()), student);
             });
         }
         return studentsBySchoolAndId;
