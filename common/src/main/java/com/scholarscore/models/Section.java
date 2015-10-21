@@ -60,6 +60,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected transient List<Assignment> assignments;
     protected List<StudentSectionGrade> studentSectionGrades;
     protected Set<Teacher> teachers;
+    protected String sourceSystemId;
     
     public Section() {
         super();
@@ -81,6 +82,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         enrolledStudents = sect.enrolledStudents;
         assignments = sect.assignments;
         gradeFormula = sect.gradeFormula;
+        sourceSystemId = sect.sourceSystemId;
     }
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -206,6 +208,15 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.studentSectionGrades = grades;
     }
 
+    @Column(name = HibernateConsts.SECTION_SOURCE_SYSTEM_ID)
+    public String getSourceSystemId() {
+        return sourceSystemId;
+    }
+
+    public void setSourceSystemId(String sourceSystemId) {
+        this.sourceSystemId = sourceSystemId;
+    }
+
     public Student findEnrolledStudentById(Long id) {
         Student student = null;
         if(null != id && null != enrolledStudents && !enrolledStudents.isEmpty()) {
@@ -289,6 +300,9 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         if(null == studentSectionGrades) {
             studentSectionGrades = mergeFrom.studentSectionGrades;
         }
+        if(null == sourceSystemId) {
+            sourceSystemId = mergeFrom.sourceSystemId;
+        }
     }
     
     @Override
@@ -304,12 +318,13 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 Objects.equals(this.enrolledStudents, other.enrolledStudents) &&
                 Objects.equals(this.assignments, other.assignments) &&
                 Objects.equals(this.studentSectionGrades, other.studentSectionGrades) &&
+                Objects.equals(this.sourceSystemId, other.sourceSystemId) &&
                 Objects.equals(this.gradeFormula, other.gradeFormula);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(course, startDate, endDate, 
+        return 31 * super.hashCode() + Objects.hash(course, startDate, endDate, sourceSystemId,
                 room, enrolledStudents, assignments, gradeFormula, studentSectionGrades);
     }
     

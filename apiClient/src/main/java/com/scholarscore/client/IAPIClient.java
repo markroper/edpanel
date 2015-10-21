@@ -30,4 +30,12 @@ public interface IAPIClient {
     Course createCourse(Long schoolId, Course course);
     SchoolYear createSchoolYear(Long schoolId, SchoolYear year);
     Term createTerm(Long schoolId, Long schoolYearId, Term year);
+    Section createSection(Long schoolId, Long schoolYearId, Long termId, Section section);
+    StudentSectionGrade createStudentSectionGrade(
+            Long schoolId, 
+            Long yearId,
+            Long termId,
+            Long sectionIf,
+            Long studentId,
+            StudentSectionGrade ssg);
 }
