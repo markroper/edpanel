@@ -2,9 +2,12 @@ package com.scholarscore.etl.powerschool.client;
 
 import com.scholarscore.etl.powerschool.api.deserializers.IDeserialize;
 import com.scholarscore.etl.powerschool.api.model.Courses;
+import com.scholarscore.etl.powerschool.api.model.SectionEnrollments;
+import com.scholarscore.etl.powerschool.api.model.Sections;
 import com.scholarscore.etl.powerschool.api.model.Staff;
 import com.scholarscore.etl.powerschool.api.model.Staffs;
 import com.scholarscore.etl.powerschool.api.model.Students;
+import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
 import com.scholarscore.etl.powerschool.api.response.*;
 
 import java.util.List;
@@ -27,7 +30,11 @@ public interface IPowerSchoolClient {
 
     TermResponse getTermsBySchoolId(Long schoolId);
 
-    SectionResponse getSectionsBySchoolId(Long schoolId);
+    public SectionResponse getSectionsBySchoolId(Long schoolId);
+    
+    public SectionEnrollmentsResponse getEnrollmentBySectionId(Long sectionId);
+    
+    public PGAssignments getAssignmentsBySectionId(Long sectionId);
 
     String executeNamedQuery(String tableName);
 

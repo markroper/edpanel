@@ -57,7 +57,7 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
         for (School school : client.getSchools().schools.school) {
             SectionResponse sectionResponse = client.getSectionsBySchoolId(school.id);
             assertNotNull(sectionResponse);
-            assertNotNull(sectionResponse.sections);
+            assertNotNull(sectionResponse.sections.section);
         }
     }
 

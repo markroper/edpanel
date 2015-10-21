@@ -151,7 +151,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     public User createUser(User login) {
         EntityId id = create(login, USERS_ENDPOINT);
         User response = UserType.clone(login);
-        response.setId(login.getId());
+        response.setId(id.getId());
         return response;
     }
 
@@ -176,6 +176,36 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     public Term createTerm(Long schoolId, Long schoolYearId, Term term) {
         Term response = new Term(term);
         EntityId id = create(term, SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId + TERM_ENDPOINT);
+        response.setId(id.getId());
+        return response;
+    }
+    
+    @Override
+    public Section createSection(
+            Long schoolId, 
+            Long schoolYearId, 
+            Long termId,
+            Section section) {
+        Section response = new Section(section);
+        EntityId id = create(section, 
+                SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId + TERM_ENDPOINT + "/" + termId + SECTION_ENDPOINT);
+        response.setId(id.getId());
+        return response;
+    }
+    
+    @Override
+    public StudentSectionGrade createStudentSectionGrade(
+            Long schoolId,
+            Long yearId, 
+            Long termId, 
+            Long sectionId, 
+            Long studentId,
+            StudentSectionGrade ssg) {
+        StudentSectionGrade response = new StudentSectionGrade(ssg);
+        EntityId id = create(ssg, 
+                SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT + "/" + yearId + 
+                TERM_ENDPOINT + "/" + termId + SECTION_ENDPOINT + "/" + sectionId + 
+                STUDENT_SECTION_GRADE_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId);
         response.setId(id.getId());
         return response;
     }

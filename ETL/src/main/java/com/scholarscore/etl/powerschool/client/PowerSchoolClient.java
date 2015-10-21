@@ -9,9 +9,13 @@ import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
 import com.scholarscore.etl.powerschool.api.deserializers.NaturalDeserializer;
 import com.scholarscore.etl.powerschool.api.model.Courses;
+import com.scholarscore.etl.powerschool.api.model.SectionEnrollments;
+import com.scholarscore.etl.powerschool.api.model.Sections;
 import com.scholarscore.etl.powerschool.api.model.Staffs;
 import com.scholarscore.etl.powerschool.api.model.Students;
+import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
 import com.scholarscore.etl.powerschool.api.response.*;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
@@ -46,7 +50,9 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
 
     public static final String PATH_RESOURCE_COURSE = "/ws/v1/school/{0}/course";
     public static final String PATH_RESOURCE_TERMS = "/ws/v1/school/{0}/term";
-    public static final String PATH_RESOURCE_SECTION = "/ws/v1/school/{0}/section?expansions=term";
+    public static final String PATH_RESOURCE_SECTION = "/ws/v1/school/{0}/section";
+    public static final String PATH_RESOURCE_SECTION_ENROLLMENT = "/ws/v1/section/{0}/section_enrollment";
+    public static final String PATH_RESOURCE_SECTION_ASSIGNMENTS = "/ws/schema/table/PGAssignments?projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
 
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";
     private static final String URI_PATH_OATH = "/oauth/access_token";
@@ -182,8 +188,19 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
         return getJackson(Courses.class, PATH_RESOURCE_COURSE, schoolId.toString());
     }
 
-    public void getSectionsBySchool(Long schoolId) {
-        get(SectionResponse.class, PATH_RESOURCE_SECTION, schoolId.toString());
+    @Override
+    public SectionResponse getSectionsBySchoolId(Long schoolId) {
+        return get(SectionResponse.class, PATH_RESOURCE_SECTION, schoolId.toString());
+    }
+    
+    @Override
+    public SectionEnrollmentsResponse getEnrollmentBySectionId(Long sectionId) {
+        return get(SectionEnrollmentsResponse.class, PATH_RESOURCE_SECTION_ENROLLMENT, sectionId.toString());
+    }
+    
+    @Override
+    public PGAssignments getAssignmentsBySectionId(Long sectionId) {
+        return get(PGAssignments.class, PATH_RESOURCE_SECTION_ASSIGNMENTS, sectionId.toString()); 
     }
 
     public Object getAsMap(String path) {
@@ -193,11 +210,6 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     @Override
     public TermResponse getTermsBySchoolId(Long schoolId) {
         return get(TermResponse.class, PATH_RESOURCE_TERMS, schoolId.toString());
-    }
-
-    @Override
-    public SectionResponse getSectionsBySchoolId(Long schoolId) {
-        return get(SectionResponse.class, PATH_RESOURCE_SECTION, schoolId.toString());
     }
 
     protected void setupCommonHeaders(HttpRequest req) {

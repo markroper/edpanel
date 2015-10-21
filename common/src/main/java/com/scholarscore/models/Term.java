@@ -29,6 +29,7 @@ import javax.persistence.Table;
 public class Term extends ApiModel implements Serializable, IApiModel<Term>{
     protected Date startDate;
     protected Date endDate;
+    protected String sourceSystemId;
     protected SchoolYear schoolYear;
 
     public Term() {
@@ -40,6 +41,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         this.schoolYear = year.schoolYear;
         this.startDate = year.startDate;
         this.endDate = year.endDate;
+        this.sourceSystemId = year.sourceSystemId;
     }
 
     @Id
@@ -85,6 +87,15 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         this.endDate = endDate;
     }
 
+    @Column(name = HibernateConsts.TERM_SOURCE_SYSTEM_ID)
+    public String getSourceSystemId() {
+        return sourceSystemId;
+    }
+
+    public void setSourceSystemId(String sourceSystemId) {
+        this.sourceSystemId = sourceSystemId;
+    }
+
     @Override
     public void mergePropertiesIfNull(Term mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);     
@@ -97,6 +108,9 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         if (null == this.schoolYear) {
             this.schoolYear = mergeFrom.schoolYear;
         }
+        if (null == this.sourceSystemId) {
+            this.sourceSystemId = mergeFrom.sourceSystemId;
+        }
     }
     
     @Override
@@ -107,12 +121,13 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         final Term other = (Term) obj;
         return Objects.equals(this.startDate, other.startDate) 
                 && Objects.equals(this.endDate, other.endDate)
+                && Objects.equals(this.sourceSystemId, other.sourceSystemId)
                 && Objects.equals(this.schoolYear, other.schoolYear);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(startDate, endDate, schoolYear);
+        return 31 * super.hashCode() + Objects.hash(startDate, endDate, sourceSystemId, schoolYear);
     }
 
     @Override
@@ -120,6 +135,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         return "Term{" + "(super:{" + super.toString() + "})" + 
                 "startDate=" + startDate +
                 ", endDate=" + endDate +
+                ", sourceSystemId=" + sourceSystemId +
                 ", schoolYear=" + schoolYear +
                 '}';
     }
