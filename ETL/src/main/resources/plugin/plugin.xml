@@ -203,13 +203,21 @@
 	    <field table="PGAssignments" field="SectionID" access="ViewOnly" />
 	    <field table="PGAssignments" field="Type" access="ViewOnly" />
 	    <field table="PGAssignments" field="Weight" access="ViewOnly" />
-	    <field table="PGCategories," field="Abbreviation" access="ViewOnly" />
-	    <field table="PGCategories," field="DCID" access="ViewOnly" />
-	    <field table="PGCategories," field="DefaultPtsPoss" access="ViewOnly" />
-	    <field table="PGCategories," field="Description" access="ViewOnly" />
-	    <field table="PGCategories," field="ID" access="ViewOnly" />
-	    <field table="PGCategories," field="Name" access="ViewOnly" />
-	    <field table="PGCategories," field="SectionID" access="ViewOnly" />
+	    <field table="PGCategories" field="Abbreviation" access="ViewOnly" />
+	    <field table="PGCategories" field="DCID" access="ViewOnly" />
+	    <field table="PGCategories" field="DefaultPtsPoss" access="ViewOnly" />
+	    <field table="PGCategories" field="Description" access="ViewOnly" />
+	    <field table="PGCategories" field="ID" access="ViewOnly" />
+	    <field table="PGCategories" field="Name" access="ViewOnly" />
+	    <field table="PGCategories" field="SectionID" access="ViewOnly" />
+	    <field table="PGScores" field="Comment_Value" access="ViewOnly" />
+	    <field table="PGScores" field="DCID" access="ViewOnly" />
+	    <field table="PGScores" field="Grade" access="ViewOnly" />
+	    <field table="PGScores" field="ID" access="ViewOnly" />
+	    <field table="PGScores" field="PGAssignmentsID" access="ViewOnly" />
+	    <field table="PGScores" field="Percent" access="ViewOnly" />
+	    <field table="PGScores" field="PercentStr" access="ViewOnly" />
+	    <field table="PGScores" field="StudentID" access="ViewOnly" />
 	    <field table="StoredGrades" field="DCID" access="ViewOnly" />
 	    <field table="StoredGrades" field="AB_Course_Cmp_Ext_Crd" access="ViewOnly" />
 	    <field table="StoredGrades" field="AB_Course_Cmp_Fun_Flg" access="ViewOnly" />
