@@ -1,5 +1,6 @@
 package com.scholarscore.etl;
 
+import com.google.gson.JsonSyntaxException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.api.model.*;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignment;
@@ -135,7 +136,14 @@ public class ETLEngine implements IETLEngine {
                         
                         //CREATE ENROLLED STUDENTS' STUDENTSECTIONGRADE INSTANCES
                         //Resolve enrolled students & Create an EdPanel StudentSectionGrade for each
-                        SectionEnrollmentsResponse enrollments = powerSchool.getEnrollmentBySectionId(powerSection.getId());
+                        
+                        SectionEnrollmentsResponse enrollments = null;
+                        try {
+                            enrollments = powerSchool.getEnrollmentBySectionId(powerSection.getId());
+                        } catch(JsonSyntaxException e) {
+                            //TODO: if a single record comes back, PowerSchool doesn't send an array and the marshalling fails :(
+                            System.out.println("failed to unmarshall section enrollments: " + e.getMessage());
+                        }
                         List<StudentSectionGrade> ssgs = new ArrayList<>();
                         if(null != enrollments && null != enrollments.section_enrollments 
                                 && null != enrollments.section_enrollments.section_enrollment) {
