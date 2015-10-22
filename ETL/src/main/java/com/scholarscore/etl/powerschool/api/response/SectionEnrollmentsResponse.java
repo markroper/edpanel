@@ -1,7 +1,7 @@
 package com.scholarscore.etl.powerschool.api.response;
 
-import com.scholarscore.etl.powerschool.api.model.SectionEnrollments;
+import com.scholarscore.etl.powerschool.api.model.PsSectionEnrollments;
 
 public class SectionEnrollmentsResponse {
-    public SectionEnrollments section_enrollments;
+    public PsSectionEnrollments section_enrollments;
 }

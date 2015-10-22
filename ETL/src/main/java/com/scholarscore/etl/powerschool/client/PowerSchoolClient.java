@@ -8,11 +8,9 @@ import com.scholarscore.client.BaseHttpClient;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
 import com.scholarscore.etl.powerschool.api.deserializers.NaturalDeserializer;
-import com.scholarscore.etl.powerschool.api.model.Courses;
-import com.scholarscore.etl.powerschool.api.model.SectionEnrollments;
-import com.scholarscore.etl.powerschool.api.model.Sections;
-import com.scholarscore.etl.powerschool.api.model.Staffs;
-import com.scholarscore.etl.powerschool.api.model.Students;
+import com.scholarscore.etl.powerschool.api.model.PsCourses;
+import com.scholarscore.etl.powerschool.api.model.PsStaffs;
+import com.scholarscore.etl.powerschool.api.model.PsStudents;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
 import com.scholarscore.etl.powerschool.api.response.*;
 
@@ -52,7 +50,7 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     public static final String PATH_RESOURCE_TERMS = "/ws/v1/school/{0}/term";
     public static final String PATH_RESOURCE_SECTION = "/ws/v1/school/{0}/section";
     public static final String PATH_RESOURCE_SECTION_ENROLLMENT = "/ws/v1/section/{0}/section_enrollment";
-    public static final String PATH_RESOURCE_SECTION_ASSIGNMENTS = "/ws/schema/table/PGAssignments?projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
+    public static final String PATH_RESOURCE_SECTION_ASSIGNMENTS = "/ws/schema/table/PGAssignments?projection=PsName,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
 
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";
     private static final String URI_PATH_OATH = "/oauth/access_token";
@@ -124,8 +122,8 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
      * @return
      */
     @Override
-    public Staffs getStaff(Long schoolId) {
-        return getJackson(Staffs.class, PATH_RESOURCE_STAFF + EXPANSION_RESOURCE_STAFF, schoolId.toString());
+    public PsStaffs getStaff(Long schoolId) {
+        return getJackson(PsStaffs.class, PATH_RESOURCE_STAFF + EXPANSION_RESOURCE_STAFF, schoolId.toString());
     }
 
     protected <T> T getJackson(Class<T> clazz, String path, String ...params) {
@@ -179,13 +177,13 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     }
 
     @Override
-    public Students getStudentsBySchool(Long schoolId) {
-        return getJackson(Students.class, PATH_RESOURCE_STUDENT, schoolId.toString());
+    public PsStudents getStudentsBySchool(Long schoolId) {
+        return getJackson(PsStudents.class, PATH_RESOURCE_STUDENT, schoolId.toString());
     }
 
     @Override
-    public Courses getCoursesBySchool(Long schoolId) {
-        return getJackson(Courses.class, PATH_RESOURCE_COURSE, schoolId.toString());
+    public PsCourses getCoursesBySchool(Long schoolId) {
+        return getJackson(PsCourses.class, PATH_RESOURCE_COURSE, schoolId.toString());
     }
 
     @Override
