@@ -3,7 +3,7 @@ package com.scholarscore.etl.powerschool.api.model;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.scholarscore.etl.powerschool.api.deserializers.StaffsDeserializer;
 import com.scholarscore.etl.powerschool.api.response.ITranslateCollection;
-import com.scholarscore.models.*;
+import com.scholarscore.models.Address;
 import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
@@ -31,7 +31,7 @@ public class PsStaffs extends ArrayList<PsStaff> implements ITranslateCollection
             }
             
             if (null != staff.phones && null != staff.phones.home_phone) {
-                ((com.scholarscore.models.user.Person)entity).setHomePhone(staff.phones.home_phone);
+                entity.setHomePhone(staff.phones.home_phone);
             }
             if (null != staff.addresses && null != staff.addresses.home) {
                 Address homeAddress = new Address();
@@ -39,7 +39,7 @@ public class PsStaffs extends ArrayList<PsStaff> implements ITranslateCollection
                 homeAddress.setPostalCode(staff.addresses.home.postal_code);
                 homeAddress.setState(staff.addresses.home.state_province);
                 homeAddress.setStreet(staff.addresses.home.street);
-                ((com.scholarscore.models.user.Person)entity).setHomeAddress(homeAddress);
+                entity.setHomeAddress(homeAddress);
             }
 
             entity.setName(staff.name.toString());
