@@ -1,6 +1,6 @@
 package com.scholarscore.etl.powerschool.api.response;
 
-import com.scholarscore.etl.powerschool.api.model.Staffs;
+import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.models.user.User;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -8,15 +8,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
 
 /**
- * Ideally there will be a Staff type object in our API that extends from User from
- * which we can differentiate a Teacher, from a Staff from a Student from a User (whomever that is?)
+ * Ideally there will be a PsStaff type object in our API that extends from User from
+ * which we can differentiate a Teacher, from a PsStaff from a PsStudent from a User (whomever that is?)
  *
  * Created by mattg on 7/2/15.
  */
 @XmlRootElement(name = "staffs")
 public class StaffResponse implements ITranslateCollection<com.scholarscore.models.user.User> {
 
-    public Staffs staffs;
+    public PsStaffs staffs;
 
     @Override
     public String toString() {
