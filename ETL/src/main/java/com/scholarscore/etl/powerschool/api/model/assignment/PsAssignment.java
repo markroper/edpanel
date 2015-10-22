@@ -23,7 +23,7 @@ public class PsAssignment {
     private String publishstate;
     private Long publishdaysbeforedue;
     private Date publishspecificdate;
-    private Long weight;
+    private Double weight;
     public Long getId() {
         return id;
     }
@@ -102,10 +102,10 @@ public class PsAssignment {
     public void setPublishspecificdate(Date publishspecificdate) {
         this.publishspecificdate = publishspecificdate;
     }
-    public Long getWeight() {
+    public Double getWeight() {
         return weight;
     }
-    public void setWeight(Long weight) {
+    public void setWeight(Double weight) {
         this.weight = weight;
     }
 }

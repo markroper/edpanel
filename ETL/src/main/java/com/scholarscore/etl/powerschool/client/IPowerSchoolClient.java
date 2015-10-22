@@ -5,6 +5,7 @@ import com.scholarscore.etl.powerschool.api.model.PsCourses;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
+import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentTypes;
 import com.scholarscore.etl.powerschool.api.response.*;
 
 import java.util.List;
@@ -32,6 +33,8 @@ public interface IPowerSchoolClient {
     public SectionEnrollmentsResponse getEnrollmentBySectionId(Long sectionId);
     
     public PGAssignments getAssignmentsBySectionId(Long sectionId);
+
+    public PGAssignmentTypes getAssignmentTypesBySectionId(Long sectionId);
 
     String executeNamedQuery(String tableName);
 

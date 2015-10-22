@@ -35,7 +35,14 @@ public interface IAPIClient {
             Long schoolId, 
             Long yearId,
             Long termId,
-            Long sectionIf,
+            Long sectionId,
             Long studentId,
             StudentSectionGrade ssg);
+
+    Assignment createSectionAssignment(
+            Long schoolId,
+            Long yearId,
+            Long termId,
+            Long sectionId,
+            Assignment ssg);
 }

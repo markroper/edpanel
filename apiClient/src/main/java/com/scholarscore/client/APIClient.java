@@ -3,6 +3,7 @@ package com.scholarscore.client;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.models.*;
+import com.scholarscore.models.factory.AssignmentFactory;
 import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
@@ -206,6 +207,17 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
                 SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT + "/" + yearId + 
                 TERM_ENDPOINT + "/" + termId + SECTION_ENDPOINT + "/" + sectionId + 
                 STUDENT_SECTION_GRADE_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId);
+        response.setId(id.getId());
+        return response;
+    }
+
+    @Override
+    public Assignment createSectionAssignment(Long schoolId, Long yearId, Long termId, Long sectionId, Assignment a) {
+        Assignment response = AssignmentFactory.cloneAssignment(a);
+        EntityId id = create(a,
+                SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT + "/" + yearId +
+                TERM_ENDPOINT + "/" + termId + SECTION_ENDPOINT + "/" + sectionId +
+                SECTION_ASSIGNMENT_ENDPOINT);
         response.setId(id.getId());
         return response;
     }

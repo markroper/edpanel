@@ -3,5 +3,5 @@ import java.util.List;
 
 public class PGAssignments {
     public String name;
-    public List<PGAssignment> records;
+    public List<PGAssignment> record;
 }
