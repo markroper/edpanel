@@ -28,4 +28,21 @@ public interface IAPIClient {
     Administrator createAdministrator(Administrator administrator);
     User createUser(User login);
     Course createCourse(Long schoolId, Course course);
+    SchoolYear createSchoolYear(Long schoolId, SchoolYear year);
+    Term createTerm(Long schoolId, Long schoolYearId, Term year);
+    Section createSection(Long schoolId, Long schoolYearId, Long termId, Section section);
+    StudentSectionGrade createStudentSectionGrade(
+            Long schoolId, 
+            Long yearId,
+            Long termId,
+            Long sectionId,
+            Long studentId,
+            StudentSectionGrade ssg);
+
+    Assignment createSectionAssignment(
+            Long schoolId,
+            Long yearId,
+            Long termId,
+            Long sectionId,
+            Assignment ssg);
 }

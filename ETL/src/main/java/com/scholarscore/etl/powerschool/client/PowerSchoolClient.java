@@ -7,10 +7,14 @@ import com.google.gson.GsonBuilder;
 import com.scholarscore.client.BaseHttpClient;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
-import com.scholarscore.etl.powerschool.api.model.Courses;
-import com.scholarscore.etl.powerschool.api.model.Staffs;
-import com.scholarscore.etl.powerschool.api.model.Students;
+import com.scholarscore.etl.powerschool.api.deserializers.NaturalDeserializer;
+import com.scholarscore.etl.powerschool.api.model.PsCourses;
+import com.scholarscore.etl.powerschool.api.model.PsStaffs;
+import com.scholarscore.etl.powerschool.api.model.PsStudents;
+import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
+import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentTypes;
 import com.scholarscore.etl.powerschool.api.response.*;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
@@ -19,8 +23,11 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.message.BasicHeader;
 
+import com.scholarscore.etl.powerschool.api.deserializers.IDeserialize;
+
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 /**
  * Created by mattg on 7/2/15.
@@ -42,10 +49,17 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
 
     public static final String PATH_RESOURCE_COURSE = "/ws/v1/school/{0}/course";
     public static final String PATH_RESOURCE_TERMS = "/ws/v1/school/{0}/term";
-    public static final String PATH_RESOURCE_SECTION = "/ws/v1/school/{0}/section?expansions=term";
+    public static final String PATH_RESOURCE_SECTION = "/ws/v1/school/{0}/section";
+    public static final String PATH_RESOURCE_SECTION_ENROLLMENT = "/ws/v1/section/{0}/section_enrollment";
+    public static final String PATH_RESOURCE_SECTION_ASSIGNMENTS = "/ws/schema/table/PGAssignments?projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
+    public static final String PATH_RESOURCE_SECTION_ASSIGNMENT_CATEGORY = "/ws/schema/table/pgcategories?q=SectionID=={0}&projection=Abbreviation,DCID,DefaultPtsPoss,Description,ID,Name,SectionID";
 
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";
     private static final String URI_PATH_OATH = "/oauth/access_token";
+
+    // Invoke a named query - the query name originates from the file myedpanel.named_queries.xml, {0} below is the table
+    // name to query against
+    private static final String PATH_NAMED_QUERY = "/ws/schema/query/com.edpanel.queries.{0}";
     private final String clientSecret;
     private final String clientId;
 
@@ -110,8 +124,8 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
      * @return
      */
     @Override
-    public Staffs getStaff(Long schoolId) {
-        return getJackson(Staffs.class, PATH_RESOURCE_STAFF + EXPANSION_RESOURCE_STAFF, schoolId.toString());
+    public PsStaffs getStaff(Long schoolId) {
+        return getJackson(PsStaffs.class, PATH_RESOURCE_STAFF + EXPANSION_RESOURCE_STAFF, schoolId.toString());
     }
 
     protected <T> T getJackson(Class<T> clazz, String path, String ...params) {
@@ -129,18 +143,69 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
         }
     }
 
+    public String executeNamedQuery(String tableName) {
+        String path = getPath(PATH_NAMED_QUERY, tableName);
+        return post("{ }".getBytes(), path);
+    }
+
+    /**
+     * Generic transformer that converts a named query (table sturcture) into a object of type T which must extend
+     * ApiModel.
+     *
+     * @param clazz
+     *      The class to return
+     *
+     * @param tableName
+     *      The table name to query
+     *
+     * @param deserializer
+     *      The implementation of the deserializer which does the transformation direct to the API model
+     *
+     * @return
+     *      A list of type T, for example if the table is a room, then each T is a room but running a named query
+     *      returns multiple rooms thus this method returns List<T>
+     */
     @Override
-    public Students getStudentsBySchool(Long schoolId) {
-        return getJackson(Students.class, PATH_RESOURCE_STUDENT, schoolId.toString());
+    public <T> List<T> namedQuery(Class<T> clazz, String tableName, IDeserialize<T> deserializer) {
+        String json = executeNamedQuery(tableName);
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Object.class, new NaturalDeserializer());
+        Gson gson = gsonBuilder.create();
+
+        Object natural = gson.fromJson(json, Object.class);
+
+        return deserializer.deserialize(clazz, natural);
     }
 
     @Override
-    public Courses getCoursesBySchool(Long schoolId) {
-        return getJackson(Courses.class, PATH_RESOURCE_COURSE, schoolId.toString());
+    public PsStudents getStudentsBySchool(Long schoolId) {
+        return getJackson(PsStudents.class, PATH_RESOURCE_STUDENT, schoolId.toString());
     }
 
-    public void getSectionsBySchool(Long schoolId) {
-        get(SectionResponse.class, PATH_RESOURCE_SECTION, schoolId.toString());
+    @Override
+    public PsCourses getCoursesBySchool(Long schoolId) {
+        return getJackson(PsCourses.class, PATH_RESOURCE_COURSE, schoolId.toString());
+    }
+
+    @Override
+    public SectionResponse getSectionsBySchoolId(Long schoolId) {
+        return get(SectionResponse.class, PATH_RESOURCE_SECTION, schoolId.toString());
+    }
+    
+    @Override
+    public SectionEnrollmentsResponse getEnrollmentBySectionId(Long sectionId) {
+        return get(SectionEnrollmentsResponse.class, PATH_RESOURCE_SECTION_ENROLLMENT, sectionId.toString());
+    }
+    
+    @Override
+    public PGAssignments getAssignmentsBySectionId(Long sectionId) {
+        return get(PGAssignments.class, PATH_RESOURCE_SECTION_ASSIGNMENTS, sectionId.toString()); 
+    }
+
+    @Override
+    public PGAssignmentTypes getAssignmentTypesBySectionId(Long sectionId) {
+        return get(PGAssignmentTypes.class, PATH_RESOURCE_SECTION_ASSIGNMENT_CATEGORY, sectionId.toString());
     }
 
     public Object getAsMap(String path) {
@@ -150,11 +215,6 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     @Override
     public TermResponse getTermsBySchoolId(Long schoolId) {
         return get(TermResponse.class, PATH_RESOURCE_TERMS, schoolId.toString());
-    }
-
-    @Override
-    public SectionResponse getSectionsBySchoolId(Long schoolId) {
-        return get(SectionResponse.class, PATH_RESOURCE_SECTION, schoolId.toString());
     }
 
     protected void setupCommonHeaders(HttpRequest req) {
