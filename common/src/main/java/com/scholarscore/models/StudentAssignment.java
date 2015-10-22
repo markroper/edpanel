@@ -1,19 +1,26 @@
 package com.scholarscore.models;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Objects;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.user.Student;
-
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * Represents the student's performance on an assignment in a specific course.
@@ -28,7 +35,7 @@ import javax.persistence.Table;
 public class StudentAssignment extends ApiModel implements Serializable, WeightedGradable, IApiModel<StudentAssignment> {
     private Boolean completed;
     private Date completionDate;
-    private Long awardedPoints;
+    private Double awardedPoints;
     private Assignment assignment;
     private Student student;
 
@@ -86,7 +93,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
 
     @Override
     @Column(name = HibernateConsts.STUDENT_ASSIGNMENT_AWARDED_POINTS)
-    public Long getAwardedPoints() {
+    public Double getAwardedPoints() {
         return awardedPoints != null ? awardedPoints : null;
     }
 
@@ -108,7 +115,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         return 1;
     }
 
-    public void setAwardedPoints(Long awardedPoints) {
+    public void setAwardedPoints(Double awardedPoints) {
         this.awardedPoints = awardedPoints;
     }
 
