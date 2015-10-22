@@ -105,7 +105,8 @@ public class ETLEngine implements IETLEngine {
     /**
      * Sadly, it is possible for a student not returned by the PowerSchool API /schools/:id/students
      * to end up enrolled in a Section. In these cases, we need to go fetch the student and create
-     * them ad hoc in edpanel in order to enroll them in the section.  Therefore, this method exists...
+     * him/her/it/them ad hoc in edpanel in order to enroll them in the section.  Returns null if the
+     * user cannot be retrieved from PowerSchool.
      * @param schoolId
      * @param powerSchoolStudentId
      */
@@ -193,6 +194,7 @@ public class ETLEngine implements IETLEngine {
                         if(null != enrollments && null != enrollments.section_enrollments 
                                 && null != enrollments.section_enrollments.section_enrollment) {
 
+                            //See if any final grades have been created for the section, and if not, retrieve them
                             SectionScoresResponse sectScores = null;
                             if(createdSection.getEndDate().compareTo(new Date()) < 0) {
                                 sectScores = powerSchool.getSectionScoresBySecionId(
