@@ -1,7 +1,6 @@
 package com.scholarscore.api.persistence.goalCalculators;
 
 import com.scholarscore.api.persistence.StudentAssignmentPersistence;
-import com.scholarscore.models.goal.AttendanceGoal;
 import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.goal.CalculatableAttendance;
 
@@ -26,7 +25,7 @@ public class AttendanceGoalCalc implements GoalCalc<CalculatableAttendance> {
                     dayAttendance.getAssignment().getDueDate().before(goal.getStartDate())) {
                 continue;
             }
-            Long points = dayAttendance.getAwardedPoints();
+            Double points = dayAttendance.getAwardedPoints();
             if (null == points) {
 
             } else if (points == 0) {

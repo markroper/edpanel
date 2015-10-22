@@ -11,6 +11,7 @@ import java.util.Date;
  */
 public class PsAssignment {
     private Long id;
+    private Long dcid;
     private String name;
     private String abbreviation;
     private String description;
@@ -24,6 +25,15 @@ public class PsAssignment {
     private Long publishdaysbeforedue;
     private Date publishspecificdate;
     private Double weight;
+
+    public Long getDcid() {
+        return dcid;
+    }
+
+    public void setDcid(Long dcid) {
+        this.dcid = dcid;
+    }
+
     public Long getId() {
         return id;
     }
