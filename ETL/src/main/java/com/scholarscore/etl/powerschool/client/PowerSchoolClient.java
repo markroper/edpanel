@@ -12,6 +12,7 @@ import com.scholarscore.etl.powerschool.api.model.PsCourses;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
+import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentTypes;
 import com.scholarscore.etl.powerschool.api.response.*;
 
 import org.apache.http.HttpRequest;
@@ -50,7 +51,8 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     public static final String PATH_RESOURCE_TERMS = "/ws/v1/school/{0}/term";
     public static final String PATH_RESOURCE_SECTION = "/ws/v1/school/{0}/section";
     public static final String PATH_RESOURCE_SECTION_ENROLLMENT = "/ws/v1/section/{0}/section_enrollment";
-    public static final String PATH_RESOURCE_SECTION_ASSIGNMENTS = "/ws/schema/table/PGAssignments?projection=PsName,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
+    public static final String PATH_RESOURCE_SECTION_ASSIGNMENTS = "/ws/schema/table/PGAssignments?projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
+    public static final String PATH_RESOURCE_SECTION_ASSIGNMENT_CATEGORY = "/ws/schema/table/pgcategories?q=SectionID=={0}&projection=Abbreviation,DCID,DefaultPtsPoss,Description,ID,Name,SectionID";
 
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";
     private static final String URI_PATH_OATH = "/oauth/access_token";
@@ -199,6 +201,11 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     @Override
     public PGAssignments getAssignmentsBySectionId(Long sectionId) {
         return get(PGAssignments.class, PATH_RESOURCE_SECTION_ASSIGNMENTS, sectionId.toString()); 
+    }
+
+    @Override
+    public PGAssignmentTypes getAssignmentTypesBySectionId(Long sectionId) {
+        return get(PGAssignmentTypes.class, PATH_RESOURCE_SECTION_ASSIGNMENT_CATEGORY, sectionId.toString());
     }
 
     public Object getAsMap(String path) {

@@ -4,16 +4,19 @@ import com.google.gson.JsonSyntaxException;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.api.model.*;
+import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignment;
+import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
+import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignment;
+import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentFactory;
+import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentType;
+import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentTypes;
+import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentType;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionEnrollmentsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.*;
-import com.scholarscore.models.Course;
-import com.scholarscore.models.School;
-import com.scholarscore.models.Section;
-import com.scholarscore.models.Term;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
@@ -36,7 +39,6 @@ public class ETLEngine implements IETLEngine {
     private List<SchoolYear> schoolYears;
     //SourceSystemStudentId to student
     private Map<Long, Student> students;
-    
     //Collections are by sourceSystemSchoolId and if there are nested maps, 
     //the keys are always sourceSystemIds of sub-entities
     private Map<Long, Map<Long, Term>> terms;
@@ -64,7 +66,7 @@ public class ETLEngine implements IETLEngine {
     public MigrationResult migrateDistrict() {
         MigrationResult result = new MigrationResult();
         this.schools = createSchools();
-        migrateSchoolYearsAndTerms();  
+        migrateSchoolYearsAndTerms();
         this.staff = createStaff();
         this.students = createStudents();
         this.courses = createCourses();
@@ -131,7 +133,6 @@ public class ETLEngine implements IETLEngine {
                         
                         //CREATE ENROLLED STUDENTS' STUDENTSECTIONGRADE INSTANCES
                         //Resolve enrolled students & Create an EdPanel StudentSectionGrade for each
-                        
                         SectionEnrollmentsResponse enrollments = null;
                         try {
                             enrollments = powerSchool.getEnrollmentBySectionId(powerSection.getId());
@@ -153,7 +154,7 @@ public class ETLEngine implements IETLEngine {
                                     ssg.setStudent(edpanelStudent);
                                     ssg.setSection(createdSection);
                                     if(createdSection.getEndDate().compareTo(new Date()) < 0) {
-                                        //TODO: figure out if the section is over and if so, resolve the student grade
+                                        //TODO: The section is over, resolve the student grade
                                         ssg.setComplete(true);
                                     } else {
                                         ssg.setComplete(false);
@@ -178,17 +179,37 @@ public class ETLEngine implements IETLEngine {
                         edpanelSection.setStudentSectionGrades(ssgs);
                         
                         //CREATE THE ASSIGNMENTS FOR THE SECTION:
-                        //TODO: first resolve the assignment categories, so we can construct the appropriate EdPanel assignment subclass
+                        //first resolve the assignment categories, so we can construct the appropriate EdPanel assignment subclass
+                        PGAssignmentTypes powerTypes = powerSchool.getAssignmentTypesBySectionId(powerSection.getId());
+                        Map<Long, PsAssignmentType> typeIdToType = new HashMap<>();
+                        if(null != powerTypes && null != powerTypes.record) {
+                            for (PGAssignmentType pat: powerTypes.record) {
+                                if(null != pat.tables && null != pat.tables.pgcategories) {
+                                    typeIdToType.put(
+                                            Long.valueOf(pat.tables.pgcategories.getId()),
+                                            pat.tables.pgcategories);
+                                }
+                            }
+                        }
                         //Now iterate over all the assignments and construct the correct type of EdPanel assignment
-//                        PGAssignments powerAssignments = powerSchool.getAssignmentsBySectionId(powerSection.getId());
-//                        if(null != powerAssignments && null != powerAssignments.records) {
-//                            for(PGAssignment powerAssignment : powerAssignments.records) {
-//                                com.scholarscore.etl.powerschool.api.model.assignment.PsAssignment pa =
-//                                        powerAssignment.tables.pgassignments;
-//                                //TODO: impl toEdPanelModel()...
-//                            }
-//                            
-//                        }
+                        PGAssignments powerAssignments = powerSchool.getAssignmentsBySectionId(powerSection.getId());
+                        if(null != powerAssignments && null != powerAssignments.record) {
+                            for(PGAssignment powerAssignment : powerAssignments.record) {
+                                PsAssignment pa = powerAssignment.tables.pgassignments;
+                                Assignment edpanelAssignment = PsAssignmentFactory.fabricate(
+                                        pa,
+                                        typeIdToType.get(Long.valueOf(pa.getPgcategoriesid())));
+                                edpanelAssignment.setSection(createdSection);
+                                edpanelAssignment.setSectionFK(createdSection.getId());
+                                Assignment createdAssignment = scholarScore.createSectionAssignment(
+                                        s.getId(),
+                                        sectionTerm.getSchoolYear().getId(),
+                                        sectionTerm.getId(),
+                                        createdSection.getId(),
+                                        edpanelAssignment);
+                            }
+
+                        }
                     }
                 }
             }
