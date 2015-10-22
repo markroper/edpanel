@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.scholarscore.etl.powerschool.api.model.Staffs;
+import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 
 import org.apache.commons.io.FileUtils;
 
@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -147,7 +146,7 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
 
     public static void main(String args[]) throws IOException {
         String json = FileUtils.readFileToString(new File("/home/mattg/dev/scholarscore/ETL/src/test/resources/staff.json"));
-        List staffs = mapper.readValue(json, Staffs.class);
+        List staffs = mapper.readValue(json, PsStaffs.class);
         System.out.println(staffs);
     }
 }
