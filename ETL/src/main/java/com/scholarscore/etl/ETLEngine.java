@@ -48,7 +48,7 @@ import java.util.UUID;
  * out entities from the scholarscore database before inserting them into the database rather than assuming a trash
  * and burn strategy.
  *
- * Created by mattg on 7/3/15.
+ * Created by mattg on 7/3/©5.
  */
 public class ETLEngine implements IETLEngine {
 
@@ -84,11 +84,11 @@ public class ETLEngine implements IETLEngine {
     @Override
     public MigrationResult migrateDistrict() {
         MigrationResult result = new MigrationResult();
-        this.schools = createSchools();
+        createSchools();
         migrateSchoolYearsAndTerms();
-        this.staff = createStaff();
-        this.students = createStudents();
-        this.courses = createCourses();
+        createStaff();
+        createStudents();
+        createCourses();
         migrateSections();
         return result;
     }
@@ -188,10 +188,10 @@ public class ETLEngine implements IETLEngine {
                                             createdSection.getId(),
                                             edpanelStudent.getId(),
                                             ssg);
+                                        ssgs.add(createdSsg);
                                     } catch (HttpClientException e) {
                                         System.out.println("failed to create ssg!");
                                     }
-                                    ssgs.add(ssg);
                                 }
                             }
                         }
@@ -310,7 +310,7 @@ public class ETLEngine implements IETLEngine {
         }
     }
     
-    private Map<Long, Map<Long, Course>> createCourses() {
+    private void createCourses() {
 
         Map<Long, Map<Long, Course>> result = new HashMap<>();
         for (School school : schools) {
@@ -324,10 +324,10 @@ public class ETLEngine implements IETLEngine {
                         scholarScore.createCourse(school.getId(), c));
             }
         }
-        return result;
+        this.courses = result;
     }
 
-    private Map<Long, Student> createStudents() {
+    private void createStudents() {
         Map<Long, Student> studentsBySchoolAndId = new HashMap<>();
         for (School school : schools) {
             Long schoolId = Long.valueOf(school.getSourceSystemId());
@@ -342,14 +342,14 @@ public class ETLEngine implements IETLEngine {
                 studentsBySchoolAndId.put(new Long(student.getSourceSystemId()), student);
             });
         }
-        return studentsBySchoolAndId;
+        this.students = studentsBySchoolAndId;
     }
 
     /**
      * Create the user entry along side the teacher and administrator entries
      * @return
      */
-    public Map<Long, Map<Long, User>> createStaff() {
+    public void createStaff() {
         Map<Long, Map<Long, User>> staffBySchool = new HashMap<>();
         for (School school : schools) {
             Long psSchoolId = new Long(school.getSourceSystemId());
@@ -370,16 +370,16 @@ public class ETLEngine implements IETLEngine {
                 }
             });
         }
-        return staffBySchool;
+       this.staff = staffBySchool;
     }
 
-    public List<School> createSchools() {
+    public void createSchools() {
         SchoolsResponse powerSchools = powerSchool.getSchools();
         List<School> schools = (List<School>) powerSchools.toInternalModel();
         for (School school : schools) {
             School response = scholarScore.createSchool(school);
             school.setId(response.getId());
         }
-        return schools;
+        this.schools = schools;
     }
 }
