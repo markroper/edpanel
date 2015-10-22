@@ -3,7 +3,12 @@ package com.scholarscore.etl;
 import com.google.gson.JsonSyntaxException;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
-import com.scholarscore.etl.powerschool.api.model.*;
+import com.scholarscore.etl.powerschool.api.model.PsCourses;
+import com.scholarscore.etl.powerschool.api.model.PsSection;
+import com.scholarscore.etl.powerschool.api.model.PsSectionEnrollment;
+import com.scholarscore.etl.powerschool.api.model.PsStaffs;
+import com.scholarscore.etl.powerschool.api.model.PsStudents;
+import com.scholarscore.etl.powerschool.api.model.PsTerm;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignment;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignment;
@@ -16,12 +21,26 @@ import com.scholarscore.etl.powerschool.api.response.SectionEnrollmentsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.models.*;
+import com.scholarscore.models.Assignment;
+import com.scholarscore.models.Course;
+import com.scholarscore.models.School;
+import com.scholarscore.models.SchoolYear;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.Term;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * This is the E2E flow for powerschool import to scholarScore export - we have references to both clients and
@@ -223,7 +242,7 @@ public class ETLEngine implements IETLEngine {
     private void migrateSchoolYearsAndTerms() {
         if(null != schools) {
             this.terms = new HashMap<>();
-            this.schoolYears = new ArrayList<SchoolYear>();    
+            this.schoolYears = new ArrayList<SchoolYear>();
             for(School s: schools) {
                 //Get all the terms from PowerSchool for the current School
                 String sourceSystemIdString = s.getSourceSystemId();
