@@ -72,7 +72,6 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(json);
     }
 
     private EntityId create(Object obj, String path) {
@@ -268,8 +267,8 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
                                          List<StudentAssignment> studentAssignments) {
         createVoidResponse(studentAssignments,
                 SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT + "/" + yearId +
-                        TERM_ENDPOINT + "/" + termId + SECTION_ENDPOINT + "/" + sectionId +
-                        SECTION_ASSIGNMENT_ENDPOINT + "/" + assignmentId + STUDENT_ASSIGNMENT_ENDPOINT + "/bulk");
+                TERM_ENDPOINT + "/" + termId + SECTION_ENDPOINT + "/" + sectionId +
+                SECTION_ASSIGNMENT_ENDPOINT + "/" + assignmentId + STUDENT_ASSIGNMENT_ENDPOINT + "/bulk");
     }
 
     /**

@@ -352,6 +352,8 @@ public class ETLEngine implements IETLEngine {
                                         }
                                         studentAssignmentsToCreate.add(studAss);
                                     }
+                                    //We've now generated an EdPanel StudentAssignment for each PS student assignment
+                                    //Call the bulk create for student assignments for this assignment.
                                     if(!studentAssignmentsToCreate.isEmpty()) {
                                         edPanel.createStudentAssignments(
                                                 s.getId(),
