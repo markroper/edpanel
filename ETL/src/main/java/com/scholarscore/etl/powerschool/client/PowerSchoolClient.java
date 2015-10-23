@@ -20,7 +20,7 @@ import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionEnrollmentsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionScoreIdsResponse;
-import com.scholarscore.etl.powerschool.api.response.SectionScoresResponse;
+import com.scholarscore.etl.powerschool.api.response.SectionGradesResponse;
 import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 import org.apache.http.HttpRequest;
@@ -59,13 +59,11 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     public static final String PATH_RESOURCE_SECTION_ENROLLMENT = "/ws/v1/section/{0}/section_enrollment";
     public static final String PATH_RESOURCE_SECTION_ASSIGNMENTS = "/ws/schema/table/PGAssignments?projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
     public static final String PATH_RESOURCE_SECTION_ASSIGNMENT_CATEGORY = "/ws/schema/table/pgcategories?q=SectionID=={0}&projection=Abbreviation,DCID,DefaultPtsPoss,Description,ID,Name,SectionID";
-    public static final String PATH_RESOUCE_SECTION_SCORES = "/ws/schema/table/sectionscores?q=SectionID=={0}&projection=DCID,ID,Assignment,Comment,Exempt,Grade,Percent,Score,SectionID,StudentID";
+    public static final String PATH_RESOURCE_SECTION_SCORES = "/ws/schema/table/storedgrades?q=sectionid=={0}&projection=dcid,grade,datestored,studentid,sectionid,termid";
     public static final String PATH_RESOURCE_ASSIGNMENT_SCORES = "/ws/schema/table/SectionScoresAssignments?q=assignment=={0}&projection=*";
     public static final String PATH_RESOURCE_SECTION_SCORE_IDS = "/ws/schema/table/SectionScoresId?q=sectionid=={0}&projection=*";
     // PGScores: "/ws/schema/table/pgscores?projection=PGAssignmentsID,id,grade,dcid,comment_value,percent,percentstr,studentid"
 
-    //TODO: HISTORICAL GRADES FOR COMPLETED SECTIONS:
-    //"/ws/schema/table/storedgrades?projection=dcid,grade,datestored,studentid,sectionid,termid"
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";
     private static final String URI_PATH_OATH = "/oauth/access_token";
 
@@ -157,7 +155,13 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
 
     public String executeNamedQuery(String tableName) {
         String path = getPath(PATH_NAMED_QUERY, tableName);
-        return post("{ }".getBytes(), path);
+        String result = null;
+        try {
+            result = post("{ }".getBytes(), path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     /**
@@ -215,8 +219,8 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     }
 
     @Override
-    public SectionScoresResponse getSectionScoresBySecionId(Long sectionId) {
-        return get(SectionScoresResponse.class, PATH_RESOUCE_SECTION_SCORES, sectionId.toString());
+    public SectionGradesResponse getSectionScoresBySecionId(Long sectionId) {
+        return get(SectionGradesResponse.class, PATH_RESOURCE_SECTION_SCORES, sectionId.toString());
     }
     
     @Override
@@ -231,7 +235,7 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
 
     @Override
     public AssignmentScoresResponse getStudentScoresByAssignmentId(Long assignmentId) {
-        return get(AssignmentScoresResponse.class, PATH_RESOURCE_ASSIGNMENT_SCORES, assignmentId.toString());
+        return get(AssignmentScoresResponse.class, PATH_RESOURCE_ASSIGNMENT_SCORES, 3, assignmentId.toString());
     }
 
     @Override
