@@ -12,7 +12,7 @@ import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionEnrollmentsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionScoreIdsResponse;
-import com.scholarscore.etl.powerschool.api.response.SectionScoresResponse;
+import com.scholarscore.etl.powerschool.api.response.SectionGradesResponse;
 import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 
@@ -42,7 +42,7 @@ public interface IPowerSchoolClient {
     
     SectionEnrollmentsResponse getEnrollmentBySectionId(Long sectionId);
 
-    SectionScoresResponse getSectionScoresBySecionId(Long sectionId);
+    SectionGradesResponse getSectionScoresBySecionId(Long sectionId);
 
     PGAssignments getAssignmentsBySectionId(Long sectionId);
 

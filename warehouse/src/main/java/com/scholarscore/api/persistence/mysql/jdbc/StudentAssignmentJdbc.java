@@ -1,26 +1,15 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.EntityPersistence;
 import com.scholarscore.api.persistence.StudentAssignmentPersistence;
 import com.scholarscore.models.Assignment;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-
 import com.scholarscore.models.StudentAssignment;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
+import java.util.List;
 
 @Transactional
 public class StudentAssignmentJdbc
@@ -57,6 +46,20 @@ public class StudentAssignmentJdbc
         injectAssignment(assignmentId, entity);
         StudentAssignment out = hibernateTemplate.merge(entity);
         return out.getId();
+    }
+
+    @Override
+    public void insertAll(long assignmentId, List<StudentAssignment> studentAssignmentList) {
+        int i = 0;
+        for(StudentAssignment sa : studentAssignmentList) {
+            hibernateTemplate.merge(sa);
+            //Release newly created entities from hibernates session im-memory storage
+            if(i % 20 == 0) {
+                hibernateTemplate.flush();
+                hibernateTemplate.clear();
+            }
+            i++;
+        }
     }
 
     private void injectAssignment(long assignmentId, StudentAssignment entity) {

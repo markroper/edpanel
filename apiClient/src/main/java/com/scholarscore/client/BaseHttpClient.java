@@ -2,11 +2,11 @@ package com.scholarscore.client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
@@ -47,7 +47,6 @@ public abstract class BaseHttpClient {
     public BaseHttpClient(URI uri) {
         this.uri = uri;
         this.httpclient = createClient();
-
         this.gson = createGsonParser();
     }
 
@@ -61,33 +60,41 @@ public abstract class BaseHttpClient {
             builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
             SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
                     builder.build());
-            return HttpClients.custom().setSSLSocketFactory(
-                    sslsf).build();
+            RequestConfig requestConfig = RequestConfig.custom().
+                    setConnectTimeout(3000).
+                    setConnectionRequestTimeout(30000).
+                    setSocketTimeout(30000).build();
+            return HttpClients.custom().
+                    setSSLSocketFactory(sslsf).
+                    setDefaultRequestConfig(requestConfig).
+                    build();
         }
         catch (KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
             throw new HttpClientException(e);
         }
     }
 
-    protected String post(byte[] data, String path) {
+    protected String post(byte[] data, String path) throws IOException {
         String strData = new String(data);
         HttpPost post = new HttpPost();
         post.setURI(uri.resolve(path));
         setupCommonHeaders(post);
         post.setHeader(HEADER_CONTENT_TYPE_JSON);
         post.setEntity(new ByteArrayEntity(data));
+        HttpResponse response = null;
         try {
-            HttpResponse response = httpclient.execute(post);
+            response = httpclient.execute(post);
             int code = response.getStatusLine().getStatusCode();
             String json = EntityUtils.toString(response.getEntity());
             if (code == HttpStatus.SC_CREATED || code == HttpStatus.SC_OK) {
                 return json;
-            }
-            else {
+            } else {
                 throw new HttpClientException("Failed to post to end point: " + post.getURI().toString() + ", status line: " + response.getStatusLine().toString() + ", payload: " + json);
             }
         } catch (IOException e) {
             throw new HttpClientException(e);
+        } finally {
+            response.getEntity().getContent().close();
         }
     }
 
@@ -103,6 +110,29 @@ public abstract class BaseHttpClient {
         return path;
     }
 
+    /**
+     * PowerSchool inexplicably shits the bed on some perfectly valid and simple API calls.  Not clear if
+     * this is rate limiting or throttling or if this is just the ghost in the machine.  For this reason,
+     * this method provides a retry mechanism, recursively calling itself in the event of timeout until
+     * retries < 0, at which point it throws a new HttpClientException.
+     *
+     * @param clazz
+     * @param path
+     * @param retries
+     * @param params
+     * @param <T>
+     * @return
+     */
+    protected <T> T get(Class<T> clazz, String path, int retries, String ...params) {
+        if(retries < 0) {
+            throw new HttpClientException("Retry limit exceeded for API call with URI: " + path);
+        }
+        try {
+            return get(clazz, path, params);
+        } catch(HttpClientException e) {
+            return get(clazz, path, retries - 1, params);
+        }
+    }
     protected <T> T get(Class<T> clazz, String path, String ...params) {
 
         path = getPath(path, params);
@@ -119,14 +149,15 @@ public abstract class BaseHttpClient {
         }
     }
 
-    protected String patch(byte[] data, String path) {
+    protected String patch(byte[] data, String path) throws IOException {
         HttpPatch patch = new HttpPatch();
         patch.setURI(uri.resolve(path));
         setupCommonHeaders(patch);
         patch.setHeader(HEADER_CONTENT_TYPE_JSON);
         patch.setEntity(new ByteArrayEntity(data));
+        HttpResponse response = null;
         try {
-            HttpResponse response = httpclient.execute(patch);
+            response = httpclient.execute(patch);
             int code = response.getStatusLine().getStatusCode();
             String json = EntityUtils.toString(response.getEntity());
             if (code == HttpStatus.SC_CREATED || code == HttpStatus.SC_OK) {
@@ -137,19 +168,24 @@ public abstract class BaseHttpClient {
             }
         } catch (IOException e) {
             throw new HttpClientException(e);
+        } finally {
+            response.getEntity().getContent().close();
         }
     }
 
     protected String getJSON(HttpUriRequest request) throws IOException {
         HttpResponse response = httpclient.execute(request);
-        if (response.getStatusLine().getStatusCode() == 200) {
-            if (null != response) {
-                String responseValue = EntityUtils.toString(response.getEntity());
-                return responseValue;
+        try {
+            if (response.getStatusLine().getStatusCode() == 200) {
+                if (null != response) {
+                    String responseValue = EntityUtils.toString(response.getEntity());
+                    return responseValue;
+                }
+            } else {
+                throw new HttpClientException("Failed to make request to end point: " + request.getURI() + ", status line: " + response.getStatusLine().toString());
             }
-        }
-        else {
-            throw new HttpClientException("Failed to make request to end point: " + request.getURI() + ", status line: " + response.getStatusLine().toString());
+        } finally {
+            response.getEntity().getContent().close();
         }
         return null;
     }
