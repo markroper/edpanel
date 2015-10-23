@@ -8,6 +8,7 @@ import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.StudentAssignment;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by cwallace on 9/16/2015.
@@ -89,6 +90,16 @@ public class StudentAssignmentManagerImpl implements  StudentAssignmentManager {
         }
         return new ServiceResponse<Long>(
                 studentAssignmentPersistence.insert(sectionAssignmentId, studentAssignment));
+    }
+
+    @Override
+    public ServiceResponse<Void> createBulkStudentAssignment(long schoolId, long yrId, long tId, long sId, long assignId, List<StudentAssignment> studentAssignments) {
+        StatusCode code = pm.getAssignmentManager().assignmentExists(schoolId, yrId, tId, sId, assignId);
+        if(!code.isOK()) {
+            return new ServiceResponse<Void>(code);
+        }
+        studentAssignmentPersistence.insertAll(assignId, studentAssignments);
+        return new ServiceResponse<Void>( (Void)null );
     }
 
     @Override

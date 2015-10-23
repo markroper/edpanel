@@ -5,6 +5,7 @@ import com.scholarscore.etl.powerschool.api.deserializers.StudentsDeserializer;
 import com.scholarscore.etl.powerschool.api.response.ITranslateCollection;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.Gender;
+import com.scholarscore.models.user.Student;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,15 +14,15 @@ import java.util.Collection;
  * Created by mattg on 7/3/15.
  */
 @JsonDeserialize(using = StudentsDeserializer.class)
-public class PsStudents extends ArrayList<PsStudent> implements ITranslateCollection<com.scholarscore.models.user.Student> {
+public class PsStudents extends ArrayList<PsStudent> implements ITranslateCollection<Student> {
 
     @Override
-    public Collection<com.scholarscore.models.user.Student> toInternalModel() {
+    public Collection<Student> toInternalModel() {
 
-        Collection<com.scholarscore.models.user.Student> response = new ArrayList<>();
+        Collection<Student> response = new ArrayList<>();
 
         this.forEach(student -> {
-            com.scholarscore.models.user.Student model = new com.scholarscore.models.user.Student();
+            Student model = new Student();
             if (null != student.name) {
                 model.setName(student.name.toString());
             }

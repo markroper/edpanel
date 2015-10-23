@@ -30,7 +30,7 @@ public class GradeUtilTest {
             gradedAssignment.setAvailablePoints(100L);
             StudentAssignment studentAssignment = new StudentAssignment();
             studentAssignment.setAssignment(gradedAssignment);
-            studentAssignment.setAwardedPoints(50L);
+            studentAssignment.setAwardedPoints(50D);
             studentAssignment.setId(i);
             studentAssignments.add(studentAssignment);
         }
@@ -40,7 +40,7 @@ public class GradeUtilTest {
             gradedAssignment.setAvailablePoints(100L);
             StudentAssignment studentAssignment = new StudentAssignment();
             studentAssignment.setAssignment(gradedAssignment);
-            studentAssignment.setAwardedPoints(90L);
+            studentAssignment.setAwardedPoints(90D);
             studentAssignment.setId(i);
             studentAssignments.add(studentAssignment);
         }
@@ -50,7 +50,7 @@ public class GradeUtilTest {
             gradedAssignment.setAvailablePoints(50L);
             StudentAssignment studentAssignment = new StudentAssignment();
             studentAssignment.setAssignment(gradedAssignment);
-            studentAssignment.setAwardedPoints(50L);
+            studentAssignment.setAwardedPoints(50D);
             studentAssignment.setId(i);
             studentAssignments.add(studentAssignment);
         }
@@ -66,7 +66,7 @@ public class GradeUtilTest {
             gradedAssignment.setAvailablePoints(100L);
             WeightedStudentAssignment studentAssignment = new WeightedStudentAssignment();
             studentAssignment.setAssignment(gradedAssignment);
-            studentAssignment.setAwardedPoints(50L);
+            studentAssignment.setAwardedPoints(50D);
             studentAssignment.setId(i);
             studentAssignment.setWeight(2);
             weightedAssignments.add(studentAssignment);
@@ -77,7 +77,7 @@ public class GradeUtilTest {
             gradedAssignment.setAvailablePoints(100L);
             WeightedStudentAssignment studentAssignment = new WeightedStudentAssignment();
             studentAssignment.setAssignment(gradedAssignment);
-            studentAssignment.setAwardedPoints(90L);
+            studentAssignment.setAwardedPoints(90D);
             studentAssignment.setId(i);
             // default weight is 1
             weightedAssignments.add(studentAssignment);
@@ -88,7 +88,7 @@ public class GradeUtilTest {
             gradedAssignment.setAvailablePoints(50L);
             WeightedStudentAssignment studentAssignment = new WeightedStudentAssignment();
             studentAssignment.setAssignment(gradedAssignment);
-            studentAssignment.setAwardedPoints(50L);
+            studentAssignment.setAwardedPoints(50D);
             studentAssignment.setId(i);
             studentAssignment.setWeight(4);
             weightedAssignments.add(studentAssignment);
