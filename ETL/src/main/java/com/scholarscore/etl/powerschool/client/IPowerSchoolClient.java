@@ -42,7 +42,7 @@ public interface IPowerSchoolClient {
     
     SectionEnrollmentsResponse getEnrollmentBySectionId(Long sectionId);
 
-    SectionGradesResponse getSectionScoresBySecionId(Long sectionId);
+    SectionGradesResponse getSectionScoresBySectionId(Long sectionId);
 
     PGAssignments getAssignmentsBySectionId(Long sectionId);
 

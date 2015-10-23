@@ -214,8 +214,8 @@ public class ETLEngine implements IETLEngine {
                             //See if any final grades have been created for the section, and if so, retrieve them
                             Map<Long, PsSectionGrade> studentIdToSectionScore = null;
                             if(createdSection.getEndDate().compareTo(new Date()) < 0) {
-                                SectionGradesResponse sectScores = powerSchool.getSectionScoresBySecionId(
-                                                Long.valueOf(createdSection.getSourceSystemId()));
+                                SectionGradesResponse sectScores = powerSchool.getSectionScoresBySectionId(
+                                        Long.valueOf(createdSection.getSourceSystemId()));
                                 if(null != sectScores && null != sectScores.record) {
                                     studentIdToSectionScore = new HashMap<>();
                                     for(PsSectionGrades ss: sectScores.record) {

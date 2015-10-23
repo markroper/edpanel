@@ -38,6 +38,8 @@ public abstract class BaseHttpClient {
     protected static final String HEADER_ACCEPT_NAME = "Accept";
     protected static final Header HEADER_CONTENT_TYPE_JSON = new BasicHeader("Content-Type", "application/json");
     protected static final Header HEADER_ACCEPT_JSON = new BasicHeader(HEADER_ACCEPT_NAME, HEADER_ACCEPT_JSON_VALUE);
+    protected static final int CONNECTION_TIMEOUT = 3000;
+    protected static final int CONNECTION_REQUEST_TIMEOUT = 30000;
 
     protected final CloseableHttpClient httpclient;
     protected final URI uri;
@@ -61,9 +63,9 @@ public abstract class BaseHttpClient {
             SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
                     builder.build());
             RequestConfig requestConfig = RequestConfig.custom().
-                    setConnectTimeout(3000).
-                    setConnectionRequestTimeout(30000).
-                    setSocketTimeout(30000).build();
+                    setConnectTimeout(CONNECTION_TIMEOUT).
+                    setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT).
+                    setSocketTimeout(CONNECTION_REQUEST_TIMEOUT).build();
             return HttpClients.custom().
                     setSSLSocketFactory(sslsf).
                     setDefaultRequestConfig(requestConfig).
