@@ -219,7 +219,7 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     }
 
     @Override
-    public SectionGradesResponse getSectionScoresBySecionId(Long sectionId) {
+    public SectionGradesResponse getSectionScoresBySectionId(Long sectionId) {
         return get(SectionGradesResponse.class, PATH_RESOURCE_SECTION_SCORES, sectionId.toString());
     }
     
