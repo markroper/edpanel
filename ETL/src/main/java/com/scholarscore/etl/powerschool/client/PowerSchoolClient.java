@@ -62,7 +62,7 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     public static final String PATH_RESOURCE_SECTION_SCORES = "/ws/schema/table/storedgrades?q=sectionid=={0}&projection=dcid,grade,datestored,studentid,sectionid,termid";
     public static final String PATH_RESOURCE_ASSIGNMENT_SCORES = "/ws/schema/table/SectionScoresAssignments?q=assignment=={0}&projection=*";
     public static final String PATH_RESOURCE_SECTION_SCORE_IDS = "/ws/schema/table/SectionScoresId?q=sectionid=={0}&projection=*";
-    // PGScores: "/ws/schema/table/pgscores?projection=PGAssignmentsID,id,grade,dcid,comment_value,percent,percentstr,studentid"
+    //PGScores: "/ws/schema/table/pgscores?projection=PGAssignmentsID,id,grade,dcid,comment_value,percent,percentstr,studentid"
 
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";
     private static final String URI_PATH_OATH = "/oauth/access_token";
