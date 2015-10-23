@@ -1,12 +1,10 @@
 package com.scholarscore.api.controller;
 
-import java.util.List;
-
-import javax.validation.Valid;
-
-import com.scholarscore.api.manager.StudentAssignmentManager;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.scholarscore.api.ApiConsts;
+import com.scholarscore.models.EntityId;
+import com.scholarscore.models.StudentAssignment;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,11 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.scholarscore.api.ApiConsts;
-import com.scholarscore.models.EntityId;
-import com.scholarscore.models.StudentAssignment;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/years/{yrId}/terms/{tId}/sections/{sId}/assignments/{assignId}/studentassignments")
@@ -94,6 +89,30 @@ public class StudentAssignmentController extends BaseController {
             @PathVariable(value="assignId") Long assignId,
             @RequestBody @Valid StudentAssignment studentAssignment) {
          return respond(pm.getStudentAssignmentManager().createStudentAssignment(schoolId, yrId, tId, sId, assignId, studentAssignment));
+    }
+
+    @ApiOperation(
+            value = "Create multiple student assignments",
+            notes = "Creates, assigns IDs to, and persists multiple student assignment",
+            response = Void.class)
+    @RequestMapping(
+            value = "/bulk",
+            method = RequestMethod.POST,
+            produces = {JSON_ACCEPT_HEADER})
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity createBulkStudentAssignments(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "yrId", required = true, value = "School year ID")
+            @PathVariable(value="yrId") Long yrId,
+            @ApiParam(name = "tId", required = true, value = "Term ID")
+            @PathVariable(value="tId") Long tId,
+            @ApiParam(name = "sId", required = true, value = "Section ID")
+            @PathVariable(value="sId") Long sId,
+            @ApiParam(name = "assignId", required = true, value = "Assignment ID")
+            @PathVariable(value="assignId") Long assignId,
+            @RequestBody List<StudentAssignment> studentAssignments) {
+        return respond(pm.getStudentAssignmentManager().createBulkStudentAssignment(schoolId, yrId, tId, sId, assignId, studentAssignments));
     }
 
     @ApiOperation(

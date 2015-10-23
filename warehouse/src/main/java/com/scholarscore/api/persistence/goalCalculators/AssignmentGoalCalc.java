@@ -1,7 +1,6 @@
 package com.scholarscore.api.persistence.goalCalculators;
 
 import com.scholarscore.api.persistence.StudentAssignmentPersistence;
-import com.scholarscore.models.goal.AssignmentGoal;
 import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.goal.CalculatableAssignment;
 
@@ -21,7 +20,7 @@ public class AssignmentGoalCalc implements GoalCalc<CalculatableAssignment> {
 
     public Double calculateGoal(CalculatableAssignment goal) {
         StudentAssignment goalAssignment = studentAssignmentPersistence.select(goal.getStudent().getId(), goal.getParentId());
-        Long awardedPoints = goalAssignment.getAwardedPoints();
+        Double awardedPoints = goalAssignment.getAwardedPoints();
                 if (null != awardedPoints) {
                     return awardedPoints.doubleValue();
                 } else {

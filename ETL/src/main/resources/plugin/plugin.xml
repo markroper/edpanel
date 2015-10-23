@@ -1,28 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://plugin.powerschool.pearson.com"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation='http://plugin.powerschool.pearson.com plugin.xsd'
-        name="EdPanel"
-        version="1.0.0"
-        description="EdPanel">
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation='http://plugin.powerschool.pearson.com plugin.xsd'
+		name="EdPanel"
+		version="1.0.0"
+		description="EdPanel">
 
-    <oauth></oauth>
-    
-    <publisher name="EdPanel">
-        <contact email="mark@edpanel.com" />
-    </publisher>	
+	<oauth></oauth>
 
-    <access_request>
-        <field table="ROOM" field="Building" access="ViewOnly"/>
-        <field table="ROOM" field="Department" access="ViewOnly"/>
-        <field table="ROOM" field="facilities" access="ViewOnly"/>
-        <field table="ROOM" field="House" access="ViewOnly"/>
-        <field table="ROOM" field="ID" access="ViewOnly"/>
-        <field table="ROOM" field="Name" access="ViewOnly"/>
-        <field table="ROOM" field="Occupancy_Maximum" access="ViewOnly"/>
-        <field table="ROOM" field="Room_Number" access="ViewOnly"/>
-        <field table="ROOM" field="RoomInfo_guid" access="ViewOnly"/>
-        <field table="ROOM" field="SchoolID" access="ViewOnly"/>
+	<publisher name="EdPanel">
+		<contact email="mark@edpanel.com" />
+	</publisher>
+
+	<access_request>
 		<field table="Attendance_Code" field="DCID" access="ViewOnly" />
 		<field table="Attendance_Code" field="Alternate_Code" access="ViewOnly" />
 		<field table="Attendance_Code" field="Assignment_Filter_YN" access="ViewOnly" />
@@ -43,7 +33,7 @@
 		<field table="Attendance_Conversion" field="Name" access="ViewOnly" />
 		<field table="Attendance_Conversion" field="SchoolID" access="ViewOnly" />
 		<field table="Attendance_Conversion" field="Year_ID" access="ViewOnly" />
-		<field table="Attendance_Conversion_Items" field="DCID" access="ViewOnly" /> 
+		<field table="Attendance_Conversion_Items" field="DCID" access="ViewOnly" />
 		<field table="Attendance_Conversion_Items" field="Attendance_Conversion_ID" access="ViewOnly" />
 		<field table="Attendance_Conversion_Items" field="Attendance_Value" access="ViewOnly" />
 		<field table="Attendance_Conversion_Items" field="Comment" access="ViewOnly" />
@@ -56,7 +46,7 @@
 		<field table="Attendance" field="DCID" access="ViewOnly" />
 		<field table="Attendance" field="ADA_Value_Code" access="ViewOnly" />
 		<field table="Attendance" field="ADA_Value_Time" access="ViewOnly" />
-		<field table="Attendance" field="ADM_Value" access="ViewOnly" /> 
+		<field table="Attendance" field="ADM_Value" access="ViewOnly" />
 		<field table="Attendance" field="Att_Comment" access="ViewOnly" />
 		<field table="Attendance" field="Att_Date" access="ViewOnly" />
 		<field table="Attendance" field="Att_Flags" access="ViewOnly" />
@@ -74,7 +64,7 @@
 		<field table="Attendance" field="Prog_Crse_Type" access="ViewOnly" />
 		<field table="Attendance" field="ProgramID" access="ViewOnly" />
 		<field table="Attendance" field="SchoolID" access="ViewOnly" />
-		<field table="Attendance" field="StudentID" access="ViewOnly" /> 
+		<field table="Attendance" field="StudentID" access="ViewOnly" />
 		<field table="Attendance" field="Total_Minutes" access="ViewOnly" />
 		<field table="Attendance" field="Transaction_Type" access="ViewOnly" />
 		<field table="Attendance" field="whomodifiedid" access="ViewOnly" />
@@ -90,186 +80,178 @@
 		<field table="Attendance_Taken" field="SectionID" access="ViewOnly" />
 		<field table="Attendance_Taken" field="whomodifiedid" access="ViewOnly" />
 		<field table="Attendance_Taken" field="whomodifiedtype" access="ViewOnly" />
-        <field table="Sections" field="DCID" access="ViewOnly" />
-        <field table="Sections" field="Att_Mode_Code" access="ViewOnly" />
-        <field table="Sections" field="Attendance" access="ViewOnly" />
-        <field table="Sections" field="Attendance_Type_Code" access="ViewOnly" />
-        <field table="Sections" field="Bitmap" access="ViewOnly" />
-        <field table="Sections" field="BlockPeriods_Obsolete" access="ViewOnly" />
-        <field table="Sections" field="BuildID" access="ViewOnly" />
-        <field table="Sections" field="CampusID" access="ViewOnly" />
-        <field table="Sections" field="CCRNArray" access="ViewOnly" />
-        <field table="Sections" field="Comment" access="ViewOnly" />
-        <field table="Sections" field="Course_Number" access="ViewOnly" />
-        <!-- UNSUPPORTED FIELDS
-        <field table="Sections" field="CRDC_SingleSexCode" access="ViewOnly" />
-        <field table="Sections" field="Custom" access="ViewOnly" /> -->
-        <field table="Sections" field="Days_Obsolete" access="ViewOnly" />
-        <field table="Sections" field="Dependent_Secs" access="ViewOnly" />
-        <field table="Sections" field="DistUniqueID" access="ViewOnly" />
-        <field table="Sections" field="Exclude_ADA" access="ViewOnly" />
-        <field table="Sections" field="Exclude_State_Rpt_YN" access="ViewOnly" />
-        <field table="Sections" field="ExcludeFromClassRank" access="ViewOnly" />
-        <field table="Sections" field="ExcludeFromGPA" access="ViewOnly" />
-        <field table="Sections" field="ExcludeFromHonorRoll" access="ViewOnly" />
-        <field table="Sections" field="ExcludeFromStoredGrades" access="ViewOnly" />
-        <field table="Sections" field="Expression" access="ViewOnly" />
-        <field table="Sections" field="FastPerList" access="ViewOnly" />
-        <field table="Sections" field="Grade_Level" access="ViewOnly" />
-        <field table="Sections" field="GradebookType" access="ViewOnly" />
-        <field table="Sections" field="GradeProfile" access="ViewOnly" />
-        <field table="Sections" field="GradeScaleID" access="ViewOnly" />
-        <field table="Sections" field="House" access="ViewOnly" />
-        <field table="Sections" field="ID" access="ViewOnly" />
-        <field table="Sections" field="Instruction_Lang" access="ViewOnly" />
-        <field table="Sections" field="LastAttUpdate" access="ViewOnly" />
-        <field table="Sections" field="Log" access="ViewOnly" />
-        <!--  UNSUPPORTED FIELDS
-        <field table="Sections" field="MA_course_level" access="ViewOnly" />
-        <field table="Sections" field="MA_course_term" access="ViewOnly" />
-        <field table="Sections" field="MA_exclude_from_epims" access="ViewOnly" />
-        <field table="Sections" field="MA_marknotrequired" access="ViewOnly" />
-        <field table="Sections" field="MA_nces_code" access="ViewOnly" />
-        <field table="Sections" field="MA_nopercent" access="ViewOnly" />
-        <field table="Sections" field="MA_SchoolCode" access="ViewOnly" />
-        <field table="Sections" field="MA_ungraded" access="ViewOnly" /> -->
-        <field table="Sections" field="Max_Load_Status" access="ViewOnly" />
-        <field table="Sections" field="MaxCut" access="ViewOnly" />
-        <field table="Sections" field="MaxEnrollment" access="ViewOnly" />
-        <field table="Sections" field="No_of_students" access="ViewOnly" />
-        <field table="Sections" field="NoOfTerms" access="ViewOnly" />
-        <field table="Sections" field="Original_Expression" access="ViewOnly" />
-        <field table="Sections" field="Parent_Section_ID" access="ViewOnly" />
-        <field table="Sections" field="Period_Obsolete" access="ViewOnly" />
-        <field table="Sections" field="PGFlags" access="ViewOnly" />
-        <field table="Sections" field="PGVersion" access="ViewOnly" />
-        <field table="Sections" field="ProgramID" access="ViewOnly" />
-        <field table="Sections" field="Room" access="ViewOnly" />
-        <field table="Sections" field="RosterModSer" access="ViewOnly" />
-        <!-- These were in the PowerSchool DOC but couldn't be installed on the Excel instance
-        <field table="Sections" field="S_MA_SEC_X.MediumOfInstruction" access="ViewOnly" />
-        <field table="Sections" field="S_SEC_CRDC_X.BlockScheduledClass_TF" access="ViewOnly" /> -->
-        <field table="Sections" field="ScheduleSectionID" access="ViewOnly" />
-        <field table="Sections" field="SchoolID" access="ViewOnly" />
-        <field table="Sections" field="Section_Number" access="ViewOnly" />
-        <field table="Sections" field="Section_Type" access="ViewOnly" />
-        <field table="Sections" field="SectionInfo_guid" access="ViewOnly" />
-        <field table="Sections" field="SortOrder" access="ViewOnly" />
-        <field table="Sections" field="Teacher" access="ViewOnly" />
-        <field table="Sections" field="TeacherDescr" access="ViewOnly" />
-        <field table="Sections" field="Team" access="ViewOnly" />
-        <field table="Sections" field="TermID" access="ViewOnly" />
-        <field table="Sections" field="TrackTeacherAtt" access="ViewOnly" />
-        <field table="Sections" field="WhereTaught" access="ViewOnly" />
-        <field table="Sections" field="WhereTaughtDistrict" access="ViewOnly" />
-        <field table="Section_Meeting" field="DCID" access="ViewOnly" />
-        <field table="Section_Meeting" field="Cycle_Day_Letter" access="ViewOnly" />
-        <field table="Section_Meeting" field="ID" access="ViewOnly" />
-        <field table="Section_Meeting" field="Meeting" access="ViewOnly" />
-        <field table="Section_Meeting" field="Period_Number" access="ViewOnly" />
-        <field table="Section_Meeting" field="SchoolID" access="ViewOnly" />
-        <field table="Section_Meeting" field="SectionID" access="ViewOnly" />
-        <field table="Section_Meeting" field="Year_ID" access="ViewOnly" />
-        <field table="SectionScores" field="DCID" access="ViewOnly" />
-        <field table="SectionScores" field="Assignment" access="ViewOnly" />
-        <field table="SectionScores" field="Comment" access="ViewOnly" />
-        <field table="SectionScores" field="Exempt" access="ViewOnly" />
-        <field table="SectionScores" field="Grade" access="ViewOnly" />
-        <field table="SectionScores" field="ID" access="ViewOnly" />
-        <field table="SectionScores" field="Percent" access="ViewOnly" />
-        <field table="SectionScores" field="Score" access="ViewOnly" />
-        <field table="SectionScores" field="SectionID" access="ViewOnly" />
-        <field table="SectionScores" field="StudentID" access="ViewOnly" />
-        <field table="SectionScores" field="Unused1" access="ViewOnly" />
-        <field table="SectionScoresID" field="DCID" access="ViewOnly" />
-        <field table="SectionScoresID" field="ID" access="ViewOnly" />
-        <field table="SectionScoresID" field="SectionID" access="ViewOnly" />
-        <field table="SectionScoresID" field="StudentID" access="ViewOnly" />
-        <field table="PGAssignments" field="DCID" access="ViewOnly" />
-	    <field table="PGAssignments" field="Abbreviation" access="ViewOnly" />
-	    <field table="PGAssignments" field="AssignmentID" access="ViewOnly" />
-	    <field table="PGAssignments" field="DateDue" access="ViewOnly" />
-	    <field table="PGAssignments" field="Description" access="ViewOnly" />
-	    <field table="PGAssignments" field="GradebookType" access="ViewOnly" />
-	    <field table="PGAssignments" field="ID" access="ViewOnly" />
-	    <field table="PGAssignments" field="IncludeInFinalGrades" access="ViewOnly" />
-	    <field table="PGAssignments" field="Name" access="ViewOnly" />
-	    <field table="PGAssignments" field="PGCategoriesID" access="ViewOnly" />
-	    <field table="PGAssignments" field="PointsPossible" access="ViewOnly" />
-	    <field table="PGAssignments" field="PublishDaysBeforeDue" access="ViewOnly" />
-	    <field table="PGAssignments" field="PublishOnSpecificDate" access="ViewOnly" />
-	    <field table="PGAssignments" field="PublishScores" access="ViewOnly" />
-	    <field table="PGAssignments" field="PublishState" access="ViewOnly" />
-	    <field table="PGAssignments" field="SectionID" access="ViewOnly" />
-	    <field table="PGAssignments" field="Type" access="ViewOnly" />
-	    <field table="PGAssignments" field="Weight" access="ViewOnly" />
-	    <field table="PGCategories" field="Abbreviation" access="ViewOnly" />
-	    <field table="PGCategories" field="DCID" access="ViewOnly" />
-	    <field table="PGCategories" field="DefaultPtsPoss" access="ViewOnly" />
-	    <field table="PGCategories" field="Description" access="ViewOnly" />
-	    <field table="PGCategories" field="ID" access="ViewOnly" />
-	    <field table="PGCategories" field="Name" access="ViewOnly" />
-	    <field table="PGCategories" field="SectionID" access="ViewOnly" />
-	    <field table="PGScores" field="Comment_Value" access="ViewOnly" />
-	    <field table="PGScores" field="DCID" access="ViewOnly" />
-	    <field table="PGScores" field="Grade" access="ViewOnly" />
-	    <field table="PGScores" field="ID" access="ViewOnly" />
-	    <field table="PGScores" field="PGAssignmentsID" access="ViewOnly" />
-	    <field table="PGScores" field="Percent" access="ViewOnly" />
-	    <field table="PGScores" field="PercentStr" access="ViewOnly" />
-	    <field table="PGScores" field="StudentID" access="ViewOnly" />
-	    <field table="StoredGrades" field="DCID" access="ViewOnly" />
-	    <field table="StoredGrades" field="AB_Course_Cmp_Ext_Crd" access="ViewOnly" />
-	    <field table="StoredGrades" field="AB_Course_Cmp_Fun_Flg" access="ViewOnly" />
-	    <field table="StoredGrades" field="AB_Course_Cmp_Fun_Sch" access="ViewOnly" />
-	    <field table="StoredGrades" field="AB_Course_Cmp_Met_Cd" access="ViewOnly" />
-	    <field table="StoredGrades" field="AB_Course_Cmp_Sta_Cd" access="ViewOnly" />
-	    <field table="StoredGrades" field="AB_Course_Eva_Pro_Cd" access="ViewOnly" />
-	    <field table="StoredGrades" field="AB_Dipl_Exam_Mark" access="ViewOnly" />
-	    <field table="StoredGrades" field="AB_Final_Mark" access="ViewOnly" />
-	    <field table="StoredGrades" field="AB_Lng_Cd" access="ViewOnly" />
-	    <field table="StoredGrades" field="AB_Pri_Del_Met_Cd" access="ViewOnly" />
-	    <field table="StoredGrades" field="Absences" access="ViewOnly" />
-	    <field table="StoredGrades" field="Behavior" access="ViewOnly" />
-	    <field table="StoredGrades" field="Comment" access="ViewOnly" />
-	    <field table="StoredGrades" field="Course_Equiv" access="ViewOnly" />
-	    <field table="StoredGrades" field="Course_Name" access="ViewOnly" />
-	    <field table="StoredGrades" field="Course_Number" access="ViewOnly" />
-	    <field table="StoredGrades" field="Credit_Type" access="ViewOnly" />
-	    <!-- UNSUPPORTED FIELD
-	    <field table="StoredGrades" field="Custom" access="ViewOnly" /> -->
-	    <field table="StoredGrades" field="DateStored" access="ViewOnly" />
-	    <field table="StoredGrades" field="EarnedCrHrs" access="ViewOnly" />
-	    <field table="StoredGrades" field="ExcludeFromClassRank" access="ViewOnly" />
-	    <field table="StoredGrades" field="ExcludeFromGPA" access="ViewOnly" />
-	    <field table="StoredGrades" field="ExcludeFromGradeSuppression" access="ViewOnly" />
-	    <field table="StoredGrades" field="ExcludeFromGraduation" access="ViewOnly" />
-	    <field table="StoredGrades" field="ExcludeFromHonorRoll" access="ViewOnly" />
-	    <field table="StoredGrades" field="ExcludeFromTranscripts" access="ViewOnly" />
-	    <field table="StoredGrades" field="GPA_AddedValue" access="ViewOnly" />
-	    <field table="StoredGrades" field="GPA_Custom1" access="ViewOnly" />
-	    <field table="StoredGrades" field="GPA_Custom2" access="ViewOnly" />
-	    <field table="StoredGrades" field="GPA_Points" access="ViewOnly" />
-	    <field table="StoredGrades" field="Grade" access="ViewOnly" />
-	    <field table="StoredGrades" field="Grade_Level" access="ViewOnly" />
-	    <field table="StoredGrades" field="GradeReplacementPolicy_ID" access="ViewOnly" />
-	    <field table="StoredGrades" field="GradeScale_Name" access="ViewOnly" />
-	    <field table="StoredGrades" field="IsEarnedCrHrsFromGB" access="ViewOnly" />
-	    <field table="StoredGrades" field="IsPotentialCrHrsFromGB" access="ViewOnly" />
-	    <field table="StoredGrades" field="Log" access="ViewOnly" />
-	    <field table="StoredGrades" field="Percent" access="ViewOnly" />
-	    <field table="StoredGrades" field="PotentialCrHrs" access="ViewOnly" />
-	    <field table="StoredGrades" field="Replaced_DCID" access="ViewOnly" />
-	    <field table="StoredGrades" field="Replaced_Equivalent_Course" access="ViewOnly" />
-	    <field table="StoredGrades" field="Replaced_Grade" access="ViewOnly" />
-	    <field table="StoredGrades" field="SchoolID" access="ViewOnly" />
-	    <field table="StoredGrades" field="SchoolName" access="ViewOnly" />
-	    <field table="StoredGrades" field="SectionID" access="ViewOnly" />
-	    <field table="StoredGrades" field="StoreCode" access="ViewOnly" />
-	    <field table="StoredGrades" field="StudentID" access="ViewOnly" />
-	    <field table="StoredGrades" field="Tardies" access="ViewOnly" />
-	    <field table="StoredGrades" field="Teacher_Name" access="ViewOnly" />
-	    <field table="StoredGrades" field="TermBinsName" access="ViewOnly" />
-	    <field table="StoredGrades" field="TermID" access="ViewOnly" />
-    </access_request>
+		<field table="Sections" field="DCID" access="ViewOnly" />
+		<field table="Sections" field="Att_Mode_Code" access="ViewOnly" />
+		<field table="Sections" field="Attendance" access="ViewOnly" />
+		<field table="Sections" field="Attendance_Type_Code" access="ViewOnly" />
+		<field table="Sections" field="Bitmap" access="ViewOnly" />
+		<field table="Sections" field="BlockPeriods_Obsolete" access="ViewOnly" />
+		<field table="Sections" field="BuildID" access="ViewOnly" />
+		<field table="Sections" field="CampusID" access="ViewOnly" />
+		<field table="Sections" field="CCRNArray" access="ViewOnly" />
+		<field table="Sections" field="Comment" access="ViewOnly" />
+		<field table="Sections" field="Course_Number" access="ViewOnly" />
+		<field table="Sections" field="Days_Obsolete" access="ViewOnly" />
+		<field table="Sections" field="Dependent_Secs" access="ViewOnly" />
+		<field table="Sections" field="DistUniqueID" access="ViewOnly" />
+		<field table="Sections" field="Exclude_ADA" access="ViewOnly" />
+		<field table="Sections" field="Exclude_State_Rpt_YN" access="ViewOnly" />
+		<field table="Sections" field="ExcludeFromClassRank" access="ViewOnly" />
+		<field table="Sections" field="ExcludeFromGPA" access="ViewOnly" />
+		<field table="Sections" field="ExcludeFromHonorRoll" access="ViewOnly" />
+		<field table="Sections" field="ExcludeFromStoredGrades" access="ViewOnly" />
+		<field table="Sections" field="Expression" access="ViewOnly" />
+		<field table="Sections" field="FastPerList" access="ViewOnly" />
+		<field table="Sections" field="Grade_Level" access="ViewOnly" />
+		<field table="Sections" field="GradebookType" access="ViewOnly" />
+		<field table="Sections" field="GradeProfile" access="ViewOnly" />
+		<field table="Sections" field="GradeScaleID" access="ViewOnly" />
+		<field table="Sections" field="House" access="ViewOnly" />
+		<field table="Sections" field="ID" access="ViewOnly" />
+		<field table="Sections" field="Instruction_Lang" access="ViewOnly" />
+		<field table="Sections" field="LastAttUpdate" access="ViewOnly" />
+		<field table="Sections" field="Log" access="ViewOnly" />
+		<field table="Sections" field="Max_Load_Status" access="ViewOnly" />
+		<field table="Sections" field="MaxCut" access="ViewOnly" />
+		<field table="Sections" field="MaxEnrollment" access="ViewOnly" />
+		<field table="Sections" field="No_of_students" access="ViewOnly" />
+		<field table="Sections" field="NoOfTerms" access="ViewOnly" />
+		<field table="Sections" field="Original_Expression" access="ViewOnly" />
+		<field table="Sections" field="Parent_Section_ID" access="ViewOnly" />
+		<field table="Sections" field="Period_Obsolete" access="ViewOnly" />
+		<field table="Sections" field="PGFlags" access="ViewOnly" />
+		<field table="Sections" field="PGVersion" access="ViewOnly" />
+		<field table="Sections" field="ProgramID" access="ViewOnly" />
+		<field table="Sections" field="Room" access="ViewOnly" />
+		<field table="Sections" field="RosterModSer" access="ViewOnly" />
+		<field table="Sections" field="ScheduleSectionID" access="ViewOnly" />
+		<field table="Sections" field="SchoolID" access="ViewOnly" />
+		<field table="Sections" field="Section_Number" access="ViewOnly" />
+		<field table="Sections" field="Section_Type" access="ViewOnly" />
+		<field table="Sections" field="SectionInfo_guid" access="ViewOnly" />
+		<field table="Sections" field="SortOrder" access="ViewOnly" />
+		<field table="Sections" field="Teacher" access="ViewOnly" />
+		<field table="Sections" field="TeacherDescr" access="ViewOnly" />
+		<field table="Sections" field="Team" access="ViewOnly" />
+		<field table="Sections" field="TermID" access="ViewOnly" />
+		<field table="Sections" field="TrackTeacherAtt" access="ViewOnly" />
+		<field table="Sections" field="WhereTaught" access="ViewOnly" />
+		<field table="Sections" field="WhereTaughtDistrict" access="ViewOnly" />
+		<field table="Section_Meeting" field="DCID" access="ViewOnly" />
+		<field table="Section_Meeting" field="Cycle_Day_Letter" access="ViewOnly" />
+		<field table="Section_Meeting" field="ID" access="ViewOnly" />
+		<field table="Section_Meeting" field="Meeting" access="ViewOnly" />
+		<field table="Section_Meeting" field="Period_Number" access="ViewOnly" />
+		<field table="Section_Meeting" field="SchoolID" access="ViewOnly" />
+		<field table="Section_Meeting" field="SectionID" access="ViewOnly" />
+		<field table="Section_Meeting" field="Year_ID" access="ViewOnly" />
+		<field table="SectionScores" field="DCID" access="ViewOnly" />
+		<field table="SectionScores" field="Assignment" access="ViewOnly" />
+		<field table="SectionScores" field="Comment" access="ViewOnly" />
+		<field table="SectionScores" field="Exempt" access="ViewOnly" />
+		<field table="SectionScores" field="Grade" access="ViewOnly" />
+		<field table="SectionScores" field="ID" access="ViewOnly" />
+		<field table="SectionScores" field="Percent" access="ViewOnly" />
+		<field table="SectionScores" field="Score" access="ViewOnly" />
+		<field table="SectionScores" field="SectionID" access="ViewOnly" />
+		<field table="SectionScores" field="StudentID" access="ViewOnly" />
+		<field table="SectionScores" field="Unused1" access="ViewOnly" />
+		<field table="SectionScores" field="Comment_Value" access="ViewOnly" />
+		<field table="SectionScoresAssignments" field="Assignment" access="ViewOnly" />
+		<field table="SectionScoresAssignments" field="Comment_Value" access="ViewOnly" />
+		<field table="SectionScoresAssignments" field="DCID" access="ViewOnly" />
+		<field table="SectionScoresAssignments" field="Exempt" access="ViewOnly" />
+		<field table="SectionScoresAssignments" field="FDCID" access="ViewOnly" />
+		<field table="SectionScoresAssignments" field="Grade" access="ViewOnly" />
+		<field table="SectionScoresAssignments" field="Percent" access="ViewOnly" />
+		<field table="SectionScoresAssignments" field="Score" access="ViewOnly" />
+		<field table="SectionScoresID" field="DCID" access="ViewOnly" />
+		<field table="SectionScoresID" field="ID" access="ViewOnly" />
+		<field table="SectionScoresID" field="SectionID" access="ViewOnly" />
+		<field table="SectionScoresID" field="StudentID" access="ViewOnly" />
+		<field table="PGAssignments" field="DCID" access="ViewOnly" />
+		<field table="PGAssignments" field="Abbreviation" access="ViewOnly" />
+		<field table="PGAssignments" field="AssignmentID" access="ViewOnly" />
+		<field table="PGAssignments" field="DateDue" access="ViewOnly" />
+		<field table="PGAssignments" field="Description" access="ViewOnly" />
+		<field table="PGAssignments" field="GradebookType" access="ViewOnly" />
+		<field table="PGAssignments" field="ID" access="ViewOnly" />
+		<field table="PGAssignments" field="IncludeInFinalGrades" access="ViewOnly" />
+		<field table="PGAssignments" field="Name" access="ViewOnly" />
+		<field table="PGAssignments" field="PGCategoriesID" access="ViewOnly" />
+		<field table="PGAssignments" field="PointsPossible" access="ViewOnly" />
+		<field table="PGAssignments" field="PublishDaysBeforeDue" access="ViewOnly" />
+		<field table="PGAssignments" field="PublishOnSpecificDate" access="ViewOnly" />
+		<field table="PGAssignments" field="PublishScores" access="ViewOnly" />
+		<field table="PGAssignments" field="PublishState" access="ViewOnly" />
+		<field table="PGAssignments" field="SectionID" access="ViewOnly" />
+		<field table="PGAssignments" field="Type" access="ViewOnly" />
+		<field table="PGAssignments" field="Weight" access="ViewOnly" />
+		<field table="PGCategories" field="Abbreviation" access="ViewOnly" />
+		<field table="PGCategories" field="DCID" access="ViewOnly" />
+		<field table="PGCategories" field="DefaultPtsPoss" access="ViewOnly" />
+		<field table="PGCategories" field="Description" access="ViewOnly" />
+		<field table="PGCategories" field="ID" access="ViewOnly" />
+		<field table="PGCategories" field="Name" access="ViewOnly" />
+		<field table="PGCategories" field="SectionID" access="ViewOnly" />
+		<field table="PGScores" field="Comment_Value" access="ViewOnly" />
+		<field table="PGScores" field="DCID" access="ViewOnly" />
+		<field table="PGScores" field="Grade" access="ViewOnly" />
+		<field table="PGScores" field="ID" access="ViewOnly" />
+		<field table="PGScores" field="PGAssignmentsID" access="ViewOnly" />
+		<field table="PGScores" field="Percent" access="ViewOnly" />
+		<field table="PGScores" field="PercentStr" access="ViewOnly" />
+		<field table="PGScores" field="StudentID" access="ViewOnly" />
+		<field table="StoredGrades" field="DCID" access="ViewOnly" />
+		<field table="StoredGrades" field="AB_Course_Cmp_Ext_Crd" access="ViewOnly" />
+		<field table="StoredGrades" field="AB_Course_Cmp_Fun_Flg" access="ViewOnly" />
+		<field table="StoredGrades" field="AB_Course_Cmp_Fun_Sch" access="ViewOnly" />
+		<field table="StoredGrades" field="AB_Course_Cmp_Met_Cd" access="ViewOnly" />
+		<field table="StoredGrades" field="AB_Course_Cmp_Sta_Cd" access="ViewOnly" />
+		<field table="StoredGrades" field="AB_Course_Eva_Pro_Cd" access="ViewOnly" />
+		<field table="StoredGrades" field="AB_Dipl_Exam_Mark" access="ViewOnly" />
+		<field table="StoredGrades" field="AB_Final_Mark" access="ViewOnly" />
+		<field table="StoredGrades" field="AB_Lng_Cd" access="ViewOnly" />
+		<field table="StoredGrades" field="AB_Pri_Del_Met_Cd" access="ViewOnly" />
+		<field table="StoredGrades" field="Absences" access="ViewOnly" />
+		<field table="StoredGrades" field="Behavior" access="ViewOnly" />
+		<field table="StoredGrades" field="Comment" access="ViewOnly" />
+		<field table="StoredGrades" field="Course_Equiv" access="ViewOnly" />
+		<field table="StoredGrades" field="Course_Name" access="ViewOnly" />
+		<field table="StoredGrades" field="Course_Number" access="ViewOnly" />
+		<field table="StoredGrades" field="Credit_Type" access="ViewOnly" />
+		<field table="StoredGrades" field="DateStored" access="ViewOnly" />
+		<field table="StoredGrades" field="EarnedCrHrs" access="ViewOnly" />
+		<field table="StoredGrades" field="ExcludeFromClassRank" access="ViewOnly" />
+		<field table="StoredGrades" field="ExcludeFromGPA" access="ViewOnly" />
+		<field table="StoredGrades" field="ExcludeFromGradeSuppression" access="ViewOnly" />
+		<field table="StoredGrades" field="ExcludeFromGraduation" access="ViewOnly" />
+		<field table="StoredGrades" field="ExcludeFromHonorRoll" access="ViewOnly" />
+		<field table="StoredGrades" field="ExcludeFromTranscripts" access="ViewOnly" />
+		<field table="StoredGrades" field="GPA_AddedValue" access="ViewOnly" />
+		<field table="StoredGrades" field="GPA_Custom1" access="ViewOnly" />
+		<field table="StoredGrades" field="GPA_Custom2" access="ViewOnly" />
+		<field table="StoredGrades" field="GPA_Points" access="ViewOnly" />
+		<field table="StoredGrades" field="Grade" access="ViewOnly" />
+		<field table="StoredGrades" field="Grade_Level" access="ViewOnly" />
+		<field table="StoredGrades" field="GradeReplacementPolicy_ID" access="ViewOnly" />
+		<field table="StoredGrades" field="GradeScale_Name" access="ViewOnly" />
+		<field table="StoredGrades" field="IsEarnedCrHrsFromGB" access="ViewOnly" />
+		<field table="StoredGrades" field="IsPotentialCrHrsFromGB" access="ViewOnly" />
+		<field table="StoredGrades" field="Log" access="ViewOnly" />
+		<field table="StoredGrades" field="Percent" access="ViewOnly" />
+		<field table="StoredGrades" field="PotentialCrHrs" access="ViewOnly" />
+		<field table="StoredGrades" field="Replaced_DCID" access="ViewOnly" />
+		<field table="StoredGrades" field="Replaced_Equivalent_Course" access="ViewOnly" />
+		<field table="StoredGrades" field="Replaced_Grade" access="ViewOnly" />
+		<field table="StoredGrades" field="SchoolID" access="ViewOnly" />
+		<field table="StoredGrades" field="SchoolName" access="ViewOnly" />
+		<field table="StoredGrades" field="SectionID" access="ViewOnly" />
+		<field table="StoredGrades" field="StoreCode" access="ViewOnly" />
+		<field table="StoredGrades" field="StudentID" access="ViewOnly" />
+		<field table="StoredGrades" field="Tardies" access="ViewOnly" />
+		<field table="StoredGrades" field="Teacher_Name" access="ViewOnly" />
+		<field table="StoredGrades" field="TermBinsName" access="ViewOnly" />
+		<field table="StoredGrades" field="TermID" access="ViewOnly" />
+	</access_request>
 </plugin>

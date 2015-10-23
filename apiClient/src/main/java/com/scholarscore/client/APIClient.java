@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * TODO: Convert InternalBase to consume this API (perhaps?)
@@ -64,13 +65,32 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         return response;
     }
 
+    private void createVoidResponse(Object obj, String path) {
+        String json = null;
+        try {
+            json = post(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private EntityId create(Object obj, String path) {
-        String jsonCreateResponse = post(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
+        String jsonCreateResponse = null;
+        try {
+            jsonCreateResponse = post(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return gson.fromJson(jsonCreateResponse, EntityId.class);
     }
     
     private EntityId update(Object obj, String path) {
-        String jsonCreateResponse = patch(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
+        String jsonCreateResponse = null;
+        try {
+            jsonCreateResponse = patch(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return gson.fromJson(jsonCreateResponse, EntityId.class);
     }
 
@@ -220,6 +240,35 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
                 SECTION_ASSIGNMENT_ENDPOINT);
         response.setId(id.getId());
         return response;
+    }
+
+    @Override
+    public StudentAssignment createStudentAssignment(Long schoolId,
+                                                     Long yearId,
+                                                     Long termId,
+                                                     Long sectionId,
+                                                     Long assignmentId,
+                                                     StudentAssignment studentAssignment) {
+        StudentAssignment response = new StudentAssignment(studentAssignment);
+        EntityId id = create(studentAssignment,
+                SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT + "/" + yearId +
+                TERM_ENDPOINT + "/" + termId + SECTION_ENDPOINT + "/" + sectionId +
+                SECTION_ASSIGNMENT_ENDPOINT + "/" + assignmentId + STUDENT_ASSIGNMENT_ENDPOINT);
+        response.setId(id.getId());
+        return response;
+    }
+
+    @Override
+    public void createStudentAssignments(Long schoolId,
+                                         Long yearId,
+                                         Long termId,
+                                         Long sectionId,
+                                         Long assignmentId,
+                                         List<StudentAssignment> studentAssignments) {
+        createVoidResponse(studentAssignments,
+                SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT + "/" + yearId +
+                TERM_ENDPOINT + "/" + termId + SECTION_ENDPOINT + "/" + sectionId +
+                SECTION_ASSIGNMENT_ENDPOINT + "/" + assignmentId + STUDENT_ASSIGNMENT_ENDPOINT + "/bulk");
     }
 
     /**

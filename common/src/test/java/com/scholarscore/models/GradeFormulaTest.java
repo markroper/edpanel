@@ -1,13 +1,13 @@
 package com.scholarscore.models;
 
+import org.testng.Assert;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 @Test(groups = { "unit" })
 public class GradeFormulaTest {
@@ -21,7 +21,7 @@ public class GradeFormulaTest {
             sect.setAvailablePoints(10L);
             sect.setType(AssignmentType.TEST);
             StudentAssignment stu = new StudentAssignment();
-            stu.setAwardedPoints(7L);
+            stu.setAwardedPoints(7D);
             stu.setAssignment(sect);
             stu.setId(i);
             studentAssignments.add(stu);
@@ -31,7 +31,7 @@ public class GradeFormulaTest {
             sect.setAvailablePoints(5L);
             StudentAssignment stu = new StudentAssignment();
             stu.setAssignment(sect);
-            stu.setAwardedPoints(5L);
+            stu.setAwardedPoints(5D);
             stu.setId(i);
             studentAssignments.add(stu);
         }
