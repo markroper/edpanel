@@ -3,12 +3,10 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 import com.scholarscore.api.persistence.BehaviorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.models.Behavior;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
-
 import java.util.Collection;
 
 /**

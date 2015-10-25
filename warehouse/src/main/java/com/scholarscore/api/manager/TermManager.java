@@ -1,11 +1,11 @@
 package com.scholarscore.api.manager;
 
-import java.util.Collection;
-
-import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
+import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.user.Student;
+
+import java.util.Collection;
 
 public interface TermManager {
 

@@ -1,18 +1,31 @@
-package com.scholarscore.models;
-
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Objects;
+package com.scholarscore.models.assignment;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.hibernate.annotations.*;
+import com.scholarscore.models.ApiModel;
+import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.IApiModel;
+import com.scholarscore.models.Section;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * Base class for all assignment subclasses encapsulating shared attributes and behaviors.
@@ -63,6 +76,8 @@ public abstract class Assignment
 
     public void setSection(Section section) {
         this.section = section;
+        //TODO: should we have this here to make it reciprocal?
+        //this.section.addAssignment(this);
     }
 
     @Column(name = HibernateConsts.SECTION_FK)
@@ -159,6 +174,58 @@ public abstract class Assignment
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(type, dueDate, availablePoints);
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public static abstract class AssignmentBuilder<U extends AssignmentBuilder<U, T>, T extends Assignment> extends ApiModelBuilder<U,T>{
+
+        private AssignmentType type;
+        private Date dueDate;
+        private Long availablePoints;
+        protected transient Section section;
+        protected Long sectionFK;
+
+
+        public U withType(final AssignmentType type){
+            this.type = type;
+            return me();
+        }
+
+        public U withDueDate(final Date dueDate){
+            this.dueDate = dueDate;
+            return me();
+        }
+
+        public U withAvailablePoints(final Long availablePoints){
+            this.availablePoints = availablePoints;
+            return me();
+        }
+
+        public U withSection(final Section section){
+            this.section = section;
+            return me();
+        }
+
+        public U withSectionFK(final Long sectionFK){
+            this.sectionFK = sectionFK;
+            return me();
+        }
+
+        public T build(){
+            T assignment = super.build();
+            assignment.setType(type);
+            assignment.setDueDate(dueDate);
+            assignment.setAvailablePoints(availablePoints);
+            assignment.setSection(section);
+            //TODO: should we make this reciprocal?
+            //section.addAssignment(assignment);
+            assignment.setSectionFK(sectionFK);
+            return assignment;
+        }
     }
     
 }

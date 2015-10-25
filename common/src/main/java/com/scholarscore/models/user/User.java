@@ -1,26 +1,5 @@
 package com.scholarscore.models.user;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -31,8 +10,25 @@ import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Defines the base identity to attach to spring security with a username (primary key) and password
@@ -278,5 +274,42 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 				", username='" + username + '\'' +
 				", enabled=" + enabled +
 				'}';
+	}
+
+	/**
+	 * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+	 * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+	 * chain setting attributes together.
+	 */
+	public static abstract class UserBuilder<U extends UserBuilder<U, T>, T extends User> extends ApiModelBuilder<U, T>{
+		// login name
+		private String username;
+		private String password;
+		private Boolean enabled = false;
+
+		public U withUsername(final String username){
+			this.username = username;
+			return me();
+		}
+
+		public U withPassword(final String password){
+			this.password = password;
+			return me();
+		}
+
+		public U withEnabled(final Boolean enabled){
+			this.enabled = enabled;
+			return me();
+		}
+
+		public T build(){
+			T user = super.build();
+			user.setUsername(username);
+			user.setPassword(password);
+			user.setEnabled(enabled);
+			return user;
+		}
+
+		public abstract T getInstance();
 	}
 }

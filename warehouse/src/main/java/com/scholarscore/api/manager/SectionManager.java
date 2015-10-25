@@ -1,11 +1,11 @@
 package com.scholarscore.api.manager;
 
-import java.util.Collection;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
+import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.Section;
+
+import java.util.Collection;
 
 public interface SectionManager {
     /**

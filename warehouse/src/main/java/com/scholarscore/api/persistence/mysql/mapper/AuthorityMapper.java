@@ -1,12 +1,11 @@
 package com.scholarscore.api.persistence.mysql.mapper;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import org.springframework.jdbc.core.RowMapper;
-
 import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.models.Authority;
+import org.springframework.jdbc.core.RowMapper;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class 
 AuthorityMapper implements RowMapper<Authority> {

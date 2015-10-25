@@ -1,12 +1,5 @@
 package com.scholarscore.models;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Objects;
-
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,6 +7,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * This class would not need to exist if JsonNode could be serialized to and from a JSON string 

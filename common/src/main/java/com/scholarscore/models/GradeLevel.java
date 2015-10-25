@@ -1,8 +1,8 @@
 package com.scholarscore.models;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.io.Serializable;
 
 /**
  * This class represents a grade level. For example, the sixth grade.
@@ -42,6 +42,24 @@ public class GradeLevel extends ApiModel implements Serializable, IApiModel<Grad
     @Override
     public int hashCode() {
         return 31 * super.hashCode();
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public static class GradeLevelBuilder extends ApiModelBuilder<GradeLevelBuilder, GradeLevel>{
+
+        @Override
+        protected GradeLevelBuilder me() {
+            return this;
+        }
+
+        @Override
+        public GradeLevel getInstance() {
+            return new GradeLevel();
+        }
     }
 
 }

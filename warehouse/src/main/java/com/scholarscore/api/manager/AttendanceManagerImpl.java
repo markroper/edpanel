@@ -1,15 +1,14 @@
 package com.scholarscore.api.manager;
 
-import java.util.Collection;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.scholarscore.api.persistence.AttendancePersistence;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.attendance.Attendance;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Collection;
 
 public class AttendanceManagerImpl implements AttendanceManager {
     private static final String ATTENDANCE = "attendance";

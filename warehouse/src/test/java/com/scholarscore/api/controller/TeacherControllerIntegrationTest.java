@@ -1,14 +1,13 @@
 package com.scholarscore.api.controller;
 
-import java.util.UUID;
-
+import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.user.Teacher;
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.user.Teacher;
+import java.util.UUID;
 
 @Test(groups = { "integration" })
 public class TeacherControllerIntegrationTest extends IntegrationBase {

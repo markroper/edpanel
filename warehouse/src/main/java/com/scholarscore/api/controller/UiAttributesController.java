@@ -1,9 +1,9 @@
 package com.scholarscore.api.controller;
 
-import java.util.List;
-
-import javax.validation.Valid;
-
+import com.scholarscore.api.ApiConsts;
+import com.scholarscore.models.UiAttributes;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -13,12 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.scholarscore.api.ApiConsts;
-import com.scholarscore.models.EntityId;
-import com.scholarscore.models.UiAttributes;
-import com.scholarscore.models.query.Query;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import javax.validation.Valid;
 
 @Validated
 @Controller

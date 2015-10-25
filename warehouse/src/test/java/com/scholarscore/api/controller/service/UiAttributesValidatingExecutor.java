@@ -1,15 +1,14 @@
 package com.scholarscore.api.controller.service;
 
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.web.servlet.ResultActions;
-import org.testng.Assert;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.UiAttributes;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.web.servlet.ResultActions;
+import org.testng.Assert;
 
 public class UiAttributesValidatingExecutor {
     private final IntegrationBase serviceBase;

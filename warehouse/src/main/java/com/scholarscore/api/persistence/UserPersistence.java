@@ -1,8 +1,8 @@
 package com.scholarscore.api.persistence;
 
-import java.util.Collection;
-
 import com.scholarscore.models.user.User;
+
+import java.util.Collection;
 
 /**
  * User management interface - provides basic crud operations on users for both internal persistence

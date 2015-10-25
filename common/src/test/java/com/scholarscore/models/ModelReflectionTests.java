@@ -1,5 +1,9 @@
 package com.scholarscore.models;
 
+import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.AttendanceAssignment;
+import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.query.AggregateFunction;
@@ -15,7 +19,6 @@ import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
 import com.scholarscore.models.user.ContactType;
 import com.scholarscore.models.user.User;
-
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.SubTypesScanner;

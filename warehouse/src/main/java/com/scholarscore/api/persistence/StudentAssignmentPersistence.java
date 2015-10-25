@@ -1,6 +1,6 @@
 package com.scholarscore.api.persistence;
 
-import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.assignment.StudentAssignment;
 
 import java.util.Collection;
 import java.util.List;

@@ -1,12 +1,12 @@
 package com.scholarscore.models.query.expressions;
 
-import java.io.Serializable;
-import java.util.Objects;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.query.expressions.operands.IOperand;
 import com.scholarscore.models.query.expressions.operands.OperandType;
 import com.scholarscore.models.query.expressions.operators.IOperator;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)

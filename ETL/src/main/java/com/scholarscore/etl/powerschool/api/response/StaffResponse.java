@@ -4,7 +4,6 @@ import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.models.user.User;
 
 import javax.xml.bind.annotation.XmlRootElement;
-
 import java.util.Collection;
 
 /**

@@ -1,9 +1,9 @@
 package com.scholarscore.models.query.expressions.operands;
 
+import com.scholarscore.models.query.DimensionField;
+
 import java.io.Serializable;
 import java.util.Objects;
-
-import com.scholarscore.models.query.DimensionField;
 
 @SuppressWarnings("serial")
 public class DimensionOperand implements Serializable, IOperand {

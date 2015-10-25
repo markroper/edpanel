@@ -1,16 +1,22 @@
 package com.scholarscore.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import org.hibernate.annotations.*;
-import org.hibernate.annotations.CascadeType;
-
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
 /**
  * A term represents one segment of an {@link com.scholarscore.models.SchoolYear}.
@@ -112,22 +118,33 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
             this.sourceSystemId = mergeFrom.sourceSystemId;
         }
     }
-    
+
+    /**
+     * Important to note here that a Term will hash the schoolYear, but a SchoolYear will not hash the terms
+     * otherwise you get into an infinite hashing loop
+     * @return
+     */
+    @Override
+    public int hashCode() {
+        return 31 * Objects.hash(startDate, endDate, sourceSystemId, schoolYear);
+    }
+
     @Override
     public boolean equals(Object obj) {
-        if(!super.equals(obj)) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
             return false;
         }
         final Term other = (Term) obj;
-        return Objects.equals(this.startDate, other.startDate) 
+        return Objects.equals(this.startDate, other.startDate)
                 && Objects.equals(this.endDate, other.endDate)
                 && Objects.equals(this.sourceSystemId, other.sourceSystemId)
                 && Objects.equals(this.schoolYear, other.schoolYear);
-    }
-    
-    @Override
-    public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(startDate, endDate, sourceSystemId, schoolYear);
     }
 
     @Override
@@ -138,5 +155,50 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
                 ", sourceSystemId=" + sourceSystemId +
                 ", schoolYear=" + schoolYear +
                 '}';
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public static class TermBuilder extends ApiModelBuilder<TermBuilder, Term>{
+        protected Date startDate;
+        protected Date endDate;
+        protected SchoolYear schoolYear;
+
+        public TermBuilder withStartDate(final Date startDate){
+            this.startDate = startDate;
+            return this;
+        }
+
+        public TermBuilder withEndDate(final Date endDate){
+            this.endDate = endDate;
+            return this;
+        }
+
+        public TermBuilder withSchoolYear(final SchoolYear schoolYear){
+            this.schoolYear = schoolYear;
+            return this;
+        }
+
+        public Term build(){
+            Term term = super.build();
+            term.setStartDate(startDate);
+            term.setEndDate(endDate);
+            //TODO: make this reciprocal?
+            term.setSchoolYear(schoolYear);
+            return term;
+        }
+
+        @Override
+        protected TermBuilder me() {
+            return this;
+        }
+
+        @Override
+        public Term getInstance() {
+            return new Term();
+        }
     }
 }

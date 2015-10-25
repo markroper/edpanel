@@ -1,12 +1,5 @@
 package com.scholarscore.models.query;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.models.query.dimension.SectionDimension;
@@ -15,6 +8,12 @@ import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
 import com.scholarscore.models.query.expressions.operands.NumericOperand;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
+import org.testng.Assert;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 @Test(groups = { "unit" })
 public class QuerySerializationTest {

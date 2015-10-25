@@ -1,10 +1,8 @@
 package com.scholarscore.api.persistence;
 
-import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.user.Administrator;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by mattg on 7/20/15.

@@ -5,9 +5,7 @@ import org.testng.annotations.Test;
 
 import java.util.Collection;
 
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 /**
  * Created by mattg on 8/29/15.

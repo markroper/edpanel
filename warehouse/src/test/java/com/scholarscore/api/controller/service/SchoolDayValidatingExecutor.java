@@ -1,17 +1,16 @@
 package com.scholarscore.api.controller.service;
 
-import java.util.List;
-
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.web.servlet.ResultActions;
-import org.testng.Assert;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.attendance.SchoolDayList;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.web.servlet.ResultActions;
+import org.testng.Assert;
+
+import java.util.List;
 
 public class SchoolDayValidatingExecutor {
     private final IntegrationBase serviceBase;

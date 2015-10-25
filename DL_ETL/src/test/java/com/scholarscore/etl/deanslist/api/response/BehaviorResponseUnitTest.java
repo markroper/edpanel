@@ -5,7 +5,6 @@ import com.scholarscore.models.BehaviorCategory;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 

@@ -1,10 +1,10 @@
 package com.scholarscore.api.manager;
 
-import java.util.Collection;
-
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.user.Teacher;
+
+import java.util.Collection;
 
 public interface TeacherManager {
     ServiceResponse<Collection<Teacher>> getAllTeachers();

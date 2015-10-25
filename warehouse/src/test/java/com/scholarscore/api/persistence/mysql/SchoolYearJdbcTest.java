@@ -1,10 +1,7 @@
 package com.scholarscore.api.persistence.mysql;
 
-import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import org.testng.annotations.Test;
-
-import java.util.Date;
 
 import static org.testng.Assert.*;
 

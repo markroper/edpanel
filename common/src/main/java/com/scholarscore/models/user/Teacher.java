@@ -1,16 +1,19 @@
 package com.scholarscore.models.user;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IStaff;
-
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Transient;
+import java.io.Serializable;
 
 @Entity(name = HibernateConsts.TEACHER_TABLE)
 @SuppressWarnings("serial")
@@ -60,5 +63,26 @@ public class Teacher extends Person implements Serializable, IStaff<Teacher> {
     @Transient
     public UserType getType() {
         return UserType.TEACHER;
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public static class TeacherBuilder extends PersonBuilder<TeacherBuilder, Teacher> {
+
+        public Teacher build(){
+            return super.build();
+        }
+
+        @Override
+        protected TeacherBuilder me() {
+            return this;
+        }
+
+        public Teacher getInstance(){
+            return new Teacher();
+        }
     }
 }
