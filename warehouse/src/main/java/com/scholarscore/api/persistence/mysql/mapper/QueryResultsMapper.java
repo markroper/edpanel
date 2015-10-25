@@ -1,15 +1,14 @@
 package com.scholarscore.api.persistence.mysql.mapper;
 
+import com.scholarscore.models.query.Record;
+import org.springframework.jdbc.core.RowMapper;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.jdbc.core.RowMapper;
-
-import com.scholarscore.models.query.Record;
 
 /**
  * Capable of mapping the result set from an arbitrary database query into 

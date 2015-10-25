@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
  * Test that we can make equivalent teacher objects using setters and builders
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class TeacherBuilderUnitTest extends AbstractBuilderUnitTest<Teacher> {
     @DataProvider
     @Override

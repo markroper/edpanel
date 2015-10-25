@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
  * LoginRequestBuilderUnitTest tests that we can build equivalent login request objects with setters and with a builder
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class LoginRequestBuilderUnitTest extends AbstractBuilderUnitTest<LoginRequest>{
     @DataProvider
     @Override

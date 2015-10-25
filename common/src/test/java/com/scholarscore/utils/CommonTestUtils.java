@@ -1,6 +1,15 @@
 package com.scholarscore.utils;
 
-import com.scholarscore.models.*;
+import com.scholarscore.models.Address;
+import com.scholarscore.models.BehaviorCategory;
+import com.scholarscore.models.Course;
+import com.scholarscore.models.Gender;
+import com.scholarscore.models.GradeFormula;
+import com.scholarscore.models.School;
+import com.scholarscore.models.SchoolYear;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.AttendanceAssignment;

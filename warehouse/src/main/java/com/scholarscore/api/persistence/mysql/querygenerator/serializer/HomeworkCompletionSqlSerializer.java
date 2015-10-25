@@ -2,8 +2,8 @@ package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
 
 import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
-import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.Dimension;
 

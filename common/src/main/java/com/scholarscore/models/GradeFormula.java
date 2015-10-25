@@ -1,18 +1,17 @@
 package com.scholarscore.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.util.GradeUtil;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
-import com.scholarscore.models.assignment.AssignmentType;
-import com.scholarscore.models.assignment.StudentAssignment;
-import com.scholarscore.util.GradeUtil;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)

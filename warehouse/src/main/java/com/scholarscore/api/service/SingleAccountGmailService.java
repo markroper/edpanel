@@ -1,8 +1,8 @@
 package com.scholarscore.api.service;
 
-import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
+import java.util.Properties;
 
 /**
  * User: jordan

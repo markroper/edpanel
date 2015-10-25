@@ -1,10 +1,8 @@
 package com.scholarscore.models;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import javax.security.auth.Subject;
+import java.io.Serializable;
 
 /**
  * The class represents a school subject area, for example history, or biology.

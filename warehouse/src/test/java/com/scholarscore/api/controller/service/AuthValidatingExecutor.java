@@ -2,14 +2,12 @@ package com.scholarscore.api.controller.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.api.security.config.UserDetailsProxy;
 import com.scholarscore.models.user.User;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 /**
  * Defines the pattern for validating the auth end point

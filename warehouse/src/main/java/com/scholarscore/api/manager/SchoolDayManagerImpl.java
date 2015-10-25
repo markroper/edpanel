@@ -1,15 +1,14 @@
 package com.scholarscore.api.manager;
 
-import java.util.Collection;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.scholarscore.api.persistence.SchoolDayPersistence;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.attendance.SchoolDay;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Collection;
 
 public class SchoolDayManagerImpl implements SchoolDayManager{
     private static final String SCHOOL_DAY = "school day";

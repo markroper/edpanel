@@ -1,21 +1,19 @@
 package com.scholarscore.models.goal;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.BehaviorCategory;
+import com.scholarscore.models.HibernateConsts;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.BehaviorCategory;
-import com.scholarscore.models.HibernateConsts;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * Goal type for goals that are behavior related

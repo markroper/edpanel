@@ -1,18 +1,17 @@
 package com.scholarscore.api.controller.service;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.EntityId;
+import com.scholarscore.models.user.Student;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.ResultActions;
 import org.testng.Assert;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.EntityId;
-import com.scholarscore.models.user.Student;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 public class StudentValidatingExecutor {
     private final IntegrationBase serviceBase;

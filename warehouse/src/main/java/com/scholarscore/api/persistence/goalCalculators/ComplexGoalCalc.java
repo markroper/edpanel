@@ -1,7 +1,14 @@
 package com.scholarscore.api.persistence.goalCalculators;
 
-import com.scholarscore.models.attendance.Attendance;
-import com.scholarscore.models.goal.*;
+import com.scholarscore.models.goal.AssignmentComponent;
+import com.scholarscore.models.goal.AttendanceComponent;
+import com.scholarscore.models.goal.BehaviorComponent;
+import com.scholarscore.models.goal.ComplexComponent;
+import com.scholarscore.models.goal.ComplexGoal;
+import com.scholarscore.models.goal.ConstantComponent;
+import com.scholarscore.models.goal.CumulativeGradeComponent;
+import com.scholarscore.models.goal.GoalAggregate;
+import com.scholarscore.models.goal.GoalComponent;
 
 /**
  * Created by cwallace on 10/14/2015.

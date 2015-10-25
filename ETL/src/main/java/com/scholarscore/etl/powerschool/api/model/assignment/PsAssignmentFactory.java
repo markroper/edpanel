@@ -1,10 +1,10 @@
 package com.scholarscore.etl.powerschool.api.model.assignment;
 
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentType;
-import com.scholarscore.models.Assignment;
-import com.scholarscore.models.AssignmentType;
-import com.scholarscore.models.AttendanceAssignment;
-import com.scholarscore.models.GradedAssignment;
+import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.AttendanceAssignment;
+import com.scholarscore.models.assignment.GradedAssignment;
 
 import java.util.HashSet;
 

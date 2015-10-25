@@ -1,10 +1,10 @@
 package com.scholarscore.api.manager;
 
-import java.util.Collection;
-
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.QueryResults;
+
+import java.util.Collection;
 
 public interface QueryManager {
     /**

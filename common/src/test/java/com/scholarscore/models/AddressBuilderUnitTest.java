@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
  * AddressBuilderUnitTest tests out the Address object's Builder to ensure that constructing an object with the builder
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class AddressBuilderUnitTest extends AbstractBuilderUnitTest<Address>{
 
     @DataProvider

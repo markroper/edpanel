@@ -1,8 +1,12 @@
 package com.scholarscore.models.user;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.Address;
+import com.scholarscore.models.Gender;
+import com.scholarscore.models.HibernateConsts;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,15 +14,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.Address;
-import com.scholarscore.models.Gender;
-import com.scholarscore.models.HibernateConsts;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * The student class expresses a single student with a unique ID per school district.

@@ -1,8 +1,8 @@
 package com.scholarscore.models.query.measure;
 
-import java.util.Set;
-
 import com.google.common.collect.ImmutableSet;
+
+import java.util.Set;
 
 public abstract class BehaviorMeasure {
     

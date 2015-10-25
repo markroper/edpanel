@@ -1,7 +1,6 @@
 package com.scholarscore.api.persistence.mysql;
 
 import com.scholarscore.models.user.Student;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.testng.annotations.Test;

@@ -1,22 +1,21 @@
 package com.scholarscore.api.controller;
 
-import java.util.Calendar;
-import java.util.Date;
-
+import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.Course;
+import com.scholarscore.models.School;
+import com.scholarscore.models.SchoolYear;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.Term;
+import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.GradedAssignment;
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.assignment.AssignmentType;
-import com.scholarscore.models.Course;
-import com.scholarscore.models.assignment.GradedAssignment;
-import com.scholarscore.models.School;
-import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.Section;
-import com.scholarscore.models.assignment.Assignment;
-import com.scholarscore.models.Term;
+import java.util.Calendar;
+import java.util.Date;
 
 @Test(groups = { "integration" })
 public class AssignmentControllerIntegrationTest extends IntegrationBase {

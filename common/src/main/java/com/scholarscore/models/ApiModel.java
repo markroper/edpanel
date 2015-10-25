@@ -1,13 +1,12 @@
 package com.scholarscore.models;
 
-import java.io.Serializable;
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.validation.constraints.Size;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
+import java.io.Serializable;
+import java.util.Objects;
 
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -53,7 +52,12 @@ public abstract class ApiModel implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -63,12 +67,8 @@ public abstract class ApiModel implements Serializable {
             return false;
         }
         final ApiModel other = (ApiModel) obj;
-        return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.equals(this.id, other.id)
+                && Objects.equals(this.name, other.name);
     }
 
     @Override

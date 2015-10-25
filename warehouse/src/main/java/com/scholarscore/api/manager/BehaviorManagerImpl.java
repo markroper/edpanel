@@ -6,7 +6,6 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.Behavior;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;

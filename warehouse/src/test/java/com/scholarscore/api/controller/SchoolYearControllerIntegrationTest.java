@@ -1,19 +1,18 @@
 package com.scholarscore.api.controller;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
+import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.School;
+import com.scholarscore.models.SchoolYear;
+import com.scholarscore.models.Term;
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.School;
-import com.scholarscore.models.Term;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 @Test(groups = { "integration" })
 public class SchoolYearControllerIntegrationTest extends IntegrationBase {

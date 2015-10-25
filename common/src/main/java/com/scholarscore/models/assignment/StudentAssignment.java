@@ -187,7 +187,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     public static class StudentAssignmentBuilder extends ApiModelBuilder<StudentAssignmentBuilder, StudentAssignment> {
         private Boolean completed;
         private Date completionDate;
-        private Long awardedPoints;
+        private Double awardedPoints;
         private Assignment assignment;
         private Student student;
 
@@ -201,7 +201,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
             return this;
         }
 
-        public StudentAssignmentBuilder withAwardedPoints(final Long awardedPoints){
+        public StudentAssignmentBuilder withAwardedPoints(final Double awardedPoints){
             this.awardedPoints = awardedPoints;
             return this;
         }
@@ -217,12 +217,13 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         }
 
         public StudentAssignment build(){
-            StudentAssignment assignment = super.build();
-            assignment.setCompleted(completed);
-            assignment.setCompletionDate(completionDate);
-            assignment.setAwardedPoints(awardedPoints);
-            assignment.setStudent(student);
-            return assignment;
+            StudentAssignment studentAssignment = super.build();
+            studentAssignment.setCompleted(completed);
+            studentAssignment.setCompletionDate(completionDate);
+            studentAssignment.setAwardedPoints(awardedPoints);
+            studentAssignment.setAssignment(assignment);
+            studentAssignment.setStudent(student);
+            return studentAssignment;
         }
 
         @Override

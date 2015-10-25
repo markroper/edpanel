@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
@@ -26,7 +27,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
@@ -68,7 +68,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         enrolledStudents = Lists.newArrayList();
         assignments = Lists.newArrayList();
         studentSectionGrades = Lists.newArrayList();
-        teachers = Lists.newArrayList();
+        teachers = Sets.newHashSet();
     }
 
     public Section(Date startDate, Date endDate, String room, GradeFormula gradeFormula) {
@@ -87,6 +87,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         room = sect.room;
         enrolledStudents = sect.enrolledStudents;
         assignments = sect.assignments;
+        studentSectionGrades = sect.studentSectionGrades;
         gradeFormula = sect.gradeFormula;
         sourceSystemId = sect.sourceSystemId;
     }
@@ -97,11 +98,11 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             joinColumns = { @JoinColumn(name = HibernateConsts.SECTION_FK, nullable = false, updatable = false) },
             inverseJoinColumns = { @JoinColumn(name = HibernateConsts.TEACHER_FK, nullable = false, updatable = false) })
     @Fetch(FetchMode.JOIN)
-    public List<Teacher> getTeachers() {
+    public Set<Teacher> getTeachers() {
         return teachers;
     }
 
-    public void setTeachers(List<Teacher> teachers) {
+    public void setTeachers(Set<Teacher> teachers) {
         this.teachers = teachers;
     }
 
@@ -220,6 +221,11 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     @JsonIgnore
     public void setStudentSectionGrades(List<StudentSectionGrade> grades) {
         this.studentSectionGrades = grades;
+    }
+
+    @JsonIgnore
+    public void addStudentSectionGrade(StudentSectionGrade grade) {
+        this.studentSectionGrades.add(grade);
     }
 
     @Column(name = HibernateConsts.SECTION_SOURCE_SYSTEM_ID)
@@ -363,13 +369,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         protected transient List<Student> enrolledStudents;
         protected transient List<Assignment> assignments;
         protected List<StudentSectionGrade> studentSectionGrades;
-        protected List<Teacher> teachers;
+        protected Set<Teacher> teachers;
+        protected String sourceSystemId;
 
         public SectionBuilder(){
             enrolledStudents = Lists.newArrayList();
             assignments = Lists.newArrayList();
             studentSectionGrades = Lists.newArrayList();
-            teachers = Lists.newArrayList();
+            teachers = Sets.newHashSet();
         }
 
         public SectionBuilder withStartDate(final Date startDate){
@@ -442,8 +449,13 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             return this;
         }
 
-        public SectionBuilder withTeachers(final List<Teacher> teachers){
+        public SectionBuilder withTeachers(final Set<Teacher> teachers){
             this.teachers.addAll(teachers);
+            return this;
+        }
+
+        public SectionBuilder withSourceSystemId(final String sourceSystemId){
+            this.sourceSystemId = sourceSystemId;
             return this;
         }
 
@@ -460,6 +472,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             section.setAssignments(assignments);
             section.setStudentSectionGrades(studentSectionGrades);
             section.setTeachers(teachers);
+            section.setSourceSystemId(sourceSystemId);
             return section;
         }
 

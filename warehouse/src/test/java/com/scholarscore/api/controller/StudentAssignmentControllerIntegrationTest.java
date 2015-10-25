@@ -1,17 +1,16 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.Course;
-import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.GradedAssignment;
+import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
-
 import org.springframework.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;

@@ -13,7 +13,7 @@ import java.util.Date;
  * BehaviorBuilderUnitTest tests that we can build an equivalent Behavior object with setters and with a builder
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class BehaviorBuilderUnitTest extends AbstractBuilderUnitTest<Behavior>{
     @DataProvider
     @Override

@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
  * GradeLevelBuilderUnitTest tests that we can build equivalent GradeLevel objects out of setters and a builder
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class GradeLevelBuilderUnitTest extends AbstractBuilderUnitTest<GradeLevel>{
     @DataProvider
     @Override

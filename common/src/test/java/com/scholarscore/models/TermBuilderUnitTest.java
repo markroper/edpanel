@@ -12,7 +12,7 @@ import java.util.Date;
  * TermBuilderUnitTest ensures that we create equivalent Term objects when using setters and builders
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class TermBuilderUnitTest extends AbstractBuilderUnitTest<Term>{
     @DataProvider
     @Override

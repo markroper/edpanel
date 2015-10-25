@@ -1,12 +1,11 @@
 package com.scholarscore.api.controller;
 
+import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.School;
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.School;
 
 @Test(groups = { "integration" })
 public class SchoolControllerIntegrationTest extends IntegrationBase {

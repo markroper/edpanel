@@ -1,10 +1,10 @@
 package com.scholarscore.api.persistence;
 
-import java.util.Collection;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.QueryResults;
+
+import java.util.Collection;
 
 public interface QueryPersistence {
     /**

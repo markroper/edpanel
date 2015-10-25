@@ -1,16 +1,19 @@
 package com.scholarscore.models.user;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IStaff;
-
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Transient;
+import java.io.Serializable;
 
 @Entity(name = HibernateConsts.TEACHER_TABLE)
 @SuppressWarnings("serial")

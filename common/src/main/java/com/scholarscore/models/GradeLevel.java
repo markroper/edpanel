@@ -1,8 +1,8 @@
 package com.scholarscore.models;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.io.Serializable;
 
 /**
  * This class represents a grade level. For example, the sixth grade.

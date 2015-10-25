@@ -1,19 +1,41 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.*;
+import com.scholarscore.models.Behavior;
+import com.scholarscore.models.BehaviorCategory;
+import com.scholarscore.models.Course;
+import com.scholarscore.models.School;
+import com.scholarscore.models.SchoolYear;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.assignment.StudentAssignment;
-import com.scholarscore.models.goal.*;
+import com.scholarscore.models.goal.AssignmentComponent;
+import com.scholarscore.models.goal.AssignmentGoal;
+import com.scholarscore.models.goal.AttendanceComponent;
+import com.scholarscore.models.goal.AttendanceGoal;
+import com.scholarscore.models.goal.BehaviorComponent;
+import com.scholarscore.models.goal.BehaviorGoal;
+import com.scholarscore.models.goal.ComplexGoal;
+import com.scholarscore.models.goal.ConstantComponent;
+import com.scholarscore.models.goal.CumulativeGradeComponent;
+import com.scholarscore.models.goal.CumulativeGradeGoal;
+import com.scholarscore.models.goal.Goal;
+import com.scholarscore.models.goal.GoalAggregate;
+import com.scholarscore.models.goal.GoalComponent;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
-
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Created by cwallace on 9/21/2015.

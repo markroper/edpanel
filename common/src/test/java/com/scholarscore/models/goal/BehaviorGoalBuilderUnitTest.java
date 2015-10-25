@@ -2,8 +2,6 @@ package com.scholarscore.models.goal;
 
 import com.scholarscore.models.AbstractBuilderUnitTest;
 import com.scholarscore.models.BehaviorCategory;
-import com.scholarscore.models.goal.BehaviorGoal;
-import com.scholarscore.models.goal.GoalType;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.utils.CommonTestUtils;
@@ -17,7 +15,7 @@ import java.util.Date;
  * BehaviorGoalBuilderUnitTest tests that we can build equivalent objects with setters and a builder
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class BehaviorGoalBuilderUnitTest extends AbstractBuilderUnitTest<BehaviorGoal> {
 
     @DataProvider

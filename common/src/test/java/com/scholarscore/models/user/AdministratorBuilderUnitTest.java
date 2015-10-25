@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
  * Test that we can create equivalent administrator objects using setters and builders
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class AdministratorBuilderUnitTest extends AbstractBuilderUnitTest<Administrator> {
 
     @DataProvider

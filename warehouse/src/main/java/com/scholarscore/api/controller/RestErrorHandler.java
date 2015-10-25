@@ -1,6 +1,9 @@
 package com.scholarscore.api.controller;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
+import com.scholarscore.api.util.StatusCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,10 +15,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.scholarscore.api.util.StatusCode;
-import com.scholarscore.api.util.StatusCodes;
 
 /**
  * This class catches and handles exceptions thrown within or before entering

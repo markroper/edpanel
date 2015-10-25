@@ -1,8 +1,8 @@
 package com.scholarscore;
 
+import com.scholarscore.models.WeightedGradable;
 import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.assignment.StudentAssignment;
-import com.scholarscore.models.WeightedGradable;
 import com.scholarscore.util.GradeUtil;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;

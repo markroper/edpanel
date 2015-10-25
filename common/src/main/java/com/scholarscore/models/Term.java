@@ -1,16 +1,22 @@
 package com.scholarscore.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import org.hibernate.annotations.*;
-import org.hibernate.annotations.CascadeType;
-
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
 /**
  * A term represents one segment of an {@link com.scholarscore.models.SchoolYear}.
@@ -81,7 +87,6 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
 
     public void setSchoolYear(SchoolYear schoolYear) {
         this.schoolYear = schoolYear;
-        this.schoolYear.addTerm(this);
     }
 
     public void setEndDate(Date endDate) {
@@ -113,22 +118,33 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
             this.sourceSystemId = mergeFrom.sourceSystemId;
         }
     }
-    
+
+    /**
+     * Important to note here that a Term will hash the schoolYear, but a SchoolYear will not hash the terms
+     * otherwise you get into an infinite hashing loop
+     * @return
+     */
+    @Override
+    public int hashCode() {
+        return 31 * Objects.hash(startDate, endDate, sourceSystemId, schoolYear);
+    }
+
     @Override
     public boolean equals(Object obj) {
-        if(!super.equals(obj)) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
             return false;
         }
         final Term other = (Term) obj;
-        return Objects.equals(this.startDate, other.startDate) 
+        return Objects.equals(this.startDate, other.startDate)
                 && Objects.equals(this.endDate, other.endDate)
                 && Objects.equals(this.sourceSystemId, other.sourceSystemId)
                 && Objects.equals(this.schoolYear, other.schoolYear);
-    }
-    
-    @Override
-    public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(startDate, endDate, sourceSystemId, schoolYear);
     }
 
     @Override

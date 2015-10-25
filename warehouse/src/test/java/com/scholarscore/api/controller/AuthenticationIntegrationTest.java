@@ -1,7 +1,5 @@
 package com.scholarscore.api.controller;
 
-import java.util.UUID;
-
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.School;
 import com.scholarscore.models.user.Student;
@@ -9,6 +7,8 @@ import com.scholarscore.models.user.User;
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.util.UUID;
 
 import static org.testng.Assert.assertNotNull;
 

@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
  * The AuthorityBuilderUnitTest tests that we can build an equivalent Authority object with a builder and setters
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class AuthorityBuilderUnitTest extends AbstractBuilderUnitTest<Authority>{
     @DataProvider
     @Override

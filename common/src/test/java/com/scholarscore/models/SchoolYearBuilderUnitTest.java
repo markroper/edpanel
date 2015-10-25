@@ -10,7 +10,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +17,7 @@ import java.util.Set;
  * SchoolYearBuilderUnitTest tests that we can build equivalent SchoolYear objects using both setters and builders
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class SchoolYearBuilderUnitTest extends AbstractBuilderUnitTest<SchoolYear>{
 
     @DataProvider
@@ -32,7 +31,7 @@ public class SchoolYearBuilderUnitTest extends AbstractBuilderUnitTest<SchoolYea
         School parentSchool = CommonTestUtils.generateSchool();
         Date startDate = new Date();
         Date endDate = DateUtils.addMonths(startDate, 9);
-        Set<Term> terms = Sets.newHashSet();
+        List<Term> terms = Lists.newArrayList();
         int numTerms = RandomUtils.nextInt(2, 5);
         for(int i = 0; i < numTerms; i++){
             terms.add(CommonTestUtils.generateTermWithoutSchoolYear(startDate, DateUtils.addMonths(startDate, 12 / numTerms)));
