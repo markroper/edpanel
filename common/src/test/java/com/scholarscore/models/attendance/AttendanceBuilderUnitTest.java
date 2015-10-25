@@ -2,10 +2,8 @@ package com.scholarscore.models.attendance;
 
 import com.scholarscore.models.AbstractBuilderUnitTest;
 import com.scholarscore.models.user.Student;
-import com.sun.tools.doclets.internal.toolkit.builders.AbstractBuilder;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
