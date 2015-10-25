@@ -1,12 +1,11 @@
 package com.scholarscore.api.manager;
 
-import java.util.Collection;
-
-import com.scholarscore.api.security.config.UserDetailsProxy;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.user.ContactType;
 import com.scholarscore.models.user.User;
+
+import java.util.Collection;
 
 /**
  * Allows for the creation of users

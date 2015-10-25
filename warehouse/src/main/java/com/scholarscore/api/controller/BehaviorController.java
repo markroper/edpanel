@@ -1,13 +1,10 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
-import com.scholarscore.api.manager.BehaviorManager;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.EntityId;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
-
 import java.util.List;
 
 /**

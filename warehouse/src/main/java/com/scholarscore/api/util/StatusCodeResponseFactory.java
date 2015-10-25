@@ -1,8 +1,8 @@
 package com.scholarscore.api.util;
 
-import java.util.Locale;
-
 import org.springframework.context.i18n.LocaleContextHolder;
+
+import java.util.Locale;
 /**
  * This class is a non-static factory that produces a localized ErrorCode instance, given a base ErrorCode as input.
  * 

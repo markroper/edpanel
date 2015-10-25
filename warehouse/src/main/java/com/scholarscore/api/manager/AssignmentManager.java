@@ -1,10 +1,10 @@
 package com.scholarscore.api.manager;
 
-import java.util.Collection;
-
-import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
-import com.scholarscore.models.Assignment;
+import com.scholarscore.api.util.StatusCode;
+import com.scholarscore.models.assignment.Assignment;
+
+import java.util.Collection;
 
 public interface AssignmentManager {
     /**

@@ -1,5 +1,11 @@
 package com.scholarscore.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.util.GradeUtil;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,17 +13,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.scholarscore.util.GradeUtil;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GradeFormula implements Serializable {
     Map<AssignmentType, Integer> assignmentTypeWeights;
     
-    public GradeFormula() { 
+    public GradeFormula() {
+        assignmentTypeWeights = new HashMap<>();
     }
     
     public GradeFormula(Map<AssignmentType, Integer> weights) {
@@ -26,7 +28,7 @@ public class GradeFormula implements Serializable {
     
     @JsonIgnore
     public boolean isValid() {
-        if(null == assignmentTypeWeights) {
+        if(null == assignmentTypeWeights || assignmentTypeWeights.isEmpty()) {
             return true;
         }
         int totalWeights = 0;
@@ -41,7 +43,7 @@ public class GradeFormula implements Serializable {
             return null;
         }
         double newlyCalculatedGrade = 0D;
-        if(null == assignmentTypeWeights) {
+        if(null == assignmentTypeWeights || assignmentTypeWeights.isEmpty()) {
             newlyCalculatedGrade = GradeUtil.calculateAverageGrade(studentAssignments);
         } else {
             Map<AssignmentType, ArrayList<Double>> assignmentTypeToGrades = new HashMap<>();
@@ -112,5 +114,54 @@ public class GradeFormula implements Serializable {
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(assignmentTypeWeights);
+    }
+
+    @Override
+    public String toString() {
+        return "GradeFormula{" +
+                "assignmentTypeWeights=" + assignmentTypeWeights +
+                '}';
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public static class GradeFormulaBuilder{
+        Map<AssignmentType, Integer> assignmentTypeWeights;
+
+        public GradeFormulaBuilder(){
+            assignmentTypeWeights = new HashMap<>();
+        }
+
+        /**
+         * Add a single assignmentType to a map
+         * This will override the assignmentType's weight if it already exists in the map
+         * @param type the AssignmentType as key
+         * @param weight the weight to assign this AssignmentType
+         * @return this builder object
+         */
+        public GradeFormulaBuilder withAssignmentTypeWeight(final AssignmentType type, final int weight){
+            assignmentTypeWeights.put(type, weight);
+            return this;
+        }
+
+        /**
+         * Put all of the items in the passed map into this map - this method is additive
+         * @param assignmentTypeWeights the weights for each assignment type in the map
+         * @return this builder
+         */
+        public GradeFormulaBuilder withAssignmentTypeWeights(final Map<AssignmentType, Integer> assignmentTypeWeights){
+            this.assignmentTypeWeights.putAll(assignmentTypeWeights);
+            return this;
+        }
+
+        public GradeFormula build(){
+            GradeFormula formula = new GradeFormula();
+            formula.setAssignmentTypeWeights(assignmentTypeWeights);
+            return formula;
+        }
+
     }
 }

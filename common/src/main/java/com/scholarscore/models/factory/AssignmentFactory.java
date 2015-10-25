@@ -1,8 +1,8 @@
 package com.scholarscore.models.factory;
 
-import java.lang.reflect.Constructor;
+import com.scholarscore.models.assignment.Assignment;
 
-import com.scholarscore.models.Assignment;
+import java.lang.reflect.Constructor;
 
 /**
  * Given an instance of a subclass of Assignment, produces a shallow clone of that 

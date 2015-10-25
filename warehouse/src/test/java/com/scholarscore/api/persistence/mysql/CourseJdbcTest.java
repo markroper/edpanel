@@ -1,7 +1,6 @@
 package com.scholarscore.api.persistence.mysql;
 
 import com.scholarscore.models.Course;
-import com.scholarscore.models.School;
 import org.testng.annotations.Test;
 
 import java.util.Collection;

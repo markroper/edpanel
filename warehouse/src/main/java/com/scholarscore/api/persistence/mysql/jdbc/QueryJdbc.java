@@ -1,14 +1,5 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.persistence.DbMappings;
@@ -22,6 +13,14 @@ import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.QueryResults;
 import com.scholarscore.models.query.Record;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class QueryJdbc extends BaseJdbc implements QueryPersistence {
     private static final ObjectMapper mapper = new ObjectMapper();

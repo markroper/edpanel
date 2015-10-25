@@ -1,7 +1,10 @@
 package com.scholarscore.models.attendance;
 
-import java.io.Serializable;
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.user.Student;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,13 +17,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.HibernateConsts;
-import com.scholarscore.models.user.Student;
+import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Represents school attendance for a single student on a single day.
@@ -48,6 +46,7 @@ public class Attendance implements Serializable {
     public void setSchoolDay(SchoolDay schoolDay) {
         this.schoolDay = schoolDay;
     }
+
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     @Column(name = HibernateConsts.ATTENDANCE_ID)
@@ -57,6 +56,7 @@ public class Attendance implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
+
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name=HibernateConsts.STUDENT_FK)
     @Fetch(FetchMode.JOIN)
@@ -114,5 +114,56 @@ public class Attendance implements Serializable {
                 ", status=" + status +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public static class AttendanceBuilder {
+
+        private SchoolDay schoolDay;
+        private Long id;
+        private Student student;
+        private AttendanceStatus status;
+        private String description;
+
+        public AttendanceBuilder(){}
+
+        public AttendanceBuilder withSchoolDay(final SchoolDay schoolDay){
+            this.schoolDay = schoolDay;
+            return this;
+        }
+
+        public AttendanceBuilder withId(final Long id){
+            this.id = id;
+            return this;
+        }
+
+        public AttendanceBuilder withStudent(final Student student){
+            this.student = student;
+            return this;
+        }
+
+        public AttendanceBuilder withAttendanceStatus(final AttendanceStatus status){
+            this.status = status;
+            return this;
+        }
+
+        public AttendanceBuilder withDescription(final String description){
+            this.description = description;
+            return this;
+        }
+
+        public Attendance build(){
+            Attendance attendance = new Attendance();
+            attendance.setSchoolDay(schoolDay);
+            attendance.setId(id);
+            attendance.setStudent(student);
+            attendance.setStatus(status);
+            attendance.setDescription(description);
+            return attendance;
+        }
     }
 }

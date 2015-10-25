@@ -1,13 +1,11 @@
 package com.scholarscore.api.persistence.mysql;
 
 import com.scholarscore.models.user.Teacher;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 
 /**

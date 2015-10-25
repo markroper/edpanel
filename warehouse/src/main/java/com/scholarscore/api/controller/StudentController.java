@@ -1,18 +1,12 @@
 package com.scholarscore.api.controller;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.validation.Valid;
-
-import com.scholarscore.api.manager.SectionManager;
-import com.scholarscore.api.manager.StudentAssignmentManager;
-import com.scholarscore.api.manager.StudentManager;
-import com.scholarscore.api.manager.StudentSectionGradeManager;
+import com.scholarscore.api.ApiConsts;
+import com.scholarscore.models.EntityId;
 import com.scholarscore.models.WeightedGradable;
+import com.scholarscore.models.user.Student;
 import com.scholarscore.util.GradeUtil;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,11 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.scholarscore.api.ApiConsts;
-import com.scholarscore.models.EntityId;
-import com.scholarscore.models.user.Student;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import javax.validation.Valid;
+import java.util.Collection;
+import java.util.List;
 
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/students")

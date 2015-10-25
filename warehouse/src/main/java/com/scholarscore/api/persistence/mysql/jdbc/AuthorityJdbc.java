@@ -1,18 +1,17 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-
 import com.scholarscore.api.persistence.AuthorityPersistence;
 import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.mysql.mapper.AuthorityMapper;
 import com.scholarscore.models.Authority;
 import com.scholarscore.models.HibernateConsts;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Maintains authority or role information for identities that can authenticate for Spring Security

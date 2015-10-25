@@ -1,8 +1,12 @@
 package com.scholarscore.models.user;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.Address;
+import com.scholarscore.models.Gender;
+import com.scholarscore.models.HibernateConsts;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,15 +14,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.Address;
-import com.scholarscore.models.Gender;
-import com.scholarscore.models.HibernateConsts;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * The student class expresses a single student with a unique ID per school district.
@@ -264,5 +262,109 @@ public class Student extends Person implements Serializable {
                 ", federalEthnicity='" + federalEthnicity + '\'' +
                 ", currentSchoolId=" + currentSchoolId +
                 '}';
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public static class StudentBuilder extends PersonBuilder<StudentBuilder, Student> {
+
+        //Source system identifier. E.g. powerschool ID
+        private String sourceSystemId;
+        //Addresses
+        private Address mailingAddress;
+        private Address homeAddress;
+        //Demographics
+        private Gender gender;
+        private Date birthDate;
+        private Date districtEntryDate;
+        private Long projectedGraduationYear;
+        private String socialSecurityNumber;
+        //EthnicityRace
+        private String federalRace;
+        private String federalEthnicity;
+        private Long currentSchoolId;
+
+        public StudentBuilder withSourceSystemId(final String sourceSystemId){
+            this.sourceSystemId = sourceSystemId;
+            return this;
+        }
+
+        public StudentBuilder withMailingAddress(final Address mailingAddress){
+            this.mailingAddress = mailingAddress;
+            return this;
+        }
+
+        public StudentBuilder withHomeAddress(final Address homeAddress){
+            this.homeAddress = homeAddress;
+            return this;
+        }
+
+        public StudentBuilder withGender(final Gender gender){
+            this.gender = gender;
+            return this;
+        }
+
+        public StudentBuilder withBirthDate(final Date birthDate){
+            this.birthDate = birthDate;
+            return this;
+        }
+
+        public StudentBuilder withDistrictEntryDate(final Date districtEntryDate){
+            this.districtEntryDate = districtEntryDate;
+            return this;
+        }
+
+        public StudentBuilder withProjectedGraduationYear(final Long projectedGraduationYear){
+            this.projectedGraduationYear = projectedGraduationYear;
+            return this;
+        }
+
+        public StudentBuilder withSocialSecurityNumber(final String socialSecurityNumber){
+            this.socialSecurityNumber = socialSecurityNumber;
+            return this;
+        }
+
+        public StudentBuilder withFederalRace(final String federalRace){
+            this.federalRace = federalRace;
+            return this;
+        }
+
+        public StudentBuilder withFederalEthnicity(final String federalEthnicity){
+            this.federalEthnicity = federalEthnicity;
+            return this;
+        }
+
+        public StudentBuilder withCurrentSchoolId(final Long currentSchoolId){
+            this.currentSchoolId = currentSchoolId;
+            return this;
+        }
+
+        public Student build(){
+            Student student = super.build();
+            student.setSourceSystemId(sourceSystemId);
+            student.setMailingAddress(mailingAddress);
+            student.setHomeAddress(homeAddress);
+            student.setGender(gender);
+            student.setBirthDate(birthDate);
+            student.setDistrictEntryDate(districtEntryDate);
+            student.setProjectedGraduationYear(projectedGraduationYear);
+            student.setSocialSecurityNumber(socialSecurityNumber);
+            student.setFederalRace(federalRace);
+            student.setFederalEthnicity(federalEthnicity);
+            student.setCurrentSchoolId(currentSchoolId);
+            return student;
+        }
+
+        @Override
+        protected StudentBuilder me() {
+            return this;
+        }
+
+        public Student getInstance(){
+            return new Student();
+        }
     }
 }

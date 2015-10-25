@@ -1,11 +1,11 @@
 package com.scholarscore.models.query.dimension;
 
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.query.Dimension;
+
+import java.util.Set;
 
 @SuppressWarnings("serial")
 public class TermDimension implements IDimension {

@@ -5,9 +5,7 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.Assignment;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.scholarscore.models.assignment.Assignment;
 
 import java.util.Collection;
 

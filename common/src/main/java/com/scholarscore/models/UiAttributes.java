@@ -1,7 +1,7 @@
 package com.scholarscore.models;
 
-import java.io.Serializable;
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -10,7 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import java.io.Serializable;
+import java.util.Objects;
 
 @Entity(name=HibernateConsts.UI_ATTRIBUTES_TABLE)
 @JsonInclude(JsonInclude.Include.NON_NULL)

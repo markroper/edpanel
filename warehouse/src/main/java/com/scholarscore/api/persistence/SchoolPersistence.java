@@ -1,8 +1,8 @@
 package com.scholarscore.api.persistence;
 
-import java.util.Collection;
-
 import com.scholarscore.models.School;
+
+import java.util.Collection;
 
 public interface SchoolPersistence {
 

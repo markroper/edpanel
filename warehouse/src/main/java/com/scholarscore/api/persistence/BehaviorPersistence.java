@@ -1,6 +1,5 @@
 package com.scholarscore.api.persistence;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scholarscore.models.Behavior;
 
 import java.util.Collection;

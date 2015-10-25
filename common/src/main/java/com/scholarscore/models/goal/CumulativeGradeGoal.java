@@ -3,7 +3,12 @@ package com.scholarscore.models.goal;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 import java.util.Objects;
 
 /**
@@ -84,5 +89,37 @@ public class CumulativeGradeGoal extends Goal implements CalculatableCumulative 
                         + "Student: " + getStudent() + "\n"
                         + "Teacher: " + getTeacher() + "\n"
                         + "ParentId: " + getParentId();
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public static class CumulativeGradeGoalBuilder extends GoalBuilder<CumulativeGradeGoalBuilder, CumulativeGradeGoal>{
+
+        private Long parentId;
+
+        public CumulativeGradeGoalBuilder withParentId(final Long parentId){
+            this.parentId = parentId;
+            return this;
+        }
+
+        public CumulativeGradeGoal build(){
+            CumulativeGradeGoal goal = super.build();
+            goal.setGoalType(GoalType.CUMULATIVE_GRADE);
+            goal.setParentId(parentId);
+            return goal;
+        }
+
+        @Override
+        protected CumulativeGradeGoalBuilder me() {
+            return this;
+        }
+
+        @Override
+        public CumulativeGradeGoal getInstance() {
+            return new CumulativeGradeGoal();
+        }
     }
 }

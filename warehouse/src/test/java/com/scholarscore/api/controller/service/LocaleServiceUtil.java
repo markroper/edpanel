@@ -1,9 +1,8 @@
 package com.scholarscore.api.controller.service;
 
+import com.scholarscore.api.controller.base.IntegrationBase;
 import org.apache.commons.lang3.ArrayUtils;
 import org.testng.Assert;
-
-import com.scholarscore.api.controller.base.IntegrationBase;
 
 import java.util.Locale;
 import java.util.Random;

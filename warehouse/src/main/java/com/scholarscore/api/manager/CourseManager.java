@@ -1,10 +1,10 @@
 package com.scholarscore.api.manager;
 
-import java.util.Collection;
-
-import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
+import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.Course;
+
+import java.util.Collection;
 
 public interface CourseManager {
     

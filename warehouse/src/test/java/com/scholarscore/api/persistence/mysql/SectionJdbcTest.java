@@ -1,8 +1,6 @@
 package com.scholarscore.api.persistence.mysql;
 
-import com.scholarscore.api.persistence.mysql.jdbc.BaseJdbc;
 import com.scholarscore.models.Course;
-import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
 import org.testng.annotations.Test;

@@ -1,18 +1,16 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import com.scholarscore.api.persistence.EntityPersistence;
 import com.scholarscore.api.persistence.SectionPersistence;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Transactional
 public class SectionJdbc implements SectionPersistence {
