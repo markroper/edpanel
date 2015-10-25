@@ -76,35 +76,35 @@ public class ETLEngine implements IETLEngine {
         MigrationResult result = new MigrationResult();
         createSchools();
         long endTime = System.currentTimeMillis();
-        long schoolCreationTime = (endTime - startTime)/1000;
+        long schoolCreationTime = (startTime - startTime)/1000;
 
         migrateSchoolYearsAndTerms();
-        long yearsAndTermsComplete = (endTime - System.currentTimeMillis())/1000;
+        long yearsAndTermsComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
 
         createStaff();
-        long staffCreationComplete = (endTime - System.currentTimeMillis())/1000;
+        long staffCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
 
         createStudents();
-        long studentCreationComplete = (endTime - System.currentTimeMillis())/1000;
+        long studentCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
 
         createCourses();
-        long courseCreationComplete = (endTime - System.currentTimeMillis())/1000;
+        long courseCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
 
         migrateSections();
-        long sectionCreationComplete = (endTime - System.currentTimeMillis())/1000;
+        long sectionCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
 
         System.out.println("Total runtime: " + (startTime-endTime)/1000 +
-                "s, schools: " + schoolCreationTime +
-                "s, Years + Terms: " + yearsAndTermsComplete +
-                "s, staff: " + staffCreationComplete +
-                "s, students: " + studentCreationComplete +
-                "s, courses: " + courseCreationComplete +
-                "s, sections: " + sectionCreationComplete);
+                " seconds, schools: " + schoolCreationTime +
+                " seconds, Years + Terms: " + yearsAndTermsComplete +
+                " seconds, staff: " + staffCreationComplete +
+                " seconds, students: " + studentCreationComplete +
+                " seconds, courses: " + courseCreationComplete +
+                " seconds, sections: " + sectionCreationComplete);
         return result;
     }
 
@@ -136,7 +136,6 @@ public class ETLEngine implements IETLEngine {
         executor.shutdown();
         //Spin while we wait for all the threads to complete
         while(!executor.isTerminated()){}
-        System.out.println("Finished all threads");
     }
 
     /**
