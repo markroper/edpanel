@@ -18,7 +18,8 @@ import java.util.Set;
 public class GradeFormula implements Serializable {
     Map<AssignmentType, Integer> assignmentTypeWeights;
     
-    public GradeFormula() { 
+    public GradeFormula() {
+        assignmentTypeWeights = new HashMap<>();
     }
     
     public GradeFormula(Map<AssignmentType, Integer> weights) {
@@ -27,7 +28,7 @@ public class GradeFormula implements Serializable {
     
     @JsonIgnore
     public boolean isValid() {
-        if(null == assignmentTypeWeights) {
+        if(null == assignmentTypeWeights || assignmentTypeWeights.isEmpty()) {
             return true;
         }
         int totalWeights = 0;
@@ -42,7 +43,7 @@ public class GradeFormula implements Serializable {
             return null;
         }
         double newlyCalculatedGrade = 0D;
-        if(null == assignmentTypeWeights) {
+        if(null == assignmentTypeWeights || assignmentTypeWeights.isEmpty()) {
             newlyCalculatedGrade = GradeUtil.calculateAverageGrade(studentAssignments);
         } else {
             Map<AssignmentType, ArrayList<Double>> assignmentTypeToGrades = new HashMap<>();

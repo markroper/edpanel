@@ -175,7 +175,6 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         return "SchoolYear{" +
                 "startDate=" + startDate +
                 ", endDate=" + endDate +
-                ", terms=" + terms +
                 ", school=" + school +
                 '}';
     }

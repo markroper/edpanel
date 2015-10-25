@@ -63,7 +63,9 @@ public class AttendanceAssignment extends Assignment implements Serializable {
     public static class AttendanceAssignmentBuilder extends AssignmentBuilder<AttendanceAssignmentBuilder, AttendanceAssignment>{
 
         public AttendanceAssignment build(){
-            return super.build();
+            AttendanceAssignment assignment = super.build();
+            assignment.setType(AssignmentType.ATTENDANCE);
+            return assignment;
         }
 
         @Override

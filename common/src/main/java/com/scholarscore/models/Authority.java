@@ -1,5 +1,7 @@
 package com.scholarscore.models;
 
+import java.util.Objects;
+
 /**
  * Defines the authority the user has within the system
  * 
@@ -24,6 +26,32 @@ public class Authority {
 	}
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(userId, authority);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		final Authority other = (Authority) obj;
+		return Objects.equals(this.userId, other.userId)
+				&& Objects.equals(this.authority, other.authority);
+	}
+
+	@Override
+	public String toString() {
+		return "Authority{" +
+				"userId=" + userId +
+				", authority='" + authority + '\'' +
+				'}';
 	}
 
 	/**

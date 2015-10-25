@@ -171,7 +171,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
                 "id=" + id +
                 ", complete=" + complete +
                 ", grade=" + grade +
-                ", section=" + section +
+                ", section=" + (section !=null ? section.getId() : null) +
                 ", student=" + student +
                 '}';
     }

@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
  * It dictates that each implementing class provides the data provider with a given name "builderProvider"
  * Created by cschneider on 10/11/15.
  */
+@Test(groups = {"unit"})
 public abstract class AbstractBuilderUnitTest<T> {
 
     /**
@@ -20,7 +21,7 @@ public abstract class AbstractBuilderUnitTest<T> {
     public abstract Object[][] builderProvider();
 
     @Test(dataProvider = "builderProvider")
-    public void testAttendanceBuilder(final String msg, T objectByBuilder, T objectBySetter){
+    public void testBuilder(final String msg, T objectByBuilder, T objectBySetter){
         Assert.assertEquals(objectByBuilder, objectBySetter, "Unexpected inequality");
     }
 }

@@ -31,7 +31,7 @@ public class BehaviorGoalBuilderUnitTest extends AbstractBuilderUnitTest<Behavio
         Student student = CommonTestUtils.generateStudent();
         Double calculatedValue = RandomUtils.nextDouble(0d, Double.MIN_VALUE);
         Double desiredValue = RandomUtils.nextDouble(0d, Double.MIN_VALUE);
-        GoalType goalType = CommonTestUtils.getRandomGoalType();
+        GoalType goalType = GoalType.BEHAVIOR;
         String name = CommonTestUtils.generateName();
         Teacher teacher = CommonTestUtils.generateTeacher();
 
