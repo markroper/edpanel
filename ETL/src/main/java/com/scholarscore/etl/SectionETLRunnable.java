@@ -44,6 +44,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
+ * For a single school within a district, this runnable can execute on its own thread and handles
+ * extracting all sections for the school from PowerSchool, creating corresponding section in EdPanel.
+ * Migration of a section includes enrolling the correct students, associating the correct teacher with the section,
+ * migrating all the assignments for the section, migrating any student grades at the section or the assignment level.
+ *
  * Created by markroper on 10/25/15.
  */
 public class SectionETLRunnable implements Runnable {

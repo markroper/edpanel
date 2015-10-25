@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * For a given SectionAssignment, a thread can be spun up to handle resolving the student assignment scores
+ * for that assignment from powerschool and creating the corresponding entries in EdPanel.
+ *
  * Created by markroper on 10/25/15.
  */
 public class StudentAssignmentETLRunnable implements Runnable {
