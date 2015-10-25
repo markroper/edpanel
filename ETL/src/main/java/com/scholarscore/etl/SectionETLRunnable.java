@@ -8,10 +8,6 @@ import com.scholarscore.etl.powerschool.api.model.PsSectionEnrollment;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignment;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
-import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignment;
-import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentFactory;
-import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScores;
-import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsScore;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreId;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreIds;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentType;
@@ -19,18 +15,15 @@ import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentTy
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentType;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGrade;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGrades;
-import com.scholarscore.etl.powerschool.api.response.AssignmentScoresResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionEnrollmentsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionGradesResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionScoreIdsResponse;
 import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.models.Assignment;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.user.Student;
@@ -47,11 +40,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by markroper on 10/25/15.
  */
 public class SectionETLRunnable implements Runnable {
+    private static final int THREAD_POOL_SIZE = 5;
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
     private School school;
@@ -235,69 +231,29 @@ public class SectionETLRunnable implements Runnable {
                 }
             }
         }
-        //Create each assignment in EdPanel and all student scores for each assignment
+
+        //THREADING BU SECTION ASSIGNMENT -> STUDENT ASSIGNMENT
+        this.sections = new ConcurrentHashMap<>();
+        ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
         if(null != powerAssignments && null != powerAssignments.record) {
             for (PGAssignment powerAssignment : powerAssignments.record) {
-                PsAssignment pa = powerAssignment.tables.pgassignments;
-                Assignment edpanelAssignment = PsAssignmentFactory.fabricate(
-                        pa,
-                        typeIdToType.get(Long.valueOf(pa.getPgcategoriesid())));
-                edpanelAssignment.setSection(createdSection);
-                edpanelAssignment.setSectionFK(createdSection.getId());
-                Assignment createdAssignment = edPanel.createSectionAssignment(
-                        school.getId(),
-                        sectionTerm.getSchoolYear().getId(),
-                        sectionTerm.getId(),
-                        createdSection.getId(),
-                        edpanelAssignment);
-                //Retrieve students' scores
-                AssignmentScoresResponse assScores =
-                        powerSchool.getStudentScoresByAssignmentId(Long.valueOf(pa.getDcid()));
-                if (null != assScores && null != assScores.record) {
-
-                    List<StudentAssignment> studentAssignmentsToCreate = Collections.synchronizedList(new ArrayList<>());
-
-                    for (PsAssignmentScores sc : assScores.record) {
-                        PsScore score = sc.tables.sectionscoresassignments;
-                        StudentAssignment studAss = new StudentAssignment();
-                        studAss.setAssignment(createdAssignment);
-                        //Resolve the student, or move on
-                        MutablePair<Student, PsSectionScoreId> sectionScoreIdAndStudent =
-                                ssidToStudent.get(Long.valueOf(score.getFdcid()));
-                        if (null != sectionScoreIdAndStudent) {
-                            studAss.setStudent(sectionScoreIdAndStudent.getLeft());
-                        } else {
-                            continue;
-                        }
-                        //Resolve the points
-                        Double awardedPoints = null;
-                        try {
-                            awardedPoints = Double.valueOf(score.getScore());
-                        } catch (NumberFormatException e) {
-                            //NO OP
-                        }
-                        if (null == awardedPoints) {
-                            studAss.setCompleted(false);
-                        } else {
-                            studAss.setAwardedPoints(awardedPoints);
-                            studAss.setCompleted(true);
-                        }
-                        studentAssignmentsToCreate.add(studAss);
-                    }
-                    //We've now generated an EdPanel StudentAssignment for each PS student assignment
-                    //Call the bulk create for student assignments for this assignment.
-                    if (!studentAssignmentsToCreate.isEmpty()) {
-                        edPanel.createStudentAssignments(
-                                school.getId(),
-                                sectionTerm.getSchoolYear().getId(),
-                                sectionTerm.getId(),
-                                createdSection.getId(),
-                                createdAssignment.getId(),
-                                studentAssignmentsToCreate);
-                    }
-                }
+                StudentAssignmentETLRunnable runnable = new StudentAssignmentETLRunnable(
+                        powerSchool,
+                        edPanel,
+                        school,
+                        sectionTerm,
+                        createdSection,
+                        powerSection,
+                        powerAssignment,
+                        typeIdToType,
+                        ssidToStudent
+                );
+                executor.execute(runnable);
             }
         }
+        executor.shutdown();
+        //Spin while we wait for all the threads to complete
+        while(!executor.isTerminated()){}
     }
 
 
