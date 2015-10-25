@@ -1,7 +1,10 @@
 package com.scholarscore.models.attendance;
 
-import java.io.Serializable;
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.user.Student;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,13 +17,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.HibernateConsts;
-import com.scholarscore.models.user.Student;
+import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Represents school attendance for a single student on a single day.

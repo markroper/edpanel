@@ -1,9 +1,9 @@
 package com.scholarscore.api.manager;
 
-import java.util.Collection;
-
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.attendance.Attendance;
+
+import java.util.Collection;
 
 public interface AttendanceManager {
     /**

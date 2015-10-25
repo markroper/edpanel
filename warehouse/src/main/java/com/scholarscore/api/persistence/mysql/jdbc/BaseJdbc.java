@@ -1,8 +1,8 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import javax.sql.DataSource;
-
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+
+import javax.sql.DataSource;
 
 public abstract class BaseJdbc {
     protected NamedParameterJdbcTemplate jdbcTemplate;

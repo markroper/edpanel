@@ -1,13 +1,14 @@
 package com.scholarscore.api.util;
 
-import java.util.Arrays;
-import java.util.Objects;
-
-import javax.xml.bind.annotation.*;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * The ErrorCode object returned by the API in those cases when the

@@ -1,13 +1,17 @@
 package com.scholarscore.models.assignment;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Objects;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * Represents a graded assignment such as a quiz, test, homework, lab, or other.

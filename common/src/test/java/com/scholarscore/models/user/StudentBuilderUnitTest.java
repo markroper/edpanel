@@ -16,7 +16,7 @@ import java.util.Date;
  * Ensure we can create equivalent Student objects using setters and builder for
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class StudentBuilderUnitTest extends AbstractBuilderUnitTest<Student> {
 
     @DataProvider

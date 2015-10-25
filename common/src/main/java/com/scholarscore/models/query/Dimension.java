@@ -1,9 +1,5 @@
 package com.scholarscore.models.query;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import com.scholarscore.models.query.dimension.AdministratorDimension;
 import com.scholarscore.models.query.dimension.CourseDimension;
 import com.scholarscore.models.query.dimension.GradeLevelDimension;
@@ -15,6 +11,10 @@ import com.scholarscore.models.query.dimension.StudentDimension;
 import com.scholarscore.models.query.dimension.SubjectAreaDimension;
 import com.scholarscore.models.query.dimension.TeacherDimension;
 import com.scholarscore.models.query.dimension.TermDimension;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Enumerates the supported dimensions of the warehouse report and querying model.

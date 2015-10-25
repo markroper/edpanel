@@ -10,9 +10,9 @@ import com.scholarscore.etl.powerschool.api.response.AssignmentScoresResponse;
 import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionEnrollmentsResponse;
+import com.scholarscore.etl.powerschool.api.response.SectionGradesResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionScoreIdsResponse;
-import com.scholarscore.etl.powerschool.api.response.SectionGradesResponse;
 import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 

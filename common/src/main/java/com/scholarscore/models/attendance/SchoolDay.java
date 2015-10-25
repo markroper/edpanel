@@ -1,8 +1,10 @@
 package com.scholarscore.models.attendance;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.School;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,12 +15,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.HibernateConsts;
-import com.scholarscore.models.School;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * Represents a day that school is in session for a single school

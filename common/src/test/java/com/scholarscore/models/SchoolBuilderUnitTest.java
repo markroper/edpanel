@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
  * SchoolBuilderUnitTest tests that we can build equivalent school objects using setters or a builder
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class SchoolBuilderUnitTest extends AbstractBuilderUnitTest<School>{
 
     @DataProvider

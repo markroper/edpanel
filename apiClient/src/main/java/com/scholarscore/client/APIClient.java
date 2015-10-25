@@ -2,14 +2,23 @@ package com.scholarscore.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scholarscore.models.*;
+import com.scholarscore.models.Behavior;
+import com.scholarscore.models.Course;
+import com.scholarscore.models.EntityId;
+import com.scholarscore.models.LoginRequest;
+import com.scholarscore.models.School;
+import com.scholarscore.models.SchoolYear;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.Term;
+import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.factory.AssignmentFactory;
 import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 import com.scholarscore.models.user.UserType;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;

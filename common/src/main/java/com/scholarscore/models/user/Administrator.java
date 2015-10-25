@@ -1,8 +1,13 @@
 package com.scholarscore.models.user;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.Address;
+import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.IStaff;
+import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.query.DimensionField;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,16 +15,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.Address;
-import com.scholarscore.models.HibernateConsts;
-import com.scholarscore.models.IStaff;
-import com.scholarscore.models.query.Dimension;
-import com.scholarscore.models.query.DimensionField;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by mattg on 7/19/15.

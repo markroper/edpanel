@@ -1,18 +1,16 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.util.Collection;
-import java.util.Date;
-
-import javax.transaction.Transactional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate4.HibernateTemplate;
-
 import com.scholarscore.api.persistence.SchoolDayPersistence;
 import com.scholarscore.api.persistence.SchoolPersistence;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.attendance.SchoolDay;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate4.HibernateTemplate;
+
+import javax.transaction.Transactional;
+import java.util.Collection;
+import java.util.Date;
 
 @Transactional
 public class SchoolDayJdbc implements SchoolDayPersistence {

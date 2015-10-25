@@ -1,6 +1,7 @@
 package com.scholarscore.models;
 
 import com.beust.jcommander.internal.Lists;
+import com.beust.jcommander.internal.Sets;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
@@ -13,12 +14,13 @@ import org.testng.annotations.Test;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * SectionBuilderUnitTest tests that we can build equivalent Section objects using setters or builders
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
     @DataProvider
     @Override
@@ -35,8 +37,9 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
         String gradeFormulaString = RandomStringUtils.randomAlphanumeric(10);
         Term term = CommonTestUtils.generateTerm(new Date(), DateUtils.addMonths(new Date(), 3), CommonTestUtils.generateSchoolYearWithoutTerms(CommonTestUtils.generateSchool()));
         Course course = CommonTestUtils.generateCourse();
+        String sourceSystemId = RandomStringUtils.randomNumeric(10);
 
-        List<Teacher> teachers = Lists.newArrayList();
+        Set<Teacher> teachers = Sets.newHashSet();
         for(int i = 0; i < RandomUtils.nextInt(1, 5); i++) {
             teachers.add(CommonTestUtils.generateTeacher());
         }
@@ -68,6 +71,7 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
         fullSection.setEnrolledStudents(enrolledStudents);
         fullSection.setAssignments(assignments);
         fullSection.setStudentSectionGrades(grades);
+        fullSection.setSourceSystemId(sourceSystemId);
 
         Section fullSectionBuilder = new Section.SectionBuilder()
                 .withId(id)
@@ -83,6 +87,7 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
                 .withEnrolledStudents(enrolledStudents)
                 .withAssignments(assignments)
                 .withStudentSectionGrades(grades)
+                .withSourceSystemId(sourceSystemId)
                 .build();
 
         Section.SectionBuilder sectionOneByOneBuilder = new Section.SectionBuilder()

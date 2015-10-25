@@ -1,8 +1,6 @@
 package com.scholarscore.models.goal;
 
 import com.scholarscore.models.AbstractBuilderUnitTest;
-import com.scholarscore.models.BehaviorCategory;
-import com.scholarscore.models.goal.CumulativeGradeGoal;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.utils.CommonTestUtils;
@@ -10,13 +8,11 @@ import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Date;
-
 /**
  * CumulativeGradeGoalBuilderUnitTest tests
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class CumulativeGradeGoalBuilderUnitTest extends AbstractBuilderUnitTest<CumulativeGradeGoal> {
 
     @DataProvider

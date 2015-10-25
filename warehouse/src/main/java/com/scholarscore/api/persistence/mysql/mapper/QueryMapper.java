@@ -1,14 +1,13 @@
 package com.scholarscore.api.persistence.mysql.mapper;
 
-import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import org.springframework.jdbc.core.RowMapper;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.models.query.Query;
+import org.springframework.jdbc.core.RowMapper;
+
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class QueryMapper implements RowMapper<Query> {
     private static final ObjectMapper mapper = new ObjectMapper();

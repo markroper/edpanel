@@ -1,17 +1,27 @@
 package com.scholarscore.models;
 
-import java.io.Serializable;
-import java.util.*;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Represents a school year, which may cross calendar year boundaries. 
@@ -28,20 +38,20 @@ import javax.persistence.Table;
 public class SchoolYear extends ApiModel implements Serializable, IApiModel<SchoolYear>{
     protected Date startDate;
     protected Date endDate;
-    protected Set<Term> terms;
+    protected List<Term> terms;
     protected School school;
     
     public SchoolYear() {
         super();
-        terms = Sets.newHashSet();
+        terms = Lists.newArrayList();
     }
     
     public SchoolYear(SchoolYear year) {
         super(year);
-        terms = Sets.newHashSet();
         this.startDate = year.startDate;
         this.endDate = year.endDate;
         this.terms = year.terms;
+        this.school = year.school;
     }
     
     public SchoolYear(Date startDate, Date endDate) {
@@ -94,11 +104,11 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
     }
 
     @Transient
-    public Set<Term> getTerms() {
+    public List<Term> getTerms() {
         return terms;
     }
 
-    public void setTerms(Set<Term> terms) {
+    public void setTerms(List<Term> terms) {
         this.terms = terms;
     }
 
@@ -132,22 +142,42 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         if(null == this.terms) {
             this.terms = mergeFrom.terms;
         }
+        if(null == this.school){
+            this.school = mergeFrom.school;
+        }
     }
-    
+
+    @Override
+    public int hashCode() {
+        return 31 * super.hashCode() + Objects.hash(startDate, endDate, school, terms);
+    }
+
     @Override
     public boolean equals(Object obj) {
-        if(!super.equals(obj)) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
             return false;
         }
         final SchoolYear other = (SchoolYear) obj;
-        return Objects.equals(this.startDate, other.startDate) 
-                && Objects.equals(this.endDate, other.endDate) 
+        return Objects.equals(this.startDate, other.startDate)
+                && Objects.equals(this.endDate, other.endDate)
+                && Objects.equals(this.school, other.school)
                 && Objects.equals(this.terms, other.terms);
     }
-    
+
     @Override
-    public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(startDate, endDate, terms);
+    public String toString() {
+        return "SchoolYear{" +
+                "startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", terms=" + terms +
+                ", school=" + school +
+                '}';
     }
 
     /**
@@ -159,11 +189,11 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
 
         protected Date startDate;
         protected Date endDate;
-        protected Set<Term> terms;
+        protected List<Term> terms;
         protected School school;
 
         public SchoolYearBuilder(){
-            terms = Sets.newHashSet();
+            terms = Lists.newArrayList();
         }
 
         public SchoolYearBuilder withStartDate(final Date startDate){
@@ -181,7 +211,7 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
             return this;
         }
 
-        public SchoolYearBuilder withTerms(final Set<Term> terms){
+        public SchoolYearBuilder withTerms(final List<Term> terms){
             this.terms.addAll(terms);
             return this;
         }

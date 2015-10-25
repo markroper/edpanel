@@ -1,6 +1,13 @@
 package com.scholarscore.models.goal;
 
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.scholarscore.models.ApiModel;
+import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.IApiModel;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -17,13 +24,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import com.scholarscore.models.*;
-import org.hibernate.annotations.Type;
-
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
+import java.util.Objects;
 
 /**
  * Abstract class defining common fields and methods that exist across all goals.

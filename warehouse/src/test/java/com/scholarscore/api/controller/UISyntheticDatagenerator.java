@@ -2,7 +2,15 @@ package com.scholarscore.api.controller;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.api.util.SchoolDataFactory;
-import com.scholarscore.models.*;
+import com.scholarscore.models.Behavior;
+import com.scholarscore.models.Course;
+import com.scholarscore.models.JsonAttributes;
+import com.scholarscore.models.School;
+import com.scholarscore.models.SchoolYear;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.Term;
+import com.scholarscore.models.UiAttributes;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.attendance.Attendance;
@@ -11,12 +19,17 @@ import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Generates synthetic data for school, school years, terms, courses, sections, students, teachers, 

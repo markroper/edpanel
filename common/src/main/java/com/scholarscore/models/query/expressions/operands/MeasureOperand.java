@@ -1,9 +1,9 @@
 package com.scholarscore.models.query.expressions.operands;
 
+import com.scholarscore.models.query.MeasureField;
+
 import java.io.Serializable;
 import java.util.Objects;
-
-import com.scholarscore.models.query.MeasureField;
 
 @SuppressWarnings("serial")
 public class MeasureOperand implements Serializable, IOperand {

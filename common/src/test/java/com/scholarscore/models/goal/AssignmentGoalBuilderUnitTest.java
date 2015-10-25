@@ -1,8 +1,6 @@
 package com.scholarscore.models.goal;
 
 import com.scholarscore.models.AbstractBuilderUnitTest;
-import com.scholarscore.models.goal.AssignmentGoal;
-import com.scholarscore.models.goal.GoalType;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.utils.CommonTestUtils;
@@ -14,7 +12,7 @@ import org.testng.annotations.Test;
  * AssignmentGoalBuilderUnitTest tests out the AssignmentGoal object's Builder to ensure that constructing an object with the builder
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class AssignmentGoalBuilderUnitTest extends AbstractBuilderUnitTest<AssignmentGoal> {
 
     @DataProvider

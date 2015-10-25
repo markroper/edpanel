@@ -1,8 +1,7 @@
 package com.scholarscore.etl.powerschool.api.model;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 /**
  * Created by mattg on 7/3/15.

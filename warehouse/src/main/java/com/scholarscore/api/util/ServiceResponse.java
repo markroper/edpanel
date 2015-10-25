@@ -1,9 +1,9 @@
 package com.scholarscore.api.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.io.Serializable;
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * The class encapsulates an instance of an object of type T, an ErrorCode instance, and an 

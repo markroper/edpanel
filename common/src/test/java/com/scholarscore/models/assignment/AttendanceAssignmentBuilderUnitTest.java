@@ -2,8 +2,6 @@ package com.scholarscore.models.assignment;
 
 import com.scholarscore.models.AbstractBuilderUnitTest;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.assignment.AssignmentType;
-import com.scholarscore.models.assignment.AttendanceAssignment;
 import com.scholarscore.utils.CommonTestUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
@@ -15,7 +13,7 @@ import java.util.Date;
  * AttendanceAssignmentBuilderUnitTest tests that we can build equivalent objects with setters and a builder
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class AttendanceAssignmentBuilderUnitTest extends AbstractBuilderUnitTest<AttendanceAssignment> {
 
     @DataProvider

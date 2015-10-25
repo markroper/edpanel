@@ -2,14 +2,21 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 
 import com.scholarscore.api.persistence.GoalPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
-import com.scholarscore.api.persistence.goalCalculators.*;
-
-import com.scholarscore.models.goal.*;
+import com.scholarscore.api.persistence.goalCalculators.AssignmentGoalCalc;
+import com.scholarscore.api.persistence.goalCalculators.AttendanceGoalCalc;
+import com.scholarscore.api.persistence.goalCalculators.BehaviorGoalCalc;
+import com.scholarscore.api.persistence.goalCalculators.ComplexGoalCalc;
+import com.scholarscore.api.persistence.goalCalculators.CumulativeGoalCalc;
+import com.scholarscore.models.goal.AssignmentGoal;
+import com.scholarscore.models.goal.AttendanceGoal;
+import com.scholarscore.models.goal.BehaviorGoal;
+import com.scholarscore.models.goal.ComplexGoal;
+import com.scholarscore.models.goal.CumulativeGradeGoal;
+import com.scholarscore.models.goal.Goal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
-
 import java.util.ArrayList;
 import java.util.Collection;
 

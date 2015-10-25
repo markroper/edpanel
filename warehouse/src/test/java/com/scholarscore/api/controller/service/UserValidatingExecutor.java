@@ -1,16 +1,14 @@
 package com.scholarscore.api.controller.service;
 
-import com.scholarscore.models.EntityId;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.EntityId;
 import com.scholarscore.models.School;
 import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Person;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
-
-import com.scholarscore.models.user.UserType;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;

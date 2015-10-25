@@ -1,8 +1,8 @@
 package com.scholarscore.models;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.io.Serializable;
 
 /**
  * All entities in the system are assigned a unique ID within an individual 

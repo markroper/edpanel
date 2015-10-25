@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
  * CourseBuilderUnitTest tests that we can create equivalent objects out of a builder and using setters
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class CourseBuilderUnitTest extends AbstractBuilderUnitTest<Course>{
 
     @DataProvider

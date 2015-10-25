@@ -1,17 +1,22 @@
 package com.scholarscore.models;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Transient;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The class represents a single school within a school district.
@@ -24,7 +29,7 @@ import javax.persistence.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class School extends ApiModel implements Serializable, IApiModel<School>{
 
-    private Set<SchoolYear> years;
+    private List<SchoolYear> years;
     private String sourceSystemId;
     private String principalName;
     private String principalEmail;
@@ -33,7 +38,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
     
     public School() {
         super();
-        years = Sets.newHashSet();
+        years = Lists.newArrayList();
     }
     
     public School(School clone) {
@@ -57,11 +62,11 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
     public String getName() { return super.getName(); }
 
     @Transient
-    public Set<SchoolYear> getYears() {
+    public List<SchoolYear> getYears() {
         return years;
     }
 
-    public void setYears(Set<SchoolYear> years) {
+    public void setYears(List<SchoolYear> years) {
         this.years = years;
     }
 
@@ -182,7 +187,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
      */
     public static class SchoolBuilder extends ApiModelBuilder<SchoolBuilder, School> {
 
-        private Set<SchoolYear> years;
+        private List<SchoolYear> years;
         private String sourceSystemId;
         private String principalName;
         private String principalEmail;
@@ -190,7 +195,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         private String mainPhone;
 
         public SchoolBuilder(){
-            years = Sets.newHashSet();
+            years = Lists.newArrayList();
         }
 
         public SchoolBuilder withYear(final SchoolYear year){

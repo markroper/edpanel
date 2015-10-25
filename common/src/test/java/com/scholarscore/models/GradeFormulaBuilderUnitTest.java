@@ -12,7 +12,7 @@ import java.util.Map;
  * GradeFormulaBuilderUnitTest tests that we can build equivalent GradeFormula objects using setters and builders
  * Created by cschneider on 10/11/15.
  */
-@Test
+@Test(groups = { "unit" })
 public class GradeFormulaBuilderUnitTest extends AbstractBuilderUnitTest<GradeFormula>{
 
     @DataProvider

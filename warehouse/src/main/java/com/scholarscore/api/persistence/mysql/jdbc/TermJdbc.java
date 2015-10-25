@@ -1,17 +1,13 @@
     package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.util.Collection;
+    import com.scholarscore.api.persistence.EntityPersistence;
+    import com.scholarscore.models.SchoolYear;
+    import com.scholarscore.models.Term;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.orm.hibernate4.HibernateTemplate;
 
-import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.Term;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.scholarscore.api.persistence.EntityPersistence;
-
-import org.springframework.orm.hibernate4.HibernateTemplate;
-
-import javax.transaction.Transactional;
+    import javax.transaction.Transactional;
+    import java.util.Collection;
 
 @Transactional
 public class TermJdbc implements EntityPersistence<Term> {

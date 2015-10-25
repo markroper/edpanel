@@ -1,10 +1,5 @@
 package com.scholarscore.api.persistence;
 
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
@@ -19,6 +14,11 @@ import com.scholarscore.models.query.dimension.TeacherDimension;
 import com.scholarscore.models.query.dimension.TermDimension;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
 import com.scholarscore.models.query.measure.BehaviorMeasure;
+
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 public class DbMappings {

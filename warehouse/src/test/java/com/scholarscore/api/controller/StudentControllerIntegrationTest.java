@@ -1,21 +1,19 @@
 package com.scholarscore.api.controller;
 
-import java.util.UUID;
-
+import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
-
+import com.scholarscore.models.user.Student;
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.user.Student;
+import java.util.UUID;
 
 import static org.testng.Assert.assertEquals;
 
