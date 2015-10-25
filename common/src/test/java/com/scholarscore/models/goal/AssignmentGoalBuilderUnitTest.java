@@ -26,7 +26,7 @@ public class AssignmentGoalBuilderUnitTest extends AbstractBuilderUnitTest<Assig
         Student student = CommonTestUtils.generateStudent();
         Double calculatedValue = RandomUtils.nextDouble(0d, Double.MIN_VALUE);
         Double desiredValue = RandomUtils.nextDouble(0d, Double.MIN_VALUE);
-        GoalType goalType = CommonTestUtils.getRandomGoalType();
+        GoalType goalType = GoalType.ASSIGNMENT;
         String name = CommonTestUtils.generateName();
         Teacher teacher = CommonTestUtils.generateTeacher();
 

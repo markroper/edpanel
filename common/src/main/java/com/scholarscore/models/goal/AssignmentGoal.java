@@ -104,6 +104,7 @@ public class AssignmentGoal extends Goal implements CalculatableAssignment {
 
         public AssignmentGoal build(){
             AssignmentGoal goal = super.build();
+            goal.setGoalType(GoalType.ASSIGNMENT);
             goal.setParentId(parentId);
             return goal;
         }

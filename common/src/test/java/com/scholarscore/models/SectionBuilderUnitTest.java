@@ -99,7 +99,8 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
                 .withGradeFormula(gradeFormula)
                 .withGradeFormulaString(gradeFormulaString)
                 .withTerm(term)
-                .withCourse(course);
+                .withCourse(course)
+                .withSourceSystemId(sourceSystemId);
 
         for(Teacher teacher : teachers){
             sectionOneByOneBuilder.withTeacher(teacher);

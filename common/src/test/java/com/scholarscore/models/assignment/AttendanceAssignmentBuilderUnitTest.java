@@ -46,6 +46,7 @@ public class AttendanceAssignmentBuilderUnitTest extends AbstractBuilderUnitTest
                 withSectionFK(sectionFK).
                 withSection(new Section(section)).
                 withAvailablePoints(availablePoints).
+                withType(type).
                 withDueDate(dueDate).
                 withType(type).
                 build();

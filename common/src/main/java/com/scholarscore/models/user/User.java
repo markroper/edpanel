@@ -303,7 +303,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		}
 
 		public T build(){
-			T user = getInstance();
+			T user = super.build();
 			user.setUsername(username);
 			user.setPassword(password);
 			user.setEnabled(enabled);

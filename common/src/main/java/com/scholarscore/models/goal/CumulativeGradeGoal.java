@@ -107,6 +107,7 @@ public class CumulativeGradeGoal extends Goal implements CalculatableCumulative 
 
         public CumulativeGradeGoal build(){
             CumulativeGradeGoal goal = super.build();
+            goal.setGoalType(GoalType.CUMULATIVE_GRADE);
             goal.setParentId(parentId);
             return goal;
         }

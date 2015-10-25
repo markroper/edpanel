@@ -26,7 +26,7 @@ public class CumulativeGradeGoalBuilderUnitTest extends AbstractBuilderUnitTest<
         Student student = CommonTestUtils.generateStudent();
         Double calculatedValue = RandomUtils.nextDouble(0d, Double.MIN_VALUE);
         Double desiredValue = RandomUtils.nextDouble(0d, Double.MIN_VALUE);
-        GoalType goalType = CommonTestUtils.getRandomGoalType();
+        GoalType goalType = GoalType.CUMULATIVE_GRADE;
         String name = CommonTestUtils.generateName();
         Teacher teacher = CommonTestUtils.generateTeacher();
 

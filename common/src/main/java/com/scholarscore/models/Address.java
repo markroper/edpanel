@@ -153,6 +153,7 @@ public class Address implements Serializable {
             address.setCity(city);
             address.setState(state);
             address.setPostalCode(postalCode);
+            address.setId(id);
             return address;
         }
     }
