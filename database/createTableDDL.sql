@@ -148,6 +148,7 @@ CREATE TABLE `scholar_warehouse`.`term` (
   `term_start_date` DATETIME NULL COMMENT 'The school term start date',
   `term_end_date` DATETIME NULL COMMENT 'The school term end date',
   `school_year_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the school table',
+  `term_source_system_id` VARCHAR(256) NULL COMMENT 'The origin system id',
   PRIMARY KEY (`term_id`),
   CONSTRAINT `fk_school_year$school_term`
     FOREIGN KEY (`school_year_fk`)
@@ -179,6 +180,7 @@ CREATE TABLE `scholar_warehouse`.`section` (
   `grade_formula` VARCHAR(1024) NULL COMMENT 'The section grading formula as a string',
   `course_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the school table',
   `term_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the term table',
+  `section_source_system_id` VARCHAR(256) NULL COMMENT 'The source system from which the entity was imported - the id from that system',
   PRIMARY KEY (`section_id`),
   CONSTRAINT `fk_course$section`
     FOREIGN KEY (`course_fk`)
@@ -232,7 +234,7 @@ CREATE TABLE `scholar_warehouse`.`student_assignment` (
   `student_assignment_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `completed` BIT(1) COMMENT 'Boolean indicating whether or not the assignment was completed',
   `completion_date` DATETIME NULL COMMENT 'The date the student turned in the assignment',
-  `awarded_points` BIGINT UNSIGNED NULL COMMENT 'The number of possible points to be awarded for an assignment',
+  `awarded_points` DOUBLE NULL COMMENT 'The number of possible points to be awarded for an assignment',
   `assignment_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the section assignment table',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
   PRIMARY KEY (`student_assignment_id`),

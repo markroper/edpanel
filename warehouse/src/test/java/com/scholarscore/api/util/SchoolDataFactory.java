@@ -1,5 +1,27 @@
 package com.scholarscore.api.util;
 
+import com.scholarscore.models.Assignment;
+import com.scholarscore.models.AssignmentType;
+import com.scholarscore.models.AttendanceAssignment;
+import com.scholarscore.models.Behavior;
+import com.scholarscore.models.BehaviorCategory;
+import com.scholarscore.models.Course;
+import com.scholarscore.models.Gender;
+import com.scholarscore.models.GradeFormula;
+import com.scholarscore.models.GradedAssignment;
+import com.scholarscore.models.School;
+import com.scholarscore.models.SchoolYear;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.Term;
+import com.scholarscore.models.goal.AssignmentGoal;
+import com.scholarscore.models.goal.AttendanceGoal;
+import com.scholarscore.models.goal.BehaviorGoal;
+import com.scholarscore.models.goal.CumulativeGradeGoal;
+import com.scholarscore.models.goal.Goal;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -13,12 +35,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
-
-import com.scholarscore.models.*;
-import com.scholarscore.models.assignment.*;
-import com.scholarscore.models.goal.*;
-import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 
 /**
  * Generates arbitrary school data for use in testing and developing the UI.
@@ -344,7 +360,7 @@ public class SchoolDataFactory {
                 if(null != a.getAvailablePoints() && a.getAvailablePoints() > 0 && completed) {
                     Integer awardedInt = new Random().nextInt(40);
                     awardedInt = ((int)(long)a.getAvailablePoints()) - awardedInt;
-                    sa.setAwardedPoints(awardedInt.longValue());
+                    sa.setAwardedPoints(awardedInt.doubleValue());
                     sa.setCompletionDate(a.getDueDate());
                 }
                 sa.setStudent(s);

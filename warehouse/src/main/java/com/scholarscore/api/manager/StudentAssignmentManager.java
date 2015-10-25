@@ -1,10 +1,11 @@
 package com.scholarscore.api.manager;
 
-import java.util.Collection;
-
-import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.ServiceResponse;
+import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.assignment.StudentAssignment;
+
+import java.util.Collection;
+import java.util.List;
 
 public interface StudentAssignmentManager {
     /**
@@ -76,6 +77,8 @@ public interface StudentAssignmentManager {
     public ServiceResponse<Long> createStudentAssignment(long schoolId, long yearId, long termId, 
             long sectionId, long sectionAssignmentId, StudentAssignment studentAssignment);
 
+    public ServiceResponse<Void> createBulkStudentAssignment(long schoolId, long yrId, long tId, long sId,
+                                                             long assignId, List<StudentAssignment> studentAssignments);
     /**
      * Replaces an existing instance with the ID provided with the section assignment instance
      * provided as a parameter, returning the section assignment ID on the response for positive cases

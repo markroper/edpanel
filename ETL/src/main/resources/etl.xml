@@ -12,7 +12,7 @@
                      http://www.springframework.org/schema/util/spring-util.xsd">
 
     <import resource="powerschool.xml"/>
-    <import resource="scholarscore.xml"/>
+    <import resource="edpanel.xml"/>
 
     <bean
             class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -24,7 +24,7 @@
 
     <bean id="etlEngine" class="com.scholarscore.etl.ETLEngine">
         <property name="powerSchool" ref="powerSchoolClient"/>
-        <property name="scholarScore" ref="scholarscoreClient"/>
+        <property name="edPanel" ref="edpanelClient"/>
     </bean>
 
 </beans>

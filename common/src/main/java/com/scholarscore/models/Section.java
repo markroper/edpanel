@@ -13,12 +13,26 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A Section is a temporal instance of a Course.  Where a course defines that which is to be taught, a Section has
@@ -46,8 +60,9 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected transient List<Student> enrolledStudents;
     protected transient List<Assignment> assignments;
     protected List<StudentSectionGrade> studentSectionGrades;
-    protected List<Teacher> teachers;
-
+    protected Set<Teacher> teachers;
+    protected String sourceSystemId;
+    
     public Section() {
         super();
         enrolledStudents = Lists.newArrayList();
@@ -73,6 +88,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         enrolledStudents = sect.enrolledStudents;
         assignments = sect.assignments;
         gradeFormula = sect.gradeFormula;
+        sourceSystemId = sect.sourceSystemId;
     }
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -206,9 +222,13 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.studentSectionGrades = grades;
     }
 
-    @JsonIgnore
-    public void addStudentSectionGrade(StudentSectionGrade grade) {
-        this.studentSectionGrades.add(grade);
+    @Column(name = HibernateConsts.SECTION_SOURCE_SYSTEM_ID)
+    public String getSourceSystemId() {
+        return sourceSystemId;
+    }
+
+    public void setSourceSystemId(String sourceSystemId) {
+        this.sourceSystemId = sourceSystemId;
     }
 
     public Student findEnrolledStudentById(Long id) {
@@ -298,6 +318,9 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         if(null == studentSectionGrades) {
             studentSectionGrades = mergeFrom.studentSectionGrades;
         }
+        if(null == sourceSystemId) {
+            sourceSystemId = mergeFrom.sourceSystemId;
+        }
     }
 
     @Override
@@ -313,12 +336,13 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 Objects.equals(this.enrolledStudents, other.enrolledStudents) &&
                 Objects.equals(this.assignments, other.assignments) &&
                 Objects.equals(this.studentSectionGrades, other.studentSectionGrades) &&
+                Objects.equals(this.sourceSystemId, other.sourceSystemId) &&
                 Objects.equals(this.gradeFormula, other.gradeFormula);
     }
 
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(course, startDate, endDate,
+        return 31 * super.hashCode() + Objects.hash(course, startDate, endDate, sourceSystemId,
                 room, enrolledStudents, assignments, gradeFormula, studentSectionGrades);
     }
 
