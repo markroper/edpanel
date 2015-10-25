@@ -17,6 +17,10 @@ public enum AssignmentType implements Serializable {
     MIDTERM,
     FINAL,
     LAB,
+    SUMMATIVE_ASSESSMENT,
+    INTERIM_ASSESSMENT,
+    PARTICIPATION,
+    WRITTEN_WORK,
     CLASSWORK,
     USER_DEFINED;
     

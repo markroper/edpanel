@@ -25,7 +25,7 @@ public class AttendanceGoalCalc implements GoalCalc<CalculatableAttendance> {
                     dayAttendance.getAssignment().getDueDate().before(goal.getStartDate())) {
                 continue;
             }
-            Long points = dayAttendance.getAwardedPoints();
+            Double points = dayAttendance.getAwardedPoints();
             if (null == points) {
 
             } else if (points == 0) {

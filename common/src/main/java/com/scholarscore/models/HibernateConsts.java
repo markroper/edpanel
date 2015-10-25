@@ -86,6 +86,7 @@ public class HibernateConsts {
     public static final String SECTION_GRADE_FORMULA = "grade_formula";
     public static final String COURSE_FK = "course_fk";
     public static final String TERM_FK = "term_fk";
+    public static final String SECTION_SOURCE_SYSTEM_ID = "section_source_system_id";
     
     //Student constants
     public static final String STUDENT_TABLE = "student";
@@ -123,6 +124,7 @@ public class HibernateConsts {
     public static final String TERM_START_DATE = "term_start_date";
     public static final String TERM_END_DATE = "term_end_date";
     public static final String SCHOOL_YEAR_FK = "school_year_fk";
+    public static final String TERM_SOURCE_SYSTEM_ID = "term_source_system_id";
     
     //Users constants
     public static final String USERS_TABLE = "users";
