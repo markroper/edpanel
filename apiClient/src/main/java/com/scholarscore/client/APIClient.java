@@ -90,7 +90,12 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return gson.fromJson(jsonCreateResponse, EntityId.class);
+        try {
+            return mapper.readValue(jsonCreateResponse, EntityId.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     
     private EntityId update(Object obj, String path) {
@@ -100,7 +105,12 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return gson.fromJson(jsonCreateResponse, EntityId.class);
+        try {
+            return mapper.readValue(jsonCreateResponse, EntityId.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public School getSchool(Long schoolId) {

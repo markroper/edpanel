@@ -1,5 +1,7 @@
 package com.scholarscore.client;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.http.Header;
@@ -44,12 +46,12 @@ public abstract class BaseHttpClient {
     protected final CloseableHttpClient httpclient;
     protected final URI uri;
 
-    protected Gson gson;
+    protected static final ObjectMapper mapper = new ObjectMapper();
 
     public BaseHttpClient(URI uri) {
         this.uri = uri;
         this.httpclient = createClient();
-        this.gson = createGsonParser();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     protected Gson createGsonParser() {
@@ -144,7 +146,7 @@ public abstract class BaseHttpClient {
             setupCommonHeaders(get);
             get.setURI(uri.resolve(path));
             String json = getJSON(get);
-            return gson.fromJson(json, clazz);
+            return mapper.readValue(json, clazz);
         } catch (IOException e) {
             throw new HttpClientException(e);
         }

@@ -64,14 +64,14 @@ public class StudentAssignmentETLRunnable implements Runnable {
     @Override
     public void run() {
         PsAssignment pa = powerAssignment.tables.pgassignments;
-        PsAssignmentType psType = typeIdToType.get(Long.valueOf(pa.getPgcategoriesid());
+        PsAssignmentType psType = typeIdToType.get(Long.valueOf(pa.getPgcategoriesid()));
         Assignment edpanelAssignment = PsAssignmentFactory.fabricate(
                 pa,
                 psType);
         edpanelAssignment.setWeight(pa.getWeight());
         edpanelAssignment.setSection(createdSection);
         edpanelAssignment.setUserDefinedType(psType.getName());
-        edpanelAssignment.setIncludeInFinalGrades(pa.getIncludeinfinalgrades());
+        edpanelAssignment.setIncludeInFinalGrades("1".equals(pa.getIncludeinfinalgrades()));
         edpanelAssignment.setSectionFK(createdSection.getId());
         Assignment createdAssignment = edPanel.createSectionAssignment(
                 school.getId(),
