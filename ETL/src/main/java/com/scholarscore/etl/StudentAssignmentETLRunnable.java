@@ -11,11 +11,11 @@ import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionSco
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentType;
 import com.scholarscore.etl.powerschool.api.response.AssignmentScoresResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.models.Assignment;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentAssignment;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.user.Student;
 import org.apache.commons.lang3.tuple.MutablePair;
 
@@ -64,10 +64,14 @@ public class StudentAssignmentETLRunnable implements Runnable {
     @Override
     public void run() {
         PsAssignment pa = powerAssignment.tables.pgassignments;
+        PsAssignmentType psType = typeIdToType.get(Long.valueOf(pa.getPgcategoriesid());
         Assignment edpanelAssignment = PsAssignmentFactory.fabricate(
                 pa,
-                typeIdToType.get(Long.valueOf(pa.getPgcategoriesid())));
+                psType);
+        edpanelAssignment.setWeight(pa.getWeight());
         edpanelAssignment.setSection(createdSection);
+        edpanelAssignment.setUserDefinedType(psType.getName());
+        edpanelAssignment.setIncludeInFinalGrades(pa.getIncludeinfinalgrades());
         edpanelAssignment.setSectionFK(createdSection.getId());
         Assignment createdAssignment = edPanel.createSectionAssignment(
                 school.getId(),
