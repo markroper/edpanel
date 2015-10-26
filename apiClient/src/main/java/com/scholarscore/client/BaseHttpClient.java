@@ -1,5 +1,7 @@
 package com.scholarscore.client;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.http.Header;
@@ -7,6 +9,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
@@ -46,10 +49,12 @@ public abstract class BaseHttpClient {
 
     protected Gson gson;
 
+    protected static ObjectMapper mapper = new ObjectMapper();
     public BaseHttpClient(URI uri) {
         this.uri = uri;
         this.httpclient = createClient();
         this.gson = createGsonParser();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     protected Gson createGsonParser() {
@@ -72,6 +77,19 @@ public abstract class BaseHttpClient {
                     build();
         }
         catch (KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
+            throw new HttpClientException(e);
+        }
+    }
+
+    protected String delete(String path, String ...params) {
+        path = getPath(path, params);
+
+        try {
+            HttpDelete get = new HttpDelete();
+            setupCommonHeaders(get);
+            get.setURI(uri.resolve(path));
+            return getJSON(get);
+        } catch (IOException e) {
             throw new HttpClientException(e);
         }
     }
@@ -144,7 +162,8 @@ public abstract class BaseHttpClient {
             setupCommonHeaders(get);
             get.setURI(uri.resolve(path));
             String json = getJSON(get);
-            return gson.fromJson(json, clazz);
+            return mapper.readValue(json, clazz);
+//            return gson.fromJson(json, clazz);
         } catch (IOException e) {
             throw new HttpClientException(e);
         }
