@@ -1,8 +1,8 @@
 package com.scholarscore.api.persistence;
 
-import java.util.Collection;
-
 import com.scholarscore.models.attendance.SchoolDay;
+
+import java.util.Collection;
 
 public interface SchoolDayPersistence {
     public Long insertSchoolDay(long schoolId, SchoolDay schoolDay);

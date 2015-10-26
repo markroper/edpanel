@@ -2,7 +2,6 @@ package com.scholarscore.api.persistence.goalCalculators;
 
 import com.scholarscore.api.persistence.BehaviorPersistence;
 import com.scholarscore.models.Behavior;
-import com.scholarscore.models.goal.BehaviorGoal;
 import com.scholarscore.models.goal.CalculatableBehavior;
 
 import java.util.Collection;

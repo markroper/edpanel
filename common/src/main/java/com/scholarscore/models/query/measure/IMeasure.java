@@ -1,10 +1,10 @@
 package com.scholarscore.models.query.measure;
 
-import java.io.Serializable;
-import java.util.Set;
-
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.Measure;
+
+import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Implementations represent a single valid query measure (aggregate field within a SQL query) including

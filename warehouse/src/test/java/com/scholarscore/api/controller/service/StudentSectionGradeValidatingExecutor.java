@@ -1,16 +1,15 @@
 package com.scholarscore.api.controller.service;
 
-import java.util.ArrayList;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.EntityId;
+import com.scholarscore.models.StudentSectionGrade;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
 import org.testng.Assert;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.EntityId;
-import com.scholarscore.models.StudentSectionGrade;
+import java.util.ArrayList;
 
 public class StudentSectionGradeValidatingExecutor {
     private final IntegrationBase serviceBase;

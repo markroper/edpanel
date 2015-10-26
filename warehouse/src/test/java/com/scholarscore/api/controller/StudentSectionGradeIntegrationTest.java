@@ -1,9 +1,5 @@
 package com.scholarscore.api.controller;
 
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
@@ -12,6 +8,9 @@ import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.user.Student;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 @Test(groups = { "integration" })
 public class StudentSectionGradeIntegrationTest extends IntegrationBase {

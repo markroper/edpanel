@@ -1,7 +1,6 @@
 package com.scholarscore.models.goal;
 
 import com.scholarscore.models.BehaviorCategory;
-import com.scholarscore.models.user.Student;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

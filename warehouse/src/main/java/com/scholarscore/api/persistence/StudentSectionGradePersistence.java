@@ -1,8 +1,8 @@
 package com.scholarscore.api.persistence;
 
-import java.util.Collection;
-
 import com.scholarscore.models.StudentSectionGrade;
+
+import java.util.Collection;
 
 public interface StudentSectionGradePersistence {
     public Collection<StudentSectionGrade> selectAll(

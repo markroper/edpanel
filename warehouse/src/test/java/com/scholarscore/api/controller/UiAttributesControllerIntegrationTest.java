@@ -1,15 +1,15 @@
 package com.scholarscore.api.controller;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.JsonAttributes;
 import com.scholarscore.models.School;
 import com.scholarscore.models.UiAttributes;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 @Test(groups = { "integration" })
 public class UiAttributesControllerIntegrationTest extends IntegrationBase {

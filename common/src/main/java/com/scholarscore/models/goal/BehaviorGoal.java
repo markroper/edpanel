@@ -1,27 +1,25 @@
 package com.scholarscore.models.goal;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.BehaviorCategory;
+import com.scholarscore.models.HibernateConsts;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.BehaviorCategory;
-import com.scholarscore.models.HibernateConsts;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * Goal type for goals that are behavior related
  * Created by cwallace on 9/20/2015.
  */
-@Entity
+@javax.persistence.Entity
 @Table(name = HibernateConsts.GOAL_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -30,7 +28,6 @@ import com.scholarscore.models.HibernateConsts;
 public class BehaviorGoal extends Goal implements CalculatableBehavior {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
 
     private Date startDate;
     private Date endDate;
@@ -59,7 +56,7 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
         this.startDate = startDate;
     }
 
-    @Column(name = HibernateConsts.GOAL_END_DATE, columnDefinition="DATE")
+    @Column(name = HibernateConsts.GOAL_END_DATE, columnDefinition = "DATE")
     public Date getEndDate() {
         return endDate;
     }
@@ -83,7 +80,7 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
     public void mergePropertiesIfNull(Goal mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
         if (mergeFrom instanceof BehaviorGoal) {
-            BehaviorGoal mergeFromBehavior = (BehaviorGoal)mergeFrom;
+            BehaviorGoal mergeFromBehavior = (BehaviorGoal) mergeFrom;
             if (null == this.startDate) {
                 this.startDate = mergeFromBehavior.startDate;
             }
@@ -119,14 +116,60 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
                 "GOAL " + "\n"
                         + "Id  : " + getId() + "\n"
                         + "Name: " + getName() + "\n"
-                        + "BehaviorCategory: " + getBehaviorCategory() +"\n"
-                        + "DesiredValue: " + getDesiredValue() +"\n"
+                        + "BehaviorCategory: " + getBehaviorCategory() + "\n"
+                        + "DesiredValue: " + getDesiredValue() + "\n"
                         + "CalculatedValue: " + getCalculatedValue() + "\n"
                         + "Approved: " + getApproved() + "\n"
                         + "GoalType: " + getGoalType() + "\n"
                         + "Student: " + getStudent() + "\n"
                         + "Teacher: " + getTeacher() + "\n"
-                        + "StartDate: " + dateFormat.format(getStartDate()) + "\n"
-                        + "EndDate: " + dateFormat.format(getEndDate());
+                        + "StartDate: " + (getStartDate() != null ? dateFormat.format(getStartDate()) : null) + "\n"
+                        + "EndDate: " + (getEndDate() != null ? dateFormat.format(getEndDate()) : null);
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public static class BehaviorGoalBuilder extends GoalBuilder<BehaviorGoalBuilder, BehaviorGoal> {
+
+        private Date startDate;
+        private Date endDate;
+        private BehaviorCategory behaviorCategory;
+
+        public BehaviorGoalBuilder withStartDate(final Date startDate){
+            this.startDate = startDate;
+            return this;
+        }
+
+        public BehaviorGoalBuilder withEndDate(final Date endDate){
+            this.endDate = endDate;
+            return this;
+        }
+
+        public BehaviorGoalBuilder withBehaviorCategory(final BehaviorCategory behaviorCategory){
+            this.behaviorCategory = behaviorCategory;
+            return this;
+        }
+
+        public BehaviorGoal build(){
+            BehaviorGoal goal = super.build();
+            goal.setGoalType(GoalType.BEHAVIOR);
+            goal.setStartDate(startDate);
+            goal.setEndDate(endDate);
+            goal.setBehaviorCategory(behaviorCategory);
+            return goal;
+        }
+
+        @Override
+        protected BehaviorGoalBuilder me() {
+            return this;
+        }
+
+        @Override
+        public BehaviorGoal getInstance() {
+            return new BehaviorGoal();
+        }
     }
 }

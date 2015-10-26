@@ -2,8 +2,6 @@ package com.scholarscore.models.goal;
 
 import com.scholarscore.models.user.Student;
 
-import java.util.Date;
-
 /**
  * Interface that defines the functionality for making an assignment based
  * component/goal calculatable

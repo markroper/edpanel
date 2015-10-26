@@ -1,16 +1,14 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.util.Collection;
-
 import com.scholarscore.api.persistence.EntityPersistence;
 import com.scholarscore.api.persistence.SchoolPersistence;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
 
 @Transactional
 public class CourseJdbc implements EntityPersistence<Course> {

@@ -2,6 +2,8 @@ package com.scholarscore.api.manager;
 
 import com.scholarscore.api.persistence.UserPersistence;
 import com.scholarscore.api.security.config.UserDetailsProxy;
+import com.scholarscore.api.service.EmailService;
+import com.scholarscore.api.service.TextMessageService;
 import com.scholarscore.api.util.RoleConstants;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
@@ -10,9 +12,6 @@ import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.user.ContactMethod;
 import com.scholarscore.models.user.ContactType;
 import com.scholarscore.models.user.User;
-
-import com.scholarscore.api.service.EmailService;
-import com.scholarscore.api.service.TextMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

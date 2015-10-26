@@ -1,12 +1,11 @@
 package com.scholarscore.api.interceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.scholarscore.api.security.config.SecurityConfig;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.scholarscore.api.security.config.SecurityConfig;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Component
 public class AuthenticationInterceptor extends HandlerInterceptorAdapter {

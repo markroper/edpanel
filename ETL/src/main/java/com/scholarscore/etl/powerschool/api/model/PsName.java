@@ -1,7 +1,5 @@
 package com.scholarscore.etl.powerschool.api.model;
 
-import java.util.Optional;
-
 /**
  * Created by mattg on 6/28/15.
  */
