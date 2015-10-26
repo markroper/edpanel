@@ -4,10 +4,9 @@ import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
-import com.scholarscore.etl.powerschool.api.model.PsTerm;
-import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
-import com.scholarscore.etl.powerschool.api.response.TermResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
+import com.scholarscore.etl.powerschool.sync.SchoolSync;
+import com.scholarscore.etl.powerschool.sync.TermSync;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
@@ -19,14 +18,13 @@ import com.scholarscore.models.user.User;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 /**
  * This is the E2E flow for powerschool import to edPanel export - we have references to both clients and
@@ -81,30 +79,30 @@ public class ETLEngine implements IETLEngine {
         migrateSchoolYearsAndTerms();
         long yearsAndTermsComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
-
-        createStaff();
-        long staffCreationComplete = (System.currentTimeMillis() - endTime)/1000;
-        endTime = System.currentTimeMillis();
-
-        createStudents();
-        long studentCreationComplete = (System.currentTimeMillis() - endTime)/1000;
-        endTime = System.currentTimeMillis();
-
-        createCourses();
-        long courseCreationComplete = (System.currentTimeMillis() - endTime)/1000;
-        endTime = System.currentTimeMillis();
-
-        migrateSections();
-        long sectionCreationComplete = (System.currentTimeMillis() - endTime)/1000;
-        endTime = System.currentTimeMillis();
-
-        System.out.println("Total runtime: " + (startTime-endTime)/1000 +
-                " seconds, schools: " + schoolCreationTime +
-                " seconds, Years + Terms: " + yearsAndTermsComplete +
-                " seconds, staff: " + staffCreationComplete +
-                " seconds, students: " + studentCreationComplete +
-                " seconds, courses: " + courseCreationComplete +
-                " seconds, sections: " + sectionCreationComplete);
+//
+//        createStaff();
+//        long staffCreationComplete = (System.currentTimeMillis() - endTime)/1000;
+//        endTime = System.currentTimeMillis();
+//
+//        createStudents();
+//        long studentCreationComplete = (System.currentTimeMillis() - endTime)/1000;
+//        endTime = System.currentTimeMillis();
+//
+//        createCourses();
+//        long courseCreationComplete = (System.currentTimeMillis() - endTime)/1000;
+//        endTime = System.currentTimeMillis();
+//
+//        migrateSections();
+//        long sectionCreationComplete = (System.currentTimeMillis() - endTime)/1000;
+//        endTime = System.currentTimeMillis();
+//
+//        System.out.println("Total runtime: " + (startTime-endTime)/1000 +
+//                " seconds, schools: " + schoolCreationTime +
+//                " seconds, Years + Terms: " + yearsAndTermsComplete +
+//                " seconds, staff: " + staffCreationComplete +
+//                " seconds, students: " + studentCreationComplete +
+//                " seconds, courses: " + courseCreationComplete +
+//                " seconds, sections: " + sectionCreationComplete);
         return result;
     }
 
@@ -141,75 +139,19 @@ public class ETLEngine implements IETLEngine {
     /**
      * Creates the all school years and terms for each of the schools on the instance
      * collection this.schools.  Returns void but populates the collections this.terms
-     * and this.schoolYears as part of execution.
+     * and this.sourceSchoolYears as part of execution.
      */
     private void migrateSchoolYearsAndTerms() {
         if(null != schools) {
             this.terms = new ConcurrentHashMap<>();
-            this.schoolYears = Collections.synchronizedList(new ArrayList<SchoolYear>());
-            for(School s: schools) {
-                //Get all the terms from PowerSchool for the current School
-                String sourceSystemIdString = s.getSourceSystemId();
-                Long sourceSystemSchoolId = new Long(sourceSystemIdString);
-                TermResponse tr = powerSchool.getTermsBySchoolId(sourceSystemSchoolId);
-                if(null != tr && null != tr.terms && null != tr.terms.term) {
-                    Map<Long, List<Term>> yearToTerms = new HashMap<>();
-                    Map<Long, SchoolYear> edPanelYears = new HashMap<>();
-                    List<PsTerm> terms = tr.terms.term;
-                    //First we build up the term and deduce from this, how many school years there are...
-                    for(PsTerm t : terms) {
-                        Term edpanelTerm = new Term();
-                        edpanelTerm.setStartDate(t.getStart_date());
-                        edpanelTerm.setEndDate(t.getEnd_date());
-                        edpanelTerm.setName(t.getName());
-                        edpanelTerm.setSourceSystemId(t.getId().toString());
-                        if(null == yearToTerms.get(t.getStart_year())) {
-                            yearToTerms.put(t.getStart_year(), Collections.synchronizedList(new ArrayList<>()));
-                        }
-                        yearToTerms.get(t.getStart_year()).add(edpanelTerm);
-                    }
-                    //Then we create the needed school years in EdPanel given the terms from PowerSchool
-                    Iterator<Map.Entry<Long, List<Term>>> it =
-                            yearToTerms.entrySet().iterator();
-                    while(it.hasNext()) {
-                        Map.Entry<Long, List<Term>> entry = it.next();
-                        SchoolYear schoolYear = new SchoolYear();
-                        schoolYear.setSchool(s);
-                        schoolYear.setName(entry.getKey().toString());
-                        //For each school year, we need to set the start & end dates as the smallest 
-                        //of the terms' start dates and the largest of the terms' end dates
-                        for(Term t: entry.getValue()) {
-                            if(null == schoolYear.getStartDate() ||
-                                    schoolYear.getStartDate().compareTo(t.getStartDate()) > 0) {
-                                schoolYear.setStartDate(t.getStartDate());
-                            }
-                            if(null == schoolYear.getEndDate() ||
-                                    schoolYear.getEndDate().compareTo(t.getEndDate()) < 0) {
-                                schoolYear.setEndDate(t.getEndDate());
-                            }
-                        }
-                        //Create the school year in EdPanel!
-                        SchoolYear createdSchoolYear = edPanel.createSchoolYear(s.getId(), schoolYear);
-                        this.schoolYears.add(createdSchoolYear);
-                        edPanelYears.put(entry.getKey(), createdSchoolYear);
-                    }
-                    //Finally, having created the EdPanel SchoolYears, we can create the terms in EdPanel
-                    it = yearToTerms.entrySet().iterator();
-                    while(it.hasNext()) {
-                        Map.Entry<Long, List<Term>> entry = it.next();
-                        for(Term t: entry.getValue()) {
-                            //Now that the school Year has been created, cache it on the 
-                            SchoolYear y = edPanelYears.get(entry.getKey());
-                            t.setSchoolYear(y);
-                            //Create the term in EdPanel!
-                            Term createdTerm = edPanel.createTerm(s.getId(), y.getId(), t);
-                            if(null == this.terms.get(sourceSystemSchoolId)) {
-                                this.terms.put(sourceSystemSchoolId, new ConcurrentHashMap<>());
-                            }
-                            this.terms.get(sourceSystemSchoolId).put(new Long(createdTerm.getSourceSystemId()), createdTerm);
-                        }
-                    }
-                }
+            for(School school: schools) {
+                TermSync tSync = new TermSync(edPanel, powerSchool, school);
+                this.terms.put(
+                        Long.valueOf(school.getSourceSystemId()),
+                        tSync.synchCreateUpdateDelete(
+                            tSync.resolveAllFromSourceSystem(),
+                            tSync.resolveFromEdPanel())
+                );
             }
         }
     }
@@ -277,12 +219,13 @@ public class ETLEngine implements IETLEngine {
     }
 
     public void createSchools() {
-        SchoolsResponse powerSchools = powerSchool.getSchools();
-        List<School> schools = (List<School>) powerSchools.toInternalModel();
-        for (School school : schools) {
-            School response = edPanel.createSchool(school);
-            school.setId(response.getId());
-        }
-        this.schools = schools;
+        SchoolSync sync = new SchoolSync(edPanel, powerSchool);
+        Map<Long, School> result = sync.synchCreateUpdateDelete(
+                sync.resolveAllFromSourceSystem(),
+                sync.resolveFromEdPanel());
+        this.schools = result.entrySet()
+                        .stream()
+                        .map(Map.Entry::getValue)
+                        .collect(Collectors.toList());
     }
 }

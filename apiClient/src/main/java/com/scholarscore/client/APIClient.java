@@ -67,11 +67,41 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         authenticate();
     }
 
+    @Override
     public School createSchool(School school) {
         EntityId id = create(school, SCHOOL_ENDPOINT);
         School response = new School(school);
         response.setId(id.getId());
         return response;
+    }
+
+    @Override
+    public School getSchool(Long schoolId) {
+        School response = get(School.class,
+                BASE_API_ENDPOINT + SCHOOL_ENDPOINT + "/" + schoolId);
+        return response;
+    }
+
+    @Override
+    public School[] getSchools() {
+        School[] response = get(School[].class, BASE_API_ENDPOINT + SCHOOL_ENDPOINT);
+        return response;
+    }
+
+    @Override
+    public School updateSchool(School school) {
+        School response = new School(school);
+        try {
+            patch(convertObjectToJsonBytes(school), BASE_API_ENDPOINT + SCHOOL_ENDPOINT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return school;
+    }
+
+    @Override
+    public void deleteSchool(School school) {
+        delete(BASE_API_ENDPOINT + SCHOOL_ENDPOINT + "/" + school.getId(), null);
     }
 
     private void createVoidResponse(Object obj, String path) {
@@ -101,12 +131,6 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
             e.printStackTrace();
         }
         return gson.fromJson(jsonCreateResponse, EntityId.class);
-    }
-
-    public School getSchool(Long schoolId) {
-        School response = get(School.class,
-                SCHOOL_ENDPOINT + "/" + schoolId);
-        return response;
     }
 
     @Override
@@ -203,11 +227,71 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
+    public void deleteSchoolYear(Long schoolId, SchoolYear year) {
+        delete(BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                SCHOOL_YEAR_ENDPOINT + "/" + year.getId(), null);
+    }
+
+    @Override
+    public SchoolYear updateSchoolYear(Long schoolId, SchoolYear year) {
+        SchoolYear y = new SchoolYear(year);
+        try {
+            patch(convertObjectToJsonBytes(year), BASE_API_ENDPOINT +
+                    SCHOOL_ENDPOINT + "/" + schoolId +
+                    SCHOOL_YEAR_ENDPOINT + "/" + year.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return y;
+    }
+
+    @Override
+    public SchoolYear[] getSchoolYears(Long schoolId) {
+        SchoolYear[] years = get(SchoolYear[].class, BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                SCHOOL_YEAR_ENDPOINT);
+        return years;
+    }
+
+    @Override
     public Term createTerm(Long schoolId, Long schoolYearId, Term term) {
         Term response = new Term(term);
         EntityId id = create(term, SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId + TERM_ENDPOINT);
         response.setId(id.getId());
         return response;
+    }
+
+    @Override
+    public void deleteTerm(Long schoolId, Long schoolYearId, Term term) {
+        delete(BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId +
+                TERM_ENDPOINT + "/" + term.getId(), null);
+    }
+
+    @Override
+    public Term updateTerm(Long schoolId, Long schoolYearId, Term term) {
+        Term t = new Term(term);
+        try {
+            patch(convertObjectToJsonBytes(term), BASE_API_ENDPOINT +
+                    SCHOOL_ENDPOINT + "/" + schoolId +
+                    SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId +
+                    TERM_ENDPOINT + "/" + term.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return t;
+    }
+
+
+    @Override
+    public Term[] getTerms(Long schoolId, Long schoolYearId) {
+        Term[] terms = get(Term[].class, BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId +
+                TERM_ENDPOINT);
+        return terms;
     }
     
     @Override

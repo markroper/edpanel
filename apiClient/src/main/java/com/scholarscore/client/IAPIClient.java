@@ -23,6 +23,10 @@ import java.util.List;
 public interface IAPIClient {
     School createSchool(School school);
     School getSchool(Long id);
+    School[] getSchools();
+    School updateSchool(School school);
+    void deleteSchool(School school);
+
     Student createStudent(Student student);
     Student updateStudent(Long studentId, Student student);
     Collection<Student> getStudents();
@@ -37,8 +41,19 @@ public interface IAPIClient {
     Administrator createAdministrator(Administrator administrator);
     User createUser(User login);
     Course createCourse(Long schoolId, Course course);
+
+    //SCHOOL YEARS
     SchoolYear createSchoolYear(Long schoolId, SchoolYear year);
+    void deleteSchoolYear(Long schoolId, SchoolYear year);
+    SchoolYear updateSchoolYear(Long schoolId, SchoolYear year);
+    SchoolYear[] getSchoolYears(Long schoolId);
+
+    //TERMS
     Term createTerm(Long schoolId, Long schoolYearId, Term year);
+    void deleteTerm(Long schoolId, Long schoolYearId, Term term);
+    Term updateTerm(Long schoolId, Long schoolYearId, Term term);
+    Term[] getTerms(Long schoolId, Long schoolYearId);
+
     Section createSection(Long schoolId, Long schoolYearId, Long termId, Section section);
     StudentSectionGrade createStudentSectionGrade(
             Long schoolId, 
