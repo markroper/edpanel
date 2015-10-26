@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
 import org.testng.Assert;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SchoolDayValidatingExecutor {
@@ -87,12 +88,37 @@ public class SchoolDayValidatingExecutor {
     }
     
     protected SchoolDay retrieveAndValidateCreatedDay( Long schoolId, SchoolDay submitted, EntityId id, HttpMethod method, String msg) {
-        submitted.setId(id.getId());
-        submitted.getSchool().setYears(null);
         SchoolDay created = this.get(schoolId, id.getId(), msg);
-        SchoolDay expected = submitted;
+        SchoolDay expected = generateExpectationSchoolDay(created, submitted, method);
+//        if (submitted.getSchool() != null) {
+//            submitted.getSchool().setYears(new ArrayList<>());
+//        }
+//        submitted.setId(id.getId());
+//        submitted.getSchool().setYears(null);
+//        SchoolDay expected = submitted;
+        boolean daysEqual = false;
+        daysEqual = created.equals(expected);
+        
+        boolean datesEqual = false;
+        datesEqual = created.getDate().equals(expected.getDate());
+        
         Assert.assertEquals(created, expected, msg);
         return created;
+    }
+    
+    protected SchoolDay generateExpectationSchoolDay(SchoolDay submitted, SchoolDay created, HttpMethod method) { 
+        SchoolDay returnSchoolDay = new SchoolDay(submitted);
+        if (method == HttpMethod.PATCH) {
+            returnSchoolDay.mergePropertiesIfNull(created);
+        } else if (null == returnSchoolDay.getId()) {
+            returnSchoolDay.setId(created.getId());
+        }
+//        if (null != returnSchoolDay.getSchool()) {
+//            // the server does not return these, don't expect them
+//            returnSchoolDay.getSchool().setYears(null);
+//        }
+        
+        return returnSchoolDay;
     }
 
 }

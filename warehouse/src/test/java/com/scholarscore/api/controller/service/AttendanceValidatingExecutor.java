@@ -102,7 +102,8 @@ public class AttendanceValidatingExecutor {
             Long schoolId, Long studentId, Attendance submitted, EntityId id, HttpMethod method, String msg) {
         submitted.setId(id.getId());
         Attendance created = this.get(schoolId, studentId, id.getId(), msg);
-        Assert.assertEquals(created, submitted, msg);
+        Assert.assertEquals(created, submitted, msg + " - these should be equal but they are not:\nCREATED:\n" 
+                + created + "\n" + "SUBMITTED:\n" + submitted);
         return created;
     }
 }
