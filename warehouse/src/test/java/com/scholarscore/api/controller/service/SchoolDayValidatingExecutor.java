@@ -90,18 +90,6 @@ public class SchoolDayValidatingExecutor {
     protected SchoolDay retrieveAndValidateCreatedDay( Long schoolId, SchoolDay submitted, EntityId id, HttpMethod method, String msg) {
         SchoolDay created = this.get(schoolId, id.getId(), msg);
         SchoolDay expected = generateExpectationSchoolDay(created, submitted, method);
-//        if (submitted.getSchool() != null) {
-//            submitted.getSchool().setYears(new ArrayList<>());
-//        }
-//        submitted.setId(id.getId());
-//        submitted.getSchool().setYears(null);
-//        SchoolDay expected = submitted;
-        boolean daysEqual = false;
-        daysEqual = created.equals(expected);
-        
-        boolean datesEqual = false;
-        datesEqual = created.getDate().equals(expected.getDate());
-        
         Assert.assertEquals(created, expected, msg);
         return created;
     }
@@ -113,11 +101,6 @@ public class SchoolDayValidatingExecutor {
         } else if (null == returnSchoolDay.getId()) {
             returnSchoolDay.setId(created.getId());
         }
-//        if (null != returnSchoolDay.getSchool()) {
-//            // the server does not return these, don't expect them
-//            returnSchoolDay.getSchool().setYears(null);
-//        }
-        
         return returnSchoolDay;
     }
 
