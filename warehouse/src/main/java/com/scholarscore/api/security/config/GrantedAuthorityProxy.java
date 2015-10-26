@@ -1,8 +1,7 @@
 package com.scholarscore.api.security.config;
 
-import org.springframework.security.core.GrantedAuthority;
-
 import com.scholarscore.models.Authority;
+import org.springframework.security.core.GrantedAuthority;
 
 @SuppressWarnings("serial")
 public class GrantedAuthorityProxy implements GrantedAuthority {

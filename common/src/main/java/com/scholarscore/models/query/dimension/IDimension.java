@@ -1,9 +1,9 @@
 package com.scholarscore.models.query.dimension;
 
+import com.scholarscore.models.query.Dimension;
+
 import java.io.Serializable;
 import java.util.Set;
-
-import com.scholarscore.models.query.Dimension;
 /**
  * Implementations represent a single eligible dimension field for use in a query.
  * Dimensions are the select columns that are included in the group by clause and have

@@ -1,10 +1,9 @@
 package com.scholarscore.api.swagger;
 
+import com.knappsack.swagger4springweb.controller.ApiDocumentationController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import com.knappsack.swagger4springweb.controller.ApiDocumentationController;
 
 @Controller
 @RequestMapping(value = "/documentation")

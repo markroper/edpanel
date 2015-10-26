@@ -2,8 +2,8 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 
 import com.scholarscore.api.persistence.EntityPersistence;
 import com.scholarscore.api.persistence.StudentAssignmentPersistence;
-import com.scholarscore.models.Assignment;
-import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.assignment.StudentAssignment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 

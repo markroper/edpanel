@@ -1,13 +1,12 @@
 package com.scholarscore.api.security.config;
 
+import com.scholarscore.api.ApiConsts;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-
-import com.scholarscore.api.ApiConsts;
 
 /**
  * Form login defaults to only support form submissions, not JSON.  We're overriding this behavior to parse

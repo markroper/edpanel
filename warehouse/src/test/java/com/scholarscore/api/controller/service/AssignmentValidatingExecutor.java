@@ -1,16 +1,15 @@
 package com.scholarscore.api.controller.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.EntityId;
+import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.assignment.AssignmentList;
+import com.scholarscore.models.factory.AssignmentFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
 import org.testng.Assert;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.AssignmentList;
-import com.scholarscore.models.EntityId;
-import com.scholarscore.models.Assignment;
-import com.scholarscore.models.factory.AssignmentFactory;
 
 public class AssignmentValidatingExecutor {
     private final IntegrationBase serviceBase;

@@ -2,8 +2,13 @@ package com.scholarscore.api.controller.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.*;
-import com.scholarscore.models.goal.*;
+import com.scholarscore.models.EntityId;
+import com.scholarscore.models.goal.AssignmentGoal;
+import com.scholarscore.models.goal.AttendanceGoal;
+import com.scholarscore.models.goal.BehaviorGoal;
+import com.scholarscore.models.goal.ComplexGoal;
+import com.scholarscore.models.goal.CumulativeGradeGoal;
+import com.scholarscore.models.goal.Goal;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;

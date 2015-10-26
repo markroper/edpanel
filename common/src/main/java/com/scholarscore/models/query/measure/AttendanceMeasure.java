@@ -1,12 +1,12 @@
 package com.scholarscore.models.query.measure;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.Measure;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @SuppressWarnings("serial")
 public class AttendanceMeasure implements IMeasure {

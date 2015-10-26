@@ -1,6 +1,13 @@
 package com.scholarscore.models.goal;
 
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.scholarscore.models.ApiModel;
+import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.IApiModel;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -17,13 +24,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import com.scholarscore.models.*;
-import org.hibernate.annotations.Type;
-
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
+import java.util.Objects;
 
 /**
  * Abstract class defining common fields and methods that exist across all goals.
@@ -192,4 +193,61 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
                         + "Student: " + getStudent() + "\n"
                         + "Teacher: " + getTeacher() + "\n";
     }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public static abstract class GoalBuilder<U extends GoalBuilder<U, T>, T extends Goal> extends ApiModelBuilder<U,T>{
+
+        private Student student;
+        private Teacher teacher;
+        private Double desiredValue;
+        private Double calculatedValue;
+        private Boolean approved;
+        private GoalType goalType;
+
+        public U withStudent(final Student student){
+            this.student = student;
+            return me();
+        }
+
+        public U withTeacher(final Teacher teacher){
+            this.teacher = teacher;
+            return me();
+        }
+
+        public U withDesiredValue(final Double desiredValue){
+            this.desiredValue = desiredValue;
+            return me();
+        }
+
+        public U withCalculatedValue(final Double calculatedValue){
+            this.calculatedValue = calculatedValue;
+            return me();
+        }
+
+        public U withApproved(final Boolean approved){
+            this.approved = approved;
+            return me();
+        }
+
+        public U withGoalType(final GoalType goalType){
+            this.goalType = goalType;
+            return me();
+        }
+
+        public T build(){
+            T goal = super.build();
+            goal.setStudent(student);
+            goal.setTeacher(teacher);
+            goal.setDesiredValue(desiredValue);
+            goal.setCalculatedValue(calculatedValue);
+            goal.setApproved(approved);
+            goal.setGoalType(goalType);
+            return goal;
+        }
+    }
+
 }

@@ -1,7 +1,11 @@
-package com.scholarscore.models;
+package com.scholarscore.models.assignment;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.ApiModel;
+import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.IApiModel;
+import com.scholarscore.models.WeightedGradable;
 import com.scholarscore.models.user.Student;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -173,5 +177,63 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(assignment, completed, awardedPoints, student, completionDate);
+    }
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public static class StudentAssignmentBuilder extends ApiModelBuilder<StudentAssignmentBuilder, StudentAssignment> {
+        private Boolean completed;
+        private Date completionDate;
+        private Double awardedPoints;
+        private Assignment assignment;
+        private Student student;
+
+        public StudentAssignmentBuilder withCompleted(final Boolean completed){
+            this.completed = completed;
+            return this;
+        }
+
+        public StudentAssignmentBuilder withCompletionDate(final Date completionDate){
+            this.completionDate = completionDate;
+            return this;
+        }
+
+        public StudentAssignmentBuilder withAwardedPoints(final Double awardedPoints){
+            this.awardedPoints = awardedPoints;
+            return this;
+        }
+
+        public StudentAssignmentBuilder withAssignment(final Assignment assignment){
+            this.assignment = assignment;
+            return this;
+        }
+
+        public StudentAssignmentBuilder withStudent(final Student student){
+            this.student = student;
+            return this;
+        }
+
+        public StudentAssignment build(){
+            StudentAssignment studentAssignment = super.build();
+            studentAssignment.setCompleted(completed);
+            studentAssignment.setCompletionDate(completionDate);
+            studentAssignment.setAwardedPoints(awardedPoints);
+            studentAssignment.setAssignment(assignment);
+            studentAssignment.setStudent(student);
+            return studentAssignment;
+        }
+
+        @Override
+        protected StudentAssignmentBuilder me() {
+            return this;
+        }
+
+        @Override
+        public StudentAssignment getInstance() {
+            return new StudentAssignment();
+        }
     }
 }

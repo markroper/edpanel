@@ -1,18 +1,18 @@
 package com.scholarscore.api.util;
 
-import com.scholarscore.models.Assignment;
-import com.scholarscore.models.AssignmentType;
-import com.scholarscore.models.AttendanceAssignment;
+import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.AttendanceAssignment;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.Gender;
 import com.scholarscore.models.GradeFormula;
-import com.scholarscore.models.GradedAssignment;
+import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentAssignment;
+import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.goal.AssignmentGoal;
 import com.scholarscore.models.goal.AttendanceGoal;
@@ -343,7 +343,7 @@ public class SchoolDataFactory {
      * @param students
      * @return
      */
-    public static Map<Long, List<StudentAssignment>> 
+    public static Map<Long, List<StudentAssignment>>
             generateStudentAssignments(List<Assignment> assignments, List<Student> students) {
         Map<Long, List<StudentAssignment>> assIdToStudAss = 
                 new HashMap<Long, List<StudentAssignment>>();

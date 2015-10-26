@@ -114,5 +114,38 @@ public abstract class Person extends User {
         result = 31 * result + (homeAddress != null ? homeAddress.hashCode() : 0);
         return result;
     }
-    
+
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public static abstract class PersonBuilder<U extends PersonBuilder<U, T>,T extends Person> extends UserBuilder<U,T>{
+        private String sourceSystemId;
+        private Address homeAddress;
+        private String homePhone;
+
+        public U withSourceSystemid(final String sourceSystemId){
+            this.sourceSystemId = sourceSystemId;
+            return me();
+        }
+
+        public U withHomeAddress(final Address homeAddress){
+            this.homeAddress = homeAddress;
+            return me();
+        }
+
+        public U withHomePhone(final String homePhone){
+            this.homePhone = homePhone;
+            return me();
+        }
+
+        public T build(){
+            T staff = super.build();
+            staff.setSourceSystemId(sourceSystemId);
+            staff.setHomeAddress(homeAddress);
+            staff.setHomePhone(homePhone);
+            return staff;
+        }
+    }
 }

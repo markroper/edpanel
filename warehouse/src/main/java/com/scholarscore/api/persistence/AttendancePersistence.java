@@ -1,8 +1,8 @@
 package com.scholarscore.api.persistence;
 
-import java.util.Collection;
-
 import com.scholarscore.models.attendance.Attendance;
+
+import java.util.Collection;
 
 public interface AttendancePersistence {
     public Long insertAttendance(Long schoolId, Long studentId, Attendance attendance);

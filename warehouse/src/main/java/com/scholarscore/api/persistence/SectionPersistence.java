@@ -1,8 +1,8 @@
 package com.scholarscore.api.persistence;
 
-import java.util.Collection;
-
 import com.scholarscore.models.Section;
+
+import java.util.Collection;
 
 public interface SectionPersistence extends EntityPersistence<Section> {
     /**

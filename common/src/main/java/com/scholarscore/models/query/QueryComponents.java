@@ -1,8 +1,5 @@
 package com.scholarscore.models.query;
 
-import java.io.Serializable;
-import java.util.Set;
-
 import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.query.dimension.CourseDimension;
 import com.scholarscore.models.query.dimension.GradeLevelDimension;
@@ -19,6 +16,9 @@ import com.scholarscore.models.query.measure.CourseGradeMeasure;
 import com.scholarscore.models.query.measure.GpaMeasure;
 import com.scholarscore.models.query.measure.HomeworkCompletionMeasure;
 import com.scholarscore.models.query.measure.IMeasure;
+
+import java.io.Serializable;
+import java.util.Set;
 
 /**
  * This class encapsulates all Dimensions and Measures available for use in a valid Query.  It serializes to a form

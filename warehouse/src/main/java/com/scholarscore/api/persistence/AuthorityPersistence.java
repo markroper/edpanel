@@ -1,8 +1,8 @@
 package com.scholarscore.api.persistence;
 
-import java.util.List;
-
 import com.scholarscore.models.Authority;
+
+import java.util.List;
 
 /**
  * Defines the pattern for accessing authorities by a username

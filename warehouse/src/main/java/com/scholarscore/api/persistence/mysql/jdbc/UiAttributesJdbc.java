@@ -1,14 +1,12 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import java.util.List;
-
-import javax.transaction.Transactional;
-
+import com.scholarscore.api.persistence.UiAttributesPersistence;
+import com.scholarscore.models.UiAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
-import com.scholarscore.api.persistence.UiAttributesPersistence;
-import com.scholarscore.models.UiAttributes;
+import javax.transaction.Transactional;
+import java.util.List;
 
 @Transactional
 public class UiAttributesJdbc implements UiAttributesPersistence {

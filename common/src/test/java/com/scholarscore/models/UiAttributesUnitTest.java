@@ -1,15 +1,14 @@
 package com.scholarscore.models;
 
-import java.io.IOException;
-
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import java.io.IOException;
 
 @Test(groups = { "unit" })
 public class UiAttributesUnitTest {

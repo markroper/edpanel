@@ -1,13 +1,12 @@
 package com.scholarscore.api.persistence.mysql;
 
-import com.scholarscore.models.AssignmentType;
-import com.scholarscore.models.GradedAssignment;
 import com.scholarscore.models.Section;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.GradedAssignment;
 import org.testng.annotations.Test;
 
 import java.util.Date;
 
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 
