@@ -18,9 +18,9 @@ public class PsAssignment {
     private Date datedue;
     private String pgcategoriesid;
     private Long sectionid;
-    private Boolean includeinfinalgrades;
+    private String includeinfinalgrades;
     private Long pointspossible;
-    private Boolean publishscores;
+    private String publishscores;
     private String publishstate;
     private Long publishdaysbeforedue;
     private Date publishspecificdate;
@@ -76,10 +76,10 @@ public class PsAssignment {
     public void setSectionid(Long sectionid) {
         this.sectionid = sectionid;
     }
-    public Boolean getIncludeinfinalgrades() {
+    public String getIncludeinfinalgrades() {
         return includeinfinalgrades;
     }
-    public void setIncludeinfinalgrades(Boolean includeinfinalgrades) {
+    public void setIncludeinfinalgrades(String includeinfinalgrades) {
         this.includeinfinalgrades = includeinfinalgrades;
     }
     public Long getPointspossible() {
@@ -88,10 +88,10 @@ public class PsAssignment {
     public void setPointspossible(Long pointspossible) {
         this.pointspossible = pointspossible;
     }
-    public Boolean getPublishscores() {
+    public String getPublishscores() {
         return publishscores;
     }
-    public void setPublishscores(Boolean publishscores) {
+    public void setPublishscores(String publishscores) {
         this.publishscores = publishscores;
     }
     public String getPublishstate() {
