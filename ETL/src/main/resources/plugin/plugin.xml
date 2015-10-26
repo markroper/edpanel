@@ -253,5 +253,88 @@
 		<field table="StoredGrades" field="Teacher_Name" access="ViewOnly" />
 		<field table="StoredGrades" field="TermBinsName" access="ViewOnly" />
 		<field table="StoredGrades" field="TermID" access="ViewOnly" />
+		<!--Tables related to section grade formulas-->
+		<field table="GradeScaleItem" field="AddedValue" access="ViewOnly" />
+		<field table="GradeScaleItem" field="Alt_Grade_Points" access="ViewOnly" />
+		<field table="GradeScaleItem" field="ConversionToNumeric" access="ViewOnly" />
+		<field table="GradeScaleItem" field="CountsInGPA" access="ViewOnly" />
+		<field table="GradeScaleItem" field="CutoffPercentage" access="ViewOnly" />
+		<field table="GradeScaleItem" field="CutoffPoints" access="ViewOnly" />
+		<field table="GradeScaleItem" field="dcid" access="ViewOnly" />
+		<field table="GradeScaleItem" field="Description" access="ViewOnly" />
+		<field table="GradeScaleItem" field="ExcludeFromAFG" access="ViewOnly" />
+		<field table="GradeScaleItem" field="gradescaleid" access="ViewOnly" />
+		<field table="GradeScaleItem" field="GradeScaleType" access="ViewOnly" />
+		<field table="GradeScaleItem" field="Grade_Points" access="ViewOnly" />
+		<field table="GradeScaleItem" field="Grade_Replacement_Policy" access="ViewOnly" />
+		<field table="GradeScaleItem" field="GraduationCredit" access="ViewOnly" />
+		<field table="GradeScaleItem" field="IsForCourseGrade" access="ViewOnly" />
+		<field table="GradeScaleItem" field="IsForStandards" access="ViewOnly" />
+		<field table="GradeScaleItem" field="IsGPAShown" access="ViewOnly" />
+		<field table="GradeScaleItem" field="IsProficient" access="ViewOnly" />
+		<field table="GradeScaleItem" field="Modify_Code" access="ViewOnly" />
+		<field table="GradeScaleItem" field="name" access="ViewOnly" />
+		<field table="GradeScaleItem" field="value" access="ViewOnly" />
+		<!-- Appears to correlate letter grade with an actual score threshold, an isProficient boolean if a student gets that score, etc.
+			https://excelacademy.powerschool.com/ws/schema/table/GradeScaleItem?projection=AddedValue,dcid,Description,ExcludeFromAFG,gradescaleid,GradeScaleType,Grade_Points,name,value -->
+		<field table="PGGradeScales" field="dcid" access="ViewOnly" />
+		<field table="PGGradeScales" field="id" access="ViewOnly" />
+		<field table="PGGradeScales" field="ModifyCode" access="ViewOnly" />
+		<field table="PGGradeScales" field="Name" access="ViewOnly" />
+		<field table="PGGradeScales" field="SectionId" access="ViewOnly" />
+		<field table="PGGradeScales" field="SchoolId" access="ViewOnly" />
+		<field table="PGGradeScales" field="YearId" access="ViewOnly" />
+		<field table="PGGradeScalesMark" field="dcid" access="ViewOnly" />
+		<field table="PGGradeScalesMark" field="cutoff" access="ViewOnly" />
+		<field table="PGGradeScalesMark" field="description" access="ViewOnly" />
+		<field table="PGGradeScalesMark" field="id" access="ViewOnly" />
+		<field table="PGGradeScalesMark" field="mark" access="ViewOnly" />
+		<field table="PGGradeScalesMark" field="pggradescaleid" access="ViewOnly" />
+		<field table="PGGradeScalesMark" field="sectionid" access="ViewOnly" />
+		<field table="PGFinalGrades" field="dcid" access="ViewOnly" />
+		<field table="PGFinalGrades" field="citizenship" access="ViewOnly" />
+		<field table="PGFinalGrades" field="enddate" access="ViewOnly" />
+		<field table="PGFinalGrades" field="finalgradename" access="ViewOnly" />
+		<field table="PGFinalGrades" field="grade" access="ViewOnly" />
+		<field table="PGFinalGrades" field="gradebooktype" access="ViewOnly" />
+		<field table="PGFinalGrades" field="lastgradeupdate" access="ViewOnly" />
+		<field table="PGFinalGrades" field="overridefg" access="ViewOnly" />
+		<field table="PGFinalGrades" field="percent" access="ViewOnly" />
+		<field table="PGFinalGrades" field="points" access="ViewOnly" />
+		<field table="PGFinalGrades" field="pointspossible" access="ViewOnly" />
+		<field table="PGFinalGrades" field="sectionid" access="ViewOnly" />
+		<field table="PGFinalGrades" field="startdate" access="ViewOnly" />
+		<field table="PGFinalGrades" field="studentid" access="ViewOnly" />
+		<field table="PGFinalGrades" field="varcredit" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="dcid" access="ViewOnly" />
+		<!-- ACCESS DENIED - REASON - PROCESS
+			{
+			message: "Access Denied. Reason: PROCESS"
+			errors: [0]
+			}
+		https://excelacademy.powerschool.com/ws/schema/table/PGFinalGrades?projection=citizenship,dcid,enddate,finalgradename,grade,percent,points,sectionid,studentid -->
+		<field table="PGFinalGradesSetup" field="abbreviation" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="begindate" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="changegradeto" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="CitizenshipAsmtName" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="CurrentGrade" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="DueDate" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="enddate" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="ExcludedMarks" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="FactorInfos" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="FactornumScoresToDrop" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="FactorTypes" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="FactorWeights" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="name" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="NumAttPoints" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="sectionid" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="schoolid" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="yearid" access="ViewOnly" />
+		<!-- Empty result set
+			FactorWeights (ver4.3.0/5.0.7)
+				Image
+				Weighting factor for each type (used in the Final Grades calculation).
+			https://excelacademy.powerschool.com/ws/schema/table/PGFinalGradesSetup?projection=name,dcid,sectionid,schoolid,yearid
+		-->
 	</access_request>
 </plugin>

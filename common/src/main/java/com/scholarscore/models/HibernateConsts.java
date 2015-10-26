@@ -26,6 +26,9 @@ public class HibernateConsts {
     public static final String ASSIGNMENT_TYPE_FK = "type_fk";
     public static final String ASSIGNMENT_DUE_DATE = "due_date";
     public static final String ASSIGNMENT_AVAILABLE_POINTS = "available_points";
+    public static final String ASSIGNMENT_WEIGHT = "weight";
+    public static final String ASSIGNMENT_USER_DEFINED_TYPE = "user_defined_type";
+    public static final String ASSIGNMENT_INCLUDE_IN_FINAL_GRADES = "include_in_final_grades";
     //graded
     public static final String ASSIGNMENT_ASSIGNED_DATE = "assigned_date";
     //student assignment

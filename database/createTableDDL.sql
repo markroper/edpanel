@@ -221,6 +221,9 @@ CREATE TABLE `scholar_warehouse`.`assignment` (
   `due_date` DATETIME NULL COMMENT 'The section end date',
   `available_points` BIGINT UNSIGNED NULL COMMENT 'The number of possible points to be awarded for an assignment',
   `section_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the term table',
+  `weight` DOUBLE NULL COMMENT 'The weighting for calculating the section grade for the assignment, if any',
+  `user_defined_type` VARCHAR(256) NULL COMMENT 'Dynamically defined assignment type that can be created by the user, if any',
+  `include_in_final_grades` BIT(1) COMMENT 'True if the assignment should be included in grade calculations, otherwise false',
   PRIMARY KEY (`assignment_id`),
   CONSTRAINT `fk_section$assignment`
     FOREIGN KEY (`section_fk`)

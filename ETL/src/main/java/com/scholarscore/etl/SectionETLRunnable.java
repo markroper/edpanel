@@ -52,7 +52,7 @@ import java.util.concurrent.Executors;
  * Created by markroper on 10/25/15.
  */
 public class SectionETLRunnable implements Runnable {
-    private static final int THREAD_POOL_SIZE = 5;
+    private static final int THREAD_POOL_SIZE = 10;
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
     private School school;

@@ -49,15 +49,22 @@ import java.util.Objects;
     @JsonSubTypes.Type(value = GradedAssignment.class, name = "FINAL"),
     @JsonSubTypes.Type(value = GradedAssignment.class, name = "LAB"),
     @JsonSubTypes.Type(value = GradedAssignment.class, name = "CLASSWORK"),
+    @JsonSubTypes.Type(value = GradedAssignment.class, name = "WRITTEN_WORK"),
+    @JsonSubTypes.Type(value = GradedAssignment.class, name = "PARTICIPATION"),
+    @JsonSubTypes.Type(value = GradedAssignment.class, name = "INTERIM_ASSESSMENT"),
+    @JsonSubTypes.Type(value = GradedAssignment.class, name = "SUMMATIVE_ASSESSMENT"),
     @JsonSubTypes.Type(value = GradedAssignment.class, name = "USER_DEFINED")
 })
 public abstract class Assignment 
         extends ApiModel implements Serializable, IApiModel<Assignment> {
     private AssignmentType type;
+    private String userDefinedType;
     private Date dueDate;
     private Long availablePoints;
     protected transient Section section;
     protected Long sectionFK;
+    protected Double weight;
+    protected Boolean includeInFinalGrades;
 
     /**
      * Default constructor used by the serializer
@@ -100,8 +107,11 @@ public abstract class Assignment
     public Assignment(Assignment assignment) {
         super(assignment);
         this.type = assignment.type;
+        this.userDefinedType = assignment.userDefinedType;
         this.dueDate = assignment.dueDate;
         this.availablePoints = assignment.availablePoints;
+        this.weight = assignment.weight;
+        this.includeInFinalGrades = assignment.includeInFinalGrades;
     }
     
     public void mergePropertiesIfNull(Assignment assignment) {
@@ -117,6 +127,15 @@ public abstract class Assignment
         }
         if(null == this.availablePoints) {
             this.availablePoints = assignment.availablePoints;
+        }
+        if(null == this.weight) {
+            this.weight = assignment.weight;
+        }
+        if(null == this.userDefinedType) {
+            this.userDefinedType = assignment.userDefinedType;
+        }
+        if(null == this.includeInFinalGrades) {
+            this.includeInFinalGrades = assignment.includeInFinalGrades;
         }
     }
 
@@ -160,6 +179,33 @@ public abstract class Assignment
         this.availablePoints = availablePoints;
     }
 
+    @Column(name = HibernateConsts.ASSIGNMENT_WEIGHT)
+    public Double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Double weight) {
+        this.weight = weight;
+    }
+
+    @Column(name = HibernateConsts.ASSIGNMENT_USER_DEFINED_TYPE)
+    public String getUserDefinedType() {
+        return userDefinedType;
+    }
+
+    public void setUserDefinedType(String userDefinedType) {
+        this.userDefinedType = userDefinedType;
+    }
+
+    @Column(name = HibernateConsts.ASSIGNMENT_INCLUDE_IN_FINAL_GRADES)
+    public Boolean getIncludeInFinalGrades() {
+        return includeInFinalGrades;
+    }
+
+    public void setIncludeInFinalGrades(Boolean includeInFinalGrades) {
+        this.includeInFinalGrades = includeInFinalGrades;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(! super.equals(obj)) {
@@ -167,13 +213,16 @@ public abstract class Assignment
         }
         final Assignment other = (Assignment) obj;
         return Objects.equals(this.type, other.type) 
-                && Objects.equals(this.dueDate, other.dueDate) 
+                && Objects.equals(this.dueDate, other.dueDate)
+                && Objects.equals(this.weight, other.weight)
+                && Objects.equals(this.includeInFinalGrades, other.includeInFinalGrades)
+                && Objects.equals(this.userDefinedType, other.userDefinedType)
                 && Objects.equals(this.availablePoints, other.availablePoints);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(type, dueDate, availablePoints);
+        return 31 * super.hashCode() + Objects.hash(type, dueDate, userDefinedType, weight, includeInFinalGrades, availablePoints);
     }
 
     /**
@@ -188,10 +237,22 @@ public abstract class Assignment
         private Long availablePoints;
         protected transient Section section;
         protected Long sectionFK;
+        protected Double weight;
+        protected String userDefinedType;
+        protected Boolean includeInFinalGrades;
 
+        public U withIncludeInfinalGrades(final Boolean b) {
+            this.includeInFinalGrades = b;
+            return me();
+        }
 
         public U withType(final AssignmentType type){
             this.type = type;
+            return me();
+        }
+
+        public U withUserDefinedType(final String type){
+            this.userDefinedType = type;
             return me();
         }
 
@@ -215,10 +276,17 @@ public abstract class Assignment
             return me();
         }
 
+        public U withWeight(final Double weight){
+            this.weight = weight;
+            return me();
+        }
+
         public T build(){
             T assignment = super.build();
             assignment.setType(type);
             assignment.setDueDate(dueDate);
+            assignment.setWeight(weight);
+            assignment.setUserDefinedType(userDefinedType);
             assignment.setAvailablePoints(availablePoints);
             assignment.setSection(section);
             //TODO: should we make this reciprocal?
