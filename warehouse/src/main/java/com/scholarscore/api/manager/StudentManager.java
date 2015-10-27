@@ -15,7 +15,7 @@ import java.util.Collection;
  */
 public interface StudentManager {
 
-    public ServiceResponse<Collection<Student>> getAllStudents();
+    public ServiceResponse<Collection<Student>> getAllStudents(Long schoolId);
 
     public StatusCode studentExists(long studentId);
     public ServiceResponse<Student> getStudent(long studentId);

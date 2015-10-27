@@ -19,32 +19,10 @@ public class SchoolSync extends SyncBase<School> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, School> resolveAllFromSourceSystem() {
-        SchoolsResponse powerSchools = powerSchool.getSchools();
-        ConcurrentHashMap<Long, School> schoolMap = new ConcurrentHashMap<>();
-        for(School s: powerSchools.toInternalModel()) {
-            schoolMap.put(Long.valueOf(s.getSourceSystemId()), s);
-        }
-        return schoolMap;
-    }
+    public ConcurrentHashMap<Long, School> synchCreateUpdateDelete() {
+        ConcurrentHashMap<Long, School> source = resolveAllFromSourceSystem();
+        ConcurrentHashMap<Long, School> edpanel = resolveFromEdPanel();
 
-    @Override
-    public ConcurrentHashMap<Long, School> resolveFromEdPanel() {
-        School[] schools = edPanel.getSchools();
-        ConcurrentHashMap<Long, School> schoolMap = new ConcurrentHashMap<>();
-        for(School s: schools) {
-            Long id = null;
-            String ssid = s.getSourceSystemId();
-            if(null != ssid) {
-                id = Long.valueOf(ssid);
-            }
-            schoolMap.put(id, s);
-        }
-        return schoolMap;
-    }
-
-    @Override
-    public ConcurrentHashMap<Long, School> synchCreateUpdateDelete(ConcurrentHashMap<Long, School> source, ConcurrentHashMap<Long, School> edpanel) {
         Iterator<Map.Entry<Long, School>> sourceIterator = source.entrySet().iterator();
         //Find & perform the inserts and updates, if any
         while(sourceIterator.hasNext()) {
@@ -52,7 +30,8 @@ public class SchoolSync extends SyncBase<School> {
             School sourceSchool = entry.getValue();
             School edPanelSchool = edpanel.get(entry.getKey());
             if(null == edPanelSchool){
-                edPanel.createSchool(sourceSchool);
+                School created = edPanel.createSchool(sourceSchool);
+                sourceSchool.setId(created.getId());
             } else {
                 sourceSchool.setId(edPanelSchool.getId());
                 edPanelSchool.setYears(sourceSchool.getYears());
@@ -70,5 +49,28 @@ public class SchoolSync extends SyncBase<School> {
             }
         }
         return source;
+    }
+
+    protected ConcurrentHashMap<Long, School> resolveAllFromSourceSystem() {
+        SchoolsResponse powerSchools = powerSchool.getSchools();
+        ConcurrentHashMap<Long, School> schoolMap = new ConcurrentHashMap<>();
+        for(School s: powerSchools.toInternalModel()) {
+            schoolMap.put(Long.valueOf(s.getSourceSystemId()), s);
+        }
+        return schoolMap;
+    }
+
+    protected ConcurrentHashMap<Long, School> resolveFromEdPanel() {
+        School[] schools = edPanel.getSchools();
+        ConcurrentHashMap<Long, School> schoolMap = new ConcurrentHashMap<>();
+        for(School s: schools) {
+            Long id = null;
+            String ssid = s.getSourceSystemId();
+            if(null != ssid) {
+                id = Long.valueOf(ssid);
+                schoolMap.put(id, s);
+            }
+        }
+        return schoolMap;
     }
 }

@@ -35,8 +35,13 @@ public class StudentJdbc implements StudentPersistence {
     }
 
     @Override
-    public Collection<Student> selectAll() {
-        return hibernateTemplate.loadAll(Student.class);
+    public Collection<Student> selectAll(Long schoolId) {
+        if(null != schoolId) {
+            String sql = "FROM student s WHERE s.currentSchoolId = :schoolId";
+            return (List<Student>) hibernateTemplate.findByNamedParam(sql, "schoolId", schoolId);
+        } else {
+            return hibernateTemplate.loadAll(Student.class);
+        }
     }
 
     @Override

@@ -36,7 +36,62 @@ public class TermSync implements ISync<Term> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Term> resolveAllFromSourceSystem() {
+    public ConcurrentHashMap<Long, Term> synchCreateUpdateDelete() {
+        ConcurrentHashMap<Long, Term> source = resolveAllFromSourceSystem();
+        ConcurrentHashMap<Long, Term> edpanel = resolveFromEdPanel();
+        Iterator<Map.Entry<Long, Term>> sourceIterator = source.entrySet().iterator();
+        //Find & perform the inserts and updates, if any
+        while(sourceIterator.hasNext()) {
+            Map.Entry<Long, Term> entry = sourceIterator.next();
+            Term sourceTerm = entry.getValue();
+            Term edPanelTerm = edpanel.get(entry.getKey());
+            if(null == edPanelTerm){
+                if(!this.edpanelSchoolYears.containsKey(sourceTerm.getSchoolYear().getName())) {
+                    //create school year
+                    SchoolYear createdYear =
+                            edPanel.createSchoolYear(school.getId(), sourceTerm.getSchoolYear());
+                    sourceTerm.getSchoolYear().setId(createdYear.getId());
+                }
+                edPanel.createTerm(school.getId(), sourceTerm.getSchoolYear().getId(), sourceTerm);
+            } else {
+                sourceTerm.setId(edPanelTerm.getId());
+                sourceTerm.getSchoolYear().setId(edPanelTerm.getSchoolYear().getId());
+                //Don't compare terms, which won't be set on the source school year
+                edPanelTerm.getSchoolYear().setTerms(new ArrayList<>());
+                if(!edPanelTerm.equals(sourceTerm)) {
+                    //Create/update school year if needed
+                    //TODO: startDate and endDate seem to be repeatedly off by one day.
+                    if(!edPanelTerm.getSchoolYear().equals(sourceTerm.getSchoolYear())) {
+                        if(!this.edpanelSchoolYears.containsKey(sourceTerm.getSchoolYear().getName())) {
+                            //create school year
+                            SchoolYear createdYear =
+                                    edPanel.createSchoolYear(school.getId(), sourceTerm.getSchoolYear());
+                            sourceTerm.getSchoolYear().setId(createdYear.getId());
+                        } else {
+                            sourceTerm.setSchoolYear(
+                                    this.edpanelSchoolYears.get(
+                                            sourceTerm.getSchoolYear().getName()));
+                        }
+                    }
+                    edPanel.updateTerm(school.getId(), sourceTerm.getSchoolYear().getId(), sourceTerm);
+                }
+            }
+        }
+        //Delete anything IN EdPanel that is NOT in source system
+        Iterator<Map.Entry<Long, Term>> edpanelIterator = edpanel.entrySet().iterator();
+        while(edpanelIterator.hasNext()) {
+            Map.Entry<Long, Term> entry = edpanelIterator.next();
+            if(!source.containsKey(entry.getKey())) {
+                edPanel.deleteTerm(
+                        school.getId(),
+                        entry.getValue().getSchoolYear().getId(),
+                        entry.getValue());
+            }
+        }
+        return source;
+    }
+
+    protected ConcurrentHashMap<Long, Term> resolveAllFromSourceSystem() {
         //Get all the terms from PowerSchool for the current School
         String sourceSystemIdString = school.getSourceSystemId();
         Long sourceSystemSchoolId = new Long(sourceSystemIdString);
@@ -95,8 +150,7 @@ public class TermSync implements ISync<Term> {
         return sourceTerms;
     }
 
-    @Override
-    public ConcurrentHashMap<Long, Term> resolveFromEdPanel() {
+    protected ConcurrentHashMap<Long, Term> resolveFromEdPanel() {
         SchoolYear[] years = edPanel.getSchoolYears(school.getId());
         ConcurrentHashMap<Long, Term> termMap = new ConcurrentHashMap<>();
         for(SchoolYear year: years) {
@@ -114,60 +168,5 @@ public class TermSync implements ISync<Term> {
             }
         }
         return termMap;
-    }
-
-    @Override
-    public ConcurrentHashMap<Long, Term> synchCreateUpdateDelete(ConcurrentHashMap<Long, Term> source,
-                                                                 ConcurrentHashMap<Long, Term> edpanel) {
-        Iterator<Map.Entry<Long, Term>> sourceIterator = source.entrySet().iterator();
-        //Find & perform the inserts and updates, if any
-        while(sourceIterator.hasNext()) {
-            Map.Entry<Long, Term> entry = sourceIterator.next();
-            Term sourceTerm = entry.getValue();
-            Term edPanelTerm = edpanel.get(entry.getKey());
-            if(null == edPanelTerm){
-                if(!this.edpanelSchoolYears.containsKey(sourceTerm.getSchoolYear().getName())) {
-                    //create school year
-                    SchoolYear createdYear =
-                            edPanel.createSchoolYear(school.getId(), sourceTerm.getSchoolYear());
-                    sourceTerm.getSchoolYear().setId(createdYear.getId());
-                }
-                edPanel.createTerm(school.getId(), sourceTerm.getSchoolYear().getId(), sourceTerm);
-            } else {
-                sourceTerm.setId(edPanelTerm.getId());
-                sourceTerm.getSchoolYear().setId(edPanelTerm.getSchoolYear().getId());
-                //Don't compare terms, which won't be set on the source school year
-                edPanelTerm.getSchoolYear().setTerms(null);
-                if(!edPanelTerm.equals(sourceTerm)) {
-                    //Create/update school year if needed
-                    //TODO: startDate and endDate seem to be repeatedly off by one day.
-                    if(!edPanelTerm.getSchoolYear().equals(sourceTerm.getSchoolYear())) {
-                        if(!this.edpanelSchoolYears.containsKey(sourceTerm.getSchoolYear().getName())) {
-                            //create school year
-                            SchoolYear createdYear =
-                                    edPanel.createSchoolYear(school.getId(), sourceTerm.getSchoolYear());
-                            sourceTerm.getSchoolYear().setId(createdYear.getId());
-                        } else {
-                            sourceTerm.setSchoolYear(
-                                    this.edpanelSchoolYears.get(
-                                            sourceTerm.getSchoolYear().getName()));
-                        }
-                    }
-                    edPanel.updateTerm(school.getId(), sourceTerm.getSchoolYear().getId(), sourceTerm);
-                }
-            }
-        }
-        //Delete anything IN EdPanel that is NOT in source system
-        Iterator<Map.Entry<Long, Term>> edpanelIterator = edpanel.entrySet().iterator();
-        while(edpanelIterator.hasNext()) {
-            Map.Entry<Long, Term> entry = edpanelIterator.next();
-            if(!source.containsKey(entry.getKey())) {
-                edPanel.deleteTerm(
-                        school.getId(),
-                        entry.getValue().getSchoolYear().getId(),
-                        entry.getValue());
-            }
-        }
-        return source;
     }
 }

@@ -29,17 +29,23 @@ public interface IAPIClient {
 
     Student createStudent(Student student);
     Student updateStudent(Long studentId, Student student);
-    Collection<Student> getStudents();
+    Collection<Student> getStudents(Long schoolId);
     
     Collection<Teacher> getTeachers();
+    Collection<Administrator> getAdministrators();
     
     Collection<Behavior> getBehaviors(Long studentId);
     Behavior createBehavior(Long studentId, Behavior behavior);
     Behavior updateBehavior(Long studentId, Long behaviorId, Behavior behavior);
-    
+
+    //USERS
     Teacher createTeacher(Teacher teacher);
     Administrator createAdministrator(Administrator administrator);
     User createUser(User login);
+    User[] getUsers(Long schoolId);
+    User updateUser(User user);
+    User replaceUser(User user);
+
     Course createCourse(Long schoolId, Course course);
 
     //SCHOOL YEARS

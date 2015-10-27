@@ -54,9 +54,9 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public ServiceResponse<Collection<Student>> getAllStudents() {
+    public ServiceResponse<Collection<Student>> getAllStudents(Long schoolId) {
         return new ServiceResponse<Collection<Student>>(
-                studentPersistence.selectAll());
+                studentPersistence.selectAll(schoolId));
     }
 
     @Override

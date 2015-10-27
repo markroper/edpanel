@@ -9,11 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public interface ISync<T extends ApiModel> {
 
-    ConcurrentHashMap<Long, T> resolveAllFromSourceSystem();
-
-    ConcurrentHashMap<Long, T> resolveFromEdPanel();
-
-    ConcurrentHashMap<Long, T> synchCreateUpdateDelete(ConcurrentHashMap<Long, T> source,
-                                                       ConcurrentHashMap<Long, T> edpanel);
+    ConcurrentHashMap<Long, T> synchCreateUpdateDelete();
 
 }

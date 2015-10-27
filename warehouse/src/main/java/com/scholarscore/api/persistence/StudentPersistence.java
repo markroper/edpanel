@@ -5,7 +5,7 @@ import com.scholarscore.models.user.Student;
 import java.util.Collection;
 
 public interface StudentPersistence {
-    Collection<Student> selectAll();
+    Collection<Student> selectAll(Long schoolId);
     
     Collection<Student> selectAllStudentsInSection(long sectionId);
 

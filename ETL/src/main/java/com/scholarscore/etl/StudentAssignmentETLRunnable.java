@@ -71,10 +71,7 @@ public class StudentAssignmentETLRunnable implements Runnable {
         edpanelAssignment.setWeight(pa.getWeight());
         edpanelAssignment.setSection(createdSection);
         edpanelAssignment.setUserDefinedType(psType.getName());
-        edpanelAssignment.setIncludeInFinalGrades(pa.getIncludeinfinalgrades());
-        if(null == edpanelAssignment.getIncludeInFinalGrades()) {
-            edpanelAssignment.setIncludeInFinalGrades(true);
-        }
+        edpanelAssignment.setIncludeInFinalGrades("1".equals(pa.getIncludeinfinalgrades()));
         edpanelAssignment.setSectionFK(createdSection.getId());
         Assignment createdAssignment = edPanel.createSectionAssignment(
                 school.getId(),

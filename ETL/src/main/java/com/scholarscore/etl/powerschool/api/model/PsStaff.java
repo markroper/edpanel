@@ -10,7 +10,7 @@ package com.scholarscore.etl.powerschool.api.model;
 public class PsStaff {
 
     public Long id;
-    public String local_id;
+    public Long local_id;
     public String admin_username;
     public String teacher_username;
     public PsName name;
