@@ -3,6 +3,7 @@ package com.scholarscore.etl.powerschool.sync;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
+import com.scholarscore.etl.powerschool.sync.associators.StaffAssociator;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.School;
 import com.scholarscore.models.user.Administrator;
@@ -19,43 +20,40 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by markroper on 10/26/15.
  */
-public class StaffSync implements ISync<User> {
+public class StaffSync implements ISync<Person> {
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
     protected School school;
-    protected ConcurrentHashMap<Long, User> createdStaff;
-    protected ConcurrentHashMap<Long, Long> ssidToLocalId;
+    protected StaffAssociator staffAssociator;
 
     public StaffSync(IAPIClient edPanel,
-                    IPowerSchoolClient powerSchool,
-                    School s,
-                     ConcurrentHashMap<Long, User> createdStaff,
-                     ConcurrentHashMap<Long, Long> ssidToLocalId) {
+                     IPowerSchoolClient powerSchool,
+                     School s,
+                     StaffAssociator staffAssociator) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
-        this.createdStaff = createdStaff;
-        this.ssidToLocalId = ssidToLocalId;
+        this.staffAssociator = staffAssociator;
     }
 
     @Override
-    public ConcurrentHashMap<Long, User> synchCreateUpdateDelete() {
+    public ConcurrentHashMap<Long, Person> synchCreateUpdateDelete() {
         Long psSchoolId = new Long(school.getSourceSystemId());
-        ConcurrentHashMap<Long, User> sourceStaff = resolveAllFromSourceSystem();
-        ConcurrentHashMap<Long, User> ed = resolveFromEdPanel();
-        Iterator<Map.Entry<Long, User>> sourceIterator = sourceStaff.entrySet().iterator();
+        ConcurrentHashMap<Long, Person> sourceStaff = resolveAllFromSourceSystem();
+        ConcurrentHashMap<Long, Person> ed = resolveFromEdPanel();
+        Iterator<Map.Entry<Long, Person>> sourceIterator = sourceStaff.entrySet().iterator();
         //Find & perform the inserts and updates, if any
         while(sourceIterator.hasNext()) {
-            Map.Entry<Long, User> entry = sourceIterator.next();
+            Map.Entry<Long, Person> entry = sourceIterator.next();
             User sourceUser = entry.getValue();
             //Associate the SSID and source system local id (teacher/admin ID and underlying user ID)
             Long ssid = Long.valueOf(sourceUser.getSourceSystemId());
             Long underlyingUserId = Long.valueOf(((Person) sourceUser).getSourceSystemUserId());
-            ssidToLocalId.put(ssid, underlyingUserId);
+            staffAssociator.associateIds(ssid, underlyingUserId);
 
             User edPanelUser = ed.get(entry.getKey());
             if(null == edPanelUser) {
-                edPanelUser = createdStaff.get(underlyingUserId);
+                edPanelUser = staffAssociator.findByOtherId(underlyingUserId);
             }
             if(null == edPanelUser){
                 ((Person) sourceUser).setCurrentSchoolId(school.getId());
@@ -80,21 +78,22 @@ public class StaffSync implements ISync<User> {
         return sourceStaff;
     }
 
-    protected ConcurrentHashMap<Long, User> resolveAllFromSourceSystem() {
+    @SuppressWarnings("unchecked")
+    protected ConcurrentHashMap<Long, Person> resolveAllFromSourceSystem() {
         PsStaffs response = powerSchool.getStaff(Long.valueOf(school.getSourceSystemId()));
         List<User> apiListOfStaff = response.toInternalModel();
-        ConcurrentHashMap<Long, User> source = new ConcurrentHashMap<>();
+        ConcurrentHashMap<Long, Person> source = new ConcurrentHashMap<>();
         for(User u : apiListOfStaff) {
-            source.put(Long.valueOf(((Person) u).getSourceSystemUserId()), u);
+            source.put(Long.valueOf(((Person) u).getSourceSystemUserId()), (Person)u);
         }
         return source;
     }
 
-    protected ConcurrentHashMap<Long, User> resolveFromEdPanel() {
+    protected ConcurrentHashMap<Long, Person> resolveFromEdPanel() {
         Collection<Teacher> users = edPanel.getTeachers();
         Collection<Administrator> admins = edPanel.getAdministrators();
 
-        ConcurrentHashMap<Long, User> userMap = new ConcurrentHashMap<>();
+        ConcurrentHashMap<Long, Person> userMap = new ConcurrentHashMap<>();
         for(Person u: users) {
             Long id = null;
             String systemUserId = u.getSourceSystemUserId();
