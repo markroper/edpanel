@@ -34,6 +34,12 @@ public class SectionManagerImpl implements SectionManager {
 
     OrchestrationManager pm;
 
+    @Override
+    public ServiceResponse<Collection<Section>> getAllSectionsInSchool(long schoolId) {
+        Collection<Section> sections = sectionPersistence.selectAllInSchool(schoolId);
+        return new ServiceResponse<Collection<Section>>(sections);
+    }
+
     /**
      * Returns all sections in a given school term, with all section assignments
      * and enrolled students populated on the instance.

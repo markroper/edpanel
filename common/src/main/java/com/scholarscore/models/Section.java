@@ -93,7 +93,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     }
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @Cascade(CascadeType.ALL)
     @JoinTable(name = HibernateConsts.TEACHER_SECTION_TABLE,
             joinColumns = { @JoinColumn(name = HibernateConsts.SECTION_FK, nullable = false, updatable = false) },
             inverseJoinColumns = { @JoinColumn(name = HibernateConsts.TEACHER_FK, nullable = false, updatable = false) })
