@@ -1,8 +1,9 @@
-package com.scholarscore.etl;
+package com.scholarscore.etl.powerschool.sync;
 
 import com.google.gson.JsonSyntaxException;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.StudentAssignmentETLRunnable;
 import com.scholarscore.etl.powerschool.api.model.PsSection;
 import com.scholarscore.etl.powerschool.api.model.PsSectionEnrollment;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
@@ -39,6 +40,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,13 +49,13 @@ import java.util.concurrent.Executors;
 
 /**
  * For a single school within a district, this runnable can execute on its own thread and handles
- * extracting all sections for the school from PowerSchool, creating corresponding section in EdPanel.
+ * extracting all sections for the school from PowerSchool and creating corresponding section in EdPanel.
  * Migration of a section includes enrolling the correct students, associating the correct teacher with the section,
  * migrating all the assignments for the section, migrating any student grades at the section or the assignment level.
  *
  * Created by markroper on 10/25/15.
  */
-public class SectionETLRunnable implements Runnable {
+public class SectionSyncRunnable implements Runnable, ISync<Section> {
     private static final int THREAD_POOL_SIZE = 10;
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
@@ -65,15 +67,15 @@ public class SectionETLRunnable implements Runnable {
     private ConcurrentHashMap<Long, Section> sections;
     private List<Long> unresolvablePowerStudents;
 
-    public SectionETLRunnable(IPowerSchoolClient powerSchool,
-                              IAPIClient edPanel,
-                              School school,
-                              ConcurrentHashMap<Long, Course> courses,
-                              ConcurrentHashMap<Long, Term> terms,
-                              StaffAssociator staffAssociator,
-                              StudentAssociator studentAssociator,
-                              ConcurrentHashMap<Long, Section> sections,
-                              List<Long> unresolvablePowerStudents) {
+    public SectionSyncRunnable(IPowerSchoolClient powerSchool,
+                               IAPIClient edPanel,
+                               School school,
+                               ConcurrentHashMap<Long, Course> courses,
+                               ConcurrentHashMap<Long, Term> terms,
+                               StaffAssociator staffAssociator,
+                               StudentAssociator studentAssociator,
+                               ConcurrentHashMap<Long, Section> sections,
+                               List<Long> unresolvablePowerStudents) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
         this.school = school;
@@ -84,32 +86,79 @@ public class SectionETLRunnable implements Runnable {
         this.sections = sections;
         this.unresolvablePowerStudents = unresolvablePowerStudents;
     }
+
     @Override
     public void run() {
-        String sourceSystemIdString =school.getSourceSystemId();
-        Long sourceSystemSchoolId = new Long(sourceSystemIdString);
-        SectionResponse sr = powerSchool.getSectionsBySchoolId(sourceSystemSchoolId);
+        synchCreateUpdateDelete();
+    }
+
+    @Override
+    public ConcurrentHashMap<Long, Section> synchCreateUpdateDelete() {
+        ConcurrentHashMap<Long, Section> source = resolveAllFromSourceSystem();
+        ConcurrentHashMap<Long, Section> ed = resolveFromEdPanel();
+        Iterator<Map.Entry<Long, Section>> sourceIterator = source.entrySet().iterator();
+        //Find & perform the inserts and updates, if any
+        while(sourceIterator.hasNext()) {
+            Map.Entry<Long, Section> entry = sourceIterator.next();
+            Section sourceSection = entry.getValue();
+            Section edPanelSection = ed.get(entry.getKey());
+            if(null == edPanelSection){
+                Section created = edPanel.createSection(
+                       school.getId(),
+                        sourceSection.getTerm().getSchoolYear().getId(),
+                        sourceSection.getTerm().getId(),
+                        sourceSection);
+                sourceSection.setId(created.getId());
+                this.sections.put(new Long(sourceSection.getSourceSystemId()), sourceSection);
+            } else {
+                sourceSection.setId(edPanelSection.getId());
+                if(!edPanelSection.equals(sourceSection)) {
+                    edPanel.replaceSection(school.getId(),
+                            sourceSection.getTerm().getSchoolYear().getId(),
+                            sourceSection.getTerm().getId(),
+                            sourceSection);
+                    this.sections.put(new Long(sourceSection.getSourceSystemId()), sourceSection);
+                }
+            }
+            //TODO: enable and debug these ;)
+//            migrateStudentSectionEnrollmentAndGrades(sourceSection.getTerm(), sourceSection);
+//            migrateStudentAssignmentGrades(sourceSection.getTerm(), sourceSection);
+        }
+        //Delete anything IN EdPanel that is NOT in source system
+        Iterator<Map.Entry<Long, Section>> edpanelIterator = ed.entrySet().iterator();
+        while(edpanelIterator.hasNext()) {
+            Map.Entry<Long, Section> entry = edpanelIterator.next();
+            if(!source.containsKey(entry.getKey())) {
+                Section edPanelSection = entry.getValue();
+                edPanel.deleteSection(school.getId(),
+                        edPanelSection.getTerm().getSchoolYear().getId(),
+                        edPanelSection.getTerm().getId(),
+                        edPanelSection);
+            }
+        }
+        return source;
+    }
+
+    protected ConcurrentHashMap<Long, Section> resolveAllFromSourceSystem() {
+        ConcurrentHashMap<Long, Section> result = new ConcurrentHashMap<>();
+        SectionResponse sr = powerSchool.getSectionsBySchoolId(Long.valueOf(school.getSourceSystemId()));
         if(null != sr && null != sr.sections && null != sr.sections.section) {
             List<PsSection> powerSchoolSections
                     = sr.sections.section;
-            for(PsSection powerSection: powerSchoolSections) {
-                //Create an EdPanel section
+            for (PsSection powerSection : powerSchoolSections) {
                 Section edpanelSection = new Section();
                 edpanelSection.setSourceSystemId(powerSection.getId().toString());
-
                 //Resolve the EdPanel Course and set it on the EdPanel section
                 Course c = this.courses.get(Long.valueOf(powerSection.getCourse_id()));
                 if(null != c) {
                     edpanelSection.setCourse(c);
                     edpanelSection.setName(c.getName());
                 }
-
                 //Resolve the EdPanel Term and set it on the Section
                 Term sectionTerm = this.terms.get(powerSection.getTerm_id());
                 edpanelSection.setTerm(sectionTerm);
                 edpanelSection.setStartDate(sectionTerm.getStartDate());
                 edpanelSection.setEndDate(sectionTerm.getEndDate());
-
                 //Resolve the EdPanel Teacher(s) and set on the Section
                 User t = staffAssociator.findBySourceSystemId(powerSection.getStaff_id());
                 if(null != t && t instanceof Teacher) {
@@ -117,29 +166,31 @@ public class SectionETLRunnable implements Runnable {
                     teachers.add((Teacher) t);
                     edpanelSection.setTeachers(teachers);
                 }
-
-                //CREATE THE SECTION WITHIN EDPANEL:
-                //TODO: Resolve the grade formula and set it on the Section
-                Section createdSection = edPanel.createSection(
-                       school.getId(),
-                        edpanelSection.getTerm().getSchoolYear().getId(),
-                        edpanelSection.getTerm().getId(),
-                        edpanelSection);
-                this.sections.put(new Long(createdSection.getSourceSystemId()), createdSection);
-
-                //For each section, resolve the enrolled students, migrate them, and migrate the section grades, if any
-                migrateStudentSectionEnrollmentAndGrades(powerSection, sectionTerm, createdSection);
-                migrateStudentAssignmentGrades(powerSection, sectionTerm, createdSection);
+                result.put(powerSection.getId(), edpanelSection);
             }
         }
+        return result;
     }
 
-    private void migrateStudentSectionEnrollmentAndGrades(PsSection powerSection, Term sectionTerm, Section createdSection) {
-        //CREATE ENROLLED STUDENTS' STUDENTSECTIONGRADE INSTANCES
+    protected ConcurrentHashMap<Long, Section> resolveFromEdPanel() {
+        Section[] sections = edPanel.getSections(school.getId());
+        ConcurrentHashMap<Long, Section> sectionMap = new ConcurrentHashMap<>();
+        for(Section s : sections) {
+            Long id = null;
+            String ssid = s.getSourceSystemId();
+            if(null != ssid) {
+                id = Long.valueOf(ssid);
+                sectionMap.put(id, s);
+            }
+        }
+        return sectionMap;
+    }
+
+    private void migrateStudentSectionEnrollmentAndGrades(Term sectionTerm, Section createdSection) {
         //Resolve enrolled students & Create an EdPanel StudentSectionGrade for each
         SectionEnrollmentsResponse enrollments = null;
         try {
-            enrollments = powerSchool.getEnrollmentBySectionId(powerSection.getId());
+            enrollments = powerSchool.getEnrollmentBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
         } catch(JsonSyntaxException e) {
             //TODO: if a single record comes back, PowerSchool doesn't send an array and the marshalling fails :(
             System.out.println("failed to unmarshall section enrollments: " + e.getMessage());
@@ -202,10 +253,9 @@ public class SectionETLRunnable implements Runnable {
         createdSection.setStudentSectionGrades(ssgs);
     }
 
-    private void migrateStudentAssignmentGrades(PsSection powerSection, Term sectionTerm, Section createdSection) {
-        //CREATE THE ASSIGNMENTS FOR THE SECTION:
+    private void migrateStudentAssignmentGrades(Term sectionTerm, Section createdSection) {
         //first resolve the assignment categories, so we can construct the appropriate EdPanel assignment subclass
-        PGAssignmentTypes powerTypes = powerSchool.getAssignmentTypesBySectionId(powerSection.getId());
+        PGAssignmentTypes powerTypes = powerSchool.getAssignmentTypesBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
         Map<Long, PsAssignmentType> typeIdToType = new HashMap<>();
         if(null != powerTypes && null != powerTypes.record) {
             for (PGAssignmentType pat: powerTypes.record) {
@@ -217,7 +267,7 @@ public class SectionETLRunnable implements Runnable {
             }
         }
         //Now iterate over all the assignments and construct the correct type of EdPanel assignment
-        PGAssignments powerAssignments = powerSchool.getAssignmentsBySectionId(powerSection.getId());
+        PGAssignments powerAssignments = powerSchool.getAssignmentsBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
 
         //Get the association between student section score ID and student ID
         SectionScoreIdsResponse ssids = powerSchool.getStudentScoreIdsBySectionId(
@@ -250,7 +300,6 @@ public class SectionETLRunnable implements Runnable {
                         school,
                         sectionTerm,
                         createdSection,
-                        powerSection,
                         powerAssignment,
                         typeIdToType,
                         ssidToStudent
@@ -262,7 +311,6 @@ public class SectionETLRunnable implements Runnable {
         //Spin while we wait for all the threads to complete
         while(!executor.isTerminated()){}
     }
-
 
     /**
      * Sadly, it is possible for a student not returned by the PowerSchool API /schools/:id/students

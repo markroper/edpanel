@@ -35,6 +35,7 @@ public class StudentJdbc implements StudentPersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<Student> selectAll(Long schoolId) {
         if(null != schoolId) {
             String sql = "FROM student s WHERE s.currentSchoolId = :schoolId";

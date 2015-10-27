@@ -52,7 +52,8 @@ public class TermSync implements ISync<Term> {
                             edPanel.createSchoolYear(school.getId(), sourceTerm.getSchoolYear());
                     sourceTerm.getSchoolYear().setId(createdYear.getId());
                 }
-                edPanel.createTerm(school.getId(), sourceTerm.getSchoolYear().getId(), sourceTerm);
+                Term created = edPanel.createTerm(school.getId(), sourceTerm.getSchoolYear().getId(), sourceTerm);
+                sourceTerm.setId(created.getId());
             } else {
                 sourceTerm.setId(edPanelTerm.getId());
                 sourceTerm.getSchoolYear().setId(edPanelTerm.getSchoolYear().getId());

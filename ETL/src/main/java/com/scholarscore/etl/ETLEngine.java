@@ -4,6 +4,7 @@ import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.CourseSync;
 import com.scholarscore.etl.powerschool.sync.SchoolSync;
+import com.scholarscore.etl.powerschool.sync.SectionSyncRunnable;
 import com.scholarscore.etl.powerschool.sync.StaffSync;
 import com.scholarscore.etl.powerschool.sync.StudentSync;
 import com.scholarscore.etl.powerschool.sync.TermSync;
@@ -120,7 +121,7 @@ public class ETLEngine implements IETLEngine {
         for(School school : this.schools) {
             Long sourceSystemSchoolId = Long.valueOf(school.getSourceSystemId());
             sections.put(sourceSystemSchoolId, new ConcurrentHashMap<>());
-            SectionETLRunnable sectionRunnable = new SectionETLRunnable(
+            SectionSyncRunnable sectionRunnable = new SectionSyncRunnable(
                     powerSchool,
                     edPanel,
                     school,
@@ -159,7 +160,7 @@ public class ETLEngine implements IETLEngine {
 
         for (School school : schools) {
             CourseSync sync = new CourseSync(edPanel, powerSchool, school);
-            this.courses.put(school.getId(), sync.synchCreateUpdateDelete());
+            this.courses.put(Long.valueOf(school.getSourceSystemId()), sync.synchCreateUpdateDelete());
         }
     }
 

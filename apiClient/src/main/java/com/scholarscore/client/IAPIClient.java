@@ -64,7 +64,12 @@ public interface IAPIClient {
     Term updateTerm(Long schoolId, Long schoolYearId, Term term);
     Term[] getTerms(Long schoolId, Long schoolYearId);
 
+    //SECTIONS
     Section createSection(Long schoolId, Long schoolYearId, Long termId, Section section);
+    Section[] getSections(Long schoolId);
+    Section replaceSection(Long schoolId, Long schoolYearId, Long termId, Section section);
+    void deleteSection(Long schoolId, Long schoolYearId, Long termId, Section section);
+
     StudentSectionGrade createStudentSectionGrade(
             Long schoolId, 
             Long yearId,

@@ -1,7 +1,6 @@
 package com.scholarscore.etl;
 
 import com.scholarscore.client.IAPIClient;
-import com.scholarscore.etl.powerschool.api.model.PsSection;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignment;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignment;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentFactory;
@@ -36,7 +35,6 @@ public class StudentAssignmentETLRunnable implements Runnable {
     private School school;
     private Term sectionTerm;
     private Section createdSection;
-    private PsSection powerSection;
     private PGAssignment powerAssignment;
     private Map<Long, PsAssignmentType> typeIdToType;
     private Map<Long, MutablePair<Student, PsSectionScoreId>> ssidToStudent;
@@ -46,7 +44,6 @@ public class StudentAssignmentETLRunnable implements Runnable {
                                         School school,
                                         Term sectionTerm,
                                         Section createdSection,
-                                        PsSection powerSection,
                                         PGAssignment powerAssignment,
                                         Map<Long, PsAssignmentType> typeIdToType,
                                         Map<Long, MutablePair<Student, PsSectionScoreId>> ssidToStudent) {
@@ -55,7 +52,6 @@ public class StudentAssignmentETLRunnable implements Runnable {
         this.school = school;
         this.sectionTerm = sectionTerm;
         this.createdSection = createdSection;
-        this.powerSection = powerSection;
         this.powerAssignment = powerAssignment;
         this.typeIdToType = typeIdToType;
         this.ssidToStudent = ssidToStudent;
