@@ -27,6 +27,7 @@ public class PsStudents extends ArrayList<PsStudent> implements ITranslateCollec
                 model.setName(student.name.toString());
             }
             model.setSourceSystemId(student.id.toString());
+            model.setSourceSystemUserId(student.local_id.toString());
             if (null != student.school_enrollment) {
                 model.setCurrentSchoolId(student.school_enrollment.school_id);
                 if (null != student.school_enrollment.exit_date) {

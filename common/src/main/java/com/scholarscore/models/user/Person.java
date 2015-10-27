@@ -7,6 +7,7 @@ import com.scholarscore.models.Address;
 @SuppressWarnings("serial")
 public abstract class Person extends User {
     protected String sourceSystemId;
+    protected String sourceSystemUserId;
     protected Address homeAddress;
     protected String homePhone;
     protected Long currentSchoolId;
@@ -21,6 +22,7 @@ public abstract class Person extends User {
         this.homeAddress = s.homeAddress;
         this.homePhone = s.homePhone;
         this.currentSchoolId = s.currentSchoolId;
+        this.sourceSystemUserId = s.sourceSystemUserId;
     }
     
     @Override
@@ -30,6 +32,9 @@ public abstract class Person extends User {
             Person staff = (Person) mergeFrom;
             if(null == this.sourceSystemId) {
                 this.sourceSystemId = staff.sourceSystemId;
+            }
+            if(null == this.sourceSystemUserId) {
+                this.sourceSystemUserId = staff.sourceSystemUserId;
             }
             if(null == this.homeAddress) {
                 this.homeAddress = staff.homeAddress;
@@ -89,6 +94,16 @@ public abstract class Person extends User {
         this.currentSchoolId = currentSchoolId;
     }
 
+    /**
+     * Abstract to force the subclass to implement the method along with the hibernate annotations
+     * @return
+     */
+    public abstract String getSourceSystemUserId();
+
+    public void setSourceSystemUserId(String sourceSystemUserId) {
+        this.sourceSystemUserId = sourceSystemUserId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -98,6 +113,7 @@ public abstract class Person extends User {
         Person staff = (Person) o;
 
         if (homePhone != null ? !homePhone.equals(staff.homePhone) : staff.homePhone != null) { return false; }
+        if (sourceSystemUserId != null ? !sourceSystemUserId.equals(staff.sourceSystemUserId) : staff.sourceSystemUserId != null) { return false; }
         if (homeAddress != null ? !homeAddress.equals(staff.homeAddress) : staff.homeAddress != null) { return false; }
         if (sourceSystemId != null ? !sourceSystemId.equals(staff.sourceSystemId) : staff.sourceSystemId != null) {
             return false;
@@ -112,6 +128,7 @@ public abstract class Person extends User {
         result = 31 * result + (homePhone != null ? homePhone.hashCode() : 0);
         result = 31 * result + (sourceSystemId != null ? sourceSystemId.hashCode() : 0);
         result = 31 * result + (homeAddress != null ? homeAddress.hashCode() : 0);
+        result = 31 * result + (sourceSystemUserId != null ? sourceSystemUserId.hashCode() : 0);
         return result;
     }
 
@@ -122,11 +139,17 @@ public abstract class Person extends User {
      */
     public static abstract class PersonBuilder<U extends PersonBuilder<U, T>,T extends Person> extends UserBuilder<U,T>{
         private String sourceSystemId;
+        private String sourceSystemUserId;
         private Address homeAddress;
         private String homePhone;
 
         public U withSourceSystemid(final String sourceSystemId){
             this.sourceSystemId = sourceSystemId;
+            return me();
+        }
+
+        public U withSourceSystemUserId(final String sourceSystemUserId){
+            this.sourceSystemUserId = sourceSystemUserId;
             return me();
         }
 
@@ -145,6 +168,7 @@ public abstract class Person extends User {
             staff.setSourceSystemId(sourceSystemId);
             staff.setHomeAddress(homeAddress);
             staff.setHomePhone(homePhone);
+            staff.setSourceSystemUserId(sourceSystemUserId);
             return staff;
         }
     }

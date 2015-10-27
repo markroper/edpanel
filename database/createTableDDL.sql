@@ -55,6 +55,7 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`student` (
   `student_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `source_system_id` VARCHAR(256) NULL COMMENT 'The identifier from the source system, if any',
+  `student_source_system_user_id` VARCHAR(256) NULL COMMENT 'The identifier of the user from the source system, if any',
   `mailing_fk` BIGINT UNSIGNED NULL COMMENT 'The address FK for mailing address',
   `home_fk` BIGINT UNSIGNED NULL COMMENT 'The address FK for home address',
   `gender` INT NULL COMMENT 'The gender of the student',
@@ -88,6 +89,7 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`teacher` (
   `teacher_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `teacher_source_system_id` VARCHAR(256) NULL,
+  `teacher_source_system_user_id` VARCHAR(256) NULL COMMENT 'The identifier of the user from the source system, if any',
   `teacher_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user_fk of the teacher',
   `teacher_home_phone` VARCHAR(256) NULL COMMENT 'Home phone number for teacher',
   `teacher_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
@@ -111,6 +113,7 @@ CREATE TABLE `scholar_warehouse`.`administrator` (
   `administrator_home_phone` VARCHAR(256) NULL,
   `administrator_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
   `administrator_source_system_id` VARCHAR(256) NULL,
+  `administrator_source_system_user_id` VARCHAR(256) NULL COMMENT 'The identifier of the user from the source system, if any',
   `administrator_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user_fk of the teacher',
   `school_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the current school the administrator actively works for',
   CONSTRAINT `administrator_homeAddress_fk$administrator`

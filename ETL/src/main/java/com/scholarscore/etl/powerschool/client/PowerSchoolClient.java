@@ -99,7 +99,7 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
             post.setURI(uri.resolve(URI_PATH_OATH));
             String json = getJSON(post);
             if (null != json) {
-                oauthToken = gson.fromJson(json, OAuthResponse.class);
+                oauthToken = mapper.readValue(json, OAuthResponse.class);
                 if (null == oauthToken || null == oauthToken.access_token) {
                     throw new PowerSchoolClientException("Unable to authenticate with power school, response: " + json);
                 }

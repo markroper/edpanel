@@ -2,10 +2,10 @@ package com.scholarscore.etl;
 
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
-import com.scholarscore.etl.powerschool.api.model.PsStaffs;
-import com.scholarscore.etl.powerschool.api.model.PsStudents;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.SchoolSync;
+import com.scholarscore.etl.powerschool.sync.StaffSync;
+import com.scholarscore.etl.powerschool.sync.StudentSync;
 import com.scholarscore.etl.powerschool.sync.TermSync;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,14 +39,19 @@ public class ETLEngine implements IETLEngine {
     private IAPIClient edPanel;
     private List<School> schools;
     private List<SchoolYear> schoolYears;
-    //SourceSystemStudentId to student
-    private ConcurrentHashMap<Long, Student> students;
     //Collections are by sourceSystemSchoolId and if there are nested maps, 
     //the keys are always sourceSystemIds of sub-entities
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Term>> terms;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Section>> sections;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Course>> courses;
-    private ConcurrentHashMap<Long, ConcurrentHashMap<Long, User>> staff;
+
+    //Student and staff maps map local ID to User|Student. Elsewhere, we need
+    //to map source system id (SSID) to the local IDs. For this purpose we also maintain
+    //a mapping of SSID to localId
+    private ConcurrentHashMap<Long, Long> ssidToLocalIdStudent = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Long, Long> ssidToLocalIdStaff = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Long, Student> students;
+    private ConcurrentHashMap<Long, User> staff;
 
     //Error state collections
     private List<Long> unresolvablePowerStudents = Collections.synchronizedList(new ArrayList<>());
@@ -79,14 +83,14 @@ public class ETLEngine implements IETLEngine {
         migrateSchoolYearsAndTerms();
         long yearsAndTermsComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
-//
-//        createStaff();
-//        long staffCreationComplete = (System.currentTimeMillis() - endTime)/1000;
-//        endTime = System.currentTimeMillis();
-//
-//        createStudents();
-//        long studentCreationComplete = (System.currentTimeMillis() - endTime)/1000;
-//        endTime = System.currentTimeMillis();
+
+        createStaff();
+        long staffCreationComplete = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+
+        createStudents();
+        long studentCreationComplete = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
 //
 //        createCourses();
 //        long courseCreationComplete = (System.currentTimeMillis() - endTime)/1000;
@@ -119,13 +123,14 @@ public class ETLEngine implements IETLEngine {
         for(School school : this.schools) {
             Long sourceSystemSchoolId = Long.valueOf(school.getSourceSystemId());
             sections.put(sourceSystemSchoolId, new ConcurrentHashMap<>());
+            //TODO: transform staff & student collections to be keyed on sourceSystemId instead of sourceSystemUserId
             SectionETLRunnable sectionRunnable = new SectionETLRunnable(
                     powerSchool,
                     edPanel,
                     school,
                     this.courses.get(sourceSystemSchoolId),
                     this.terms.get(sourceSystemSchoolId),
-                    this.staff.get(sourceSystemSchoolId),
+                    this.staff,
                     this.students,
                     this.sections.get(sourceSystemSchoolId),
                     unresolvablePowerStudents);
@@ -148,9 +153,7 @@ public class ETLEngine implements IETLEngine {
                 TermSync tSync = new TermSync(edPanel, powerSchool, school);
                 this.terms.put(
                         Long.valueOf(school.getSourceSystemId()),
-                        tSync.synchCreateUpdateDelete(
-                            tSync.resolveAllFromSourceSystem(),
-                            tSync.resolveFromEdPanel())
+                        tSync.synchCreateUpdateDelete()
                 );
             }
         }
@@ -176,17 +179,8 @@ public class ETLEngine implements IETLEngine {
     private void createStudents() {
         ConcurrentHashMap<Long, Student> studentsBySchoolAndId = new ConcurrentHashMap<>();
         for (School school : schools) {
-            Long schoolId = Long.valueOf(school.getSourceSystemId());
-            PsStudents response = powerSchool.getStudentsBySchool(schoolId);
-            Collection<Student> apiListOfStudents = response.toInternalModel();
-
-            List<Student> students = Collections.synchronizedList(new ArrayList<>());
-            apiListOfStudents.forEach(student -> {
-                student.setCurrentSchoolId(school.getId());
-                Student createdStudent = edPanel.createStudent(student);
-                student.setId(createdStudent.getId());
-                studentsBySchoolAndId.put(new Long(student.getSourceSystemId()), student);
-            });
+            StudentSync sync = new StudentSync(edPanel, powerSchool, school, studentsBySchoolAndId, ssidToLocalIdStudent);
+            studentsBySchoolAndId.putAll(sync.synchCreateUpdateDelete());
         }
         this.students = studentsBySchoolAndId;
     }
@@ -196,33 +190,18 @@ public class ETLEngine implements IETLEngine {
      * @return
      */
     public void createStaff() {
-        ConcurrentHashMap<Long, ConcurrentHashMap<Long, User>> staffBySchool = new ConcurrentHashMap<>();
+        ConcurrentHashMap<Long, User> staffBySchool = new ConcurrentHashMap<>();
         for (School school : schools) {
             Long psSchoolId = new Long(school.getSourceSystemId());
-            PsStaffs response = powerSchool.getStaff(Long.valueOf(school.getSourceSystemId()));
-            List<User> apiListOfStaff = response.toInternalModel();
-            apiListOfStaff.forEach(staff -> {
-                staff.setPassword(UUID.randomUUID().toString());
-                try {
-                    User result = edPanel.createUser(staff);
-                    staff.setId(result.getId());
-                    if (null == staffBySchool.get(psSchoolId)) {
-                        staffBySchool.put(psSchoolId, new ConcurrentHashMap<>());
-                    }
-                    staffBySchool.get(psSchoolId).put(
-                            Long.valueOf(staff.getSourceSystemId()), staff);
-                } catch (Exception e) {
-                }
-            });
+            StaffSync sync = new StaffSync(edPanel, powerSchool, school, staffBySchool, ssidToLocalIdStaff);
+            staffBySchool.putAll(sync.synchCreateUpdateDelete());
         }
         this.staff = staffBySchool;
     }
 
     public void createSchools() {
         SchoolSync sync = new SchoolSync(edPanel, powerSchool);
-        Map<Long, School> result = sync.synchCreateUpdateDelete(
-                sync.resolveAllFromSourceSystem(),
-                sync.resolveFromEdPanel());
+        Map<Long, School> result = sync.synchCreateUpdateDelete();
         this.schools = result.entrySet()
                         .stream()
                         .map(Map.Entry::getValue)

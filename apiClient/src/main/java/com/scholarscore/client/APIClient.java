@@ -120,7 +120,12 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return gson.fromJson(jsonCreateResponse, EntityId.class);
+        try {
+            return mapper.readValue(jsonCreateResponse, EntityId.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     
     private EntityId update(Object obj, String path) {
@@ -130,7 +135,12 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return gson.fromJson(jsonCreateResponse, EntityId.class);
+        try {
+            return mapper.readValue(jsonCreateResponse, EntityId.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
@@ -142,8 +152,12 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Collection<Student> getStudents() {
-        Student[] students = get(Student[].class, BASE_API_ENDPOINT + STUDENT_ENDPOINT);
+    public Collection<Student> getStudents(Long schoolId) {
+        String path = BASE_API_ENDPOINT + STUDENT_ENDPOINT;
+        if(null != schoolId) {
+            path += "?schoolId=" + schoolId;
+        }
+        Student[] students = get(Student[].class, path);
         return Arrays.asList(students);
     }
     
@@ -167,6 +181,12 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     public Collection<Teacher> getTeachers() {
         Teacher[] teachers = get(Teacher[].class, BASE_API_ENDPOINT + TEACHER_ENDPOINT);
         return Arrays.asList(teachers);
+    }
+
+    @Override
+    public Collection<Administrator> getAdministrators() {
+        Administrator[] admins = get(Administrator[].class, BASE_API_ENDPOINT + ADMINISTRATOR_ENDPOINT);
+        return Arrays.asList(admins);
     }
 
     @Override
@@ -202,11 +222,37 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public User createUser(User login) {
-        EntityId id = create(login, USERS_ENDPOINT);
-        User response = UserType.clone(login);
+    public User createUser(User usr) {
+        EntityId id = create(usr, USERS_ENDPOINT);
+        User response = UserType.clone(usr);
         response.setId(id.getId());
         return response;
+    }
+
+    @Override
+    public User[] getUsers(Long schoolId) {
+        User[] response = get(User[].class, BASE_API_ENDPOINT + USERS_ENDPOINT + "?enabled=&schoolId=" + schoolId);
+        return response;
+    }
+
+    @Override
+    public User updateUser(User user) {
+        try {
+            patch(convertObjectToJsonBytes(user), BASE_API_ENDPOINT + USERS_ENDPOINT + "/" + user.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    @Override
+    public User replaceUser(User user) {
+        try {
+            put(convertObjectToJsonBytes(user), BASE_API_ENDPOINT + USERS_ENDPOINT + "/" + user.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return user;
     }
 
     @Override

@@ -13,6 +13,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
@@ -47,13 +48,11 @@ public abstract class BaseHttpClient {
     protected final CloseableHttpClient httpclient;
     protected final URI uri;
 
-    protected Gson gson;
+    protected static final ObjectMapper mapper = new ObjectMapper();
 
-    protected static ObjectMapper mapper = new ObjectMapper();
     public BaseHttpClient(URI uri) {
         this.uri = uri;
         this.httpclient = createClient();
-        this.gson = createGsonParser();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
@@ -93,6 +92,7 @@ public abstract class BaseHttpClient {
             throw new HttpClientException(e);
         }
     }
+
 
     protected String post(byte[] data, String path) throws IOException {
         String strData = new String(data);
@@ -163,7 +163,6 @@ public abstract class BaseHttpClient {
             get.setURI(uri.resolve(path));
             String json = getJSON(get);
             return mapper.readValue(json, clazz);
-//            return gson.fromJson(json, clazz);
         } catch (IOException e) {
             throw new HttpClientException(e);
         }
@@ -185,6 +184,30 @@ public abstract class BaseHttpClient {
             }
             else {
                 throw new HttpClientException("Failed to post to end point: " + patch.getURI().toString() + ", status line: " + response.getStatusLine().toString() + ", payload: " + json);
+            }
+        } catch (IOException e) {
+            throw new HttpClientException(e);
+        } finally {
+            response.getEntity().getContent().close();
+        }
+    }
+
+    protected String put(byte[] data, String path) throws IOException {
+        HttpPut put = new HttpPut();
+        put.setURI(uri.resolve(path));
+        setupCommonHeaders(put);
+        put.setHeader(HEADER_CONTENT_TYPE_JSON);
+        put.setEntity(new ByteArrayEntity(data));
+        HttpResponse response = null;
+        try {
+            response = httpclient.execute(put);
+            int code = response.getStatusLine().getStatusCode();
+            String json = EntityUtils.toString(response.getEntity());
+            if (code == HttpStatus.SC_CREATED || code == HttpStatus.SC_OK) {
+                return json;
+            }
+            else {
+                throw new HttpClientException("Failed to post to end point: " + put.getURI().toString() + ", status line: " + response.getStatusLine().toString() + ", payload: " + json);
             }
         } catch (IOException e) {
             throw new HttpClientException(e);
