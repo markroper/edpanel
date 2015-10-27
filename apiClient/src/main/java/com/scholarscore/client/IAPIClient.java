@@ -46,7 +46,11 @@ public interface IAPIClient {
     User updateUser(User user);
     User replaceUser(User user);
 
+    //Courses
     Course createCourse(Long schoolId, Course course);
+    void deleteCourse(Long schoolId, Course course);
+    Course replaceCourse(Long schoolId, Course course);
+    Course[] getCourses(Long schoolId);
 
     //SCHOOL YEARS
     SchoolYear createSchoolYear(Long schoolId, SchoolYear year);

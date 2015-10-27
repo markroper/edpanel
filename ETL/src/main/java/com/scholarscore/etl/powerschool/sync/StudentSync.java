@@ -3,6 +3,7 @@ package com.scholarscore.etl.powerschool.sync;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
+import com.scholarscore.etl.powerschool.sync.associators.StudentAssociator;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.School;
 import com.scholarscore.models.user.Person;
@@ -21,19 +22,16 @@ public class StudentSync implements ISync<Student> {
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
     protected School school;
-    protected ConcurrentHashMap<Long, Student> createdStudents;
-    protected ConcurrentHashMap<Long, Long> ssidToLocalId;
+    protected StudentAssociator studentAssociator;
 
     public StudentSync(IAPIClient edPanel,
                        IPowerSchoolClient powerSchool,
                        School s,
-                       ConcurrentHashMap<Long, Student> createdStudents,
-                       ConcurrentHashMap<Long, Long> ssidToLocalId) {
+                       StudentAssociator studentAssociator) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
-        this.createdStudents = createdStudents;
-        this.ssidToLocalId = ssidToLocalId;
+        this.studentAssociator = studentAssociator;
     }
 
     @Override
@@ -50,10 +48,9 @@ public class StudentSync implements ISync<Student> {
             //Associate the SSID and source system local id (teacher/admin ID and underlying user ID)
             Long ssid = Long.valueOf(sourceUser.getSourceSystemId());
             Long underlyingUserId = Long.valueOf(((Person) sourceUser).getSourceSystemUserId());
-            ssidToLocalId.put(ssid, underlyingUserId);
-
+            studentAssociator.associateIds(ssid, underlyingUserId);
             if(null == edPanelUser) {
-                edPanelUser = createdStudents.get(underlyingUserId);
+                edPanelUser = studentAssociator.findByOtherId(underlyingUserId);
             }
             if(null == edPanelUser){
                 ((Person) sourceUser).setCurrentSchoolId(school.getId());

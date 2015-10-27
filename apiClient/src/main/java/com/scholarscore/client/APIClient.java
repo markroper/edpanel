@@ -262,7 +262,31 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         response.setId(id.getId());
         return response;
     }
-    
+
+    @Override
+    public void deleteCourse(Long schoolId, Course course) {
+        String[] params = { schoolId.toString(), course.getId().toString() };
+        delete(BASE_API_ENDPOINT + COURSE_ENDPOINT + "/{1}", params);
+    }
+
+    @Override
+    public Course replaceCourse(Long schoolId, Course course) {
+        String[] params = { schoolId.toString(), course.getId().toString() };
+        try {
+            put(convertObjectToJsonBytes(course), getPath(BASE_API_ENDPOINT + COURSE_ENDPOINT + "/{1}", params));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return course;
+    }
+
+    @Override
+    public Course[] getCourses(Long schoolId) {
+        String[] params = { schoolId.toString() };
+        Course[] courses = get(Course[].class, getPath(BASE_API_ENDPOINT + COURSE_ENDPOINT, params));
+        return courses;
+    }
+
 
     @Override
     public SchoolYear createSchoolYear(Long schoolId, SchoolYear year) {

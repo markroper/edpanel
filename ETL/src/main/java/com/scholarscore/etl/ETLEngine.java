@@ -1,22 +1,21 @@
 package com.scholarscore.etl;
 
 import com.scholarscore.client.IAPIClient;
-import com.scholarscore.etl.powerschool.api.model.PsCourses;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
+import com.scholarscore.etl.powerschool.sync.CourseSync;
 import com.scholarscore.etl.powerschool.sync.SchoolSync;
 import com.scholarscore.etl.powerschool.sync.StaffSync;
 import com.scholarscore.etl.powerschool.sync.StudentSync;
 import com.scholarscore.etl.powerschool.sync.TermSync;
+import com.scholarscore.etl.powerschool.sync.associators.StaffAssociator;
+import com.scholarscore.etl.powerschool.sync.associators.StudentAssociator;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
-import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.User;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -43,15 +42,13 @@ public class ETLEngine implements IETLEngine {
     //the keys are always sourceSystemIds of sub-entities
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Term>> terms;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Section>> sections;
-    private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Course>> courses;
+    private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Course>> courses = new ConcurrentHashMap<>();
 
     //Student and staff maps map local ID to User|Student. Elsewhere, we need
     //to map source system id (SSID) to the local IDs. For this purpose we also maintain
-    //a mapping of SSID to localId
-    private ConcurrentHashMap<Long, Long> ssidToLocalIdStudent = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Long, Long> ssidToLocalIdStaff = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Long, Student> students;
-    private ConcurrentHashMap<Long, User> staff;
+    //a mapping of SSID to localId, all of which is encapsulated in the associators below
+    private StaffAssociator staffAssociator = new StaffAssociator();
+    private StudentAssociator studentAssociator = new StudentAssociator();
 
     //Error state collections
     private List<Long> unresolvablePowerStudents = Collections.synchronizedList(new ArrayList<>());
@@ -91,22 +88,22 @@ public class ETLEngine implements IETLEngine {
         createStudents();
         long studentCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
-//
-//        createCourses();
-//        long courseCreationComplete = (System.currentTimeMillis() - endTime)/1000;
-//        endTime = System.currentTimeMillis();
-//
-//        migrateSections();
-//        long sectionCreationComplete = (System.currentTimeMillis() - endTime)/1000;
-//        endTime = System.currentTimeMillis();
-//
-//        System.out.println("Total runtime: " + (startTime-endTime)/1000 +
-//                " seconds, schools: " + schoolCreationTime +
-//                " seconds, Years + Terms: " + yearsAndTermsComplete +
-//                " seconds, staff: " + staffCreationComplete +
-//                " seconds, students: " + studentCreationComplete +
-//                " seconds, courses: " + courseCreationComplete +
-//                " seconds, sections: " + sectionCreationComplete);
+
+        createCourses();
+        long courseCreationComplete = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+
+        migrateSections();
+        long sectionCreationComplete = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+
+        System.out.println("Total runtime: " + (startTime-endTime)/1000 +
+                " seconds, schools: " + schoolCreationTime +
+                " seconds, Years + Terms: " + yearsAndTermsComplete +
+                " seconds, staff: " + staffCreationComplete +
+                " seconds, students: " + studentCreationComplete +
+                " seconds, courses: " + courseCreationComplete +
+                " seconds, sections: " + sectionCreationComplete);
         return result;
     }
 
@@ -123,15 +120,14 @@ public class ETLEngine implements IETLEngine {
         for(School school : this.schools) {
             Long sourceSystemSchoolId = Long.valueOf(school.getSourceSystemId());
             sections.put(sourceSystemSchoolId, new ConcurrentHashMap<>());
-            //TODO: transform staff & student collections to be keyed on sourceSystemId instead of sourceSystemUserId
             SectionETLRunnable sectionRunnable = new SectionETLRunnable(
                     powerSchool,
                     edPanel,
                     school,
                     this.courses.get(sourceSystemSchoolId),
                     this.terms.get(sourceSystemSchoolId),
-                    this.staff,
-                    this.students,
+                    staffAssociator,
+                    studentAssociator,
                     this.sections.get(sourceSystemSchoolId),
                     unresolvablePowerStudents);
             executor.execute(sectionRunnable);
@@ -161,28 +157,17 @@ public class ETLEngine implements IETLEngine {
 
     private void createCourses() {
 
-        ConcurrentHashMap<Long, ConcurrentHashMap<Long, Course>> result = new ConcurrentHashMap<>();
         for (School school : schools) {
-            Long schoolId = Long.valueOf(school.getSourceSystemId());
-            result.put(schoolId, new ConcurrentHashMap<>());
-            PsCourses response = powerSchool.getCoursesBySchool(schoolId);
-            Collection<Course> apiListOfCourses = response.toInternalModel();
-            for(Course c: apiListOfCourses) {
-                result.get(schoolId).put(
-                        Long.valueOf(c.getSourceSystemId()),
-                        edPanel.createCourse(school.getId(), c));
-            }
+            CourseSync sync = new CourseSync(edPanel, powerSchool, school);
+            this.courses.put(school.getId(), sync.synchCreateUpdateDelete());
         }
-        this.courses = result;
     }
 
     private void createStudents() {
-        ConcurrentHashMap<Long, Student> studentsBySchoolAndId = new ConcurrentHashMap<>();
         for (School school : schools) {
-            StudentSync sync = new StudentSync(edPanel, powerSchool, school, studentsBySchoolAndId, ssidToLocalIdStudent);
-            studentsBySchoolAndId.putAll(sync.synchCreateUpdateDelete());
+            StudentSync sync = new StudentSync(edPanel, powerSchool, school, studentAssociator);
+            studentAssociator.addOtherIdMap(sync.synchCreateUpdateDelete());
         }
-        this.students = studentsBySchoolAndId;
     }
 
     /**
@@ -190,13 +175,10 @@ public class ETLEngine implements IETLEngine {
      * @return
      */
     public void createStaff() {
-        ConcurrentHashMap<Long, User> staffBySchool = new ConcurrentHashMap<>();
         for (School school : schools) {
-            Long psSchoolId = new Long(school.getSourceSystemId());
-            StaffSync sync = new StaffSync(edPanel, powerSchool, school, staffBySchool, ssidToLocalIdStaff);
-            staffBySchool.putAll(sync.synchCreateUpdateDelete());
+            StaffSync sync = new StaffSync(edPanel, powerSchool, school, staffAssociator);
+            staffAssociator.addOtherIdMap(sync.synchCreateUpdateDelete());
         }
-        this.staff = staffBySchool;
     }
 
     public void createSchools() {

@@ -21,6 +21,8 @@ import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionScoreIdsResponse;
 import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
+import com.scholarscore.etl.powerschool.sync.associators.StaffAssociator;
+import com.scholarscore.etl.powerschool.sync.associators.StudentAssociator;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
@@ -58,8 +60,8 @@ public class SectionETLRunnable implements Runnable {
     private School school;
     private ConcurrentHashMap<Long, Course> courses;
     private ConcurrentHashMap<Long, Term> terms;
-    private ConcurrentHashMap<Long, User> staff;
-    private ConcurrentHashMap<Long, Student> students;
+    private StudentAssociator studentAssociator;
+    private StaffAssociator staffAssociator;
     private ConcurrentHashMap<Long, Section> sections;
     private List<Long> unresolvablePowerStudents;
 
@@ -68,8 +70,8 @@ public class SectionETLRunnable implements Runnable {
                               School school,
                               ConcurrentHashMap<Long, Course> courses,
                               ConcurrentHashMap<Long, Term> terms,
-                              ConcurrentHashMap<Long, User> staff,
-                              ConcurrentHashMap<Long, Student> students,
+                              StaffAssociator staffAssociator,
+                              StudentAssociator studentAssociator,
                               ConcurrentHashMap<Long, Section> sections,
                               List<Long> unresolvablePowerStudents) {
         this.powerSchool = powerSchool;
@@ -77,8 +79,8 @@ public class SectionETLRunnable implements Runnable {
         this.school = school;
         this.courses = courses;
         this.terms = terms;
-        this.staff = staff;
-        this.students = students;
+        this.staffAssociator = staffAssociator;
+        this.studentAssociator = studentAssociator;
         this.sections = sections;
         this.unresolvablePowerStudents = unresolvablePowerStudents;
     }
@@ -109,7 +111,7 @@ public class SectionETLRunnable implements Runnable {
                 edpanelSection.setEndDate(sectionTerm.getEndDate());
 
                 //Resolve the EdPanel Teacher(s) and set on the Section
-                User t = this.staff.get(powerSection.getStaff_id());
+                User t = staffAssociator.findBySourceSystemId(powerSection.getStaff_id());
                 if(null != t && t instanceof Teacher) {
                     HashSet<Teacher> teachers = new HashSet<>();
                     teachers.add((Teacher) t);
@@ -163,7 +165,7 @@ public class SectionETLRunnable implements Runnable {
             }
             //Create an EdPanel StudentSectionGrade for each PowerSchool StudentEnrollment
             for(PsSectionEnrollment se : enrollments.section_enrollments.section_enrollment) {
-                Student edpanelStudent = this.students.get(se.getStudent_id());
+                Student edpanelStudent = studentAssociator.findBySourceSystemId(se.getStudent_id());
                 if(null == edpanelStudent) {
                     edpanelStudent = migrateMissingStudent(school.getId(), se.getStudent_id());
                 }
@@ -225,7 +227,7 @@ public class SectionETLRunnable implements Runnable {
             for(PsSectionScoreIds ssid: ssids.record) {
                 PsSectionScoreId i = ssid.tables.sectionscoresid;
                 Long ssidId = Long.valueOf(i.getDcid());
-                Student stud = this.students.get(Long.valueOf(i.getStudentid()));
+                Student stud = studentAssociator.findBySourceSystemId(Long.valueOf(i.getStudentid()));
                 if(null == stud) {
                     stud = migrateMissingStudent(school.getId(), Long.valueOf(i.getStudentid()));
                 }
@@ -289,7 +291,16 @@ public class SectionETLRunnable implements Runnable {
         for(Student edpanelStudent : studs) {
             edpanelStudent.setCurrentSchoolId(schoolId);
             Student createdStudent = edPanel.createStudent(edpanelStudent);
-            this.students.put(powerSchoolStudentId, createdStudent);
+            ConcurrentHashMap<Long, Student> studMap = new ConcurrentHashMap<>();
+            studMap.put(powerSchoolStudentId, createdStudent);
+            try {
+                Long otherId = Long.valueOf(createdStudent.getSourceSystemUserId());
+                Long ssid = Long.valueOf(createdStudent.getSourceSystemId());
+                studentAssociator.associateIds(ssid, otherId);
+            } catch(NumberFormatException e) {
+                //NO OP
+            }
+            studentAssociator.addOtherIdMap(studMap);
             return createdStudent;
         }
         return null;
