@@ -32,9 +32,11 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
     @DataProvider
     public Object[][] createSchoolYearProvider() {
         SchoolYear emptySchoolYear = new SchoolYear();
+        emptySchoolYear.setSchool(school);
         
         SchoolYear namedSchoolYear = new SchoolYear();
         namedSchoolYear.setName(localeServiceUtil.generateName());
+        namedSchoolYear.setSchool(school);
         
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);
@@ -44,6 +46,7 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
         SchoolYear schoolYearWithDates = new SchoolYear(namedSchoolYear);
         schoolYearWithDates.setStartDate(today);
         schoolYearWithDates.setEndDate(nextYear);
+        schoolYearWithDates.setSchool(school);
         
         SchoolYear schoolYearWithTerms = new SchoolYear(schoolYearWithDates);
         List<Term> terms = new ArrayList<>();
@@ -58,6 +61,7 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
         term2.setId(2l);
         terms.add(term2);
         schoolYearWithTerms.setTerms(terms);
+        schoolYearWithTerms.setSchool(school);
        
         return new Object[][] {
                 { "Empty schoolYear", emptySchoolYear },
@@ -81,7 +85,9 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createSchoolYearProvider")
     public void replaceSchoolYearTest(String msg, SchoolYear schoolYear) {
         SchoolYear createdSchoolYear = schoolYearValidatingExecutor.create(school.getId(), schoolYear, msg);
-        schoolYearValidatingExecutor.replace(school.getId(), createdSchoolYear.getId(), new SchoolYear(), msg);
+        SchoolYear newSchoolYear = new SchoolYear();
+        newSchoolYear.setSchool(school);
+        schoolYearValidatingExecutor.replace(school.getId(), createdSchoolYear.getId(), newSchoolYear, msg);
         numberOfItemsCreated++;
     }
     
@@ -104,6 +110,7 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
     @DataProvider
     public Object[][] createSchoolYearNegativeProvider() {
         SchoolYear gradedSchoolYearNameTooLong = new SchoolYear();
+        gradedSchoolYearNameTooLong.setSchool(school);
         gradedSchoolYearNameTooLong.setName(localeServiceUtil.generateName(257));
         
         return new Object[][] {
@@ -118,7 +125,9 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createSchoolYearNegativeProvider")
     public void replaceSchoolYearNegativeTest(String msg, SchoolYear schoolYear, HttpStatus expectedStatus) {
-        SchoolYear created = schoolYearValidatingExecutor.create(school.getId(), new SchoolYear(), msg);
+        SchoolYear newSchoolYear = new SchoolYear();
+        newSchoolYear.setSchool(school);
+        SchoolYear created = schoolYearValidatingExecutor.create(school.getId(), newSchoolYear, msg);
         schoolYearValidatingExecutor.replaceNegative(school.getId(), created.getId(), schoolYear, expectedStatus, msg);
     }
 }
