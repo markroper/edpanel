@@ -94,8 +94,6 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     this.sections.put(new Long(sourceSection.getSourceSystemId()), sourceSection);
                 }
             }
-//            migrateStudentSectionEnrollmentAndGrades(sourceSection.getTerm(), sourceSection);
-//            migrateStudentAssignmentGrades(sourceSection.getTerm(), sourceSection);
             StudentSectionGradeSync ssgSync = new StudentSectionGradeSync(
                     powerSchool,
                     edPanel,
@@ -176,105 +174,4 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
         }
         return sectionMap;
     }
-
-//    private void migrateStudentAssignmentGrades(Term sectionTerm, Section createdSection) {
-//        //first resolve the assignment categories, so we can construct the appropriate EdPanel assignment subclass
-//        PGAssignmentTypes powerTypes = powerSchool.getAssignmentTypesBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
-//        Map<Long, PsAssignmentType> typeIdToType = new HashMap<>();
-//        if(null != powerTypes && null != powerTypes.record) {
-//            for (PGAssignmentType pat: powerTypes.record) {
-//                if(null != pat.tables && null != pat.tables.pgcategories) {
-//                    typeIdToType.put(
-//                            Long.valueOf(pat.tables.pgcategories.getId()),
-//                            pat.tables.pgcategories);
-//                }
-//            }
-//        }
-//        //Now iterate over all the assignments and construct the correct type of EdPanel assignment
-//        PGAssignments powerAssignments = powerSchool.getAssignmentsBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
-//
-//        //Get the association between student section score ID and student ID
-//        SectionScoreIdsResponse ssids = powerSchool.getStudentScoreIdsBySectionId(
-//                Long.valueOf(createdSection.getSourceSystemId()));
-//        Map<Long, MutablePair<Student, PsSectionScoreId>> ssidToStudent = new HashMap<>();
-//        if(null != ssids && null != ssids.record) {
-//            for(PsSectionScoreIds ssid: ssids.record) {
-//                PsSectionScoreId i = ssid.tables.sectionscoresid;
-//                Long ssidId = Long.valueOf(i.getDcid());
-//                Student stud = studentAssociator.findBySourceSystemId(Long.valueOf(i.getStudentid()));
-//                if(null == stud) {
-//                    stud = migrateMissingStudent(school.getId(), Long.valueOf(i.getStudentid()));
-//                }
-//                if(null != stud) {
-//                    ssidToStudent.put(ssidId, new MutablePair<>(stud, i));
-//                } else {
-//                    //TODO: log? no op?
-//                }
-//            }
-//        }
-//
-//        //THREADING BU SECTION ASSIGNMENT -> STUDENT ASSIGNMENT
-//        this.sections = new ConcurrentHashMap<>();
-//        ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-//        if(null != powerAssignments && null != powerAssignments.record) {
-//            for (PGAssignment powerAssignment : powerAssignments.record) {
-//                StudentAssignmentSyncRunnable runnable = new StudentAssignmentSyncRunnable(
-//                        powerSchool,
-//                        edPanel,
-//                        school,
-//                        sectionTerm,
-//                        createdSection,
-//                        powerAssignment,
-//                        typeIdToType,
-//                        ssidToStudent
-//                );
-//                executor.execute(runnable);
-//            }
-//        }
-//        executor.shutdown();
-//        //Spin while we wait for all the threads to complete
-//        while(!executor.isTerminated()){}
-//    }
-
-    /**
-     * Sadly, it is possible for a student not returned by the PowerSchool API /schools/:id/students
-     * to end up enrolled in a Section. In these cases, we need to go fetch the student and create
-     * him/her/it/them ad hoc in edpanel in order to enroll them in the section.  Returns null if the
-     * user cannot be retrieved from PowerSchool.
-     * @param schoolId
-     * @param powerSchoolStudentId
-     */
-//    private Student migrateMissingStudent(Long schoolId, Long powerSchoolStudentId) {
-//        StudentResponse powerStudent = null;
-//
-//        try {
-//            powerStudent = powerSchool.getStudentById(powerSchoolStudentId);
-//        } catch(HttpClientException e) {
-//            //Cache the unresolvable student ID for error reporting
-//            if(null == unresolvablePowerStudents) {
-//                unresolvablePowerStudents = Collections.synchronizedList(new ArrayList<>());
-//            }
-//            unresolvablePowerStudents.add(powerSchoolStudentId);
-//            return null;
-//        }
-//        PsStudents students = new PsStudents();
-//        students.add(powerStudent.student);
-//        Collection<Student> studs = students.toInternalModel();
-//        for(Student edpanelStudent : studs) {
-//            edpanelStudent.setCurrentSchoolId(schoolId);
-//            Student createdStudent = edPanel.createStudent(edpanelStudent);
-//            ConcurrentHashMap<Long, Student> studMap = new ConcurrentHashMap<>();
-//            try {
-//                Long otherId = Long.valueOf(createdStudent.getSourceSystemUserId());
-//                Long ssid = Long.valueOf(createdStudent.getSourceSystemId());
-//                studentAssociator.associateIds(ssid, otherId);
-//                studMap.put(otherId, createdStudent);
-//                studentAssociator.addOtherIdMap(studMap);
-//            } catch(NumberFormatException e) {
-//                //NO OP
-//            }
-//            return createdStudent;
-//        }
-//        return null;
-//    }
 }
