@@ -38,6 +38,7 @@ import java.util.concurrent.Executors;
  * Created by markroper on 10/28/15.
  */
 public class SectionAssignmentSync implements ISync<Assignment> {
+    private static final int THREAD_POOL_SIZE = 10;
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
     private School school;
@@ -68,7 +69,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         ConcurrentHashMap<Long, Assignment> ed = this.resolveFromEdPanel();
         Iterator<Map.Entry<Long, Assignment>> sourceIterator = source.entrySet().iterator();
         //Find & perform the inserts and updates, if any
-        ExecutorService executor = Executors.newFixedThreadPool(10);
+        ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
         while(sourceIterator.hasNext()) {
             Map.Entry<Long, Assignment> entry = sourceIterator.next();
             Assignment sourceAssignment = entry.getValue();

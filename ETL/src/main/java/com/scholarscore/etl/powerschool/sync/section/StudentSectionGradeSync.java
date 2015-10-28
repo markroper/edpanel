@@ -65,10 +65,10 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
     public ConcurrentHashMap<Long, StudentSectionGrade> synchCreateUpdateDelete() {
         //To populate and set on the createdSection
         List<StudentSectionGrade> ssgs = Collections.synchronizedList(new ArrayList<>());
-
         ConcurrentHashMap<Long, StudentSectionGrade> source = this.resolveAllFromSourceSystem();
         ConcurrentHashMap<Long, StudentSectionGrade> edpanelSsgMap = this.resolveFromEdPanel();
         Iterator<Map.Entry<Long, StudentSectionGrade>> sourceIterator = source.entrySet().iterator();
+        ArrayList<StudentSectionGrade> ssgsToCreate = new ArrayList<>();
         //Find & perform the inserts and updates, if any
         while(sourceIterator.hasNext()) {
             Map.Entry<Long, StudentSectionGrade> entry = sourceIterator.next();
@@ -76,14 +76,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             StudentSectionGrade edPanelSsg = edpanelSsgMap.get(entry.getKey());
             ssgs.add(sourceSsg);
             if(null == edPanelSsg){
-                StudentSectionGrade created = edPanel.createStudentSectionGrade(
-                        school.getId(),
-                        createdSection.getTerm().getSchoolYear().getId(),
-                        createdSection.getTerm().getId(),
-                        createdSection.getId(),
-                        sourceSsg.getStudent().getId(),
-                        sourceSsg);
-                sourceSsg.setId(created.getId());
+                ssgsToCreate.add(sourceSsg);
             } else {
                 sourceSsg.setId(edPanelSsg.getId());
                 if(!edPanelSsg.equals(sourceSsg)) {
@@ -97,6 +90,13 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                 }
             }
         }
+        //Bulk Create those identified as new in the while loop!
+        edPanel.createStudentSectionGrades(
+                school.getId(),
+                createdSection.getTerm().getSchoolYear().getId(),
+                createdSection.getTerm().getId(),
+                createdSection.getId(),
+                ssgsToCreate);
         //Delete anything IN EdPanel that is NOT in source system
         Iterator<Map.Entry<Long, StudentSectionGrade>> edpanelIterator = edpanelSsgMap.entrySet().iterator();
         while(edpanelIterator.hasNext()) {

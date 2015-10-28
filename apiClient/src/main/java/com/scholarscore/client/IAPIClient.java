@@ -78,6 +78,12 @@ public interface IAPIClient {
             Long sectionId,
             Long studentId,
             StudentSectionGrade ssg);
+    void createStudentSectionGrades(
+            Long schoolId,
+            Long yearId,
+            Long termId,
+            Long sectionId,
+            List<StudentSectionGrade> ssgs);
     StudentSectionGrade replaceStudentSectionGrade(
             Long schoolId,
             Long yearId,
