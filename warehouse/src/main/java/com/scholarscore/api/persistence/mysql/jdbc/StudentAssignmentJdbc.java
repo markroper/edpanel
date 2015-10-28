@@ -30,8 +30,15 @@ public class StudentAssignmentJdbc
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<StudentAssignment> selectAll(long id) {
-        return hibernateTemplate.loadAll(StudentAssignment.class);
+        String[] params = new String[]{"assignmentId"};
+        Object[] paramValues = new Object[]{ new Long(id) };
+        List<StudentAssignment> objects = (List<StudentAssignment>) hibernateTemplate.findByNamedParam(
+                "from student_assignment s where s.assignment.id = :assignmentId",
+                params,
+                paramValues);
+        return objects;
     }
 
 

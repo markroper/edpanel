@@ -48,20 +48,21 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     public static final String PATH_RESOURCE_SCHOOL = "/ws/v1/district/school";
     public static final String EXPANSION_RESOURCE_SCHOOL = "?expansions=school_boundary,school_fees_setup";
 
-    public static final String PATH_RESOURCE_STUDENT = "/ws/v1/school/{0}/student?expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup,school_enrollment";
+    //TODO: need to handle pagination here...
+    public static final String PATH_RESOURCE_STUDENT = "/ws/v1/school/{0}/student?pagesize=1000&expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup,school_enrollment";
     public static final String PATH_RESOURCE_SINGLE_STUDENT = "/ws/v1/student/{0}?expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup";
-    public static final String PATH_RESOURCE_STAFF = "/ws/v1/school/{0}/staff";
-    public static final String EXPANSION_RESOURCE_STAFF = "?expansions=phones,addresses,emails,school_affiliations";
+    public static final String PATH_RESOURCE_STAFF = "/ws/v1/school/{0}/staff?pagesize=1000";
+    public static final String EXPANSION_RESOURCE_STAFF = "&expansions=phones,addresses,emails,school_affiliations";
 
-    public static final String PATH_RESOURCE_COURSE = "/ws/v1/school/{0}/course";
-    public static final String PATH_RESOURCE_TERMS = "/ws/v1/school/{0}/term";
-    public static final String PATH_RESOURCE_SECTION = "/ws/v1/school/{0}/section";
+    public static final String PATH_RESOURCE_COURSE = "/ws/v1/school/{0}/course?pagesize=1000";
+    public static final String PATH_RESOURCE_TERMS = "/ws/v1/school/{0}/term?pagesize=1000";
+    public static final String PATH_RESOURCE_SECTION = "/ws/v1/school/{0}/section?pagesize=1000";
     public static final String PATH_RESOURCE_SECTION_ENROLLMENT = "/ws/v1/section/{0}/section_enrollment";
-    public static final String PATH_RESOURCE_SECTION_ASSIGNMENTS = "/ws/schema/table/PGAssignments?projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
+    public static final String PATH_RESOURCE_SECTION_ASSIGNMENTS = "/ws/schema/table/PGAssignments?pagesize=1000&projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
     public static final String PATH_RESOURCE_SECTION_ASSIGNMENT_CATEGORY = "/ws/schema/table/pgcategories?q=SectionID=={0}&projection=Abbreviation,DCID,DefaultPtsPoss,Description,ID,Name,SectionID";
-    public static final String PATH_RESOURCE_SECTION_SCORES = "/ws/schema/table/storedgrades?q=sectionid=={0}&projection=dcid,grade,datestored,studentid,sectionid,termid";
-    public static final String PATH_RESOURCE_ASSIGNMENT_SCORES = "/ws/schema/table/SectionScoresAssignments?q=assignment=={0}&projection=*";
-    public static final String PATH_RESOURCE_SECTION_SCORE_IDS = "/ws/schema/table/SectionScoresId?q=sectionid=={0}&projection=*";
+    public static final String PATH_RESOURCE_SECTION_SCORES = "/ws/schema/table/storedgrades?pagesize=1000&q=sectionid=={0}&projection=dcid,grade,datestored,studentid,sectionid,termid";
+    public static final String PATH_RESOURCE_ASSIGNMENT_SCORES = "/ws/schema/table/SectionScoresAssignments?pagesize=1000&q=assignment=={0}&projection=*";
+    public static final String PATH_RESOURCE_SECTION_SCORE_IDS = "/ws/schema/table/SectionScoresId?pagesize=1000&q=sectionid=={0}&projection=*";
     //PGScores: "/ws/schema/table/pgscores?projection=PGAssignmentsID,id,grade,dcid,comment_value,percent,percentstr,studentid"
 
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";

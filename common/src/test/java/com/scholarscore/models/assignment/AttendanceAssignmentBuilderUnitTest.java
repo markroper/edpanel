@@ -51,6 +51,7 @@ public class AttendanceAssignmentBuilderUnitTest extends AbstractBuilderUnitTest
                 withType(type).
                 withDueDate(dueDate).
                 withUserDefinedType(name).
+                withSourceSystemId(name).
                 withIncludeInfinalGrades(true).
                 build();
 

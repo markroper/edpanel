@@ -4,12 +4,12 @@ import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.CourseSync;
 import com.scholarscore.etl.powerschool.sync.SchoolSync;
-import com.scholarscore.etl.powerschool.sync.SectionSyncRunnable;
-import com.scholarscore.etl.powerschool.sync.StaffSync;
-import com.scholarscore.etl.powerschool.sync.StudentSync;
+import com.scholarscore.etl.powerschool.sync.section.SectionSyncRunnable;
+import com.scholarscore.etl.powerschool.sync.user.StaffSync;
+import com.scholarscore.etl.powerschool.sync.user.StudentSync;
 import com.scholarscore.etl.powerschool.sync.TermSync;
-import com.scholarscore.etl.powerschool.sync.associators.StaffAssociator;
-import com.scholarscore.etl.powerschool.sync.associators.StudentAssociator;
+import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
+import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
@@ -47,7 +47,7 @@ public class ETLEngine implements IETLEngine {
 
     //Student and staff maps map local ID to User|Student. Elsewhere, we need
     //to map source system id (SSID) to the local IDs. For this purpose we also maintain
-    //a mapping of SSID to localId, all of which is encapsulated in the associators below
+    //a mapping of SSID to localId, all of which is encapsulated in the associator below
     private StaffAssociator staffAssociator = new StaffAssociator();
     private StudentAssociator studentAssociator = new StudentAssociator();
 

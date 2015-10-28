@@ -1,9 +1,10 @@
-package com.scholarscore.etl.powerschool.sync;
+package com.scholarscore.etl.powerschool.sync.user;
 
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.sync.associators.StudentAssociator;
+import com.scholarscore.etl.powerschool.sync.ISync;
+import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.School;
 import com.scholarscore.models.user.Person;

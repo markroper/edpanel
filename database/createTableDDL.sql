@@ -227,6 +227,7 @@ CREATE TABLE `scholar_warehouse`.`assignment` (
   `weight` DOUBLE NULL COMMENT 'The weighting for calculating the section grade for the assignment, if any',
   `user_defined_type` VARCHAR(256) NULL COMMENT 'Dynamically defined assignment type that can be created by the user, if any',
   `include_in_final_grades` BIT(1) COMMENT 'True if the assignment should be included in grade calculations, otherwise false',
+  `assignment_source_system_id` VARCHAR(256) NULL COMMENT 'The source system from which the entity was imported - the id from that system',
   PRIMARY KEY (`assignment_id`),
   CONSTRAINT `fk_section$assignment`
     FOREIGN KEY (`section_fk`)

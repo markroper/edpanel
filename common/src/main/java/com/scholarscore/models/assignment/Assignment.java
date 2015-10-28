@@ -65,6 +65,7 @@ public abstract class Assignment
     protected Long sectionFK;
     protected Double weight;
     protected Boolean includeInFinalGrades;
+    protected String sourceSystemId;
 
     /**
      * Default constructor used by the serializer
@@ -112,6 +113,7 @@ public abstract class Assignment
         this.availablePoints = assignment.availablePoints;
         this.weight = assignment.weight;
         this.includeInFinalGrades = assignment.includeInFinalGrades;
+        this.sourceSystemId = assignment.sourceSystemId;
     }
     
     public void mergePropertiesIfNull(Assignment assignment) {
@@ -136,6 +138,9 @@ public abstract class Assignment
         }
         if(null == this.includeInFinalGrades) {
             this.includeInFinalGrades = assignment.includeInFinalGrades;
+        }
+        if(null == this.sourceSystemId) {
+            this.sourceSystemId = assignment.sourceSystemId;
         }
     }
 
@@ -206,6 +211,15 @@ public abstract class Assignment
         this.includeInFinalGrades = includeInFinalGrades;
     }
 
+    @Column(name = HibernateConsts.ASSIGNMENT_SOURCE_SYSTEM_ID)
+    public String getSourceSystemId() {
+        return sourceSystemId;
+    }
+
+    public void setSourceSystemId(String sourceSystemId) {
+        this.sourceSystemId = sourceSystemId;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(! super.equals(obj)) {
@@ -217,12 +231,13 @@ public abstract class Assignment
                 && Objects.equals(this.weight, other.weight)
                 && Objects.equals(this.includeInFinalGrades, other.includeInFinalGrades)
                 && Objects.equals(this.userDefinedType, other.userDefinedType)
+                && Objects.equals(this.sourceSystemId, other.sourceSystemId)
                 && Objects.equals(this.availablePoints, other.availablePoints);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(type, dueDate, userDefinedType, weight, includeInFinalGrades, availablePoints);
+        return 31 * super.hashCode() + Objects.hash(type, dueDate, sourceSystemId, userDefinedType, weight, includeInFinalGrades, availablePoints);
     }
 
     /**
@@ -240,6 +255,7 @@ public abstract class Assignment
         protected Double weight;
         protected String userDefinedType;
         protected Boolean includeInFinalGrades;
+        protected String sourceSystemId;
 
         public U withIncludeInfinalGrades(final Boolean b) {
             this.includeInFinalGrades = b;
@@ -248,6 +264,11 @@ public abstract class Assignment
 
         public U withType(final AssignmentType type){
             this.type = type;
+            return me();
+        }
+
+        public U withSourceSystemId(final String ssid){
+            this.sourceSystemId = ssid;
             return me();
         }
 
@@ -286,6 +307,7 @@ public abstract class Assignment
             assignment.setType(type);
             assignment.setDueDate(dueDate);
             assignment.setWeight(weight);
+            assignment.setSourceSystemId(sourceSystemId);
             assignment.setUserDefinedType(userDefinedType);
             assignment.setAvailablePoints(availablePoints);
             assignment.setSection(section);
