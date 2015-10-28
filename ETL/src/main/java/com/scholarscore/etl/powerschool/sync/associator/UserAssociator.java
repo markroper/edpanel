@@ -1,4 +1,4 @@
-package com.scholarscore.etl.powerschool.sync.associators;
+package com.scholarscore.etl.powerschool.sync.associator;
 
 import com.scholarscore.models.user.User;
 

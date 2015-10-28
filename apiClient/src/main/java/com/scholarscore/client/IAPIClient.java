@@ -70,6 +70,7 @@ public interface IAPIClient {
     Section replaceSection(Long schoolId, Long schoolYearId, Long termId, Section section);
     void deleteSection(Long schoolId, Long schoolYearId, Long termId, Section section);
 
+    //Student section grades
     StudentSectionGrade createStudentSectionGrade(
             Long schoolId, 
             Long yearId,
@@ -77,13 +78,50 @@ public interface IAPIClient {
             Long sectionId,
             Long studentId,
             StudentSectionGrade ssg);
+    StudentSectionGrade replaceStudentSectionGrade(
+            Long schoolId,
+            Long yearId,
+            Long termId,
+            Long sectionId,
+            Long studentId,
+            StudentSectionGrade ssg);
+    void deleteStudentSectionGrade(
+            Long schoolId,
+            Long yearId,
+            Long termId,
+            Long sectionId,
+            Long studentId,
+            StudentSectionGrade ssg);
+    StudentSectionGrade[] getStudentSectionGrades(
+            Long schoolId,
+            Long yearId,
+            Long termId,
+            Long sectionId);
 
+    //ASSIGNMENTS
     Assignment createSectionAssignment(
             Long schoolId,
             Long yearId,
             Long termId,
             Long sectionId,
             Assignment ssg);
+    Assignment replaceSectionAssignment(
+            Long schoolId,
+            Long yearId,
+            Long termId,
+            Long sectionId,
+            Assignment ssg);
+    void deleteSectionAssignment(
+            Long schoolId,
+            Long yearId,
+            Long termId,
+            Long sectionId,
+            Assignment ssg);
+    Assignment[] getSectionAssignments(
+            Long schoolId,
+            Long yearId,
+            Long termId,
+            Long sectionId);
 
     StudentAssignment createStudentAssignment(
             Long schoolId,
@@ -94,6 +132,7 @@ public interface IAPIClient {
             StudentAssignment studentAssignment
     );
 
+    //STUDENT ASSIGNMENTS
     void createStudentAssignments(
             Long schoolId,
             Long yearId,
@@ -102,4 +141,28 @@ public interface IAPIClient {
             Long assignmentId,
             List<StudentAssignment> studentAssignment
     );
+    StudentAssignment[] getStudentAssignments(
+            Long schoolId,
+            Long yearId,
+            Long termId,
+            Long sectionId,
+            Long assignmentId
+    );
+    void deleteStudentAssignment(
+            Long schoolId,
+            Long yearId,
+            Long termId,
+            Long sectionId,
+            Long assignmentId,
+            StudentAssignment studentAssignment
+    );
+    void replaceStudentAssignment(
+            Long schoolId,
+            Long yearId,
+            Long termId,
+            Long sectionId,
+            Long assignmentId,
+            StudentAssignment studentAssignment
+    );
+
 }

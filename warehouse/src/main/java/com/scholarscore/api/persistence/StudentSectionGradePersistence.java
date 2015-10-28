@@ -3,6 +3,7 @@ package com.scholarscore.api.persistence;
 import com.scholarscore.models.StudentSectionGrade;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface StudentSectionGradePersistence {
     public Collection<StudentSectionGrade> selectAll(
@@ -19,6 +20,10 @@ public interface StudentSectionGradePersistence {
             long sectionId,
             long studentId,
             StudentSectionGrade entity);
+
+    public void insertAll (
+            long sectionId,
+            List<StudentSectionGrade> entities);
 
     public Long update(
             long sectionId,
