@@ -1,8 +1,6 @@
 package com.scholarscore.etl.powerschool.sync.assignment;
 
-import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
-import com.scholarscore.etl.powerschool.api.model.PsStudents;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignment;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignment;
@@ -13,9 +11,9 @@ import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentTy
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentTypes;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentType;
 import com.scholarscore.etl.powerschool.api.response.SectionScoreIdsResponse;
-import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.ISync;
+import com.scholarscore.etl.powerschool.sync.MissingStudentMigrator;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
@@ -23,9 +21,6 @@ import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.user.Student;
 import org.apache.commons.lang3.tuple.MutablePair;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -147,7 +142,13 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                 Long ssidId = Long.valueOf(i.getDcid());
                 Student stud = studentAssociator.findBySourceSystemId(Long.valueOf(i.getStudentid()));
                 if(null == stud) {
-                    stud = migrateMissingStudent(school.getId(), Long.valueOf(i.getStudentid()));
+                    stud = MissingStudentMigrator.migrateMissingStudent(
+                            school.getId(),
+                            Long.valueOf(i.getStudentid()),
+                            powerSchool,
+                            edPanel,
+                            studentAssociator,
+                            unresolvablePowerStudents);
                 }
                 if(null != stud) {
                     ssidToStudent.put(ssidId, new MutablePair<>(stud, i));
@@ -192,47 +193,5 @@ public class SectionAssignmentSync implements ISync<Assignment> {
             );
         }
         return edpanelAssignments;
-    }
-
-    /**
-     * Sadly, it is possible for a student not returned by the PowerSchool API /schools/:id/students
-     * to end up enrolled in a Section. In these cases, we need to go fetch the student and create
-     * him/her/it/them ad hoc in edpanel in order to enroll them in the section.  Returns null if the
-     * user cannot be retrieved from PowerSchool.
-     * @param schoolId
-     * @param powerSchoolStudentId
-     */
-    private Student migrateMissingStudent(Long schoolId, Long powerSchoolStudentId) {
-        StudentResponse powerStudent = null;
-
-        try {
-            powerStudent = powerSchool.getStudentById(powerSchoolStudentId);
-        } catch(HttpClientException e) {
-            //Cache the unresolvable student ID for error reporting
-            if(null == unresolvablePowerStudents) {
-                unresolvablePowerStudents = Collections.synchronizedList(new ArrayList<>());
-            }
-            unresolvablePowerStudents.add(powerSchoolStudentId);
-            return null;
-        }
-        PsStudents students = new PsStudents();
-        students.add(powerStudent.student);
-        Collection<Student> studs = students.toInternalModel();
-        for(Student edpanelStudent : studs) {
-            edpanelStudent.setCurrentSchoolId(schoolId);
-            Student createdStudent = edPanel.createStudent(edpanelStudent);
-            ConcurrentHashMap<Long, Student> studMap = new ConcurrentHashMap<>();
-            try {
-                Long otherId = Long.valueOf(createdStudent.getSourceSystemUserId());
-                Long ssid = Long.valueOf(createdStudent.getSourceSystemId());
-                studentAssociator.associateIds(ssid, otherId);
-                studMap.put(otherId, createdStudent);
-                studentAssociator.addOtherIdMap(studMap);
-            } catch(NumberFormatException e) {
-                //NO OP
-            }
-            return createdStudent;
-        }
-        return null;
     }
 }
