@@ -98,7 +98,7 @@ public class ETLEngine implements IETLEngine {
         long sectionCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
 
-        System.out.println("Total runtime: " + (startTime-endTime)/1000 +
+        System.out.println("Total runtime: " + (endTime - startTime)/1000 +
                 " seconds, schools: " + schoolCreationTime +
                 " seconds, Years + Terms: " + yearsAndTermsComplete +
                 " seconds, staff: " + staffCreationComplete +

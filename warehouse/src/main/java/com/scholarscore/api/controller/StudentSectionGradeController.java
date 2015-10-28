@@ -92,7 +92,6 @@ public class StudentSectionGradeController extends BaseController {
             notes = "Creates, assigns and ID to, and persists the student section grades",
             response = Void.class)
     @RequestMapping(
-            value = "/students",
             method = RequestMethod.POST,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")

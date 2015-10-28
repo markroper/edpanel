@@ -429,6 +429,20 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
+    public void createStudentSectionGrades(Long schoolId,
+                                           Long yearId,
+                                           Long termId,
+                                           Long sectionId,
+                                           List<StudentSectionGrade> ssgs) {
+        createVoidResponse(ssgs,
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                        SCHOOL_YEAR_ENDPOINT + "/" + yearId +
+                        TERM_ENDPOINT + "/" + termId +
+                        SECTION_ENDPOINT + "/" + sectionId +
+                        STUDENT_SECTION_GRADE_ENDPOINT);
+    }
+
+    @Override
     public StudentSectionGrade replaceStudentSectionGrade(Long schoolId,
                                                           Long yearId,
                                                           Long termId,
