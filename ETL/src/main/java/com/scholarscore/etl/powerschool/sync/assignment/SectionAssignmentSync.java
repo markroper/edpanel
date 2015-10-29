@@ -67,9 +67,10 @@ public class SectionAssignmentSync implements ISync<Assignment> {
     public ConcurrentHashMap<Long, Assignment> syncCreateUpdateDelete(SyncResult results) {
         ConcurrentHashMap<Long, Assignment> source = null;
         try {
-            source = this.resolveAllFromSourceSystem();
+            source = this.resolveAllFromSourceSystem(results);
         } catch (HttpClientException e) {
             results.sectionAssignmentSourceGetFailed(
+                    Long.valueOf(createdSection.getSourceSystemId()),
                     Long.valueOf(createdSection.getSourceSystemId()),
                     createdSection.getId());
             return new ConcurrentHashMap<>();
@@ -79,6 +80,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
             ed = this.resolveFromEdPanel();
         } catch (HttpClientException e) {
             results.sectionAssignmentEdPanelGetFailed(
+                    Long.valueOf(createdSection.getSourceSystemId()),
                     Long.valueOf(createdSection.getSourceSystemId()),
                     createdSection.getId());
             return new ConcurrentHashMap<>();
@@ -100,11 +102,11 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                             createdSection.getId(),
                             sourceAssignment);
                 } catch (HttpClientException e) {
-                    results.sectionAssignmentCreateFailed(Long.valueOf(sourceAssignment.getSourceSystemId()));
+                    results.sectionAssignmentCreateFailed(Long.valueOf(createdSection.getSourceSystemId()), Long.valueOf(sourceAssignment.getSourceSystemId()));
                     continue;
                 }
                 sourceAssignment.setId(created.getId());
-                results.sectionAssignmentCreated(entry.getKey(), sourceAssignment.getId());
+                results.sectionAssignmentCreated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceAssignment.getId());
             } else {
                 //Massage discrepencies to determine
                 sourceAssignment.setId(edPanelAssignment.getId());
@@ -121,10 +123,10 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                                 createdSection.getId(),
                                 sourceAssignment);
                     } catch (IOException e) {
-                        results.sectionAssignmentCreateFailed(entry.getKey());
+                        results.sectionAssignmentCreateFailed(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey());
                         continue;
                     }
-                    results.sectionAssignmentUpdated(entry.getKey(), sourceAssignment.getId());
+                    results.sectionAssignmentUpdated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceAssignment.getId());
                 }
             }
             //Regardless of wheter or not we're creating, updating or no-op-ing, sync the StudentAssignments
@@ -153,10 +155,10 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                             createdSection.getId(),
                             entry.getValue());
                 } catch (HttpClientException e) {
-                    results.sectionAssignmentDeleteFailed(entry.getKey(), entry.getValue().getId());
+                    results.sectionAssignmentDeleteFailed(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), entry.getValue().getId());
                     continue;
                 }
-                results.sectionAssignmentDeleted(entry.getKey(), entry.getValue().getId());
+                results.sectionAssignmentDeleted(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), entry.getValue().getId());
             }
         }
         //Spin while we wait for all the threads to complete
@@ -168,7 +170,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         return source;
     }
 
-    protected ConcurrentHashMap<Long, Assignment> resolveAllFromSourceSystem() throws HttpClientException {
+    protected ConcurrentHashMap<Long, Assignment> resolveAllFromSourceSystem(SyncResult results) throws HttpClientException {
         //first resolve the assignment categories, so we can construct the appropriate EdPanel assignment subclass
         PGAssignmentTypes powerTypes =
                 powerSchool.getAssignmentTypesBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
@@ -198,7 +200,8 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                             powerSchool,
                             edPanel,
                             studentAssociator,
-                            unresolvablePowerStudents);
+                            unresolvablePowerStudents,
+                            results);
                 }
                 if(null != stud) {
                     ssidToStudent.put(ssidId, new MutablePair<>(stud, i));
