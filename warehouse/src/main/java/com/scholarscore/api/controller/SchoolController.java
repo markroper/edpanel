@@ -138,4 +138,19 @@ public class SchoolController extends BaseController {
         }
         return respond(studentToGpa);
     }
+
+    @ApiOperation(
+            value = "Get all sections in a school",
+            notes = "Retrieve all sections school",
+            response = List.class)
+    @RequestMapping(
+            value = "/{schoolId}/sections",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getAllSectionsInSchool(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId) {
+        return respond(pm.getSectionManager().getAllSectionsInSchool(schoolId));
+    }
 }

@@ -1,8 +1,6 @@
 package com.scholarscore.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -98,7 +96,6 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
     }
 
     @OneToOne(optional = true)
-    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.SCHOOL_FK)
     public School getSchool() {
         return school;

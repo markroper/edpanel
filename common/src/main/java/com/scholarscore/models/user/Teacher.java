@@ -58,7 +58,13 @@ public class Teacher extends Person implements Serializable, IStaff<Teacher> {
     public Long getCurrentSchoolId() {
         return currentSchoolId;
     }
-    
+
+    @Override
+    @Column(name = HibernateConsts.TEACHER_SOURCE_SYSTEM_USER_ID)
+    public String getSourceSystemUserId() {
+        return sourceSystemUserId;
+    }
+
     @Override
     @Transient
     public UserType getType() {

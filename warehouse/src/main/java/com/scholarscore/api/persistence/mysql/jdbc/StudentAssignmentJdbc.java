@@ -30,8 +30,15 @@ public class StudentAssignmentJdbc
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<StudentAssignment> selectAll(long id) {
-        return hibernateTemplate.loadAll(StudentAssignment.class);
+        String[] params = new String[]{"assignmentId"};
+        Object[] paramValues = new Object[]{ new Long(id) };
+        List<StudentAssignment> objects = (List<StudentAssignment>) hibernateTemplate.findByNamedParam(
+                "from student_assignment s where s.assignment.id = :assignmentId",
+                params,
+                paramValues);
+        return objects;
     }
 
 
@@ -43,16 +50,15 @@ public class StudentAssignmentJdbc
 
     @Override
     public Long insert(long assignmentId, StudentAssignment entity) {
-        injectAssignment(assignmentId, entity);
-        StudentAssignment out = hibernateTemplate.merge(entity);
-        return out.getId();
+        hibernateTemplate.save(entity);
+        return entity.getId();
     }
 
     @Override
     public void insertAll(long assignmentId, List<StudentAssignment> studentAssignmentList) {
         int i = 0;
         for(StudentAssignment sa : studentAssignmentList) {
-            hibernateTemplate.merge(sa);
+            hibernateTemplate.save(sa);
             //Release newly created entities from hibernates session im-memory storage
             if(i % 20 == 0) {
                 hibernateTemplate.flush();
@@ -72,7 +78,7 @@ public class StudentAssignmentJdbc
     @Override
     public Long update(long assignmentId, long id, StudentAssignment entity) {
         injectAssignment(assignmentId, entity);
-        hibernateTemplate.merge(entity);
+        hibernateTemplate.update(entity);
         return id;
     }
 

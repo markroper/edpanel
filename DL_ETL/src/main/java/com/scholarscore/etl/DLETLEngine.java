@@ -53,13 +53,13 @@ public class DLETLEngine implements IETLEngine {
     }
 
     @Override
-    public MigrationResult migrateDistrict() {
+    public MigrationResult syncDistrict() {
 
         // grab behaviors from deanslist
         Collection<Behavior> behaviorsToMerge = getBehaviorData();
 
         // get students from scholarscore -- we need to match names to behavior events
-        Collection<Student> existingStudents = scholarScore.getStudents();
+        Collection<Student> existingStudents = scholarScore.getStudents(null);
         studentLookup = populateLookup(existingStudents);
 
         // get teachers from scholarscore -- we need to match names to behavior events

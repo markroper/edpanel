@@ -15,10 +15,13 @@ import java.util.Collection;
  */
 public interface StudentManager {
 
-    public ServiceResponse<Collection<Student>> getAllStudents();
+    public ServiceResponse<Collection<Student>> getAllStudents(Long schoolId);
 
     public StatusCode studentExists(long studentId);
+
     public ServiceResponse<Student> getStudent(long studentId);
+
+    public ServiceResponse<Student> getStudentBySourceSystemId(Long ssid);
 
     // Creates a student and populates the Id field (if ID is specified it will be ignored)
     public ServiceResponse<Long> createStudent(Student student);

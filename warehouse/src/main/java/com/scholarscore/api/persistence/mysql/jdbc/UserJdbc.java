@@ -14,6 +14,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Maintain User identities separate from Student / Teacher entities for Spring Security
@@ -69,6 +70,7 @@ public class UserJdbc implements UserPersistence {
     
     @Override
     public Long createUser(User user) {
+        assignDefaults(user);
         User out = hibernateTemplate.merge(user);
         return out.getId();
     }
@@ -113,6 +115,15 @@ public class UserJdbc implements UserPersistence {
             }  
         }
         return filteredValues;
+    }
+
+    private static void assignDefaults(User user) {
+        if(null == user.getPassword()) {
+            user.setPassword(UUID.randomUUID().toString());
+        }
+        if(null == user.getUsername()) {
+            user.setUsername(UUID.randomUUID().toString());
+        }
     }
 
     public HibernateTemplate getHibernateTemplate() {

@@ -12,6 +12,7 @@ import com.scholarscore.models.assignment.StudentAssignment;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Created by cwallace on 9/16/2015.
@@ -118,6 +119,21 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         }
         return new ServiceResponse<>(
                 studentSectionGradePersistence.insert(sectionId, studentId, grade));
+    }
+
+    @Override
+    public ServiceResponse<Void> createStudentSectionGrades(long schoolId,
+                                                            long yearId,
+                                                            long termId,
+                                                            long sectionId,
+                                                            List<StudentSectionGrade> grades) {
+        StatusCode code = pm.getSectionManager().sectionExists(schoolId, yearId, termId, sectionId);
+        if(!code.isOK()) {
+            return new ServiceResponse<>(code);
+        }
+        studentSectionGradePersistence.insertAll(sectionId, grades);
+        return new ServiceResponse<>((Void)null);
+
     }
 
     @Override

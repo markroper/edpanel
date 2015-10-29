@@ -29,6 +29,7 @@ public class AttendanceAssignmentBuilderUnitTest extends AbstractBuilderUnitTest
         Date dueDate = CommonTestUtils.getRandomDate();
         AssignmentType type = AssignmentType.ATTENDANCE;
         Section section = CommonTestUtils.generateSection();
+        Double weight = RandomUtils.nextDouble(0D, Double.MAX_VALUE);
 
         AttendanceAssignment fullAttendanceAssignment = new AttendanceAssignment();
 
@@ -37,6 +38,10 @@ public class AttendanceAssignmentBuilderUnitTest extends AbstractBuilderUnitTest
         fullAttendanceAssignment.setSectionFK(sectionFK);
         fullAttendanceAssignment.setSection(section);
         fullAttendanceAssignment.setAvailablePoints(availablePoints);
+        fullAttendanceAssignment.setUserDefinedType(name);
+        fullAttendanceAssignment.setWeight(weight);
+        fullAttendanceAssignment.setIncludeInFinalGrades(true);
+        fullAttendanceAssignment.setSourceSystemId(name);
         fullAttendanceAssignment.setDueDate(dueDate);
         fullAttendanceAssignment.setType(type);
 
@@ -44,11 +49,14 @@ public class AttendanceAssignmentBuilderUnitTest extends AbstractBuilderUnitTest
                 withId(id).
                 withName(name).
                 withSectionFK(sectionFK).
+                withWeight(weight).
                 withSection(new Section(section)).
                 withAvailablePoints(availablePoints).
                 withType(type).
                 withDueDate(dueDate).
-                withType(type).
+                withUserDefinedType(name).
+                withSourceSystemId(name).
+                withIncludeInfinalGrades(true).
                 build();
 
         return new Object[][]{

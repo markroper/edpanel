@@ -1,5 +1,7 @@
 package com.scholarscore.client;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.http.Header;
@@ -7,9 +9,11 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
@@ -38,18 +42,18 @@ public abstract class BaseHttpClient {
     protected static final String HEADER_ACCEPT_NAME = "Accept";
     protected static final Header HEADER_CONTENT_TYPE_JSON = new BasicHeader("Content-Type", "application/json");
     protected static final Header HEADER_ACCEPT_JSON = new BasicHeader(HEADER_ACCEPT_NAME, HEADER_ACCEPT_JSON_VALUE);
-    protected static final int CONNECTION_TIMEOUT = 3000;
-    protected static final int CONNECTION_REQUEST_TIMEOUT = 30000;
+    protected static final int CONNECTION_TIMEOUT = 4000;
+    protected static final int CONNECTION_REQUEST_TIMEOUT = 40000;
 
     protected final CloseableHttpClient httpclient;
     protected final URI uri;
 
-    protected Gson gson;
+    protected static final ObjectMapper mapper = new ObjectMapper();
 
     public BaseHttpClient(URI uri) {
         this.uri = uri;
         this.httpclient = createClient();
-        this.gson = createGsonParser();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     protected Gson createGsonParser() {
@@ -75,6 +79,20 @@ public abstract class BaseHttpClient {
             throw new HttpClientException(e);
         }
     }
+
+    protected String delete(String path, String ...params) {
+        path = getPath(path, params);
+
+        try {
+            HttpDelete delete = new HttpDelete();
+            setupCommonHeaders(delete);
+            delete.setURI(uri.resolve(path));
+            return getJSON(delete);
+        } catch (IOException e) {
+            throw new HttpClientException(e);
+        }
+    }
+
 
     protected String post(byte[] data, String path) throws IOException {
         String strData = new String(data);
@@ -144,8 +162,7 @@ public abstract class BaseHttpClient {
             setupCommonHeaders(get);
             get.setURI(uri.resolve(path));
             String json = getJSON(get);
-            System.out.println(json);
-            return gson.fromJson(json, clazz);
+            return mapper.readValue(json, clazz);
         } catch (IOException e) {
             throw new HttpClientException(e);
         }
@@ -167,6 +184,30 @@ public abstract class BaseHttpClient {
             }
             else {
                 throw new HttpClientException("Failed to post to end point: " + patch.getURI().toString() + ", status line: " + response.getStatusLine().toString() + ", payload: " + json);
+            }
+        } catch (IOException e) {
+            throw new HttpClientException(e);
+        } finally {
+            response.getEntity().getContent().close();
+        }
+    }
+
+    protected String put(byte[] data, String path) throws IOException {
+        HttpPut put = new HttpPut();
+        put.setURI(uri.resolve(path));
+        setupCommonHeaders(put);
+        put.setHeader(HEADER_CONTENT_TYPE_JSON);
+        put.setEntity(new ByteArrayEntity(data));
+        HttpResponse response = null;
+        try {
+            response = httpclient.execute(put);
+            int code = response.getStatusLine().getStatusCode();
+            String json = EntityUtils.toString(response.getEntity());
+            if (code == HttpStatus.SC_CREATED || code == HttpStatus.SC_OK) {
+                return json;
+            }
+            else {
+                throw new HttpClientException("Failed to post to end point: " + put.getURI().toString() + ", status line: " + response.getStatusLine().toString() + ", payload: " + json);
             }
         } catch (IOException e) {
             throw new HttpClientException(e);

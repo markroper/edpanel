@@ -75,7 +75,13 @@ public class Administrator extends Person implements Serializable, IStaff<Admini
     public Long getCurrentSchoolId() {
         return currentSchoolId;
     }
-    
+
+    @Override
+    @Column(name = HibernateConsts.ADMIN_SOURCE_SYSTEM_USER_ID)
+    public String getSourceSystemUserId() {
+        return sourceSystemUserId;
+    }
+
     @Override
     @Transient
     public UserType getType() {

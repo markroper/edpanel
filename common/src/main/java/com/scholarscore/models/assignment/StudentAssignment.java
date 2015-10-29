@@ -7,8 +7,6 @@ import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
 import com.scholarscore.models.WeightedGradable;
 import com.scholarscore.models.user.Student;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -88,7 +86,6 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     }
 
     @ManyToOne(optional = true, fetch=FetchType.LAZY)
-    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.ASSIGNMENT_FK)
     @Fetch(FetchMode.JOIN)
     public Assignment getAssignment() {
@@ -128,7 +125,6 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     }
 
     @ManyToOne(optional = true, fetch=FetchType.LAZY)
-    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.STUDENT_FK)
     @Fetch(FetchMode.JOIN)
     public Student getStudent() {

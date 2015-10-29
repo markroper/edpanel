@@ -5,6 +5,7 @@ import com.scholarscore.etl.powerschool.api.deserializers.StaffsDeserializer;
 import com.scholarscore.etl.powerschool.api.response.ITranslateCollection;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Person;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 
@@ -23,7 +24,7 @@ public class PsStaffs extends ArrayList<PsStaff> implements ITranslateCollection
         for (PsStaff staff : this) {
 
             // MJG: Should we have a notion of an administrator?
-            com.scholarscore.models.user.Person entity;
+            Person entity;
             if (staff.isAdmin()) {
                 entity = new Administrator();
             } else {
@@ -49,6 +50,7 @@ public class PsStaffs extends ArrayList<PsStaff> implements ITranslateCollection
 
             // Define the login user so we can create that as well via the API
             entity.setEnabled(true);
+            entity.setSourceSystemUserId(staff.local_id.toString());
             entity.setUsername(staff.getUsername());
             collection.add(entity);
         }
