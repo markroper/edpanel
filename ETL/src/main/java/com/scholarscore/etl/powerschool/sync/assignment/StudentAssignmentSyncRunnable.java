@@ -70,8 +70,14 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
             } else {
                 sourceStudentAssignment.setId(edPanelStudentAssignment.getId());
                 sourceStudentAssignment.setStudent(edPanelStudentAssignment.getStudent());
+                if(sourceStudentAssignment.getStudent().getId().equals(edPanelStudentAssignment.getStudent().getId())) {
+                    sourceStudentAssignment.setStudent(edPanelStudentAssignment.getStudent());
+                }
+                if(sourceStudentAssignment.getAssignment().getId().equals(edPanelStudentAssignment.getAssignment().getId())) {
+                    sourceStudentAssignment.setAssignment(edPanelStudentAssignment.getAssignment());
+                }
                 if(!edPanelStudentAssignment.equals(sourceStudentAssignment)) {
-                    edPanel.replaceStudentAssignment(
+                     edPanel.replaceStudentAssignment(
                             school.getId(),
                             createdSection.getTerm().getSchoolYear().getId(),
                             createdSection.getTerm().getId(),

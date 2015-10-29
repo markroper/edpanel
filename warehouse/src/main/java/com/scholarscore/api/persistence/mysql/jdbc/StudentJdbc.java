@@ -78,6 +78,17 @@ public class StudentJdbc implements StudentPersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public Student selectBySsid(Long ssid) {
+        String query = "select s from student s where s.sourceSystemId = :ssid";
+        List<Student> students = (List<Student>) hibernateTemplate.findByNamedParam(query, "ssid", ssid.toString());
+        if (students.size() == 1) {
+            return students.get(0);
+        }
+        return null;
+    }
+
+    @Override
     public Long createStudent(Student student) {
         assignDefaults(student);
         Student out = hibernateTemplate.merge(student);
@@ -117,6 +128,4 @@ public class StudentJdbc implements StudentPersistence {
     public void setAuthorityPersistence(AuthorityPersistence authorityPersistence) {
         this.authorityPersistence = authorityPersistence;
     }
-    
-    
 }

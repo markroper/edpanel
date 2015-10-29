@@ -30,6 +30,7 @@ public interface IAPIClient {
     Student createStudent(Student student);
     Student updateStudent(Long studentId, Student student);
     Collection<Student> getStudents(Long schoolId);
+    Student getStudent(Long ssid);
     
     Collection<Teacher> getTeachers();
     Collection<Administrator> getAdministrators();

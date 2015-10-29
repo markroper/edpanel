@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  *
  * In PowerSchool, users appear to be globally unique within a powerschool install, but a single user
- * have multiple udentities. So there may be multiple Teacher rows for a single user if that user has taught at
+ * have multiple identities. So there may be multiple Teacher rows for a single user if that user has taught at
  * multiple schools in the district.  In EdPanel, a User has a one to one relationship with a student, teacher, or
  * administrative identity and a foreign key to the current active school.
  *

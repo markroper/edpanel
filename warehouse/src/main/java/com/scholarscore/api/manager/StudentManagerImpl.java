@@ -69,6 +69,11 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
+    public ServiceResponse<Student> getStudentBySourceSystemId(Long ssid) {
+        return new ServiceResponse<Student>(studentPersistence.selectBySsid(ssid));
+    }
+
+    @Override
     public ServiceResponse<Long> replaceStudent(long studentId, Student student) {
         StatusCode code = studentExists(studentId);
         if(!code.isOK()) {

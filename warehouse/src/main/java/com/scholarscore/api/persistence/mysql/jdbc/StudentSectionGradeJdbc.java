@@ -82,18 +82,10 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
 
     @Override
     public Long update(long sectionId, long studentId, StudentSectionGrade entity) {
-
-        StudentSectionGrade update = select(sectionId, studentId);
-        if (null != update) {
-            update.setStudent(entity.getStudent());
-            update.setGrade(entity.getGrade());
-            update.setComplete(entity.getComplete());
-            update.setSection(entity.getSection());
-            injectStudent(studentId, update);
-            injectSection(sectionId, update);
-            hibernateTemplate.merge(update);
-        }
-        return update.getId();
+        injectStudent(studentId, entity);
+        injectSection(sectionId, entity);
+        hibernateTemplate.update(entity);
+        return entity.getId();
     }
 
     @Override

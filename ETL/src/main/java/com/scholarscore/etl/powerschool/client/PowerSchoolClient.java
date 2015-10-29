@@ -1,7 +1,6 @@
 package com.scholarscore.etl.powerschool.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.scholarscore.client.BaseHttpClient;
@@ -39,32 +38,51 @@ import java.util.List;
  * Created by mattg on 7/2/15.
  */
 public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolClient {
-
+    private static final Integer PAGE_SIZE = 1000;
+    private static final String PAGE_SIZE_PARAM = "pagesize=" + PAGE_SIZE;
+    private static final String BASE = "/ws/v1";
+    private static final String SCHEMA_BASE = "/ws/schema/table";
     private static final String HEADER_AUTH_NAME = "Authorization";
-
     public static final String PATH_RESOURCE_DISTRICT = "/ws/v1/district";
     public static final String EXPANSION_RESOURCE_DISTRICT = "?expansions=district_race_codes,districts_of_residence,entry_codes,ethnicity_race_decline_to_specify,exit_codes,federal_race_categories,fees_payment_methods,scheduling_reporting_ethnicities,test_setup";
-
     public static final String PATH_RESOURCE_SCHOOL = "/ws/v1/district/school";
     public static final String EXPANSION_RESOURCE_SCHOOL = "?expansions=school_boundary,school_fees_setup";
-
-    //TODO: need to handle pagination here...
-    public static final String PATH_RESOURCE_STUDENT = "/ws/v1/school/{0}/student?pagesize=1000&expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup,school_enrollment";
-    public static final String PATH_RESOURCE_SINGLE_STUDENT = "/ws/v1/student/{0}?expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup";
-    public static final String PATH_RESOURCE_STAFF = "/ws/v1/school/{0}/staff?pagesize=1000";
+    public static final String PATH_RESOURCE_STUDENT =
+            BASE +
+            "/school/{0}/student?pagesize=" +
+            PAGE_SIZE +
+            "&expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup,school_enrollment";
+    public static final String PATH_RESOURCE_SINGLE_STUDENT =
+            BASE +
+            "/student/{0}?expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup";
+    public static final String PATH_RESOURCE_STAFF = BASE + "/school/{0}/staff?" + PAGE_SIZE_PARAM;
     public static final String EXPANSION_RESOURCE_STAFF = "&expansions=phones,addresses,emails,school_affiliations";
-
-    public static final String PATH_RESOURCE_COURSE = "/ws/v1/school/{0}/course?pagesize=1000";
-    public static final String PATH_RESOURCE_TERMS = "/ws/v1/school/{0}/term?pagesize=1000";
-    public static final String PATH_RESOURCE_SECTION = "/ws/v1/school/{0}/section?pagesize=1000";
-    public static final String PATH_RESOURCE_SECTION_ENROLLMENT = "/ws/v1/section/{0}/section_enrollment";
-    public static final String PATH_RESOURCE_SECTION_ASSIGNMENTS = "/ws/schema/table/PGAssignments?pagesize=1000&projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
-    public static final String PATH_RESOURCE_SECTION_ASSIGNMENT_CATEGORY = "/ws/schema/table/pgcategories?q=SectionID=={0}&projection=Abbreviation,DCID,DefaultPtsPoss,Description,ID,Name,SectionID";
-    public static final String PATH_RESOURCE_SECTION_SCORES = "/ws/schema/table/storedgrades?pagesize=1000&q=sectionid=={0}&projection=dcid,grade,datestored,studentid,sectionid,termid";
-    public static final String PATH_RESOURCE_ASSIGNMENT_SCORES = "/ws/schema/table/SectionScoresAssignments?pagesize=1000&q=assignment=={0}&projection=*";
-    public static final String PATH_RESOURCE_SECTION_SCORE_IDS = "/ws/schema/table/SectionScoresId?pagesize=1000&q=sectionid=={0}&projection=*";
-    //PGScores: "/ws/schema/table/pgscores?projection=PGAssignmentsID,id,grade,dcid,comment_value,percent,percentstr,studentid"
-
+    public static final String PATH_RESOURCE_COURSE = BASE + "/school/{0}/course?" + PAGE_SIZE_PARAM;
+    public static final String PATH_RESOURCE_TERMS = BASE + "/school/{0}/term?" + PAGE_SIZE_PARAM;
+    public static final String PATH_RESOURCE_SECTION = BASE + "/school/{0}/section?" + PAGE_SIZE_PARAM;
+    public static final String PATH_RESOURCE_SECTION_ENROLLMENT = BASE + "/section/{0}/section_enrollment";
+    public static final String PATH_RESOURCE_SECTION_ASSIGNMENTS =
+            "/ws/schema/table/PGAssignments?" +
+            PAGE_SIZE_PARAM +
+            "&projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
+    public static final String PATH_RESOURCE_SECTION_ASSIGNMENT_CATEGORY =
+            SCHEMA_BASE +
+            "/pgcategories?q=SectionID=={0}&projection=Abbreviation,DCID,DefaultPtsPoss,Description,ID,Name,SectionID";
+    public static final String PATH_RESOURCE_SECTION_SCORES =
+            SCHEMA_BASE +
+            "/storedgrades?" +
+            PAGE_SIZE_PARAM +
+            "&q=sectionid=={0}&projection=dcid,grade,datestored,studentid,sectionid,termid";
+    public static final String PATH_RESOURCE_ASSIGNMENT_SCORES =
+            SCHEMA_BASE +
+            "/SectionScoresAssignments?" +
+            PAGE_SIZE_PARAM +
+            "&q=assignment=={0}&projection=*";
+    public static final String PATH_RESOURCE_SECTION_SCORE_IDS =
+            SCHEMA_BASE +
+            "/SectionScoresId?" +
+            PAGE_SIZE_PARAM +
+            "&q=sectionid=={0}&projection=*";
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";
     private static final String URI_PATH_OATH = "/oauth/access_token";
 
@@ -82,10 +100,6 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         authenticate();
-    }
-
-    protected Gson createGsonClient() {
-        return new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
     }
 
     public void authenticate() {
@@ -126,14 +140,6 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
         return get(DistrictResponse.class, PATH_RESOURCE_DISTRICT);
     }
 
-    /**
-     * Get a collection of staff by school
-     *
-     * @param schoolId
-     *      The school identifier to retrieve the staff from within
-     *
-     * @return
-     */
     @Override
     public PsStaffs getStaff(Long schoolId) {
         return getJackson(PsStaffs.class, PATH_RESOURCE_STAFF + EXPANSION_RESOURCE_STAFF, schoolId.toString());

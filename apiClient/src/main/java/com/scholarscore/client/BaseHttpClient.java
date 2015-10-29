@@ -42,8 +42,8 @@ public abstract class BaseHttpClient {
     protected static final String HEADER_ACCEPT_NAME = "Accept";
     protected static final Header HEADER_CONTENT_TYPE_JSON = new BasicHeader("Content-Type", "application/json");
     protected static final Header HEADER_ACCEPT_JSON = new BasicHeader(HEADER_ACCEPT_NAME, HEADER_ACCEPT_JSON_VALUE);
-    protected static final int CONNECTION_TIMEOUT = 3000;
-    protected static final int CONNECTION_REQUEST_TIMEOUT = 30000;
+    protected static final int CONNECTION_TIMEOUT = 4000;
+    protected static final int CONNECTION_REQUEST_TIMEOUT = 40000;
 
     protected final CloseableHttpClient httpclient;
     protected final URI uri;

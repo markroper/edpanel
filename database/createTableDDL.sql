@@ -254,7 +254,8 @@ CREATE TABLE `scholar_warehouse`.`student_assignment` (
     FOREIGN KEY (`student_fk`)
     REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
     ON DELETE CASCADE
-    ON UPDATE CASCADE)
+    ON UPDATE CASCADE,
+  UNIQUE KEY `assignment_fk$student_fk` (`assignment_fk`,`student_fk`))
 ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`student_section_grade` (

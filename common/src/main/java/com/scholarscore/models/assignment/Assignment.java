@@ -39,7 +39,7 @@ import java.util.Objects;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
 @JsonSubTypes({
     @JsonSubTypes.Type(value = AttendanceAssignment.class, name="ATTENDANCE"),
     @JsonSubTypes.Type(value = GradedAssignment.class, name = "HOMEWORK"),
@@ -75,7 +75,6 @@ public abstract class Assignment
     }
 
     @OneToOne
-    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.SECTION_FK, insertable = false, updatable = false)
     @Transient
     public Section getSection() {

@@ -47,6 +47,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     private static final String SECTION_ENDPOINT = "/sections";
     private static final String SECTION_ASSIGNMENT_ENDPOINT = "/assignments";
     private static final String STUDENT_ENDPOINT = "/students";
+    private static final String SSIDS_ENDPOINT = "/sourcesystemids";
     private static final String STUDENT_ASSIGNMENT_ENDPOINT = "/studentassignments";
     private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
     private static final String TEACHER_ENDPOINT = "/teachers";
@@ -160,7 +161,15 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         Student[] students = get(Student[].class, path);
         return Arrays.asList(students);
     }
-    
+
+    @Override
+    public Student getStudent(Long ssid) {
+        Student s = get(
+                Student.class,
+                BASE_API_ENDPOINT + STUDENT_ENDPOINT + SSIDS_ENDPOINT + "/" + ssid);
+        return s;
+    }
+
     @Override
     public Student updateStudent(Long studentId, Student student) {
         if (studentId == null || studentId < 0) { return null; }
