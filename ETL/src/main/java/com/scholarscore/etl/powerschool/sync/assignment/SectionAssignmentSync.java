@@ -123,8 +123,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         try {
             executor.awaitTermination(ETLEngine.TOTAL_TTL_MINUTES, TimeUnit.MINUTES);
         } catch(InterruptedException e) {
-            System.out.println("Max TTL for the migration process was exceeded and the migration terminated. " +
-                    "Max TTL (minutes) is: " + ETLEngine.TOTAL_TTL_MINUTES);
+            System.out.println("Executor thread pool interrupted " + e.getMessage());
         }
         return source;
     }
