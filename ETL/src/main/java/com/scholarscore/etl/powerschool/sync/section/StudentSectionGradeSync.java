@@ -67,9 +67,10 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
         List<StudentSectionGrade> ssgs = Collections.synchronizedList(new ArrayList<>());
         ConcurrentHashMap<Long, StudentSectionGrade> source = null;
         try {
-            source = this.resolveAllFromSourceSystem();
+            source = this.resolveAllFromSourceSystem(results);
         } catch (HttpClientException e) {
             results.studentSectionGradeSourceGetFailed(
+                    Long.valueOf(createdSection.getSourceSystemId()),
                     Long.valueOf(this.createdSection.getSourceSystemId()),
                     this.createdSection.getId()
             );
@@ -80,6 +81,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             edpanelSsgMap = this.resolveFromEdPanel();
         } catch (HttpClientException e) {
             results.studentSectionGradeEdPanelGetFailed(
+                    Long.valueOf(createdSection.getSourceSystemId()),
                     Long.valueOf(this.createdSection.getSourceSystemId()),
                     this.createdSection.getId()
             );
@@ -95,7 +97,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             ssgs.add(sourceSsg);
             if(null == edPanelSsg){
                 ssgsToCreate.add(sourceSsg);
-                results.studentSectionGradeCreated(entry.getKey(), -1L);
+                results.studentSectionGradeCreated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), -1L);
             } else {
                 //Massage the objects to resolve whether or not an update is needed
                 sourceSsg.setId(edPanelSsg.getId());
@@ -115,10 +117,10 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                                 sourceSsg.getStudent().getId(),
                                 sourceSsg);
                     } catch (IOException e) {
-                        results.studentSectionGradeUpdateFailed(entry.getKey(), sourceSsg.getId());
+                        results.studentSectionGradeUpdateFailed(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceSsg.getId());
                         continue;
                     }
-                    results.studentSectionGradeUpdated(entry.getKey(), sourceSsg.getId());
+                    results.studentSectionGradeUpdated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceSsg.getId());
                 }
             }
         }
@@ -131,7 +133,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                     createdSection.getId(),
                     ssgsToCreate);
         } catch (HttpClientException e) {
-            results.studentSectionGradeCreateFailed(createdSection.getId());
+            results.studentSectionGradeCreateFailed(Long.valueOf(createdSection.getSourceSystemId()), createdSection.getId());
         }
         //Delete anything IN EdPanel that is NOT in source system
         Iterator<Map.Entry<Long, StudentSectionGrade>> edpanelIterator = edpanelSsgMap.entrySet().iterator();
@@ -148,17 +150,17 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                             edPanelSsg.getStudent().getId(),
                             edPanelSsg);
                 } catch (HttpClientException e) {
-                    results.studentSectionGradeDeleteFailed(entry.getKey(), edPanelSsg.getId());
+                    results.studentSectionGradeDeleteFailed(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), edPanelSsg.getId());
                     continue;
                 }
-                results.studentSectionGradeDeleted(entry.getKey(), edPanelSsg.getId());
+                results.studentSectionGradeDeleted(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), edPanelSsg.getId());
             }
         }
         createdSection.setStudentSectionGrades(ssgs);
         return source;
     }
 
-    protected ConcurrentHashMap<Long, StudentSectionGrade> resolveAllFromSourceSystem() throws HttpClientException {
+    protected ConcurrentHashMap<Long, StudentSectionGrade> resolveAllFromSourceSystem(SyncResult results) throws HttpClientException {
         //Resolve enrolled students & Create an EdPanel StudentSectionGrade for each
         SectionEnrollmentsResponse enrollments = null;
         try {
@@ -200,7 +202,8 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                             powerSchool,
                             edPanel,
                             studentAssociator,
-                            unresolvablePowerStudents);
+                            unresolvablePowerStudents,
+                            results);
                 }
                 if(null != se && null != edpanelStudent) {
                     StudentSectionGrade ssg = new StudentSectionGrade();

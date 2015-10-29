@@ -66,6 +66,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
             source = resolveAllFromSourceSystem();
         } catch (HttpClientException e) {
             results.studentAssignmentSourceGetFailed(
+                    Long.valueOf(createdSection.getSourceSystemId()),
                     Long.valueOf(this.assignment.getSourceSystemId()),
                     this.assignment.getId());
             return new ConcurrentHashMap<>();
@@ -75,6 +76,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
             ed = resolveFromEdPanel();
         } catch (HttpClientException e) {
             results.studentAssignmentEdPanelGetFailed(
+                    Long.valueOf(createdSection.getSourceSystemId()),
                     Long.valueOf(this.assignment.getSourceSystemId()),
                     this.assignment.getId());
             return new ConcurrentHashMap<>();
@@ -89,7 +91,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
             StudentAssignment edPanelStudentAssignment = ed.get(entry.getKey());
             if(null == edPanelStudentAssignment){
                 studentAssignmentsToCreate.add(sourceStudentAssignment);
-                results.studentAssignmentCreated(entry.getKey(), -1L);
+                results.studentAssignmentCreated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), -1L);
             } else {
                 sourceStudentAssignment.setId(edPanelStudentAssignment.getId());
                 sourceStudentAssignment.setStudent(edPanelStudentAssignment.getStudent());
@@ -109,10 +111,10 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                                 assignment.getId(),
                                 sourceStudentAssignment);
                     } catch (IOException e) {
-                        results.studentAssignmentUpdateFailed(entry.getKey(), sourceStudentAssignment.getId());
+                        results.studentAssignmentUpdateFailed(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceStudentAssignment.getId());
                         continue;
                     }
-                    results.studentAssignmentUpdated(entry.getKey(), sourceStudentAssignment.getId());
+                    results.studentAssignmentUpdated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceStudentAssignment.getId());
                 }
             }
         }
@@ -129,7 +131,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
             for(StudentAssignment s: studentAssignmentsToCreate) {
                 // NOTE - we couldn't create the student assignments for any of the assignment,
                 // so use the parent ID in this case.
-                results.studentAssignmentCreateFailed(Long.valueOf(assignment.getSourceSystemId()));
+                results.studentAssignmentCreateFailed(Long.valueOf(createdSection.getSourceSystemId()), Long.valueOf(assignment.getSourceSystemId()));
             }
         }
 
@@ -147,10 +149,10 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                             assignment.getId(),
                             entry.getValue());
                 } catch (HttpClientException e) {
-                    results.studentAssignmentDeleteFailed(entry.getKey(), entry.getValue().getId());
+                    results.studentAssignmentDeleteFailed(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), entry.getValue().getId());
                     continue;
                 }
-                results.studentAssignmentDeleted(entry.getKey(), entry.getValue().getId());
+                results.studentAssignmentDeleted(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), entry.getValue().getId());
             }
         }
         return source;
