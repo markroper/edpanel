@@ -91,6 +91,11 @@ public class SchoolDayValidatingExecutor {
         submitted.getSchool().setYears(null);
         SchoolDay created = this.get(schoolId, id.getId(), msg);
         SchoolDay expected = submitted;
+        if(null != expected.getSchool() &&
+                null != created.getSchool() &&
+                created.getSchool().getId().equals(expected.getSchool().getId())) {
+            expected.setSchool(created.getSchool());
+        }
         Assert.assertEquals(created, expected, msg);
         return created;
     }
