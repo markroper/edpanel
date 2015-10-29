@@ -50,11 +50,11 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
 
     @Override
     public void run() {
-        this.synchCreateUpdateDelete();
+        this.syncCreateUpdateDelete();
     }
 
     @Override
-    public ConcurrentHashMap<Long, StudentAssignment> synchCreateUpdateDelete() {
+    public ConcurrentHashMap<Long, StudentAssignment> syncCreateUpdateDelete() {
         ConcurrentHashMap<Long, StudentAssignment> source = resolveAllFromSourceSystem();
         ConcurrentHashMap<Long, StudentAssignment> ed = resolveFromEdPanel();
 

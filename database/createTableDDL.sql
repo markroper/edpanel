@@ -17,7 +17,7 @@ CREATE TABLE `scholar_warehouse`.`school` (
   `main_phone` VARCHAR(256) NULL COMMENT 'The school\'s main phone number',
   `principal_name` VARCHAR(256) NULL COMMENT 'The principal\'s name',
   `principal_email` VARCHAR(256) NULL COMMENT 'The principal\'s email address',
-  `sourceSystemId` VARCHAR(256) NULL COMMENT 'The source system from which the entity was imported - the id from that system',
+  `sourceSystemId` VARCHAR(256) NULL UNIQUE COMMENT 'The source system from which the entity was imported - the id from that system',
   PRIMARY KEY (`school_id`))
 ENGINE = InnoDB;
 
@@ -54,7 +54,7 @@ ENGINE = InnoDB;
   
 CREATE TABLE `scholar_warehouse`.`student` (
   `student_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
-  `source_system_id` VARCHAR(256) NULL COMMENT 'The identifier from the source system, if any',
+  `source_system_id` VARCHAR(256) NULL UNIQUE COMMENT 'The identifier from the source system, if any',
   `student_source_system_user_id` VARCHAR(256) NULL COMMENT 'The identifier of the user from the source system, if any',
   `mailing_fk` BIGINT UNSIGNED NULL COMMENT 'The address FK for mailing address',
   `home_fk` BIGINT UNSIGNED NULL COMMENT 'The address FK for home address',
@@ -88,7 +88,7 @@ ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`teacher` (
   `teacher_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
-  `teacher_source_system_id` VARCHAR(256) NULL,
+  `teacher_source_system_id` VARCHAR(256) NULL UNIQUE,
   `teacher_source_system_user_id` VARCHAR(256) NULL COMMENT 'The identifier of the user from the source system, if any',
   `teacher_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user_fk of the teacher',
   `teacher_home_phone` VARCHAR(256) NULL COMMENT 'Home phone number for teacher',
@@ -112,7 +112,7 @@ CREATE TABLE `scholar_warehouse`.`administrator` (
   `administrator_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `administrator_home_phone` VARCHAR(256) NULL,
   `administrator_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
-  `administrator_source_system_id` VARCHAR(256) NULL,
+  `administrator_source_system_id` VARCHAR(256) NULL UNIQUE,
   `administrator_source_system_user_id` VARCHAR(256) NULL COMMENT 'The identifier of the user from the source system, if any',
   `administrator_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user_fk of the teacher',
   `school_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the current school the administrator actively works for',
@@ -151,7 +151,7 @@ CREATE TABLE `scholar_warehouse`.`term` (
   `term_start_date` DATETIME NULL COMMENT 'The school term start date',
   `term_end_date` DATETIME NULL COMMENT 'The school term end date',
   `school_year_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the school table',
-  `term_source_system_id` VARCHAR(256) NULL COMMENT 'The origin system id',
+  `term_source_system_id` VARCHAR(256) NULL UNIQUE COMMENT 'The origin system id',
   PRIMARY KEY (`term_id`),
   CONSTRAINT `fk_school_year$school_term`
     FOREIGN KEY (`school_year_fk`)
@@ -183,7 +183,7 @@ CREATE TABLE `scholar_warehouse`.`section` (
   `grade_formula` VARCHAR(1024) NULL COMMENT 'The section grading formula as a string',
   `course_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the school table',
   `term_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the term table',
-  `section_source_system_id` VARCHAR(256) NULL COMMENT 'The source system from which the entity was imported - the id from that system',
+  `section_source_system_id` VARCHAR(256) NULL UNIQUE COMMENT 'The source system from which the entity was imported - the id from that system',
   PRIMARY KEY (`section_id`),
   CONSTRAINT `fk_course$section`
     FOREIGN KEY (`course_fk`)
@@ -227,7 +227,7 @@ CREATE TABLE `scholar_warehouse`.`assignment` (
   `weight` DOUBLE NULL COMMENT 'The weighting for calculating the section grade for the assignment, if any',
   `user_defined_type` VARCHAR(256) NULL COMMENT 'Dynamically defined assignment type that can be created by the user, if any',
   `include_in_final_grades` BIT(1) COMMENT 'True if the assignment should be included in grade calculations, otherwise false',
-  `assignment_source_system_id` VARCHAR(256) NULL COMMENT 'The source system from which the entity was imported - the id from that system',
+  `assignment_source_system_id` VARCHAR(256) NULL UNIQUE COMMENT 'The source system from which the entity was imported - the id from that system',
   PRIMARY KEY (`assignment_id`),
   CONSTRAINT `fk_section$assignment`
     FOREIGN KEY (`section_fk`)

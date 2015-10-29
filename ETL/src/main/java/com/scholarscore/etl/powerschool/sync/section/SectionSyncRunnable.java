@@ -63,11 +63,11 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
 
     @Override
     public void run() {
-        synchCreateUpdateDelete();
+        syncCreateUpdateDelete();
     }
 
     @Override
-    public ConcurrentHashMap<Long, Section> synchCreateUpdateDelete() {
+    public ConcurrentHashMap<Long, Section> syncCreateUpdateDelete() {
         ConcurrentHashMap<Long, Section> source = resolveAllFromSourceSystem();
         ConcurrentHashMap<Long, Section> ed = resolveFromEdPanel();
         Iterator<Map.Entry<Long, Section>> sourceIterator = source.entrySet().iterator();
@@ -101,7 +101,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     studentAssociator,
                     unresolvablePowerStudents,
                     sourceSection);
-            ssgSync.synchCreateUpdateDelete();
+            ssgSync.syncCreateUpdateDelete();
 
             SectionAssignmentSync assignmentSync = new SectionAssignmentSync(
                     powerSchool,
@@ -111,7 +111,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     unresolvablePowerStudents,
                     sourceSection
             );
-            assignmentSync.synchCreateUpdateDelete();
+            assignmentSync.syncCreateUpdateDelete();
         }
         //Delete anything IN EdPanel that is NOT in source system
         Iterator<Map.Entry<Long, Section>> edpanelIterator = ed.entrySet().iterator();

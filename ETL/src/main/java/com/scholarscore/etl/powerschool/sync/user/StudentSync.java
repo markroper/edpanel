@@ -36,7 +36,7 @@ public class StudentSync implements ISync<Student> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Student> synchCreateUpdateDelete() {
+    public ConcurrentHashMap<Long, Student> syncCreateUpdateDelete() {
         Long psSchoolId = new Long(school.getSourceSystemId());
         ConcurrentHashMap<Long, Student> sourceStudents = resolveAllFromSourceSystem();
         ConcurrentHashMap<Long, Student> ed = resolveFromEdPanel();

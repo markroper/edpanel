@@ -27,9 +27,11 @@ import java.util.stream.Collectors;
 
 /**
  * This is the E2E flow for powerschool import to edPanel export - we have references to both clients and
- * can invoke get API's from powerschool and POST (create) API's from edPanel.  We assume for now that we'll seek
- * out entities from the scholarscore database before inserting them into the database rather than assuming a trash
- * and burn strategy.
+ * can invoke get API's from powerschool and POST (create) API's from edPanel.
+ *
+ * The migrateDistrict() method on this implementation can be run to do an initial migration or to synchronize a
+ * partially migrated or out of date set of entities between edpanel and powerschool.  The method is idempotent, if it
+ * fails partway through or completes successfully and is rerun, the end state it generates should always be the same.
  *
  * Created by mattg on 7/3/©5.
  */
@@ -154,7 +156,7 @@ public class ETLEngine implements IETLEngine {
                 TermSync tSync = new TermSync(edPanel, powerSchool, school);
                 this.terms.put(
                         Long.valueOf(school.getSourceSystemId()),
-                        tSync.synchCreateUpdateDelete()
+                        tSync.syncCreateUpdateDelete()
                 );
             }
         }
@@ -164,27 +166,27 @@ public class ETLEngine implements IETLEngine {
 
         for (School school : schools) {
             CourseSync sync = new CourseSync(edPanel, powerSchool, school);
-            this.courses.put(Long.valueOf(school.getSourceSystemId()), sync.synchCreateUpdateDelete());
+            this.courses.put(Long.valueOf(school.getSourceSystemId()), sync.syncCreateUpdateDelete());
         }
     }
 
     private void createStudents() {
         for (School school : schools) {
             StudentSync sync = new StudentSync(edPanel, powerSchool, school, studentAssociator);
-            studentAssociator.addOtherIdMap(sync.synchCreateUpdateDelete());
+            studentAssociator.addOtherIdMap(sync.syncCreateUpdateDelete());
         }
     }
 
     public void createStaff() {
         for (School school : schools) {
             StaffSync sync = new StaffSync(edPanel, powerSchool, school, staffAssociator);
-            staffAssociator.addOtherIdMap(sync.synchCreateUpdateDelete());
+            staffAssociator.addOtherIdMap(sync.syncCreateUpdateDelete());
         }
     }
 
     public void createSchools() {
         SchoolSync sync = new SchoolSync(edPanel, powerSchool);
-        Map<Long, School> result = sync.synchCreateUpdateDelete();
+        Map<Long, School> result = sync.syncCreateUpdateDelete();
         this.schools = result.entrySet()
                         .stream()
                         .map(Map.Entry::getValue)
