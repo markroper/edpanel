@@ -84,10 +84,10 @@ public abstract class BaseHttpClient {
         path = getPath(path, params);
 
         try {
-            HttpDelete get = new HttpDelete();
-            setupCommonHeaders(get);
-            get.setURI(uri.resolve(path));
-            return getJSON(get);
+            HttpDelete delete = new HttpDelete();
+            setupCommonHeaders(delete);
+            delete.setURI(uri.resolve(path));
+            return getJSON(delete);
         } catch (IOException e) {
             throw new HttpClientException(e);
         }
