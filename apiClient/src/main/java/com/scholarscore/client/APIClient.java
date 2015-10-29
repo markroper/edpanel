@@ -102,7 +102,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
 
     @Override
     public void deleteSchool(School school) {
-        delete(BASE_API_ENDPOINT + SCHOOL_ENDPOINT + "/" + school.getId(), null);
+        delete(BASE_API_ENDPOINT + SCHOOL_ENDPOINT + "/" + school.getId(), (String[]) null);
     }
 
     private void createVoidResponse(Object obj, String path) {
@@ -309,7 +309,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     public void deleteSchoolYear(Long schoolId, SchoolYear year) {
         delete(BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
-                SCHOOL_YEAR_ENDPOINT + "/" + year.getId(), null);
+                SCHOOL_YEAR_ENDPOINT + "/" + year.getId(), (String[]) null);
     }
 
     @Override
@@ -346,7 +346,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         delete(BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
                 SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId +
-                TERM_ENDPOINT + "/" + term.getId(), null);
+                TERM_ENDPOINT + "/" + term.getId(), (String[]) null);
     }
 
     @Override
@@ -417,7 +417,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
                 SCHOOL_ENDPOINT + "/" + schoolId +
                 SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId +
                 TERM_ENDPOINT + "/" + termId +
-                SECTION_ENDPOINT + "/" + section.getId(), null);
+                SECTION_ENDPOINT + "/" + section.getId(), (String[]) null);
     }
 
     @Override
@@ -483,7 +483,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
                 SCHOOL_YEAR_ENDPOINT + "/" + yearId +
                 TERM_ENDPOINT + "/" + termId +
                 SECTION_ENDPOINT + "/" + sectionId +
-                STUDENT_SECTION_GRADE_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId, null);
+                STUDENT_SECTION_GRADE_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId, (String[]) null);
     }
 
     @Override
@@ -532,7 +532,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
             SCHOOL_YEAR_ENDPOINT + "/" + yearId +
             TERM_ENDPOINT + "/" + termId +
             SECTION_ENDPOINT + "/" + sectionId +
-            SECTION_ASSIGNMENT_ENDPOINT + "/" + ssg.getId(), null);
+            SECTION_ASSIGNMENT_ENDPOINT + "/" + ssg.getId(), (String[]) null);
     }
 
     @Override
@@ -608,7 +608,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
                 TERM_ENDPOINT + "/" + termId +
                 SECTION_ENDPOINT + "/" + sectionId +
                 SECTION_ASSIGNMENT_ENDPOINT + "/" + assignmentId +
-                STUDENT_ASSIGNMENT_ENDPOINT + "/" + studentAssignment.getId(), null);
+                STUDENT_ASSIGNMENT_ENDPOINT + "/" + studentAssignment.getId(), (String[]) null);
     }
 
     @Override

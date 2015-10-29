@@ -308,6 +308,7 @@ public abstract class Assignment
             assignment.setWeight(weight);
             assignment.setSourceSystemId(sourceSystemId);
             assignment.setUserDefinedType(userDefinedType);
+            assignment.setIncludeInFinalGrades(includeInFinalGrades);
             assignment.setAvailablePoints(availablePoints);
             assignment.setSection(section);
             //TODO: should we make this reciprocal?
