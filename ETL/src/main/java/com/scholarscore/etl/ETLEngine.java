@@ -26,11 +26,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * This is the E2E flow for powerschool import to edPanel export - we have references to both clients and
- * can invoke get API's from powerschool and POST (create) API's from edPanel.
+ * This is the E2E flow for PowerSchool import to edPanel export - we have references to both clients and
+ * can invoke get APIs from PowerSchool and POST/PUT/DELETE APIs to EdPanel to synchronize.
  *
  * The syncDistrict() method on this implementation can be run to do an initial migration or to synchronize a
- * partially migrated or out of date set of entities between edpanel and powerschool.  The method is idempotent, if it
+ * partially migrated or out of date set of entities between EdPanel and PowerSchool.  The method is idempotent, if it
  * fails partway through or completes successfully and is rerun, the end state it generates should always be the same.
  *
  * Created by mattg on 7/3/©5.
