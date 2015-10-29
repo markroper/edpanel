@@ -38,6 +38,10 @@ public class AttendanceAssignmentBuilderUnitTest extends AbstractBuilderUnitTest
         fullAttendanceAssignment.setSectionFK(sectionFK);
         fullAttendanceAssignment.setSection(section);
         fullAttendanceAssignment.setAvailablePoints(availablePoints);
+        fullAttendanceAssignment.setUserDefinedType(name);
+        fullAttendanceAssignment.setWeight(weight);
+        fullAttendanceAssignment.setIncludeInFinalGrades(true);
+        fullAttendanceAssignment.setSourceSystemId(name);
         fullAttendanceAssignment.setDueDate(dueDate);
         fullAttendanceAssignment.setType(type);
 
