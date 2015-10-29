@@ -221,7 +221,7 @@ public class Student extends Person implements Serializable {
     }
 
     /**
-     * TODO: Student's don't actually have this field persisted yet. Add to model & enable
+     * TODO: Students don't actually have this field persisted yet. Add to model & enable
      */
     @Override
     @Transient
