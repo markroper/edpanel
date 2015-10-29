@@ -116,13 +116,6 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
     }
     
     @Test(dataProvider = "createStudentAssignmentProvider")
-    public void createStudentAssignmentTest(String msg, StudentAssignment studentAssignment) {
-        studentAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), 
-                section.getId(), sectionAssignment.getId(), studentAssignment, msg);
-        numberOfItemsCreated++;
-    }
-    
-    @Test(dataProvider = "createStudentAssignmentProvider")
     public void deleteStudentAssignmentTest(String msg, StudentAssignment studentAssignment) {
         StudentAssignment createdSection = studentAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(), sectionAssignment.getId(), studentAssignment, msg);
         studentAssignmentValidatingExecutor.delete(school.getId(), schoolYear.getId(), term.getId(), section.getId(), sectionAssignment.getId(), createdSection.getId(), msg);
@@ -135,9 +128,11 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
         StudentAssignment replacement = new StudentAssignment();
         replacement.setStudent(student);
         replacement.setAssignment(sectionAssignment);
+        replacement.setId(createdSection.getId());
         studentAssignmentValidatingExecutor.replace(school.getId(), schoolYear.getId(), term.getId(), 
                 section.getId(), sectionAssignment.getId(), createdSection.getId(), replacement, msg);
-        numberOfItemsCreated++;
+        studentAssignmentValidatingExecutor.delete(school.getId(), schoolYear.getId(), term.getId(),
+                section.getId(), sectionAssignment.getId(), createdSection.getId(), msg);
     }
     
     @Test(dataProvider = "createStudentAssignmentProvider")
@@ -150,7 +145,9 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
         //PATCH the existing record with a new name.
         studentAssignmentValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), 
                 section.getId(), sectionAssignment.getId(), createdSection.getId(), updatedStudent, msg);
-        numberOfItemsCreated++;
+
+        studentAssignmentValidatingExecutor.delete(school.getId(), schoolYear.getId(), term.getId(),
+                section.getId(), sectionAssignment.getId(), createdSection.getId(), msg);
     }
     
     @Test
@@ -185,5 +182,7 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
                 section.getId(), sectionAssignment.getId(), st, msg);
         studentAssignmentValidatingExecutor.replaceNegative(school.getId(), schoolYear.getId(), term.getId(), 
                 section.getId(), sectionAssignment.getId(), created.getId(), studentAssignment, expectedStatus, msg);
+        studentAssignmentValidatingExecutor.delete(school.getId(), schoolYear.getId(), term.getId(),
+                section.getId(), sectionAssignment.getId(), created.getId(), msg);
     }
 }
