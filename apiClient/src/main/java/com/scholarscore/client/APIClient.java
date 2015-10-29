@@ -47,6 +47,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     private static final String SECTION_ENDPOINT = "/sections";
     private static final String SECTION_ASSIGNMENT_ENDPOINT = "/assignments";
     private static final String STUDENT_ENDPOINT = "/students";
+    private static final String SSIDS_ENDPOINT = "/sourcesystemids";
     private static final String STUDENT_ASSIGNMENT_ENDPOINT = "/studentassignments";
     private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
     private static final String TEACHER_ENDPOINT = "/teachers";
@@ -67,11 +68,41 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         authenticate();
     }
 
+    @Override
     public School createSchool(School school) {
         EntityId id = create(school, SCHOOL_ENDPOINT);
         School response = new School(school);
         response.setId(id.getId());
         return response;
+    }
+
+    @Override
+    public School getSchool(Long schoolId) {
+        School response = get(School.class,
+                BASE_API_ENDPOINT + SCHOOL_ENDPOINT + "/" + schoolId);
+        return response;
+    }
+
+    @Override
+    public School[] getSchools() {
+        School[] response = get(School[].class, BASE_API_ENDPOINT + SCHOOL_ENDPOINT);
+        return response;
+    }
+
+    @Override
+    public School updateSchool(School school) {
+        School response = new School(school);
+        try {
+            patch(convertObjectToJsonBytes(school), BASE_API_ENDPOINT + SCHOOL_ENDPOINT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return school;
+    }
+
+    @Override
+    public void deleteSchool(School school) {
+        delete(BASE_API_ENDPOINT + SCHOOL_ENDPOINT + "/" + school.getId(), (String[]) null);
     }
 
     private void createVoidResponse(Object obj, String path) {
@@ -90,7 +121,12 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return gson.fromJson(jsonCreateResponse, EntityId.class);
+        try {
+            return mapper.readValue(jsonCreateResponse, EntityId.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     
     private EntityId update(Object obj, String path) {
@@ -100,13 +136,12 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return gson.fromJson(jsonCreateResponse, EntityId.class);
-    }
-
-    public School getSchool(Long schoolId) {
-        School response = get(School.class,
-                SCHOOL_ENDPOINT + "/" + schoolId);
-        return response;
+        try {
+            return mapper.readValue(jsonCreateResponse, EntityId.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
@@ -118,11 +153,23 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Collection<Student> getStudents() {
-        Student[] students = get(Student[].class, BASE_API_ENDPOINT + STUDENT_ENDPOINT);
+    public Collection<Student> getStudents(Long schoolId) {
+        String path = BASE_API_ENDPOINT + STUDENT_ENDPOINT;
+        if(null != schoolId) {
+            path += "?schoolId=" + schoolId;
+        }
+        Student[] students = get(Student[].class, path);
         return Arrays.asList(students);
     }
-    
+
+    @Override
+    public Student getStudent(Long ssid) {
+        Student s = get(
+                Student.class,
+                BASE_API_ENDPOINT + STUDENT_ENDPOINT + SSIDS_ENDPOINT + "/" + ssid);
+        return s;
+    }
+
     @Override
     public Student updateStudent(Long studentId, Student student) {
         if (studentId == null || studentId < 0) { return null; }
@@ -143,6 +190,12 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     public Collection<Teacher> getTeachers() {
         Teacher[] teachers = get(Teacher[].class, BASE_API_ENDPOINT + TEACHER_ENDPOINT);
         return Arrays.asList(teachers);
+    }
+
+    @Override
+    public Collection<Administrator> getAdministrators() {
+        Administrator[] admins = get(Administrator[].class, BASE_API_ENDPOINT + ADMINISTRATOR_ENDPOINT);
+        return Arrays.asList(admins);
     }
 
     @Override
@@ -178,11 +231,37 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public User createUser(User login) {
-        EntityId id = create(login, USERS_ENDPOINT);
-        User response = UserType.clone(login);
+    public User createUser(User usr) {
+        EntityId id = create(usr, USERS_ENDPOINT);
+        User response = UserType.clone(usr);
         response.setId(id.getId());
         return response;
+    }
+
+    @Override
+    public User[] getUsers(Long schoolId) {
+        User[] response = get(User[].class, BASE_API_ENDPOINT + USERS_ENDPOINT + "?enabled=&schoolId=" + schoolId);
+        return response;
+    }
+
+    @Override
+    public User updateUser(User user) {
+        try {
+            patch(convertObjectToJsonBytes(user), BASE_API_ENDPOINT + USERS_ENDPOINT + "/" + user.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    @Override
+    public User replaceUser(User user) {
+        try {
+            put(convertObjectToJsonBytes(user), BASE_API_ENDPOINT + USERS_ENDPOINT + "/" + user.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return user;
     }
 
     @Override
@@ -192,7 +271,31 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         response.setId(id.getId());
         return response;
     }
-    
+
+    @Override
+    public void deleteCourse(Long schoolId, Course course) {
+        String[] params = { schoolId.toString(), course.getId().toString() };
+        delete(BASE_API_ENDPOINT + COURSE_ENDPOINT + "/{1}", params);
+    }
+
+    @Override
+    public Course replaceCourse(Long schoolId, Course course) {
+        String[] params = { schoolId.toString(), course.getId().toString() };
+        try {
+            put(convertObjectToJsonBytes(course), getPath(BASE_API_ENDPOINT + COURSE_ENDPOINT + "/{1}", params));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return course;
+    }
+
+    @Override
+    public Course[] getCourses(Long schoolId) {
+        String[] params = { schoolId.toString() };
+        Course[] courses = get(Course[].class, getPath(BASE_API_ENDPOINT + COURSE_ENDPOINT, params));
+        return courses;
+    }
+
 
     @Override
     public SchoolYear createSchoolYear(Long schoolId, SchoolYear year) {
@@ -203,11 +306,71 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
+    public void deleteSchoolYear(Long schoolId, SchoolYear year) {
+        delete(BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                SCHOOL_YEAR_ENDPOINT + "/" + year.getId(), (String[]) null);
+    }
+
+    @Override
+    public SchoolYear updateSchoolYear(Long schoolId, SchoolYear year) {
+        SchoolYear y = new SchoolYear(year);
+        try {
+            patch(convertObjectToJsonBytes(year), BASE_API_ENDPOINT +
+                    SCHOOL_ENDPOINT + "/" + schoolId +
+                    SCHOOL_YEAR_ENDPOINT + "/" + year.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return y;
+    }
+
+    @Override
+    public SchoolYear[] getSchoolYears(Long schoolId) {
+        SchoolYear[] years = get(SchoolYear[].class, BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                SCHOOL_YEAR_ENDPOINT);
+        return years;
+    }
+
+    @Override
     public Term createTerm(Long schoolId, Long schoolYearId, Term term) {
         Term response = new Term(term);
         EntityId id = create(term, SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId + TERM_ENDPOINT);
         response.setId(id.getId());
         return response;
+    }
+
+    @Override
+    public void deleteTerm(Long schoolId, Long schoolYearId, Term term) {
+        delete(BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId +
+                TERM_ENDPOINT + "/" + term.getId(), (String[]) null);
+    }
+
+    @Override
+    public Term updateTerm(Long schoolId, Long schoolYearId, Term term) {
+        Term t = new Term(term);
+        try {
+            patch(convertObjectToJsonBytes(term), BASE_API_ENDPOINT +
+                    SCHOOL_ENDPOINT + "/" + schoolId +
+                    SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId +
+                    TERM_ENDPOINT + "/" + term.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return t;
+    }
+
+
+    @Override
+    public Term[] getTerms(Long schoolId, Long schoolYearId) {
+        Term[] terms = get(Term[].class, BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId +
+                TERM_ENDPOINT);
+        return terms;
     }
     
     @Override
@@ -218,11 +381,45 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
             Section section) {
         Section response = new Section(section);
         EntityId id = create(section, 
-                SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId + TERM_ENDPOINT + "/" + termId + SECTION_ENDPOINT);
+                        SCHOOL_ENDPOINT + "/" + schoolId +
+                        SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId +
+                        TERM_ENDPOINT + "/" + termId + SECTION_ENDPOINT);
         response.setId(id.getId());
         return response;
     }
-    
+
+    @Override
+    public Section[] getSections(Long schoolId) {
+        Section[] sections = get(Section[].class, BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                SECTION_ENDPOINT);
+        return sections;
+    }
+
+    @Override
+    public Section replaceSection(Long schoolId, Long schoolYearId, Long termId, Section section) {
+        Section t = new Section(section);
+        try {
+            put(convertObjectToJsonBytes(section), BASE_API_ENDPOINT +
+                    SCHOOL_ENDPOINT + "/" + schoolId +
+                    SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId +
+                    TERM_ENDPOINT + "/" + termId +
+                    SECTION_ENDPOINT + "/" + section.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return t;
+    }
+
+    @Override
+    public void deleteSection(Long schoolId, Long schoolYearId, Long termId, Section section) {
+        delete(BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId +
+                TERM_ENDPOINT + "/" + termId +
+                SECTION_ENDPOINT + "/" + section.getId(), (String[]) null);
+    }
+
     @Override
     public StudentSectionGrade createStudentSectionGrade(
             Long schoolId,
@@ -241,6 +438,68 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
+    public void createStudentSectionGrades(Long schoolId,
+                                           Long yearId,
+                                           Long termId,
+                                           Long sectionId,
+                                           List<StudentSectionGrade> ssgs) {
+        createVoidResponse(ssgs,
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                        SCHOOL_YEAR_ENDPOINT + "/" + yearId +
+                        TERM_ENDPOINT + "/" + termId +
+                        SECTION_ENDPOINT + "/" + sectionId +
+                        STUDENT_SECTION_GRADE_ENDPOINT);
+    }
+
+    @Override
+    public StudentSectionGrade replaceStudentSectionGrade(Long schoolId,
+                                                          Long yearId,
+                                                          Long termId,
+                                                          Long sectionId,
+                                                          Long studentId, StudentSectionGrade ssg) {
+        StudentSectionGrade studentSectionGrade = new StudentSectionGrade(ssg);
+        try {
+            put(convertObjectToJsonBytes(ssg), BASE_API_ENDPOINT +
+                    SCHOOL_ENDPOINT + "/" + schoolId +
+                    SCHOOL_YEAR_ENDPOINT + "/" + yearId +
+                    TERM_ENDPOINT + "/" + termId +
+                    SECTION_ENDPOINT + "/" + sectionId +
+                    STUDENT_SECTION_GRADE_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return studentSectionGrade;
+    }
+
+    @Override
+    public void deleteStudentSectionGrade(Long schoolId,
+                                                         Long yearId,
+                                                         Long termId,
+                                                         Long sectionId,
+                                                         Long studentId,
+                                                         StudentSectionGrade ssg) {
+        delete(BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                SCHOOL_YEAR_ENDPOINT + "/" + yearId +
+                TERM_ENDPOINT + "/" + termId +
+                SECTION_ENDPOINT + "/" + sectionId +
+                STUDENT_SECTION_GRADE_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId, (String[]) null);
+    }
+
+    @Override
+    public StudentSectionGrade[] getStudentSectionGrades(Long schoolId, Long yearId, Long termId, Long sectionId) {
+        StudentSectionGrade[] ssgs = get(
+                StudentSectionGrade[].class,
+                BASE_API_ENDPOINT +
+                    SCHOOL_ENDPOINT + "/" + schoolId +
+                    SCHOOL_YEAR_ENDPOINT + "/" + yearId +
+                    TERM_ENDPOINT + "/" + termId +
+                    SECTION_ENDPOINT + "/" + sectionId +
+                    STUDENT_SECTION_GRADE_ENDPOINT);
+        return ssgs;
+    }
+
+    @Override
     public Assignment createSectionAssignment(Long schoolId, Long yearId, Long termId, Long sectionId, Assignment a) {
         Assignment response = AssignmentFactory.cloneAssignment(a);
         EntityId id = create(a,
@@ -249,6 +508,44 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
                 SECTION_ASSIGNMENT_ENDPOINT);
         response.setId(id.getId());
         return response;
+    }
+
+    @Override
+    public Assignment replaceSectionAssignment(Long schoolId, Long yearId, Long termId, Long sectionId, Assignment ssg) {
+        try {
+            put(convertObjectToJsonBytes(ssg), BASE_API_ENDPOINT +
+                    SCHOOL_ENDPOINT + "/" + schoolId +
+                    SCHOOL_YEAR_ENDPOINT + "/" + yearId +
+                    TERM_ENDPOINT + "/" + termId +
+                    SECTION_ENDPOINT + "/" + sectionId +
+                    SECTION_ASSIGNMENT_ENDPOINT + "/" + ssg.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ssg;
+    }
+
+    @Override
+    public void deleteSectionAssignment(Long schoolId, Long yearId, Long termId, Long sectionId, Assignment ssg) {
+        delete(BASE_API_ENDPOINT +
+            SCHOOL_ENDPOINT + "/" + schoolId +
+            SCHOOL_YEAR_ENDPOINT + "/" + yearId +
+            TERM_ENDPOINT + "/" + termId +
+            SECTION_ENDPOINT + "/" + sectionId +
+            SECTION_ASSIGNMENT_ENDPOINT + "/" + ssg.getId(), (String[]) null);
+    }
+
+    @Override
+    public Assignment[] getSectionAssignments(Long schoolId, Long yearId, Long termId, Long sectionId) {
+        Assignment[] assigments = get(
+            Assignment[].class,
+            BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                SCHOOL_YEAR_ENDPOINT + "/" + yearId +
+                TERM_ENDPOINT + "/" + termId +
+                SECTION_ENDPOINT + "/" + sectionId +
+                SECTION_ASSIGNMENT_ENDPOINT);
+        return assigments;
     }
 
     @Override
@@ -278,6 +575,60 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
                 SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT + "/" + yearId +
                 TERM_ENDPOINT + "/" + termId + SECTION_ENDPOINT + "/" + sectionId +
                 SECTION_ASSIGNMENT_ENDPOINT + "/" + assignmentId + STUDENT_ASSIGNMENT_ENDPOINT + "/bulk");
+    }
+
+    @Override
+    public StudentAssignment[] getStudentAssignments(Long schoolId,
+                                                     Long yearId,
+                                                     Long termId,
+                                                     Long sectionId,
+                                                     Long assignmentId) {
+        StudentAssignment[] ssgs = get(
+                StudentAssignment[].class,
+                BASE_API_ENDPOINT +
+                        SCHOOL_ENDPOINT + "/" + schoolId +
+                        SCHOOL_YEAR_ENDPOINT + "/" + yearId +
+                        TERM_ENDPOINT + "/" + termId +
+                        SECTION_ENDPOINT + "/" + sectionId +
+                        SECTION_ASSIGNMENT_ENDPOINT + "/" + assignmentId +
+                        STUDENT_ASSIGNMENT_ENDPOINT);
+        return ssgs;
+    }
+
+    @Override
+    public void deleteStudentAssignment(Long schoolId,
+                                        Long yearId,
+                                        Long termId,
+                                        Long sectionId,
+                                        Long assignmentId,
+                                        StudentAssignment studentAssignment) {
+        delete(BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                SCHOOL_YEAR_ENDPOINT + "/" + yearId +
+                TERM_ENDPOINT + "/" + termId +
+                SECTION_ENDPOINT + "/" + sectionId +
+                SECTION_ASSIGNMENT_ENDPOINT + "/" + assignmentId +
+                STUDENT_ASSIGNMENT_ENDPOINT + "/" + studentAssignment.getId(), (String[]) null);
+    }
+
+    @Override
+    public void replaceStudentAssignment(Long schoolId,
+                                         Long yearId,
+                                         Long termId,
+                                         Long sectionId,
+                                         Long assignmentId,
+                                         StudentAssignment studentAssignment) {
+        try {
+            put(convertObjectToJsonBytes(studentAssignment), BASE_API_ENDPOINT +
+                    SCHOOL_ENDPOINT + "/" + schoolId +
+                    SCHOOL_YEAR_ENDPOINT + "/" + yearId +
+                    TERM_ENDPOINT + "/" + termId +
+                    SECTION_ENDPOINT + "/" + sectionId +
+                    SECTION_ASSIGNMENT_ENDPOINT + "/" + assignmentId +
+                    STUDENT_ASSIGNMENT_ENDPOINT + "/" + studentAssignment.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

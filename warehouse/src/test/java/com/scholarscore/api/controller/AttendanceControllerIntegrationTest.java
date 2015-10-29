@@ -70,6 +70,7 @@ public class AttendanceControllerIntegrationTest extends IntegrationBase {
             SchoolDay day = new SchoolDay();
             day.setSchool(school);
             day.setDate(date);
+            day.setSchool(school);
             days.add(schoolDayValidatingExecutor.create(school.getId(), day, "creating a school")); 
         }
     }

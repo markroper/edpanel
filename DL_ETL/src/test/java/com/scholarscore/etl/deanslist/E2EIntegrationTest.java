@@ -27,7 +27,7 @@ public class E2EIntegrationTest extends AbstractTestNGSpringContextTests {
 
     // Test pulls behaviors from deanslist and matches to students in scholarscore
     public void testMigrateDistrict() {
-        MigrationResult result = engine.migrateDistrict();
+        MigrationResult result = engine.syncDistrict();
         logger.info("Migration result: " + result);
         assertNotNull(result, "Expected non-null migration result for district");
     }

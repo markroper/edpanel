@@ -16,6 +16,7 @@ public class HibernateConsts {
     public static final String ADMIN_ADDRESS_FK = "administrator_homeAddress_fk";
     public static final String ADMIN_HOME_PHONE = "administrator_home_phone";
     public static final String ADMIN_SOURCE_SYSTEM_ID = "administrator_source_system_id";
+    public static final String ADMIN_SOURCE_SYSTEM_USER_ID = "administrator_source_system_user_id";
     public static final String ADMIN_USER_FK = "administrator_user_fk";
     
     //Assignment constants
@@ -26,6 +27,10 @@ public class HibernateConsts {
     public static final String ASSIGNMENT_TYPE_FK = "type_fk";
     public static final String ASSIGNMENT_DUE_DATE = "due_date";
     public static final String ASSIGNMENT_AVAILABLE_POINTS = "available_points";
+    public static final String ASSIGNMENT_WEIGHT = "weight";
+    public static final String ASSIGNMENT_USER_DEFINED_TYPE = "user_defined_type";
+    public static final String ASSIGNMENT_INCLUDE_IN_FINAL_GRADES = "include_in_final_grades";
+    public static final String ASSIGNMENT_SOURCE_SYSTEM_ID = "assignment_source_system_id";
     //graded
     public static final String ASSIGNMENT_ASSIGNED_DATE = "assigned_date";
     //student assignment
@@ -35,6 +40,7 @@ public class HibernateConsts {
     public static final String STUDENT_ASSIGNMENT_COMPLETION_DATE = "completion_date";
     public static final String STUDENT_ASSIGNMENT_ID = "student_assignment_id";
     public static final String STUDENT_ASSIGNMENT_NAME = "student_assignment_name";
+    public static final String STUDENT_SOURCE_SYSTEM_USER_ID = "student_source_system_user_id";
     public static final String ASSIGNMENT_FK = "assignment_fk";
     
     //Behavior constants
@@ -115,6 +121,7 @@ public class HibernateConsts {
     public static final String TEACHER_ADDRESS_FK = "teacher_homeAddress_fk";
     public static final String TEACHER_HOME_PHONE = "teacher_home_phone";
     public static final String TEACHER_SOURCE_SYSTEM_ID = "teacher_source_system_id";
+    public static final String TEACHER_SOURCE_SYSTEM_USER_ID = "teacher_source_system_user_id";
     public static final String TEACHER_USER_FK = "teacher_user_fk";
     
     //Term constants

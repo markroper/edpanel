@@ -88,6 +88,28 @@ public class StudentSectionGradeController extends BaseController {
     }
 
     @ApiOperation(
+            value = "Create multiple student grades in a section",
+            notes = "Creates, assigns and ID to, and persists the student section grades",
+            response = Void.class)
+    @RequestMapping(
+            method = RequestMethod.POST,
+            produces = {JSON_ACCEPT_HEADER})
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity createStudentSectionGrade(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "yearId", required = true, value = "School year ID")
+            @PathVariable(value="yearId") Long yearId,
+            @ApiParam(name = "termId", required = true, value = "Term ID")
+            @PathVariable(value="termId") Long termId,
+            @ApiParam(name = "sectId", required = true, value = "Section ID")
+            @PathVariable(value="sectId") Long sectId,
+            @RequestBody @Valid List<StudentSectionGrade> studentSectionGrades) {
+        return respond(pm.getStudentSectionGradeManager().createStudentSectionGrades(
+                schoolId, yearId, termId, sectId, studentSectionGrades));
+    }
+
+    @ApiOperation(
             value = "Overwrite an existing student section grade", 
             notes = "Overwrites an existing student section grade",
             response = EntityId.class)

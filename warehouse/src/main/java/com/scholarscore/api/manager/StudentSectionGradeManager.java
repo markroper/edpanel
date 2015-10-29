@@ -5,6 +5,7 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.StudentSectionGrade;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface StudentSectionGradeManager {
     /**
@@ -69,6 +70,19 @@ public interface StudentSectionGradeManager {
      */
     public ServiceResponse<Long> createStudentSectionGrade(
             long schoolId, long yearId, long termId, long sectionId, long studentId, StudentSectionGrade grade);
+
+    /**
+     * Stores a new student section grade instance in the system for each entity in the grades array
+     * In degenerate cases, the response is populated with a descriptive error code.
+     * @param schoolId
+     * @param yearId
+     * @param termId
+     * @param sectionId
+     * @param grades
+     * @return
+     */
+    public ServiceResponse<Void> createStudentSectionGrades(
+            long schoolId, long yearId, long termId, long sectionId, List<StudentSectionGrade> grades);
 
     /**
      * Replaces an existing instance with the ID provided with the StudentSectionGrade instance

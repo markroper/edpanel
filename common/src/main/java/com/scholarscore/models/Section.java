@@ -9,8 +9,6 @@ import com.google.common.collect.Sets;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -93,7 +91,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     }
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @Cascade(CascadeType.ALL)
     @JoinTable(name = HibernateConsts.TEACHER_SECTION_TABLE,
             joinColumns = { @JoinColumn(name = HibernateConsts.SECTION_FK, nullable = false, updatable = false) },
             inverseJoinColumns = { @JoinColumn(name = HibernateConsts.TEACHER_FK, nullable = false, updatable = false) })
@@ -124,7 +121,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     }
 
     @OneToOne(optional = true)
-    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.COURSE_FK)
     @Fetch(FetchMode.JOIN)
     public Course getCourse() {
@@ -137,7 +133,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
 
 
     @OneToOne(optional = true)
-    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.TERM_FK)
     @Fetch(FetchMode.JOIN)
     public Term getTerm() {
@@ -211,7 +206,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     }
 
     @OneToMany(mappedBy = "section", fetch=FetchType.LAZY)
-    @Cascade(CascadeType.SAVE_UPDATE)
     @Fetch(FetchMode.JOIN)
     @JsonIgnore
     public List<StudentSectionGrade> getStudentSectionGrades() {

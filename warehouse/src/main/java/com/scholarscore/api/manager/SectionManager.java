@@ -9,6 +9,13 @@ import java.util.Collection;
 
 public interface SectionManager {
     /**
+     * Return all sections within a school
+     * @param schoolId ID of parent school
+     * @return
+     */
+    public ServiceResponse<Collection<Section>> getAllSectionsInSchool(long schoolId);
+
+    /**
      * Return all sections within a term
      * @param schoolId ID of parent school
      * @param yearId ID of parent year

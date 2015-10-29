@@ -54,9 +54,9 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public ServiceResponse<Collection<Student>> getAllStudents() {
+    public ServiceResponse<Collection<Student>> getAllStudents(Long schoolId) {
         return new ServiceResponse<Collection<Student>>(
-                studentPersistence.selectAll());
+                studentPersistence.selectAll(schoolId));
     }
 
     @Override
@@ -66,6 +66,11 @@ public class StudentManagerImpl implements StudentManager {
             return new ServiceResponse<Student>(code);
         }
         return new ServiceResponse<Student>(studentPersistence.select(studentId));
+    }
+
+    @Override
+    public ServiceResponse<Student> getStudentBySourceSystemId(Long ssid) {
+        return new ServiceResponse<Student>(studentPersistence.selectBySsid(ssid));
     }
 
     @Override

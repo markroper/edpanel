@@ -35,8 +35,14 @@ public class StudentJdbc implements StudentPersistence {
     }
 
     @Override
-    public Collection<Student> selectAll() {
-        return hibernateTemplate.loadAll(Student.class);
+    @SuppressWarnings("unchecked")
+    public Collection<Student> selectAll(Long schoolId) {
+        if(null != schoolId) {
+            String sql = "FROM student s WHERE s.currentSchoolId = :schoolId";
+            return (List<Student>) hibernateTemplate.findByNamedParam(sql, "schoolId", schoolId);
+        } else {
+            return hibernateTemplate.loadAll(Student.class);
+        }
     }
 
     @Override
@@ -65,6 +71,17 @@ public class StudentJdbc implements StudentPersistence {
     public Student select(String username) {
         String query = "select s from student s join s.user u where u.username = :username";
         List<Student> students = (List<Student>) hibernateTemplate.findByNamedParam(query, "username", username);
+        if (students.size() == 1) {
+            return students.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Student selectBySsid(Long ssid) {
+        String query = "select s from student s where s.sourceSystemId = :ssid";
+        List<Student> students = (List<Student>) hibernateTemplate.findByNamedParam(query, "ssid", ssid.toString());
         if (students.size() == 1) {
             return students.get(0);
         }
@@ -111,6 +128,4 @@ public class StudentJdbc implements StudentPersistence {
     public void setAuthorityPersistence(AuthorityPersistence authorityPersistence) {
         this.authorityPersistence = authorityPersistence;
     }
-    
-    
 }

@@ -114,4 +114,16 @@ public class SectionJdbc implements SectionPersistence {
         }
         return sectionList;
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection<Section> selectAllInSchool(long schoolId) {
+        String[] params = new String[]{"schoolId"};
+        Object[] paramValues = new Object[]{ new Long(schoolId) };
+        List<Section> objects = (List<Section>)hibernateTemplate.findByNamedParam(
+                "from section s where s.term.schoolYear.school.id = :schoolId",
+                params,
+                paramValues);
+        return objects;
+    }
 }

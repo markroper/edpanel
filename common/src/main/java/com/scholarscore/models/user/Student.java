@@ -213,9 +213,15 @@ public class Student extends Person implements Serializable {
     public void setUserId(Long userId) {
         setId(userId);
     }
-    
+
+    @Override
+    @Column(name = HibernateConsts.STUDENT_SOURCE_SYSTEM_USER_ID)
+    public String getSourceSystemUserId() {
+        return sourceSystemUserId;
+    }
+
     /**
-     * TODO: Student's don't actually have this field persisted yet. Add to model & enable
+     * TODO: Students don't actually have this field persisted yet. Add to model & enable
      */
     @Override
     @Transient
