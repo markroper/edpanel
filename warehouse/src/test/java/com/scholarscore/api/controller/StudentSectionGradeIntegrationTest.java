@@ -19,7 +19,6 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
     private Term term;
     private Section section;
     private Student student;
-    private Student student2;
     private Student student3;
     private Course course;
     
@@ -33,6 +32,7 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
         
         schoolYear = new SchoolYear();
         schoolYear.setName(localeServiceUtil.generateName());
+        schoolYear.setSchool(school);
         schoolYear = schoolYearValidatingExecutor.create(school.getId(), schoolYear, "create base schoolYear");
         
         term = new Term();
@@ -44,7 +44,6 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
         course = courseValidatingExecutor.create(school.getId(), course, "create base course");
         
         student = generateNewStudent();
-        student2 = generateNewStudent();
         student3 = generateNewStudent();
         
         section = new Section();
@@ -111,9 +110,6 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createStudentSectionGradeProvider")
     public void updateStudentSectionGradeTest(String msg, StudentSectionGrade studentSectionGrade, Student stud) {
-//        Student student5 = new Student();
-//        student5.setName(localeServiceUtil.generateName());
-//        student5 = studentValidatingExecutor.create(student5, "create base student");
         studentSectionGradeValidatingExecutor.create(
                 school.getId(), schoolYear.getId(), term.getId(), section.getId(), stud.getId(), studentSectionGrade, msg);
         StudentSectionGrade updatedSection = new StudentSectionGrade();

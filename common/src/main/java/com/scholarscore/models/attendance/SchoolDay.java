@@ -2,6 +2,7 @@ package com.scholarscore.models.attendance;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.IApiModel;
 import com.scholarscore.models.School;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -29,7 +30,7 @@ import java.util.Objects;
 @Table(name = HibernateConsts.SCHOOL_DAY_TABLE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings("serial")
-public class SchoolDay implements Serializable {
+public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
     private Long id;
     private School school;
     private Date date;
@@ -62,6 +63,14 @@ public class SchoolDay implements Serializable {
         this.school = school;
     }
 
+    public SchoolDay() { }
+    
+    public SchoolDay(SchoolDay schoolDay) { 
+        this.id = schoolDay.id;
+        this.school = schoolDay.school;
+        this.date = schoolDay.date;
+    }
+    
     @Override
     public int hashCode() {
         return Objects.hash(id, school, date);
@@ -80,6 +89,30 @@ public class SchoolDay implements Serializable {
                 && Objects.equals(this.school, other.school)
                 && Objects.equals(this.date, other.date);
     }
+
+    @Override
+    public String toString() {
+        return "SchoolDay{" +
+                "id=" + id +
+                ", school=" + school +
+                ", date=" + date +
+                '}';
+    }
+
+    @Override
+    public void mergePropertiesIfNull(SchoolDay mergeFrom) {
+        if (mergeFrom == null) { return; } 
+        if (null == id) {
+            this.id = mergeFrom.id;
+        }
+        if (null == school) {
+            this.school = mergeFrom.school;
+        }
+        if (null == date) {
+            this.date = mergeFrom.date;
+        }
+    }
+
 
     /**
      * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using

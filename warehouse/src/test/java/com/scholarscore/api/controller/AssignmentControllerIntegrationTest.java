@@ -35,9 +35,11 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
         school.setName(localeServiceUtil.generateName());
         school = schoolValidatingExecutor.create(school, "Create base school");
         
-        schoolYear = new SchoolYear();
-        schoolYear.setName(localeServiceUtil.generateName());
-        schoolYear.setSchool(school);
+        SchoolYear.SchoolYearBuilder schoolYearBuilder = new SchoolYear.SchoolYearBuilder();
+        schoolYear = schoolYearBuilder
+                .withName(localeServiceUtil.generateName())
+                .withSchool(school)
+                .build();
         schoolYear = schoolYearValidatingExecutor.create(school.getId(), schoolYear, "create base schoolYear");
         
         term = new Term();
