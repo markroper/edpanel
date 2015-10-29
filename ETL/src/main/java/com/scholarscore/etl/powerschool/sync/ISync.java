@@ -28,8 +28,8 @@ public interface ISync<T extends ApiModel> {
     /**
      * <p>
      * Pulls all the instances of T (scoped to the unit of migration for the implementation) from both PowerSchool
-     * and EdPanel, transform the PowerSchool representation into an EdPanel model, and then resolve and
-     * perform the following operations for each instance:
+     * and EdPanel, transforms the PowerSchool representation into an EdPanel model, and then resolves and
+     * performs the following operations for each instance:
      * <p/>
      * <p>
      *  1) If the entity exists in PowerSchool and not in EdPanel, *CREATE* it in EdPanel
@@ -38,14 +38,14 @@ public interface ISync<T extends ApiModel> {
      *  4) If the entity exists in both EdPanel and PowerSchool and its values are the same, perform no action.
      * </p>
      * <p>
-     * Implementations should be idempotent, which is to say that rerunning this method after it has been previously
+     * Implementations should be idempotent, which is to say that re-running this method after it has been previously
      * run (successfully or unsuccessfully as in a crash) should yield the same end state within EdPanel as if it
      * had been run for the first time.
      * </p>
      *
-     * @return Thread safe map of powerschool ID to EdPanel model representing the end state of
-     *          what is in EdPanel after all the CREATE/UPDATE/DELETE operations have been performed
-     *          to synchronize EdPanel's state with PowerSchool's state.
+     * @return A thread safe map of PowerSchool ID (source system id) to EdPanel model that represents the
+     *          end state of what is in EdPanel after all the CREATE/UPDATE/DELETE operations have been
+     *          performed to synchronize EdPanel's state with PowerSchool's state.
      */
     ConcurrentHashMap<Long, T> syncCreateUpdateDelete();
 
