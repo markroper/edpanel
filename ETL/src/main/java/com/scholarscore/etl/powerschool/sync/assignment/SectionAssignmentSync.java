@@ -1,7 +1,9 @@
 package com.scholarscore.etl.powerschool.sync.assignment;
 
+import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ETLEngine;
+import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignment;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignment;
@@ -22,6 +24,7 @@ import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.user.Student;
 import org.apache.commons.lang3.tuple.MutablePair;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -61,9 +64,25 @@ public class SectionAssignmentSync implements ISync<Assignment> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Assignment> syncCreateUpdateDelete() {
-        ConcurrentHashMap<Long, Assignment> source = this.resolveAllFromSourceSystem();
-        ConcurrentHashMap<Long, Assignment> ed = this.resolveFromEdPanel();
+    public ConcurrentHashMap<Long, Assignment> syncCreateUpdateDelete(SyncResult results) {
+        ConcurrentHashMap<Long, Assignment> source = null;
+        try {
+            source = this.resolveAllFromSourceSystem();
+        } catch (HttpClientException e) {
+            results.sectionAssignmentSourceGetFailed(
+                    Long.valueOf(createdSection.getSourceSystemId()),
+                    createdSection.getId());
+            return new ConcurrentHashMap<>();
+        }
+        ConcurrentHashMap<Long, Assignment> ed = null;
+        try {
+            ed = this.resolveFromEdPanel();
+        } catch (HttpClientException e) {
+            results.sectionAssignmentEdPanelGetFailed(
+                    Long.valueOf(createdSection.getSourceSystemId()),
+                    createdSection.getId());
+            return new ConcurrentHashMap<>();
+        }
         Iterator<Map.Entry<Long, Assignment>> sourceIterator = source.entrySet().iterator();
         //Find & perform the inserts and updates, if any
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
@@ -72,13 +91,20 @@ public class SectionAssignmentSync implements ISync<Assignment> {
             Assignment sourceAssignment = entry.getValue();
             Assignment edPanelAssignment = ed.get(entry.getKey());
             if(null == edPanelAssignment){
-                Assignment created = edPanel.createSectionAssignment(
-                        school.getId(),
-                        createdSection.getTerm().getSchoolYear().getId(),
-                        createdSection.getTerm().getId(),
-                        createdSection.getId(),
-                        sourceAssignment);
+                Assignment created = null;
+                try {
+                    created = edPanel.createSectionAssignment(
+                            school.getId(),
+                            createdSection.getTerm().getSchoolYear().getId(),
+                            createdSection.getTerm().getId(),
+                            createdSection.getId(),
+                            sourceAssignment);
+                } catch (HttpClientException e) {
+                    results.sectionAssignmentCreateFailed(Long.valueOf(sourceAssignment.getSourceSystemId()));
+                    continue;
+                }
                 sourceAssignment.setId(created.getId());
+                results.sectionAssignmentCreated(entry.getKey(), sourceAssignment.getId());
             } else {
                 //Massage discrepencies to determine
                 sourceAssignment.setId(edPanelAssignment.getId());
@@ -86,12 +112,19 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                     edPanelAssignment.setSection(sourceAssignment.getSection());
                 }
                 if(!edPanelAssignment.equals(sourceAssignment)) {
-                    edPanel.replaceSectionAssignment(
-                            school.getId(),
-                            createdSection.getTerm().getSchoolYear().getId(),
-                            createdSection.getTerm().getId(),
-                            createdSection.getId(),
-                            sourceAssignment);
+                    Assignment replaced = null;
+                    try {
+                        replaced = edPanel.replaceSectionAssignment(
+                                school.getId(),
+                                createdSection.getTerm().getSchoolYear().getId(),
+                                createdSection.getTerm().getId(),
+                                createdSection.getId(),
+                                sourceAssignment);
+                    } catch (IOException e) {
+                        results.sectionAssignmentCreateFailed(entry.getKey());
+                        continue;
+                    }
+                    results.sectionAssignmentUpdated(entry.getKey(), sourceAssignment.getId());
                 }
             }
             //Regardless of wheter or not we're creating, updating or no-op-ing, sync the StudentAssignments
@@ -101,7 +134,8 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                         school,
                         createdSection,
                         sourceAssignment,
-                        ssidToStudent
+                        ssidToStudent,
+                        results
             );
             executor.execute(runnable);
         }
@@ -111,12 +145,18 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         while(edpanelIterator.hasNext()) {
             Map.Entry<Long, Assignment> entry = edpanelIterator.next();
             if(!source.containsKey(entry.getKey())) {
-                edPanel.deleteSectionAssignment(
-                        school.getId(),
-                        createdSection.getTerm().getSchoolYear().getId(),
-                        createdSection.getTerm().getId(),
-                        createdSection.getId(),
-                        entry.getValue());
+                try {
+                    edPanel.deleteSectionAssignment(
+                            school.getId(),
+                            createdSection.getTerm().getSchoolYear().getId(),
+                            createdSection.getTerm().getId(),
+                            createdSection.getId(),
+                            entry.getValue());
+                } catch (HttpClientException e) {
+                    results.sectionAssignmentDeleteFailed(entry.getKey(), entry.getValue().getId());
+                    continue;
+                }
+                results.sectionAssignmentDeleted(entry.getKey(), entry.getValue().getId());
             }
         }
         //Spin while we wait for all the threads to complete
@@ -128,7 +168,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         return source;
     }
 
-    protected ConcurrentHashMap<Long, Assignment> resolveAllFromSourceSystem() {
+    protected ConcurrentHashMap<Long, Assignment> resolveAllFromSourceSystem() throws HttpClientException {
         //first resolve the assignment categories, so we can construct the appropriate EdPanel assignment subclass
         PGAssignmentTypes powerTypes =
                 powerSchool.getAssignmentTypesBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
@@ -189,7 +229,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         return source;
     }
 
-    protected ConcurrentHashMap<Long, Assignment> resolveFromEdPanel() {
+    protected ConcurrentHashMap<Long, Assignment> resolveFromEdPanel() throws HttpClientException {
         ConcurrentHashMap<Long, Assignment> edpanelAssignments = new ConcurrentHashMap<>();
         Assignment[] edPanelAssignmentMap = edPanel.getSectionAssignments(
                 school.getId(),

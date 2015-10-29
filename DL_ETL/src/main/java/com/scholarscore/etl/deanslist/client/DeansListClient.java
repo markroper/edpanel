@@ -79,7 +79,12 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
 
     @Override
     public BehaviorResponse getBehaviorData() {
-        BehaviorResponse behaviorResponse = get(BehaviorResponse.class, PATH_GET_BEHAVIOR_DATA);
+        BehaviorResponse behaviorResponse = null;
+        try {
+            behaviorResponse = get(BehaviorResponse.class, PATH_GET_BEHAVIOR_DATA);
+        } catch (HttpClientException e) {
+            e.printStackTrace();
+        }
         logger.debug("got behaviorResponse: " + behaviorResponse);
         return behaviorResponse;
     }

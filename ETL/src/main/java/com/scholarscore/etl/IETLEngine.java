@@ -22,5 +22,5 @@ public interface IETLEngine {
      *      iv.  Synchronize the student scores on the assignments
      * @return A descriptive migration result indicating what was done and what failed during the sync
      */
-    MigrationResult syncDistrict();
+    SyncResult syncDistrict();
 }
