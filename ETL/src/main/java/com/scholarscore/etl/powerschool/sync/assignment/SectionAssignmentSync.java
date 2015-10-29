@@ -164,7 +164,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                 if(null != stud) {
                     ssidToStudent.put(ssidId, new MutablePair<>(stud, i));
                 } else {
-                    //TODO: log? no op?
+                    System.out.println("Unable to resolve student");
                 }
             }
         }
