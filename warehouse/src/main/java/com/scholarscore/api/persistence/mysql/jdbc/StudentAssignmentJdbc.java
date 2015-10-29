@@ -50,7 +50,6 @@ public class StudentAssignmentJdbc
 
     @Override
     public Long insert(long assignmentId, StudentAssignment entity) {
-//        injectAssignment(assignmentId, entity);
         hibernateTemplate.save(entity);
         return entity.getId();
     }
