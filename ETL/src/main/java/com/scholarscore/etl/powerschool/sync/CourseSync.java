@@ -28,7 +28,7 @@ public class CourseSync implements ISync<Course> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Course> synchCreateUpdateDelete() {
+    public ConcurrentHashMap<Long, Course> syncCreateUpdateDelete() {
         ConcurrentHashMap<Long, Course> source = resolveAllFromSourceSystem();
         ConcurrentHashMap<Long, Course> edpanel = resolveFromEdPanel();
         Iterator<Map.Entry<Long, Course>> sourceIterator = source.entrySet().iterator();

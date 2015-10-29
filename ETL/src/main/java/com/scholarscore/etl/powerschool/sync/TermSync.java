@@ -36,7 +36,7 @@ public class TermSync implements ISync<Term> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Term> synchCreateUpdateDelete() {
+    public ConcurrentHashMap<Long, Term> syncCreateUpdateDelete() {
         ConcurrentHashMap<Long, Term> source = resolveAllFromSourceSystem();
         ConcurrentHashMap<Long, Term> edpanel = resolveFromEdPanel();
         Iterator<Map.Entry<Long, Term>> sourceIterator = source.entrySet().iterator();

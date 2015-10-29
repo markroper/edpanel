@@ -59,7 +59,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, StudentSectionGrade> synchCreateUpdateDelete() {
+    public ConcurrentHashMap<Long, StudentSectionGrade> syncCreateUpdateDelete() {
         //To populate and set on the createdSection
         List<StudentSectionGrade> ssgs = Collections.synchronizedList(new ArrayList<>());
         ConcurrentHashMap<Long, StudentSectionGrade> source = this.resolveAllFromSourceSystem();

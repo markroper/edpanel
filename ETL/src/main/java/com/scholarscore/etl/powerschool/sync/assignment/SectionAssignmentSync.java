@@ -61,7 +61,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Assignment> synchCreateUpdateDelete() {
+    public ConcurrentHashMap<Long, Assignment> syncCreateUpdateDelete() {
         ConcurrentHashMap<Long, Assignment> source = this.resolveAllFromSourceSystem();
         ConcurrentHashMap<Long, Assignment> ed = this.resolveFromEdPanel();
         Iterator<Map.Entry<Long, Assignment>> sourceIterator = source.entrySet().iterator();

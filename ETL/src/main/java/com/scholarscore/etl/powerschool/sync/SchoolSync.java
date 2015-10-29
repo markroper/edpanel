@@ -12,14 +12,17 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by markroper on 10/26/15.
  */
-public class SchoolSync extends SyncBase<School> {
+public class SchoolSync implements ISync<School> {
+    protected IAPIClient edPanel;
+    protected IPowerSchoolClient powerSchool;
 
     public SchoolSync(IAPIClient edPanel, IPowerSchoolClient powerSchool) {
-        super(edPanel, powerSchool);
+        this.edPanel = edPanel;
+        this.powerSchool = powerSchool;
     }
 
     @Override
-    public ConcurrentHashMap<Long, School> synchCreateUpdateDelete() {
+    public ConcurrentHashMap<Long, School> syncCreateUpdateDelete() {
         ConcurrentHashMap<Long, School> source = resolveAllFromSourceSystem();
         ConcurrentHashMap<Long, School> edpanel = resolveFromEdPanel();
 
