@@ -53,7 +53,7 @@ public class DLETLEngine implements IETLEngine {
     }
 
     @Override
-    public MigrationResult migrateDistrict() {
+    public MigrationResult syncDistrict() {
 
         // grab behaviors from deanslist
         Collection<Behavior> behaviorsToMerge = getBehaviorData();

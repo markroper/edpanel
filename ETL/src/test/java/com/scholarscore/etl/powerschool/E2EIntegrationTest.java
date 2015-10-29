@@ -21,7 +21,7 @@ public class E2EIntegrationTest extends AbstractTestNGSpringContextTests {
 
     // Test migrates everything
     public void testMigrateDistrict() {
-        MigrationResult result = engine.migrateDistrict();
+        MigrationResult result = engine.syncDistrict();
         System.out.println("Migration result: " + result);
         assertNotNull(result, "Expected non-null migration result for district");
     }
