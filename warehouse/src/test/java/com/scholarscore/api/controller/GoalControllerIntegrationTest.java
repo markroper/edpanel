@@ -109,8 +109,6 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         sectionAssignment = (GradedAssignment) sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(),
                 term.getId(), section.getId(), sectionAssignment, "create test base term");
 
-
-
         studentAssignment = new StudentAssignment();
         studentAssignment.setAssignment(sectionAssignment);
         studentAssignment.setStudent(student);
@@ -132,8 +130,6 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         Date today = cal.getTime();
         cal.add(Calendar.YEAR, 1); // to get previous year add -1
         Date nextYear = cal.getTime();
-
-
 
         BehaviorGoal behaviorGoal = new BehaviorGoal();
         behaviorGoal.setStudent(student);

@@ -28,6 +28,7 @@ public class TermControllerIntegrationTest extends IntegrationBase {
         
         schoolYear = new SchoolYear();
         schoolYear.setName(localeServiceUtil.generateName());
+        schoolYear.setSchool(school);
         schoolYear = schoolYearValidatingExecutor.create(school.getId(), schoolYear, "create base schoolYear");
     }
     

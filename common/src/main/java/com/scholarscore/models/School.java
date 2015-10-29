@@ -132,6 +132,19 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "School{" +
+                "(super: " + super.toString() + ")" + 
+                "years=" + years +
+                ", sourceSystemId='" + sourceSystemId + '\'' +
+                ", principalName='" + principalName + '\'' +
+                ", principalEmail='" + principalEmail + '\'' +
+                ", address=" + address +
+                ", mainPhone='" + mainPhone + '\'' +
+                '}';
+    }
+
     @Column(name = HibernateConsts.SCHOOL_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
         return sourceSystemId;
