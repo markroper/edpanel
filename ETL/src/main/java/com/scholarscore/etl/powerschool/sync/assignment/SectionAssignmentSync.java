@@ -1,6 +1,7 @@
 package com.scholarscore.etl.powerschool.sync.assignment;
 
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.ETLEngine;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignment;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignment;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by markroper on 10/28/15.
@@ -118,7 +120,12 @@ public class SectionAssignmentSync implements ISync<Assignment> {
             }
         }
         //Spin while we wait for all the threads to complete
-        while(!executor.isTerminated()){}
+        try {
+            executor.awaitTermination(ETLEngine.TOTAL_TTL_MINUTES, TimeUnit.MINUTES);
+        } catch(InterruptedException e) {
+            System.out.println("Max TTL for the migration process was exceeded and the migration terminated. " +
+                    "Max TTL (minutes) is: " + ETLEngine.TOTAL_TTL_MINUTES);
+        }
         return source;
     }
 

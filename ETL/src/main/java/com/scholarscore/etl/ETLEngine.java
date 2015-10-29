@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
  * Created by mattg on 7/3/©5.
  */
 public class ETLEngine implements IETLEngine {
+    public static final Long TOTAL_TTL_MINUTES = 120L;
     public static final int THREAD_POOL_SIZE = 5;
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
@@ -132,7 +134,12 @@ public class ETLEngine implements IETLEngine {
         }
         executor.shutdown();
         //Spin while we wait for all the threads to complete
-        while(!executor.isTerminated()){}
+        try {
+            executor.awaitTermination(TOTAL_TTL_MINUTES, TimeUnit.MINUTES);
+        } catch(InterruptedException e) {
+            System.out.println("Max TTL for the migration process was exceeded and the migration terminated. " +
+                    "Max TTL (minutes) is: " + TOTAL_TTL_MINUTES);
+        }
     }
 
     /**
