@@ -4,15 +4,14 @@ import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.CourseSync;
 import com.scholarscore.etl.powerschool.sync.SchoolSync;
-import com.scholarscore.etl.powerschool.sync.section.SectionSyncRunnable;
-import com.scholarscore.etl.powerschool.sync.user.StaffSync;
-import com.scholarscore.etl.powerschool.sync.user.StudentSync;
 import com.scholarscore.etl.powerschool.sync.TermSync;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
+import com.scholarscore.etl.powerschool.sync.section.SectionSyncRunnable;
+import com.scholarscore.etl.powerschool.sync.user.StaffSync;
+import com.scholarscore.etl.powerschool.sync.user.StudentSync;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
-import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
 
@@ -38,13 +37,11 @@ public class ETLEngine implements IETLEngine {
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
     private List<School> schools;
-    private List<SchoolYear> schoolYears;
     //Collections are by sourceSystemSchoolId and if there are nested maps, 
     //the keys are always sourceSystemIds of sub-entities
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Term>> terms;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Section>> sections;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Course>> courses = new ConcurrentHashMap<>();
-
     //Student and staff maps map local ID to User|Student. Elsewhere, we need
     //to map source system id (SSID) to the local IDs. For this purpose we also maintain
     //a mapping of SSID to localId, all of which is encapsulated in the associator below
@@ -171,10 +168,6 @@ public class ETLEngine implements IETLEngine {
         }
     }
 
-    /**
-     * Create the user entry along side the teacher and administrator entries
-     * @return
-     */
     public void createStaff() {
         for (School school : schools) {
             StaffSync sync = new StaffSync(edPanel, powerSchool, school, staffAssociator);

@@ -41,8 +41,8 @@ public class AssignmentJdbc implements EntityPersistence<Assignment> {
     @Override
     public Long insert(long parentId, Assignment entity) {
         entity.setSectionFK(parentId);
-        Assignment out = hibernateTemplate.merge(entity);
-        return out.getId();
+        hibernateTemplate.save(entity);
+        return entity.getId();
     }
 
     @Override
@@ -50,7 +50,7 @@ public class AssignmentJdbc implements EntityPersistence<Assignment> {
                        Assignment entity) {
         entity.setSectionFK(parentId);
         entity.setId(assignmentId);
-        Assignment result = hibernateTemplate.merge(entity);
+        hibernateTemplate.update(entity);
         return assignmentId;
     }
 

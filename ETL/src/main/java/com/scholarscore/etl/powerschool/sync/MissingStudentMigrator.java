@@ -27,7 +27,7 @@ public class MissingStudentMigrator {
      * @param schoolId
      * @param powerSchoolStudentId
      */
-    public static Student migrateMissingStudent(
+    public static Student resolveMissingStudent(
             Long schoolId,
             Long powerSchoolStudentId,
             IPowerSchoolClient powerSchool,
@@ -47,18 +47,28 @@ public class MissingStudentMigrator {
         Collection<Student> studs = students.toInternalModel();
         for(Student edpanelStudent : studs) {
             edpanelStudent.setCurrentSchoolId(schoolId);
-            Student createdStudent = edPanel.createStudent(edpanelStudent);
-            ConcurrentHashMap<Long, Student> studMap = new ConcurrentHashMap<>();
+            Student resolvedStudent = null;
             try {
-                Long otherId = Long.valueOf(createdStudent.getSourceSystemUserId());
-                Long ssid = Long.valueOf(createdStudent.getSourceSystemId());
-                studentAssociator.associateIds(ssid, otherId);
-                studMap.put(otherId, createdStudent);
-                studentAssociator.addOtherIdMap(studMap);
-            } catch(NumberFormatException e) {
+                resolvedStudent = edPanel.getStudent(
+                        Long.valueOf(edpanelStudent.getSourceSystemId()));
+            } catch (HttpClientException e) {
                 //NO OP
             }
-            return createdStudent;
+            try {
+                if(null == resolvedStudent) {
+                    resolvedStudent = edPanel.createStudent(edpanelStudent);
+                }
+                ConcurrentHashMap<Long, Student> studMap = new ConcurrentHashMap<>();
+                Long otherId = Long.valueOf(resolvedStudent.getSourceSystemUserId());
+                Long ssid = Long.valueOf(resolvedStudent.getSourceSystemId());
+                studentAssociator.associateIds(ssid, otherId);
+                studMap.put(otherId, resolvedStudent);
+                studentAssociator.addOtherIdMap(studMap);
+            } catch(NumberFormatException | HttpClientException | NullPointerException e) {
+                //NO OP
+                System.out.println("exception resolving missing student");
+            }
+            return resolvedStudent;
         }
         return null;
     }

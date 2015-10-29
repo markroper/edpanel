@@ -39,13 +39,13 @@ public class StudentSync implements ISync<Student> {
     public ConcurrentHashMap<Long, Student> synchCreateUpdateDelete() {
         Long psSchoolId = new Long(school.getSourceSystemId());
         ConcurrentHashMap<Long, Student> sourceStudents = resolveAllFromSourceSystem();
-        ConcurrentHashMap<Long, User> ed = resolveFromEdPanel();
+        ConcurrentHashMap<Long, Student> ed = resolveFromEdPanel();
         Iterator<Map.Entry<Long, Student>> sourceIterator = sourceStudents.entrySet().iterator();
         //Find & perform the inserts and updates, if any
         while(sourceIterator.hasNext()) {
             Map.Entry<Long, Student> entry = sourceIterator.next();
-            User sourceUser = entry.getValue();
-            User edPanelUser = ed.get(entry.getKey());
+            Student sourceUser = entry.getValue();
+            Student edPanelUser = ed.get(entry.getKey());
             //Associate the SSID and source system local id (teacher/admin ID and underlying user ID)
             Long ssid = Long.valueOf(sourceUser.getSourceSystemId());
             Long underlyingUserId = Long.valueOf(((Person) sourceUser).getSourceSystemUserId());
@@ -54,28 +54,29 @@ public class StudentSync implements ISync<Student> {
                 edPanelUser = studentAssociator.findByOtherId(underlyingUserId);
             }
             if(null == edPanelUser){
-                ((Person) sourceUser).setCurrentSchoolId(school.getId());
+                sourceUser.setCurrentSchoolId(school.getId());
                 User created = edPanel.createUser(sourceUser);
                 sourceUser.setId(created.getId());
             } else {
                 sourceUser.setId(edPanelUser.getId());
-                ((Person) sourceUser).setCurrentSchoolId(school.getId());
+                sourceUser.setCurrentSchoolId(school.getId());
                 sourceUser.setSourceSystemId(edPanelUser.getSourceSystemId());
                 sourceUser.setUsername(edPanelUser.getUsername());
                 edPanelUser.setPassword(null);
-                Address add = ((Person)edPanelUser).getHomeAddress();
+                Address add = sourceUser.getHomeAddress();
                 if(null != add) {
-                    add.setId(null);
+                    add.setId(edPanelUser.getHomeAddress().getId());
                 }
-                add = ((Student)edPanelUser).getMailingAddress();
+                add = sourceUser.getMailingAddress();
                 if(null != add) {
-                    add.setId(null);
+                    add.setId(edPanelUser.getMailingAddress().getId());
                 }
                 if(!edPanelUser.equals(sourceUser)) {
                     edPanel.replaceUser(sourceUser);
                 }
             }
         }
+
         //Note: we never delete users, even if they're removed from the source system.
         return sourceStudents;
     }
@@ -91,12 +92,12 @@ public class StudentSync implements ISync<Student> {
         return source;
     }
 
-    protected ConcurrentHashMap<Long, User> resolveFromEdPanel() {
+    protected ConcurrentHashMap<Long, Student> resolveFromEdPanel() {
         Collection<Student> users = edPanel.getStudents(null);
-        ConcurrentHashMap<Long, User> userMap = new ConcurrentHashMap<>();
-        for(User u: users) {
+        ConcurrentHashMap<Long, Student> userMap = new ConcurrentHashMap<>();
+        for(Student u: users) {
             Long id = null;
-            String sourceSystemUserId = ((Person)u).getSourceSystemUserId();
+            String sourceSystemUserId = u.getSourceSystemUserId();
             if(null != sourceSystemUserId) {
                 id = Long.valueOf(sourceSystemUserId);
                 userMap.put(id, u);

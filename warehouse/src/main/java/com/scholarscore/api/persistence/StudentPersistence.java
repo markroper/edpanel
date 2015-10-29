@@ -13,6 +13,8 @@ public interface StudentPersistence {
 
     Student select(String username);
 
+    Student selectBySsid(Long ssid);
+
     Long createStudent(Student student);
 
     Long replaceStudent(long studentId, Student student);

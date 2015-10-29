@@ -75,7 +75,14 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             if(null == edPanelSsg){
                 ssgsToCreate.add(sourceSsg);
             } else {
+                //Massage the objects to resolve whether or not an update is needed
                 sourceSsg.setId(edPanelSsg.getId());
+                if(sourceSsg.getStudent().getId().equals(edPanelSsg.getStudent().getId())) {
+                    sourceSsg.setStudent(edPanelSsg.getStudent());
+                }
+                if(sourceSsg.getSection().getId().equals(edPanelSsg.getSection().getId())) {
+                    sourceSsg.setSection(edPanelSsg.getSection());
+                }
                 if(!edPanelSsg.equals(sourceSsg)) {
                     edPanel.replaceStudentSectionGrade(
                             school.getId(),
@@ -149,7 +156,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             for(PsSectionEnrollment se : enrollments.section_enrollments.section_enrollment) {
                 Student edpanelStudent = studentAssociator.findBySourceSystemId(se.getStudent_id());
                 if(null == edpanelStudent) {
-                    edpanelStudent = MissingStudentMigrator.migrateMissingStudent(
+                    edpanelStudent = MissingStudentMigrator.resolveMissingStudent(
                             school.getId(),
                             se.getStudent_id(),
                             powerSchool,

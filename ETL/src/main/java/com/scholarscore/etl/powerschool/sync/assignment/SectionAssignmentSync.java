@@ -33,7 +33,7 @@ import java.util.concurrent.Executors;
  * Created by markroper on 10/28/15.
  */
 public class SectionAssignmentSync implements ISync<Assignment> {
-    private static final int THREAD_POOL_SIZE = 10;
+    private static final int THREAD_POOL_SIZE = 5;
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
     private School school;
@@ -78,7 +78,11 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                         sourceAssignment);
                 sourceAssignment.setId(created.getId());
             } else {
+                //Massage discrepencies to determine
                 sourceAssignment.setId(edPanelAssignment.getId());
+                if(sourceAssignment.getSectionFK().equals(edPanelAssignment.getSectionFK())) {
+                    edPanelAssignment.setSection(sourceAssignment.getSection());
+                }
                 if(!edPanelAssignment.equals(sourceAssignment)) {
                     edPanel.replaceSectionAssignment(
                             school.getId(),
@@ -142,7 +146,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                 Long ssidId = Long.valueOf(i.getDcid());
                 Student stud = studentAssociator.findBySourceSystemId(Long.valueOf(i.getStudentid()));
                 if(null == stud) {
-                    stud = MissingStudentMigrator.migrateMissingStudent(
+                    stud = MissingStudentMigrator.resolveMissingStudent(
                             school.getId(),
                             Long.valueOf(i.getStudentid()),
                             powerSchool,

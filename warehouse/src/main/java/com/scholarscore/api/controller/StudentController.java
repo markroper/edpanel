@@ -53,6 +53,21 @@ public class StudentController extends BaseController {
     }
 
     @ApiOperation(
+            value = "Get a student by source system ID",
+            notes = "Given a student source system ID, the endpoint returns the student",
+            response = Student.class)
+    @RequestMapping(
+            value = "/sourcesystemids/{ssid}",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getBySsid(
+            @ApiParam(name = "ssid", required = true, value = "Student SSID")
+            @PathVariable(value="ssid") Long ssid) {
+        return respond(pm.getStudentManager().getStudentBySourceSystemId(ssid));
+    }
+
+    @ApiOperation(
             value = "Create a student", 
             notes = "Creates, assigns an ID to, persists and returns a student",
             response = EntityId.class)
