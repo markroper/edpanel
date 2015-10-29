@@ -77,7 +77,7 @@ public class ETLEngine implements IETLEngine {
         MigrationResult result = new MigrationResult();
         createSchools();
         long endTime = System.currentTimeMillis();
-        long schoolCreationTime = (startTime - startTime)/1000;
+        long schoolCreationTime = (endTime - startTime)/1000;
 
         migrateSchoolYearsAndTerms();
         long yearsAndTermsComplete = (System.currentTimeMillis() - endTime)/1000;
@@ -139,8 +139,7 @@ public class ETLEngine implements IETLEngine {
         try {
             executor.awaitTermination(TOTAL_TTL_MINUTES, TimeUnit.MINUTES);
         } catch(InterruptedException e) {
-            System.out.println("Max TTL for the migration process was exceeded and the migration terminated. " +
-                    "Max TTL (minutes) is: " + TOTAL_TTL_MINUTES);
+            System.out.println("Executor thread pool interrupted " + e.getMessage());
         }
     }
 
