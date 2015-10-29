@@ -98,11 +98,12 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
     
     @Test(dataProvider = "createStudentSectionGradeProvider")
     public void replaceStudentSectionGradeTest(String msg, StudentSectionGrade studentSectionGrade, Student stud) {
-        studentSectionGradeValidatingExecutor.create(
+        StudentSectionGrade ssg = studentSectionGradeValidatingExecutor.create(
                 school.getId(), schoolYear.getId(), term.getId(), section.getId(), stud.getId(), studentSectionGrade, msg);
         StudentSectionGrade replaceGrade = new StudentSectionGrade();
         replaceGrade.setStudent(stud);
         replaceGrade.setSection(section);
+        replaceGrade.setId(ssg.getId());
         studentSectionGradeValidatingExecutor.replace(
                 school.getId(), schoolYear.getId(), term.getId(), section.getId(), stud.getId(), replaceGrade, msg);
         numCreated++;
