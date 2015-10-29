@@ -39,6 +39,9 @@ import java.util.stream.Collectors;
 public class ETLEngine implements IETLEngine {
     public static final Long TOTAL_TTL_MINUTES = 120L;
     public static final int THREAD_POOL_SIZE = 5;
+    private SyncResult results = new SyncResult();
+
+
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
     private List<School> schools;
@@ -72,9 +75,8 @@ public class ETLEngine implements IETLEngine {
     }
 
     @Override
-    public MigrationResult syncDistrict() {
+    public SyncResult syncDistrict() {
         long startTime = System.currentTimeMillis();
-        MigrationResult result = new MigrationResult();
         createSchools();
         long endTime = System.currentTimeMillis();
         long schoolCreationTime = (endTime - startTime)/1000;
@@ -106,7 +108,7 @@ public class ETLEngine implements IETLEngine {
                 " seconds, students: " + studentCreationComplete +
                 " seconds, courses: " + courseCreationComplete +
                 " seconds, sections: " + sectionCreationComplete);
-        return result;
+        return results;
     }
 
     /**
@@ -131,7 +133,8 @@ public class ETLEngine implements IETLEngine {
                     staffAssociator,
                     studentAssociator,
                     this.sections.get(sourceSystemSchoolId),
-                    unresolvablePowerStudents);
+                    unresolvablePowerStudents,
+                    results);
             executor.execute(sectionRunnable);
         }
         executor.shutdown();
@@ -150,7 +153,7 @@ public class ETLEngine implements IETLEngine {
                 TermSync tSync = new TermSync(edPanel, powerSchool, school);
                 this.terms.put(
                         Long.valueOf(school.getSourceSystemId()),
-                        tSync.syncCreateUpdateDelete()
+                        tSync.syncCreateUpdateDelete(results)
                 );
             }
         }
@@ -160,27 +163,27 @@ public class ETLEngine implements IETLEngine {
 
         for (School school : schools) {
             CourseSync sync = new CourseSync(edPanel, powerSchool, school);
-            this.courses.put(Long.valueOf(school.getSourceSystemId()), sync.syncCreateUpdateDelete());
+            this.courses.put(Long.valueOf(school.getSourceSystemId()), sync.syncCreateUpdateDelete(results));
         }
     }
 
     private void createStudents() {
         for (School school : schools) {
             StudentSync sync = new StudentSync(edPanel, powerSchool, school, studentAssociator);
-            studentAssociator.addOtherIdMap(sync.syncCreateUpdateDelete());
+            studentAssociator.addOtherIdMap(sync.syncCreateUpdateDelete(results));
         }
     }
 
     public void createStaff() {
         for (School school : schools) {
             StaffSync sync = new StaffSync(edPanel, powerSchool, school, staffAssociator);
-            staffAssociator.addOtherIdMap(sync.syncCreateUpdateDelete());
+            staffAssociator.addOtherIdMap(sync.syncCreateUpdateDelete(results));
         }
     }
 
     public void createSchools() {
         SchoolSync sync = new SchoolSync(edPanel, powerSchool);
-        Map<Long, School> result = sync.syncCreateUpdateDelete();
+        Map<Long, School> result = sync.syncCreateUpdateDelete(results);
         this.schools = result.entrySet()
                         .stream()
                         .map(Map.Entry::getValue)

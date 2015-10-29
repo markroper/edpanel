@@ -2,8 +2,6 @@ package com.scholarscore.client;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -45,22 +43,22 @@ public abstract class BaseHttpClient {
     protected static final int CONNECTION_TIMEOUT = 4000;
     protected static final int CONNECTION_REQUEST_TIMEOUT = 40000;
 
-    protected final CloseableHttpClient httpclient;
+    protected CloseableHttpClient httpclient;
     protected final URI uri;
 
     protected static final ObjectMapper mapper = new ObjectMapper();
 
     public BaseHttpClient(URI uri) {
         this.uri = uri;
-        this.httpclient = createClient();
+        try {
+            this.httpclient = createClient();
+        } catch (HttpClientException e) {
+            e.printStackTrace();
+        }
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    protected Gson createGsonParser() {
-        return new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
-    }
-
-    protected CloseableHttpClient createClient() {
+    protected CloseableHttpClient createClient() throws HttpClientException {
         try {
             SSLContextBuilder builder = new SSLContextBuilder();
             builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
@@ -80,7 +78,7 @@ public abstract class BaseHttpClient {
         }
     }
 
-    protected String delete(String path, String ...params) {
+    protected String delete(String path, String ...params) throws HttpClientException {
         path = getPath(path, params);
 
         try {
@@ -94,7 +92,7 @@ public abstract class BaseHttpClient {
     }
 
 
-    protected String post(byte[] data, String path) throws IOException {
+    protected String post(byte[] data, String path) throws IOException, HttpClientException {
         String strData = new String(data);
         HttpPost post = new HttpPost();
         post.setURI(uri.resolve(path));
@@ -143,7 +141,7 @@ public abstract class BaseHttpClient {
      * @param <T>
      * @return
      */
-    protected <T> T get(Class<T> clazz, String path, int retries, String ...params) {
+    protected <T> T get(Class<T> clazz, String path, int retries, String ...params) throws HttpClientException {
         if(retries < 0) {
             throw new HttpClientException("Retry limit exceeded for API call with URI: " + path);
         }
@@ -153,7 +151,7 @@ public abstract class BaseHttpClient {
             return get(clazz, path, retries - 1, params);
         }
     }
-    protected <T> T get(Class<T> clazz, String path, String ...params) {
+    protected <T> T get(Class<T> clazz, String path, String ...params) throws HttpClientException {
 
         path = getPath(path, params);
 
@@ -168,7 +166,7 @@ public abstract class BaseHttpClient {
         }
     }
 
-    protected String patch(byte[] data, String path) throws IOException {
+    protected String patch(byte[] data, String path) throws IOException, HttpClientException {
         HttpPatch patch = new HttpPatch();
         patch.setURI(uri.resolve(path));
         setupCommonHeaders(patch);
@@ -216,7 +214,7 @@ public abstract class BaseHttpClient {
         }
     }
 
-    protected String getJSON(HttpUriRequest request) throws IOException {
+    protected String getJSON(HttpUriRequest request) throws IOException, HttpClientException {
         HttpResponse response = httpclient.execute(request);
         try {
             if (response.getStatusLine().getStatusCode() == 200) {
@@ -236,6 +234,6 @@ public abstract class BaseHttpClient {
     protected void setupCommonHeaders(HttpRequest request) {
         request.setHeader(HEADER_ACCEPT_JSON);
     }
-    protected abstract void authenticate();
+    protected abstract void authenticate() throws HttpClientException;
     protected abstract Boolean isAuthenticated();
 }

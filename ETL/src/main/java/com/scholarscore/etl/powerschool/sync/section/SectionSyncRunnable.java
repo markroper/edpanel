@@ -1,6 +1,8 @@
 package com.scholarscore.etl.powerschool.sync.section;
 
+import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsSection;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
@@ -15,6 +17,7 @@ import com.scholarscore.models.Term;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -40,6 +43,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
     private StaffAssociator staffAssociator;
     private ConcurrentHashMap<Long, Section> sections;
     private List<Long> unresolvablePowerStudents;
+    private SyncResult results;
 
     public SectionSyncRunnable(IPowerSchoolClient powerSchool,
                                IAPIClient edPanel,
@@ -49,7 +53,8 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                                StaffAssociator staffAssociator,
                                StudentAssociator studentAssociator,
                                ConcurrentHashMap<Long, Section> sections,
-                               List<Long> unresolvablePowerStudents) {
+                               List<Long> unresolvablePowerStudents,
+                               SyncResult results) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
         this.school = school;
@@ -59,17 +64,30 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
         this.studentAssociator = studentAssociator;
         this.sections = sections;
         this.unresolvablePowerStudents = unresolvablePowerStudents;
+        this.results = results;
     }
 
     @Override
     public void run() {
-        syncCreateUpdateDelete();
+        syncCreateUpdateDelete(results);
     }
 
     @Override
-    public ConcurrentHashMap<Long, Section> syncCreateUpdateDelete() {
-        ConcurrentHashMap<Long, Section> source = resolveAllFromSourceSystem();
-        ConcurrentHashMap<Long, Section> ed = resolveFromEdPanel();
+    public ConcurrentHashMap<Long, Section> syncCreateUpdateDelete(SyncResult results) {
+        ConcurrentHashMap<Long, Section> source = null;
+        try {
+            source = resolveAllFromSourceSystem();
+        } catch (HttpClientException e) {
+            results.sectionSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+            return new ConcurrentHashMap<>();
+        }
+        ConcurrentHashMap<Long, Section> ed = null;
+        try {
+            ed = resolveFromEdPanel();
+        } catch (HttpClientException e) {
+            results.sectionEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+            return new ConcurrentHashMap<>();
+        }
         Iterator<Map.Entry<Long, Section>> sourceIterator = source.entrySet().iterator();
         //Find & perform the inserts and updates, if any
         while(sourceIterator.hasNext()) {
@@ -77,21 +95,34 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
             Section sourceSection = entry.getValue();
             Section edPanelSection = ed.get(entry.getKey());
             if(null == edPanelSection){
-                Section created = edPanel.createSection(
-                       school.getId(),
-                        sourceSection.getTerm().getSchoolYear().getId(),
-                        sourceSection.getTerm().getId(),
-                        sourceSection);
+                Section created = null;
+                try {
+                    created = edPanel.createSection(
+                           school.getId(),
+                            sourceSection.getTerm().getSchoolYear().getId(),
+                            sourceSection.getTerm().getId(),
+                            sourceSection);
+                } catch (HttpClientException e) {
+                    results.sectionCreateFailed(entry.getKey());
+                    continue;
+                }
                 sourceSection.setId(created.getId());
+                results.sectionCreated(entry.getKey(), sourceSection.getId());
                 this.sections.put(new Long(sourceSection.getSourceSystemId()), sourceSection);
             } else {
                 sourceSection.setId(edPanelSection.getId());
                 if(!edPanelSection.equals(sourceSection)) {
-                    edPanel.replaceSection(school.getId(),
-                            sourceSection.getTerm().getSchoolYear().getId(),
-                            sourceSection.getTerm().getId(),
-                            sourceSection);
+                    try {
+                        edPanel.replaceSection(school.getId(),
+                                sourceSection.getTerm().getSchoolYear().getId(),
+                                sourceSection.getTerm().getId(),
+                                sourceSection);
+                    } catch (IOException e) {
+                        results.sectionUpdateFailed(entry.getKey(), sourceSection.getId());
+                        continue;
+                    }
                     this.sections.put(new Long(sourceSection.getSourceSystemId()), sourceSection);
+                    results.sectionUpdated(entry.getKey(), sourceSection.getId());
                 }
             }
             StudentSectionGradeSync ssgSync = new StudentSectionGradeSync(
@@ -101,7 +132,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     studentAssociator,
                     unresolvablePowerStudents,
                     sourceSection);
-            ssgSync.syncCreateUpdateDelete();
+            ssgSync.syncCreateUpdateDelete(results);
 
             SectionAssignmentSync assignmentSync = new SectionAssignmentSync(
                     powerSchool,
@@ -111,7 +142,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     unresolvablePowerStudents,
                     sourceSection
             );
-            assignmentSync.syncCreateUpdateDelete();
+            assignmentSync.syncCreateUpdateDelete(results);
         }
         //Delete anything IN EdPanel that is NOT in source system
         Iterator<Map.Entry<Long, Section>> edpanelIterator = ed.entrySet().iterator();
@@ -119,16 +150,22 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
             Map.Entry<Long, Section> entry = edpanelIterator.next();
             if(!source.containsKey(entry.getKey())) {
                 Section edPanelSection = entry.getValue();
-                edPanel.deleteSection(school.getId(),
-                        edPanelSection.getTerm().getSchoolYear().getId(),
-                        edPanelSection.getTerm().getId(),
-                        edPanelSection);
+                try {
+                    edPanel.deleteSection(school.getId(),
+                            edPanelSection.getTerm().getSchoolYear().getId(),
+                            edPanelSection.getTerm().getId(),
+                            edPanelSection);
+                } catch (HttpClientException e) {
+                    results.sectionDeleteFailed(entry.getKey(), edPanelSection.getId());
+                    continue;
+                }
+                results.sectionDeleted(entry.getKey(), edPanelSection.getId());
             }
         }
         return source;
     }
 
-    protected ConcurrentHashMap<Long, Section> resolveAllFromSourceSystem() {
+    protected ConcurrentHashMap<Long, Section> resolveAllFromSourceSystem() throws HttpClientException {
         ConcurrentHashMap<Long, Section> result = new ConcurrentHashMap<>();
         SectionResponse sr = powerSchool.getSectionsBySchoolId(Long.valueOf(school.getSourceSystemId()));
         if(null != sr && null != sr.sections && null != sr.sections.section) {
@@ -161,7 +198,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
         return result;
     }
 
-    protected ConcurrentHashMap<Long, Section> resolveFromEdPanel() {
+    protected ConcurrentHashMap<Long, Section> resolveFromEdPanel() throws HttpClientException {
         Section[] sections = edPanel.getSections(school.getId());
         ConcurrentHashMap<Long, Section> sectionMap = new ConcurrentHashMap<>();
         for(Section s : sections) {

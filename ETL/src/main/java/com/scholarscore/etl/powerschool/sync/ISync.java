@@ -1,5 +1,6 @@
 package com.scholarscore.etl.powerschool.sync;
 
+import com.scholarscore.etl.SyncResult;
 import com.scholarscore.models.ApiModel;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,6 +48,6 @@ public interface ISync<T extends ApiModel> {
      *          end state of what is in EdPanel after all the CREATE/UPDATE/DELETE operations have been
      *          performed to synchronize EdPanel's state with PowerSchool's state.
      */
-    ConcurrentHashMap<Long, T> syncCreateUpdateDelete();
+    ConcurrentHashMap<Long, T> syncCreateUpdateDelete(SyncResult results);
 
 }

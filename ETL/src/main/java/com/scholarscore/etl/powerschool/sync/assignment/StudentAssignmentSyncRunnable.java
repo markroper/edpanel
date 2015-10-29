@@ -1,6 +1,8 @@
 package com.scholarscore.etl.powerschool.sync.assignment;
 
+import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScores;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsScore;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreId;
@@ -14,6 +16,7 @@ import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.user.Student;
 import org.apache.commons.lang3.tuple.MutablePair;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -33,30 +36,49 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
     private Section createdSection;
     private Assignment assignment;
     private Map<Long, MutablePair<Student, PsSectionScoreId>> ssidToStudent;
+    private SyncResult results;
 
     public StudentAssignmentSyncRunnable(IPowerSchoolClient powerSchool,
                                          IAPIClient edPanel,
                                          School school,
                                          Section createdSection,
                                          Assignment assignment,
-                                         Map<Long, MutablePair<Student, PsSectionScoreId>> ssidToStudent) {
+                                         Map<Long, MutablePair<Student, PsSectionScoreId>> ssidToStudent,
+                                         SyncResult results) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
         this.school = school;
         this.createdSection = createdSection;
         this.ssidToStudent = ssidToStudent;
         this.assignment = assignment;
+        this.results = results;
     }
 
     @Override
     public void run() {
-        this.syncCreateUpdateDelete();
+        this.syncCreateUpdateDelete(results);
     }
 
     @Override
-    public ConcurrentHashMap<Long, StudentAssignment> syncCreateUpdateDelete() {
-        ConcurrentHashMap<Long, StudentAssignment> source = resolveAllFromSourceSystem();
-        ConcurrentHashMap<Long, StudentAssignment> ed = resolveFromEdPanel();
+    public ConcurrentHashMap<Long, StudentAssignment> syncCreateUpdateDelete(SyncResult results) {
+        ConcurrentHashMap<Long, StudentAssignment> source = null;
+        try {
+            source = resolveAllFromSourceSystem();
+        } catch (HttpClientException e) {
+            results.studentAssignmentSourceGetFailed(
+                    Long.valueOf(this.assignment.getSourceSystemId()),
+                    this.assignment.getId());
+            return new ConcurrentHashMap<>();
+        }
+        ConcurrentHashMap<Long, StudentAssignment> ed = null;
+        try {
+            ed = resolveFromEdPanel();
+        } catch (HttpClientException e) {
+            results.studentAssignmentEdPanelGetFailed(
+                    Long.valueOf(this.assignment.getSourceSystemId()),
+                    this.assignment.getId());
+            return new ConcurrentHashMap<>();
+        }
 
         Iterator<Map.Entry<Long, StudentAssignment>> sourceIterator = source.entrySet().iterator();
         List<StudentAssignment> studentAssignmentsToCreate = new ArrayList<>();
@@ -67,6 +89,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
             StudentAssignment edPanelStudentAssignment = ed.get(entry.getKey());
             if(null == edPanelStudentAssignment){
                 studentAssignmentsToCreate.add(sourceStudentAssignment);
+                results.studentAssignmentCreated(entry.getKey(), -1L);
             } else {
                 sourceStudentAssignment.setId(edPanelStudentAssignment.getId());
                 sourceStudentAssignment.setStudent(edPanelStudentAssignment.getStudent());
@@ -77,43 +100,63 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                     sourceStudentAssignment.setAssignment(edPanelStudentAssignment.getAssignment());
                 }
                 if(!edPanelStudentAssignment.equals(sourceStudentAssignment)) {
-                     edPanel.replaceStudentAssignment(
-                            school.getId(),
-                            createdSection.getTerm().getSchoolYear().getId(),
-                            createdSection.getTerm().getId(),
-                            createdSection.getId(),
-                            assignment.getId(),
-                            sourceStudentAssignment);
+                    try {
+                        edPanel.replaceStudentAssignment(
+                                school.getId(),
+                                createdSection.getTerm().getSchoolYear().getId(),
+                                createdSection.getTerm().getId(),
+                                createdSection.getId(),
+                                assignment.getId(),
+                                sourceStudentAssignment);
+                    } catch (IOException e) {
+                        results.studentAssignmentUpdateFailed(entry.getKey(), sourceStudentAssignment.getId());
+                        continue;
+                    }
+                    results.studentAssignmentUpdated(entry.getKey(), sourceStudentAssignment.getId());
                 }
             }
         }
         //Perform the bulk creates!
-        edPanel.createStudentAssignments(
-                school.getId(),
-                createdSection.getTerm().getSchoolYear().getId(),
-                createdSection.getTerm().getId(),
-                createdSection.getId(),
-                assignment.getId(),
-                studentAssignmentsToCreate);
+        try {
+            edPanel.createStudentAssignments(
+                    school.getId(),
+                    createdSection.getTerm().getSchoolYear().getId(),
+                    createdSection.getTerm().getId(),
+                    createdSection.getId(),
+                    assignment.getId(),
+                    studentAssignmentsToCreate);
+        } catch (HttpClientException e) {
+            for(StudentAssignment s: studentAssignmentsToCreate) {
+                // NOTE - we couldn't create the student assignments for any of the assignment,
+                // so use the parent ID in this case.
+                results.studentAssignmentCreateFailed(Long.valueOf(assignment.getSourceSystemId()));
+            }
+        }
 
         //Delete anything IN EdPanel that is NOT in source system
         Iterator<Map.Entry<Long, StudentAssignment>> edpanelIterator = ed.entrySet().iterator();
         while(edpanelIterator.hasNext()) {
             Map.Entry<Long, StudentAssignment> entry = edpanelIterator.next();
             if(!source.containsKey(entry.getKey())) {
-                edPanel.deleteStudentAssignment(
-                        school.getId(),
-                        createdSection.getTerm().getSchoolYear().getId(),
-                        createdSection.getTerm().getId(),
-                        createdSection.getId(),
-                        assignment.getId(),
-                        entry.getValue());
+                try {
+                    edPanel.deleteStudentAssignment(
+                            school.getId(),
+                            createdSection.getTerm().getSchoolYear().getId(),
+                            createdSection.getTerm().getId(),
+                            createdSection.getId(),
+                            assignment.getId(),
+                            entry.getValue());
+                } catch (HttpClientException e) {
+                    results.studentAssignmentDeleteFailed(entry.getKey(), entry.getValue().getId());
+                    continue;
+                }
+                results.studentAssignmentDeleted(entry.getKey(), entry.getValue().getId());
             }
         }
         return source;
     }
 
-    protected ConcurrentHashMap<Long, StudentAssignment> resolveAllFromSourceSystem() {
+    protected ConcurrentHashMap<Long, StudentAssignment> resolveAllFromSourceSystem() throws HttpClientException {
         //Retrieve students' scores
         AssignmentScoresResponse assScores =
                 powerSchool.getStudentScoresByAssignmentId(Long.valueOf(assignment.getSourceSystemId()));
@@ -152,7 +195,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
         return studentAssignmentsToCreate;
     }
 
-    protected ConcurrentHashMap<Long, StudentAssignment> resolveFromEdPanel() {
+    protected ConcurrentHashMap<Long, StudentAssignment> resolveFromEdPanel() throws HttpClientException {
         StudentAssignment[] studentAssignments = edPanel.getStudentAssignments(
                 school.getId(),
                 createdSection.getTerm().getSchoolYear().getId(),
