@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * This is the E2E flow for powerschool import to edPanel export - we have references to both clients and
  * can invoke get API's from powerschool and POST (create) API's from edPanel.
  *
- * The migrateDistrict() method on this implementation can be run to do an initial migration or to synchronize a
+ * The syncDistrict() method on this implementation can be run to do an initial migration or to synchronize a
  * partially migrated or out of date set of entities between edpanel and powerschool.  The method is idempotent, if it
  * fails partway through or completes successfully and is rerun, the end state it generates should always be the same.
  *
@@ -72,7 +72,7 @@ public class ETLEngine implements IETLEngine {
     }
 
     @Override
-    public MigrationResult migrateDistrict() {
+    public MigrationResult syncDistrict() {
         long startTime = System.currentTimeMillis();
         MigrationResult result = new MigrationResult();
         createSchools();
