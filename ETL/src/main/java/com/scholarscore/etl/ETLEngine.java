@@ -30,8 +30,9 @@ import java.util.stream.Collectors;
  * can invoke get APIs from PowerSchool and POST/PUT/DELETE APIs to EdPanel to synchronize.
  *
  * The syncDistrict() method on this implementation can be run to do an initial migration or to synchronize a
- * partially migrated or out of date set of entities between EdPanel and PowerSchool.  The method is idempotent, if it
- * fails partway through or completes successfully and is rerun, the end state it generates should always be the same.
+ * partially migrated or out of date set of entities between EdPanel and PowerSchool.  The method is idempotent,
+ * if it fails partway through or completes successfully and is rerun, the end state it generates should
+ * always be the same.
  *
  * Created by mattg on 7/3/©5.
  */
@@ -51,7 +52,6 @@ public class ETLEngine implements IETLEngine {
     //a mapping of SSID to localId, all of which is encapsulated in the associator below
     private StaffAssociator staffAssociator = new StaffAssociator();
     private StudentAssociator studentAssociator = new StudentAssociator();
-
     //Error state collections
     private List<Long> unresolvablePowerStudents = Collections.synchronizedList(new ArrayList<>());
 
@@ -143,11 +143,6 @@ public class ETLEngine implements IETLEngine {
         }
     }
 
-    /**
-     * Creates the all school years and terms for each of the schools on the instance
-     * collection this.schools.  Returns void but populates the collections this.terms
-     * and this.sourceSchoolYears as part of execution.
-     */
     private void migrateSchoolYearsAndTerms() {
         if(null != schools) {
             this.terms = new ConcurrentHashMap<>();
