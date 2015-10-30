@@ -12,6 +12,9 @@ import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.School;
 import com.scholarscore.models.attendance.SchoolDay;
 
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -33,7 +36,7 @@ public class SchoolDaySync implements ISync<SchoolDay> {
     @Override
     public ConcurrentHashMap<Long, SchoolDay> syncCreateUpdateDelete(SyncResult results) {
         ConcurrentHashMap<Long, SchoolDay> source = null;
-        ConcurrentHashMap<Long, SchoolDay> edPanel = null;
+        ConcurrentHashMap<Long, SchoolDay> ed = null;
         try {
             source = resolveAllFromSourceSystem(Long.valueOf(school.getSourceSystemId()));
         } catch (HttpClientException e) {
@@ -41,12 +44,56 @@ public class SchoolDaySync implements ISync<SchoolDay> {
             return new ConcurrentHashMap<>();
         }
         try {
-            edPanel = resolveFromEdPanel(school.getId());
+            ed = resolveFromEdPanel(school.getId());
         } catch (HttpClientException e) {
             results.schoolDayEdPaneleGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
             return new ConcurrentHashMap<>();
         }
-        return null;
+        Iterator<Map.Entry<Long, SchoolDay>> sourceIterator = source.entrySet().iterator();
+        //Find & perform the inserts and updates, if any
+        while(sourceIterator.hasNext()) {
+            Map.Entry<Long, SchoolDay> entry = sourceIterator.next();
+            SchoolDay schoolDay = entry.getValue();
+            SchoolDay edPanelSchoolDay = ed.get(entry.getKey());
+            if(null == edPanelSchoolDay){
+                SchoolDay created = null;
+                try {
+                    created = edPanel.createSchoolDays(school.getId(), schoolDay);
+                } catch (HttpClientException e) {
+                    results.schoolDayCreateFailed(entry.getKey());
+                    continue;
+                }
+                schoolDay.setId(created.getId());
+                results.schoolDayCreated(entry.getKey(), schoolDay.getId());
+            } else {
+                schoolDay.setId(edPanelSchoolDay.getId());
+                schoolDay.setSchool(edPanelSchoolDay.getSchool());
+                if(!edPanelSchoolDay.equals(schoolDay)) {
+                    try {
+                        edPanel.updateSchoolDays(school.getId(), schoolDay);
+                    } catch (IOException e) {
+                        results.schoolDayUpdateFailed(entry.getKey(), schoolDay.getId());
+                        continue;
+                    }
+                    results.schoolDayUpdated(entry.getKey(), schoolDay.getId());
+                }
+            }
+        }
+        //Delete anything IN EdPanel that is NOT in source system
+        Iterator<Map.Entry<Long, SchoolDay>> edpanelIterator = ed.entrySet().iterator();
+        while(edpanelIterator.hasNext()) {
+            Map.Entry<Long, SchoolDay> entry = edpanelIterator.next();
+            if(!source.containsKey(entry.getKey())) {
+                try {
+                    edPanel.deleteSchoolDays(school.getId(), entry.getValue());
+                } catch (HttpClientException e) {
+                    results.schoolDayDeleteFailed(entry.getKey(), entry.getValue().getId());
+                    continue;
+                }
+                results.schoolDayDeleted(entry.getKey(), entry.getValue().getId());
+            }
+        }
+        return source;
     }
 
     protected ConcurrentHashMap<Long, SchoolDay> resolveAllFromSourceSystem(Long sourceSchoolId) throws HttpClientException {

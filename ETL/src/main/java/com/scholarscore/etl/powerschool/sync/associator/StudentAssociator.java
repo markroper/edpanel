@@ -48,4 +48,11 @@ public class StudentAssociator extends UserAssociator<Student> {
         students.putAll(entriesToAdd);
     }
 
+    public ConcurrentHashMap<Long, Long> getSsidToLocalIdStudent() {
+        return ssidToLocalIdStudent;
+    }
+
+    public ConcurrentHashMap<Long, Student> getStudents() {
+        return students;
+    }
 }
