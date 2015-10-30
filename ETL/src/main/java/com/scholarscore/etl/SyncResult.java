@@ -16,7 +16,7 @@ public class SyncResult {
 
     protected ConcurrentHashMap<Long, EntitySyncResult> sectionAssignments =
             new ConcurrentHashMap<>();
-    protected ConcurrentHashMap<Long, EntitySyncResult> studentAssignments =
+    protected ConcurrentHashMap<Long, ConcurrentHashMap<Long, EntitySyncResult>> studentAssignments =
             new ConcurrentHashMap<>();
     protected ConcurrentHashMap<Long, EntitySyncResult> studentSectionGrades =
             new ConcurrentHashMap<>();
@@ -48,20 +48,26 @@ public class SyncResult {
         EntitySyncResult result = sectionAssignments.get(sectionssid);
         if(null == result) {
            result = new EntitySyncResult();
+            sectionAssignments.put(sectionssid, result);
         }
         result.failedCreate(ssid);
     }
-    public void studentAssignmentCreateFailed(long sectionssid, long ssid) {
-        EntitySyncResult result = studentAssignments.get(sectionssid);
+    public void studentAssignmentCreateFailed(long sectionssid, long assignmentssid, long ssid) {
+        ConcurrentHashMap<Long, EntitySyncResult> result = studentAssignments.get(sectionssid);
         if(null == result) {
-            result = new EntitySyncResult();
+            result = new ConcurrentHashMap<>();
+            studentAssignments.put(sectionssid, result);
         }
-        result.failedCreate(ssid);
+        if(null == result.get(assignmentssid)) {
+            result.put(assignmentssid, new EntitySyncResult());
+        }
+        result.get(assignmentssid).failedCreate(ssid);
     }
     public void studentSectionGradeCreateFailed(long sectionssid, long ssid) {
         EntitySyncResult result = studentSectionGrades.get(sectionssid);
         if(null == result) {
             result = new EntitySyncResult();
+            studentSectionGrades.put(sectionssid, result);
         }
         result.failedCreate(ssid);
     }
@@ -93,20 +99,26 @@ public class SyncResult {
         EntitySyncResult result = sectionAssignments.get(sectionssid);
         if(null == result) {
             result = new EntitySyncResult();
+            sectionAssignments.put(sectionssid, result);
         }
         result.created(ssid, edPanelId);
     }
-    public void studentAssignmentCreated(long sectionssid, long ssid, long edPanelId) {
-        EntitySyncResult result = studentAssignments.get(sectionssid);
+    public void studentAssignmentCreated(long sectionssid, long assignmentssid, long ssid, long edPanelId) {
+        ConcurrentHashMap<Long, EntitySyncResult> result = studentAssignments.get(sectionssid);
         if(null == result) {
-            result = new EntitySyncResult();
+            result = new ConcurrentHashMap<>();
+            studentAssignments.put(sectionssid, result);
         }
-        result.created(ssid, edPanelId);
+        if(null == result.get(assignmentssid)) {
+            result.put(assignmentssid, new EntitySyncResult());
+        }
+        result.get(assignmentssid).created(ssid, edPanelId);
     }
     public void studentSectionGradeCreated(long sectionssid, long ssid, long edPanelId) {
         EntitySyncResult result = studentSectionGrades.get(sectionssid);
         if(null == result) {
             result = new EntitySyncResult();
+            studentSectionGrades.put(sectionssid, result);
         }
         result.created(ssid, edPanelId);
     }
@@ -134,24 +146,30 @@ public class SyncResult {
     public void sectionUpdateFailed(long ssid, long edPanelId) {
         sections.failedUpdate(ssid, edPanelId);
     }
-    public void sectionAssignmentUpdateFailed(long sectionssid, long ssid, long edPanelId) {
+    public void sectionAssignmentUpdateFailed(long sectionssid, long assignmentssid, long ssid, long edPanelId) {
         EntitySyncResult result = sectionAssignments.get(sectionssid);
         if(null == result) {
             result = new EntitySyncResult();
+            sectionAssignments.put(sectionssid, result);
         }
         result.failedUpdate(ssid, edPanelId);
     }
-    public void studentAssignmentUpdateFailed(long sectionssid, long ssid, long edPanelId) {
-        EntitySyncResult result = studentAssignments.get(sectionssid);
+    public void studentAssignmentUpdateFailed(long sectionssid, long assignmentssid, long ssid, long edPanelId) {
+        ConcurrentHashMap<Long, EntitySyncResult> result = studentAssignments.get(sectionssid);
         if(null == result) {
-            result = new EntitySyncResult();
+            result = new ConcurrentHashMap<>();
+            studentAssignments.put(sectionssid, result);
         }
-        result.failedUpdate(ssid, edPanelId);
+        if(null == result.get(assignmentssid)) {
+            result.put(assignmentssid, new EntitySyncResult());
+        }
+        result.get(assignmentssid).failedUpdate(ssid, edPanelId);
     }
     public void studentSectionGradeUpdateFailed(long sectionssid, long ssid, long edPanelId) {
         EntitySyncResult result = studentSectionGrades.get(sectionssid);
         if(null == result) {
             result = new EntitySyncResult();
+            studentSectionGrades.put(sectionssid, result);
         }
         result.failedUpdate(ssid, edPanelId);
     }
@@ -183,20 +201,26 @@ public class SyncResult {
         EntitySyncResult result = sectionAssignments.get(sectionssid);
         if(null == result) {
             result = new EntitySyncResult();
+            sectionAssignments.put(sectionssid, result);
         }
         result.updated(ssid, edPanelId);
     }
-    public void studentAssignmentUpdated(long sectionssid, long ssid, long edPanelId) {
-        EntitySyncResult result = studentAssignments.get(sectionssid);
+    public void studentAssignmentUpdated(long sectionssid, long assignmentssid, long ssid, long edPanelId) {
+        ConcurrentHashMap<Long, EntitySyncResult> result = studentAssignments.get(sectionssid);
         if(null == result) {
-            result = new EntitySyncResult();
+            result = new ConcurrentHashMap<Long, EntitySyncResult>();
+            studentAssignments.put(sectionssid, result);
         }
-        result.updated(ssid, edPanelId);
+        if(null == result.get(assignmentssid)) {
+            result.put(assignmentssid, new EntitySyncResult());
+        }
+        result.get(assignmentssid).updated(ssid, edPanelId);
     }
     public void studentSectionGradeUpdated(long sectionssid, long ssid, long edPanelId) {
         EntitySyncResult result = studentSectionGrades.get(sectionssid);
         if(null == result) {
             result = new EntitySyncResult();
+            studentSectionGrades.put(sectionssid, result);
         }
         result.updated(ssid, edPanelId);
     }
@@ -228,20 +252,26 @@ public class SyncResult {
         EntitySyncResult result = sectionAssignments.get(sectionssid);
         if(null == result) {
             result = new EntitySyncResult();
+            sectionAssignments.put(sectionssid, result);
         }
         result.failedDelete(ssid, edPanelId);
     }
-    public void studentAssignmentDeleteFailed(long sectionssid, long ssid, long edPanelId) {
-        EntitySyncResult result = studentAssignments.get(sectionssid);
+    public void studentAssignmentDeleteFailed(long sectionssid, long assignmentssid, long ssid, long edPanelId) {
+        ConcurrentHashMap<Long, EntitySyncResult> result = studentAssignments.get(sectionssid);
         if(null == result) {
-            result = new EntitySyncResult();
+            result = new ConcurrentHashMap<Long, EntitySyncResult>();
+            studentAssignments.put(sectionssid, result);
         }
-        result.failedDelete(ssid, edPanelId);
+        if(null == result.get(assignmentssid)) {
+            result.put(assignmentssid, new EntitySyncResult());
+        }
+        result.get(assignmentssid).failedDelete(ssid, edPanelId);
     }
     public void studentSectionGradeDeleteFailed(long sectionssid, long ssid, long edPanelId) {
         EntitySyncResult result = studentSectionGrades.get(sectionssid);
         if(null == result) {
             result = new EntitySyncResult();
+            studentSectionGrades.put(sectionssid, result);
         }
         result.failedDelete(ssid, edPanelId);
     }
@@ -273,20 +303,26 @@ public class SyncResult {
         EntitySyncResult result = sectionAssignments.get(sectionssid);
         if(null == result) {
             result = new EntitySyncResult();
+            sectionAssignments.put(sectionssid, result);
         }
         result.deleted(ssid, edPanelId);
     }
-    public void studentAssignmentDeleted(long sectionssid, long ssid, long edPanelId) {
-        EntitySyncResult result = studentAssignments.get(sectionssid);
+    public void studentAssignmentDeleted(long sectionssid, long assignmentssid, long ssid, long edPanelId) {
+        ConcurrentHashMap<Long, EntitySyncResult> result = studentAssignments.get(sectionssid);
         if(null == result) {
-            result = new EntitySyncResult();
+            result = new ConcurrentHashMap<Long, EntitySyncResult>();
+            studentAssignments.put(sectionssid, result);
         }
-        result.deleted(ssid, edPanelId);
+        if(null == result.get(assignmentssid)) {
+            result.put(assignmentssid, new EntitySyncResult());
+        }
+        result.get(assignmentssid).deleted(ssid, edPanelId);
     }
     public void studentSectionGradeDeleted(long sectionssid, long ssid, long edPanelId) {
         EntitySyncResult result = studentSectionGrades.get(sectionssid);
         if(null == result) {
             result = new EntitySyncResult();
+            studentSectionGrades.put(sectionssid, result);
         }
         result.deleted(ssid, edPanelId);
     }
@@ -319,20 +355,29 @@ public class SyncResult {
         EntitySyncResult result = sectionAssignments.get(sectionssid);
         if(null == result) {
             result = new EntitySyncResult();
+            sectionAssignments.put(sectionssid, result);
         }
         result.getSourceGetFailed().put(parentSsid, parentEdPanelId);
     }
-    public void studentAssignmentSourceGetFailed(long sectionssid, long parentSsid, long parentEdPanelId) {
-        EntitySyncResult result = studentAssignments.get(sectionssid);
+    public void studentAssignmentSourceGetFailed(long sectionssid,
+                                                 long assignmentssid,
+                                                 long parentSsid,
+                                                 long parentEdPanelId) {
+        ConcurrentHashMap<Long, EntitySyncResult> result = studentAssignments.get(sectionssid);
         if(null == result) {
-            result = new EntitySyncResult();
+            result = new ConcurrentHashMap<Long, EntitySyncResult>();
+            studentAssignments.put(sectionssid, result);
         }
-        result.getSourceGetFailed().put(parentSsid, parentEdPanelId);
+        if(null == result.get(assignmentssid)) {
+            result.put(assignmentssid, new EntitySyncResult());
+        }
+        result.get(assignmentssid).getSourceGetFailed().put(parentSsid, parentEdPanelId);
     }
     public void studentSectionGradeSourceGetFailed(long sectionssid, long parentSsid, long parentEdPanelId) {
         EntitySyncResult result = studentSectionGrades.get(sectionssid);
         if(null == result) {
             result = new EntitySyncResult();
+            studentSectionGrades.put(sectionssid, result);
         }
         result.getSourceGetFailed().put(parentSsid, parentEdPanelId);
     }
@@ -365,20 +410,29 @@ public class SyncResult {
         EntitySyncResult result = sectionAssignments.get(sectionssid);
         if(null == result) {
             result = new EntitySyncResult();
+            sectionAssignments.put(sectionssid, result);
         }
         result.getEdPanelGetFailed().put(parentSsid, parentEdPanelId);
     }
-    public void studentAssignmentEdPanelGetFailed(long sectionssid,long parentSsid, long parentEdPanelId) {
-        EntitySyncResult result = studentAssignments.get(sectionssid);
+    public void studentAssignmentEdPanelGetFailed(long sectionssid,
+                                                  long assignmentssid,
+                                                  long parentSsid,
+                                                  long parentEdPanelId) {
+        ConcurrentHashMap<Long, EntitySyncResult> result = studentAssignments.get(sectionssid);
         if(null == result) {
-            result = new EntitySyncResult();
+            result = new ConcurrentHashMap<Long, EntitySyncResult>();
+            studentAssignments.put(sectionssid, result);
         }
-        result.getEdPanelGetFailed().put(parentSsid, parentEdPanelId);
+        if(null == result.get(assignmentssid)) {
+            result.put(assignmentssid, new EntitySyncResult());
+        }
+        result.get(assignmentssid).getEdPanelGetFailed().put(parentSsid, parentEdPanelId);
     }
     public void studentSectionGradeEdPanelGetFailed(long sectionssid, long parentSsid, long parentEdPanelId) {
         EntitySyncResult result = studentSectionGrades.get(sectionssid);
         if(null == result) {
             result = new EntitySyncResult();
+            studentSectionGrades.put(sectionssid, result);
         }
         result.getEdPanelGetFailed().put(parentSsid, parentEdPanelId);
     }
@@ -435,10 +489,11 @@ public class SyncResult {
     public void setSectionAssignments(ConcurrentHashMap<Long, EntitySyncResult> sectionAssignments) {
         this.sectionAssignments = sectionAssignments;
     }
-    public ConcurrentHashMap<Long, EntitySyncResult> getStudentAssignments() {
+    public ConcurrentHashMap<Long, ConcurrentHashMap<Long, EntitySyncResult>> getStudentAssignments() {
         return studentAssignments;
     }
-    public void setStudentAssignments(ConcurrentHashMap<Long, EntitySyncResult> studentAssignments) {
+    public void setStudentAssignments(
+            ConcurrentHashMap<Long, ConcurrentHashMap<Long, EntitySyncResult>> studentAssignments) {
         this.studentAssignments = studentAssignments;
     }
     public ConcurrentHashMap<Long, EntitySyncResult> getStudentSectionGrades() {

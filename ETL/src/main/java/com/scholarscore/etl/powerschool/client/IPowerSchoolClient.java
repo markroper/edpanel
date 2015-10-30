@@ -1,7 +1,6 @@
 package com.scholarscore.etl.powerschool.client;
 
 import com.scholarscore.client.HttpClientException;
-import com.scholarscore.etl.powerschool.api.deserializers.IDeserialize;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
@@ -16,9 +15,6 @@ import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionScoreIdsResponse;
 import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by mattg on 7/2/15.
@@ -53,8 +49,4 @@ public interface IPowerSchoolClient {
     AssignmentScoresResponse getStudentScoresByAssignmentId(Long assignmentId) throws HttpClientException;
 
     SectionScoreIdsResponse getStudentScoreIdsBySectionId(Long sectionId) throws HttpClientException;
-
-    String executeNamedQuery(String tableName) throws IOException, HttpClientException;
-
-    <T> List<T> namedQuery(Class<T> clazz, String tableName, IDeserialize<T> transformer) throws IOException;
 }

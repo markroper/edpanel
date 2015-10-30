@@ -15,8 +15,6 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,8 +53,6 @@ public class ETLEngine implements IETLEngine {
     //a mapping of SSID to localId, all of which is encapsulated in the associator below
     private StaffAssociator staffAssociator = new StaffAssociator();
     private StudentAssociator studentAssociator = new StudentAssociator();
-    //Error state collections
-    private List<Long> unresolvablePowerStudents = Collections.synchronizedList(new ArrayList<>());
 
     public void setPowerSchool(IPowerSchoolClient powerSchool) {
         this.powerSchool = powerSchool;
@@ -108,83 +104,119 @@ public class ETLEngine implements IETLEngine {
                 " \nseconds, students: " + studentCreationComplete +
                 " \nseconds, courses: " + courseCreationComplete +
                 " \nseconds, sections: " + sectionCreationComplete);
+        outputResults(results);
+        return results;
+    }
+
+    /**
+     * TODO: figure out how we actually want to output these results.  For now, its a series of sys outs
+     * @param results
+     */
+    private static void outputResults(SyncResult results) {
         System.out.println("Created Schools: " + results.getSchools().getCreated().size());
         System.out.println("Failed school creations: " + results.getSchools().getFailedCreates().size());
         System.out.println("Failed school source gets: " + results.getSchools().getSourceGetFailed().size());
         System.out.println("Failed school edpanel gets: " + results.getSchools().getEdPanelGetFailed().size());
         System.out.println("--");
         System.out.println("Created Courses: " + results.getCourses().getCreated().size());
+        System.out.println("Updated Courses: " + results.getCourses().getUpdated().size());
         System.out.println("Failed courses creations: " + results.getCourses().getFailedCreates().size());
         System.out.println("Failed courses source gets: " + results.getCourses().getSourceGetFailed().size());
         System.out.println("Failed courses edpanel gets: " + results.getCourses().getEdPanelGetFailed().size());
         System.out.println("--");
         System.out.println("Created Terms: " + results.getTerms().getCreated().size());
+        System.out.println("Updated Terms: " + results.getTerms().getUpdated().size());
         System.out.println("Failed terms creations: " + results.getTerms().getFailedCreates().size());
         System.out.println("Failed terms source gets: " + results.getTerms().getSourceGetFailed().size());
         System.out.println("Failed terms edpanel gets: " + results.getTerms().getEdPanelGetFailed().size());
         System.out.println("--");
         System.out.println("Created staff: " + results.getStaff().getCreated().size());
+        System.out.println("Updated staff: " + results.getStaff().getUpdated().size());
         System.out.println("Failed staff creations: " + results.getStaff().getFailedCreates().size());
         System.out.println("Failed staff source gets: " + results.getStaff().getSourceGetFailed().size());
         System.out.println("Failed staff edpanel gets: " + results.getStaff().getEdPanelGetFailed().size());
         System.out.println("--");
         System.out.println("Created students: " + results.getStudents().getCreated().size());
+        System.out.println("Updated students: " + results.getStudents().getUpdated().size());
+        System.out.println("Deleted students: " + results.getStudents().getDeleted().size());
         System.out.println("Failed students creations: " + results.getStudents().getFailedCreates().size());
         System.out.println("Failed students source gets: " + results.getStudents().getSourceGetFailed().size());
         System.out.println("Failed students edpanel gets: " + results.getStudents().getEdPanelGetFailed().size());
         System.out.println("--");
         System.out.println("Created sections: " + results.getSections().getCreated().size());
+        System.out.println("Updated sections: " + results.getSections().getUpdated().size());
+        System.out.println("Deleted sections: " + results.getSections().getUpdated().size());
         System.out.println("Failed sections creations: " + results.getSections().getFailedCreates().size());
         System.out.println("Failed sections source gets: " + results.getSections().getSourceGetFailed().size());
         System.out.println("Failed sections edpanel gets: " + results.getSections().getEdPanelGetFailed().size());
         System.out.println("--");
         Integer studAssignments = 0;
+        Integer studUpdatedAssignments = 0;
+        Integer studDeletedAssignments = 0;
         Integer studAssFailedCreates = 0;
         Integer studAssFailedSourceGets = 0;
         Integer studAssFailedEdPanelGets = 0;
         for(Map.Entry<Long, EntitySyncResult> sa : results.getSectionAssignments().entrySet()) {
             studAssignments += sa.getValue().getCreated().size();
+            studUpdatedAssignments += sa.getValue().getUpdated().size();
+            studDeletedAssignments += sa.getValue().getDeleted().size();
             studAssFailedCreates += sa.getValue().getFailedCreates().size();
             studAssFailedSourceGets += sa.getValue().getSourceGetFailed().size();
             studAssFailedEdPanelGets += sa.getValue().getEdPanelGetFailed().size();
         }
         System.out.println("Created section assignments: " + studAssignments);
+        System.out.println("Updated section assignments: " + studUpdatedAssignments);
+        System.out.println("Deleted section assignments: " + studDeletedAssignments);
         System.out.println("Failed section assignments creations: " + studAssFailedCreates);
         System.out.println("Failed section assignments source gets: " + studAssFailedSourceGets);
         System.out.println("Failed section assignments edpanel gets: " + studAssFailedEdPanelGets);
         System.out.println("--");
 
         Integer ssgs = 0;
+        Integer ssgsUpdated = 0;
+        Integer ssgsDeleted = 0;
         Integer ssgFailedCreates = 0;
         Integer ssgFailedSourceGets = 0;
         Integer ssgFailedEdPanelGets = 0;
         for(Map.Entry<Long, EntitySyncResult> sa : results.getStudentSectionGrades().entrySet()) {
             ssgs += sa.getValue().getCreated().size();
+            ssgsUpdated += sa.getValue().getUpdated().size();
+            ssgsDeleted += sa.getValue().getDeleted().size();
             ssgFailedCreates += sa.getValue().getFailedCreates().size();
             ssgFailedSourceGets += sa.getValue().getSourceGetFailed().size();
             ssgFailedEdPanelGets += sa.getValue().getEdPanelGetFailed().size();
         }
         System.out.println("Created section student grades: " + ssgs);
+        System.out.println("Updated section student grades: " + ssgsUpdated);
+        System.out.println("Deleted section student grades: " + ssgsDeleted);
         System.out.println("Failed ssg creations: " + ssgFailedCreates);
         System.out.println("Failed ssg source gets: " + ssgFailedSourceGets);
         System.out.println("Failed ssg edpanel gets: " + ssgFailedEdPanelGets);
         System.out.println("--");
         Integer sectAss = 0;
+        Integer sectAssUpdated = 0;
+        Integer sectAssDeleted = 0;
         Integer sectAssFailedCreates = 0;
         Integer sectAssFailedSourceGets = 0;
         Integer sectAssFailedEdPanelGets = 0;
-        for(Map.Entry<Long, EntitySyncResult> sa : results.getStudentAssignments().entrySet()) {
-            sectAss += sa.getValue().getCreated().size();
-            sectAssFailedCreates += sa.getValue().getFailedCreates().size();
-            sectAssFailedSourceGets += sa.getValue().getSourceGetFailed().size();
-            sectAssFailedEdPanelGets += sa.getValue().getEdPanelGetFailed().size();
+        for(Map.Entry<Long, ConcurrentHashMap<Long, EntitySyncResult>> sa : results.getStudentAssignments().entrySet()) {
+            for(Map.Entry<Long, EntitySyncResult> a : sa.getValue().entrySet()) {
+                sectAss += a.getValue().getCreated().size();
+                sectAssUpdated += a.getValue().getUpdated().size();
+                sectAssDeleted += a.getValue().getDeleted().size();
+                sectAssFailedCreates += a.getValue().getFailedCreates().size();
+                sectAssFailedSourceGets += a.getValue().getSourceGetFailed().size();
+                sectAssFailedEdPanelGets += a.getValue().getEdPanelGetFailed().size();
+            }
         }
         System.out.println("Created student assignments: " + sectAss);
+        System.out.println("Updated student assignments: " + sectAssUpdated);
+        System.out.println("Deleted student assignments: " + sectAssDeleted);
         System.out.println("Failed student assignments creations: " + sectAssFailedCreates);
         System.out.println("Failed student assignments source gets: " + sectAssFailedSourceGets);
         System.out.println("Failed student assignments edpanel gets: " + sectAssFailedEdPanelGets);
-        return results;
     }
+
 
     /**
      * For each school in this.schools, resolve all the sections and create an EdPanel Section instance for each.
@@ -208,7 +240,6 @@ public class ETLEngine implements IETLEngine {
                     staffAssociator,
                     studentAssociator,
                     this.sections.get(sourceSystemSchoolId),
-                    unresolvablePowerStudents,
                     results);
             executor.execute(sectionRunnable);
         }

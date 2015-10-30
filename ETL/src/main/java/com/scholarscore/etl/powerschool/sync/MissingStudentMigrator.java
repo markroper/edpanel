@@ -10,7 +10,6 @@ import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.user.Student;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -34,14 +33,13 @@ public class MissingStudentMigrator {
             IPowerSchoolClient powerSchool,
             IAPIClient edPanel,
             StudentAssociator studentAssociator,
-            List<Long> unresolvablePowerStudents,
             SyncResult results) {
         StudentResponse powerStudent = null;
 
         try {
             powerStudent = powerSchool.getStudentById(powerSchoolStudentId);
         } catch(HttpClientException e) {
-            unresolvablePowerStudents.add(powerSchoolStudentId);
+            results.studentCreateFailed(powerSchoolStudentId);
             return null;
         }
         PsStudents students = new PsStudents();
