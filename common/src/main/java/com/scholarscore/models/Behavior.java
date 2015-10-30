@@ -3,8 +3,6 @@ package com.scholarscore.models;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -177,7 +175,6 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     }
 
     @OneToOne(optional = true)
-    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.STUDENT_FK, nullable = true)
     public Student getStudent() {
         return student;
@@ -188,7 +185,6 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     }
 
     @OneToOne(optional = true)
-    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.TEACHER_FK, nullable = true)
     public Teacher getTeacher() {
         return teacher;

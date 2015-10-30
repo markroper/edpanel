@@ -27,7 +27,6 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -43,7 +42,6 @@ public class SectionAssignmentSync implements ISync<Assignment> {
     private IAPIClient edPanel;
     private School school;
     private StudentAssociator studentAssociator;
-    private List<Long> unresolvablePowerStudents;
     private Section createdSection;
     //Lookup mappings populated as a part of powerschool assignment resolution
     Map<Long, MutablePair<Student, PsSectionScoreId>> ssidToStudent = new HashMap<>();
@@ -53,13 +51,11 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                                    IAPIClient edPanel,
                                    School school,
                                    StudentAssociator studentAssociator,
-                                   List<Long> unresolvablePowerStudents,
                                    Section createdSection) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
         this.school = school;
         this.studentAssociator = studentAssociator;
-        this.unresolvablePowerStudents = unresolvablePowerStudents;
         this.createdSection = createdSection;
     }
 
@@ -102,7 +98,9 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                             createdSection.getId(),
                             sourceAssignment);
                 } catch (HttpClientException e) {
-                    results.sectionAssignmentCreateFailed(Long.valueOf(createdSection.getSourceSystemId()), Long.valueOf(sourceAssignment.getSourceSystemId()));
+                    results.sectionAssignmentCreateFailed(
+                            Long.valueOf(createdSection.getSourceSystemId()),
+                            Long.valueOf(sourceAssignment.getSourceSystemId()));
                     continue;
                 }
                 sourceAssignment.setId(created.getId());
@@ -200,13 +198,12 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                             powerSchool,
                             edPanel,
                             studentAssociator,
-                            unresolvablePowerStudents,
                             results);
                 }
                 if(null != stud) {
                     ssidToStudent.put(ssidId, new MutablePair<>(stud, i));
                 } else {
-                    System.out.println("Unable to resolve student");
+                    System.out.println("Unable to resolve student with ssid: " + i.getStudentid());
                 }
             }
         }

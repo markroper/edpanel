@@ -18,7 +18,6 @@ import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.Collection;
 
 import static org.testng.Assert.assertNotNull;
@@ -51,12 +50,6 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
             Collection<User> internalModel = response.toInternalModel();
             assertNotNull(internalModel);
         }
-    }
-
-    public void testExecuteNamedQueryRoom() throws IOException {
-        String json = client.executeNamedQuery("room");
-        System.out.println(json);
-        assertNotNull(json);
     }
 
     public void testGetSectionsBySchool() throws HttpClientException {

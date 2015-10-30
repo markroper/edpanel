@@ -1,6 +1,5 @@
 package com.scholarscore.etl.powerschool.sync.section;
 
-import com.google.gson.JsonSyntaxException;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.SyncResult;
@@ -44,20 +43,17 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
     private StudentAssociator studentAssociator;
     private StaffAssociator staffAssociator;
     private ConcurrentHashMap<Long, Section> sections;
-    private List<Long> unresolvablePowerStudents;
     private Section createdSection;
 
     public StudentSectionGradeSync(IPowerSchoolClient powerSchool,
                                    IAPIClient edPanel,
                                    School school,
                                    StudentAssociator studentAssociator,
-                                   List<Long> unresolvablePowerStudents,
                                    Section createdSection) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
         this.school = school;
         this.studentAssociator = studentAssociator;
-        this.unresolvablePowerStudents = unresolvablePowerStudents;
         this.createdSection = createdSection;
     }
 
@@ -163,12 +159,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
     protected ConcurrentHashMap<Long, StudentSectionGrade> resolveAllFromSourceSystem(SyncResult results) throws HttpClientException {
         //Resolve enrolled students & Create an EdPanel StudentSectionGrade for each
         SectionEnrollmentsResponse enrollments = null;
-        try {
-            enrollments = powerSchool.getEnrollmentBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
-        } catch(JsonSyntaxException e) {
-            //TODO: if a single record comes back, PowerSchool doesn't send an array and the marshalling fails :(
-            System.out.println("failed to unmarshall section enrollments: " + e.getMessage());
-        }
+        enrollments = powerSchool.getEnrollmentBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
         List<StudentSectionGrade> ssgs = Collections.synchronizedList(new ArrayList<>());
         /*
             RESOLVE SSGS FROM POWERSCHOOL
@@ -180,8 +171,9 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             //See if any final grades have been created for the section, and if so, retrieve them
             Map<Long, PsSectionGrade> studentIdToSectionScore = null;
             if(createdSection.getEndDate().compareTo(new Date()) < 0) {
-                SectionGradesResponse sectScores = powerSchool.getSectionScoresBySectionId(
-                        Long.valueOf(createdSection.getSourceSystemId()));
+                SectionGradesResponse sectScores = null;
+                    sectScores = powerSchool.getSectionScoresBySectionId(
+                            Long.valueOf(createdSection.getSourceSystemId()));
                 if(null != sectScores && null != sectScores.record) {
                     studentIdToSectionScore = new HashMap<>();
                     for(PsSectionGrades ss: sectScores.record) {
@@ -202,7 +194,6 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                             powerSchool,
                             edPanel,
                             studentAssociator,
-                            unresolvablePowerStudents,
                             results);
                 }
                 if(null != se && null != edpanelStudent) {
@@ -212,7 +203,10 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                     if(null != studentIdToSectionScore) {
                         PsSectionGrade score = studentIdToSectionScore.get(
                                 Long.valueOf(edpanelStudent.getSourceSystemId()));
-                        Double pct = score.getPercent();
+                        Double pct = null;
+                        if(null != score) {
+                            pct = score.getPercent();
+                        }
                         ssg.setGrade(pct);
                         ssg.setComplete(true);
                     } else {

@@ -42,7 +42,6 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
     private StudentAssociator studentAssociator;
     private StaffAssociator staffAssociator;
     private ConcurrentHashMap<Long, Section> sections;
-    private List<Long> unresolvablePowerStudents;
     private SyncResult results;
 
     public SectionSyncRunnable(IPowerSchoolClient powerSchool,
@@ -53,7 +52,6 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                                StaffAssociator staffAssociator,
                                StudentAssociator studentAssociator,
                                ConcurrentHashMap<Long, Section> sections,
-                               List<Long> unresolvablePowerStudents,
                                SyncResult results) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
@@ -63,7 +61,6 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
         this.staffAssociator = staffAssociator;
         this.studentAssociator = studentAssociator;
         this.sections = sections;
-        this.unresolvablePowerStudents = unresolvablePowerStudents;
         this.results = results;
     }
 
@@ -130,7 +127,6 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     edPanel,
                     school,
                     studentAssociator,
-                    unresolvablePowerStudents,
                     sourceSection);
             ssgSync.syncCreateUpdateDelete(results);
 
@@ -139,7 +135,6 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     edPanel,
                     school,
                     studentAssociator,
-                    unresolvablePowerStudents,
                     sourceSection
             );
             assignmentSync.syncCreateUpdateDelete(results);
