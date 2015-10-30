@@ -36,6 +36,7 @@ public class Attendance implements Serializable {
     private Student student;
     private AttendanceStatus status;
     private String description;
+    private String sourceSystemId;
     
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name=HibernateConsts.SCHOOL_DAY_FK)
@@ -83,7 +84,15 @@ public class Attendance implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
+    @Column(name = HibernateConsts.ATTENDANCE_SOURCE_SYSTEM_ID)
+    public String getSourceSystemId() {
+        return sourceSystemId;
+    }
+    public void setSourceSystemId(String sourceSystemId) {
+        this.sourceSystemId = sourceSystemId;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -97,12 +106,13 @@ public class Attendance implements Serializable {
                 && Objects.equals(this.id, other.id)
                 && Objects.equals(this.student, other.student)
                 && Objects.equals(this.status, other.status)
+                && Objects.equals(this.sourceSystemId, other.sourceSystemId)
                 && Objects.equals(this.description, other.description);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(schoolDay, id, student, status, description);
+        return 31 * super.hashCode() + Objects.hash(schoolDay, id, sourceSystemId, student, status, description);
     }
     
     @Override
@@ -112,6 +122,7 @@ public class Attendance implements Serializable {
                 ", id=" + id +
                 ", student=" + student +
                 ", status=" + status +
+                ", status=" + sourceSystemId +
                 ", description='" + description + '\'' +
                 '}';
     }
@@ -128,11 +139,17 @@ public class Attendance implements Serializable {
         private Student student;
         private AttendanceStatus status;
         private String description;
+        private String sourceSystemId;
 
         public AttendanceBuilder(){}
 
         public AttendanceBuilder withSchoolDay(final SchoolDay schoolDay){
             this.schoolDay = schoolDay;
+            return this;
+        }
+
+        public AttendanceBuilder withSourceSystemId(final String sourceSystemId){
+            this.sourceSystemId = sourceSystemId;
             return this;
         }
 
@@ -163,6 +180,7 @@ public class Attendance implements Serializable {
             attendance.setStudent(student);
             attendance.setStatus(status);
             attendance.setDescription(description);
+            attendance.setDescription(sourceSystemId);
             return attendance;
         }
     }

@@ -1,5 +1,6 @@
 package com.scholarscore.etl.powerschool.client;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.client.BaseHttpClient;
 import com.scholarscore.client.HttpClientException;
@@ -9,8 +10,11 @@ import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentTypes;
+import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper;
+import com.scholarscore.etl.powerschool.api.model.attendance.PsCalendarDayWrapper;
 import com.scholarscore.etl.powerschool.api.response.AssignmentScoresResponse;
 import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
+import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionEnrollmentsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionGradesResponse;
@@ -50,6 +54,19 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     public static final String PATH_RESOURCE_SINGLE_STUDENT =
             BASE +
             "/student/{0}?expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup";
+    //Attendance related
+    public static final String PATH_RESOUCE_CALENDAR_DAY =
+            SCHEMA_BASE +
+            "/calendar_day?" +
+            PAGE_SIZE_PARAM +
+            "&projection=dcid,date_value,insession,note,membershipvalue,scheduleid,schoolid,type" +
+            "&q=schoolid=={0}";
+    public static final String PATH_RESOURCE_ATTENDANCE =
+            SCHEMA_BASE +
+            "/attendance?" +
+            PAGE_SIZE_PARAM +
+            "&projection=*&q=studentid=={0}";
+
     public static final String PATH_RESOURCE_STAFF = BASE + "/school/{0}/staff?" + PAGE_SIZE_PARAM;
     public static final String EXPANSION_RESOURCE_STAFF = "&expansions=phones,addresses,emails,school_affiliations";
     public static final String PATH_RESOURCE_COURSE = BASE + "/school/{0}/course?" + PAGE_SIZE_PARAM;
@@ -198,6 +215,22 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     @Override
     public SectionScoreIdsResponse getStudentScoreIdsBySectionId(Long sectionId) throws HttpClientException {
         return get(SectionScoreIdsResponse.class, PATH_RESOURCE_SECTION_SCORE_IDS, sectionId.toString());
+    }
+
+    @Override
+    public PsResponse<PsCalendarDayWrapper> getSchoolCalendarDays(Long schoolId) throws HttpClientException {
+        return get(
+                new TypeReference<PsResponse<PsCalendarDayWrapper>>(){},
+                PATH_RESOUCE_CALENDAR_DAY,
+                schoolId.toString());
+    }
+
+    @Override
+    public PsResponse<PsAttendanceWrapper> getStudentAttendance(Long studentId) throws HttpClientException {
+        return get(
+                new TypeReference<PsResponse<PsAttendanceWrapper>>(){},
+                PATH_RESOURCE_ATTENDANCE,
+                studentId.toString());
     }
 
     public Object getAsMap(String path) throws HttpClientException {
