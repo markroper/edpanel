@@ -5,7 +5,7 @@ import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.sync.ISync;
+import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.School;

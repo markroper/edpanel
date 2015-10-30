@@ -8,7 +8,7 @@ import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsScore;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreId;
 import com.scholarscore.etl.powerschool.api.response.AssignmentScoresResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.sync.ISync;
+import com.scholarscore.etl.ISync;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.assignment.Assignment;

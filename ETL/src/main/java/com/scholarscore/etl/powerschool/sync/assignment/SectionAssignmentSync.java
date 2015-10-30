@@ -15,7 +15,7 @@ import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentTy
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentType;
 import com.scholarscore.etl.powerschool.api.response.SectionScoreIdsResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.sync.ISync;
+import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.powerschool.sync.MissingStudentMigrator;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.School;
