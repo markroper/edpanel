@@ -1,6 +1,6 @@
 package com.scholarscore.etl.powerschool.client;
 
-import com.scholarscore.etl.powerschool.api.deserializers.IDeserialize;
+import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
@@ -16,43 +16,37 @@ import com.scholarscore.etl.powerschool.api.response.SectionScoreIdsResponse;
 import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 
-import java.util.List;
-
 /**
  * Created by mattg on 7/2/15.
  */
 public interface IPowerSchoolClient {
-    SchoolsResponse getSchools();
+    SchoolsResponse getSchools() throws HttpClientException;
 
-    DistrictResponse getDistrict();
+    DistrictResponse getDistrict() throws HttpClientException;
 
-    PsStaffs getStaff(Long schoolId);
+    PsStaffs getStaff(Long schoolId) throws HttpClientException;
 
-    PsStudents getStudentsBySchool(Long schoolId);
+    PsStudents getStudentsBySchool(Long schoolId) throws HttpClientException;
 
-    StudentResponse getStudentById(Long studentId);
+    StudentResponse getStudentById(Long studentId) throws HttpClientException;
 
-    PsCourses getCoursesBySchool(Long schoolId);
+    PsCourses getCoursesBySchool(Long schoolId) throws HttpClientException;
 
-    Object getAsMap(String path);
+    Object getAsMap(String path) throws HttpClientException;
 
-    TermResponse getTermsBySchoolId(Long schoolId);
+    TermResponse getTermsBySchoolId(Long schoolId) throws HttpClientException;
 
-    SectionResponse getSectionsBySchoolId(Long schoolId);
+    SectionResponse getSectionsBySchoolId(Long schoolId) throws HttpClientException;
     
-    SectionEnrollmentsResponse getEnrollmentBySectionId(Long sectionId);
+    SectionEnrollmentsResponse getEnrollmentBySectionId(Long sectionId) throws HttpClientException;
 
-    SectionGradesResponse getSectionScoresBySectionId(Long sectionId);
+    SectionGradesResponse getSectionScoresBySectionId(Long sectionId) throws HttpClientException;
 
-    PGAssignments getAssignmentsBySectionId(Long sectionId);
+    PGAssignments getAssignmentsBySectionId(Long sectionId) throws HttpClientException;
 
-    PGAssignmentTypes getAssignmentTypesBySectionId(Long sectionId);
+    PGAssignmentTypes getAssignmentTypesBySectionId(Long sectionId) throws HttpClientException;
 
-    AssignmentScoresResponse getStudentScoresByAssignmentId(Long assignmentId);
+    AssignmentScoresResponse getStudentScoresByAssignmentId(Long assignmentId) throws HttpClientException;
 
-    SectionScoreIdsResponse getStudentScoreIdsBySectionId(Long sectionId);
-
-    String executeNamedQuery(String tableName);
-
-    <T> List<T> namedQuery(Class<T> clazz, String tableName, IDeserialize<T> transformer);
+    SectionScoreIdsResponse getStudentScoreIdsBySectionId(Long sectionId) throws HttpClientException;
 }

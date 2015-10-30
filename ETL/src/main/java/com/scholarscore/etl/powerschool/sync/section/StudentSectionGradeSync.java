@@ -1,14 +1,15 @@
 package com.scholarscore.etl.powerschool.sync.section;
 
-import com.google.gson.JsonSyntaxException;
+import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsSectionEnrollment;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGrade;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGrades;
 import com.scholarscore.etl.powerschool.api.response.SectionEnrollmentsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionGradesResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.sync.ISync;
+import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.powerschool.sync.MissingStudentMigrator;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
@@ -19,6 +20,7 @@ import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.user.Student;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -41,29 +43,46 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
     private StudentAssociator studentAssociator;
     private StaffAssociator staffAssociator;
     private ConcurrentHashMap<Long, Section> sections;
-    private List<Long> unresolvablePowerStudents;
     private Section createdSection;
 
     public StudentSectionGradeSync(IPowerSchoolClient powerSchool,
                                    IAPIClient edPanel,
                                    School school,
                                    StudentAssociator studentAssociator,
-                                   List<Long> unresolvablePowerStudents,
                                    Section createdSection) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
         this.school = school;
         this.studentAssociator = studentAssociator;
-        this.unresolvablePowerStudents = unresolvablePowerStudents;
         this.createdSection = createdSection;
     }
 
     @Override
-    public ConcurrentHashMap<Long, StudentSectionGrade> syncCreateUpdateDelete() {
+    public ConcurrentHashMap<Long, StudentSectionGrade> syncCreateUpdateDelete(SyncResult results) {
         //To populate and set on the createdSection
         List<StudentSectionGrade> ssgs = Collections.synchronizedList(new ArrayList<>());
-        ConcurrentHashMap<Long, StudentSectionGrade> source = this.resolveAllFromSourceSystem();
-        ConcurrentHashMap<Long, StudentSectionGrade> edpanelSsgMap = this.resolveFromEdPanel();
+        ConcurrentHashMap<Long, StudentSectionGrade> source = null;
+        try {
+            source = this.resolveAllFromSourceSystem(results);
+        } catch (HttpClientException e) {
+            results.studentSectionGradeSourceGetFailed(
+                    Long.valueOf(createdSection.getSourceSystemId()),
+                    Long.valueOf(this.createdSection.getSourceSystemId()),
+                    this.createdSection.getId()
+            );
+            return new ConcurrentHashMap<>();
+        }
+        ConcurrentHashMap<Long, StudentSectionGrade> edpanelSsgMap = null;
+        try {
+            edpanelSsgMap = this.resolveFromEdPanel();
+        } catch (HttpClientException e) {
+            results.studentSectionGradeEdPanelGetFailed(
+                    Long.valueOf(createdSection.getSourceSystemId()),
+                    Long.valueOf(this.createdSection.getSourceSystemId()),
+                    this.createdSection.getId()
+            );
+            return new ConcurrentHashMap<>();
+        }
         Iterator<Map.Entry<Long, StudentSectionGrade>> sourceIterator = source.entrySet().iterator();
         ArrayList<StudentSectionGrade> ssgsToCreate = new ArrayList<>();
         //Find & perform the inserts and updates, if any
@@ -74,6 +93,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             ssgs.add(sourceSsg);
             if(null == edPanelSsg){
                 ssgsToCreate.add(sourceSsg);
+                results.studentSectionGradeCreated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), -1L);
             } else {
                 //Massage the objects to resolve whether or not an update is needed
                 sourceSsg.setId(edPanelSsg.getId());
@@ -84,51 +104,62 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                     sourceSsg.setSection(edPanelSsg.getSection());
                 }
                 if(!edPanelSsg.equals(sourceSsg)) {
-                    edPanel.replaceStudentSectionGrade(
-                            school.getId(),
-                            createdSection.getTerm().getSchoolYear().getId(),
-                            createdSection.getTerm().getId(),
-                            createdSection.getId(),
-                            sourceSsg.getStudent().getId(),
-                            sourceSsg);
+                    try {
+                        edPanel.replaceStudentSectionGrade(
+                                school.getId(),
+                                createdSection.getTerm().getSchoolYear().getId(),
+                                createdSection.getTerm().getId(),
+                                createdSection.getId(),
+                                sourceSsg.getStudent().getId(),
+                                sourceSsg);
+                    } catch (IOException e) {
+                        results.studentSectionGradeUpdateFailed(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceSsg.getId());
+                        continue;
+                    }
+                    results.studentSectionGradeUpdated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceSsg.getId());
                 }
             }
         }
         //Bulk Create those identified as new in the while loop!
-        edPanel.createStudentSectionGrades(
-                school.getId(),
-                createdSection.getTerm().getSchoolYear().getId(),
-                createdSection.getTerm().getId(),
-                createdSection.getId(),
-                ssgsToCreate);
+        try {
+            edPanel.createStudentSectionGrades(
+                    school.getId(),
+                    createdSection.getTerm().getSchoolYear().getId(),
+                    createdSection.getTerm().getId(),
+                    createdSection.getId(),
+                    ssgsToCreate);
+        } catch (HttpClientException e) {
+            results.studentSectionGradeCreateFailed(Long.valueOf(createdSection.getSourceSystemId()), createdSection.getId());
+        }
         //Delete anything IN EdPanel that is NOT in source system
         Iterator<Map.Entry<Long, StudentSectionGrade>> edpanelIterator = edpanelSsgMap.entrySet().iterator();
         while(edpanelIterator.hasNext()) {
             Map.Entry<Long, StudentSectionGrade> entry = edpanelIterator.next();
             if(!source.containsKey(entry.getKey())) {
                 StudentSectionGrade edPanelSsg = entry.getValue();
-                edPanel.deleteStudentSectionGrade(
-                        school.getId(),
-                        createdSection.getTerm().getSchoolYear().getId(),
-                        createdSection.getTerm().getId(),
-                        createdSection.getId(),
-                        edPanelSsg.getStudent().getId(),
-                        edPanelSsg);
+                try {
+                    edPanel.deleteStudentSectionGrade(
+                            school.getId(),
+                            createdSection.getTerm().getSchoolYear().getId(),
+                            createdSection.getTerm().getId(),
+                            createdSection.getId(),
+                            edPanelSsg.getStudent().getId(),
+                            edPanelSsg);
+                } catch (HttpClientException e) {
+                    results.studentSectionGradeDeleteFailed(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), edPanelSsg.getId());
+                    continue;
+                }
+                results.studentSectionGradeDeleted(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), edPanelSsg.getId());
             }
         }
         createdSection.setStudentSectionGrades(ssgs);
         return source;
     }
 
-    protected ConcurrentHashMap<Long, StudentSectionGrade> resolveAllFromSourceSystem() {
+    protected ConcurrentHashMap<Long, StudentSectionGrade> resolveAllFromSourceSystem(SyncResult results) throws HttpClientException {
         //Resolve enrolled students & Create an EdPanel StudentSectionGrade for each
         SectionEnrollmentsResponse enrollments = null;
-        try {
-            enrollments = powerSchool.getEnrollmentBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
-        } catch(JsonSyntaxException e) {
-            //TODO: if a single record comes back, PowerSchool doesn't send an array and the marshalling fails :(
-            System.out.println("failed to unmarshall section enrollments: " + e.getMessage());
-        }
+        enrollments = powerSchool.getEnrollmentBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
         List<StudentSectionGrade> ssgs = Collections.synchronizedList(new ArrayList<>());
         /*
             RESOLVE SSGS FROM POWERSCHOOL
@@ -140,8 +171,9 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             //See if any final grades have been created for the section, and if so, retrieve them
             Map<Long, PsSectionGrade> studentIdToSectionScore = null;
             if(createdSection.getEndDate().compareTo(new Date()) < 0) {
-                SectionGradesResponse sectScores = powerSchool.getSectionScoresBySectionId(
-                        Long.valueOf(createdSection.getSourceSystemId()));
+                SectionGradesResponse sectScores = null;
+                    sectScores = powerSchool.getSectionScoresBySectionId(
+                            Long.valueOf(createdSection.getSourceSystemId()));
                 if(null != sectScores && null != sectScores.record) {
                     studentIdToSectionScore = new HashMap<>();
                     for(PsSectionGrades ss: sectScores.record) {
@@ -162,7 +194,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                             powerSchool,
                             edPanel,
                             studentAssociator,
-                            unresolvablePowerStudents);
+                            results);
                 }
                 if(null != se && null != edpanelStudent) {
                     StudentSectionGrade ssg = new StudentSectionGrade();
@@ -171,7 +203,10 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                     if(null != studentIdToSectionScore) {
                         PsSectionGrade score = studentIdToSectionScore.get(
                                 Long.valueOf(edpanelStudent.getSourceSystemId()));
-                        Double pct = score.getPercent();
+                        Double pct = null;
+                        if(null != score) {
+                            pct = score.getPercent();
+                        }
                         ssg.setGrade(pct);
                         ssg.setComplete(true);
                     } else {
@@ -184,7 +219,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
         return source;
     }
 
-    protected ConcurrentHashMap<Long, StudentSectionGrade> resolveFromEdPanel() {
+    protected ConcurrentHashMap<Long, StudentSectionGrade> resolveFromEdPanel() throws HttpClientException {
         ConcurrentHashMap<Long, StudentSectionGrade> edpanelSsgMap = new ConcurrentHashMap<>();
         StudentSectionGrade[] edPanelSsgs = edPanel.getStudentSectionGrades(
                 school.getId(),

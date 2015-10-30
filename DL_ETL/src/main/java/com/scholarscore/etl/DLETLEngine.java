@@ -1,5 +1,6 @@
 package com.scholarscore.etl;
 
+import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.deanslist.api.response.BehaviorResponse;
 import com.scholarscore.etl.deanslist.client.IDeansListClient;
@@ -53,17 +54,27 @@ public class DLETLEngine implements IETLEngine {
     }
 
     @Override
-    public MigrationResult syncDistrict() {
+    public SyncResult syncDistrict() {
 
         // grab behaviors from deanslist
         Collection<Behavior> behaviorsToMerge = getBehaviorData();
 
         // get students from scholarscore -- we need to match names to behavior events
-        Collection<Student> existingStudents = scholarScore.getStudents(null);
+        Collection<Student> existingStudents = null;
+        try {
+            existingStudents = scholarScore.getStudents(null);
+        } catch (HttpClientException e) {
+            e.printStackTrace();
+        }
         studentLookup = populateLookup(existingStudents);
 
         // get teachers from scholarscore -- we need to match names to behavior events
-        Collection<Teacher> existingTeachers = scholarScore.getTeachers();
+        Collection<Teacher> existingTeachers = null;
+        try {
+            existingTeachers = scholarScore.getTeachers();
+        } catch (HttpClientException e) {
+            e.printStackTrace();
+        }
         teacherLookup = populateLookup(existingTeachers);
 
         logger.info("got " + behaviorsToMerge.size() + " behavior events from deanslist.");
@@ -78,7 +89,7 @@ public class DLETLEngine implements IETLEngine {
         }
 
         // TODO Jordan: What to return, if anything, in migration result?
-        return new MigrationResult();
+        return new SyncResult();
     }
     
     private void handleBehavior(Behavior behavior) {
@@ -109,8 +120,13 @@ public class DLETLEngine implements IETLEngine {
                 if (studentBehaviorEvents == null) {
                     // call scholarscore API to get this student's behavioral records, save in cache
                     // (we need to search for the behavioral event within these results)
-                    Collection<Behavior> studentBehaviors = scholarScore.getBehaviors(studentId);
-                    
+                    Collection<Behavior> studentBehaviors = null;
+                    try {
+                        studentBehaviors = scholarScore.getBehaviors(studentId);
+                    } catch (HttpClientException e) {
+                        e.printStackTrace();
+                    }
+
                     HashMap<String, Behavior> studentBehaviorHashMap = populateLookup(studentBehaviors);
                     existingBehaviorLookup.put(studentId, studentBehaviorHashMap);
                     studentBehaviorEvents = studentBehaviorHashMap;
@@ -120,13 +136,22 @@ public class DLETLEngine implements IETLEngine {
                 Behavior scholarScoreBehavior = studentBehaviorEvents.get(behavior.getRemoteBehaviorId());
                 if (scholarScoreBehavior == null) {
                     // behavior not found, add it via API...
-                    Behavior createdBehavior = scholarScore.createBehavior(studentId, behavior);
+                    Behavior createdBehavior = null;
+                    try {
+                        createdBehavior = scholarScore.createBehavior(studentId, behavior);
+                    } catch (HttpClientException e) {
+                        e.printStackTrace();
+                    }
                     // ... and save in cache
                     studentBehaviorEvents.put(createdBehavior.getRemoteBehaviorId(), createdBehavior);
                 } else {
                     // behavior exists already in scholarscore (with id scholarScoreBehaviorId), update it
                     Long behaviorId = scholarScoreBehavior.getId();
-                    scholarScore.updateBehavior(studentId, behaviorId, behavior);
+                    try {
+                        scholarScore.updateBehavior(studentId, behaviorId, behavior);
+                    } catch (HttpClientException e) {
+                        e.printStackTrace();
+                    }
                 }
 
             }

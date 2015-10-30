@@ -1,8 +1,6 @@
 package com.scholarscore.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -78,7 +76,6 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
     }
 
     @OneToOne(optional = true)
-    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name=HibernateConsts.SCHOOL_YEAR_FK)
     @Fetch(FetchMode.JOIN)
     public SchoolYear getSchoolYear() {
