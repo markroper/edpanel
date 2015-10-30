@@ -9,6 +9,8 @@ import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.models.attendance.Attendance;
+import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
@@ -65,6 +67,21 @@ public interface IAPIClient {
     void deleteTerm(Long schoolId, Long schoolYearId, Term term) throws HttpClientException;
     Term updateTerm(Long schoolId, Long schoolYearId, Term term) throws IOException;
     Term[] getTerms(Long schoolId, Long schoolYearId) throws HttpClientException;
+
+    //School days
+    SchoolDay createSchoolDays(Long schoolId, SchoolDay day) throws HttpClientException;
+    void createSchoolDays(Long schoolId, List<SchoolDay> days) throws HttpClientException;
+    void deleteSchoolDays(Long schoolId, SchoolDay day) throws HttpClientException;
+    SchoolDay updateSchoolDays(Long schoolId, SchoolDay day) throws IOException;
+    SchoolDay[] getSchoolDays(Long schoolId) throws HttpClientException;
+
+    //Attendance
+    Attendance createAttendance(Long schoolId, Long studentId, Attendance attend) throws HttpClientException;
+    void createAttendance(Long schoolId, Long studentId, List<Attendance> attends) throws HttpClientException;
+    void deleteAttendance(Long schoolId, Long studentId, Attendance attend) throws HttpClientException;
+    Attendance updateAttendance(Long schoolId, Long studentId, Attendance attend) throws IOException;
+    Attendance[] getAttendance(Long schoolId, Long studentId) throws HttpClientException;
+
 
     //SECTIONS
     Section createSection(Long schoolId, Long schoolYearId, Long termId, Section section) throws HttpClientException;

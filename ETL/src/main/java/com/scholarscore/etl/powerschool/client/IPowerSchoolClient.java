@@ -6,8 +6,11 @@ import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentTypes;
+import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper;
+import com.scholarscore.etl.powerschool.api.model.attendance.PsCalendarDayWrapper;
 import com.scholarscore.etl.powerschool.api.response.AssignmentScoresResponse;
 import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
+import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionEnrollmentsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionGradesResponse;
@@ -49,4 +52,8 @@ public interface IPowerSchoolClient {
     AssignmentScoresResponse getStudentScoresByAssignmentId(Long assignmentId) throws HttpClientException;
 
     SectionScoreIdsResponse getStudentScoreIdsBySectionId(Long sectionId) throws HttpClientException;
+
+    PsResponse<PsCalendarDayWrapper> getSchoolCalendarDays(Long schoolId) throws HttpClientException;
+
+    PsResponse<PsAttendanceWrapper> getStudentAttendance(Long studentId) throws HttpClientException;
 }

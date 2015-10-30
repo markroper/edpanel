@@ -2,7 +2,6 @@ package com.scholarscore.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -16,7 +15,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The class represents a single school within a school district.
@@ -27,10 +25,10 @@ import java.util.Set;
 @Entity(name = "school")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class School extends ApiModel implements Serializable, IApiModel<School>{
-
+public class School extends ApiModel implements Serializable, IApiModel<School> {
     private List<SchoolYear> years;
     private String sourceSystemId;
+    private Long number;
     private String principalName;
     private String principalEmail;
     private Address address;
@@ -49,6 +47,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         this.sourceSystemId = clone.sourceSystemId;
         this.address = clone.address;
         this.mainPhone = clone.mainPhone;
+        this.number = clone.number;
     }
 
     @Id
@@ -74,6 +73,14 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         years.add(year);
     }
 
+    @Column(name = HibernateConsts.SCHOOL_NUMBER)
+    public Long getNumber() {
+        return number;
+    }
+
+    public void setNumber(Long number) {
+        this.number = number;
+    }
 
     @Override
     public void mergePropertiesIfNull(School mergeFrom) {
@@ -97,6 +104,9 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         if (null == mainPhone) {
             this.mainPhone = mergeFrom.mainPhone;
         }
+        if (null == number) {
+            this.number = mergeFrom.number;
+        }
     }
 
     @Override
@@ -116,6 +126,8 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
             return false;
         if (getAddress() != null ? !getAddress().equals(school.getAddress()) : school.getAddress() != null)
             return false;
+        if (getNumber() != null ? !getNumber().equals(school.getNumber()) : school.getNumber() != null)
+            return false;
         return !(getMainPhone() != null ? !getMainPhone().equals(school.getMainPhone()) : school.getMainPhone() != null);
 
     }
@@ -128,6 +140,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         result = 31 * result + (getPrincipalName() != null ? getPrincipalName().hashCode() : 0);
         result = 31 * result + (getPrincipalEmail() != null ? getPrincipalEmail().hashCode() : 0);
         result = 31 * result + (getAddress() != null ? getAddress().hashCode() : 0);
+        result = 31 * result + (getNumber() != null ? getNumber().hashCode() : 0);
         result = 31 * result + (getMainPhone() != null ? getMainPhone().hashCode() : 0);
         return result;
     }
@@ -141,6 +154,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
                 ", principalName='" + principalName + '\'' +
                 ", principalEmail='" + principalEmail + '\'' +
                 ", address=" + address +
+                ", number=" + number +
                 ", mainPhone='" + mainPhone + '\'' +
                 '}';
     }
@@ -206,6 +220,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
         private String principalEmail;
         private Address address;
         private String mainPhone;
+        private Long number;
 
         public SchoolBuilder(){
             years = Lists.newArrayList();
@@ -213,6 +228,11 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
 
         public SchoolBuilder withYear(final SchoolYear year){
             years.add(year);
+            return this;
+        }
+
+        public SchoolBuilder withNumber(final Long number){
+            this.number = number;
             return this;
         }
 
@@ -256,6 +276,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School>{
             school.setSourceSystemId(sourceSystemId);
             school.setPrincipalName(principalName);
             school.setPrincipalEmail(principalEmail);
+            school.setNumber(number);
             school.setAddress(address);
             school.setMainPhone(mainPhone);
             return school;

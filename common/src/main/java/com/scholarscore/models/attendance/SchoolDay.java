@@ -32,6 +32,7 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
     private Long id;
+    private String sourceSystemId;
     private School school;
     private Date date;
     
@@ -63,17 +64,26 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
         this.school = school;
     }
 
+    @Column(name = HibernateConsts.SCHOOL_DAY_SOURCE_SYSTEM_ID)
+    public String getSourceSystemId() {
+        return sourceSystemId;
+    }
+    public void setSourceSystemId(String sourceSystemId) {
+        this.sourceSystemId = sourceSystemId;
+    }
+
     public SchoolDay() { }
     
     public SchoolDay(SchoolDay schoolDay) { 
         this.id = schoolDay.id;
         this.school = schoolDay.school;
         this.date = schoolDay.date;
+        this.sourceSystemId = schoolDay.sourceSystemId;
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(id, school, date);
+        return Objects.hash(id, school, date, sourceSystemId);
     }
 
     @Override
@@ -87,6 +97,7 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
         final SchoolDay other = (SchoolDay) obj;
         return Objects.equals(this.id, other.id)
                 && Objects.equals(this.school, other.school)
+                && Objects.equals(this.sourceSystemId, other.sourceSystemId)
                 && Objects.equals(this.date, other.date);
     }
 
@@ -95,6 +106,7 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
         return "SchoolDay{" +
                 "id=" + id +
                 ", school=" + school +
+                ", sourceSystemId=" + sourceSystemId +
                 ", date=" + date +
                 '}';
     }
@@ -110,6 +122,9 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
         }
         if (null == date) {
             this.date = mergeFrom.date;
+        }
+        if (null == sourceSystemId) {
+            this.sourceSystemId = mergeFrom.sourceSystemId;
         }
     }
 
