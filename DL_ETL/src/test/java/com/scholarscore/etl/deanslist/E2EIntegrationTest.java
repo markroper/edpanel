@@ -1,7 +1,7 @@
 package com.scholarscore.etl.deanslist;
 
 import com.scholarscore.etl.IETLEngine;
-import com.scholarscore.etl.MigrationResult;
+import com.scholarscore.etl.SyncResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class E2EIntegrationTest extends AbstractTestNGSpringContextTests {
 
     // Test pulls behaviors from deanslist and matches to students in scholarscore
     public void testMigrateDistrict() {
-        MigrationResult result = engine.syncDistrict();
+        SyncResult result = engine.syncDistrict();
         logger.info("Migration result: " + result);
         assertNotNull(result, "Expected non-null migration result for district");
     }

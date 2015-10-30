@@ -2,6 +2,7 @@ package com.scholarscore.etl.powerschool.sync;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
 import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
@@ -9,7 +10,6 @@ import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.user.Student;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -33,13 +33,13 @@ public class MissingStudentMigrator {
             IPowerSchoolClient powerSchool,
             IAPIClient edPanel,
             StudentAssociator studentAssociator,
-            List<Long> unresolvablePowerStudents) {
+            SyncResult results) {
         StudentResponse powerStudent = null;
 
         try {
             powerStudent = powerSchool.getStudentById(powerSchoolStudentId);
         } catch(HttpClientException e) {
-            unresolvablePowerStudents.add(powerSchoolStudentId);
+            results.studentCreateFailed(powerSchoolStudentId);
             return null;
         }
         PsStudents students = new PsStudents();
@@ -57,6 +57,10 @@ public class MissingStudentMigrator {
             try {
                 if(null == resolvedStudent) {
                     resolvedStudent = edPanel.createStudent(edpanelStudent);
+                    if(null != resolvedStudent) {
+                        results.studentCreated(
+                                Long.valueOf(resolvedStudent.getSourceSystemId()), resolvedStudent.getId());
+                    }
                 }
                 ConcurrentHashMap<Long, Student> studMap = new ConcurrentHashMap<>();
                 Long otherId = Long.valueOf(resolvedStudent.getSourceSystemUserId());
@@ -65,8 +69,7 @@ public class MissingStudentMigrator {
                 studMap.put(otherId, resolvedStudent);
                 studentAssociator.addOtherIdMap(studMap);
             } catch(NumberFormatException | HttpClientException | NullPointerException e) {
-                //NO OP
-                System.out.println("exception resolving missing student");
+                results.studentCreateFailed(Long.valueOf(edpanelStudent.getSourceSystemId()));
             }
             return resolvedStudent;
         }
