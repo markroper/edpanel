@@ -98,12 +98,13 @@ public class ETLEngine implements IETLEngine {
         endTime = System.currentTimeMillis();
 
         System.out.println("Total runtime: " + (endTime - startTime)/1000 +
-                " \nseconds, schools: " + schoolCreationTime +
-                " \nseconds, Years + Terms: " + yearsAndTermsComplete +
-                " \nseconds, staff: " + staffCreationComplete +
-                " \nseconds, students: " + studentCreationComplete +
-                " \nseconds, courses: " + courseCreationComplete +
-                " \nseconds, sections: " + sectionCreationComplete);
+                " seconds, \nschools: " + schoolCreationTime +
+                " seconds, \nYears + Terms: " + yearsAndTermsComplete +
+                " seconds, \nstaff: " + staffCreationComplete +
+                " seconds, \nstudents: " + studentCreationComplete +
+                " seconds, \ncourses: " + courseCreationComplete +
+                " seconds, \nsections: " + sectionCreationComplete +
+                " seconds");
         outputResults(results);
         return results;
     }
