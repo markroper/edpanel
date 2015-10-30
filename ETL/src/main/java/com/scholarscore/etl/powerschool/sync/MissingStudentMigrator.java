@@ -57,9 +57,10 @@ public class MissingStudentMigrator {
             try {
                 if(null == resolvedStudent) {
                     resolvedStudent = edPanel.createStudent(edpanelStudent);
-                }
-                if(null != resolvedStudent) {
-                    results.studentCreated(Long.valueOf(resolvedStudent.getSourceSystemId()), resolvedStudent.getId());
+                    if(null != resolvedStudent) {
+                        results.studentCreated(
+                                Long.valueOf(resolvedStudent.getSourceSystemId()), resolvedStudent.getId());
+                    }
                 }
                 ConcurrentHashMap<Long, Student> studMap = new ConcurrentHashMap<>();
                 Long otherId = Long.valueOf(resolvedStudent.getSourceSystemUserId());
@@ -68,8 +69,6 @@ public class MissingStudentMigrator {
                 studMap.put(otherId, resolvedStudent);
                 studentAssociator.addOtherIdMap(studMap);
             } catch(NumberFormatException | HttpClientException | NullPointerException e) {
-                //NO OP
-                System.out.println("exception resolving missing student: " + resolvedStudent + edpanelStudent);
                 results.studentCreateFailed(Long.valueOf(edpanelStudent.getSourceSystemId()));
             }
             return resolvedStudent;
