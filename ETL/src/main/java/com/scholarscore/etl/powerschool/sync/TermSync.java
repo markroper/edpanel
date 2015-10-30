@@ -2,6 +2,7 @@ package com.scholarscore.etl.powerschool.sync;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsTerm;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
