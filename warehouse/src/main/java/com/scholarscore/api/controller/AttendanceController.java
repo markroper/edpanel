@@ -91,6 +91,24 @@ public class AttendanceController extends BaseController {
             @RequestBody @Valid Attendance attendance) {
         return respond(pm.getAttendanceManager().createAttendance(schoolId, studentId, attendance));
     }
+
+    @ApiOperation(
+            value = "Create attendance entries for a single student",
+            notes = "Creates, assigns an ID, and persists student attendance entries",
+            response = Void.class)
+    @RequestMapping(
+            value = "/bulk",
+            method = RequestMethod.POST,
+            produces = {JSON_ACCEPT_HEADER})
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity createAttendances(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @RequestBody @Valid List<Attendance> attendances) {
+        return respond(pm.getAttendanceManager().createAttendances(schoolId, studentId, attendances));
+    }
     
     @ApiOperation(
             value = "Delete an attendance entry", 
@@ -108,5 +126,24 @@ public class AttendanceController extends BaseController {
             @ApiParam(name = "attendanceId", required = true, value = "Attendance ID")
             @PathVariable(value="attendanceId") Long attendanceId) {
         return respond(pm.getAttendanceManager().deleteAttendance(schoolId, studentId, attendanceId));
+    }
+
+    @ApiOperation(
+            value = "Replace an attendance entry",
+            response = Void.class)
+    @RequestMapping(
+            value = "/{attendanceId}",
+            method = RequestMethod.PUT,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity replaceAttendance(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "attendanceId", required = true, value = "Attendance ID")
+            @PathVariable(value="attendanceId") Long attendanceId,
+            @RequestBody @Valid Attendance attendance) {
+        return respond(pm.getAttendanceManager().replaceAttendance(schoolId, studentId, attendanceId, attendance));
     }
 }
