@@ -11,6 +11,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Transactional
 public class SchoolDayJdbc implements SchoolDayPersistence {
@@ -32,6 +33,20 @@ public class SchoolDayJdbc implements SchoolDayPersistence {
         }
         SchoolDay output = hibernateTemplate.merge(schoolDay);
         return output.getId();
+    }
+
+    @Override
+    public void insertSchoolDays(long schoolId, List<SchoolDay> schoolDays) {
+        int i = 0;
+        for(SchoolDay day : schoolDays) {
+            hibernateTemplate.save(day);
+            //Release newly created entities from hibernates session im-memory storage
+            if(i % 20 == 0) {
+                hibernateTemplate.flush();
+                hibernateTemplate.clear();
+            }
+            i++;
+        }
     }
 
     @Override
@@ -77,7 +92,13 @@ public class SchoolDayJdbc implements SchoolDayPersistence {
         }
         return schoolDayId;
     }
-    
+
+    @Override
+    public Long update(long schoolId, long schoolDayId, SchoolDay day) {
+        hibernateTemplate.update(day);
+        return schoolDayId;
+    }
+
     public void setSchoolPersistence(SchoolPersistence schoolPersistence) {
         this.schoolPersistence = schoolPersistence;
     }

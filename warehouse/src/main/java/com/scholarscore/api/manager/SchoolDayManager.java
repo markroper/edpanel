@@ -5,6 +5,7 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.attendance.SchoolDay;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface SchoolDayManager {
     /**
@@ -41,6 +42,15 @@ public interface SchoolDayManager {
      * @return
      */
     public ServiceResponse<Long> createSchoolDay(long schoolId, SchoolDay schoolDay);
+
+    /**
+     * Creates school days associated with a school
+     *
+     * @param schoolId The school ID
+     * @param schoolDays The school day instances
+     * @return
+     */
+    public ServiceResponse<Void> createSchoolDays(long schoolId, List<SchoolDay> schoolDays);
     
     /**
      * Deleted a school day by school ID and day ID
@@ -49,6 +59,15 @@ public interface SchoolDayManager {
      * @return
      */
     public ServiceResponse<Long> deleteSchoolDay(long schoolId, long schoolDayId);
+
+    /**
+     * Replace a school day by school ID and day ID
+     * @param schoolId The containing school ID
+     * @param schoolDayId The school day ID
+     * @param schoolDay The school day instance
+     * @return
+     */
+    public ServiceResponse<Void> replaceSchoolDay(long schoolId, long schoolDayId, SchoolDay schoolDay);
     
     /**
      * Returns StatusCode.OK if the school day exists and otherwise a not found.

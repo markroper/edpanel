@@ -81,6 +81,22 @@ public class SchoolDayController extends BaseController {
             @RequestBody @Valid SchoolDay schoolDay) {
         return respond(pm.getSchoolDayManager().createSchoolDay(schoolId, schoolDay));
     }
+
+    @ApiOperation(
+            value = "Create multiple school days",
+            notes = "Creates, assigns an ID, & persists provided school days",
+            response = Void.class)
+    @RequestMapping(
+            value = "/bulk",
+            method = RequestMethod.POST,
+            produces = {JSON_ACCEPT_HEADER})
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity createSchoolDays(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @RequestBody @Valid List<SchoolDay> schoolDays) {
+        return respond(pm.getSchoolDayManager().createSchoolDays(schoolId, schoolDays));
+    }
     
     @ApiOperation(
             value = "Delete a school day", 
@@ -96,5 +112,22 @@ public class SchoolDayController extends BaseController {
             @ApiParam(name = "schoolDayId", required = true, value = "School day ID")
             @PathVariable(value="schoolDayId") Long schoolDayId) {
         return respond(pm.getSchoolDayManager().deleteSchoolDay(schoolId, schoolDayId));
+    }
+
+    @ApiOperation(
+            value = "Replace a school day",
+            response = Void.class)
+    @RequestMapping(
+            value = "/{schoolDayId}",
+            method = RequestMethod.PUT,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity replaceSchoolYear(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "schoolDayId", required = true, value = "School day ID")
+            @PathVariable(value="schoolDayId") Long schoolDayId,
+            @RequestBody @Valid SchoolDay schoolDay) {
+        return respond(pm.getSchoolDayManager().replaceSchoolDay(schoolId, schoolDayId, schoolDay));
     }
 }
