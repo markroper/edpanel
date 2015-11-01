@@ -38,6 +38,7 @@ import java.net.URI;
  */
 public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSchoolClient {
     private static final Integer PAGE_SIZE = 1000;
+    private static final String ATTENDANCE_START_DATE = "2015-08-01";
     private static final String PAGE_SIZE_PARAM = "pagesize=" + PAGE_SIZE;
     private static final String PAGE_NUM_PARAM = "page={0}";
     private static final String BASE = "/ws/v1";
@@ -63,13 +64,13 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
             PAGE_SIZE_PARAM +
             "&" + PAGE_NUM_PARAM +
             "&projection=dcid,date_value,insession,note,membershipvalue,scheduleid,schoolid,type,id" +
-            "&q=schoolid=={1};date_value=gt=2015-08-01";
+            "&q=schoolid=={1};date_value=gt=" + ATTENDANCE_START_DATE + ";insession==1";
     public static final String PATH_RESOURCE_ATTENDANCE =
             SCHEMA_BASE +
             "/attendance?" +
             PAGE_SIZE_PARAM +
             "&" + PAGE_NUM_PARAM +
-            "&projection=*&q=studentid=={1};Att_Mode_Code!=ATT_ModeMeeting";
+            "&projection=*&q=studentid=={1};Att_Mode_Code!=ATT_ModeMeeting;att_date=gt="+ ATTENDANCE_START_DATE;
     public static final String PATH_RESOURCE_ATTENDANCE_CODE =
             SCHEMA_BASE +
             "/attendance_code?" +
