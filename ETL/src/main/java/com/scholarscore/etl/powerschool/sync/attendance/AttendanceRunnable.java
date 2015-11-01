@@ -1,4 +1,4 @@
-package com.scholarscore.etl.powerschool.sync;
+package com.scholarscore.etl.powerschool.sync.attendance;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
@@ -11,7 +11,6 @@ import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.School;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.AttendanceStatus;
@@ -28,38 +27,36 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by markroper on 10/30/15.
+ * Created by markroper on 11/1/15.
  */
-public class AttendanceSync implements ISync<Attendance> {
+public class AttendanceRunnable implements Runnable, ISync<Attendance> {
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
     protected School school;
-    protected StudentAssociator studentAssociator;
     protected ConcurrentHashMap<Date, SchoolDay> schoolDays;
+    protected Student student;
+    protected SyncResult results;
 
-    public AttendanceSync(IAPIClient edPanel,
+    public AttendanceRunnable(IAPIClient edPanel,
                           IPowerSchoolClient powerSchool,
                           School s,
-                          StudentAssociator studentAssociator,
-                          ConcurrentHashMap<Date, SchoolDay> schoolDays) {
+                          Student student,
+                          ConcurrentHashMap<Date, SchoolDay> schoolDays,
+                          SyncResult results) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
-        this.studentAssociator = studentAssociator;
+        this.student = student;
         this.schoolDays = schoolDays;
+        this.results = results;
     }
     @Override
-    public ConcurrentHashMap<Long, Attendance> syncCreateUpdateDelete(SyncResult results) {
-        ConcurrentHashMap<Long, Attendance> response = new ConcurrentHashMap<>();
-        Iterator<Map.Entry<Long, Student>> studentIterator = studentAssociator.getStudents().entrySet().iterator();
-        while(studentIterator.hasNext()) {
-            //TODO: thread me for speed? Move this loop up to ETLEngine and make this puppy a runnable?
-            response.putAll(syncCreateUpdateDeleteOneStudent(studentIterator.next().getValue(), results));
-        }
-        return response;
+    public void run() {
+        syncCreateUpdateDelete(results);
     }
 
-    protected ConcurrentHashMap<Long, Attendance> syncCreateUpdateDeleteOneStudent(Student student, SyncResult results) {
+    @Override
+    public ConcurrentHashMap<Long, Attendance> syncCreateUpdateDelete(SyncResult results) {
         ConcurrentHashMap<Long, Attendance> source = null;
         ConcurrentHashMap<Long, Attendance> ed = null;
         try {
@@ -138,7 +135,7 @@ public class AttendanceSync implements ISync<Attendance> {
             PsAttendance psAttendance = wrap.tables.attendance;
             Attendance a = psAttendance.toApiModel();
             a.setSchoolDay(schoolDays.get(psAttendance.att_date));
-            a.setStudent(studentAssociator.findBySourceSystemId(sourceStudentId));
+            a.setStudent(student);
             a.setStatus(codeMap.get(psAttendance.attendance_codeid));
             //TODO: currently EdPanel only tracks attendance at the DAY not period level.
             if(null == psAttendance.periodid || psAttendance.periodid.equals(0L)) {

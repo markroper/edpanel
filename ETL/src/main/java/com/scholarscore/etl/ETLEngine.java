@@ -2,9 +2,9 @@ package com.scholarscore.etl;
 
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.sync.AttendanceSync;
+import com.scholarscore.etl.powerschool.sync.attendance.AttendanceSync;
 import com.scholarscore.etl.powerschool.sync.CourseSync;
-import com.scholarscore.etl.powerschool.sync.SchoolDaySync;
+import com.scholarscore.etl.powerschool.sync.attendance.SchoolDaySync;
 import com.scholarscore.etl.powerschool.sync.SchoolSync;
 import com.scholarscore.etl.powerschool.sync.TermSync;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
@@ -18,6 +18,7 @@ import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.attendance.SchoolDay;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -37,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ETLEngine implements IETLEngine {
     public static final Long TOTAL_TTL_MINUTES = 120L;
-    public static final int THREAD_POOL_SIZE = 5;
+    public static final int THREAD_POOL_SIZE = 8;
     private SyncResult results = new SyncResult();
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
@@ -45,7 +46,7 @@ public class ETLEngine implements IETLEngine {
     private ConcurrentHashMap<Long, School> schools;
     //Collections are by sourceSystemSchoolId and if there are nested maps, 
     //the keys are always sourceSystemIds of sub-entities
-    private ConcurrentHashMap<Long, ConcurrentHashMap<Long, SchoolDay>> schoolDays;
+    private ConcurrentHashMap<Long, ConcurrentHashMap<Date, SchoolDay>> schoolDays;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Term>> terms;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Section>> sections;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Course>> courses = new ConcurrentHashMap<>();
@@ -77,30 +78,37 @@ public class ETLEngine implements IETLEngine {
         createSchools();
         long endTime = System.currentTimeMillis();
         long schoolCreationTime = (endTime - startTime)/1000;
+        System.out.println("School sync complete");
 
         migrateSchoolYearsAndTerms();
         long yearsAndTermsComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
+        System.out.println("Term and year sync complete");
 
         createStaff();
         long staffCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
+        System.out.println("Staff sync complete");
 
         createStudents();
         long studentCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
+        System.out.println("Student sync complete");
 
         syncSchoolDaysAndAttendance();
         long schoolDayCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
+        System.out.println("School day & Attendance sync complete");
 
         createCourses();
         long courseCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
+        System.out.println("Course sync complete");
 
         migrateSections();
         long sectionCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
+        System.out.println("Section sync complete");
 
         System.out.println("Total runtime: " + (endTime - startTime)/1000 +
                 " seconds, \nschools: " + schoolCreationTime +

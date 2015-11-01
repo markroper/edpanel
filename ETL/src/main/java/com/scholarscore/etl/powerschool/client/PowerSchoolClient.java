@@ -2,7 +2,6 @@ package com.scholarscore.etl.powerschool.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scholarscore.client.BaseHttpClient;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
@@ -37,9 +36,10 @@ import java.net.URI;
 /**
  * Created by mattg on 7/2/15.
  */
-public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolClient {
+public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSchoolClient {
     private static final Integer PAGE_SIZE = 1000;
     private static final String PAGE_SIZE_PARAM = "pagesize=" + PAGE_SIZE;
+    private static final String PAGE_NUM_PARAM = "page={0}";
     private static final String BASE = "/ws/v1";
     private static final String SCHEMA_BASE = "/ws/schema/table";
     private static final String HEADER_AUTH_NAME = "Authorization";
@@ -60,17 +60,20 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
             SCHEMA_BASE +
             "/calendar_day?" +
             PAGE_SIZE_PARAM +
+            "&" + PAGE_NUM_PARAM +
             "&projection=dcid,date_value,insession,note,membershipvalue,scheduleid,schoolid,type,id" +
-            "&q=schoolid=={0}";
+            "&q=schoolid=={1}";
     public static final String PATH_RESOURCE_ATTENDANCE =
             SCHEMA_BASE +
             "/attendance?" +
             PAGE_SIZE_PARAM +
-            "&projection=*&q=studentid=={0}";
+            "&" + PAGE_NUM_PARAM +
+            "&projection=*&q=studentid=={1}";
     public static final String PATH_RESOURCE_ATTENDANCE_CODE =
             SCHEMA_BASE +
             "/attendance_code?" +
             PAGE_SIZE_PARAM +
+            "&" + PAGE_NUM_PARAM +
             "&projection=*";
 
     public static final String PATH_RESOURCE_STAFF = BASE + "/school/{0}/staff?" + PAGE_SIZE_PARAM;
@@ -228,6 +231,7 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
         return get(
                 new TypeReference<PsResponse<PsCalendarDayWrapper>>(){},
                 PATH_RESOUCE_CALENDAR_DAY,
+                PAGE_SIZE,
                 schoolId.toString());
     }
 
@@ -236,6 +240,7 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
         return get(
                 new TypeReference<PsResponse<PsAttendanceWrapper>>(){},
                 PATH_RESOURCE_ATTENDANCE,
+                PAGE_SIZE,
                 studentId.toString());
     }
 
@@ -244,6 +249,7 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
         return get(
                 new TypeReference<PsResponse<PsAttendanceCodeWrapper>>(){},
                 PATH_RESOURCE_ATTENDANCE_CODE,
+                PAGE_SIZE,
                 (String[]) null);
     }
 
