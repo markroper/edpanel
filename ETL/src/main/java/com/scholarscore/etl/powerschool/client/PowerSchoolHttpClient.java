@@ -23,6 +23,7 @@ public abstract class PowerSchoolHttpClient extends BaseHttpClient {
         boolean makeRequest = true;
         T returnVal = null;
         Integer currentPage = 1;
+        String unadulteredPath = path;
         while(makeRequest) {
             makeRequest = false;
             //No matter the powerschool query, we add a param that is page= to all queries to handle pagination.
@@ -36,7 +37,7 @@ public abstract class PowerSchoolHttpClient extends BaseHttpClient {
                 }
                 params = newParams;
             }
-            path = getPath(path, params);
+            path = getPath(unadulteredPath, params);
             try {
                 HttpGet get = new HttpGet();
                 setupCommonHeaders(get);
