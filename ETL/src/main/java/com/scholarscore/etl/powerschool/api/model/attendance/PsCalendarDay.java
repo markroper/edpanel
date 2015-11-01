@@ -14,6 +14,7 @@ public class PsCalendarDay implements IToApiModel<SchoolDay> {
     public String insession;
     public String membershipvalue;
     public Long dcid;
+    public Long id;
     public Date date_value;
     public Long schoolid;
     public String type;
@@ -24,8 +25,10 @@ public class PsCalendarDay implements IToApiModel<SchoolDay> {
         School s = new School();
         SchoolDay day = new SchoolDay();
         day.setSourceSystemId(String.valueOf(dcid));
+        day.setSourceSystemOtherId(id);
         s.setNumber(schoolid);
         day.setSchool(s);
+        day.setDate(date_value);
         return day;
     }
 }

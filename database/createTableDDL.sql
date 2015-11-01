@@ -335,7 +335,8 @@ CREATE TABLE `scholar_warehouse`.`school_day` (
     `school_day_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'System generated ID',
     `school_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The school foreign key',
     `school_day_date` DATETIME NULL COMMENT 'The date of the school day',
-    `school_day_source_system_id` VARCHAR(256) NULL,
+    `school_day_source_system_id` VARCHAR(256) NULL UNIQUE,
+    `school_day_source_system_other_id` BIGINT UNSIGNED NULL,
     PRIMARY KEY (`school_day_id`),
     FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
         ON DELETE CASCADE
