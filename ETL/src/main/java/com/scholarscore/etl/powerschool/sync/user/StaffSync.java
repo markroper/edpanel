@@ -1,9 +1,11 @@
 package com.scholarscore.etl.powerschool.sync.user;
 
+import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.sync.ISync;
+import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.School;
@@ -12,6 +14,7 @@ import com.scholarscore.models.user.Person;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -38,10 +41,26 @@ public class StaffSync implements ISync<Person> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Person> syncCreateUpdateDelete() {
+    public ConcurrentHashMap<Long, Person> syncCreateUpdateDelete(SyncResult results) {
         Long psSchoolId = new Long(school.getSourceSystemId());
-        ConcurrentHashMap<Long, Person> sourceStaff = resolveAllFromSourceSystem();
-        ConcurrentHashMap<Long, Person> ed = resolveFromEdPanel();
+        ConcurrentHashMap<Long, Person> sourceStaff = null;
+        try {
+            sourceStaff = resolveAllFromSourceSystem();
+        } catch (HttpClientException e) {
+            results.staffSourceGetFailed(Long.valueOf(
+                    school.getSourceSystemId()),
+                    school.getId());
+            return new ConcurrentHashMap<>();
+        }
+        ConcurrentHashMap<Long, Person> ed = null;
+        try {
+            ed = resolveFromEdPanel();
+        } catch (HttpClientException e) {
+            results.staffEdPanelGetFailed(Long.valueOf(
+                            school.getSourceSystemId()),
+                    school.getId());
+            return new ConcurrentHashMap<>();
+        }
         Iterator<Map.Entry<Long, Person>> sourceIterator = sourceStaff.entrySet().iterator();
         //Find & perform the inserts and updates, if any
         while(sourceIterator.hasNext()) {
@@ -58,8 +77,15 @@ public class StaffSync implements ISync<Person> {
             }
             if(null == edPanelUser){
                 ((Person) sourceUser).setCurrentSchoolId(school.getId());
-                User created = edPanel.createUser(sourceUser);
+                User created = null;
+                try {
+                    created = edPanel.createUser(sourceUser);
+                } catch (HttpClientException e) {
+                    results.staffCreateFailed(ssid);
+                    continue;
+                }
                 sourceUser.setId(created.getId());
+                results.staffCreated(entry.getKey(), created.getId());
             } else {
                 sourceUser.setId(edPanelUser.getId());
                 ((Person) sourceUser).setCurrentSchoolId(school.getId());
@@ -71,7 +97,13 @@ public class StaffSync implements ISync<Person> {
                     add.setId(null);
                 }
                 if(!edPanelUser.equals(sourceUser)) {
-                    edPanel.replaceUser(sourceUser);
+                    try {
+                        edPanel.replaceUser(sourceUser);
+                    } catch (IOException e) {
+                        results.staffUpdateFailed(entry.getKey(), sourceUser.getId());
+                        continue;
+                    }
+                    results.staffUpdated(entry.getKey(), sourceUser.getId());
                 }
             }
         }
@@ -80,7 +112,7 @@ public class StaffSync implements ISync<Person> {
     }
 
     @SuppressWarnings("unchecked")
-    protected ConcurrentHashMap<Long, Person> resolveAllFromSourceSystem() {
+    protected ConcurrentHashMap<Long, Person> resolveAllFromSourceSystem() throws HttpClientException {
         PsStaffs response = powerSchool.getStaff(Long.valueOf(school.getSourceSystemId()));
         List<User> apiListOfStaff = response.toInternalModel();
         ConcurrentHashMap<Long, Person> source = new ConcurrentHashMap<>();
@@ -90,7 +122,7 @@ public class StaffSync implements ISync<Person> {
         return source;
     }
 
-    protected ConcurrentHashMap<Long, Person> resolveFromEdPanel() {
+    protected ConcurrentHashMap<Long, Person> resolveFromEdPanel() throws HttpClientException {
         Collection<Teacher> users = edPanel.getTeachers();
         Collection<Administrator> admins = edPanel.getAdministrators();
 

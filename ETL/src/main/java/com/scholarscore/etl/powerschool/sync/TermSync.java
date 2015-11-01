@@ -1,6 +1,9 @@
 package com.scholarscore.etl.powerschool.sync;
 
+import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.ISync;
+import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsTerm;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
@@ -8,6 +11,7 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Term;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,9 +40,21 @@ public class TermSync implements ISync<Term> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Term> syncCreateUpdateDelete() {
-        ConcurrentHashMap<Long, Term> source = resolveAllFromSourceSystem();
-        ConcurrentHashMap<Long, Term> edpanel = resolveFromEdPanel();
+    public ConcurrentHashMap<Long, Term> syncCreateUpdateDelete(SyncResult results) {
+        ConcurrentHashMap<Long, Term> source = null;
+        try {
+            source = resolveAllFromSourceSystem();
+        } catch (HttpClientException e) {
+            results.termSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+            return new ConcurrentHashMap<>();
+        }
+        ConcurrentHashMap<Long, Term> edpanel = null;
+        try {
+            edpanel = resolveFromEdPanel();
+        } catch (HttpClientException e) {
+            results.termEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+            return new ConcurrentHashMap<>();
+        }
         Iterator<Map.Entry<Long, Term>> sourceIterator = source.entrySet().iterator();
         //Find & perform the inserts and updates, if any
         while(sourceIterator.hasNext()) {
@@ -48,12 +64,24 @@ public class TermSync implements ISync<Term> {
             if(null == edPanelTerm){
                 if(!this.edpanelSchoolYears.containsKey(sourceTerm.getSchoolYear().getName())) {
                     //create school year
-                    SchoolYear createdYear =
-                            edPanel.createSchoolYear(school.getId(), sourceTerm.getSchoolYear());
+                    SchoolYear createdYear = null;
+                    try {
+                        createdYear = edPanel.createSchoolYear(school.getId(), sourceTerm.getSchoolYear());
+                    } catch (HttpClientException e) {
+                        results.termCreateFailed(entry.getKey());
+                        continue;
+                    }
                     sourceTerm.getSchoolYear().setId(createdYear.getId());
                 }
-                Term created = edPanel.createTerm(school.getId(), sourceTerm.getSchoolYear().getId(), sourceTerm);
+                Term created = null;
+                try {
+                    created = edPanel.createTerm(school.getId(), sourceTerm.getSchoolYear().getId(), sourceTerm);
+                } catch (HttpClientException e) {
+                    results.termCreateFailed(entry.getKey());
+                    continue;
+                }
                 sourceTerm.setId(created.getId());
+                results.termCreated(entry.getKey(), sourceTerm.getId());
             } else {
                 sourceTerm.setId(edPanelTerm.getId());
                 sourceTerm.getSchoolYear().setId(edPanelTerm.getSchoolYear().getId());
@@ -61,12 +89,16 @@ public class TermSync implements ISync<Term> {
                 edPanelTerm.getSchoolYear().setTerms(new ArrayList<>());
                 if(!edPanelTerm.equals(sourceTerm)) {
                     //Create/update school year if needed
-                    //TODO: startDate and endDate seem to be repeatedly off by one day.
                     if(!edPanelTerm.getSchoolYear().equals(sourceTerm.getSchoolYear())) {
                         if(!this.edpanelSchoolYears.containsKey(sourceTerm.getSchoolYear().getName())) {
                             //create school year
-                            SchoolYear createdYear =
-                                    edPanel.createSchoolYear(school.getId(), sourceTerm.getSchoolYear());
+                            SchoolYear createdYear = null;
+                            try {
+                                createdYear = edPanel.createSchoolYear(school.getId(), sourceTerm.getSchoolYear());
+                            } catch (HttpClientException e) {
+                                results.termUpdateFailed(entry.getKey(), sourceTerm.getId());
+                                continue;
+                            }
                             sourceTerm.getSchoolYear().setId(createdYear.getId());
                         } else {
                             sourceTerm.setSchoolYear(
@@ -74,7 +106,13 @@ public class TermSync implements ISync<Term> {
                                             sourceTerm.getSchoolYear().getName()));
                         }
                     }
-                    edPanel.updateTerm(school.getId(), sourceTerm.getSchoolYear().getId(), sourceTerm);
+                    try {
+                        edPanel.updateTerm(school.getId(), sourceTerm.getSchoolYear().getId(), sourceTerm);
+                    } catch (IOException e) {
+                        results.termUpdateFailed(entry.getKey(), sourceTerm.getId());
+                        continue;
+                    }
+                    results.termUpdated(entry.getKey(), sourceTerm.getId());
                 }
             }
         }
@@ -83,16 +121,22 @@ public class TermSync implements ISync<Term> {
         while(edpanelIterator.hasNext()) {
             Map.Entry<Long, Term> entry = edpanelIterator.next();
             if(!source.containsKey(entry.getKey())) {
-                edPanel.deleteTerm(
-                        school.getId(),
-                        entry.getValue().getSchoolYear().getId(),
-                        entry.getValue());
+                try {
+                    edPanel.deleteTerm(
+                            school.getId(),
+                            entry.getValue().getSchoolYear().getId(),
+                            entry.getValue());
+                } catch (HttpClientException e) {
+                    results.termDeleteFailed(entry.getKey(), entry.getValue().getId());
+                    continue;
+                }
+                results.termDeleted(entry.getKey(), entry.getValue().getId());
             }
         }
         return source;
     }
 
-    protected ConcurrentHashMap<Long, Term> resolveAllFromSourceSystem() {
+    protected ConcurrentHashMap<Long, Term> resolveAllFromSourceSystem() throws HttpClientException {
         //Get all the terms from PowerSchool for the current School
         String sourceSystemIdString = school.getSourceSystemId();
         Long sourceSystemSchoolId = new Long(sourceSystemIdString);
@@ -151,7 +195,7 @@ public class TermSync implements ISync<Term> {
         return sourceTerms;
     }
 
-    protected ConcurrentHashMap<Long, Term> resolveFromEdPanel() {
+    protected ConcurrentHashMap<Long, Term> resolveFromEdPanel() throws HttpClientException {
         SchoolYear[] years = edPanel.getSchoolYears(school.getId());
         ConcurrentHashMap<Long, Term> termMap = new ConcurrentHashMap<>();
         for(SchoolYear year: years) {

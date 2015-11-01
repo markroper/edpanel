@@ -1,7 +1,7 @@
 package com.scholarscore.etl.powerschool;
 
 import com.scholarscore.etl.IETLEngine;
-import com.scholarscore.etl.MigrationResult;
+import com.scholarscore.etl.SyncResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
@@ -21,7 +21,7 @@ public class E2EIntegrationTest extends AbstractTestNGSpringContextTests {
 
     // Test migrates everything
     public void testMigrateDistrict() {
-        MigrationResult result = engine.syncDistrict();
+        SyncResult result = engine.syncDistrict();
         System.out.println("Migration result: " + result);
         assertNotNull(result, "Expected non-null migration result for district");
     }
