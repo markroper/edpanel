@@ -10,6 +10,9 @@ public enum AttendanceStatus {
     PRESENT,
     TARDY,
     EXCUSED_ABSENT,
+    EXCUSED_TARDY,
+    EARLY_DISMISSAL,
+    EXCUSED_EARLY_DISMISSAL,
     ABSENT,
     OTHER;
 }

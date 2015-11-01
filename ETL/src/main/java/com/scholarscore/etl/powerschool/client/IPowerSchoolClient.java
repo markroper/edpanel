@@ -6,6 +6,7 @@ import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentTypes;
+import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsCalendarDayWrapper;
 import com.scholarscore.etl.powerschool.api.response.AssignmentScoresResponse;
@@ -56,4 +57,6 @@ public interface IPowerSchoolClient {
     PsResponse<PsCalendarDayWrapper> getSchoolCalendarDays(Long schoolId) throws HttpClientException;
 
     PsResponse<PsAttendanceWrapper> getStudentAttendance(Long studentId) throws HttpClientException;
+
+    PsResponse<PsAttendanceCodeWrapper> getAttendanceCodes() throws HttpClientException;
 }

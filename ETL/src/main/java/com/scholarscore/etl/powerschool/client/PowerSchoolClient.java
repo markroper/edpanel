@@ -10,6 +10,7 @@ import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
 import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentTypes;
+import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsCalendarDayWrapper;
 import com.scholarscore.etl.powerschool.api.response.AssignmentScoresResponse;
@@ -59,13 +60,18 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
             SCHEMA_BASE +
             "/calendar_day?" +
             PAGE_SIZE_PARAM +
-            "&projection=dcid,date_value,insession,note,membershipvalue,scheduleid,schoolid,type" +
+            "&projection=dcid,date_value,insession,note,membershipvalue,scheduleid,schoolid,type,id" +
             "&q=schoolid=={0}";
     public static final String PATH_RESOURCE_ATTENDANCE =
             SCHEMA_BASE +
             "/attendance?" +
             PAGE_SIZE_PARAM +
             "&projection=*&q=studentid=={0}";
+    public static final String PATH_RESOURCE_ATTENDANCE_CODE =
+            SCHEMA_BASE +
+            "/attendance_code?" +
+            PAGE_SIZE_PARAM +
+            "&projection=*";
 
     public static final String PATH_RESOURCE_STAFF = BASE + "/school/{0}/staff?" + PAGE_SIZE_PARAM;
     public static final String EXPANSION_RESOURCE_STAFF = "&expansions=phones,addresses,emails,school_affiliations";
@@ -231,6 +237,14 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
                 new TypeReference<PsResponse<PsAttendanceWrapper>>(){},
                 PATH_RESOURCE_ATTENDANCE,
                 studentId.toString());
+    }
+
+    @Override
+    public PsResponse<PsAttendanceCodeWrapper> getAttendanceCodes() throws HttpClientException {
+        return get(
+                new TypeReference<PsResponse<PsAttendanceCodeWrapper>>(){},
+                PATH_RESOURCE_ATTENDANCE_CODE,
+                (String[]) null);
     }
 
     public Object getAsMap(String path) throws HttpClientException {

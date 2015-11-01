@@ -50,7 +50,7 @@ public interface SchoolDayManager {
      * @param schoolDays The school day instances
      * @return
      */
-    public ServiceResponse<Void> createSchoolDays(long schoolId, List<SchoolDay> schoolDays);
+    public ServiceResponse<List<Long>> createSchoolDays(long schoolId, List<SchoolDay> schoolDays);
     
     /**
      * Deleted a school day by school ID and day ID

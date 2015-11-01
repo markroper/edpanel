@@ -33,6 +33,7 @@ import java.util.Objects;
 public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
     private Long id;
     private String sourceSystemId;
+    private Long sourceSystemOtherId;
     private School school;
     private Date date;
     
@@ -72,6 +73,15 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
         this.sourceSystemId = sourceSystemId;
     }
 
+    @Column(name = HibernateConsts.SCHOOL_DAY_SOURCE_SYSTEM_OTHER_ID)
+    public Long getSourceSystemOtherId() {
+        return sourceSystemOtherId;
+    }
+
+    public void setSourceSystemOtherId(Long sourceSystemOtherId) {
+        this.sourceSystemOtherId = sourceSystemOtherId;
+    }
+
     public SchoolDay() { }
     
     public SchoolDay(SchoolDay schoolDay) { 
@@ -79,11 +89,12 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
         this.school = schoolDay.school;
         this.date = schoolDay.date;
         this.sourceSystemId = schoolDay.sourceSystemId;
+        this.sourceSystemOtherId = schoolDay.sourceSystemOtherId;
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(id, school, date, sourceSystemId);
+        return Objects.hash(id, school, date, sourceSystemId, sourceSystemOtherId);
     }
 
     @Override
@@ -98,6 +109,7 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
         return Objects.equals(this.id, other.id)
                 && Objects.equals(this.school, other.school)
                 && Objects.equals(this.sourceSystemId, other.sourceSystemId)
+                && Objects.equals(this.sourceSystemOtherId, other.sourceSystemOtherId)
                 && Objects.equals(this.date, other.date);
     }
 
@@ -107,6 +119,7 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
                 "id=" + id +
                 ", school=" + school +
                 ", sourceSystemId=" + sourceSystemId +
+                ", sourceSystemOtherId=" + sourceSystemOtherId +
                 ", date=" + date +
                 '}';
     }
@@ -126,6 +139,9 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
         if (null == sourceSystemId) {
             this.sourceSystemId = mergeFrom.sourceSystemId;
         }
+        if (null == sourceSystemOtherId) {
+            this.sourceSystemId = mergeFrom.sourceSystemId;
+        }
     }
 
 
@@ -138,6 +154,8 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
         private Long id;
         private School school;
         private Date date;
+        private String sourceSystemId;
+        private Long sourceSystemOtherId;
 
         protected SchoolDayBuilder me(){
             return this;
@@ -147,6 +165,17 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
             this.id = id;
             return this;
         }
+
+        public SchoolDayBuilder withSourceSystemId(final String id){
+            this.sourceSystemId = id;
+            return this;
+        }
+
+        public SchoolDayBuilder withSourceSystemOtherId(final Long id){
+            this.sourceSystemOtherId = id;
+            return this;
+        }
+
 
         public SchoolDayBuilder withSchool(final School school){
             this.school = school;
@@ -163,6 +192,8 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
             schoolDay.setId(id);
             schoolDay.setSchool(school);
             schoolDay.setDate(date);
+            schoolDay.setSourceSystemId(sourceSystemId);
+            schoolDay.setSourceSystemOtherId(sourceSystemOtherId);
             return schoolDay;
         }
     }

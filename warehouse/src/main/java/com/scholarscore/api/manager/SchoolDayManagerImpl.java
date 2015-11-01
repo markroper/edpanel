@@ -64,13 +64,12 @@ public class SchoolDayManagerImpl implements SchoolDayManager{
     }
 
     @Override
-    public ServiceResponse<Void> createSchoolDays(long schoolId, List<SchoolDay> schoolDays) {
+    public ServiceResponse<List<Long>> createSchoolDays(long schoolId, List<SchoolDay> schoolDays) {
         StatusCode code = pm.getSchoolManager().schoolExists(schoolId);
         if (!code.isOK()) {
-            return new ServiceResponse<Void>(code);
+            return new ServiceResponse<List<Long>>(code);
         }
-        dayPersistence.insertSchoolDays(schoolId, schoolDays);
-        return new ServiceResponse<Void>((Void) null);
+        return new ServiceResponse<List<Long>>(dayPersistence.insertSchoolDays(schoolId, schoolDays));
     }
 
     @Override

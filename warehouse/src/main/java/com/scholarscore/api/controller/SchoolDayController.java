@@ -85,7 +85,7 @@ public class SchoolDayController extends BaseController {
     @ApiOperation(
             value = "Create multiple school days",
             notes = "Creates, assigns an ID, & persists provided school days",
-            response = Void.class)
+            response = List.class)
     @RequestMapping(
             value = "/bulk",
             method = RequestMethod.POST,

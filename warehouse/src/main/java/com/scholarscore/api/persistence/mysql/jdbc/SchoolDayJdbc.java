@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -36,10 +37,12 @@ public class SchoolDayJdbc implements SchoolDayPersistence {
     }
 
     @Override
-    public void insertSchoolDays(long schoolId, List<SchoolDay> schoolDays) {
+    public List<Long> insertSchoolDays(long schoolId, List<SchoolDay> schoolDays) {
         int i = 0;
+        List<Long> ids = new ArrayList<>();
         for(SchoolDay day : schoolDays) {
             hibernateTemplate.save(day);
+            ids.add(day.getId());
             //Release newly created entities from hibernates session im-memory storage
             if(i % 20 == 0) {
                 hibernateTemplate.flush();
@@ -47,6 +50,7 @@ public class SchoolDayJdbc implements SchoolDayPersistence {
             }
             i++;
         }
+        return ids;
     }
 
     @Override

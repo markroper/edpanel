@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface SchoolDayPersistence {
     public Long insertSchoolDay(long schoolId, SchoolDay schoolDay);
-    public void insertSchoolDays(long schoolId, List<SchoolDay> schoolDays);
+    public List<Long> insertSchoolDays(long schoolId, List<SchoolDay> schoolDays);
     public SchoolDay select(long schoolId, long schoolDayId);
     public Collection<SchoolDay> selectAllSchoolDays(long schoolId);
     public Collection<SchoolDay> selectAllSchoolDaysInYear(long schoolId, long schoolYearId);

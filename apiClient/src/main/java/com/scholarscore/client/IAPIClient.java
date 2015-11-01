@@ -70,9 +70,9 @@ public interface IAPIClient {
 
     //School days
     SchoolDay createSchoolDays(Long schoolId, SchoolDay day) throws HttpClientException;
-    void createSchoolDays(Long schoolId, List<SchoolDay> days) throws HttpClientException;
-    void deleteSchoolDays(Long schoolId, SchoolDay day) throws HttpClientException;
-    SchoolDay updateSchoolDays(Long schoolId, SchoolDay day) throws IOException;
+    List<Long> createSchoolDays(Long schoolId, List<SchoolDay> days) throws HttpClientException;
+    void deleteSchoolDay(Long schoolId, SchoolDay day) throws HttpClientException;
+    SchoolDay updateSchoolDay(Long schoolId, SchoolDay day) throws IOException;
     SchoolDay[] getSchoolDays(Long schoolId) throws HttpClientException;
 
     //Attendance

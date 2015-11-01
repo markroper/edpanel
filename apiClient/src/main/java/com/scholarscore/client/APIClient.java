@@ -1,6 +1,7 @@
 package com.scholarscore.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Course;
@@ -113,6 +114,20 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         String json = null;
         try {
             json = post(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
+        } catch (IOException e) {
+            throw new HttpClientException(e);
+        }
+    }
+
+    private List<Long> createListResponse(Object obj, String path) throws HttpClientException {
+        String json = null;
+        try {
+            json = post(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
+        } catch (IOException e) {
+            throw new HttpClientException(e);
+        }
+        try {
+            return mapper.readValue(json, new TypeReference<List<Long>>() {});
         } catch (IOException e) {
             throw new HttpClientException(e);
         }
@@ -368,19 +383,19 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public void createSchoolDays(Long schoolId, List<SchoolDay> days) throws HttpClientException {
-        createVoidResponse(days, SCHOOL_ENDPOINT + "/" + schoolId + DAYS_ENDPOINT + "/bulk");
+    public List<Long> createSchoolDays(Long schoolId, List<SchoolDay> days) throws HttpClientException {
+        return createListResponse(days, SCHOOL_ENDPOINT + "/" + schoolId + DAYS_ENDPOINT + "/bulk");
     }
 
     @Override
-    public void deleteSchoolDays(Long schoolId, SchoolDay day) throws HttpClientException {
+    public void deleteSchoolDay(Long schoolId, SchoolDay day) throws HttpClientException {
         delete(BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
                 DAYS_ENDPOINT + "/" + day.getId(), (String[]) null);
     }
 
     @Override
-    public SchoolDay updateSchoolDays(Long schoolId, SchoolDay day) throws IOException {
+    public SchoolDay updateSchoolDay(Long schoolId, SchoolDay day) throws IOException {
         SchoolDay t = new SchoolDay(day);
         patch(convertObjectToJsonBytes(day), BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
