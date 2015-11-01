@@ -56,19 +56,20 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
             BASE +
             "/student/{0}?expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup";
     //Attendance related
+    //TODO: looks back only to 2015-08-01 - MAKE THIS DYNAMIC
     public static final String PATH_RESOUCE_CALENDAR_DAY =
             SCHEMA_BASE +
             "/calendar_day?" +
             PAGE_SIZE_PARAM +
             "&" + PAGE_NUM_PARAM +
             "&projection=dcid,date_value,insession,note,membershipvalue,scheduleid,schoolid,type,id" +
-            "&q=schoolid=={1}";
+            "&q=schoolid=={1};date_value=gt=2015-08-01";
     public static final String PATH_RESOURCE_ATTENDANCE =
             SCHEMA_BASE +
             "/attendance?" +
             PAGE_SIZE_PARAM +
             "&" + PAGE_NUM_PARAM +
-            "&projection=*&q=studentid=={1}";
+            "&projection=*&q=studentid=={1};Att_Mode_Code!=ATT_ModeMeeting";
     public static final String PATH_RESOURCE_ATTENDANCE_CODE =
             SCHEMA_BASE +
             "/attendance_code?" +
