@@ -5,6 +5,7 @@ import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.PrepScoreMapper;
 import com.scholarscore.api.util.RoleConstants;
 import com.scholarscore.models.Authority;
+import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.PrepScore;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.user.Student;
@@ -94,29 +95,30 @@ public class StudentJdbc extends BaseJdbc implements StudentPersistence {
         // define 'week' buckets -- each eligible prep score contributor (i.e. behavior event) will end up in one of these buckets
         // each date is a saturday that represents the entire following week (through to friday)
         Date[] allWeeks = getSaturdayDatesForAllWeeksSince(allPrepScoresSince);
-        
-        StringBuilder queryBuilder = new StringBuilder();
-        
-        queryBuilder.append("select *, CASE ");
 
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-        
-        for (Date week : allWeeks) {
 
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("select point_value, CASE ");
+        for (Date week : allWeeks) {
+            // need the start date (saturday)...
             String saturdayDateString = dateFormatter.format(week);
 
+            // and the end date (friday)
             Calendar cal = Calendar.getInstance();
             cal.setTime(week);
-            // since we know the incoming date is a saturday, this always gets us the following friday)
+            // since we know the incoming date is a saturday, this always gets us the following friday
             cal.add(Calendar.DAY_OF_MONTH, 6);
             String fridayDateString = dateFormatter.format(cal.getTime());
-            
-            queryBuilder.append(" WHEN date >= '" + saturdayDateString 
-                    + "' AND date < '" + fridayDateString 
+
+            //query for all records within this week, and bucket them appropriately
+            queryBuilder.append(" WHEN " + HibernateConsts.BEHAVIOR_DATE + " >= '" + saturdayDateString 
+                    + "' AND " + HibernateConsts.BEHAVIOR_DATE + " < '" + fridayDateString 
                     + "' THEN '" + saturdayDateString + "'");
         }
 
-        queryBuilder.append(" END");
+        queryBuilder.append(" END as " + HibernateConsts.BEHAVIOR_DATE);
+        
         queryBuilder.append(" from behavior");
         System.out.println("Build query: " + queryBuilder.toString());
         List<PrepScore> prepScores = jdbcTemplate.query(
@@ -124,6 +126,10 @@ public class StudentJdbc extends BaseJdbc implements StudentPersistence {
                 params,
                 new PrepScoreMapper()
         );
+        System.out.println("Got prepscores back...");
+        for (PrepScore prepScore : prepScores) {
+            System.out.println(prepScore);
+        }
         return prepScores;
     }
 
