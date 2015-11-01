@@ -296,7 +296,7 @@ CREATE TABLE `scholar_warehouse`.`behavior` (
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
   `teacher_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the teacher table',
   `name` VARCHAR(256) NULL COMMENT 'Human readable name of behavior event',
-  `date` DATETIME NULL COMMENT 'Date the behavior event occurred',
+  `date` DATETIME NOT NULL COMMENT 'Date the behavior event occurred',
   `remote_system` VARCHAR(64) NULL COMMENT 'The name of the remote system that the remote_id columns refer to',
   `remote_behavior_id` VARCHAR(64) NULL COMMENT 'ID of the behavior in a remote system(currently only deanslist)',
   `remote_student_id` VARCHAR(256) NULL COMMENT 'ID of the student in a remote system (currently only deanslist)',
@@ -407,3 +407,9 @@ insert into `scholar_warehouse`.`administrator` (administrator_name, administrat
 insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Matt Greenwood', 2, 1);
 insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser', 3, 1);
 
+insert into `scholar_warehouse`.`behavior`      (behavior_id, student_fk, date, point_value)                 values (1, 3, '2015-11-01', 1);
+insert into `scholar_warehouse`.`behavior`      (behavior_id, student_fk, date, point_value)                 values (2, 3, '2015-11-01', 2);
+insert into `scholar_warehouse`.`behavior`      (behavior_id, student_fk, date, point_value)                 values (3, 3, '2015-11-01', 1);
+insert into `scholar_warehouse`.`behavior`      (behavior_id, student_fk, date, point_value)                 values (4, 3, '2015-11-01', -1);
+insert into `scholar_warehouse`.`behavior`      (behavior_id, student_fk, date, point_value)                 values (5, 3, '2015-11-01', -1);
+insert into `scholar_warehouse`.`behavior`      (behavior_id, student_fk, date, point_value)                 values (6, 3, '2015-11-01', 1);

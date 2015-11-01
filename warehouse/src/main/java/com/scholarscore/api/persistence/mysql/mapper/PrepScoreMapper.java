@@ -2,6 +2,7 @@ package com.scholarscore.api.persistence.mysql.mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.persistence.DbMappings;
+import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.PrepScore;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -15,18 +16,13 @@ import java.sql.SQLException;
  * Time: 3:47 PM
  */
 public class PrepScoreMapper implements RowMapper<PrepScore> {
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public PrepScore mapRow(ResultSet rs, int rowNum) throws SQLException {
-        PrepScore prepScore;
-        try {
-            // TODO Jordan: update this accordingly
-            prepScore = mapper.readValue("value", PrepScore.class);
-            // set id?
-        } catch (IOException e) {
-            prepScore = null;
-        }
+        PrepScore prepScore = new PrepScore();
+        prepScore.setScore(rs.getLong(HibernateConsts.BEHAVIOR_POINT_VALUE));
+        prepScore.setStartDate(rs.getDate(HibernateConsts.BEHAVIOR_DATE));
+        // TODO Jordan: need endDate, and student_fk perhaps?
         return prepScore;
     }
 }
