@@ -92,7 +92,6 @@ public class StudentJdbc extends BaseJdbc implements StudentPersistence {
         Map<String, Object> params = new HashMap<>();
         
         // define 'week' buckets -- each eligible prep score contributor (i.e. behavior event) will end up in one of these buckets
-        // 
         // each date is a saturday that represents the entire following week (through to friday)
         Date[] allWeeks = getSaturdayDatesForAllWeeksSince(allPrepScoresSince);
         
