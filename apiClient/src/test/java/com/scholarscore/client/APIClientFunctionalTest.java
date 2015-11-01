@@ -21,12 +21,12 @@ public class APIClientFunctionalTest extends AbstractTestNGSpringContextTests {
     @Autowired
     public APIClient client;
 
-    public void testAuthenticate() {
+    public void testAuthenticate() throws HttpClientException {
         client.authenticate();
         assertTrue(client.isAuthenticated(), "Expected client to be authenticated");
     }
 
-    public void testAddSchool() {
+    public void testAddSchool() throws HttpClientException {
         School school = new School();
         school.setName("Inner City YMCA");
         School result = client.createSchool(school);

@@ -1,10 +1,14 @@
 package com.scholarscore.etl.powerschool.sync;
 
+import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.ISync;
+import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.School;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,9 +26,21 @@ public class SchoolSync implements ISync<School> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, School> syncCreateUpdateDelete() {
-        ConcurrentHashMap<Long, School> source = resolveAllFromSourceSystem();
-        ConcurrentHashMap<Long, School> edpanel = resolveFromEdPanel();
+    public ConcurrentHashMap<Long, School> syncCreateUpdateDelete(SyncResult results) {
+        ConcurrentHashMap<Long, School> source = null;
+        try {
+            source = resolveAllFromSourceSystem();
+        } catch (HttpClientException e) {
+            results.schoolSourceGetFailed(-1L, -1L);
+            return new ConcurrentHashMap<>();
+        }
+        ConcurrentHashMap<Long, School> edpanel = null;
+        try {
+            edpanel = resolveFromEdPanel();
+        } catch (HttpClientException e) {
+            results.schoolEdPanelGetFailed(-1L, -1L);
+            return new ConcurrentHashMap<>();
+        }
 
         Iterator<Map.Entry<Long, School>> sourceIterator = source.entrySet().iterator();
         //Find & perform the inserts and updates, if any
@@ -33,13 +49,26 @@ public class SchoolSync implements ISync<School> {
             School sourceSchool = entry.getValue();
             School edPanelSchool = edpanel.get(entry.getKey());
             if(null == edPanelSchool){
-                School created = edPanel.createSchool(sourceSchool);
+                School created = null;
+                try {
+                    created = edPanel.createSchool(sourceSchool);
+                } catch (HttpClientException e) {
+                    results.schoolCreateFailed(entry.getKey());
+                    continue;
+                }
                 sourceSchool.setId(created.getId());
+                results.schoolCreated(entry.getKey(), sourceSchool.getId());
             } else {
                 sourceSchool.setId(edPanelSchool.getId());
                 edPanelSchool.setYears(sourceSchool.getYears());
                 if(!edPanelSchool.equals(sourceSchool)) {
-                    edPanel.updateSchool(sourceSchool);
+                    try {
+                        edPanel.updateSchool(sourceSchool);
+                    } catch (IOException e) {
+                        results.schoolUpdateFailed(entry.getKey(), sourceSchool.getId());
+                        continue;
+                    }
+                    results.schoolUpdated(entry.getKey(), sourceSchool.getId());
                 }
             }
         }
@@ -48,13 +77,19 @@ public class SchoolSync implements ISync<School> {
         while(edpanelIterator.hasNext()) {
             Map.Entry<Long, School> entry = edpanelIterator.next();
             if(!source.containsKey(entry.getKey())) {
-                edPanel.deleteSchool(entry.getValue());
+                try {
+                    edPanel.deleteSchool(entry.getValue());
+                } catch (HttpClientException e) {
+                    results.schoolDeleteFailed(entry.getKey(), entry.getValue().getId());
+                    continue;
+                }
+                results.schoolDeleted(entry.getKey(), entry.getValue().getId());
             }
         }
         return source;
     }
 
-    protected ConcurrentHashMap<Long, School> resolveAllFromSourceSystem() {
+    protected ConcurrentHashMap<Long, School> resolveAllFromSourceSystem() throws HttpClientException {
         SchoolsResponse powerSchools = powerSchool.getSchools();
         ConcurrentHashMap<Long, School> schoolMap = new ConcurrentHashMap<>();
         for(School s: powerSchools.toInternalModel()) {
@@ -63,7 +98,7 @@ public class SchoolSync implements ISync<School> {
         return schoolMap;
     }
 
-    protected ConcurrentHashMap<Long, School> resolveFromEdPanel() {
+    protected ConcurrentHashMap<Long, School> resolveFromEdPanel() throws HttpClientException {
         School[] schools = edPanel.getSchools();
         ConcurrentHashMap<Long, School> schoolMap = new ConcurrentHashMap<>();
         for(School s: schools) {
