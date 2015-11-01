@@ -1,6 +1,5 @@
 package com.scholarscore.client;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.Header;
@@ -155,21 +154,6 @@ public abstract class BaseHttpClient {
             return get(clazz, path, params);
         } catch(HttpClientException e) {
             return get(clazz, path, retries - 1, params);
-        }
-    }
-
-    protected <T> T get(TypeReference<T> typeRef,  String path, String ...params) throws HttpClientException {
-
-        path = getPath(path, params);
-
-        try {
-            HttpGet get = new HttpGet();
-            setupCommonHeaders(get);
-            get.setURI(uri.resolve(path));
-            String json = getJSON(get);
-            return mapper.readValue(json, typeRef);
-        } catch (IOException e) {
-            throw new HttpClientException(e);
         }
     }
 
