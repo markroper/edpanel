@@ -5,9 +5,12 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
+import com.scholarscore.models.PrepScore;
 import com.scholarscore.models.user.Student;
 
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by cwallace on 9/16/2015.
@@ -51,6 +54,15 @@ public class StudentManagerImpl implements StudentManager {
         }
         studentPersistence.delete(studentId);
         return new ServiceResponse<Long>((Long) null);
+    }
+
+    @Override
+    public ServiceResponse<List<PrepScore>> getStudentPrepScore(long studentId, Date startDate) {
+        StatusCode code = studentExists(studentId);
+        if(!code.isOK()) {
+            return new ServiceResponse<>(code);
+        }
+        return new ServiceResponse<>(studentPersistence.selectStudentPrepScore(studentId, startDate));
     }
 
     @Override

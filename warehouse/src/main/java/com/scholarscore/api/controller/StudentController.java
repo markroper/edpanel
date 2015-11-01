@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -187,6 +188,23 @@ public class StudentController extends BaseController {
             @ApiParam(name = "sId", required = true, value = "Section ID")
             @PathVariable(value="sId") Long sId) {
         return respond(pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, schoolId, yrId, tId, sId));
+    }
+
+    @ApiOperation(
+            value = "Get one or more of a student's prep scores",
+            notes = "Prep score is a measure of a student's weekly performance. It is initially 90 and is adjusted by all positive and negative behavioral events.",
+            response = List.class)
+    @RequestMapping(
+            value = "/{studentId}/prepscores",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getStudentPrepScores(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId
+    ) {
+        Date date = new Date();
+        return respond(pm.getStudentManager().getStudentPrepScore(studentId, date));
     }
 
 }
