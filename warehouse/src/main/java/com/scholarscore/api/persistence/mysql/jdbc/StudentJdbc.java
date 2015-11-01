@@ -2,21 +2,31 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 
 import com.scholarscore.api.persistence.AuthorityPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
+import com.scholarscore.api.persistence.mysql.mapper.PrepScoreMapper;
 import com.scholarscore.api.util.RoleConstants;
 import com.scholarscore.models.Authority;
+import com.scholarscore.models.PrepScore;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.user.Student;
+import org.joda.time.Days;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Transactional
-public class StudentJdbc implements StudentPersistence {
+public class StudentJdbc extends BaseJdbc implements StudentPersistence {
 
     @Autowired
     private HibernateTemplate hibernateTemplate;
@@ -75,6 +85,94 @@ public class StudentJdbc implements StudentPersistence {
             return students.get(0);
         }
         return null;
+    }
+
+    @Override
+    public List<PrepScore> selectStudentPrepScore(long studentId, Date allPrepScoresSince) {
+        Map<String, Object> params = new HashMap<>();
+        
+        // define 'week' buckets -- each eligible prep score contributor (i.e. behavior event) will end up in one of these buckets
+        // 
+        // each date is a saturday that represents the entire following week (through to friday)
+        Date[] allWeeks = getSaturdayDatesForAllWeeksSince(allPrepScoresSince);
+        
+        StringBuilder queryBuilder = new StringBuilder();
+        
+        queryBuilder.append("select *, CASE ");
+
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        
+        for (Date week : allWeeks) {
+
+            String saturdayDateString = dateFormatter.format(week);
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(week);
+            // since we know the incoming date is a saturday, this always gets us the following friday)
+            cal.add(Calendar.DAY_OF_MONTH, 6);
+            String fridayDateString = dateFormatter.format(cal.getTime());
+            
+            queryBuilder.append(" WHEN date >= '" + saturdayDateString 
+                    + "' AND date < '" + fridayDateString 
+                    + "' THEN '" + saturdayDateString + "'");
+        }
+
+        queryBuilder.append(" END");
+        queryBuilder.append(" from behavior");
+        System.out.println("Build query: " + queryBuilder.toString());
+        List<PrepScore> prepScores = jdbcTemplate.query(
+                queryBuilder.toString(),
+                params,
+                new PrepScoreMapper()
+        );
+        return prepScores;
+    }
+
+    // constructs an array containing zero or more dates.
+    // each of these dates will occur on a saturday at noon, which for our purposes represents a week (saturday - friday)
+    // if the date provided is not a saturday at noon, the most recent saturday BEFORE the specified date will be used
+    protected Date[] getSaturdayDatesForAllWeeksSince(Date allPrepScoresSince) {
+        // if date is saturday
+        // use date
+        Date currentSaturday = null;
+        if (isSaturdayDate(allPrepScoresSince)) {
+            currentSaturday = allPrepScoresSince;
+        } else {
+            // otherwise, get saturday-date from non-saturday date
+            currentSaturday = getRecentSaturdayForDate(allPrepScoresSince);
+        }
+
+        ArrayList<Date> validSaturdayDates = new ArrayList<>();
+
+        // if the date is in the past, save it and increment a week
+        // until we pass by the present
+        while (!currentSaturday.after(Calendar.getInstance().getTime())) {
+            validSaturdayDates.add(currentSaturday);
+            Calendar c = Calendar.getInstance();
+            c.setTime(currentSaturday);
+            c.add(Calendar.DAY_OF_MONTH, 7);
+            currentSaturday = c.getTime();
+        }
+        
+        return validSaturdayDates.toArray(new Date[0]);
+    }
+
+    private Date getRecentSaturdayForDate(Date allPrepScoresSince) {
+        if (allPrepScoresSince == null) { return null; }
+        if (isSaturdayDate(allPrepScoresSince)) { return allPrepScoresSince; } 
+        
+        Calendar c = Calendar.getInstance();
+        c.setTime(allPrepScoresSince);
+        while (!(c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)) {
+            c.add(Calendar.DAY_OF_MONTH, -1);
+        }
+        return c.getTime();
+    }
+
+    private boolean isSaturdayDate(Date allPrepScoresSince) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(allPrepScoresSince);
+        return (c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY);
     }
 
     @Override
