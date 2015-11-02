@@ -8,7 +8,7 @@ import java.util.Date;
  * Named 'EdPanelDateUtil' because this stuff is probably not generalizable beyond edpanel
  *  
  * The reason these methods are currently centered around weeks, with the saturday-friday week holding
- * special significance, is because nina's school 
+ * special significance, is because this is how the formula of 'prepscore' at nina's school is calculated.
  *  
  * User: jordan
  * Date: 11/1/15
@@ -23,19 +23,18 @@ public class EdPanelDateUtil {
     // if the start date provided is not a saturday, the most recent saturday BEFORE the specified date will be used
     // if the end date provided is not a friday, the soonest friday AFTER the specified date will be used
     public static Date[] getSaturdayDatesForWeeksBetween(Date startDate, Date endDate) {
-        // if date is saturday
-        // use date
+        // if date is saturday, use date
         Date currentSaturday;
         if (isDayOfWeek(startDate, Calendar.SATURDAY)) {
             currentSaturday = startDate;
         } else {
-            // otherwise, get saturday-date from non-saturday date
+            // otherwise, get the preceding saturday from the non-saturday
             currentSaturday = getRecentSaturdayForDate(startDate);
         }
 
         ArrayList<Date> validSaturdayDates = new ArrayList<>();
-            // if the date is in the past, save it and increment a week
-        // until we pass by the present
+        // if the date is in the past, save it and increment a week
+        // keep going until we hit (pass, more likely) our end date)
         while (!currentSaturday.after(endDate)) {
             validSaturdayDates.add(currentSaturday);
             Calendar c = Calendar.getInstance();
