@@ -1,13 +1,17 @@
 package com.scholarscore.api.manager;
 
 import com.scholarscore.api.persistence.StudentPersistence;
+import com.scholarscore.api.persistence.StudentPrepScorePersistence;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
+import com.scholarscore.models.PrepScore;
 import com.scholarscore.models.user.Student;
 
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by cwallace on 9/16/2015.
@@ -15,6 +19,7 @@ import java.util.Collection;
 public class StudentManagerImpl implements StudentManager {
 
     StudentPersistence studentPersistence;
+    StudentPrepScorePersistence studentPrepScorePersistence;
 
     OrchestrationManager pm;
 
@@ -24,6 +29,10 @@ public class StudentManagerImpl implements StudentManager {
         this.studentPersistence = studentPersistence;
     }
 
+    public void setStudentPrepScorePersistence(StudentPrepScorePersistence studentPrepScorePersistence) {
+        this.studentPrepScorePersistence = studentPrepScorePersistence;
+    }
+
     public void setPm(OrchestrationManager pm) {
         this.pm = pm;
     }
@@ -31,7 +40,7 @@ public class StudentManagerImpl implements StudentManager {
     //Student
     @Override
     public ServiceResponse<Long> createStudent(Student student) {
-        return new ServiceResponse<Long>(studentPersistence.createStudent(student));
+        return new ServiceResponse<>(studentPersistence.createStudent(student));
     }
 
     @Override
@@ -47,15 +56,15 @@ public class StudentManagerImpl implements StudentManager {
     public ServiceResponse<Long> deleteStudent(long studentId) {
         StatusCode code = studentExists(studentId);
         if(!code.isOK()) {
-            return new ServiceResponse<Long>(code);
+            return new ServiceResponse<>(code);
         }
         studentPersistence.delete(studentId);
-        return new ServiceResponse<Long>((Long) null);
+        return new ServiceResponse<>((Long) null);
     }
 
     @Override
     public ServiceResponse<Collection<Student>> getAllStudents(Long schoolId) {
-        return new ServiceResponse<Collection<Student>>(
+        return new ServiceResponse<>(
                 studentPersistence.selectAll(schoolId));
     }
 
@@ -63,36 +72,41 @@ public class StudentManagerImpl implements StudentManager {
     public ServiceResponse<Student> getStudent(long studentId) {
         StatusCode code = studentExists(studentId);
         if(!code.isOK()) {
-            return new ServiceResponse<Student>(code);
+            return new ServiceResponse<>(code);
         }
-        return new ServiceResponse<Student>(studentPersistence.select(studentId));
+        return new ServiceResponse<>(studentPersistence.select(studentId));
     }
 
     @Override
     public ServiceResponse<Student> getStudentBySourceSystemId(Long ssid) {
-        return new ServiceResponse<Student>(studentPersistence.selectBySsid(ssid));
+        return new ServiceResponse<>(studentPersistence.selectBySsid(ssid));
     }
 
     @Override
     public ServiceResponse<Long> replaceStudent(long studentId, Student student) {
         StatusCode code = studentExists(studentId);
         if(!code.isOK()) {
-            return new ServiceResponse<Long>(code);
+            return new ServiceResponse<>(code);
         }
         studentPersistence.replaceStudent(studentId, student);
-        return new ServiceResponse<Long>(studentId);
+        return new ServiceResponse<>(studentId);
     }
 
     @Override
     public ServiceResponse<Long> updateStudent(long studentId, Student student) {
         StatusCode code = studentExists(studentId);
         if(!code.isOK()) {
-            return new ServiceResponse<Long>(code);
+            return new ServiceResponse<>(code);
         }
         student.setId(studentId);
         student.mergePropertiesIfNull(studentPersistence.select(studentId));
         replaceStudent(studentId, student);
-        return new ServiceResponse<Long>(studentId);
+        return new ServiceResponse<>(studentId);
+    }
+
+    @Override
+    public ServiceResponse<List<PrepScore>> getStudentPrepScore(Long[] studentIds, Date startDate, Date endDate) {
+        return new ServiceResponse<>(studentPrepScorePersistence.selectStudentPrepScore(studentIds, startDate, endDate));
     }
 
 }

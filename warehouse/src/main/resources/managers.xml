@@ -73,6 +73,7 @@
     <bean id="studentManager"
           class="com.scholarscore.api.manager.StudentManagerImpl">
            <property name="studentPersistence" ref="studentPersistence"/>
+           <property name="studentPrepScorePersistence" ref="studentPrepScorePersistence"/>
            <property name="pm" ref="PM"/>
     </bean>
 

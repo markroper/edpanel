@@ -51,6 +51,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -468,7 +470,7 @@ public class IntegrationBase {
                         + content);
                 } else {
                     Assert.fail("Unexpected error code returned attempting to validate response \n"
-                    + "Expected 200 but got " + status);
+                    + "Expected 200 but got " + status + " with content: " + content);
                 }
             }
         } catch (Exception e) {
@@ -825,4 +827,14 @@ public class IntegrationBase {
 
     protected void invalidateCookie() { mockMvc.setjSessionId(null); }
     
+    protected Date getNow() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+
 }

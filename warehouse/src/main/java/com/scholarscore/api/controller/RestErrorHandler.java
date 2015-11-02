@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -37,7 +38,7 @@ public class RestErrorHandler extends BaseController {
     public ResponseEntity<StatusCode> processValidationError(MethodArgumentNotValidException ex) {
         BindingResult result = ex.getBindingResult();
         StatusCode error = new StatusCode(StatusCodes.UNPARSABLE_REQUEST_CODE, result.getFieldError().getDefaultMessage());
-        return new ResponseEntity<StatusCode>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
     
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -45,7 +46,7 @@ public class RestErrorHandler extends BaseController {
     @ResponseBody
     public ResponseEntity<StatusCode> processDataIntegrationViolationException(DataIntegrityViolationException dive) {
         StatusCode error = new StatusCode(StatusCodes.DATA_INTEGRITY_VIOLATION_CODE, dive.getMessage());
-        return new ResponseEntity<StatusCode>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
     
     @ExceptionHandler(JsonMappingException.class) 
@@ -53,7 +54,15 @@ public class RestErrorHandler extends BaseController {
     @ResponseBody
     public ResponseEntity<StatusCode> processJsonMappingException(JsonMappingException ex) {
         StatusCode error = new StatusCode(StatusCodes.JSON_PARSING_ERROR_CODE, ex.getMessage());
-        return new ResponseEntity<StatusCode>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ResponseEntity<StatusCode> processConstraintViolationException(ConstraintViolationException ex) { 
+        StatusCode error = new StatusCode(StatusCodes.CONSTRAINT_VIOLATED_ERROR_CODE, ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
     
     @ExceptionHandler(Exception.class)

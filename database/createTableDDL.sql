@@ -297,7 +297,7 @@ CREATE TABLE `scholar_warehouse`.`behavior` (
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
   `teacher_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the teacher table',
   `name` VARCHAR(256) NULL COMMENT 'Human readable name of behavior event',
-  `date` DATETIME NULL COMMENT 'Date the behavior event occurred',
+  `date` DATETIME NOT NULL COMMENT 'Date the behavior event occurred',
   `remote_system` VARCHAR(64) NULL COMMENT 'The name of the remote system that the remote_id columns refer to',
   `remote_behavior_id` VARCHAR(64) NULL COMMENT 'ID of the behavior in a remote system(currently only deanslist)',
   `remote_student_id` VARCHAR(256) NULL COMMENT 'ID of the student in a remote system (currently only deanslist)',
@@ -400,14 +400,16 @@ ENGINE = InnoDB;
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mroper', 'admin', 1);
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mattg', 'admin', 1);
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('student_user', 'student_user', 1);
+insert into `scholar_warehouse`.`users` (username, password, enabled) values ('student_user2', 'student_user', 1);
 
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (1, 'ADMINISTRATOR');
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (2, 'ADMINISTRATOR');
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (3, 'STUDENT');
+insert into `scholar_warehouse`.`authorities` (user_id, authority) values (4, 'STUDENT');
 
 insert into `scholar_warehouse`.`school` (school_name) values ('FirstSchool');
 
 insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Mark Roper', 1, 1);
 insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Matt Greenwood', 2, 1);
 insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser', 3, 1);
-
+insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser2', 4, 1);

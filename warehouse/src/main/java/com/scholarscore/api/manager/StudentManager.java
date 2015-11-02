@@ -2,9 +2,12 @@ package com.scholarscore.api.manager;
 
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
+import com.scholarscore.models.PrepScore;
 import com.scholarscore.models.user.Student;
 
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * User: jordan
@@ -32,5 +35,7 @@ public interface StudentManager {
     public ServiceResponse<Long> updateStudent(long studentId, Student student);
 
     public ServiceResponse<Long> deleteStudent(long studentId);
+    
+    public ServiceResponse<List<PrepScore>> getStudentPrepScore(Long studentIds[], Date startDate, Date endDate);
 
 }
