@@ -11,6 +11,7 @@ public class StatusCodes {
     public static final int INVALID_ENTITY = 4000;
     public static final int JSON_PARSING_ERROR_CODE = 5000;
     public static final int DATA_INTEGRITY_VIOLATION_CODE = 6000;
+    public static final int CONSTRAINT_VIOLATED_ERROR_CODE = 7000;
 
     public static StatusCode getStatusCode(StatusCodeType statusCodeType) {
         return new StatusCode(statusCodeType.getCode(), statusCodeType.getKey());

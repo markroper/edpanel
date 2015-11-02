@@ -16,8 +16,6 @@ public interface StudentPersistence {
 
     Student select(String username);
 
-    List<PrepScore> selectStudentPrepScore(Long[] studentId, Date startDate, Date endDate);
-
     Student selectBySsid(Long ssid);
 
     Long createStudent(Student student);

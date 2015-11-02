@@ -11,6 +11,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * User: jordan
@@ -39,15 +40,21 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
     //Positive test cases
     @DataProvider
     public Object[][] createBehaviorProvider() {
+        
+        // all behaviors must have time
+        Date now = getNow();
+
         Behavior emptyBehavior = new Behavior();
         // teacher is always required or constraint exception
         emptyBehavior.setStudent(student);
         emptyBehavior.setTeacher(teacher);
+        emptyBehavior.setBehaviorDate(now);
 
         Behavior namedBehavior = new Behavior();
         // teacher is always required or constraint exception
         namedBehavior.setStudent(student);
         namedBehavior.setTeacher(teacher);
+        namedBehavior.setBehaviorDate(now);
         namedBehavior.setName("BehaviorEvent");
 
         Behavior populatedBehavior = new Behavior();
@@ -55,12 +62,7 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
         populatedBehavior.setStudent(student);
         populatedBehavior.setTeacher(teacher);
         populatedBehavior.setBehaviorCategory(BehaviorCategory.MERIT);
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        populatedBehavior.setBehaviorDate(cal.getTime());
+        populatedBehavior.setBehaviorDate(now);
         populatedBehavior.setPointValue("1");
         populatedBehavior.setRemoteStudentId("123456");
         populatedBehavior.setRoster("History 101");
@@ -89,6 +91,7 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
         Behavior newBehavior = new Behavior();
         newBehavior.setStudent(student);
         newBehavior.setTeacher(teacher);
+        newBehavior.setBehaviorDate(getNow());
         
         Behavior createdBehavior = behaviorValidatingExecutor.create(student.getId(), behavior, msg);
         behaviorValidatingExecutor.replace(student.getId(), createdBehavior.getId(), newBehavior, msg);
@@ -115,32 +118,44 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
     //Negative test cases
     @DataProvider
     public Object[][] createBehaviorNegativeProvider() {
+        
+        Date now = getNow();
+
+        Behavior behaviorWithoutDate = new Behavior();
+        behaviorWithoutDate.setStudent(student);
+        behaviorWithoutDate.setTeacher(teacher);
+        behaviorWithoutDate.setName(localeServiceUtil.generateName(24));
+        
         Behavior behaviorNameTooLong = new Behavior();
         behaviorNameTooLong.setStudent(student);
         behaviorNameTooLong.setTeacher(teacher);
         behaviorNameTooLong.setName(localeServiceUtil.generateName(257));
+        behaviorNameTooLong.setBehaviorDate(now);
 
         Behavior remoteStudentIdTooLong = new Behavior();
         remoteStudentIdTooLong.setStudent(student);
         remoteStudentIdTooLong.setTeacher(teacher);
         remoteStudentIdTooLong.setRemoteStudentId(localeServiceUtil.generateName(257));
-
+        remoteStudentIdTooLong.setBehaviorDate(now);
 
         Behavior pointValueTooLong = new Behavior();
         pointValueTooLong.setStudent(student);
         pointValueTooLong.setTeacher(teacher);
         pointValueTooLong.setPointValue(localeServiceUtil.generateName(257));
+        pointValueTooLong.setBehaviorDate(now);
         
         Behavior rosterTooLong = new Behavior();
         rosterTooLong.setStudent(student);
         rosterTooLong.setTeacher(teacher);
         rosterTooLong.setRoster(localeServiceUtil.generateName(257));
+        rosterTooLong.setBehaviorDate(now);
         
         return new Object[][] {
                 { "Behavior with name exceeding 256 char limit", behaviorNameTooLong, HttpStatus.BAD_REQUEST },
                 { "Behavior with remote student Id exceeding 256 char limit", remoteStudentIdTooLong, HttpStatus.BAD_REQUEST },
                 { "Behavior with point value exceeding 256 char limit", pointValueTooLong, HttpStatus.BAD_REQUEST },
                 { "Behavior with roster exceeding 256 char limit", rosterTooLong, HttpStatus.BAD_REQUEST },
+                { "Behavior with no date set", behaviorWithoutDate, HttpStatus.BAD_REQUEST },
         };
     }
 
@@ -154,6 +169,7 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
         Behavior updatedBehavior = new Behavior();
         updatedBehavior.setStudent(student);
         updatedBehavior.setTeacher(teacher);
+        updatedBehavior.setBehaviorDate(getNow());
         Behavior created = behaviorValidatingExecutor.create(student.getId(), updatedBehavior, msg);
         behaviorValidatingExecutor.replaceNegative(student.getId(), created.getId(), behavior, expectedStatus, msg);
     }
