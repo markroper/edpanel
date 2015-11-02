@@ -21,7 +21,6 @@ import java.util.Objects;
  *
  */
 @Entity
-@Table(name = HibernateConsts.ASSIGNMENT_TABLE)
 @DiscriminatorValue(value = "GradedAssignment")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @SuppressWarnings("serial")
