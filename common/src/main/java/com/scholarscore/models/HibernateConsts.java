@@ -74,6 +74,7 @@ public class HibernateConsts {
     public static final String SCHOOL_TABLE = "school";
     public static final String SCHOOL_ID = "school_id";
     public static final String SCHOOL_NAME = "school_name";
+    public static final String SCHOOL_NUMBER = "school_number";
     public static final String SCHOOL_SOURCE_SYSTEM_ID = "sourceSystemId";
     public static final String SCHOOL_PRINCIPAL_EMAIL = "principal_email";
     public static final String SCHOOL_PRINCIPAL_NAME = "principal_name";
@@ -179,6 +180,8 @@ public class HibernateConsts {
     public static final String SCHOOL_DAY_TABLE = "school_day";
     public static final String SCHOOL_DAY_ID = "school_day_id";
     public static final String SCHOOL_DAY_DATE = "school_day_date";
+    public static final String SCHOOL_DAY_SOURCE_SYSTEM_ID = "school_day_source_system_id";
+    public static final String SCHOOL_DAY_SOURCE_SYSTEM_OTHER_ID = "school_day_source_system_other_id";
     
     //Attendance
     public static final String ATTENDANCE_TABLE = "attendance";
@@ -186,6 +189,7 @@ public class HibernateConsts {
     public static final String SCHOOL_DAY_FK = "school_day_fk";
     public static final String ATTENDANCE_STATUS = "attendance_status";
     public static final String ATTENDANCE_DESCRIPTION = "attendance_description";
+    public static final String ATTENDANCE_SOURCE_SYSTEM_ID = "attendance_source_system_id";
     
     //UI attributes
     public static final String UI_ATTRIBUTES_TABLE = "ui_attributes";

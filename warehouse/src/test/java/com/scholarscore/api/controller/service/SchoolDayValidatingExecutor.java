@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
 import org.testng.Assert;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SchoolDayValidatingExecutor {
@@ -59,6 +58,20 @@ public class SchoolDayValidatingExecutor {
         EntityId dayId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
         Assert.assertNotNull(dayId, "unexpected null day ID returned from create call for case: " + msg);
         return retrieveAndValidateCreatedDay(schoolId, day, dayId, HttpMethod.POST, msg);
+    }
+
+    public List<Long> createAll(Long schoolId, List<SchoolDay> days, String msg) {
+        ResultActions response = serviceBase.makeRequest(
+                HttpMethod.POST,
+                serviceBase.getSchoolDayEndpoint(schoolId) + "/bulk",
+                null,
+                days);
+        List<Long> dayIds = serviceBase.validateResponse(response, new TypeReference<List<Long>>(){});
+        Assert.assertNotNull(dayIds, "unexpected null day ID returned from create call for case: " + msg);
+        Assert.assertEquals(days.size(),
+                dayIds.size(),
+                "Number of IDs returned doesn't match number of SchoolDay instanced submitted for creation");
+        return dayIds;
     }
     
     public void createNegative(Long schoolId, SchoolDay day, HttpStatus expectedCode, String msg) {

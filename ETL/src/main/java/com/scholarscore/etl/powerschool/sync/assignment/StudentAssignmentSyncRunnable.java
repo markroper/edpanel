@@ -2,13 +2,14 @@ package com.scholarscore.etl.powerschool.sync.assignment;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.SyncResult;
-import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScores;
+import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScoreWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsScore;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreId;
-import com.scholarscore.etl.powerschool.api.response.AssignmentScoresResponse;
+import com.scholarscore.etl.powerschool.api.response.PsResponse;
+import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.ISync;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.assignment.Assignment;
@@ -93,11 +94,6 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
             StudentAssignment edPanelStudentAssignment = ed.get(entry.getKey());
             if(null == edPanelStudentAssignment){
                 studentAssignmentsToCreate.add(sourceStudentAssignment);
-                results.studentAssignmentCreated(
-                        Long.valueOf(createdSection.getSourceSystemId()),
-                        Long.valueOf(this.assignment.getSourceSystemId()),
-                        entry.getKey(),
-                        -1L);
             } else {
                 sourceStudentAssignment.setId(edPanelStudentAssignment.getId());
                 sourceStudentAssignment.setStudent(edPanelStudentAssignment.getStudent());
@@ -134,13 +130,23 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
         }
         //Perform the bulk creates!
         try {
-            edPanel.createStudentAssignments(
+            List<Long> ids = edPanel.createStudentAssignments(
                     school.getId(),
                     createdSection.getTerm().getSchoolYear().getId(),
                     createdSection.getTerm().getId(),
                     createdSection.getId(),
                     assignment.getId(),
                     studentAssignmentsToCreate);
+
+            int i = 0;
+            for(StudentAssignment s: studentAssignmentsToCreate) {
+                results.studentAssignmentCreated(
+                        Long.valueOf(createdSection.getSourceSystemId()),
+                        Long.valueOf(this.assignment.getSourceSystemId()),
+                        Long.valueOf(s.getStudent().getSourceSystemId()),
+                        ids.get(i));
+                i++;
+            }
         } catch (HttpClientException e) {
             for(StudentAssignment s: studentAssignmentsToCreate) {
                 // NOTE - we couldn't create the student assignments for any of the assignment,
@@ -185,11 +191,11 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
 
     protected ConcurrentHashMap<Long, StudentAssignment> resolveAllFromSourceSystem() throws HttpClientException {
         //Retrieve students' scores
-        AssignmentScoresResponse assScores =
+        PsResponse<PsAssignmentScoreWrapper> assScores =
                 powerSchool.getStudentScoresByAssignmentId(Long.valueOf(assignment.getSourceSystemId()));
         ConcurrentHashMap<Long, StudentAssignment> studentAssignmentsToCreate = new ConcurrentHashMap<>();
         if (null != assScores && null != assScores.record) {
-            for (PsAssignmentScores sc : assScores.record) {
+            for (PsResponseInner<PsAssignmentScoreWrapper> sc : assScores.record) {
                 PsScore score = sc.tables.sectionscoresassignments;
                 StudentAssignment studAss = new StudentAssignment();
                 studAss.setAssignment(assignment);
