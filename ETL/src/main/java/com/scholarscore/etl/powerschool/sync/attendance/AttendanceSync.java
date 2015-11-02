@@ -28,17 +28,20 @@ public class AttendanceSync implements ISync<Attendance> {
     protected School school;
     protected StudentAssociator studentAssociator;
     protected ConcurrentHashMap<Date, SchoolDay> schoolDays;
+    protected Date syncCutoff;
 
     public AttendanceSync(IAPIClient edPanel,
                           IPowerSchoolClient powerSchool,
                           School s,
                           StudentAssociator studentAssociator,
-                          ConcurrentHashMap<Date, SchoolDay> schoolDays) {
+                          ConcurrentHashMap<Date, SchoolDay> schoolDays,
+                          Date syncCutoff) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
         this.studentAssociator = studentAssociator;
         this.schoolDays = schoolDays;
+        this.syncCutoff = syncCutoff;
     }
 
     @Override
@@ -50,7 +53,7 @@ public class AttendanceSync implements ISync<Attendance> {
             Student s = studentIterator.next().getValue();
             if(s.getCurrentSchoolId().equals(school.getId())) {
                 AttendanceRunnable runnable = new AttendanceRunnable(
-                        edPanel, powerSchool, school, s, schoolDays, results);
+                        edPanel, powerSchool, school, s, schoolDays, results, syncCutoff);
                 executor.execute(runnable);
             }
         }

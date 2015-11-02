@@ -26,13 +26,16 @@ public class SchoolDaySync {
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
     protected School school;
+    protected Date syncCutoff;
 
     public SchoolDaySync(IAPIClient edPanel,
                       IPowerSchoolClient powerSchool,
-                      School s) {
+                      School s,
+                     Date syncCutoff) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
+        this.syncCutoff = syncCutoff;
     }
 
     public ConcurrentHashMap<Date, SchoolDay> syncCreateUpdateDelete(SyncResult results) {
@@ -100,8 +103,10 @@ public class SchoolDaySync {
         Iterator<Map.Entry<Date, SchoolDay>> edpanelIterator = ed.entrySet().iterator();
         while(edpanelIterator.hasNext()) {
             Map.Entry<Date, SchoolDay> entry = edpanelIterator.next();
-            if(!source.containsKey(entry.getKey())) {
+            if(!source.containsKey(entry.getKey()) && entry.getValue().getDate().compareTo(syncCutoff) > 0) {
                 try {
+                    //We only sync the last year's school days so we can't just delete from ed panel those
+                    //that are not in the source system because we want to keep history
                     edPanel.deleteSchoolDay(school.getId(), entry.getValue());
                 } catch (HttpClientException e) {
                     results.schoolDayDeleteFailed(

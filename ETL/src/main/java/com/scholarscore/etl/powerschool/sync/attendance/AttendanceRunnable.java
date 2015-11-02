@@ -36,19 +36,22 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
     protected ConcurrentHashMap<Date, SchoolDay> schoolDays;
     protected Student student;
     protected SyncResult results;
+    protected Date syncCutoff;
 
     public AttendanceRunnable(IAPIClient edPanel,
                           IPowerSchoolClient powerSchool,
                           School s,
                           Student student,
                           ConcurrentHashMap<Date, SchoolDay> schoolDays,
-                          SyncResult results) {
+                          SyncResult results,
+                          Date syncCutoff) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
         this.student = student;
         this.schoolDays = schoolDays;
         this.results = results;
+        this.syncCutoff = syncCutoff;
     }
     @Override
     public void run() {
@@ -83,6 +86,12 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                 results.attendanceCreated(Long.valueOf(sourceAttendance.getSourceSystemId()), -1L);
             } else {
                 sourceAttendance.setId(edPanelAttendance.getId());
+                if(edPanelAttendance.getStudent().getId().equals(sourceAttendance.getStudent().getId())) {
+                    sourceAttendance.setStudent(edPanelAttendance.getStudent());
+                }
+                if(edPanelAttendance.getSchoolDay().getId().equals(sourceAttendance.getSchoolDay().getId())) {
+                    sourceAttendance.setSchoolDay(edPanelAttendance.getSchoolDay());
+                }
                 if(!edPanelAttendance.equals(sourceAttendance)) {
                     try {
                         edPanel.updateAttendance(school.getId(), student.getId(), sourceAttendance);
@@ -107,7 +116,8 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         Iterator<Map.Entry<Long, Attendance>> edpanelIterator = ed.entrySet().iterator();
         while(edpanelIterator.hasNext()) {
             Map.Entry<Long, Attendance> entry = edpanelIterator.next();
-            if(!source.containsKey(entry.getKey())) {
+            if(!source.containsKey(entry.getKey()) &&
+                    entry.getValue().getSchoolDay().getDate().compareTo(syncCutoff) > 0) {
                 try {
                     edPanel.deleteAttendance(school.getId(), student.getId(), entry.getValue());
                 } catch (HttpClientException e) {
