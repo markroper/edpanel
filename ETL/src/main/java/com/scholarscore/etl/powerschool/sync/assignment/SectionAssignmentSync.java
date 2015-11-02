@@ -3,19 +3,18 @@ package com.scholarscore.etl.powerschool.sync.assignment;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ETLEngine;
+import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.SyncResult;
-import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignment;
-import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignment;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentFactory;
+import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreId;
-import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreIds;
-import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentType;
-import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentTypes;
+import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreIdWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentType;
-import com.scholarscore.etl.powerschool.api.response.SectionScoreIdsResponse;
+import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentTypeWrapper;
+import com.scholarscore.etl.powerschool.api.response.PsResponse;
+import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.powerschool.sync.MissingStudentMigrator;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.School;
@@ -169,10 +168,10 @@ public class SectionAssignmentSync implements ISync<Assignment> {
 
     protected ConcurrentHashMap<Long, Assignment> resolveAllFromSourceSystem(SyncResult results) throws HttpClientException {
         //first resolve the assignment categories, so we can construct the appropriate EdPanel assignment subclass
-        PGAssignmentTypes powerTypes =
+        PsResponse<PsAssignmentTypeWrapper> powerTypes =
                 powerSchool.getAssignmentTypesBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
         if(null != powerTypes && null != powerTypes.record) {
-            for (PGAssignmentType pat: powerTypes.record) {
+            for (PsResponseInner<PsAssignmentTypeWrapper> pat: powerTypes.record) {
                 if(null != pat.tables && null != pat.tables.pgcategories) {
                     typeIdToType.put(
                             Long.valueOf(pat.tables.pgcategories.getId()),
@@ -181,12 +180,13 @@ public class SectionAssignmentSync implements ISync<Assignment> {
             }
         }
         //Now iterate over all the assignments and construct the correct type of EdPanel assignment
-        PGAssignments powerAssignments = powerSchool.getAssignmentsBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
+        PsResponse<PsAssignmentWrapper> powerAssignments =
+                powerSchool.getAssignmentsBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
         //Get the association between student section score ID and student ID
-        SectionScoreIdsResponse ssids = powerSchool.getStudentScoreIdsBySectionId(
+        PsResponse<PsSectionScoreIdWrapper> ssids = powerSchool.getStudentScoreIdsBySectionId(
                 Long.valueOf(createdSection.getSourceSystemId()));
         if(null != ssids && null != ssids.record) {
-            for(PsSectionScoreIds ssid: ssids.record) {
+            for(PsResponseInner<PsSectionScoreIdWrapper> ssid: ssids.record) {
                 PsSectionScoreId i = ssid.tables.sectionscoresid;
                 Long ssidId = Long.valueOf(i.getDcid());
                 Student stud = studentAssociator.findBySourceSystemId(Long.valueOf(i.getStudentid()));
@@ -210,7 +210,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         //THREADING BU SECTION ASSIGNMENT -> STUDENT ASSIGNMENT
         ConcurrentHashMap<Long, Assignment> source = new ConcurrentHashMap<>();
         if(null != powerAssignments && null != powerAssignments.record) {
-            for (PGAssignment powerAssignment : powerAssignments.record) {
+            for (PsResponseInner<PsAssignmentWrapper> powerAssignment : powerAssignments.record) {
                 PsAssignment pa = powerAssignment.tables.pgassignments;
                 PsAssignmentType psType = typeIdToType.get(Long.valueOf(pa.getPgcategoriesid()));
                 Assignment edpanelAssignment = PsAssignmentFactory.fabricate(
