@@ -1,7 +1,9 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
+import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Course;
+import com.scholarscore.models.PrepScore;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
@@ -16,6 +18,8 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 @Test(groups = { "integration" })
 public class StudentControllerIntegrationTest extends IntegrationBase {
@@ -64,7 +68,41 @@ public class StudentControllerIntegrationTest extends IntegrationBase {
         //PATCH the existing record with a new name.
         studentValidatingExecutor.update(createdStudent.getId(), updatedStudent, msg);
     }
-    
+
+    @Test(dataProvider = "createStudentProvider")
+    public void studentPrepScoreTest(String msg, Student student) {
+        Student createdStudent = studentValidatingExecutor.create(student, msg);
+        
+        Behavior plusOneBehavior = new Behavior();
+        plusOneBehavior.setBehaviorDate(getNow());
+        plusOneBehavior.setPointValue("1");
+        plusOneBehavior.setStudent(createdStudent);
+        
+        Behavior plusTwoBehavior = new Behavior();
+        plusTwoBehavior.setBehaviorDate(getNow());
+        plusTwoBehavior.setPointValue("2");
+        plusTwoBehavior.setStudent(createdStudent);
+        
+        Behavior minusTenBehavior = new Behavior();
+        minusTenBehavior.setBehaviorDate(getNow());
+        minusTenBehavior.setPointValue("-10");
+        minusTenBehavior.setStudent(createdStudent);
+        
+        behaviorValidatingExecutor.create(createdStudent.getId(), plusOneBehavior, "creating plusOneBehavior");
+        behaviorValidatingExecutor.create(createdStudent.getId(), plusTwoBehavior, "creating plusTwoBehavior");
+        behaviorValidatingExecutor.create(createdStudent.getId(), minusTenBehavior, "creating minusTenBehavior");
+        
+        String expectedPrepScore = Integer.toString(PrepScore.INITIAL_PREP_SCORE +
+        Integer.parseInt(plusOneBehavior.getPointValue()) +
+        Integer.parseInt(plusTwoBehavior.getPointValue()) +
+        Integer.parseInt(minusTenBehavior.getPointValue()));
+        
+        Long[] studentIds = new Long[] { createdStudent.getId() };
+        String result = studentValidatingExecutor.getPrepScore(studentIds, null, null);
+        assertNotNull(result);
+        assertTrue(result.contains(expectedPrepScore));
+    }
+
     @Test
     public void getAllItems() {
         studentValidatingExecutor.getAll("Get all records created so far");
@@ -138,4 +176,5 @@ public class StudentControllerIntegrationTest extends IntegrationBase {
         Student created = studentValidatingExecutor.create(s, msg);
         studentValidatingExecutor.replaceNegative(created.getId(), student, expectedStatus, msg);
     }
+    
 }

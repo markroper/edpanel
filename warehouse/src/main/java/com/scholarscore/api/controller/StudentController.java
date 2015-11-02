@@ -204,13 +204,15 @@ public class StudentController extends BaseController {
     public @ResponseBody ResponseEntity getStudentPrepScore(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId, 
-            @ApiParam(name = "startDate", required = true, value = "Start Date")
-            @RequestParam(value="startDate") @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date startDate,
-            @ApiParam(name = "endDate", required = true, value = "End Date")
-            @RequestParam(value="endDate") @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date endDate
+            @ApiParam(name = "startDate", value = "Start Date")
+            @RequestParam(value="startDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date startDate,
+            @ApiParam(name = "endDate", value = "End Date")
+            @RequestParam(value="endDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date endDate
     ) {
         return respond(pm.getStudentManager().getStudentPrepScore(new Long[] { studentId }, startDate, endDate));
     }
+    
+    private String testThis() { return "this"; }
     
     @ApiOperation(
             value = "Get one or more of a student's prep scores",
@@ -224,10 +226,10 @@ public class StudentController extends BaseController {
     public @ResponseBody ResponseEntity getStudentPrepScores(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @RequestParam(value="studentId") Long[] studentIds,
-            @ApiParam(name = "startDate", required = true, value = "Start Date")
-            @RequestParam(value="startDate") @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date startDate,
-            @ApiParam(name = "endDate", required = true, value = "End Date")
-            @RequestParam(value="endDate") @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date endDate
+            @ApiParam(name = "startDate", value = "Start Date")
+            @RequestParam(value="startDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date startDate,
+            @ApiParam(name = "endDate", value = "End Date")
+            @RequestParam(value="endDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date endDate
     ) {
         return respond(pm.getStudentManager().getStudentPrepScore(studentIds, startDate, endDate));
     }

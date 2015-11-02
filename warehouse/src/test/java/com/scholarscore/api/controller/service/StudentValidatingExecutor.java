@@ -12,6 +12,9 @@ import org.testng.Assert;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StudentValidatingExecutor {
     private final IntegrationBase serviceBase;
@@ -135,6 +138,34 @@ public class StudentValidatingExecutor {
         MockHttpServletResponse resp = response.andReturn().getResponse();
         Assert.assertEquals(resp.getStatus(), HttpStatus.OK.value(),
                 "Unexpected Http status code returned when fetching GPA");
+        try {
+            return resp.getContentAsString();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public String getPrepScore(Long[] studentIds, String startDate, String endDate) { 
+        Map<String, String> params = new HashMap<>();
+        
+        StringBuilder studentIdBuilder = new StringBuilder();
+        boolean first = true;
+        for (Long studentId : studentIds) {
+            if (!first) { studentIdBuilder.append(", "); }
+            else { first = false; } 
+            studentIdBuilder.append(studentId);
+        }
+        
+        if (studentIds != null) { params.put("studentId", studentIdBuilder.toString()); }
+        if (startDate != null) { params.put("startDate", startDate); }
+        if (endDate != null) { params.put("endDate", endDate); }
+        ResultActions response = serviceBase.makeRequest(HttpMethod.GET,
+                serviceBase.getStudentEndpoint() + "/prepscores", params, null);
+
+        MockHttpServletResponse resp = response.andReturn().getResponse();
+        Assert.assertEquals(resp.getStatus(), HttpStatus.OK.value(),
+                "Unexpected Http status code returned when fetching PrepScore");
         try {
             return resp.getContentAsString();
         } catch (UnsupportedEncodingException e) {
