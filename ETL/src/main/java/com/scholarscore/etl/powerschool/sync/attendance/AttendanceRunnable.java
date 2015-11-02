@@ -137,7 +137,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
             a.setSchoolDay(schoolDays.get(psAttendance.att_date));
             a.setStudent(student);
             a.setStatus(codeMap.get(psAttendance.attendance_codeid));
-            //TODO: currently EdPanel only tracks attendance at the DAY not period level.
+            //TODO: currently EdPanel only tracks attendance at the DAY not period level...
             if(null == psAttendance.periodid || psAttendance.periodid.equals(0L)) {
                 result.put(psAttendance.dcid, a);
             }
