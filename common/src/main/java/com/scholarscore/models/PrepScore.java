@@ -11,6 +11,7 @@ public class PrepScore {
 
     // this hardcoding is for the beta. future versions will allow this value to vary and eventually
     // customize the formula entirely.
+    //TODO: v2 expand/modify this implementation accordingly
     public static final int INITIAL_PREP_SCORE = 90;
 
     private Date startDate;
