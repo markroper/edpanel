@@ -103,7 +103,8 @@ public class SchoolDaySync {
         Iterator<Map.Entry<Date, SchoolDay>> edpanelIterator = ed.entrySet().iterator();
         while(edpanelIterator.hasNext()) {
             Map.Entry<Date, SchoolDay> entry = edpanelIterator.next();
-            if(!source.containsKey(entry.getKey()) && entry.getValue().getDate().compareTo(syncCutoff) > 0) {
+            if(!source.containsKey(entry.getKey())
+                    && entry.getValue().getDate().compareTo(syncCutoff) > 0) {
                 try {
                     //We only sync the last year's school days so we can't just delete from ed panel those
                     //that are not in the source system because we want to keep history

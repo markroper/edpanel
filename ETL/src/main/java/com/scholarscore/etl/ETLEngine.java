@@ -180,7 +180,9 @@ public class ETLEngine implements IETLEngine {
         executor.shutdown();
         //Spin while we wait for all the threads to complete
         try {
-            executor.awaitTermination(TOTAL_TTL_MINUTES, TimeUnit.MINUTES);
+            if (!executor.awaitTermination(TOTAL_TTL_MINUTES, TimeUnit.MINUTES)) { //optional *
+                executor.shutdownNow(); //optional **/optional **
+            }
         } catch(InterruptedException e) {
             System.out.println("Executor thread pool interrupted " + e.getMessage());
         }
@@ -236,6 +238,7 @@ public class ETLEngine implements IETLEngine {
      * @param results
      */
     private static void outputResults(SyncResult results) {
+        System.out.println("--");
         System.out.println("Created Schools: " + results.getSchools().getCreated().size());
         System.out.println("Failed school creations: " + results.getSchools().getFailedCreates().size());
         System.out.println("Failed school source gets: " + results.getSchools().getSourceGetFailed().size());

@@ -180,7 +180,7 @@ public class Attendance implements Serializable {
             attendance.setStudent(student);
             attendance.setStatus(status);
             attendance.setDescription(description);
-            attendance.setDescription(sourceSystemId);
+            attendance.setSourceSystemId(sourceSystemId);
             return attendance;
         }
     }

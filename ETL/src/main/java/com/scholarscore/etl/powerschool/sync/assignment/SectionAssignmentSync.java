@@ -159,7 +159,9 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         }
         //Spin while we wait for all the threads to complete
         try {
-            executor.awaitTermination(ETLEngine.TOTAL_TTL_MINUTES, TimeUnit.MINUTES);
+            if (!executor.awaitTermination(ETLEngine.TOTAL_TTL_MINUTES, TimeUnit.MINUTES)) {
+                executor.shutdownNow();
+            }
         } catch(InterruptedException e) {
             System.out.println("Executor thread pool interrupted " + e.getMessage());
         }
