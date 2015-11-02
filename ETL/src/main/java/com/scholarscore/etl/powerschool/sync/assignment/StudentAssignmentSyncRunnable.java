@@ -93,11 +93,6 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
             StudentAssignment edPanelStudentAssignment = ed.get(entry.getKey());
             if(null == edPanelStudentAssignment){
                 studentAssignmentsToCreate.add(sourceStudentAssignment);
-                results.studentAssignmentCreated(
-                        Long.valueOf(createdSection.getSourceSystemId()),
-                        Long.valueOf(this.assignment.getSourceSystemId()),
-                        entry.getKey(),
-                        -1L);
             } else {
                 sourceStudentAssignment.setId(edPanelStudentAssignment.getId());
                 sourceStudentAssignment.setStudent(edPanelStudentAssignment.getStudent());
@@ -134,13 +129,23 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
         }
         //Perform the bulk creates!
         try {
-            edPanel.createStudentAssignments(
+            List<Long> ids = edPanel.createStudentAssignments(
                     school.getId(),
                     createdSection.getTerm().getSchoolYear().getId(),
                     createdSection.getTerm().getId(),
                     createdSection.getId(),
                     assignment.getId(),
                     studentAssignmentsToCreate);
+
+            int i = 0;
+            for(StudentAssignment s: studentAssignmentsToCreate) {
+                results.studentAssignmentCreated(
+                        Long.valueOf(createdSection.getSourceSystemId()),
+                        Long.valueOf(this.assignment.getSourceSystemId()),
+                        Long.valueOf(s.getStudent().getSourceSystemId()),
+                        ids.get(i));
+                i++;
+            }
         } catch (HttpClientException e) {
             for(StudentAssignment s: studentAssignmentsToCreate) {
                 // NOTE - we couldn't create the student assignments for any of the assignment,

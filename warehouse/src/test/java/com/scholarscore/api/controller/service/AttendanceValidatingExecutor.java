@@ -70,6 +70,16 @@ public class AttendanceValidatingExecutor {
         Assert.assertNotNull(dayId, "unexpected null day ID returned from create call for case: " + msg);
         return retrieveAndValidateCreatedAttendance(schoolId, studentId, attendance, dayId, HttpMethod.POST, msg);
     }
+
+    public void createAll(Long schoolId, Long studentId, List<Attendance> attendance, String msg) {
+        ResultActions response = serviceBase.makeRequest(
+                HttpMethod.POST,
+                serviceBase.getAttendanceEndpoint(schoolId, studentId) + "/bulk",
+                null,
+                attendance);
+        EntityId dayId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
+        Assert.assertNull(dayId, "unexpected null day ID returned from create call for case: " + msg);
+    }
     
     public void createNegative(Long schoolId, Long studentId, Attendance attendance, HttpStatus expectedCode, String msg) {
         ResultActions response = serviceBase.makeRequest(

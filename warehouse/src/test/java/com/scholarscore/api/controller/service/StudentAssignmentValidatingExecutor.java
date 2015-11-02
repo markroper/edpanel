@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.testng.Assert;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class StudentAssignmentValidatingExecutor {
     private final IntegrationBase serviceBase;
@@ -58,6 +59,20 @@ public class StudentAssignmentValidatingExecutor {
         EntityId studentAssignmentId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
         Assert.assertNotNull(studentAssignmentId, "unexpected null section assignment returned from create call for case: " + msg);
         return retrieveAndValidateCreatedStudentAssignment(schoolId, schoolYearId, termId, sectionId, sectionAssignmentId, studentAssignmentId, studentAssignment, HttpMethod.POST, msg);
+    }
+
+    public List<Long> createAll(Long schoolId, Long schoolYearId, Long termId, Long sectionId,
+                                    Long sectionAssignmentId, List<StudentAssignment> studentAssignments, String msg) {
+        //Create the term
+        ResultActions response = serviceBase.makeRequest(
+                HttpMethod.POST,
+                serviceBase.getStudentAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId, sectionAssignmentId) + "/bulk",
+                null,
+                studentAssignments);
+        List<Long> studentAssignmentId = serviceBase.validateResponse(response, new TypeReference<List<Long>>(){});
+        Assert.assertNotNull(studentAssignmentId, "unexpected non-null response returned from create call for case: " + msg);
+        Assert.assertEquals(studentAssignments.size(), studentAssignmentId.size(), "Num created dufferent than num submitted");
+        return studentAssignmentId;
     }
     
     public void createNegative(Long schoolId, Long schoolYearId, Long termId, Long sectionId, Long sectionAssignmentId,

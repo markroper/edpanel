@@ -637,13 +637,13 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public void createStudentAssignments(Long schoolId,
+    public List<Long> createStudentAssignments(Long schoolId,
                                          Long yearId,
                                          Long termId,
                                          Long sectionId,
                                          Long assignmentId,
                                          List<StudentAssignment> studentAssignments) throws HttpClientException {
-        createVoidResponse(studentAssignments,
+        return createListResponse(studentAssignments,
                 SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT + "/" + yearId +
                 TERM_ENDPOINT + "/" + termId + SECTION_ENDPOINT + "/" + sectionId +
                 SECTION_ASSIGNMENT_ENDPOINT + "/" + assignmentId + STUDENT_ASSIGNMENT_ENDPOINT + "/bulk");

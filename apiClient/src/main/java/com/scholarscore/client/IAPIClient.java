@@ -158,7 +158,7 @@ public interface IAPIClient {
     ) throws HttpClientException;
 
     //STUDENT ASSIGNMENTS
-    void createStudentAssignments(
+    List<Long> createStudentAssignments(
             Long schoolId,
             Long yearId,
             Long termId,
