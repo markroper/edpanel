@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Transactional
 public class StudentJdbc implements StudentPersistence {
-    
+
     @Autowired
     private HibernateTemplate hibernateTemplate;
 
@@ -74,7 +74,7 @@ public class StudentJdbc implements StudentPersistence {
         }
         return null;
     }
-    
+
     @Override
     @SuppressWarnings("unchecked")
     public Student selectBySsid(Long ssid) {
