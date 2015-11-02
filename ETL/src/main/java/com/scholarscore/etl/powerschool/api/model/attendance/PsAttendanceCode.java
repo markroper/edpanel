@@ -39,6 +39,7 @@ public class PsAttendanceCode implements IToApiModel<AttendanceStatus> {
             desc = description.toUpperCase();
         }
 
+        //TODO: this is dynamically defined by each powerschool customer. we need to externalize these strings to support new clients
         switch(attCodeUpper) {
             case "":
                 return AttendanceStatus.PRESENT;

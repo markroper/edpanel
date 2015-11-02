@@ -140,7 +140,7 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
             this.sourceSystemId = mergeFrom.sourceSystemId;
         }
         if (null == sourceSystemOtherId) {
-            this.sourceSystemId = mergeFrom.sourceSystemId;
+            this.sourceSystemOtherId = mergeFrom.sourceSystemOtherId;
         }
     }
 
