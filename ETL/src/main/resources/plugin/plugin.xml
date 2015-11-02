@@ -13,6 +13,15 @@
 	</publisher>
 
 	<access_request>
+		<field table="Calendar_Day" field="DCID" access="ViewOnly" />
+		<field table="Calendar_Day" field="Date_Value" access="ViewOnly" />
+		<field table="Calendar_Day" field="InSession" access="ViewOnly" />
+		<field table="Calendar_Day" field="Note" access="ViewOnly" />
+		<field table="Calendar_Day" field="MembershipValue" access="ViewOnly" />
+		<field table="Calendar_Day" field="ScheduleId" access="ViewOnly" />
+		<field table="Calendar_Day" field="SchoolId" access="ViewOnly" />
+		<field table="Calendar_Day" field="Type" access="ViewOnly" />
+		<field table="Calendar_Day" field="ID" access="ViewOnly" />
 		<field table="Attendance_Code" field="DCID" access="ViewOnly" />
 		<field table="Attendance_Code" field="Alternate_Code" access="ViewOnly" />
 		<field table="Attendance_Code" field="Assignment_Filter_YN" access="ViewOnly" />

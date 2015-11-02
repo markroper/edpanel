@@ -71,13 +71,13 @@ public interface StudentAssignmentManager {
      * @param termId the ID of the term
      * @param sectionId the ID of the section
      * @param sectionAssignmentId the ID of the section assignment
-     * @param studentAssigment the student assignment to create on the section
+     * @param studentAssignment the student assignment to create on the section
      * @return
      */
     public ServiceResponse<Long> createStudentAssignment(long schoolId, long yearId, long termId, 
             long sectionId, long sectionAssignmentId, StudentAssignment studentAssignment);
 
-    public ServiceResponse<Void> createBulkStudentAssignment(long schoolId, long yrId, long tId, long sId,
+    public ServiceResponse<List<Long>> createBulkStudentAssignment(long schoolId, long yrId, long tId, long sId,
                                                              long assignId, List<StudentAssignment> studentAssignments);
     /**
      * Replaces an existing instance with the ID provided with the section assignment instance

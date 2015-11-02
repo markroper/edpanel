@@ -33,7 +33,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by markroper on 10/25/15.
  */
 public class SectionSyncRunnable implements Runnable, ISync<Section> {
-    private static final int THREAD_POOL_SIZE = 10;
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
     private School school;

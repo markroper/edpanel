@@ -13,6 +13,7 @@ CREATE TABLE `scholar_warehouse`.`address` (
 CREATE TABLE `scholar_warehouse`.`school` (
   `school_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key column for the school table.',
   `school_name` VARCHAR(256) NULL COMMENT 'A human readable user-defined name',
+  `school_number` BIGINT UNSIGNED NULL COMMENT 'The school number within the district',
   `school_address_fk` BIGINT UNSIGNED COMMENT 'The FK pointer back to the address of the school',
   `main_phone` VARCHAR(256) NULL COMMENT 'The school\'s main phone number',
   `principal_name` VARCHAR(256) NULL COMMENT 'The principal\'s name',
@@ -334,6 +335,8 @@ CREATE TABLE `scholar_warehouse`.`school_day` (
     `school_day_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'System generated ID',
     `school_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The school foreign key',
     `school_day_date` DATETIME NULL COMMENT 'The date of the school day',
+    `school_day_source_system_id` VARCHAR(256) NULL UNIQUE,
+    `school_day_source_system_other_id` BIGINT UNSIGNED NULL,
     PRIMARY KEY (`school_day_id`),
     FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
         ON DELETE CASCADE
@@ -347,6 +350,7 @@ CREATE TABLE `scholar_warehouse`.`attendance` (
     `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the student table',
     `attendance_status` VARCHAR(64) NOT NULL COMMENT 'Maps to POJO enum values PRESENT, EXCUSED_ABSENT, ABSENT, TARDY',
     `attendance_description` VARCHAR(256) NULL COMMENT 'Description of the attendance status, if any',
+    `attendance_source_system_id` VARCHAR(256) NULL,
     PRIMARY KEY (`attendance_id`),
     FOREIGN KEY (`school_day_fk`) REFERENCES `scholar_warehouse`.`school_day` (`school_day_id`)
         ON DELETE CASCADE

@@ -93,13 +93,12 @@ public class StudentAssignmentManagerImpl implements  StudentAssignmentManager {
     }
 
     @Override
-    public ServiceResponse<Void> createBulkStudentAssignment(long schoolId, long yrId, long tId, long sId, long assignId, List<StudentAssignment> studentAssignments) {
+    public ServiceResponse<List<Long>> createBulkStudentAssignment(long schoolId, long yrId, long tId, long sId, long assignId, List<StudentAssignment> studentAssignments) {
         StatusCode code = pm.getAssignmentManager().assignmentExists(schoolId, yrId, tId, sId, assignId);
         if(!code.isOK()) {
-            return new ServiceResponse<Void>(code);
+            return new ServiceResponse<List<Long>>(code);
         }
-        studentAssignmentPersistence.insertAll(assignId, studentAssignments);
-        return new ServiceResponse<Void>( (Void)null );
+        return new ServiceResponse<List<Long>>(studentAssignmentPersistence.insertAll(assignId, studentAssignments));
     }
 
     @Override

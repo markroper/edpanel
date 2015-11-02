@@ -35,6 +35,7 @@ public class SchoolBuilderUnitTest extends AbstractBuilderUnitTest<School>{
         fullSchool.setSourceSystemId(sourceSystemId);
         fullSchool.setPrincipalEmail(principalEmail);
         fullSchool.setPrincipalName(principalName);
+        fullSchool.setNumber(id);
 
         School fullSchoolBuilder = new School.SchoolBuilder()
                 .withAddress(address)
@@ -44,6 +45,7 @@ public class SchoolBuilderUnitTest extends AbstractBuilderUnitTest<School>{
                 .withPrincipalName(principalName)
                 .withName(name)
                 .withId(id)
+                .withNumber(id)
                 .build();
 
         return new Object[][]{

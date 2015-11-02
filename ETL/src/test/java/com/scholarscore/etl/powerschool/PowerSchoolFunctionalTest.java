@@ -10,7 +10,6 @@ import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.client.PowerSchoolClient;
 import com.scholarscore.models.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -80,11 +79,6 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
         assertNotNull(response);
         assertNotNull(response.district);
         assertNotNull(response.district.uuid);
-    }
-
-    public void testGetAsMap() throws HttpClientException {
-        Object response = client.getAsMap(PowerSchoolClient.PATH_RESOURCE_DISTRICT);
-        Assert.assertNotNull(response);
     }
 
     public void testGetAllStudentsBySchoolId() throws HttpClientException {
