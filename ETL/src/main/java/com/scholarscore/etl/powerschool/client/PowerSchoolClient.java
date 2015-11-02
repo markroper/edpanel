@@ -32,13 +32,16 @@ import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
 import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by mattg on 7/2/15.
  */
 public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSchoolClient {
     private static final Integer PAGE_SIZE = 1000;
-    private static final String ATTENDANCE_START_DATE = "2015-08-01";
+    private static String ATTENDANCE_START_DATE = "2015-08-01";
     private static final String PAGE_SIZE_PARAM = "pagesize=" + PAGE_SIZE;
     private static final String PAGE_NUM_PARAM = "page={0}";
     private static final String BASE = "/ws/v1";
@@ -57,7 +60,6 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
             BASE +
             "/student/{0}?expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup";
     //Attendance related
-    //TODO: looks back only to 2015-08-01 - MAKE THIS DYNAMIC
     public static final String PATH_RESOUCE_CALENDAR_DAY =
             SCHEMA_BASE +
             "/calendar_day?" +
@@ -119,6 +121,12 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         authenticate();
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, -1); // to get previous year add -1
+        Date lastYear = cal.getTime();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        ATTENDANCE_START_DATE = format.format(lastYear);
     }
 
     public void authenticate() {

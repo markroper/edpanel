@@ -47,9 +47,12 @@ public class AttendanceSync implements ISync<Attendance> {
         Iterator<Map.Entry<Long, Student>> studentIterator = studentAssociator.getStudents().entrySet().iterator();
         ExecutorService executor = Executors.newFixedThreadPool(ETLEngine.THREAD_POOL_SIZE);
         while(studentIterator.hasNext()) {
-            AttendanceRunnable runnable = new AttendanceRunnable(
-                    edPanel, powerSchool, school, studentIterator.next().getValue(), schoolDays, results);
-            executor.execute(runnable);
+            Student s = studentIterator.next().getValue();
+            if(s.getCurrentSchoolId().equals(school.getId())) {
+                AttendanceRunnable runnable = new AttendanceRunnable(
+                        edPanel, powerSchool, school, s, schoolDays, results);
+                executor.execute(runnable);
+            }
         }
         executor.shutdown();
         //Spin while we wait for all the threads to complete
