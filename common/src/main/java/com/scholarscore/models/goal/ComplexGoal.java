@@ -18,7 +18,6 @@ import java.util.Objects;
  */
 
 @Entity
-@Table(name = HibernateConsts.GOAL_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @DiscriminatorValue(value = "COMPLEX")
