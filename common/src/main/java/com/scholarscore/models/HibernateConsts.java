@@ -57,6 +57,11 @@ public class HibernateConsts {
     public static final String STUDENT_FK = "student_fk";
     public static final String TEACHER_FK = "teacher_fk";
     
+    // these aren't defined columns in the DB, but are used by the SQL statements
+    // as labels for addressing the calculated columns used by prepScore
+    public static final String START_DATE = "start_date";
+    public static final String END_DATE = "end_date";
+    
     //Course constants
     public static final String COURSE_TABLE = "course";
     public static final String COURSE_NUMBER = "course_number";

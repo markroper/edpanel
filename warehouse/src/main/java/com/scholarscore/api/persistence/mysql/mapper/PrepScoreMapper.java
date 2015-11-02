@@ -21,8 +21,9 @@ public class PrepScoreMapper implements RowMapper<PrepScore> {
     public PrepScore mapRow(ResultSet rs, int rowNum) throws SQLException {
         PrepScore prepScore = new PrepScore();
         prepScore.setScore(rs.getLong(HibernateConsts.BEHAVIOR_POINT_VALUE));
-        prepScore.setStartDate(rs.getDate(HibernateConsts.BEHAVIOR_DATE));
-        // TODO Jordan: need endDate, and student_fk perhaps?
+        prepScore.setStudentId(rs.getLong(HibernateConsts.STUDENT_FK));
+        prepScore.setStartDate(rs.getDate("start_date"));
+        prepScore.setEndDate(rs.getDate("end_date"));
         return prepScore;
     }
 }
