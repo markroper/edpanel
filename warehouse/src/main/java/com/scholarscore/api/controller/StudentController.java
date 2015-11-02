@@ -4,9 +4,11 @@ import com.scholarscore.api.ApiConsts;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.WeightedGradable;
 import com.scholarscore.models.user.Student;
+import com.scholarscore.util.EdPanelDateUtil;
 import com.scholarscore.util.GradeUtil;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -187,6 +190,48 @@ public class StudentController extends BaseController {
             @ApiParam(name = "sId", required = true, value = "Section ID")
             @PathVariable(value="sId") Long sId) {
         return respond(pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, schoolId, yrId, tId, sId));
+    }
+
+    @ApiOperation(
+            value = "Get one student's prep scores",
+            notes = "Prep score is a measure of a student's weekly performance. It is initially 90 and is adjusted by all positive and negative behavioral events.",
+            response = List.class)
+    @RequestMapping(
+            value = "/{studentId}/prepscores",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getStudentPrepScore(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId, 
+            @ApiParam(name = "startDate", value = "Start Date")
+            @RequestParam(value="startDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date startDate,
+            @ApiParam(name = "endDate", value = "End Date")
+            @RequestParam(value="endDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date endDate
+    ) {
+        return respond(pm.getStudentManager().getStudentPrepScore(new Long[] { studentId }, startDate, endDate));
+    }
+    
+    private String testThis() { return "this"; }
+    
+    @ApiOperation(
+            value = "Get one or more of a student's prep scores",
+            notes = "Prep score is a measure of a student's weekly performance. It is initially 90 and is adjusted by all positive and negative behavioral events.",
+            response = List.class)
+    @RequestMapping(
+            value = "/prepscores",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getStudentPrepScores(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @RequestParam(value="studentId") Long[] studentIds,
+            @ApiParam(name = "startDate", value = "Start Date")
+            @RequestParam(value="startDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date startDate,
+            @ApiParam(name = "endDate", value = "End Date")
+            @RequestParam(value="endDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date endDate
+    ) {
+        return respond(pm.getStudentManager().getStudentPrepScore(studentIds, startDate, endDate));
     }
 
 }

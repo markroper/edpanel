@@ -23,8 +23,7 @@ public class StudentJdbc implements StudentPersistence {
 
     private AuthorityPersistence authorityPersistence;
     
-    public StudentJdbc() {
-    }
+    public StudentJdbc() { }
 
     public StudentJdbc(HibernateTemplate template) {
         this.hibernateTemplate = template;
@@ -64,8 +63,7 @@ public class StudentJdbc implements StudentPersistence {
     public Student select(long studentId) {
         return hibernateTemplate.get(Student.class, studentId);
     }
-
-
+    
     @Override
     @SuppressWarnings("unchecked")
     public Student select(String username) {

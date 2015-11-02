@@ -64,7 +64,7 @@
         <property name="assignmentGoalCalc" ref="assignmentCalc"/>
         <property name="behaviorGoalCalc" ref="behaviorCalc"/>
         <property name="cumulativeGoalCalc" ref="cumulativeGradeCalc"/>
-        <property name="attendanceGoalCalc" ref="attendenceGoalCalc"/>
+        <property name="attendanceGoalCalc" ref="attendanceGoalCalc"/>
         <property name="complexGoalCalc" ref="complexGoalCalc"/>
     </bean>
 
@@ -156,14 +156,14 @@
         <property name="studentSectionGradePersistence" ref="studentSectionGradePersistence"/>
     </bean>
 
-    <bean id="attendenceGoalCalc"
+    <bean id="attendanceGoalCalc"
           class="com.scholarscore.api.persistence.goalCalculators.AttendanceGoalCalc">
         <property name="studentAssignmentPersistence" ref="studentAssignmentPersistence"/>
     </bean>
 
     <bean id="complexGoalCalc"
           class="com.scholarscore.api.persistence.goalCalculators.ComplexGoalCalc">
-        <property name="attendanceGoalCalc" ref="attendenceGoalCalc"/>
+        <property name="attendanceGoalCalc" ref="attendanceGoalCalc"/>
         <property name="cumulativeGoalCalc" ref="cumulativeGradeCalc"/>
         <property name="assignmentGoalCalc" ref="assignmentCalc"/>
         <property name="behaviorGoalCalc" ref="behaviorCalc"/>
@@ -192,4 +192,10 @@
          class="com.scholarscore.api.persistence.mysql.jdbc.AuthorityJdbc">
       <property name="dataSource" ref="dataSource"/>
    </bean>
+    
+    <bean id="studentPrepScorePersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.StudentPrepScoreJdbc">
+        <property name="dataSource" ref="dataSource"/>        
+    </bean>
+    
 </beans>
