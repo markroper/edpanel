@@ -18,7 +18,6 @@ import java.util.Objects;
  * Created by cwallace on 9/21/2015.
  */
 @Entity
-@Table(name = HibernateConsts.GOAL_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @DiscriminatorValue(value = "ATTENDANCE")

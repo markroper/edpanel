@@ -20,7 +20,6 @@ import java.util.Objects;
  * Created by cwallace on 9/20/2015.
  */
 @javax.persistence.Entity
-@Table(name = HibernateConsts.GOAL_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @DiscriminatorValue(value = "BEHAVIOR")
