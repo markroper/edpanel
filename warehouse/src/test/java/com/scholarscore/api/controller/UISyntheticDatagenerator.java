@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -103,10 +104,13 @@ public class UISyntheticDatagenerator extends IntegrationBase {
         //School years
         List<SchoolYear> generatedSchoolYears = new ArrayList<SchoolYear>();
         for(SchoolYear year: SchoolDataFactory.generateSchoolYears()) {
+            year.setSchool(school);
             generatedSchoolYears.add(
                     schoolYearValidatingExecutor.create(school.getId(), year, year.getName()));
         }
-        
+
+        List<SchoolDay> daysToCreate = new ArrayList<>();
+        List<Attendance> attendanceToCreate = new ArrayList<>();
         for(SchoolYear y : generatedSchoolYears) {
             Date currentDate = y.getStartDate();
             Calendar c = Calendar.getInstance();
@@ -120,25 +124,45 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                     SchoolDay day = new SchoolDay();
                     day.setSchool(school);
                     day.setDate(currentDate);
-                    day = schoolDayValidatingExecutor.create(school.getId(), day, "Creating a school date for synthetic data generator");
-                    for(Student s : generatedStudents) {
-                        int val = new Random().nextInt(100);
-                        AttendanceStatus status = AttendanceStatus.PRESENT;
-                        //one in ten times, choose a random attendance status
-                        if(val != 0 && val % 10 == 0) {
-                            status = AttendanceStatus.values()[new Random().nextInt(AttendanceStatus.values().length - 1)];
-                        }
-                        Attendance a = new Attendance();
-                        a.setSchoolDay(day);
-                        a.setStudent(s);
-                        a.setStatus(status);
-                        attendanceValidatingExecutor.create(school.getId(), s.getId(), a, "creating attendance");
-                    }
+                    daysToCreate.add(day);
                 }
                 //Increment the date
                 c.add(Calendar.DATE, 1);
                 currentDate = c.getTime();
             }
+        }
+        Map<Long, List<Attendance>> studentIdToAttendance = new HashMap<>();
+        List<Long> createdDayIds = schoolDayValidatingExecutor.createAll(
+                school.getId(), daysToCreate, "creating days");
+        int i = 0;
+        for(SchoolDay day : daysToCreate) {
+            day.setId(createdDayIds.get(i));
+            i++;
+            for(Student s : generatedStudents) {
+                int val = new Random().nextInt(100);
+                AttendanceStatus status = AttendanceStatus.PRESENT;
+                //one in ten times, choose a random attendance status
+                if(val != 0 && val % 10 == 0) {
+                    status = AttendanceStatus.values()[new Random().nextInt(AttendanceStatus.values().length - 1)];
+                }
+                Attendance a = new Attendance();
+                a.setSchoolDay(day);
+                a.setStudent(s);
+                a.setStatus(status);
+                if(!studentIdToAttendance.containsKey(s.getId())) {
+                    studentIdToAttendance.put(s.getId(), new ArrayList<>());
+                }
+                studentIdToAttendance.get(s.getId()).add(a);
+            }
+        }
+        Iterator<Map.Entry<Long, List<Attendance>>> it = studentIdToAttendance.entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry<Long, List<Attendance>> entry = it.next();
+            attendanceValidatingExecutor.createAll(
+                    school.getId(),
+                    entry.getKey(),
+                    entry.getValue(),
+                    "creating attendances for a student");
         }
         
         //Create courses
@@ -230,28 +254,30 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                             SchoolDataFactory.generateStudentAssignments(createdAssignments, generatedStudents);
                     for(Map.Entry<Long, List<StudentAssignment>> studentAssignmentEntry : studentAssignments.entrySet()) {
                         List<StudentAssignment> createdStudentAssignments = new ArrayList<StudentAssignment>();
+
+                        List<Long> studAssIds = studentAssignmentValidatingExecutor.createAll(
+                                school.getId(),
+                                termEntry.getKey(),
+                                sectionEntry.getKey(),
+                                assignmentEntry.getKey(),
+                                studentAssignmentEntry.getKey(),
+                                studentAssignmentEntry.getValue(),
+                                "Bulk student assignment create");
+
+                        int studAssIdIndex = 0;
                         for(StudentAssignment sa : studentAssignmentEntry.getValue()) {
-
-                            StudentAssignment createdAssignment = studentAssignmentValidatingExecutor.create(
-                                    school.getId(),
-                                    termEntry.getKey(),
-                                    sectionEntry.getKey(),
-                                    assignmentEntry.getKey(),
-                                    sa.getAssignment().getId(),
-                                    sa,
-                                    sa.getName());
-                            createdStudentAssignments.add(createdAssignment);
-
-
+                            sa.setId(studAssIds.get(studAssIdIndex));
+                            createdStudentAssignments.add(sa);
                             //Needed for giving goals
                             if (null == studentToAssignmentId.get(sa.getStudent().getId())) {
                                 List<Long> assignmentIds = new ArrayList<Long>();
-                                assignmentIds.add(createdAssignment.getId());
+                                assignmentIds.add(sa.getId());
                                 studentToAssignmentId.put(sa.getStudent().getId(),assignmentIds);
                             } else {
-                                studentToAssignmentId.get(sa.getStudent().getId()).add(createdAssignment.getId());
+                                studentToAssignmentId.get(sa.getStudent().getId()).add(sa.getId());
                             }
                         }
+
                     }
                 }
             }
