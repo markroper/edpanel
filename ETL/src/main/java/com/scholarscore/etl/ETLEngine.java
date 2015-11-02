@@ -2,7 +2,9 @@ package com.scholarscore.etl;
 
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
+import com.scholarscore.etl.powerschool.sync.attendance.AttendanceSync;
 import com.scholarscore.etl.powerschool.sync.CourseSync;
+import com.scholarscore.etl.powerschool.sync.attendance.SchoolDaySync;
 import com.scholarscore.etl.powerschool.sync.SchoolSync;
 import com.scholarscore.etl.powerschool.sync.TermSync;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
@@ -14,14 +16,15 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.attendance.SchoolDay;
 
-import java.util.List;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * This is the E2E flow for PowerSchool import to edPanel export - we have references to both clients and
@@ -36,15 +39,18 @@ import java.util.stream.Collectors;
  */
 public class ETLEngine implements IETLEngine {
     public static final Long TOTAL_TTL_MINUTES = 120L;
-    public static final int THREAD_POOL_SIZE = 5;
+    public static final int THREAD_POOL_SIZE = 8;
+    //After a certain point in the past, we no longer want to sync expensive and large tables, like attendance
+    //This date defines that cutoff point before which we will cease to sync updates.
+    private Date syncCutoff;
     private SyncResult results = new SyncResult();
-
-
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
-    private List<School> schools;
+    //The school_number attribute to school instance
+    private ConcurrentHashMap<Long, School> schools;
     //Collections are by sourceSystemSchoolId and if there are nested maps, 
     //the keys are always sourceSystemIds of sub-entities
+    private ConcurrentHashMap<Long, ConcurrentHashMap<Date, SchoolDay>> schoolDays;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Term>> terms;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Section>> sections;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Course>> courses = new ConcurrentHashMap<>();
@@ -72,36 +78,53 @@ public class ETLEngine implements IETLEngine {
 
     @Override
     public SyncResult syncDistrict() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, -1); // to get previous year add -1
+        this.syncCutoff = cal.getTime();
+        this.powerSchool.setSyncCutoff(this.syncCutoff);
+
         long startTime = System.currentTimeMillis();
         createSchools();
         long endTime = System.currentTimeMillis();
         long schoolCreationTime = (endTime - startTime)/1000;
+        System.out.println("School sync complete");
 
         migrateSchoolYearsAndTerms();
         long yearsAndTermsComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
+        System.out.println("Term and year sync complete");
 
         createStaff();
         long staffCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
+        System.out.println("Staff sync complete");
 
         createStudents();
         long studentCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
+        System.out.println("Student sync complete");
+
+        syncSchoolDaysAndAttendance();
+        long schoolDayCreationComplete = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+        System.out.println("School day & Attendance sync complete");
 
         createCourses();
         long courseCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
+        System.out.println("Course sync complete");
 
         migrateSections();
         long sectionCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
+        System.out.println("Section sync complete");
 
         System.out.println("Total runtime: " + (endTime - startTime)/1000 +
                 " seconds, \nschools: " + schoolCreationTime +
                 " seconds, \nYears + Terms: " + yearsAndTermsComplete +
                 " seconds, \nstaff: " + staffCreationComplete +
                 " seconds, \nstudents: " + studentCreationComplete +
+                " seconds, \ndays & attendance: " + schoolDayCreationComplete +
                 " seconds, \ncourses: " + courseCreationComplete +
                 " seconds, \nsections: " + sectionCreationComplete +
                 " seconds");
@@ -109,11 +132,113 @@ public class ETLEngine implements IETLEngine {
         return results;
     }
 
+    private void syncSchoolDaysAndAttendance() {
+        this.schoolDays = new ConcurrentHashMap<>();
+        for(Map.Entry<Long, School> school : this.schools.entrySet()) {
+            SchoolDaySync s = new SchoolDaySync(edPanel, powerSchool, school.getValue(), syncCutoff);
+            Long schoolSsid = Long.valueOf(school.getValue().getSourceSystemId());
+            this.schoolDays.put(
+                    schoolSsid,
+                    s.syncCreateUpdateDelete(results));
+            AttendanceSync a = new AttendanceSync(
+                    edPanel,
+                    powerSchool,
+                    school.getValue(),
+                    studentAssociator,
+                    this.schoolDays.get(schoolSsid),
+                    syncCutoff);
+            a.syncCreateUpdateDelete(results);
+        }
+
+    }
+
+    /**
+     * For each school in this.schools, resolve all the sections and create an EdPanel Section instance for each.
+     * For each EdPanel Section instance, resolve and set the appropriate enrolled student IDs, course ID, teacher(s) ID,
+     * PsTerm ID, Assignments, and GradeFormula.  After these dependencies are resolve, call the EdPanel API to create the Section
+     * and the assignments.  Returns void but populates this.sections with all sections created and includes the collection of
+     * assignments on each section.
+     */
+    private void migrateSections() {
+        this.sections = new ConcurrentHashMap<>();
+        ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+        for(Map.Entry<Long, School> school : this.schools.entrySet()) {
+            Long sourceSystemSchoolId = Long.valueOf(school.getValue().getSourceSystemId());
+            sections.put(sourceSystemSchoolId, new ConcurrentHashMap<>());
+            SectionSyncRunnable sectionRunnable = new SectionSyncRunnable(
+                    powerSchool,
+                    edPanel,
+                    school.getValue(),
+                    this.courses.get(sourceSystemSchoolId),
+                    this.terms.get(sourceSystemSchoolId),
+                    staffAssociator,
+                    studentAssociator,
+                    this.sections.get(sourceSystemSchoolId),
+                    results);
+            executor.execute(sectionRunnable);
+        }
+        executor.shutdown();
+        //Spin while we wait for all the threads to complete
+        try {
+            if (!executor.awaitTermination(TOTAL_TTL_MINUTES, TimeUnit.MINUTES)) { //optional *
+                executor.shutdownNow(); //optional **/optional **
+            }
+        } catch(InterruptedException e) {
+            System.out.println("Executor thread pool interrupted " + e.getMessage());
+        }
+    }
+
+    private void migrateSchoolYearsAndTerms() {
+        if(null != schools) {
+            this.terms = new ConcurrentHashMap<>();
+            for(Map.Entry<Long, School> school : this.schools.entrySet()) {
+                TermSync tSync = new TermSync(edPanel, powerSchool, school.getValue());
+                this.terms.put(
+                        Long.valueOf(school.getValue().getSourceSystemId()),
+                        tSync.syncCreateUpdateDelete(results)
+                );
+            }
+        }
+    }
+
+    private void createCourses() {
+
+        for (Map.Entry<Long, School> school : this.schools.entrySet()) {
+            CourseSync sync = new CourseSync(edPanel, powerSchool, school.getValue());
+            this.courses.put(Long.valueOf(school.getValue().getSourceSystemId()), sync.syncCreateUpdateDelete(results));
+        }
+    }
+
+    private void createStudents() {
+        for (Map.Entry<Long, School> school : this.schools.entrySet()) {
+            StudentSync sync = new StudentSync(edPanel, powerSchool, school.getValue(), studentAssociator);
+            studentAssociator.addOtherIdMap(sync.syncCreateUpdateDelete(results));
+        }
+    }
+
+    public void createStaff() {
+        for (Map.Entry<Long, School> school : this.schools.entrySet()) {
+            StaffSync sync = new StaffSync(edPanel, powerSchool, school.getValue(), staffAssociator);
+            staffAssociator.addOtherIdMap(sync.syncCreateUpdateDelete(results));
+        }
+    }
+
+    public void createSchools() {
+        SchoolSync sync = new SchoolSync(edPanel, powerSchool);
+        Map<Long, School> result = sync.syncCreateUpdateDelete(results);
+        this.schools = new ConcurrentHashMap<>();
+        for (Map.Entry<Long, School> school : result.entrySet()) {
+            School s = school.getValue();
+            this.schools.put(s.getNumber(), s);
+        }
+    }
+
     /**
      * TODO: figure out how we actually want to output these results.  For now, its a series of sys outs
      * @param results
      */
     private static void outputResults(SyncResult results) {
+        System.out.println("--");
         System.out.println("Created Schools: " + results.getSchools().getCreated().size());
         System.out.println("Failed school creations: " + results.getSchools().getFailedCreates().size());
         System.out.println("Failed school source gets: " + results.getSchools().getSourceGetFailed().size());
@@ -216,84 +341,5 @@ public class ETLEngine implements IETLEngine {
         System.out.println("Failed student assignments creations: " + sectAssFailedCreates);
         System.out.println("Failed student assignments source gets: " + sectAssFailedSourceGets);
         System.out.println("Failed student assignments edpanel gets: " + sectAssFailedEdPanelGets);
-    }
-
-
-    /**
-     * For each school in this.schools, resolve all the sections and create an EdPanel Section instance for each.
-     * For each EdPanel Section instance, resolve and set the appropriate enrolled student IDs, course ID, teacher(s) ID,
-     * PsTerm ID, Assignments, and GradeFormula.  After these dependencies are resolve, call the EdPanel API to create the Section
-     * and the assignments.  Returns void but populates this.sections with all sections created and includes the collection of
-     * assignments on each section.
-     */
-    private void migrateSections() {
-        this.sections = new ConcurrentHashMap<>();
-        ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-        for(School school : this.schools) {
-            Long sourceSystemSchoolId = Long.valueOf(school.getSourceSystemId());
-            sections.put(sourceSystemSchoolId, new ConcurrentHashMap<>());
-            SectionSyncRunnable sectionRunnable = new SectionSyncRunnable(
-                    powerSchool,
-                    edPanel,
-                    school,
-                    this.courses.get(sourceSystemSchoolId),
-                    this.terms.get(sourceSystemSchoolId),
-                    staffAssociator,
-                    studentAssociator,
-                    this.sections.get(sourceSystemSchoolId),
-                    results);
-            executor.execute(sectionRunnable);
-        }
-        executor.shutdown();
-        //Spin while we wait for all the threads to complete
-        try {
-            executor.awaitTermination(TOTAL_TTL_MINUTES, TimeUnit.MINUTES);
-        } catch(InterruptedException e) {
-            System.out.println("Executor thread pool interrupted " + e.getMessage());
-        }
-    }
-
-    private void migrateSchoolYearsAndTerms() {
-        if(null != schools) {
-            this.terms = new ConcurrentHashMap<>();
-            for(School school: schools) {
-                TermSync tSync = new TermSync(edPanel, powerSchool, school);
-                this.terms.put(
-                        Long.valueOf(school.getSourceSystemId()),
-                        tSync.syncCreateUpdateDelete(results)
-                );
-            }
-        }
-    }
-
-    private void createCourses() {
-
-        for (School school : schools) {
-            CourseSync sync = new CourseSync(edPanel, powerSchool, school);
-            this.courses.put(Long.valueOf(school.getSourceSystemId()), sync.syncCreateUpdateDelete(results));
-        }
-    }
-
-    private void createStudents() {
-        for (School school : schools) {
-            StudentSync sync = new StudentSync(edPanel, powerSchool, school, studentAssociator);
-            studentAssociator.addOtherIdMap(sync.syncCreateUpdateDelete(results));
-        }
-    }
-
-    public void createStaff() {
-        for (School school : schools) {
-            StaffSync sync = new StaffSync(edPanel, powerSchool, school, staffAssociator);
-            staffAssociator.addOtherIdMap(sync.syncCreateUpdateDelete(results));
-        }
-    }
-
-    public void createSchools() {
-        SchoolSync sync = new SchoolSync(edPanel, powerSchool);
-        Map<Long, School> result = sync.syncCreateUpdateDelete(results);
-        this.schools = result.entrySet()
-                        .stream()
-                        .map(Map.Entry::getValue)
-                        .collect(Collectors.toList());
     }
 }

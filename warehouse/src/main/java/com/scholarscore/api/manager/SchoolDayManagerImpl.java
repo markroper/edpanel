@@ -9,6 +9,7 @@ import com.scholarscore.models.attendance.SchoolDay;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
+import java.util.List;
 
 public class SchoolDayManagerImpl implements SchoolDayManager{
     private static final String SCHOOL_DAY = "school day";
@@ -63,12 +64,31 @@ public class SchoolDayManagerImpl implements SchoolDayManager{
     }
 
     @Override
+    public ServiceResponse<List<Long>> createSchoolDays(long schoolId, List<SchoolDay> schoolDays) {
+        StatusCode code = pm.getSchoolManager().schoolExists(schoolId);
+        if (!code.isOK()) {
+            return new ServiceResponse<List<Long>>(code);
+        }
+        return new ServiceResponse<List<Long>>(dayPersistence.insertSchoolDays(schoolId, schoolDays));
+    }
+
+    @Override
     public ServiceResponse<Long> deleteSchoolDay(long schoolId, long schoolDayId) {
         StatusCode code = pm.getSchoolManager().schoolExists(schoolId);
         if (!code.isOK()) {
             return new ServiceResponse<Long>(code);
         }
         return new ServiceResponse<Long>(dayPersistence.delete(schoolId, schoolDayId));
+    }
+
+    @Override
+    public ServiceResponse<Void> replaceSchoolDay(long schoolId, long schoolDayId, SchoolDay schoolDay) {
+        StatusCode code = pm.getSchoolManager().schoolExists(schoolId);
+        if (!code.isOK()) {
+            return new ServiceResponse<Void>(code);
+        }
+        dayPersistence.update(schoolId, schoolDayId, schoolDay);
+        return new ServiceResponse<Void>((Void) null);
     }
 
     @Override

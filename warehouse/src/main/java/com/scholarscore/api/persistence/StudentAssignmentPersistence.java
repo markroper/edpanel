@@ -11,5 +11,5 @@ public interface StudentAssignmentPersistence extends EntityPersistence<StudentA
 
     public Collection<StudentAssignment> selectAllAttendanceSection(long sectionId, long studentId);
 
-    public void insertAll(long assignmentId, List<StudentAssignment> studentAssignmentList);
+    public List<Long> insertAll(long assignmentId, List<StudentAssignment> studentAssignmentList);
 }

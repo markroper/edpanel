@@ -4,6 +4,7 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.attendance.Attendance;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface AttendanceManager {
     /**
@@ -42,7 +43,16 @@ public interface AttendanceManager {
      * @return
      */
     public ServiceResponse<Long> createAttendance(long schoolId, long studentId, Attendance attendance);
-    
+
+    /**
+     * Creates attendance entries for a student at a school and returns a service response
+     * @param schoolId
+     * @param studentId
+     * @param attendances
+     * @return
+     */
+    public ServiceResponse<Void> createAttendances(long schoolId, long studentId, List<Attendance> attendances);
+
     /**
      * Deletes an attendance entry for a student at a school and returns a service response
      * containing the id of the attendance entry that was deleted
@@ -52,4 +62,13 @@ public interface AttendanceManager {
      * @return
      */
     public ServiceResponse<Long> deleteAttendance(long schoolId, long studentId, long attendanceId);
+
+    /**
+     * Replaces an attendance entry for a student at a school and returns a service response
+     * @param schoolId
+     * @param studentId
+     * @param attendanceId
+     * @return
+     */
+    public ServiceResponse<Void> replaceAttendance(long schoolId, long studentId, long attendanceId, Attendance a);
 }

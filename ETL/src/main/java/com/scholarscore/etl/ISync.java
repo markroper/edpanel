@@ -3,7 +3,6 @@ package com.scholarscore.etl;
 import com.scholarscore.etl.powerschool.sync.CourseSync;
 import com.scholarscore.etl.powerschool.sync.SchoolSync;
 import com.scholarscore.etl.powerschool.sync.TermSync;
-import com.scholarscore.models.ApiModel;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * Created by markroper on 10/26/15.
  */
-public interface ISync<T extends ApiModel> {
+public interface ISync<T> {
 
     /**
      * <p>

@@ -13,7 +13,8 @@ public class SyncResult {
     protected EntitySyncResult students = new EntitySyncResult();
     protected EntitySyncResult staff = new EntitySyncResult();
     protected EntitySyncResult sections = new EntitySyncResult();
-
+    protected EntitySyncResult schoolDays = new EntitySyncResult();
+    protected EntitySyncResult attendance = new EntitySyncResult();
     protected ConcurrentHashMap<Long, EntitySyncResult> sectionAssignments =
             new ConcurrentHashMap<>();
     protected ConcurrentHashMap<Long, ConcurrentHashMap<Long, EntitySyncResult>> studentAssignments =
@@ -23,6 +24,12 @@ public class SyncResult {
     /*
         CREATE FAILED HELPER METHODS
     */
+    public void schoolDayCreateFailed(long ssid) {
+        schoolDays.failedCreate(ssid);
+    }
+    public void attendanceCreateFailed(long ssid) {
+        attendance.failedCreate(ssid);
+    }
     public void schoolCreateFailed(long ssid) {
         schools.failedCreate(ssid);
     }
@@ -74,6 +81,12 @@ public class SyncResult {
     /*
         CREATE HELPER METHODS
     */
+    public void schoolDayCreated(long ssid, long edPanelId) {
+        schoolDays.created(ssid, edPanelId);
+    }
+    public void attendanceCreated(long ssid, long edPanelId) {
+        attendance.created(ssid, edPanelId);
+    }
     public void schoolCreated(long ssid, long edPanelId) {
         schools.created(ssid, edPanelId);
     }
@@ -125,6 +138,12 @@ public class SyncResult {
     /*
         UPDATE FAILED HELPER METHODS
     */
+    public void schoolDayUpdateFailed(long ssid, long edPanelId) {
+        schoolDays.failedUpdate(ssid, edPanelId);
+    }
+    public void attendanceUpdateFailed(long ssid, long edPanelId) {
+        attendance.failedUpdate(ssid, edPanelId);
+    }
     public void schoolUpdateFailed(long ssid, long edPanelId) {
         schools.failedUpdate(ssid, edPanelId);
     }
@@ -176,6 +195,12 @@ public class SyncResult {
     /*
         UPDATE HELPER METHODS
     */
+    public void schoolDayUpdated(long ssid, long edPanelId) {
+        schoolDays.updated(ssid, edPanelId);
+    }
+    public void attendanceUpdated(long ssid, long edPanelId) {
+        attendance.updated(ssid, edPanelId);
+    }
     public void schoolUpdated(long ssid, long edPanelId) {
         schools.updated(ssid, edPanelId);
     }
@@ -227,6 +252,12 @@ public class SyncResult {
     /*
         FAILED DELETE HELPER METHODS
      */
+    public void schoolDayDeleteFailed(long ssid, long edPanelId) {
+        schoolDays.failedDelete(ssid, edPanelId);
+    }
+    public void attendanceDeleteFailed(long ssid, long edPanelId) {
+        attendance.failedDelete(ssid, edPanelId);
+    }
     public void schoolDeleteFailed(long ssid, long edPanelId) {
         schools.failedDelete(ssid, edPanelId);
     }
@@ -278,6 +309,12 @@ public class SyncResult {
     /*
         DELETE HELPER METHODS
      */
+    public void schoolDayDeleted(long ssid, long edPanelId) {
+        schoolDays.deleted(ssid, edPanelId);
+    }
+    public void attendanceDeleted(long ssid, long edPanelId) {
+        attendance.deleted(ssid, edPanelId);
+    }
     public void schoolDeleted(long ssid, long edPanelId) {
         schools.deleted(ssid, edPanelId);
     }
@@ -330,6 +367,12 @@ public class SyncResult {
     /*
         GET ALL FROM SOURCE SYSTEM FAILED HELPER METHODS
      */
+    public void schoolDaySourceGetFailed(long ssid, long edPanelId) {
+        schoolDays.getSourceGetFailed().put(ssid, edPanelId);
+    }
+    public void attendanceSourceGetFailed(long ssid, long edPanelId) {
+        attendance.getSourceGetFailed().put(ssid, edPanelId);
+    }
     public void schoolSourceGetFailed(long parentSsid, long parentEdPanelId) {
         schools.getSourceGetFailed().put(parentSsid, parentEdPanelId);
     }
@@ -385,6 +428,12 @@ public class SyncResult {
     /*
         GET ALL FROM EDPANEL FAILED HELPER METHODS
     */
+    public void schoolDayEdPaneleGetFailed(long ssid, long edPanelId) {
+        schoolDays.getEdPanelGetFailed().put(ssid, edPanelId);
+    }
+    public void attendanceEdPanelGetFailed(long ssid, long edPanelId) {
+        attendance.getEdPanelGetFailed().put(ssid, edPanelId);
+    }
     public void schoolEdPanelGetFailed(long parentSsid, long parentEdPanelId) {
         schools.getEdPanelGetFailed().put(parentSsid, parentEdPanelId);
     }

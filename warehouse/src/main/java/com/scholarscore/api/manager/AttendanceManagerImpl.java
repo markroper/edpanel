@@ -9,6 +9,7 @@ import com.scholarscore.models.attendance.Attendance;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
+import java.util.List;
 
 public class AttendanceManagerImpl implements AttendanceManager {
     private static final String ATTENDANCE = "attendance";
@@ -88,6 +89,22 @@ public class AttendanceManagerImpl implements AttendanceManager {
     }
 
     @Override
+    public ServiceResponse<Void> createAttendances(long schoolId,
+                                                   long studentId,
+                                                   List<Attendance> attendances) {
+        StatusCode code = pm.getSchoolManager().schoolExists(schoolId);
+        if (!code.isOK()) {
+            return new ServiceResponse<Void>(code);
+        }
+        code = pm.getStudentManager().studentExists(studentId);
+        if (!code.isOK()) {
+            return new ServiceResponse<Void>(code);
+        }
+        attendancePersistence.insertAttendances(schoolId, studentId, attendances);
+        return new ServiceResponse<Void>((Void) null);
+    }
+
+    @Override
     public ServiceResponse<Long> deleteAttendance(long schoolId,
             long studentId, long attendanceId) {
         StatusCode code = pm.getSchoolManager().schoolExists(schoolId);
@@ -99,6 +116,20 @@ public class AttendanceManagerImpl implements AttendanceManager {
             return new ServiceResponse<Long>(code);
         }
         return new ServiceResponse<Long>(attendancePersistence.delete(schoolId, studentId, attendanceId));
+    }
+
+    @Override
+    public ServiceResponse<Void> replaceAttendance(long schoolId, long studentId, long attendanceId, Attendance a) {
+        StatusCode code = pm.getSchoolManager().schoolExists(schoolId);
+        if (!code.isOK()) {
+            return new ServiceResponse<Void>(code);
+        }
+        code = pm.getStudentManager().studentExists(studentId);
+        if (!code.isOK()) {
+            return new ServiceResponse<Void>(code);
+        }
+        attendancePersistence.update(schoolId, studentId, attendanceId, a);
+        return new ServiceResponse<Void>((Void) null);
     }
 
     public OrchestrationManager getPm() {
