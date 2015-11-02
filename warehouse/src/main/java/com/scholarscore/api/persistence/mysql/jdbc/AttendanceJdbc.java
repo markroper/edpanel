@@ -13,6 +13,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Transactional
 public class AttendanceJdbc implements AttendancePersistence {
@@ -45,6 +46,33 @@ public class AttendanceJdbc implements AttendancePersistence {
         attendance.getStudent().setId(studentId);
         Attendance a = this.hibernateTemplate.merge(attendance);
         return a.getId();
+    }
+
+    @Override
+    public void insertAttendances(Long schoolId, Long studentId, List<Attendance> attendances) {
+        int i = 0;
+        for(Attendance attendance : attendances) {
+            //Setup the school & schoolId, if needed
+            if(null == attendance.getSchoolDay()) {
+                attendance.setSchoolDay(new SchoolDay());
+            }
+            if(null == attendance.getSchoolDay().getSchool()) {
+                attendance.getSchoolDay().setSchool(new School());
+            }
+            attendance.getSchoolDay().getSchool().setId(schoolId);
+            //Setup the student, if needed
+            if(null == attendance.getStudent()) {
+                attendance.setStudent(new Student());
+            }
+            attendance.getStudent().setId(studentId);
+            hibernateTemplate.save(attendance);
+            //Release newly created entities from hibernates session im-memory storage
+            if(i % 20 == 0) {
+                hibernateTemplate.flush();
+                hibernateTemplate.clear();
+            }
+            i++;
+        }
     }
 
     @Override
@@ -92,7 +120,12 @@ public class AttendanceJdbc implements AttendancePersistence {
         }
         return attendanceId;
     }
-    
+
+    @Override
+    public void update(Long schoolId, Long studentId, Long attendanceId, Attendance a) {
+        hibernateTemplate.update(a);
+    }
+
     public void setHibernateTemplate(HibernateTemplate template) {
         this.hibernateTemplate = template;
     }   

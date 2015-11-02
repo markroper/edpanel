@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -55,10 +56,12 @@ public class StudentAssignmentJdbc
     }
 
     @Override
-    public void insertAll(long assignmentId, List<StudentAssignment> studentAssignmentList) {
+    public List<Long> insertAll(long assignmentId, List<StudentAssignment> studentAssignmentList) {
         int i = 0;
+        List<Long> ids = new ArrayList<>();
         for(StudentAssignment sa : studentAssignmentList) {
             hibernateTemplate.save(sa);
+            ids.add(sa.getId());
             //Release newly created entities from hibernates session im-memory storage
             if(i % 20 == 0) {
                 hibernateTemplate.flush();
@@ -66,6 +69,7 @@ public class StudentAssignmentJdbc
             }
             i++;
         }
+        return ids;
     }
 
     private void injectAssignment(long assignmentId, StudentAssignment entity) {

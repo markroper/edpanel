@@ -2,14 +2,15 @@ package com.scholarscore.etl.powerschool.sync.section;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsSectionEnrollment;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGrade;
-import com.scholarscore.etl.powerschool.api.model.section.PsSectionGrades;
+import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeWrapper;
+import com.scholarscore.etl.powerschool.api.response.PsResponse;
+import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.api.response.SectionEnrollmentsResponse;
-import com.scholarscore.etl.powerschool.api.response.SectionGradesResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.powerschool.sync.MissingStudentMigrator;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
@@ -171,12 +172,12 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             //See if any final grades have been created for the section, and if so, retrieve them
             Map<Long, PsSectionGrade> studentIdToSectionScore = null;
             if(createdSection.getEndDate().compareTo(new Date()) < 0) {
-                SectionGradesResponse sectScores = null;
+                PsResponse<PsSectionGradeWrapper> sectScores = null;
                     sectScores = powerSchool.getSectionScoresBySectionId(
                             Long.valueOf(createdSection.getSourceSystemId()));
                 if(null != sectScores && null != sectScores.record) {
                     studentIdToSectionScore = new HashMap<>();
-                    for(PsSectionGrades ss: sectScores.record) {
+                    for(PsResponseInner<PsSectionGradeWrapper> ss: sectScores.record) {
                         PsSectionGrade score = ss.tables.storedgrades;
                         studentIdToSectionScore.put(
                                 Long.valueOf(score.getStudentid()),

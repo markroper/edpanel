@@ -156,6 +156,7 @@ public abstract class BaseHttpClient {
             return get(clazz, path, retries - 1, params);
         }
     }
+
     protected <T> T get(Class<T> clazz, String path, String ...params) throws HttpClientException {
 
         path = getPath(path, params);

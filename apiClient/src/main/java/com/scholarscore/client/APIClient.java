@@ -1,6 +1,7 @@
 package com.scholarscore.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Course;
@@ -13,6 +14,8 @@ import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.models.attendance.Attendance;
+import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.factory.AssignmentFactory;
 import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
@@ -52,6 +55,8 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
     private static final String TEACHER_ENDPOINT = "/teachers";
     private static final String BEHAVIOR_ENDPOINT = "/behaviors";
+    private static final String DAYS_ENDPOINT = "/days";
+    private static final String ATTENDANCE_ENDPOINT = "/attendance";
 
     // TODO: Create this end point
     private static final String ADMINISTRATOR_ENDPOINT = "/administrators";
@@ -109,6 +114,20 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         String json = null;
         try {
             json = post(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
+        } catch (IOException e) {
+            throw new HttpClientException(e);
+        }
+    }
+
+    private List<Long> createListResponse(Object obj, String path) throws HttpClientException {
+        String json = null;
+        try {
+            json = post(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
+        } catch (IOException e) {
+            throw new HttpClientException(e);
+        }
+        try {
+            return mapper.readValue(json, new TypeReference<List<Long>>() {});
         } catch (IOException e) {
             throw new HttpClientException(e);
         }
@@ -354,7 +373,87 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
                 TERM_ENDPOINT);
         return terms;
     }
-    
+
+    @Override
+    public SchoolDay createSchoolDays(Long schoolId, SchoolDay day) throws HttpClientException {
+        SchoolDay response = new SchoolDay(day);
+        EntityId id = create(day, SCHOOL_ENDPOINT + "/" + schoolId + DAYS_ENDPOINT);
+        response.setId(id.getId());
+        return response;
+    }
+
+    @Override
+    public List<Long> createSchoolDays(Long schoolId, List<SchoolDay> days) throws HttpClientException {
+        return createListResponse(days, SCHOOL_ENDPOINT + "/" + schoolId + DAYS_ENDPOINT + "/bulk");
+    }
+
+    @Override
+    public void deleteSchoolDay(Long schoolId, SchoolDay day) throws HttpClientException {
+        delete(BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                DAYS_ENDPOINT + "/" + day.getId(), (String[]) null);
+    }
+
+    @Override
+    public SchoolDay updateSchoolDay(Long schoolId, SchoolDay day) throws IOException {
+        SchoolDay t = new SchoolDay(day);
+        patch(convertObjectToJsonBytes(day), BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                DAYS_ENDPOINT + "/" + day.getId());
+        return t;
+    }
+
+    @Override
+    public SchoolDay[] getSchoolDays(Long schoolId) throws HttpClientException {
+        SchoolDay[] days = get(SchoolDay[].class, BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                DAYS_ENDPOINT);
+        return days;
+    }
+
+    @Override
+    public Attendance createAttendance(Long schoolId, Long studentId, Attendance attend) throws HttpClientException {
+        EntityId id = create(attend,
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                STUDENT_ENDPOINT + "/" + studentId +
+                ATTENDANCE_ENDPOINT);
+        attend.setId(id.getId());
+        return attend;
+    }
+
+    @Override
+    public void createAttendance(Long schoolId, Long studentId, List<Attendance> attends) throws HttpClientException {
+        createVoidResponse(attends,
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                STUDENT_ENDPOINT + "/" + studentId +
+                ATTENDANCE_ENDPOINT + "/bulk");
+    }
+
+    @Override
+    public void deleteAttendance(Long schoolId, Long studentId, Attendance attend) throws HttpClientException {
+        delete(BASE_API_ENDPOINT + SCHOOL_ENDPOINT + "/" + schoolId +
+                STUDENT_ENDPOINT + "/" + studentId +
+                ATTENDANCE_ENDPOINT, (String[]) null);
+    }
+
+    @Override
+    public Attendance updateAttendance(Long schoolId, Long studentId, Attendance attend) throws IOException {
+        patch(convertObjectToJsonBytes(attend), BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                STUDENT_ENDPOINT + "/" + studentId +
+                ATTENDANCE_ENDPOINT + "/" + attend.getId());
+        return attend;
+    }
+
+    @Override
+    public Attendance[] getAttendance(Long schoolId, Long studentId) throws HttpClientException {
+        Attendance[] attendances = get(Attendance[].class, BASE_API_ENDPOINT +
+                SCHOOL_ENDPOINT + "/" + schoolId +
+                STUDENT_ENDPOINT + "/" + studentId +
+                ATTENDANCE_ENDPOINT);
+        return attendances;
+    }
+
     @Override
     public Section createSection(
             Long schoolId, 
@@ -538,13 +637,13 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public void createStudentAssignments(Long schoolId,
+    public List<Long> createStudentAssignments(Long schoolId,
                                          Long yearId,
                                          Long termId,
                                          Long sectionId,
                                          Long assignmentId,
                                          List<StudentAssignment> studentAssignments) throws HttpClientException {
-        createVoidResponse(studentAssignments,
+        return createListResponse(studentAssignments,
                 SCHOOL_ENDPOINT + "/" + schoolId + SCHOOL_YEAR_ENDPOINT + "/" + yearId +
                 TERM_ENDPOINT + "/" + termId + SECTION_ENDPOINT + "/" + sectionId +
                 SECTION_ASSIGNMENT_ENDPOINT + "/" + assignmentId + STUDENT_ASSIGNMENT_ENDPOINT + "/bulk");

@@ -1,21 +1,25 @@
 package com.scholarscore.etl.powerschool.client;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scholarscore.client.BaseHttpClient;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
-import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
-import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentTypes;
-import com.scholarscore.etl.powerschool.api.response.AssignmentScoresResponse;
+import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentWrapper;
+import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScoreWrapper;
+import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreIdWrapper;
+import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentTypeWrapper;
+import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
+import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper;
+import com.scholarscore.etl.powerschool.api.model.attendance.PsCalendarDayWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeWrapper;
 import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
+import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionEnrollmentsResponse;
-import com.scholarscore.etl.powerschool.api.response.SectionGradesResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
-import com.scholarscore.etl.powerschool.api.response.SectionScoreIdsResponse;
 import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 import org.apache.http.HttpRequest;
@@ -28,56 +32,17 @@ import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by mattg on 7/2/15.
  */
-public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolClient {
+public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSchoolClient {
+    private PowerSchoolPaths paths = new PowerSchoolPaths();
     private static final Integer PAGE_SIZE = 1000;
-    private static final String PAGE_SIZE_PARAM = "pagesize=" + PAGE_SIZE;
-    private static final String BASE = "/ws/v1";
-    private static final String SCHEMA_BASE = "/ws/schema/table";
     private static final String HEADER_AUTH_NAME = "Authorization";
-    public static final String PATH_RESOURCE_DISTRICT = "/ws/v1/district";
-    public static final String EXPANSION_RESOURCE_DISTRICT = "?expansions=district_race_codes,districts_of_residence,entry_codes,ethnicity_race_decline_to_specify,exit_codes,federal_race_categories,fees_payment_methods,scheduling_reporting_ethnicities,test_setup";
-    public static final String PATH_RESOURCE_SCHOOL = "/ws/v1/district/school";
-    public static final String EXPANSION_RESOURCE_SCHOOL = "?expansions=school_boundary,school_fees_setup";
-    public static final String PATH_RESOURCE_STUDENT =
-            BASE +
-            "/school/{0}/student?pagesize=" +
-            PAGE_SIZE +
-            "&expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup,school_enrollment";
-    public static final String PATH_RESOURCE_SINGLE_STUDENT =
-            BASE +
-            "/student/{0}?expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup";
-    public static final String PATH_RESOURCE_STAFF = BASE + "/school/{0}/staff?" + PAGE_SIZE_PARAM;
-    public static final String EXPANSION_RESOURCE_STAFF = "&expansions=phones,addresses,emails,school_affiliations";
-    public static final String PATH_RESOURCE_COURSE = BASE + "/school/{0}/course?" + PAGE_SIZE_PARAM;
-    public static final String PATH_RESOURCE_TERMS = BASE + "/school/{0}/term?" + PAGE_SIZE_PARAM;
-    public static final String PATH_RESOURCE_SECTION = BASE + "/school/{0}/section?" + PAGE_SIZE_PARAM;
-    public static final String PATH_RESOURCE_SECTION_ENROLLMENT = BASE + "/section/{0}/section_enrollment";
-    public static final String PATH_RESOURCE_SECTION_ASSIGNMENTS =
-            "/ws/schema/table/PGAssignments?" +
-            PAGE_SIZE_PARAM +
-            "&projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
-    public static final String PATH_RESOURCE_SECTION_ASSIGNMENT_CATEGORY =
-            SCHEMA_BASE +
-            "/pgcategories?q=SectionID=={0}&projection=Abbreviation,DCID,DefaultPtsPoss,Description,ID,Name,SectionID";
-    public static final String PATH_RESOURCE_SECTION_SCORES =
-            SCHEMA_BASE +
-            "/storedgrades?" +
-            PAGE_SIZE_PARAM +
-            "&q=sectionid=={0}&projection=dcid,grade,datestored,studentid,sectionid,termid";
-    public static final String PATH_RESOURCE_ASSIGNMENT_SCORES =
-            SCHEMA_BASE +
-            "/SectionScoresAssignments?" +
-            PAGE_SIZE_PARAM +
-            "&q=assignment=={0}&projection=*";
-    public static final String PATH_RESOURCE_SECTION_SCORE_IDS =
-            SCHEMA_BASE +
-            "/SectionScoresId?" +
-            PAGE_SIZE_PARAM +
-            "&q=sectionid=={0}&projection=*";
+    private static final String PATH_RESOURCE_DISTRICT = "/ws/v1/district";
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";
     private static final String URI_PATH_OATH = "/oauth/access_token";
     private final String clientSecret;
@@ -91,6 +56,12 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         authenticate();
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, -1); // to get previous year add -1
+        Date lastYear = cal.getTime();
+        paths.setCutoffDate(lastYear);
+        paths.setPageSize(PAGE_SIZE);
     }
 
     public void authenticate() {
@@ -122,8 +93,13 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
     }
 
     @Override
+    public void setSyncCutoff(Date date) {
+        paths.setCutoffDate(date);
+    }
+
+    @Override
     public SchoolsResponse getSchools() throws HttpClientException {
-        return get(SchoolsResponse.class, PATH_RESOURCE_SCHOOL + EXPANSION_RESOURCE_SCHOOL);
+        return get(SchoolsResponse.class, paths.getSchoolPath());
     }
 
     @Override
@@ -133,7 +109,7 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
 
     @Override
     public PsStaffs getStaff(Long schoolId) throws HttpClientException {
-        return getJackson(PsStaffs.class, PATH_RESOURCE_STAFF + EXPANSION_RESOURCE_STAFF, schoolId.toString());
+        return getJackson(PsStaffs.class, paths.getStaffPath(), schoolId.toString());
     }
 
     protected <T> T getJackson(Class<T> clazz, String path, String ...params) throws HttpClientException {
@@ -153,51 +129,94 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
 
     @Override
     public PsStudents getStudentsBySchool(Long schoolId) throws HttpClientException {
-        return getJackson(PsStudents.class, PATH_RESOURCE_STUDENT, schoolId.toString());
+        return getJackson(PsStudents.class, paths.getStudentsPath(), schoolId.toString());
     }
 
     @Override
     public StudentResponse getStudentById(Long studentId) throws HttpClientException {
-        return get(StudentResponse.class, PATH_RESOURCE_SINGLE_STUDENT, studentId.toString());
+        return get(StudentResponse.class, paths.getStudentPath(), studentId.toString());
     }
     @Override
     public PsCourses getCoursesBySchool(Long schoolId) throws HttpClientException {
-        return getJackson(PsCourses.class, PATH_RESOURCE_COURSE, schoolId.toString());
+        return getJackson(PsCourses.class, paths.getCoursePath(), schoolId.toString());
     }
 
     @Override
     public SectionResponse getSectionsBySchoolId(Long schoolId) throws HttpClientException {
-        return get(SectionResponse.class, PATH_RESOURCE_SECTION, schoolId.toString());
+        return get(SectionResponse.class, paths.getSectionPath(), schoolId.toString());
     }
 
     @Override
     public SectionEnrollmentsResponse getEnrollmentBySectionId(Long sectionId) throws HttpClientException {
-        return get(SectionEnrollmentsResponse.class, PATH_RESOURCE_SECTION_ENROLLMENT, sectionId.toString());
+        return get(SectionEnrollmentsResponse.class, paths.getSectionEnrollmentPath(), sectionId.toString());
     }
 
     @Override
-    public SectionGradesResponse getSectionScoresBySectionId(Long sectionId) throws HttpClientException {
-        return get(SectionGradesResponse.class, PATH_RESOURCE_SECTION_SCORES, sectionId.toString());
+    public PsResponse<PsSectionGradeWrapper> getSectionScoresBySectionId(Long sectionId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsSectionGradeWrapper>>(){},
+                paths.getSectionScoresPath(),
+                PAGE_SIZE,
+                sectionId.toString());
     }
     
     @Override
-    public PGAssignments getAssignmentsBySectionId(Long sectionId) throws HttpClientException {
-        return get(PGAssignments.class, PATH_RESOURCE_SECTION_ASSIGNMENTS, sectionId.toString()); 
+    public PsResponse<PsAssignmentWrapper> getAssignmentsBySectionId(Long sectionId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsAssignmentWrapper>>(){},
+                paths.getSectionAssignmentsPath(),
+                PAGE_SIZE,
+                sectionId.toString());
     }
 
     @Override
-    public PGAssignmentTypes getAssignmentTypesBySectionId(Long sectionId) throws HttpClientException {
-        return get(PGAssignmentTypes.class, PATH_RESOURCE_SECTION_ASSIGNMENT_CATEGORY, sectionId.toString());
+    public PsResponse<PsAssignmentTypeWrapper> getAssignmentTypesBySectionId(Long sectionId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsAssignmentTypeWrapper>>(){},
+                paths.getSectionAssignmentCategories(),
+                PAGE_SIZE,
+                sectionId.toString());
     }
 
     @Override
-    public AssignmentScoresResponse getStudentScoresByAssignmentId(Long assignmentId) throws HttpClientException {
-        return get(AssignmentScoresResponse.class, PATH_RESOURCE_ASSIGNMENT_SCORES, 3, assignmentId.toString());
+    public PsResponse<PsAssignmentScoreWrapper> getStudentScoresByAssignmentId(Long assignmentId) throws HttpClientException {
+        return get(
+                new TypeReference<PsResponse<PsAssignmentScoreWrapper>>(){},
+                paths.getAssignmentScores(),
+                PAGE_SIZE,
+                assignmentId.toString());
     }
 
     @Override
-    public SectionScoreIdsResponse getStudentScoreIdsBySectionId(Long sectionId) throws HttpClientException {
-        return get(SectionScoreIdsResponse.class, PATH_RESOURCE_SECTION_SCORE_IDS, sectionId.toString());
+    public PsResponse<PsSectionScoreIdWrapper> getStudentScoreIdsBySectionId(Long sectionId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsSectionScoreIdWrapper>>() {},
+                paths.getSectionScoreIds(),
+                PAGE_SIZE,
+                sectionId.toString());
+    }
+
+    @Override
+    public PsResponse<PsCalendarDayWrapper> getSchoolCalendarDays(Long schoolId) throws HttpClientException {
+        return get(
+                new TypeReference<PsResponse<PsCalendarDayWrapper>>(){},
+                paths.getCalendarDayPath(),
+                PAGE_SIZE,
+                schoolId.toString());
+    }
+
+    @Override
+    public PsResponse<PsAttendanceWrapper> getStudentAttendance(Long studentId) throws HttpClientException {
+        return get(
+                new TypeReference<PsResponse<PsAttendanceWrapper>>(){},
+                paths.getAttendancePath(),
+                PAGE_SIZE,
+                studentId.toString());
+    }
+
+    @Override
+    public PsResponse<PsAttendanceCodeWrapper> getAttendanceCodes() throws HttpClientException {
+        return get(
+                new TypeReference<PsResponse<PsAttendanceCodeWrapper>>(){},
+                paths.getAttendanceCodePath(),
+                PAGE_SIZE,
+                (String[]) null);
     }
 
     public Object getAsMap(String path) throws HttpClientException {
@@ -206,7 +225,7 @@ public class PowerSchoolClient extends BaseHttpClient implements IPowerSchoolCli
 
     @Override
     public TermResponse getTermsBySchoolId(Long schoolId) throws HttpClientException {
-        return get(TermResponse.class, PATH_RESOURCE_TERMS, schoolId.toString());
+        return get(TermResponse.class, paths.getTermPath(), schoolId.toString());
     }
 
     protected void setupCommonHeaders(HttpRequest req) {

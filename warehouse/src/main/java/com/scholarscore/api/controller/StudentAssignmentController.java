@@ -94,7 +94,7 @@ public class StudentAssignmentController extends BaseController {
     @ApiOperation(
             value = "Create multiple student assignments",
             notes = "Creates, assigns IDs to, and persists multiple student assignment",
-            response = Void.class)
+            response = List.class)
     @RequestMapping(
             value = "/bulk",
             method = RequestMethod.POST,
