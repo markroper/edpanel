@@ -1,37 +1,22 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
-import com.mysql.jdbc.log.LogFactory;
 import com.scholarscore.api.persistence.AuthorityPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
-import com.scholarscore.api.persistence.mysql.mapper.PrepScoreMapper;
 import com.scholarscore.api.util.RoleConstants;
 import com.scholarscore.models.Authority;
-import com.scholarscore.models.HibernateConsts;
-import com.scholarscore.models.PrepScore;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.util.EdPanelDateUtil;
-import org.apache.commons.lang.time.DateUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Transactional
-public class StudentJdbc extends BaseJdbc implements StudentPersistence {
+public class StudentJdbc implements StudentPersistence {
     
     @Autowired
     private HibernateTemplate hibernateTemplate;

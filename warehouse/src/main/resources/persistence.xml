@@ -77,7 +77,6 @@
           class="com.scholarscore.api.persistence.mysql.jdbc.StudentJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
         <property name="authorityPersistence" ref="authorityPersistence"/>
-        <property name="dataSource" ref="dataSource"/>
     </bean>
 
     <bean id="schoolPersistence"
