@@ -20,10 +20,14 @@ import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 
+import java.util.Date;
+
 /**
  * Created by mattg on 7/2/15.
  */
 public interface IPowerSchoolClient {
+    void setSyncCutoff(Date date);
+
     SchoolsResponse getSchools() throws HttpClientException;
 
     DistrictResponse getDistrict() throws HttpClientException;

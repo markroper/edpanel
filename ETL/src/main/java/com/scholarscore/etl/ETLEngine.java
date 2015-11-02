@@ -18,6 +18,7 @@ import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.attendance.SchoolDay;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,6 +40,9 @@ import java.util.concurrent.TimeUnit;
 public class ETLEngine implements IETLEngine {
     public static final Long TOTAL_TTL_MINUTES = 120L;
     public static final int THREAD_POOL_SIZE = 8;
+    //After a certain point in the past, we no longer want to sync expensive and large tables, like attendance
+    //This date defines that cutoff point before which we will cease to sync updates.
+    private Date syncCutoff;
     private SyncResult results = new SyncResult();
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
@@ -74,6 +78,11 @@ public class ETLEngine implements IETLEngine {
 
     @Override
     public SyncResult syncDistrict() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, -1); // to get previous year add -1
+        this.syncCutoff = cal.getTime();
+        this.powerSchool.setSyncCutoff(this.syncCutoff);
+
         long startTime = System.currentTimeMillis();
         createSchools();
         long endTime = System.currentTimeMillis();
@@ -126,7 +135,7 @@ public class ETLEngine implements IETLEngine {
     private void syncSchoolDaysAndAttendance() {
         this.schoolDays = new ConcurrentHashMap<>();
         for(Map.Entry<Long, School> school : this.schools.entrySet()) {
-            SchoolDaySync s = new SchoolDaySync(edPanel, powerSchool, school.getValue());
+            SchoolDaySync s = new SchoolDaySync(edPanel, powerSchool, school.getValue(), syncCutoff);
             Long schoolSsid = Long.valueOf(school.getValue().getSourceSystemId());
             this.schoolDays.put(
                     schoolSsid,
@@ -136,7 +145,8 @@ public class ETLEngine implements IETLEngine {
                     powerSchool,
                     school.getValue(),
                     studentAssociator,
-                    this.schoolDays.get(schoolSsid));
+                    this.schoolDays.get(schoolSsid),
+                    syncCutoff);
             a.syncCreateUpdateDelete(results);
         }
 
