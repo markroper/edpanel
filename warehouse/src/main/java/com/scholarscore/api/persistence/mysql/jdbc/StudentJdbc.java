@@ -1,5 +1,6 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
+import com.mysql.jdbc.log.LogFactory;
 import com.scholarscore.api.persistence.AuthorityPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.PrepScoreMapper;
@@ -9,17 +10,19 @@ import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.PrepScore;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.user.Student;
-import org.joda.time.Days;
+import com.scholarscore.util.EdPanelDateUtil;
+import org.apache.commons.lang.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +32,8 @@ import java.util.UUID;
 @Transactional
 public class StudentJdbc extends BaseJdbc implements StudentPersistence {
 
+    private final static Logger logger = LoggerFactory.getLogger(StudentJdbc.class);
+    
     @Autowired
     private HibernateTemplate hibernateTemplate;
 
@@ -88,98 +93,99 @@ public class StudentJdbc extends BaseJdbc implements StudentPersistence {
         return null;
     }
 
+    // TODO Jordan: add sensible default for allPrepScoresSince? (or otherwise handle null date)
+    // (or add in controller?) 
     @Override
-    public List<PrepScore> selectStudentPrepScore(long studentId, Date allPrepScoresSince) {
-        Map<String, Object> params = new HashMap<>();
-        
+    public List<PrepScore> selectStudentPrepScore(Long[] studentIds, Date startDate, Date endDate) {
         // define 'week' buckets -- each eligible prep score contributor (i.e. behavior event) will end up in one of these buckets
         // each date is a saturday that represents the entire following week (through to friday)
-        Date[] allWeeks = getSaturdayDatesForAllWeeksSince(allPrepScoresSince);
+        Date[] allWeeks = EdPanelDateUtil.getSaturdayDatesForWeeksBetween(startDate, endDate);
 
+        // TODO Jordan: SDF is not threadsafe but costly to create. use threadlocal or something
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("select point_value, CASE ");
-        for (Date week : allWeeks) {
-            // need the start date (saturday)...
-            String saturdayDateString = dateFormatter.format(week);
-
-            // and the end date (friday)
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(week);
-            // since we know the incoming date is a saturday, this always gets us the following friday
-            cal.add(Calendar.DAY_OF_MONTH, 6);
-            String fridayDateString = dateFormatter.format(cal.getTime());
-
-            //query for all records within this week, and bucket them appropriately
-            queryBuilder.append(" WHEN " + HibernateConsts.BEHAVIOR_DATE + " >= '" + saturdayDateString 
-                    + "' AND " + HibernateConsts.BEHAVIOR_DATE + " < '" + fridayDateString 
-                    + "' THEN '" + saturdayDateString + "'");
-        }
-
-        queryBuilder.append(" END as " + HibernateConsts.BEHAVIOR_DATE);
+        // build the CASES fragment of the query to bucket the behavior events by week
+        String casesFrag = buildCaseFrag(allWeeks);
         
-        queryBuilder.append(" from behavior");
-        System.out.println("Build query: " + queryBuilder.toString());
-        List<PrepScore> prepScores = jdbcTemplate.query(
-                queryBuilder.toString(),
-                params,
-                new PrepScoreMapper()
-        );
-        System.out.println("Got prepscores back...");
-        for (PrepScore prepScore : prepScores) {
-            System.out.println(prepScore);
-        }
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("SELECT ");
+        queryBuilder.append(HibernateConsts.STUDENT_FK + ", ");
+        queryBuilder.append(PrepScore.INITIAL_PREP_SCORE + " + sum(" + HibernateConsts.BEHAVIOR_POINT_VALUE + ")" 
+                        + " as " + HibernateConsts.BEHAVIOR_POINT_VALUE + ", ");
+        // include the CASE statements assembled earlier
+        queryBuilder.append(casesFrag);
+        queryBuilder.append(" FROM " + HibernateConsts.BEHAVIOR_TABLE);
+
+        // filter by date range
+        List<Date> allWeeksList = Arrays.asList(allWeeks);
+        Collections.sort(allWeeksList);
+        String firstSaturdayString = dateFormatter.format(allWeeksList.get(0)); // first saturday
+        Date latestSaturday = allWeeksList.get(allWeeksList.size() - 1);
+        String lastFridayString = dateFormatter.format(DateUtils.addDays(latestSaturday, 6)); // add 6 days to go from sat -> fri
+        queryBuilder.append(" WHERE " + HibernateConsts.BEHAVIOR_DATE + " >= '" + firstSaturdayString + "'" 
+                        + " AND " + HibernateConsts.BEHAVIOR_DATE + " < '" + lastFridayString + "'");
+        
+        // ... and filter by student
+        queryBuilder.append(" AND (" + buildStudentWhereClauseFrag(studentIds) + ")");
+        
+        // group by student+date(s)
+        queryBuilder.append(" GROUP BY " + HibernateConsts.STUDENT_FK + ", " + HibernateConsts.START_DATE + ", " + HibernateConsts.END_DATE);
+        System.out.println("Built query for prepscore: " + queryBuilder.toString());
+
+        // run query 
+        List<PrepScore> prepScores = jdbcTemplate.query(queryBuilder.toString(), new HashMap<>(), new PrepScoreMapper());
         return prepScores;
     }
 
-    // constructs an array containing zero or more dates.
-    // each of these dates will occur on a saturday at noon, which for our purposes represents a week (saturday - friday)
-    // if the date provided is not a saturday at noon, the most recent saturday BEFORE the specified date will be used
-    protected Date[] getSaturdayDatesForAllWeeksSince(Date allPrepScoresSince) {
-        // if date is saturday
-        // use date
-        Date currentSaturday = null;
-        if (isSaturdayDate(allPrepScoresSince)) {
-            currentSaturday = allPrepScoresSince;
-        } else {
-            // otherwise, get saturday-date from non-saturday date
-            currentSaturday = getRecentSaturdayForDate(allPrepScoresSince);
-        }
+    private String buildCaseFrag(Date[] allWeeks) {
+        // here, two CASE statements are used to bucket behavior events to specific weeks.
+        // for each week, one case will return the saturday before the behavioral event, if not already a saturday
+        // the other case will return the friday after the event, if not already a friday
+        StringBuilder caseOneBuilder = new StringBuilder();
+        StringBuilder caseTwoBuilder = new StringBuilder();
 
-        ArrayList<Date> validSaturdayDates = new ArrayList<>();
+        // TODO Jordan: SDF is not threadsafe but costly to create. use threadlocal or something
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
-        // if the date is in the past, save it and increment a week
-        // until we pass by the present
-        while (!currentSaturday.after(Calendar.getInstance().getTime())) {
-            validSaturdayDates.add(currentSaturday);
-            Calendar c = Calendar.getInstance();
-            c.setTime(currentSaturday);
-            c.add(Calendar.DAY_OF_MONTH, 7);
-            currentSaturday = c.getTime();
+        caseOneBuilder.append("CASE ");
+        caseTwoBuilder.append("CASE ");
+        for (Date week : allWeeks) {
+            // need the start date (saturday)...
+            String saturdayDateString = dateFormatter.format(week);
+            // and the end date (friday)
+            String fridayDateString = dateFormatter.format(DateUtils.addDays(week, 6));
+
+            //query for all records within this week, and bucket them appropriately
+            // start_date column will be the saturday (beginning of the week of the prepscore in question)
+            caseOneBuilder.append(" WHEN " + HibernateConsts.BEHAVIOR_DATE + " >= '" + saturdayDateString
+                    + "' AND " + HibernateConsts.BEHAVIOR_DATE + " < '" + fridayDateString
+                    + "' THEN '" + saturdayDateString + "'");
+            // end_date column will be the friday (ending of the week of the prepscore in question)
+            caseTwoBuilder.append(" WHEN " + HibernateConsts.BEHAVIOR_DATE + " >= '" + saturdayDateString
+                    + "' AND " + HibernateConsts.BEHAVIOR_DATE + " < '" + fridayDateString
+                    + "' THEN '" + fridayDateString + "'");
+
         }
+        caseOneBuilder.append(" END as " + HibernateConsts.START_DATE);
+        caseTwoBuilder.append(" END as " + HibernateConsts.END_DATE);
         
-        return validSaturdayDates.toArray(new Date[0]);
+        return caseOneBuilder.toString() + ", " + caseTwoBuilder.toString();
     }
 
-    private Date getRecentSaturdayForDate(Date allPrepScoresSince) {
-        if (allPrepScoresSince == null) { return null; }
-        if (isSaturdayDate(allPrepScoresSince)) { return allPrepScoresSince; } 
-        
-        Calendar c = Calendar.getInstance();
-        c.setTime(allPrepScoresSince);
-        while (!(c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)) {
-            c.add(Calendar.DAY_OF_MONTH, -1);
+    private String buildStudentWhereClauseFrag(Long[] studentIds) {
+        StringBuilder sb = new StringBuilder();
+        boolean oneAdded = false;
+        for (long studentId : studentIds) {
+            if (oneAdded) {
+                sb.append(" OR ");
+            } else {
+                oneAdded = true;
+            }
+            sb.append(HibernateConsts.STUDENT_FK + " = '" + studentId + "'");
         }
-        return c.getTime();
+        return sb.toString();
     }
-
-    private boolean isSaturdayDate(Date allPrepScoresSince) {
-        Calendar c = Calendar.getInstance();
-        c.setTime(allPrepScoresSince);
-        return (c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY);
-    }
-
+    
     @Override
     @SuppressWarnings("unchecked")
     public Student selectBySsid(Long ssid) {

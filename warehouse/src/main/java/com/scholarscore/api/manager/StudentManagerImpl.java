@@ -57,12 +57,8 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public ServiceResponse<List<PrepScore>> getStudentPrepScore(long studentId, Date startDate) {
-        StatusCode code = studentExists(studentId);
-        if(!code.isOK()) {
-            return new ServiceResponse<>(code);
-        }
-        return new ServiceResponse<>(studentPersistence.selectStudentPrepScore(studentId, startDate));
+    public ServiceResponse<List<PrepScore>> getStudentPrepScore(Long[] studentIds, Date startDate, Date endDate) {
+        return new ServiceResponse<>(studentPersistence.selectStudentPrepScore(studentIds, startDate, endDate));
     }
 
     @Override
