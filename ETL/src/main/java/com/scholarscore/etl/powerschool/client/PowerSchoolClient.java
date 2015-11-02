@@ -7,19 +7,19 @@ import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.PsStudents;
-import com.scholarscore.etl.powerschool.api.model.assignment.PGAssignments;
-import com.scholarscore.etl.powerschool.api.model.assignment.type.PGAssignmentTypes;
+import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentWrapper;
+import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScoreWrapper;
+import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreIdWrapper;
+import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentTypeWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsCalendarDayWrapper;
-import com.scholarscore.etl.powerschool.api.response.AssignmentScoresResponse;
+import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeWrapper;
 import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionEnrollmentsResponse;
-import com.scholarscore.etl.powerschool.api.response.SectionGradesResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
-import com.scholarscore.etl.powerschool.api.response.SectionScoreIdsResponse;
 import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 import org.apache.http.HttpRequest;
@@ -88,26 +88,32 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     public static final String PATH_RESOURCE_SECTION_ENROLLMENT = BASE + "/section/{0}/section_enrollment";
     public static final String PATH_RESOURCE_SECTION_ASSIGNMENTS =
             "/ws/schema/table/PGAssignments?" +
-            PAGE_SIZE_PARAM +
-            "&projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
+            PAGE_NUM_PARAM +
+            "&" + PAGE_SIZE_PARAM +
+            "&projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={1}";
     public static final String PATH_RESOURCE_SECTION_ASSIGNMENT_CATEGORY =
             SCHEMA_BASE +
-            "/pgcategories?q=SectionID=={0}&projection=Abbreviation,DCID,DefaultPtsPoss,Description,ID,Name,SectionID";
+            "/pgcategories?q=SectionID=={1}&"+
+            PAGE_NUM_PARAM +
+            "&projection=Abbreviation,DCID,DefaultPtsPoss,Description,ID,Name,SectionID";
     public static final String PATH_RESOURCE_SECTION_SCORES =
             SCHEMA_BASE +
             "/storedgrades?" +
-            PAGE_SIZE_PARAM +
-            "&q=sectionid=={0}&projection=dcid,grade,datestored,studentid,sectionid,termid";
+            PAGE_NUM_PARAM +
+            "&" + PAGE_SIZE_PARAM +
+            "&q=sectionid=={1}&projection=dcid,grade,datestored,studentid,sectionid,termid";
     public static final String PATH_RESOURCE_ASSIGNMENT_SCORES =
             SCHEMA_BASE +
             "/SectionScoresAssignments?" +
-            PAGE_SIZE_PARAM +
-            "&q=assignment=={0}&projection=*";
+            PAGE_NUM_PARAM +
+            "&" + PAGE_SIZE_PARAM +
+            "&q=assignment=={1}&projection=*";
     public static final String PATH_RESOURCE_SECTION_SCORE_IDS =
             SCHEMA_BASE +
             "/SectionScoresId?" +
-            PAGE_SIZE_PARAM +
-            "&q=sectionid=={0}&projection=*";
+            PAGE_NUM_PARAM +
+            "&" + PAGE_SIZE_PARAM +
+            "&q=sectionid=={1}&projection=*";
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";
     private static final String URI_PATH_OATH = "/oauth/access_token";
     private final String clientSecret;
@@ -212,28 +218,44 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
 
     @Override
-    public SectionGradesResponse getSectionScoresBySectionId(Long sectionId) throws HttpClientException {
-        return get(SectionGradesResponse.class, PATH_RESOURCE_SECTION_SCORES, sectionId.toString());
+    public PsResponse<PsSectionGradeWrapper> getSectionScoresBySectionId(Long sectionId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsSectionGradeWrapper>>(){},
+                PATH_RESOURCE_SECTION_SCORES,
+                PAGE_SIZE,
+                sectionId.toString());
     }
     
     @Override
-    public PGAssignments getAssignmentsBySectionId(Long sectionId) throws HttpClientException {
-        return get(PGAssignments.class, PATH_RESOURCE_SECTION_ASSIGNMENTS, sectionId.toString()); 
+    public PsResponse<PsAssignmentWrapper> getAssignmentsBySectionId(Long sectionId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsAssignmentWrapper>>(){},
+                PATH_RESOURCE_SECTION_ASSIGNMENTS,
+                PAGE_SIZE,
+                sectionId.toString());
     }
 
     @Override
-    public PGAssignmentTypes getAssignmentTypesBySectionId(Long sectionId) throws HttpClientException {
-        return get(PGAssignmentTypes.class, PATH_RESOURCE_SECTION_ASSIGNMENT_CATEGORY, sectionId.toString());
+    public PsResponse<PsAssignmentTypeWrapper> getAssignmentTypesBySectionId(Long sectionId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsAssignmentTypeWrapper>>(){},
+                PATH_RESOURCE_SECTION_ASSIGNMENT_CATEGORY,
+                PAGE_SIZE,
+                sectionId.toString());
     }
 
     @Override
-    public AssignmentScoresResponse getStudentScoresByAssignmentId(Long assignmentId) throws HttpClientException {
-        return get(AssignmentScoresResponse.class, PATH_RESOURCE_ASSIGNMENT_SCORES, 3, assignmentId.toString());
+    public PsResponse<PsAssignmentScoreWrapper> getStudentScoresByAssignmentId(Long assignmentId) throws HttpClientException {
+        return get(
+                new TypeReference<PsResponse<PsAssignmentScoreWrapper>>(){},
+                PATH_RESOURCE_ASSIGNMENT_SCORES,
+                PAGE_SIZE,
+                assignmentId.toString());
     }
 
     @Override
-    public SectionScoreIdsResponse getStudentScoreIdsBySectionId(Long sectionId) throws HttpClientException {
-        return get(SectionScoreIdsResponse.class, PATH_RESOURCE_SECTION_SCORE_IDS, sectionId.toString());
+    public PsResponse<PsSectionScoreIdWrapper> getStudentScoreIdsBySectionId(Long sectionId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsSectionScoreIdWrapper>>() {},
+                PATH_RESOURCE_SECTION_SCORE_IDS,
+                PAGE_SIZE,
+                sectionId.toString());
     }
 
     @Override

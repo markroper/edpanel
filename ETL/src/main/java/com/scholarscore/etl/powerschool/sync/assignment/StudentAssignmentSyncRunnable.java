@@ -2,13 +2,14 @@ package com.scholarscore.etl.powerschool.sync.assignment;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.SyncResult;
-import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScores;
+import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScoreWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsScore;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreId;
-import com.scholarscore.etl.powerschool.api.response.AssignmentScoresResponse;
+import com.scholarscore.etl.powerschool.api.response.PsResponse;
+import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.ISync;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.assignment.Assignment;
@@ -190,11 +191,11 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
 
     protected ConcurrentHashMap<Long, StudentAssignment> resolveAllFromSourceSystem() throws HttpClientException {
         //Retrieve students' scores
-        AssignmentScoresResponse assScores =
+        PsResponse<PsAssignmentScoreWrapper> assScores =
                 powerSchool.getStudentScoresByAssignmentId(Long.valueOf(assignment.getSourceSystemId()));
         ConcurrentHashMap<Long, StudentAssignment> studentAssignmentsToCreate = new ConcurrentHashMap<>();
         if (null != assScores && null != assScores.record) {
-            for (PsAssignmentScores sc : assScores.record) {
+            for (PsResponseInner<PsAssignmentScoreWrapper> sc : assScores.record) {
                 PsScore score = sc.tables.sectionscoresassignments;
                 StudentAssignment studAss = new StudentAssignment();
                 studAss.setAssignment(assignment);
