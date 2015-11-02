@@ -130,7 +130,7 @@ public class SchoolDaySync {
             PsCalendarDay psCalDay = wrap.tables.calendar_day;
             SchoolDay day = psCalDay.toApiModel();
             day.setSchool(school);
-            //NOTE: we use id (not the pk, not garunteed unique in PS) and not DCID, because thats the column that
+            //NOTE: we use id (not the pk, not guaranteed unique in PS) and not DCID, because that's the column that
             //gets joined to. :(.  Also, only add the school_day if its 'in session':
             if(psCalDay.insession.equals("1")) {
                 result.put(psCalDay.date_value, day);
