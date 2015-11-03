@@ -59,8 +59,8 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                         "\"name\":\"Attendance\"," +
                         "\"isTemporal\":true," +
                         "\"thresholdChar\":\"#\"," +
-                        "\"green\":3," +
-                        "\"yellow\":6," +
+                        "\"green\":1," +
+                        "\"yellow\":4," +
                         "\"period\":\"year\"" +
                  "}," +
                  "\"behavior\":{" +
@@ -68,8 +68,8 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                         "\"isTemporal\":true," +
                         "\"thresholdChar\":\"#\"," +
                         "\"period\":\"week\"," +
-                        "\"green\":35," +
-                        "\"yellow\":55" +
+                        "\"green\":85," +
+                        "\"yellow\":75" +
                  "}," +
                  "\"homework\":{" +
                         "\"name\":\"Attendance\"," +
@@ -81,7 +81,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                         "\"isTemporal\":false," +
                         "\"thresholdChar\":\"#\"," +
                         "\"green\":3.3," +
-                        "\"yellow\":2.8" +
+                        "\"yellow\":3" +
                  "}" +
                "}"));
         } catch (IOException e) {
