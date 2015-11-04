@@ -6,7 +6,6 @@ import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.PrepScore;
 import com.scholarscore.util.EdPanelDateUtil;
 import org.apache.commons.lang.time.DateUtils;
-import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,70 +49,82 @@ public class StudentPrepScoreJdbc extends BaseJdbc implements StudentPrepScorePe
         if (endDate.before(startDate)) {
             endDate = startDate;            // if endDate is before startDate, move it up to startDate
         }
+        // end sensible default handling
 
         // define 'week' buckets -- each eligible prep score contributor (i.e. behavior event) will end up in one of these buckets
         // each date is a saturday that represents the entire following week (through to friday)
         Date[] allWeeks = EdPanelDateUtil.getSaturdayDatesForWeeksBetween(startDate, endDate);
+        
         StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("SELECT " + HibernateConsts.STUDENT_USER_FK + ", " 
+                + HibernateConsts.PREPSCORE_DERIVED_WEEKS_TABLE + "." + HibernateConsts.PREPSCORE_START_DATE + ", " 
+                + HibernateConsts.PREPSCORE_DERIVED_WEEKS_TABLE + "." + HibernateConsts.PREPSCORE_END_DATE + ", "
+                + "(" + PrepScore.INITIAL_PREP_SCORE + " coalesce(" + HibernateConsts.PREPSCORE_DERIVED_INNER_POINT_VALUE + ",0)) as " + HibernateConsts.BEHAVIOR_POINT_VALUE + " ");
+        queryBuilder.append(" FROM " + HibernateConsts.STUDENT_TABLE);
         
-        // select student_fk(s) and their prep score(s) for each week that any behavior events exist
-        queryBuilder.append("SELECT " + HibernateConsts.STUDENT_FK + ", ");
-        queryBuilder.append(PrepScore.INITIAL_PREP_SCORE + " + sum(" + HibernateConsts.BEHAVIOR_POINT_VALUE + ")"
-                + " as " + HibernateConsts.BEHAVIOR_POINT_VALUE + ", ");
+        // join on derived table that contains a row for every student-week (every supplied student x every supplied week)
+        queryBuilder.append(buildDerivedDateTableSqlFragment(allWeeks));
         
-        // build the CASES fragment of the query to bucket the behavior events by week
-        queryBuilder.append(buildCaseSqlFragment(allWeeks));
-        // FROM behavior
-        queryBuilder.append(" FROM " + HibernateConsts.BEHAVIOR_TABLE);
-        
-        queryBuilder.append(" RIGHT OUTER JOIN " + HibernateConsts.STUDENT_TABLE + " ON " 
-                + HibernateConsts.STUDENT_TABLE + "." + HibernateConsts.STUDENT_USER_FK + "="
-                + HibernateConsts.BEHAVIOR_TABLE + "." + HibernateConsts.STUDENT_FK);
-        
-        // WHERE: filter by date range...
-        queryBuilder.append(" WHERE (" + buildDateWhereClauseSqlFragment(allWeeks) + ")");
-        // ... and filter by student
-        queryBuilder.append(" AND (" + buildStudentWhereClauseSqlFragment(studentIds) + ")");
-        // group by student+date(s)
-        queryBuilder.append(" GROUP BY " + HibernateConsts.STUDENT_FK + ", " + HibernateConsts.START_DATE + ", " + HibernateConsts.END_DATE);
-        logger.info("Built query for prepscore: " + queryBuilder.toString());
-        // System.out.println("Built query for prepscore: " + queryBuilder.toString());
-
-        StringBuilder newQueryBuilder = new StringBuilder();
-        newQueryBuilder.append("select student_user_fk, derived_weeks.start_date, derived_weeks.end_date, (90 + coalesce(inner_point_value,0)) as point_value ");
-        newQueryBuilder.append(" FROM student");
-        
-        // join on derived table 
-        newQueryBuilder.append(" JOIN (SELECT ");
+        queryBuilder.append(" JOIN (SELECT ");
         boolean first = true;
         for (Date week : allWeeks) {
             if (!first) {
-                newQueryBuilder.append("UNION SELECT ");
+                queryBuilder.append("UNION SELECT ");
             }
-            newQueryBuilder.append("'" + getFormatter().format(week) + "' ");
+            queryBuilder.append("'" + getFormatter().format(week) + "' ");
             if (first) { 
-                newQueryBuilder.append("as start_date "); 
+                queryBuilder.append("as " + "start_date" + " "); 
             }
-            newQueryBuilder.append(", ");
-            newQueryBuilder.append("'" + getFormatter().format(DateUtils.addDays(week, 6)) + "' ");
+            queryBuilder.append(", ");
+            queryBuilder.append("'" + getFormatter().format(DateUtils.addDays(week, 6)) + "' ");
             if (first) {
-                newQueryBuilder.append("as end_date ");
+                queryBuilder.append("as " + HibernateConsts.PREPSCORE_END_DATE + " ");
                 first = false;
             }
         }
-        newQueryBuilder.append(") as derived_weeks ");
-        newQueryBuilder.append("LEFT OUTER JOIN ( ");
-
-        newQueryBuilder.append("SELECT student_fk, sum(coalesce(point_value,0)) as inner_point_value, " + buildCaseSqlFragment(allWeeks) 
-                + " FROM behavior " 
-                + " group by student_fk, start_date ");
+        queryBuilder.append(") as " + HibernateConsts.PREPSCORE_DERIVED_WEEKS_TABLE + " ");
         
-        newQueryBuilder.append(") as bucketed_behavior_events ");
-        newQueryBuilder.append("ON bucketed_behavior_events.student_fk=student_user_fk AND bucketed_behavior_events.start_date=derived_weeks.start_date");
+        queryBuilder.append("LEFT OUTER JOIN ( ");
+
+        queryBuilder.append("SELECT " 
+                + HibernateConsts.STUDENT_FK + ", "
+                + "sum(coalesce(" + HibernateConsts.BEHAVIOR_POINT_VALUE + ",0)) as " + HibernateConsts.PREPSCORE_DERIVED_INNER_POINT_VALUE + ", " 
+                + buildCaseSqlFragment(allWeeks));
+        queryBuilder.append(" FROM " + HibernateConsts.BEHAVIOR_TABLE 
+                + " group by " + HibernateConsts.STUDENT_FK + ", " + HibernateConsts.PREPSCORE_START_DATE + " ");
+        
+        queryBuilder.append(") as " + HibernateConsts.PREPSCORE_DERIVED_BUCKETED_BEHAVIOR_TABLE + " ");
+        queryBuilder.append("ON " + HibernateConsts.PREPSCORE_DERIVED_BUCKETED_BEHAVIOR_TABLE + "." + HibernateConsts.STUDENT_FK + "=" + HibernateConsts.STUDENT_USER_FK
+                + " AND " + HibernateConsts.PREPSCORE_DERIVED_BUCKETED_BEHAVIOR_TABLE + "." + HibernateConsts.PREPSCORE_START_DATE 
+                + "=" + HibernateConsts.PREPSCORE_DERIVED_WEEKS_TABLE + "." + HibernateConsts.PREPSCORE_START_DATE);
         
         // run query, return results
-        System.out.println("Built query for prepscore: " + newQueryBuilder.toString());
-        return jdbcTemplate.query(newQueryBuilder.toString(), new HashMap<>(), new PrepScoreMapper());
+        logger.info("Built query for prepscore: " + queryBuilder.toString());
+        System.out.println("Built query for prepscore: " + queryBuilder.toString());
+        return jdbcTemplate.query(queryBuilder.toString(), new HashMap<>(), new PrepScoreMapper());
+    }
+
+    private String buildDerivedDateTableSqlFragment(Date[] allWeeks) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(" JOIN (SELECT ");
+        boolean first = true;
+        for (Date week : allWeeks) {
+            if (!first) {
+                stringBuilder.append("UNION SELECT ");
+            }
+            stringBuilder.append("'" + getFormatter().format(week) + "' ");
+            if (first) {
+                stringBuilder.append("as " + HibernateConsts.PREPSCORE_START_DATE + " ");
+            }
+            stringBuilder.append(", ");
+            stringBuilder.append("'" + getFormatter().format(DateUtils.addDays(week, 6)) + "' ");
+            if (first) {
+                stringBuilder.append("as " + HibernateConsts.PREPSCORE_END_DATE + " ");
+                first = false;
+            }
+        }
+        stringBuilder.append(") as " + HibernateConsts.PREPSCORE_DERIVED_WEEKS_TABLE + " ");
+        return stringBuilder.toString();
     }
 
     private String buildCaseSqlFragment(Date[] allWeeks) {
@@ -142,8 +153,8 @@ public class StudentPrepScoreJdbc extends BaseJdbc implements StudentPrepScorePe
                     + "' THEN '" + fridayDateString + "'");
 
         }
-        caseOneBuilder.append(" END as " + HibernateConsts.START_DATE);
-        caseTwoBuilder.append(" END as " + HibernateConsts.END_DATE);
+        caseOneBuilder.append(" END as " + HibernateConsts.PREPSCORE_START_DATE);
+        caseTwoBuilder.append(" END as " + HibernateConsts.PREPSCORE_END_DATE);
 
         return caseOneBuilder.toString() + ", " + caseTwoBuilder.toString();
     }
