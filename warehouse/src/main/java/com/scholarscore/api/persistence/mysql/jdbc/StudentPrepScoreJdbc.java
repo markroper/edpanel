@@ -62,33 +62,38 @@ public class StudentPrepScoreJdbc extends BaseJdbc implements StudentPrepScorePe
                 + "(" + PrepScore.INITIAL_PREP_SCORE + " + coalesce(" + HibernateConsts.PREPSCORE_DERIVED_INNER_POINT_VALUE + ",0)) as " + HibernateConsts.BEHAVIOR_POINT_VALUE + " ");
         queryBuilder.append(" FROM " + HibernateConsts.STUDENT_TABLE);
         
-        // JOIN on derived table that contains list of weeks requested
-        queryBuilder.append(buildDerivedDateTableSqlFragment(allWeeks));
+        // JOIN on derived table that contains list of weeks requested to get all student-weeks
+        queryBuilder.append(" " + buildDerivedDateTableSqlFragment(allWeeks));
 
-        // 
-        queryBuilder.append("LEFT OUTER JOIN ( ");
-        queryBuilder.append("SELECT " 
-                + HibernateConsts.STUDENT_FK + ", "
-                + "sum(coalesce(" + HibernateConsts.BEHAVIOR_POINT_VALUE + ",0)) as " + HibernateConsts.PREPSCORE_DERIVED_INNER_POINT_VALUE + ", " 
-                + buildCaseSqlFragment(allWeeks));
-        queryBuilder.append(" FROM " + HibernateConsts.BEHAVIOR_TABLE 
-                + " group by " + HibernateConsts.STUDENT_FK 
-                + ", " + HibernateConsts.PREPSCORE_START_DATE + " ");
+        // JOIN on aggregated behavior events (grouped by student-week, so they can be joined to the above)
+        queryBuilder.append(" " + buildBehaviorJoinClauseSqlFragment());
         
-        queryBuilder.append(") as " + HibernateConsts.PREPSCORE_DERIVED_BUCKETED_BEHAVIOR_TABLE + " ");
-        queryBuilder.append("ON " + HibernateConsts.PREPSCORE_DERIVED_BUCKETED_BEHAVIOR_TABLE + "." + HibernateConsts.STUDENT_FK 
-                + "=" + HibernateConsts.STUDENT_USER_FK
-                + " AND " 
-                + HibernateConsts.PREPSCORE_DERIVED_BUCKETED_BEHAVIOR_TABLE + "." + HibernateConsts.PREPSCORE_START_DATE 
-                + "=" + HibernateConsts.PREPSCORE_DERIVED_WEEKS_TABLE + "." + HibernateConsts.PREPSCORE_START_DATE);
-
-        // filter by student
+        // WHERE to filter only requested student
         queryBuilder.append(" WHERE " + buildStudentWhereClauseSqlFragment(studentIds));
         
         // run query, return results
         logger.info("Built query for prepscore: " + queryBuilder.toString());
-        System.out.println("Built query for prepscore: " + queryBuilder.toString());
         return jdbcTemplate.query(queryBuilder.toString(), new HashMap<>(), new PrepScoreMapper());
+    }
+
+    private String buildBehaviorJoinClauseSqlFragment() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("LEFT OUTER JOIN ( ");
+        stringBuilder.append("SELECT "
+                + HibernateConsts.STUDENT_FK + ", "
+                + "sum(coalesce(" + HibernateConsts.BEHAVIOR_POINT_VALUE + ",0)) as " + HibernateConsts.PREPSCORE_DERIVED_INNER_POINT_VALUE + ", "
+                + buildCaseSqlFragment(allWeeks));
+        stringBuilder.append(" FROM " + HibernateConsts.BEHAVIOR_TABLE
+                + " group by " + HibernateConsts.STUDENT_FK
+                + ", " + HibernateConsts.PREPSCORE_START_DATE + " ");
+        stringBuilder.append(") as " + HibernateConsts.PREPSCORE_DERIVED_BUCKETED_BEHAVIOR_TABLE + " ");
+
+        stringBuilder.append("ON " + HibernateConsts.PREPSCORE_DERIVED_BUCKETED_BEHAVIOR_TABLE + "." + HibernateConsts.STUDENT_FK
+                + "=" + HibernateConsts.STUDENT_USER_FK
+                + " AND "
+                + HibernateConsts.PREPSCORE_DERIVED_BUCKETED_BEHAVIOR_TABLE + "." + HibernateConsts.PREPSCORE_START_DATE
+                + "=" + HibernateConsts.PREPSCORE_DERIVED_WEEKS_TABLE + "." + HibernateConsts.PREPSCORE_START_DATE);
+        return stringBuilder.toString();
     }
 
     private String buildDerivedDateTableSqlFragment(Date[] allWeeks) {
@@ -110,7 +115,7 @@ public class StudentPrepScoreJdbc extends BaseJdbc implements StudentPrepScorePe
                 first = false;
             }
         }
-        stringBuilder.append(") as " + HibernateConsts.PREPSCORE_DERIVED_WEEKS_TABLE + " ");
+        stringBuilder.append(") as " + HibernateConsts.PREPSCORE_DERIVED_WEEKS_TABLE);
         return stringBuilder.toString();
     }
 
