@@ -26,7 +26,7 @@ public class GradeUtil {
         }
         // to avoid NaN. assumption is that no completed classes should be thought of as '100%' and not '0%'
         if (percentageScore == 0D) { return 1D; }
-        return percentageScore / gradables.size();
+        return (double)Math.round(percentageScore / gradables.size() * 1000D) / 1000D;
     }
     
     public static Double calculateGPA(Integer gpaScale, Collection<? extends WeightedGradable> gradables) {
