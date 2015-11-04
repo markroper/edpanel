@@ -66,7 +66,7 @@ public class StudentPrepScoreJdbc extends BaseJdbc implements StudentPrepScorePe
         queryBuilder.append(" " + buildDerivedDateTableSqlFragment(allWeeks));
 
         // JOIN on aggregated behavior events (grouped by student-week, so they can be joined to the above)
-        queryBuilder.append(" " + buildBehaviorJoinClauseSqlFragment());
+        queryBuilder.append(" " + buildBehaviorJoinClauseSqlFragment(allWeeks));
         
         // WHERE to filter only requested student
         queryBuilder.append(" WHERE " + buildStudentWhereClauseSqlFragment(studentIds));
@@ -76,7 +76,7 @@ public class StudentPrepScoreJdbc extends BaseJdbc implements StudentPrepScorePe
         return jdbcTemplate.query(queryBuilder.toString(), new HashMap<>(), new PrepScoreMapper());
     }
 
-    private String buildBehaviorJoinClauseSqlFragment() {
+    private String buildBehaviorJoinClauseSqlFragment(Date[] allWeeks) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("LEFT OUTER JOIN ( ");
         stringBuilder.append("SELECT "
