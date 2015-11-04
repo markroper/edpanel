@@ -83,7 +83,7 @@ public class StudentPrepScoreJdbc extends BaseJdbc implements StudentPrepScorePe
                 + "=" + HibernateConsts.PREPSCORE_DERIVED_WEEKS_TABLE + "." + HibernateConsts.PREPSCORE_START_DATE);
 
         // filter by student
-        queryBuilder.append(" AND " + buildStudentWhereClauseSqlFragment(studentIds));
+        queryBuilder.append(" WHERE " + buildStudentWhereClauseSqlFragment(studentIds));
         
         // run query, return results
         logger.info("Built query for prepscore: " + queryBuilder.toString());
@@ -167,7 +167,7 @@ public class StudentPrepScoreJdbc extends BaseJdbc implements StudentPrepScorePe
             } else {
                 oneAdded = true;
             }
-            sb.append(HibernateConsts.STUDENT_FK + " = '" + studentId + "'");
+            sb.append(HibernateConsts.STUDENT_USER_FK + " = '" + studentId + "'");
         }
         return sb.toString();
     }
