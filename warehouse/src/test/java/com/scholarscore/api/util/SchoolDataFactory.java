@@ -396,6 +396,7 @@ public class SchoolDataFactory {
                 Behavior b = new Behavior();
                 b.setBehaviorDate(d);
                 b.setBehaviorCategory(BehaviorCategory.DEMERIT);
+                b.setPointValue("-2");
                 b.setTeacher(t);
                 b.setStudent(s);
                 studentBehaviors.get(s.getId()).add(b);
