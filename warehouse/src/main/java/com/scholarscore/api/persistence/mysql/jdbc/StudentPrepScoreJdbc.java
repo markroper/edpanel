@@ -150,18 +150,6 @@ public class StudentPrepScoreJdbc extends BaseJdbc implements StudentPrepScorePe
 
         return caseOneBuilder.toString() + ", " + caseTwoBuilder.toString();
     }
-
-    private String buildDateWhereClauseSqlFragment(Date[] dates) {
-        // filter by date range - sort weeks to get earliest/latest for outer bounds of query
-        List<Date> allWeeksList = Arrays.asList(dates);
-        Collections.sort(allWeeksList);
-        String firstSaturdayString = getFormatter().format(allWeeksList.get(0)); // first saturday
-        Date latestSaturday = allWeeksList.get(allWeeksList.size() - 1);
-        String lastFridayString = getFormatter().format(DateUtils.addDays(latestSaturday, 6)); // add 6 days to go from sat -> fri
-        return HibernateConsts.BEHAVIOR_DATE + " >= '" + firstSaturdayString + "'"
-                + " AND " + HibernateConsts.BEHAVIOR_DATE + " < '" + lastFridayString + "'";
-
-    }
     
     private String buildStudentWhereClauseSqlFragment(Long[] studentIds) {
         StringBuilder sb = new StringBuilder();
