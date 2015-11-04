@@ -413,3 +413,13 @@ insert into `scholar_warehouse`.`administrator` (administrator_name, administrat
 insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Matt Greenwood', 2, 1);
 insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser', 3, 1);
 insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser2', 4, 1);
+
+insert into `scholar_warehouse`.`behavior`      (behavior_id, student_fk, date, point_value)           values (1, 3, '2015-11-01', 1);
+insert into `scholar_warehouse`.`behavior`      (behavior_id, student_fk, date, point_value)           values (2, 3, '2015-11-01', 2);
+insert into `scholar_warehouse`.`behavior`      (behavior_id, student_fk, date, point_value)           values (3, 3, '2015-11-01', 1);
+insert into `scholar_warehouse`.`behavior`      (behavior_id, student_fk, date, point_value)           values (4, 3, '2015-11-01', -1);
+
+insert into `scholar_warehouse`.`behavior`      (behavior_id, student_fk, date, point_value)           values (5, 3, '2015-10-29', -4);
+insert into `scholar_warehouse`.`behavior`      (behavior_id, student_fk, date, point_value)           values (6, 3, '2015-10-28', 2);
+insert into `scholar_warehouse`.`behavior`      (behavior_id, student_fk, date, point_value)           values (7, 3, '2015-10-27', 2);
+insert into `scholar_warehouse`.`behavior`      (behavior_id, student_fk, date, point_value)           values (8, 3, '2015-10-28', -1);
