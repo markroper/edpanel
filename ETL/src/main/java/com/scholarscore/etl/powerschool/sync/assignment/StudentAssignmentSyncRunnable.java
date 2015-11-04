@@ -198,6 +198,11 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
             for (PsResponseInner<PsAssignmentScoreWrapper> sc : assScores.record) {
                 PsScore score = sc.tables.sectionscoresassignments;
                 StudentAssignment studAss = new StudentAssignment();
+                if(null != score.getExempt() && score.getExempt().equals("1")) {
+                    studAss.setExempt(true);
+                } else {
+                    studAss.setExempt(false);
+                }
                 studAss.setAssignment(assignment);
                 //Resolve the student, or move on
                 MutablePair<Student, PsSectionScoreId> sectionScoreIdAndStudent =
@@ -215,11 +220,10 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                     //NO OP
                 }
                 if (null == awardedPoints) {
-                    studAss.setCompleted(false);
-                } else {
-                    studAss.setAwardedPoints(awardedPoints);
-                    studAss.setCompleted(true);
+                    awardedPoints = 0D;
                 }
+                studAss.setAwardedPoints(awardedPoints);
+                studAss.setCompleted(true);
                 studentAssignmentsToCreate.put(
                         Long.valueOf(studAss.getStudent().getSourceSystemId()),
                         studAss);

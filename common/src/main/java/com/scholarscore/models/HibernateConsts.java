@@ -40,6 +40,7 @@ public class HibernateConsts {
     public static final String STUDENT_ASSIGNMENT_COMPLETION_DATE = "completion_date";
     public static final String STUDENT_ASSIGNMENT_ID = "student_assignment_id";
     public static final String STUDENT_ASSIGNMENT_NAME = "student_assignment_name";
+    public static final String STUDENT_ASSIGNMENT_EXEMPT = "student_assignment_exempt";
     public static final String STUDENT_SOURCE_SYSTEM_USER_ID = "student_source_system_user_id";
     public static final String ASSIGNMENT_FK = "assignment_fk";
     
@@ -119,6 +120,7 @@ public class HibernateConsts {
     public static final String STUDENT_SECTION_GRADE_TABLE = "student_section_grade";
     public static final String STUDENT_SECTION_GRADE_ID = "student_section_grade_id";
     public static final String STUDENT_SECTION_GRADE_COMPLETE = "complete";
+    public static final String STUDENT_SECTION_GRADE_EXEMPT = "student_section_grade_exempt";
     public static final String STUDENT_SECTION_GRADE_GRADE = "grade";
     
     //Teacher constants
