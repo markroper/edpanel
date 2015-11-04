@@ -54,13 +54,18 @@ public class HibernateConsts {
     public static final String BEHAVIOR_CATEGORY = "category";
     public static final String BEHAVIOR_POINT_VALUE = "point_value";
     public static final String BEHAVIOR_ROSTER = "roster";
+    
+    // the following column names are used in multiple places in different tables
     public static final String STUDENT_FK = "student_fk";
     public static final String TEACHER_FK = "teacher_fk";
     
     // these aren't defined columns in the DB, but are used by the SQL statements
     // as labels for addressing the calculated columns used by prepScore
-    public static final String START_DATE = "start_date";
-    public static final String END_DATE = "end_date";
+    public static final String PREPSCORE_START_DATE = "start_date";
+    public static final String PREPSCORE_END_DATE = "end_date";
+    public static final String PREPSCORE_DERIVED_WEEKS_TABLE = "derived_weeks";
+    public static final String PREPSCORE_DERIVED_BUCKETED_BEHAVIOR_TABLE = "bucketed_behavior_events";
+    public static final String PREPSCORE_DERIVED_INNER_POINT_VALUE = "inner_point_value";
     
     //Course constants
     public static final String COURSE_TABLE = "course";
