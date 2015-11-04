@@ -79,6 +79,7 @@ public class GradeUtilTest {
             studentAssignment.setAssignment(gradedAssignment);
             studentAssignment.setAwardedPoints(90D);
             studentAssignment.setId(i);
+            studentAssignment.setWeight(1);
             // default weight is 1
             weightedAssignments.add(studentAssignment);
         }
@@ -96,13 +97,13 @@ public class GradeUtilTest {
 
         Double expectedWeightedAverage =
                         // 50 score out of 100 possible, 5 assignments, 2 weight
-                        (((50.0 / 100.0) * 5.0 * 2.0)
+                        (((50.0 / 100.0) * 5.0 * 2)
                         // 90 score out of 100 possible, 10 assignments, 1 weight
-                        + ((90.0 / 100.0) * 10.0 * 1.0)
+                        + ((90.0 / 100.0) * 10.0 * 1)
                         // 50 score out of 50 possible, 5 assignments, 4 weight
-                        + ((50.0 / 50.0) * 5.0 * 4.0))
+                        + ((50.0 / 50.0) * 5.0 ) * 4)
                                 // 5 assignments w/ 2 weight, 10 assignments w/ 1 weight, 5 assignments w/ 4 weight
-                        / ((5.0 * 2.0) + (10.0 * 1.0) + (5.0 * 4.0));
+                        / ((5.0) + (10.0) + (5.0));
 
 
         return new Object[][] { 

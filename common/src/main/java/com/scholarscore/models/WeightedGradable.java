@@ -6,10 +6,8 @@ package com.scholarscore.models;
  * Time: 8:34 PM
  */
 public interface WeightedGradable {
-
     public Number getAwardedPoints();
     public Number getAvailablePoints();
-
-    // relative weight compared to other WeightedGradables
     public int getWeight();
+    public Boolean getExempt();
 }

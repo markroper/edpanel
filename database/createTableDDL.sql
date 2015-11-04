@@ -245,6 +245,7 @@ CREATE TABLE `scholar_warehouse`.`student_assignment` (
   `awarded_points` DOUBLE NULL COMMENT 'The number of possible points to be awarded for an assignment',
   `assignment_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the section assignment table',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
+  `student_assignment_exempt` BIT(1) COMMENT 'Whether the student assignment is exempt from grade calculations',
   PRIMARY KEY (`student_assignment_id`),
   CONSTRAINT `fk_assignment$student_assignment`
     FOREIGN KEY (`assignment_fk`)
@@ -263,6 +264,7 @@ CREATE TABLE `scholar_warehouse`.`student_section_grade` (
   `student_section_grade_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `complete` BIT(1) COMMENT 'Indicates whether the course grade is final',
   `grade` DOUBLE COMMENT 'Represents a single student grade in a section',
+  `exempt` BIT(1) COMMENT 'Indicates whether the student section grade should be included in GPA calculations',
   `section_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the section table',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
   PRIMARY KEY (`student_section_grade_id`),

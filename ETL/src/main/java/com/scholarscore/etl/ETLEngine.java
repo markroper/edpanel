@@ -2,13 +2,13 @@ package com.scholarscore.etl;
 
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.sync.attendance.AttendanceSync;
 import com.scholarscore.etl.powerschool.sync.CourseSync;
-import com.scholarscore.etl.powerschool.sync.attendance.SchoolDaySync;
 import com.scholarscore.etl.powerschool.sync.SchoolSync;
 import com.scholarscore.etl.powerschool.sync.TermSync;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
+import com.scholarscore.etl.powerschool.sync.attendance.AttendanceSync;
+import com.scholarscore.etl.powerschool.sync.attendance.SchoolDaySync;
 import com.scholarscore.etl.powerschool.sync.section.SectionSyncRunnable;
 import com.scholarscore.etl.powerschool.sync.user.StaffSync;
 import com.scholarscore.etl.powerschool.sync.user.StudentSync;
