@@ -207,9 +207,11 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                         Double pct = null;
                         if(null != score) {
                             pct = score.getPercent();
-                        }
-                        if(null != score.getExcludefromgpa() && score.getExcludefromgpa().equals("1")) {
-                            ssg.setExempt(true);
+                            if(null != score.getExcludefromgpa() && score.getExcludefromgpa().equals("1")) {
+                                ssg.setExempt(true);
+                            } else {
+                                ssg.setExempt(false);
+                            }
                         } else {
                             ssg.setExempt(false);
                         }

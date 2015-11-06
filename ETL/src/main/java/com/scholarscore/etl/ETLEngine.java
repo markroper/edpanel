@@ -168,14 +168,21 @@ public class ETLEngine implements IETLEngine {
     private void migrateSections() {
         this.sections = new ConcurrentHashMap<>();
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-        Map<Long, PsFinalGradeSetup> sectionIdToGradeFormula = new HashMap<>();
+        Map<Long, Map<Long, PsFinalGradeSetup>> sectionIdToGradeFormula = new HashMap<>();
         try {
             PsResponse<PsFinalGradeSetupWrapper> gradeSetups =  powerSchool.getFinalGradeSetups();
             for(PsResponseInner<PsFinalGradeSetupWrapper> wrapper : gradeSetups.record) {
                 PsFinalGradeSetup gradeSetup = wrapper.tables.psm_finalgradesetup;
-                sectionIdToGradeFormula.put(gradeSetup.sectionid, gradeSetup);
+                if(!sectionIdToGradeFormula.containsKey(gradeSetup.sectionid)) {
+                    sectionIdToGradeFormula.put(gradeSetup.sectionid, new HashMap<>());
+                }
+                if(sectionIdToGradeFormula.get(gradeSetup.sectionid).containsKey(gradeSetup.reportingtermid)) {
+                    System.out.println("DUPE!");
+                }
+                sectionIdToGradeFormula.get(gradeSetup.sectionid).put(gradeSetup.reportingtermid, gradeSetup);
             }
-        } catch (HttpClientException e) {
+        } catch (HttpClientException | NullPointerException e) {
+            System.out.println(e);
             //NO OP
         }
 

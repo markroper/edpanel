@@ -18,6 +18,7 @@ import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapp
 import com.scholarscore.etl.powerschool.api.model.section.PsGradeFormulaWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeightingWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PtSectionWrapper;
 import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
@@ -226,6 +227,14 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     public PsResponse<PsFinalGradeSetupWrapper> getFinalGradeSetups() throws HttpClientException {
         return get(new TypeReference<PsResponse<PsFinalGradeSetupWrapper>>() {},
                 paths.getSectionGradesSetupPath(),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PtSectionWrapper> getPowerTeacherSection(String sourceSectionNumberVarchar) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtSectionWrapper>>() {},
+                paths.getPowerTeacherSectionPath(sourceSectionNumberVarchar),
                 PAGE_SIZE,
                 (String[]) null);
     }
