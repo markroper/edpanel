@@ -87,25 +87,32 @@ public class PowerSchoolPaths {
         return BASE + "/school/{0}/section?" + getPageSizeParam();
     }
 
+    public String getPowerTeacherSectionPath(String sourceSectionId) {
+        return SCHEMA_BASE +
+                "/PSM_Section?" +
+                getPageSizeParam() +
+                "&projection=*&q=sectionidentifier==" + sourceSectionId.toString();
+    }
+
     public String getSectionGradesSetupPath() {
         return SCHEMA_BASE +
-            "PSM_FinalGradeSetup?" +
+            "/PSM_FinalGradeSetup?" +
             getPageSizeParam() +
             "&projection=*&q=finalgradesetuptype!=TotalPoints";
     }
 
     public String getSectionGradeFormula(long formulaId) {
         return SCHEMA_BASE +
-                "PSM_GradingFormula?" +
+                "/PSM_GradingFormula?" +
                 getPageSizeParam() +
-                "projection=*&q=id==" + String.valueOf(formulaId);
+                "&projection=*&q=id==" + String.valueOf(formulaId);
     }
 
     public String getSectionGradeFormulaWeights(long formulaId) {
         return SCHEMA_BASE +
-                "PSM_GradingFormulaWeighting?" +
+                "/PSM_GradingFormulaWeighting?" +
                 getPageSizeParam() +
-                "projection=*&q=ParentGradingFormulaID==" + String.valueOf(formulaId);
+                "&projection=*&q=ParentGradingFormulaID==" + String.valueOf(formulaId);
     }
 
     public String getSectionEnrollmentPath() {

@@ -12,6 +12,7 @@ import com.scholarscore.etl.powerschool.api.model.section.PsGradeFormula;
 import com.scholarscore.etl.powerschool.api.model.section.PsGradeFormulaWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeighting;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeightingWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PtSectionWrapper;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
@@ -53,7 +54,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
     private StudentAssociator studentAssociator;
     private StaffAssociator staffAssociator;
     private ConcurrentHashMap<Long, Section> sections;
-    private Map<Long, PsFinalGradeSetup> sectionIdToGradeFormula;
+    private Map<Long, Map<Long, PsFinalGradeSetup>> sectionIdToGradeFormula;
     private SyncResult results;
 
     public SectionSyncRunnable(IPowerSchoolClient powerSchool,
@@ -64,7 +65,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                                StaffAssociator staffAssociator,
                                StudentAssociator studentAssociator,
                                ConcurrentHashMap<Long, Section> sections,
-                               Map<Long, PsFinalGradeSetup> sectionIdToGradeFormula,
+                               Map<Long, Map<Long, PsFinalGradeSetup>> sectionIdToGradeFormula,
                                SyncResult results) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
@@ -203,7 +204,14 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 }
                 //If there is a formula other than using assignment points and weights to calculate the grade,
                 //Resolve that formula and set it on the section.
-                if(sectionIdToGradeFormula.containsKey(powerSection.getId())) {
+                Long powerTeacherSectionId = null;
+                PsResponse<PtSectionWrapper> powerTeacherSection =
+                        powerSchool.getPowerTeacherSection(powerSection.getSection_number());
+                for(PsResponseInner<PtSectionWrapper> ptSectWrap: powerTeacherSection.record) {
+                    powerTeacherSectionId = ptSectWrap.tables.psm_section.id;
+                    break;
+                }
+                if(null != powerTeacherSectionId && sectionIdToGradeFormula.containsKey(powerTeacherSectionId)) {
                     //First we need to resolve the assignment types
                     Map<Long, AssignmentType> typeIdToType = new HashMap<>();
                     PsResponse<PsAssignmentTypeWrapper> powerTypes =
@@ -217,8 +225,10 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                             }
                         }
                     }
-                    //lookup the grade formula ^ ^
-                    PsFinalGradeSetup setup = sectionIdToGradeFormula.get(powerSection.getId());
+                    //TODO: we have grade formula by term. Need to change the EdPanel model to support this
+                    Iterator<Map.Entry<Long, PsFinalGradeSetup>> it =
+                            sectionIdToGradeFormula.get(powerTeacherSectionId).entrySet().iterator();
+                    PsFinalGradeSetup setup = it.next().getValue();
                     PsResponse<PsGradeFormulaWrapper> formulaResponse =
                             powerSchool.getGradeFormula(setup.gradingformulaid);
                     PsResponse<PsSectionGradeFormulaWeightingWrapper> formulaWeightResponse =
@@ -233,6 +243,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                                 psWeight.assignmentcategoryid),
                                 psWeight.weighting);
                     }
+                    //TODO: this is always empty, figure out why
                     edpanelSection.setGradeFormula(formulaBuilder.build());
                 }
 

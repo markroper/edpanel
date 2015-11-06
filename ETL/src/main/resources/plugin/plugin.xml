@@ -291,7 +291,17 @@
 		<field table="PSM_AssignmentCategory" field="ID" access="ViewOnly" />
 		<field table="PSM_AssignmentCategory" field="IncludeInFinalGrades" access="ViewOnly" />
 		<field table="PSM_AssignmentCategory" field="Name" access="ViewOnly" />
-		<field table="PSM_AssignmentCategory" field="Description" access="ViewOnly" />
+		<field table="PSM_Section" field="Description" access="ViewOnly" />
+		<field table="PSM_Section" field="GradebookType" access="ViewOnly" />
+		<field table="PSM_Section" field="ID" access="ViewOnly" />
+		<field table="PSM_Section" field="IsEarnedVarCreditAllowed" access="ViewOnly" />
+		<field table="PSM_Section" field="IsPotentialVarCreditAllowed" access="ViewOnly" />
+		<field table="PSM_Section" field="Meeting" access="ViewOnly" />
+		<field table="PSM_Section" field="RoomName" access="ViewOnly" />
+		<field table="PSM_Section" field="SchoolCourseID" access="ViewOnly" />
+		<field table="PSM_Section" field="SchoolID" access="ViewOnly" />
+		<field table="PSM_Section" field="SectionIdentifier" access="ViewOnly" />
+		<field table="PSM_Section" field="TermID" access="ViewOnly" />
 		<!--Tables related to section grade formulas-->
 		<field table="GradeScaleItem" field="AddedValue" access="ViewOnly" />
 		<field table="GradeScaleItem" field="Alt_Grade_Points" access="ViewOnly" />
