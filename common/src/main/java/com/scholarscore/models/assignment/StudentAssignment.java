@@ -41,6 +41,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     private Assignment assignment;
     private Student student;
     private Boolean exempt;
+    private String comment;
 
     public StudentAssignment() {
         super();
@@ -54,6 +55,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         this.student = sa.student;
         this.completionDate = sa.completionDate;
         this.exempt = sa.exempt;
+        this.comment = sa.comment;
     }
 
     @Override
@@ -78,6 +80,9 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         }
         if(null == this.exempt) {
             this.exempt = mergeFrom.exempt;
+        }
+        if(null == this.comment) {
+            this.comment = mergeFrom.comment;
         }
     }
 
@@ -119,6 +124,15 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         // directly grabbed from StudentAssignment.
         //TODO: then why is this here?  remove me
         return 1;
+    }
+
+    @Column(name = HibernateConsts.STUDENT_ASSIGNMENT_COMMENT)
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public void setAwardedPoints(Double awardedPoints) {
@@ -182,12 +196,13 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
                 Objects.equals(this.awardedPoints, other.awardedPoints) &&
                 Objects.equals(this.student, other.student) &&
                 Objects.equals(this.exempt, other.exempt) &&
+                Objects.equals(this.comment, other.comment) &&
                 Objects.equals(this.completionDate, other.completionDate);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(assignment, completed, exempt, awardedPoints, student, completionDate);
+        return 31 * super.hashCode() + Objects.hash(assignment, completed, exempt, comment, awardedPoints, student, completionDate);
     }
 
     /**
@@ -202,6 +217,12 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         private Assignment assignment;
         private Student student;
         private Boolean exempt;
+        private String comment;
+
+        public StudentAssignmentBuilder withComment(final String comment){
+            this.comment = comment;
+            return this;
+        }
 
         public StudentAssignmentBuilder withCompleted(final Boolean completed){
             this.completed = completed;
@@ -240,6 +261,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
             studentAssignment.setAwardedPoints(awardedPoints);
             studentAssignment.setAssignment(assignment);
             studentAssignment.setStudent(student);
+            studentAssignment.setComment(comment);
             studentAssignment.setExempt(exempt);
             return studentAssignment;
         }

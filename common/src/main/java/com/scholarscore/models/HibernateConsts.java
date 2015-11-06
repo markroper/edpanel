@@ -38,6 +38,7 @@ public class HibernateConsts {
     public static final String STUDENT_ASSIGNMENT_COMPLETED = "completed";
     public static final String STUDENT_ASSIGNMENT_AWARDED_POINTS = "awarded_points";
     public static final String STUDENT_ASSIGNMENT_COMPLETION_DATE = "completion_date";
+    public static final String STUDENT_ASSIGNMENT_COMMENT = "comment";
     public static final String STUDENT_ASSIGNMENT_ID = "student_assignment_id";
     public static final String STUDENT_ASSIGNMENT_NAME = "student_assignment_name";
     public static final String STUDENT_ASSIGNMENT_EXEMPT = "student_assignment_exempt";
