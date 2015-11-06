@@ -262,6 +262,36 @@
 		<field table="StoredGrades" field="Teacher_Name" access="ViewOnly" />
 		<field table="StoredGrades" field="TermBinsName" access="ViewOnly" />
 		<field table="StoredGrades" field="TermID" access="ViewOnly" />
+		<field table="PSM_GradingFormula" field="ContentGroupID" access="ViewOnly" />
+		<field table="PSM_GradingFormula" field="GradeScaleID" access="ViewOnly" />
+		<field table="PSM_GradingFormula" field="ID" access="ViewOnly" />
+		<field table="PSM_GradingFormula" field="Name" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="AssignmentCategoryID" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="AssignmentID" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="GradingFormulaWeightingType" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="ID" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="LowScoresToDiscard" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="ParentGradingFormulaID" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="ReportCardItemID" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="ReportingTermID" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="Weighting" access="ViewOnly" />
+		<field table="PSM_FinalGradeSetup" field="ContentGroupID" access="ViewOnly" />
+		<field table="PSM_FinalGradeSetup" field="FinalGradeSetupType" access="ViewOnly" />
+		<field table="PSM_FinalGradeSetup" field="GradingFormulaID" access="ViewOnly" />
+		<field table="PSM_FinalGradeSetup" field="ID" access="ViewOnly" />
+		<field table="PSM_FinalGradeSetup" field="LowScoresToDiscard" access="ViewOnly" />
+		<field table="PSM_FinalGradeSetup" field="ReportingTermID" access="ViewOnly" />
+		<field table="PSM_FinalGradeSetup" field="SectionID" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="Abbreviation" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="ContentGroupID" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="DefaultExtraCreditPoints" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="DefaultPoints" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="DefaultScoreType" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="Description" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="ID" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="IncludeInFinalGrades" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="Name" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="Description" access="ViewOnly" />
 		<!--Tables related to section grade formulas-->
 		<field table="GradeScaleItem" field="AddedValue" access="ViewOnly" />
 		<field table="GradeScaleItem" field="Alt_Grade_Points" access="ViewOnly" />

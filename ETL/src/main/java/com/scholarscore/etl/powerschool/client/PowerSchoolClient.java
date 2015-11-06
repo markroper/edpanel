@@ -14,6 +14,9 @@ import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentTy
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsCalendarDayWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PsGradeFormulaWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeightingWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeWrapper;
 import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
@@ -168,7 +171,7 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
 
     @Override
-    public PsResponse<PsAssignmentTypeWrapper> getAssignmentTypesBySectionId(Long sectionId) throws HttpClientException {
+    public PsResponse<PsAssignmentTypeWrapper> getAssignmentCategoriesBySectionId(Long sectionId) throws HttpClientException {
         return get(new TypeReference<PsResponse<PsAssignmentTypeWrapper>>(){},
                 paths.getSectionAssignmentCategories(),
                 PAGE_SIZE,
@@ -215,6 +218,30 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
         return get(
                 new TypeReference<PsResponse<PsAttendanceCodeWrapper>>(){},
                 paths.getAttendanceCodePath(),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PsFinalGradeSetupWrapper> getFinalGradeSetups() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsFinalGradeSetupWrapper>>() {},
+                paths.getSectionGradesSetupPath(),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PsGradeFormulaWrapper> getGradeFormula(Long gradeFormulaId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsGradeFormulaWrapper>>() {},
+                paths.getSectionGradeFormula(gradeFormulaId),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PsSectionGradeFormulaWeightingWrapper> getGradeFormulaWeights(Long gradeFormulaId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsSectionGradeFormulaWeightingWrapper>>() {},
+                paths.getSectionGradeFormulaWeights(gradeFormulaId),
                 PAGE_SIZE,
                 (String[]) null);
     }

@@ -171,7 +171,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
     protected ConcurrentHashMap<Long, Assignment> resolveAllFromSourceSystem(SyncResult results) throws HttpClientException {
         //first resolve the assignment categories, so we can construct the appropriate EdPanel assignment subclass
         PsResponse<PsAssignmentTypeWrapper> powerTypes =
-                powerSchool.getAssignmentTypesBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
+                powerSchool.getAssignmentCategoriesBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
         if(null != powerTypes && null != powerTypes.record) {
             for (PsResponseInner<PsAssignmentTypeWrapper> pat: powerTypes.record) {
                 if(null != pat.tables && null != pat.tables.pgcategories) {
