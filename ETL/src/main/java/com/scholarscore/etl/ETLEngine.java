@@ -1,6 +1,11 @@
 package com.scholarscore.etl;
 
+import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetup;
+import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapper;
+import com.scholarscore.etl.powerschool.api.response.PsResponse;
+import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.CourseSync;
 import com.scholarscore.etl.powerschool.sync.SchoolSync;
@@ -20,6 +25,7 @@ import com.scholarscore.models.attendance.SchoolDay;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -162,6 +168,17 @@ public class ETLEngine implements IETLEngine {
     private void migrateSections() {
         this.sections = new ConcurrentHashMap<>();
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+        Map<Long, PsFinalGradeSetup> sectionIdToGradeFormula = new HashMap<>();
+        try {
+            PsResponse<PsFinalGradeSetupWrapper> gradeSetups =  powerSchool.getFinalGradeSetups();
+            for(PsResponseInner<PsFinalGradeSetupWrapper> wrapper : gradeSetups.record) {
+                PsFinalGradeSetup gradeSetup = wrapper.tables.psm_finalgradesetup;
+                sectionIdToGradeFormula.put(gradeSetup.sectionid, gradeSetup);
+            }
+        } catch (HttpClientException e) {
+            //NO OP
+        }
+
         for(Map.Entry<Long, School> school : this.schools.entrySet()) {
             Long sourceSystemSchoolId = Long.valueOf(school.getValue().getSourceSystemId());
             sections.put(sourceSystemSchoolId, new ConcurrentHashMap<>());
@@ -174,6 +191,7 @@ public class ETLEngine implements IETLEngine {
                     staffAssociator,
                     studentAssociator,
                     this.sections.get(sourceSystemSchoolId),
+                    sectionIdToGradeFormula,
                     results);
             executor.execute(sectionRunnable);
         }

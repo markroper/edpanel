@@ -2,22 +2,34 @@ package com.scholarscore.etl.powerschool.sync.section;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsSection;
+import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentFactory;
+import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentTypeWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetup;
+import com.scholarscore.etl.powerschool.api.model.section.PsGradeFormula;
+import com.scholarscore.etl.powerschool.api.model.section.PsGradeFormulaWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeighting;
+import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeightingWrapper;
+import com.scholarscore.etl.powerschool.api.response.PsResponse;
+import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.powerschool.sync.assignment.SectionAssignmentSync;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.Course;
+import com.scholarscore.models.GradeFormula;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -41,6 +53,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
     private StudentAssociator studentAssociator;
     private StaffAssociator staffAssociator;
     private ConcurrentHashMap<Long, Section> sections;
+    private Map<Long, PsFinalGradeSetup> sectionIdToGradeFormula;
     private SyncResult results;
 
     public SectionSyncRunnable(IPowerSchoolClient powerSchool,
@@ -51,6 +64,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                                StaffAssociator staffAssociator,
                                StudentAssociator studentAssociator,
                                ConcurrentHashMap<Long, Section> sections,
+                               Map<Long, PsFinalGradeSetup> sectionIdToGradeFormula,
                                SyncResult results) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
@@ -60,6 +74,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
         this.staffAssociator = staffAssociator;
         this.studentAssociator = studentAssociator;
         this.sections = sections;
+        this.sectionIdToGradeFormula = sectionIdToGradeFormula;
         this.results = results;
     }
 
@@ -186,6 +201,41 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     teachers.add((Teacher) t);
                     edpanelSection.setTeachers(teachers);
                 }
+                //If there is a formula other than using assignment points and weights to calculate the grade,
+                //Resolve that formula and set it on the section.
+                if(sectionIdToGradeFormula.containsKey(powerSection.getId())) {
+                    //First we need to resolve the assignment types
+                    Map<Long, AssignmentType> typeIdToType = new HashMap<>();
+                    PsResponse<PsAssignmentTypeWrapper> powerTypes =
+                            powerSchool.getAssignmentCategoriesBySectionId(Long.valueOf(edpanelSection.getSourceSystemId()));
+                    if(null != powerTypes && null != powerTypes.record) {
+                        for (PsResponseInner<PsAssignmentTypeWrapper> pat: powerTypes.record) {
+                            if(null != pat.tables && null != pat.tables.pgcategories) {
+                                typeIdToType.put(
+                                    Long.valueOf(pat.tables.pgcategories.getId()),
+                                    PsAssignmentFactory.resolveAssignmentType(pat.tables.pgcategories));
+                            }
+                        }
+                    }
+                    //lookup the grade formula ^ ^
+                    PsFinalGradeSetup setup = sectionIdToGradeFormula.get(powerSection.getId());
+                    PsResponse<PsGradeFormulaWrapper> formulaResponse =
+                            powerSchool.getGradeFormula(setup.gradingformulaid);
+                    PsResponse<PsSectionGradeFormulaWeightingWrapper> formulaWeightResponse =
+                            powerSchool.getGradeFormulaWeights(setup.gradingformulaid);
+
+                    PsGradeFormula psFormula = formulaResponse.record.get(0).tables.psm_gradingformula;
+                    GradeFormula.GradeFormulaBuilder formulaBuilder = new GradeFormula.GradeFormulaBuilder();
+                    for(PsResponseInner<PsSectionGradeFormulaWeightingWrapper> psweightwrapper:
+                            formulaWeightResponse.record) {
+                        PsSectionGradeFormulaWeighting psWeight = psweightwrapper.tables.psm_gradingformulaweighting;
+                        formulaBuilder.withAssignmentTypeWeight(typeIdToType.get(
+                                psWeight.assignmentcategoryid),
+                                psWeight.weighting);
+                    }
+                    edpanelSection.setGradeFormula(formulaBuilder.build());
+                }
+
                 result.put(powerSection.getId(), edpanelSection);
             }
         }
