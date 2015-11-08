@@ -22,6 +22,8 @@ import com.scholarscore.models.Section;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.user.Student;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,6 +38,7 @@ import java.util.concurrent.TimeUnit;
  * Created by markroper on 10/28/15.
  */
 public class SectionAssignmentSync implements ISync<Assignment> {
+    private final static Logger LOGGER = LoggerFactory.getLogger(SectionAssignmentSync.class);
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
     private School school;
@@ -163,7 +166,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                 executor.shutdownNow();
             }
         } catch(InterruptedException e) {
-            System.out.println("Executor thread pool interrupted " + e.getMessage());
+            LOGGER.error("Executor thread pool interrupted " + e.getMessage());
         }
         return source;
     }
@@ -204,7 +207,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                 if(null != stud) {
                     ssidToStudent.put(ssidId, new MutablePair<>(stud, i));
                 } else {
-                    System.out.println("Unable to resolve student with ssid: " + i.getStudentid());
+                    LOGGER.warn("Unable to resolve student with ssid: " + i.getStudentid());
                 }
             }
         }

@@ -2,6 +2,9 @@ package com.scholarscore.etl;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentFactory;
+import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCategory;
+import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCategoryWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetup;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapper;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
@@ -21,7 +24,10 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.attendance.SchoolDay;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -44,6 +50,7 @@ import java.util.concurrent.TimeUnit;
  * Created by mattg on 7/3/©5.
  */
 public class ETLEngine implements IETLEngine {
+    private final static Logger LOGGER = LoggerFactory.getLogger(ETLEngine.class);
     public static final Long TOTAL_TTL_MINUTES = 120L;
     public static final int THREAD_POOL_SIZE = 8;
     //After a certain point in the past, we no longer want to sync expensive and large tables, like attendance
@@ -93,39 +100,39 @@ public class ETLEngine implements IETLEngine {
         createSchools();
         long endTime = System.currentTimeMillis();
         long schoolCreationTime = (endTime - startTime)/1000;
-        System.out.println("School sync complete");
+        LOGGER.info("School sync complete. " + schools.size() + " school(s) synchronized.");
 
         migrateSchoolYearsAndTerms();
         long yearsAndTermsComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
-        System.out.println("Term and year sync complete");
+        LOGGER.info("Term and year sync complete");
 
         createStaff();
         long staffCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
-        System.out.println("Staff sync complete");
+        LOGGER.info("Staff sync complete");
 
         createStudents();
         long studentCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
-        System.out.println("Student sync complete");
+        LOGGER.info("Student sync complete");
 
         syncSchoolDaysAndAttendance();
         long schoolDayCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
-        System.out.println("School day & Attendance sync complete");
+        LOGGER.info("School day & Attendance sync complete");
 
         createCourses();
         long courseCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
-        System.out.println("Course sync complete");
+        LOGGER.info("Course sync complete");
 
         migrateSections();
         long sectionCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
-        System.out.println("Section sync complete");
+        LOGGER.info("Section sync complete");
 
-        System.out.println("Total runtime: " + (endTime - startTime)/1000 +
+        LOGGER.info("Total runtime: " + (endTime - startTime)/1000 +
                 " seconds, \nschools: " + schoolCreationTime +
                 " seconds, \nYears + Terms: " + yearsAndTermsComplete +
                 " seconds, \nstaff: " + staffCreationComplete +
@@ -168,6 +175,7 @@ public class ETLEngine implements IETLEngine {
     private void migrateSections() {
         this.sections = new ConcurrentHashMap<>();
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+        //Resolve PowerTeacher section ID to grade formula setup mapping
         Map<Long, Map<Long, PsFinalGradeSetup>> sectionIdToGradeFormula = new HashMap<>();
         try {
             PsResponse<PsFinalGradeSetupWrapper> gradeSetups =  powerSchool.getFinalGradeSetups();
@@ -182,9 +190,27 @@ public class ETLEngine implements IETLEngine {
                 sectionIdToGradeFormula.get(gradeSetup.sectionid).put(gradeSetup.reportingtermid, gradeSetup);
             }
         } catch (HttpClientException | NullPointerException e) {
-            System.out.println(e);
-            //NO OP
+            LOGGER.warn(e.getLocalizedMessage());
         }
+        //Associate powerTeacher AssignmentCategories and EdPanel types
+        Map<Long, AssignmentType> powerTeacherCategoryToEdPanelType = new HashMap<>();
+        try {
+            PsResponse<PtAssignmentCategoryWrapper> powerTypes =
+                    powerSchool.getPowerTeacherAssignmentCategory();
+            if (null != powerTypes && null != powerTypes.record) {
+                for (PsResponseInner<PtAssignmentCategoryWrapper> pat : powerTypes.record) {
+                    if (null != pat.tables && null != pat.tables.psm_assignmentcategory) {
+                        PtAssignmentCategory category = pat.tables.psm_assignmentcategory;
+                        powerTeacherCategoryToEdPanelType.put(
+                                Long.valueOf(category.id),
+                                PsAssignmentFactory.resolveAssignmentType(category.abbreviation, category.name));
+                    }
+                }
+            }
+        } catch(HttpClientException e) {
+            LOGGER.warn(e.getLocalizedMessage());
+        }
+
 
         for(Map.Entry<Long, School> school : this.schools.entrySet()) {
             Long sourceSystemSchoolId = Long.valueOf(school.getValue().getSourceSystemId());
@@ -199,6 +225,7 @@ public class ETLEngine implements IETLEngine {
                     studentAssociator,
                     this.sections.get(sourceSystemSchoolId),
                     sectionIdToGradeFormula,
+                    powerTeacherCategoryToEdPanelType,
                     results);
             executor.execute(sectionRunnable);
         }
@@ -209,7 +236,7 @@ public class ETLEngine implements IETLEngine {
                 executor.shutdownNow(); //optional **/optional **
             }
         } catch(InterruptedException e) {
-            System.out.println("Executor thread pool interrupted " + e.getMessage());
+            LOGGER.error("Executor thread pool interrupted " + e.getMessage());
         }
     }
 
@@ -263,44 +290,44 @@ public class ETLEngine implements IETLEngine {
      * @param results
      */
     private static void outputResults(SyncResult results) {
-        System.out.println("--");
-        System.out.println("Created Schools: " + results.getSchools().getCreated().size());
-        System.out.println("Failed school creations: " + results.getSchools().getFailedCreates().size());
-        System.out.println("Failed school source gets: " + results.getSchools().getSourceGetFailed().size());
-        System.out.println("Failed school edpanel gets: " + results.getSchools().getEdPanelGetFailed().size());
-        System.out.println("--");
-        System.out.println("Created Courses: " + results.getCourses().getCreated().size());
-        System.out.println("Updated Courses: " + results.getCourses().getUpdated().size());
-        System.out.println("Failed courses creations: " + results.getCourses().getFailedCreates().size());
-        System.out.println("Failed courses source gets: " + results.getCourses().getSourceGetFailed().size());
-        System.out.println("Failed courses edpanel gets: " + results.getCourses().getEdPanelGetFailed().size());
-        System.out.println("--");
-        System.out.println("Created Terms: " + results.getTerms().getCreated().size());
-        System.out.println("Updated Terms: " + results.getTerms().getUpdated().size());
-        System.out.println("Failed terms creations: " + results.getTerms().getFailedCreates().size());
-        System.out.println("Failed terms source gets: " + results.getTerms().getSourceGetFailed().size());
-        System.out.println("Failed terms edpanel gets: " + results.getTerms().getEdPanelGetFailed().size());
-        System.out.println("--");
-        System.out.println("Created staff: " + results.getStaff().getCreated().size());
-        System.out.println("Updated staff: " + results.getStaff().getUpdated().size());
-        System.out.println("Failed staff creations: " + results.getStaff().getFailedCreates().size());
-        System.out.println("Failed staff source gets: " + results.getStaff().getSourceGetFailed().size());
-        System.out.println("Failed staff edpanel gets: " + results.getStaff().getEdPanelGetFailed().size());
-        System.out.println("--");
-        System.out.println("Created students: " + results.getStudents().getCreated().size());
-        System.out.println("Updated students: " + results.getStudents().getUpdated().size());
-        System.out.println("Deleted students: " + results.getStudents().getDeleted().size());
-        System.out.println("Failed students creations: " + results.getStudents().getFailedCreates().size());
-        System.out.println("Failed students source gets: " + results.getStudents().getSourceGetFailed().size());
-        System.out.println("Failed students edpanel gets: " + results.getStudents().getEdPanelGetFailed().size());
-        System.out.println("--");
-        System.out.println("Created sections: " + results.getSections().getCreated().size());
-        System.out.println("Updated sections: " + results.getSections().getUpdated().size());
-        System.out.println("Deleted sections: " + results.getSections().getUpdated().size());
-        System.out.println("Failed sections creations: " + results.getSections().getFailedCreates().size());
-        System.out.println("Failed sections source gets: " + results.getSections().getSourceGetFailed().size());
-        System.out.println("Failed sections edpanel gets: " + results.getSections().getEdPanelGetFailed().size());
-        System.out.println("--");
+        LOGGER.info("--");
+        LOGGER.info("Created Schools: " + results.getSchools().getCreated().size());
+        LOGGER.info("Failed school creations: " + results.getSchools().getFailedCreates().size());
+        LOGGER.info("Failed school source gets: " + results.getSchools().getSourceGetFailed().size());
+        LOGGER.info("Failed school edpanel gets: " + results.getSchools().getEdPanelGetFailed().size());
+        LOGGER.info("--");
+        LOGGER.info("Created Courses: " + results.getCourses().getCreated().size());
+        LOGGER.info("Updated Courses: " + results.getCourses().getUpdated().size());
+        LOGGER.info("Failed courses creations: " + results.getCourses().getFailedCreates().size());
+        LOGGER.info("Failed courses source gets: " + results.getCourses().getSourceGetFailed().size());
+        LOGGER.info("Failed courses edpanel gets: " + results.getCourses().getEdPanelGetFailed().size());
+        LOGGER.info("--");
+        LOGGER.info("Created Terms: " + results.getTerms().getCreated().size());
+        LOGGER.info("Updated Terms: " + results.getTerms().getUpdated().size());
+        LOGGER.info("Failed terms creations: " + results.getTerms().getFailedCreates().size());
+        LOGGER.info("Failed terms source gets: " + results.getTerms().getSourceGetFailed().size());
+        LOGGER.info("Failed terms edpanel gets: " + results.getTerms().getEdPanelGetFailed().size());
+        LOGGER.info("--");
+        LOGGER.info("Created staff: " + results.getStaff().getCreated().size());
+        LOGGER.info("Updated staff: " + results.getStaff().getUpdated().size());
+        LOGGER.info("Failed staff creations: " + results.getStaff().getFailedCreates().size());
+        LOGGER.info("Failed staff source gets: " + results.getStaff().getSourceGetFailed().size());
+        LOGGER.info("Failed staff edpanel gets: " + results.getStaff().getEdPanelGetFailed().size());
+        LOGGER.info("--");
+        LOGGER.info("Created students: " + results.getStudents().getCreated().size());
+        LOGGER.info("Updated students: " + results.getStudents().getUpdated().size());
+        LOGGER.info("Deleted students: " + results.getStudents().getDeleted().size());
+        LOGGER.info("Failed students creations: " + results.getStudents().getFailedCreates().size());
+        LOGGER.info("Failed students source gets: " + results.getStudents().getSourceGetFailed().size());
+        LOGGER.info("Failed students edpanel gets: " + results.getStudents().getEdPanelGetFailed().size());
+        LOGGER.info("--");
+        LOGGER.info("Created sections: " + results.getSections().getCreated().size());
+        LOGGER.info("Updated sections: " + results.getSections().getUpdated().size());
+        LOGGER.info("Deleted sections: " + results.getSections().getUpdated().size());
+        LOGGER.info("Failed sections creations: " + results.getSections().getFailedCreates().size());
+        LOGGER.info("Failed sections source gets: " + results.getSections().getSourceGetFailed().size());
+        LOGGER.info("Failed sections edpanel gets: " + results.getSections().getEdPanelGetFailed().size());
+        LOGGER.info("--");
         Integer studAssignments = 0;
         Integer studUpdatedAssignments = 0;
         Integer studDeletedAssignments = 0;
@@ -315,13 +342,13 @@ public class ETLEngine implements IETLEngine {
             studAssFailedSourceGets += sa.getValue().getSourceGetFailed().size();
             studAssFailedEdPanelGets += sa.getValue().getEdPanelGetFailed().size();
         }
-        System.out.println("Created section assignments: " + studAssignments);
-        System.out.println("Updated section assignments: " + studUpdatedAssignments);
-        System.out.println("Deleted section assignments: " + studDeletedAssignments);
-        System.out.println("Failed section assignments creations: " + studAssFailedCreates);
-        System.out.println("Failed section assignments source gets: " + studAssFailedSourceGets);
-        System.out.println("Failed section assignments edpanel gets: " + studAssFailedEdPanelGets);
-        System.out.println("--");
+        LOGGER.info("Created section assignments: " + studAssignments);
+        LOGGER.info("Updated section assignments: " + studUpdatedAssignments);
+        LOGGER.info("Deleted section assignments: " + studDeletedAssignments);
+        LOGGER.info("Failed section assignments creations: " + studAssFailedCreates);
+        LOGGER.info("Failed section assignments source gets: " + studAssFailedSourceGets);
+        LOGGER.info("Failed section assignments edpanel gets: " + studAssFailedEdPanelGets);
+        LOGGER.info("--");
 
         Integer ssgs = 0;
         Integer ssgsUpdated = 0;
@@ -337,13 +364,13 @@ public class ETLEngine implements IETLEngine {
             ssgFailedSourceGets += sa.getValue().getSourceGetFailed().size();
             ssgFailedEdPanelGets += sa.getValue().getEdPanelGetFailed().size();
         }
-        System.out.println("Created section student grades: " + ssgs);
-        System.out.println("Updated section student grades: " + ssgsUpdated);
-        System.out.println("Deleted section student grades: " + ssgsDeleted);
-        System.out.println("Failed ssg creations: " + ssgFailedCreates);
-        System.out.println("Failed ssg source gets: " + ssgFailedSourceGets);
-        System.out.println("Failed ssg edpanel gets: " + ssgFailedEdPanelGets);
-        System.out.println("--");
+        LOGGER.info("Created section student grades: " + ssgs);
+        LOGGER.info("Updated section student grades: " + ssgsUpdated);
+        LOGGER.info("Deleted section student grades: " + ssgsDeleted);
+        LOGGER.info("Failed ssg creations: " + ssgFailedCreates);
+        LOGGER.info("Failed ssg source gets: " + ssgFailedSourceGets);
+        LOGGER.info("Failed ssg edpanel gets: " + ssgFailedEdPanelGets);
+        LOGGER.info("--");
         Integer sectAss = 0;
         Integer sectAssUpdated = 0;
         Integer sectAssDeleted = 0;
@@ -360,11 +387,11 @@ public class ETLEngine implements IETLEngine {
                 sectAssFailedEdPanelGets += a.getValue().getEdPanelGetFailed().size();
             }
         }
-        System.out.println("Created student assignments: " + sectAss);
-        System.out.println("Updated student assignments: " + sectAssUpdated);
-        System.out.println("Deleted student assignments: " + sectAssDeleted);
-        System.out.println("Failed student assignments creations: " + sectAssFailedCreates);
-        System.out.println("Failed student assignments source gets: " + sectAssFailedSourceGets);
-        System.out.println("Failed student assignments edpanel gets: " + sectAssFailedEdPanelGets);
+        LOGGER.info("Created student assignments: " + sectAss);
+        LOGGER.info("Updated student assignments: " + sectAssUpdated);
+        LOGGER.info("Deleted student assignments: " + sectAssDeleted);
+        LOGGER.info("Failed student assignments creations: " + sectAssFailedCreates);
+        LOGGER.info("Failed student assignments source gets: " + sectAssFailedSourceGets);
+        LOGGER.info("Failed student assignments edpanel gets: " + sectAssFailedEdPanelGets);
     }
 }

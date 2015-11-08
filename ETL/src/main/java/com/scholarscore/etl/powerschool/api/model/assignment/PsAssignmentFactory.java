@@ -19,7 +19,7 @@ public class PsAssignmentFactory {
         add("HW"); add("HOMEWORK"); add("HOME WORK");
     }};
     private static final HashSet<String> TEST_STRINGS = new HashSet<String>(){{
-        add("TST"); add("TEST");
+        add("TST"); add("TEST"); add("TESTS"); add("CT");
     }};
     private static final HashSet<String> QUIZ_STRINGS = new HashSet<String>(){{
         add("QUIZ"); add("QUIZZES"); add("QZ");
@@ -34,7 +34,7 @@ public class PsAssignmentFactory {
         add("INTERIM ASSESSMENTS"); add("IA");
     }};
     private static final HashSet<String> PARTICIPATION_STRINGS = new HashSet<String>(){{
-        add("CLASS PARTICIPATION"); add("CP"); add("PARTICIPATION");
+        add("CLASS PARTICIPATION"); add("CP"); add("PARTICIPATION"); add("DISC");
     }};
     private static final HashSet<String> WRITTEN_WORK_STRINGS = new HashSet<String>(){{
         add("WRITTEN WORK"); add("WW");
@@ -55,47 +55,30 @@ public class PsAssignmentFactory {
         add("FINAL"); add("FINAL EXAM");
     }};
 
+    private static final HashSet<String> EXAM_STRINGS = new HashSet<String>(){{
+        add("EXAM");
+    }};
+    private static final HashSet<String> PROJ_STRINGS = new HashSet<String>(){{
+        add("PROJECT"); add("PROJ");
+    }};
+
     public static Assignment fabricate(PsAssignment powerAss, PsAssignmentType powerType) {
         String abb = powerType.getAbbreviation().toUpperCase();
         String name = powerType.getName().toUpperCase();
         Assignment a;
-        if(HW_STRINGS.contains(abb) || HW_STRINGS.contains(name)) {
-            a = new GradedAssignment();
-        } else if(TEST_STRINGS.contains(abb) || TEST_STRINGS.contains(name)) {
-            a = new GradedAssignment();
-        } else if(QUIZ_STRINGS.contains(abb) || QUIZ_STRINGS.contains(name)) {
-            a = new GradedAssignment();
-        } else if(CLASSWORK_STRINGS.contains(abb) || CLASSWORK_STRINGS.contains(name)) {
-            a = new GradedAssignment();
-        } else if(SUMMATIVE_ASSESSMENT_STRINGS.contains(abb) || SUMMATIVE_ASSESSMENT_STRINGS.contains(name)) {
-            a = new GradedAssignment();
-        } else if(INTERIM_ASSESSMENT_STRINGS.contains(abb) || INTERIM_ASSESSMENT_STRINGS.contains(name)) {
-            a = new GradedAssignment();
-        } else if(PARTICIPATION_STRINGS.contains(abb) || PARTICIPATION_STRINGS.contains(name)) {
-            a = new GradedAssignment();
-        } else if(WRITTEN_WORK_STRINGS.contains(abb) || WRITTEN_WORK_STRINGS.contains(name)) {
-            a = new GradedAssignment();
-        } else if(PREP_WORK_STRINGS.contains(abb) || PREP_WORK_STRINGS.contains(name)) {
-            a = new GradedAssignment();
-        } else if(ATTENDANCE_STRINGS.contains(abb) || ATTENDANCE_STRINGS.contains(name)) {
+        if(ATTENDANCE_STRINGS.contains(abb) || ATTENDANCE_STRINGS.contains(name)) {
             a = new AttendanceAssignment();
-        } else if(LAB_STRINGS.contains(abb) || LAB_STRINGS.contains(name)) {
-            a = new GradedAssignment();
-        } else if(MIDTERM_STRINGS.contains(abb) || MIDTERM_STRINGS.contains(name)) {
-            a = new GradedAssignment();
-        } else if(FINAL_STRINGS.contains(abb) || FINAL_STRINGS  .contains(name)) {
-            a = new GradedAssignment();
         } else {
             a = new GradedAssignment();
         }
-        a.setType(resolveAssignmentType(powerType));
+        a.setType(resolveAssignmentType(powerType.getAbbreviation(), powerType.getName()));
         populateInstance(a, powerAss);
         return a;
     }
 
-    public static AssignmentType resolveAssignmentType(PsAssignmentType powerType) {
-        String abb = powerType.getAbbreviation().toUpperCase();
-        String name = powerType.getName().toUpperCase();
+    public static AssignmentType resolveAssignmentType(String abb, String name) {
+        abb = abb.toUpperCase();
+        name = name.toUpperCase();
         if(HW_STRINGS.contains(abb) || HW_STRINGS.contains(name)) {
             return AssignmentType.HOMEWORK;
         } else if(TEST_STRINGS.contains(abb) || TEST_STRINGS.contains(name)) {
@@ -122,6 +105,10 @@ public class PsAssignmentFactory {
             return AssignmentType.MIDTERM;
         } else if(FINAL_STRINGS.contains(abb) || FINAL_STRINGS  .contains(name)) {
             return AssignmentType.FINAL;
+        } else if(EXAM_STRINGS.contains(abb) || EXAM_STRINGS.contains(name)) {
+            return AssignmentType.EXAM;
+        } else if(PROJ_STRINGS.contains(abb) || PROJ_STRINGS.contains(name)){
+            return AssignmentType.PROJECT;
         } else {
             return AssignmentType.USER_DEFINED;
         }

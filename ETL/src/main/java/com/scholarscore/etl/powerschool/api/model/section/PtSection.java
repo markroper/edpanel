@@ -8,7 +8,7 @@ public class PtSection {
     public Long termid; // "105911"
     public Long ispotentialvarcreditallowed; // "0"
     public Long schoolid; // "95906"
-    public Long sectionidentifier; // "501"
+    public String sectionidentifier; // "501"
     public String description; // ""
     public Long isearnedvarcreditallowed; // "0"
     public Long schoolcourseid; // "226007"

@@ -1,5 +1,7 @@
 package com.scholarscore.etl.powerschool.client;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -88,10 +90,14 @@ public class PowerSchoolPaths {
     }
 
     public String getPowerTeacherSectionPath(String sourceSectionId) {
-        return SCHEMA_BASE +
-                "/PSM_Section?" +
-                getPageSizeParam() +
-                "&projection=*&q=sectionidentifier==" + sourceSectionId.toString();
+        try {
+            return SCHEMA_BASE +
+                    "/PSM_Section?" +
+                    getPageSizeParam() +
+                    "&projection=*&q=sectionidentifier==" + URLEncoder.encode(sourceSectionId, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
     }
 
     public String getSectionGradesSetupPath() {
@@ -130,7 +136,15 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
             "/pgcategories?q=SectionID=={1}&"+
             PAGE_NUM_PARAM +
+            "&" + getPageSizeParam() +
             "&projection=Abbreviation,DCID,DefaultPtsPoss,Description,ID,Name,SectionID";
+    }
+
+    public String getPowerTeacherAssignmentCategories() {
+        return SCHEMA_BASE +
+                "/psm_assignmentcategory?" +
+                PAGE_NUM_PARAM +
+                "&projection=*&" + getPageSizeParam();
     }
 
     public String getSectionScoresPath() {

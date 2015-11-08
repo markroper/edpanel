@@ -10,6 +10,8 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.user.Student;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -23,6 +25,7 @@ import java.util.concurrent.TimeUnit;
  * Created by markroper on 10/30/15.
  */
 public class AttendanceSync implements ISync<Attendance> {
+    private final static Logger LOGGER = LoggerFactory.getLogger(AttendanceSync.class);
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
     protected School school;
@@ -64,7 +67,7 @@ public class AttendanceSync implements ISync<Attendance> {
                 executor.shutdownNow();
             }
         } catch(InterruptedException e) {
-            System.out.println("Executor thread pool interrupted " + e.getMessage());
+            LOGGER.error("Executor thread pool interrupted " + e.getMessage());
         }
         return response;
     }

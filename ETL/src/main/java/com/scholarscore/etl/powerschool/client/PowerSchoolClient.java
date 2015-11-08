@@ -11,6 +11,7 @@ import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentWrapper
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScoreWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreIdWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentTypeWrapper;
+import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCategoryWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsCalendarDayWrapper;
@@ -177,6 +178,14 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
                 paths.getSectionAssignmentCategories(),
                 PAGE_SIZE,
                 sectionId.toString());
+    }
+
+    @Override
+    public PsResponse<PtAssignmentCategoryWrapper> getPowerTeacherAssignmentCategory() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtAssignmentCategoryWrapper>>(){},
+                paths.getPowerTeacherAssignmentCategories(),
+                PAGE_SIZE,
+                (String[]) null);
     }
 
     @Override

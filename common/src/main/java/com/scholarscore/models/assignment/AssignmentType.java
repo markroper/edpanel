@@ -22,6 +22,8 @@ public enum AssignmentType implements Serializable {
     PARTICIPATION,
     WRITTEN_WORK,
     CLASSWORK,
+    EXAM,
+    PROJECT,
     USER_DEFINED;
     
     public static AssignmentType toAssignmentType(String input) {

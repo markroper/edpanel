@@ -178,6 +178,8 @@
 		<field table="SectionScoresID" field="ID" access="ViewOnly" />
 		<field table="SectionScoresID" field="SectionID" access="ViewOnly" />
 		<field table="SectionScoresID" field="StudentID" access="ViewOnly" />
+
+
 		<field table="PGAssignments" field="DCID" access="ViewOnly" />
 		<field table="PGAssignments" field="Abbreviation" access="ViewOnly" />
 		<field table="PGAssignments" field="AssignmentID" access="ViewOnly" />
