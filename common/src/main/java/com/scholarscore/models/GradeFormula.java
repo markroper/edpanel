@@ -16,7 +16,8 @@ import java.util.Set;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GradeFormula implements Serializable {
-    Map<AssignmentType, Integer> assignmentTypeWeights;
+    protected Long termId;
+    protected Map<AssignmentType, Integer> assignmentTypeWeights;
     
     public GradeFormula() {
         assignmentTypeWeights = new HashMap<>();
@@ -89,7 +90,15 @@ public class GradeFormula implements Serializable {
         }
         return newlyCalculatedGrade;
     }
-    
+
+    public Long getTermId() {
+        return termId;
+    }
+
+    public void setTermId(Long termId) {
+        this.termId = termId;
+    }
+
     public Map<AssignmentType, Integer> getAssignmentTypeWeights() {
         return assignmentTypeWeights;
     }
@@ -108,17 +117,19 @@ public class GradeFormula implements Serializable {
             return false;
         }
         final GradeFormula other = (GradeFormula) obj;
-        return Objects.equals(this.assignmentTypeWeights, other.assignmentTypeWeights);
+        return Objects.equals(this.assignmentTypeWeights, other.assignmentTypeWeights) &&
+                Objects.equals(this.termId, other.termId);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(assignmentTypeWeights);
+        return 31 * super.hashCode() + Objects.hash(assignmentTypeWeights, termId);
     }
 
     @Override
     public String toString() {
         return "GradeFormula{" +
+                "termId=" + termId +
                 "assignmentTypeWeights=" + assignmentTypeWeights +
                 '}';
     }
@@ -130,6 +141,7 @@ public class GradeFormula implements Serializable {
      */
     public static class GradeFormulaBuilder{
         Map<AssignmentType, Integer> assignmentTypeWeights;
+        Long termId;
 
         public GradeFormulaBuilder(){
             assignmentTypeWeights = new HashMap<>();
@@ -147,6 +159,11 @@ public class GradeFormula implements Serializable {
             return this;
         }
 
+        public GradeFormulaBuilder withTermId(final Long termId){
+            this.termId = termId;
+            return this;
+        }
+
         /**
          * Put all of the items in the passed map into this map - this method is additive
          * @param assignmentTypeWeights the weights for each assignment type in the map
@@ -160,6 +177,7 @@ public class GradeFormula implements Serializable {
         public GradeFormula build(){
             GradeFormula formula = new GradeFormula();
             formula.setAssignmentTypeWeights(assignmentTypeWeights);
+            formula.setTermId(termId);
             return formula;
         }
 
