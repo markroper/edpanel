@@ -288,7 +288,7 @@
 		<field table="PSM_ReportingTerm" field="Name" access="ViewOnly" />
 		<field table="PSM_ReportingTerm" field="ParentReportingTermID" access="ViewOnly" />
 		<field table="PSM_ReportingTerm" field="StartDate" access="ViewOnly" />
-		<field table="PSM_ReportingTerm" field="TermID" access="ViewOnly" />
+		<field table="PSM_ReportingTerm" field="termid" access="ViewOnly" />
 		<field table="PSM_AssignmentCategory" field="Abbreviation" access="ViewOnly" />
 		<field table="PSM_AssignmentCategory" field="ContentGroupID" access="ViewOnly" />
 		<field table="PSM_AssignmentCategory" field="DefaultExtraCreditPoints" access="ViewOnly" />
@@ -347,5 +347,27 @@
 		<field table="PGGradeScalesMark" field="mark" access="ViewOnly" />
 		<field table="PGGradeScalesMark" field="pggradescaleid" access="ViewOnly" />
 		<field table="PGGradeScalesMark" field="sectionid" access="ViewOnly" />
+		<field table="PGFinalGrades" field="dcid" access="ViewOnly" />
+		<field table="PGFinalGrades" field="citizenship" access="ViewOnly" />
+		<field table="PGFinalGrades" field="enddate" access="ViewOnly" />
+		<field table="PGFinalGrades" field="finalgradename" access="ViewOnly" />
+		<field table="PGFinalGrades" field="grade" access="ViewOnly" />
+		<field table="PGFinalGrades" field="gradebooktype" access="ViewOnly" />
+		<field table="PGFinalGrades" field="lastgradeupdate" access="ViewOnly" />
+		<field table="PGFinalGrades" field="overridefg" access="ViewOnly" />
+		<field table="PGFinalGrades" field="percent" access="ViewOnly" />
+		<field table="PGFinalGrades" field="points" access="ViewOnly" />
+		<field table="PGFinalGrades" field="pointspossible" access="ViewOnly" />
+		<field table="PGFinalGrades" field="sectionid" access="ViewOnly" />
+		<field table="PGFinalGrades" field="startdate" access="ViewOnly" />
+		<field table="PGFinalGrades" field="studentid" access="ViewOnly" />
+		<field table="PGFinalGrades" field="varcredit" access="ViewOnly" />
+		<field table="PGFinalGradesSetup" field="dcid" access="ViewOnly" />
+		<!-- ACCESS DENIED - REASON - PROCESS
+			{
+			message: "Access Denied. Reason: PROCESS"
+			errors: [0]
+			}
+		https://excelacademy.powerschool.com/ws/schema/table/PGFinalGrades?projection=citizenship,dcid,enddate,finalgradename,grade,percent,points,sectionid,studentid -->
 	</access_request>
 </plugin>

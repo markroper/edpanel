@@ -12,5 +12,5 @@ public class PsSectionGradeFormulaWeighting {
     public Long id; // "535910"
     public Long reportingtermid; // ""
     public Long assignmentid; // ""
-    public Integer weighting; // "15"
+    public Double weighting; // "15"
 }

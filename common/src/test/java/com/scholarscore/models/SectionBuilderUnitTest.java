@@ -3,8 +3,7 @@ package com.scholarscore.models;
 import com.beust.jcommander.internal.Lists;
 import com.beust.jcommander.internal.Sets;
 import com.scholarscore.models.assignment.Assignment;
-import com.scholarscore.models.gradeformula.AssignmentGradeFormula;
-import com.scholarscore.models.gradeformula.TermGradeFormulas;
+import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.utils.CommonTestUtils;
@@ -35,7 +34,7 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
         Date startDate = CommonTestUtils.getRandomDate();
         Date endDate = DateUtils.addWeeks(startDate, RandomUtils.nextInt(1, 5));
         String room = RandomStringUtils.randomAlphanumeric(3);
-        AssignmentGradeFormula gradeFormula = CommonTestUtils.generateGradeFormula();
+        GradeFormula gradeFormula = CommonTestUtils.generateGradeFormula();
         String gradeFormulaString = RandomStringUtils.randomAlphanumeric(10);
         Term term = CommonTestUtils.generateTerm(new Date(), DateUtils.addMonths(new Date(), 3), CommonTestUtils.generateSchoolYearWithoutTerms(CommonTestUtils.generateSchool()));
         Course course = CommonTestUtils.generateCourse();
@@ -65,7 +64,7 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
         fullSection.setStartDate(startDate);
         fullSection.setEndDate(endDate);
         fullSection.setRoom(room);
-        fullSection.setGradeFormula(new TermGradeFormulas(){{add(gradeFormula);}});
+        fullSection.setGradeFormula(gradeFormula);
         fullSection.setGradeFormulaString(gradeFormulaString);
         fullSection.setTerm(term);
         fullSection.setCourse(course);
@@ -81,7 +80,7 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
                 .withStartDate(startDate)
                 .withEndDate(endDate)
                 .withRoom(room)
-                .withGradeFormula(new TermGradeFormulas(){{add(gradeFormula);}})
+                .withGradeFormula(gradeFormula)
                 .withGradeFormulaString(gradeFormulaString)
                 .withTerm(term)
                 .withCourse(course)
@@ -98,7 +97,7 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
                 .withStartDate(startDate)
                 .withEndDate(endDate)
                 .withRoom(room)
-                .withGradeFormula(new TermGradeFormulas(){{add(gradeFormula);}})
+                .withGradeFormula(gradeFormula)
                 .withGradeFormulaString(gradeFormulaString)
                 .withTerm(term)
                 .withCourse(course)

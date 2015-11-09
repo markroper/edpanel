@@ -184,9 +184,6 @@ public class ETLEngine implements IETLEngine {
                 if(!sectionIdToGradeFormula.containsKey(gradeSetup.sectionid)) {
                     sectionIdToGradeFormula.put(gradeSetup.sectionid, new HashMap<>());
                 }
-                if(sectionIdToGradeFormula.get(gradeSetup.sectionid).containsKey(gradeSetup.reportingtermid)) {
-                    System.out.println("DUPE!");
-                }
                 sectionIdToGradeFormula.get(gradeSetup.sectionid).put(gradeSetup.reportingtermid, gradeSetup);
             }
         } catch (HttpClientException | NullPointerException e) {
