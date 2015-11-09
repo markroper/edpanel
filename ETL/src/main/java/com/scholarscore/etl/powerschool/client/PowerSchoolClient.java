@@ -46,7 +46,7 @@ import java.util.Date;
  */
 public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSchoolClient {
     private PowerSchoolPaths paths = new PowerSchoolPaths();
-    private static final Integer PAGE_SIZE = 1000;
+    private static final Integer PAGE_SIZE = 200;
     private static final String HEADER_AUTH_NAME = "Authorization";
     private static final String PATH_RESOURCE_DISTRICT = "/ws/v1/district";
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";
@@ -135,7 +135,11 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
 
     @Override
     public PsStudents getStudentsBySchool(Long schoolId) throws HttpClientException {
-        return getJackson(PsStudents.class, paths.getStudentsPath(), schoolId.toString());
+        return get(
+                new TypeReference<PsStudents>() {},
+                paths.getStudentsPath(),
+                PAGE_SIZE,
+                schoolId.toString());
     }
 
     @Override

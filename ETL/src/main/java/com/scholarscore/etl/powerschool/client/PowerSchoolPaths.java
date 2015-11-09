@@ -35,8 +35,9 @@ public class PowerSchoolPaths {
 
     public String getStudentsPath() {
         return BASE +
-            "/school/{0}/student?pagesize=" +
-                pageSize +
+            "/school/{1}/student?pagesize=" +
+            pageSize +
+            "&" + PAGE_NUM_PARAM +
             "&expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup,school_enrollment";
     }
 
@@ -94,6 +95,7 @@ public class PowerSchoolPaths {
             return SCHEMA_BASE +
                 "/PSM_Section?" +
                 getPageSizeParam() +
+                "&" + PAGE_NUM_PARAM +
                 "&projection=*&q=sectionidentifier==" + URLEncoder.encode(sourceSectionId, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             return null;
@@ -104,6 +106,7 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
             "/PSM_ReportingTerm?" +
             getPageSizeParam() +
+            "&" + PAGE_NUM_PARAM +
             "&projection=*&q=id==" + termId;
     }
 
@@ -111,6 +114,7 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
             "/PSM_FinalGradeSetup?" +
             getPageSizeParam() +
+            "&" + PAGE_NUM_PARAM +
             "&projection=*";
     }
 
@@ -118,6 +122,7 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
             "/PSM_GradingFormula?" +
             getPageSizeParam() +
+            "&" + PAGE_NUM_PARAM +
             "&projection=*&q=id==" + String.valueOf(formulaId);
     }
 
@@ -125,6 +130,7 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
             "/PSM_GradingFormulaWeighting?" +
             getPageSizeParam() +
+            "&" + PAGE_NUM_PARAM +
             "&projection=*&q=ParentGradingFormulaID==" + String.valueOf(formulaId);
     }
 
