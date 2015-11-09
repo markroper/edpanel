@@ -209,54 +209,6 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     teachers.add((Teacher) t);
                     edpanelSection.setTeachers(teachers);
                 }
-                //If there is a formula other than using assignment points and weights to calculate the grade,
-                //Resolve that formula and set it on the section.
-//                Long powerTeacherSectionId = null;
-//                try {
-//                    PsResponse<PtSectionWrapper> powerTeacherSection =
-//                            powerSchool.getPowerTeacherSection(powerSection.getSection_number());
-//                    for (PsResponseInner<PtSectionWrapper> ptSectWrap : powerTeacherSection.record) {
-//                        powerTeacherSectionId = ptSectWrap.tables.psm_section.id;
-//                        break;
-//                    }
-//                } catch(HttpClientException e) {
-//                    LOGGER.warn(e.getLocalizedMessage());
-//                }
-//                if(null != powerTeacherSectionId && sectionIdToGradeFormula.containsKey(powerTeacherSectionId)) {
-//                    Iterator<Map.Entry<Long, PsFinalGradeSetup>> it =
-//                            sectionIdToGradeFormula.get(powerTeacherSectionId).entrySet().iterator();
-//                    TermGradeFormulas gradeFormulasByTerm = new TermGradeFormulas();
-//                    while(it.hasNext()) {
-//                        Map.Entry<Long, PsFinalGradeSetup> setupEntry = it.next();
-//                        PsFinalGradeSetup setup = setupEntry.getValue();
-//                        PsResponse<PsSectionGradeFormulaWeightingWrapper> formulaWeightResponse =
-//                                powerSchool.getGradeFormulaWeights(setup.gradingformulaid);
-//                        AssignmentGradeFormula.GradeFormulaBuilder formulaBuilder = new AssignmentGradeFormula.GradeFormulaBuilder();
-////                        formulaBuilder.withTermId(setupEntry.getKey());
-//                        PsResponse<PtTermWrapper> powerTeacherTermResponse =
-//                                powerSchool.getPowerTeacherTerm(setupEntry.getKey());
-//                        if(null != powerTeacherTermResponse && powerTeacherTermResponse.record.size() > 0) {
-//                            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-//                            String startDate = powerTeacherTermResponse.record.get(0).tables.psm_reportingterm.startdate;
-//                            String endDate = powerTeacherTermResponse.record.get(0).tables.psm_reportingterm.enddate;
-//                            try {
-//                                formulaBuilder.withStartDate(df.parse(startDate));
-//                                formulaBuilder.withEndDate(df.parse(endDate));
-//                            } catch (ParseException e) {
-//                                LOGGER.warn("Unable to parse start/end date for grading formula: " + e.getMessage());
-//                            }
-//                        }
-//                        for(PsResponseInner<PsSectionGradeFormulaWeightingWrapper> psweightwrapper:
-//                                formulaWeightResponse.record) {
-//                            PsSectionGradeFormulaWeighting psWeight = psweightwrapper.tables.psm_gradingformulaweighting;
-//                            formulaBuilder.withAssignmentTypeWeight(
-//                                    powerTeacherCategoryToEdPanelType.get(psWeight.assignmentcategoryid),
-//                                    psWeight.weighting);
-//                        }
-//                        gradeFormulasByTerm.add(formulaBuilder.build());
-//                    }
-//                    edpanelSection.setGradeFormula(gradeFormulasByTerm);
-//                }
                 edpanelSection.setGradeFormula(resolveSectionGradeFormula(powerSection));
                 result.put(powerSection.getId(), edpanelSection);
             }
@@ -281,16 +233,16 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
         if(null != powerTeacherSectionId && sectionIdToGradeFormula.containsKey(powerTeacherSectionId)) {
             Iterator<Map.Entry<Long, PsFinalGradeSetup>> it =
                     sectionIdToGradeFormula.get(powerTeacherSectionId).entrySet().iterator();
-            GradeFormula gradeFormulasByTerm = new GradeFormula();
             HashMap<Long, GradeFormula> allSectionFormulas = new HashMap<>();
             while(it.hasNext()) {
                 Map.Entry<Long, PsFinalGradeSetup> setupEntry = it.next();
                 GradeFormula gradeFormula = new GradeFormula();
                 PsFinalGradeSetup setup = setupEntry.getValue();
                 gradeFormula.setId(setupEntry.getKey());
+                gradeFormula.setSourceSystemDescription(setup.finalgradesetuptype);
+                //Get the term so we can set the term date ranges on the formula & set the formula ID to the powerschool term id
                 PsResponse<PtTermWrapper> powerTeacherTermResponse =
                         powerSchool.getPowerTeacherTerm(setupEntry.getKey());
-                Long reportingTermParentId = null;
                 if(null != powerTeacherTermResponse && powerTeacherTermResponse.record.size() > 0) {
                     DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                     PtTerm term = powerTeacherTermResponse.record.get(0).tables.psm_reportingterm;
@@ -305,7 +257,8 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                         LOGGER.warn("Unable to parse start/end date for grading formula: " + e.getMessage());
                     }
                 }
-
+                //Now if the powerschool grade setup has a formula ID, we need to resolve the weights for that formula
+                //and set them on the EdPanel GradeFormula instance
                 if(null != setup.gradingformulaid && !setup.gradingformulaid.equals(0L)) {
                     PsResponse<PsSectionGradeFormulaWeightingWrapper> formulaWeightResponse =
                             powerSchool.getGradeFormulaWeights(setup.gradingformulaid);
@@ -313,6 +266,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     Map<AssignmentType, Double> assignmentTypeToPoints = new HashMap<>();
                     for (PsResponseInner<PsSectionGradeFormulaWeightingWrapper> psweightwrapper :
                             formulaWeightResponse.record) {
+                        //Powerschool supports assignment category weights and specific assignment weights
                         PsSectionGradeFormulaWeighting psWeight = psweightwrapper.tables.psm_gradingformulaweighting;
                         if(null != psWeight.assignmentcategoryid && !psWeight.assignmentcategoryid.equals(0L)) {
                             assignmentTypeToPoints.put(
