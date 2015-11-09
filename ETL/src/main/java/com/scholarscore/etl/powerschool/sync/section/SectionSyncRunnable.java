@@ -297,6 +297,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     String startDate = term.startdate;
                     String endDate = term.enddate;
                     gradeFormula.setParentId(term.parentreportingtermid);
+                    gradeFormula.setName(term.name);
                     try {
                         gradeFormula.setStartDate(df.parse(startDate));
                         gradeFormula.setEndDate(df.parse(endDate));
@@ -330,7 +331,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 //Put the formula in the map, and add it as a child to the parent
                 if(allSectionFormulas.containsKey(gradeFormula.getParentId())) {
                     allSectionFormulas.get(gradeFormula.getParentId()).getChildren().add(gradeFormula);
-                } else {
+                } else if(null != gradeFormula.getParentId()){
                     GradeFormula parent = new GradeFormula();
                     parent.setId(gradeFormula.getParentId());
                     parent.setChildren(new HashSet<GradeFormula>(){{ add(gradeFormula); }});

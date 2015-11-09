@@ -181,7 +181,7 @@ CREATE TABLE `scholar_warehouse`.`section` (
   `section_start_date` DATETIME NULL COMMENT 'The section start date',
   `section_end_date` DATETIME NULL COMMENT 'The section end date',
   `room` VARCHAR(256) NULL COMMENT 'Human-readable room name',
-  `grade_formula` VARCHAR(1024) NULL COMMENT 'The section grading formula as a string',
+  `grade_formula` VARCHAR(16384) NULL COMMENT 'The section grading formula as a string',
   `course_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the school table',
   `term_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the term table',
   `number_of_terms` INTEGER UNSIGNED NULL COMMENT 'The number of terms that the section spans',

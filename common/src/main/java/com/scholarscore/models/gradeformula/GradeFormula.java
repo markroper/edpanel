@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -24,7 +25,7 @@ public class GradeFormula implements Serializable {
     Date startDate;
     Date endDate;
     Long parentId;
-    Set<GradeFormula> children;
+    Set<GradeFormula> children = new HashSet<>();
     //TODO: missing low score to discard?
     Map<AssignmentType, Double> assignmentTypeWeights = new HashMap<>();
     //keyed on sourceSystemId
