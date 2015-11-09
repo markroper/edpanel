@@ -17,11 +17,12 @@ import com.scholarscore.etl.powerschool.sync.assignment.SectionAssignmentSync;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.Course;
-import com.scholarscore.models.GradeFormula;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.gradeformula.AssignmentGradeFormula;
+import com.scholarscore.models.gradeformula.TermGradeFormulas;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 import org.slf4j.Logger;
@@ -32,7 +33,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -220,20 +220,21 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 if(null != powerTeacherSectionId && sectionIdToGradeFormula.containsKey(powerTeacherSectionId)) {
                     Iterator<Map.Entry<Long, PsFinalGradeSetup>> it =
                             sectionIdToGradeFormula.get(powerTeacherSectionId).entrySet().iterator();
-                    Set<GradeFormula> gradeFormulasByTerm= new HashSet<>();
+                    TermGradeFormulas gradeFormulasByTerm= new TermGradeFormulas();
                     while(it.hasNext()) {
                         Map.Entry<Long, PsFinalGradeSetup> setupEntry = it.next();
                         PsFinalGradeSetup setup = setupEntry.getValue();
                         PsResponse<PsSectionGradeFormulaWeightingWrapper> formulaWeightResponse =
                                 powerSchool.getGradeFormulaWeights(setup.gradingformulaid);
-                        GradeFormula.GradeFormulaBuilder formulaBuilder = new GradeFormula.GradeFormulaBuilder();
+                        AssignmentGradeFormula.GradeFormulaBuilder formulaBuilder = new AssignmentGradeFormula.GradeFormulaBuilder();
                         //TODO: this is the powerTeacher termId, which we need to convert to PowerSchool termId, so we can then convert THAT to the appropriate EdPanel ID
                         formulaBuilder.withTermId(setupEntry.getKey());
+
                         for(PsResponseInner<PsSectionGradeFormulaWeightingWrapper> psweightwrapper:
                                 formulaWeightResponse.record) {
                             PsSectionGradeFormulaWeighting psWeight = psweightwrapper.tables.psm_gradingformulaweighting;
-                            formulaBuilder.withAssignmentTypeWeight(powerTeacherCategoryToEdPanelType.get(
-                                            psWeight.assignmentcategoryid),
+                            formulaBuilder.withAssignmentTypeWeight(
+                                    powerTeacherCategoryToEdPanelType.get(psWeight.assignmentcategoryid),
                                     psWeight.weighting);
                         }
                         gradeFormulasByTerm.add(formulaBuilder.build());

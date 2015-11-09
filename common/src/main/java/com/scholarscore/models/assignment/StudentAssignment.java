@@ -120,7 +120,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     @JsonIgnore
     @Transient
     public int getWeight() {
-        // Today, these weights live in GradeFormula and can't be 
+        // Today, these weights live in AssignmentGradeFormula and can't be
         // directly grabbed from StudentAssignment.
         //TODO: then why is this here?  remove me
         return 1;

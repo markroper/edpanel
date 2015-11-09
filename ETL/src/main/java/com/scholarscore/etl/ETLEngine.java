@@ -132,7 +132,7 @@ public class ETLEngine implements IETLEngine {
         endTime = System.currentTimeMillis();
         LOGGER.info("Section sync complete");
 
-        LOGGER.info("Total runtime: " + (endTime - startTime)/1000 +
+        LOGGER.info("Total runtime: " + (endTime - startTime) / 1000 +
                 " seconds, \nschools: " + schoolCreationTime +
                 " seconds, \nYears + Terms: " + yearsAndTermsComplete +
                 " seconds, \nstaff: " + staffCreationComplete +
@@ -168,7 +168,7 @@ public class ETLEngine implements IETLEngine {
     /**
      * For each school in this.schools, resolve all the sections and create an EdPanel Section instance for each.
      * For each EdPanel Section instance, resolve and set the appropriate enrolled student IDs, course ID, teacher(s) ID,
-     * PsTerm ID, Assignments, and GradeFormula.  After these dependencies are resolve, call the EdPanel API to create the Section
+     * PsTerm ID, Assignments, and AssignmentGradeFormula.  After these dependencies are resolve, call the EdPanel API to create the Section
      * and the assignments.  Returns void but populates this.sections with all sections created and includes the collection of
      * assignments on each section.
      */

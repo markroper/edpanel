@@ -17,6 +17,7 @@ import com.scholarscore.etl.powerschool.api.model.section.PsGradeFormulaWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeightingWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PtTermWrapper;
 import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
@@ -74,6 +75,8 @@ public interface IPowerSchoolClient {
     PsResponse<PsFinalGradeSetupWrapper> getFinalGradeSetups() throws HttpClientException;
 
     PsResponse<PtSectionWrapper> getPowerTeacherSection(String sourceSectionNumberVarchar) throws HttpClientException;
+
+    PsResponse<PtTermWrapper> getPowerTeacherTerm(Long powerTeacherTermId) throws HttpClientException;
 
     PsResponse<PsGradeFormulaWrapper> getGradeFormula(Long gradeFormulaId) throws HttpClientException;
 
