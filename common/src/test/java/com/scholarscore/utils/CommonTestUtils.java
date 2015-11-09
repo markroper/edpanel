@@ -14,8 +14,7 @@ import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.AttendanceAssignment;
 import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.goal.GoalType;
-import com.scholarscore.models.gradeformula.AssignmentGradeFormula;
-import com.scholarscore.models.gradeformula.TermGradeFormulas;
+import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -261,7 +260,7 @@ public class CommonTestUtils {
         Date startDate = getRandomDate();
         Date endDate = DateUtils.addWeeks(startDate, RandomUtils.nextInt(1, 5));
         String room = RandomStringUtils.randomAlphanumeric(3);
-        AssignmentGradeFormula gradeFormula = generateGradeFormula();
+        GradeFormula gradeFormula = generateGradeFormula();
         String gradeFormulaString = RandomStringUtils.randomAlphanumeric(10);
         Term term = generateTerm(new Date(), DateUtils.addMonths(new Date(), 3), generateSchoolYear(generateSchool()));
         Course course = generateCourse();
@@ -272,9 +271,7 @@ public class CommonTestUtils {
                 withStartDate(startDate).
                 withEndDate(endDate).
                 withRoom(room).
-                withGradeFormula(new TermGradeFormulas() {{
-                    add(gradeFormula);
-                }}).
+                withGradeFormula(gradeFormula).
                 withGradeFormulaString(gradeFormulaString).
                 withTerm(term).
                 withCourse(course).build();
@@ -368,13 +365,11 @@ public class CommonTestUtils {
                 build();
     }
 
-    public static AssignmentGradeFormula generateGradeFormula(){
-        AssignmentGradeFormula.GradeFormulaBuilder builder = new AssignmentGradeFormula.GradeFormulaBuilder();
-
+    public static GradeFormula generateGradeFormula(){
+        GradeFormula formula = new GradeFormula();
         for(AssignmentType type : AssignmentType.values()){
-            builder.withAssignmentTypeWeight(type, RandomUtils.nextInt(0, Integer.MAX_VALUE));
+            formula.getAssignmentTypeWeights().put(type, new Double(RandomUtils.nextInt(0, Integer.MAX_VALUE)));
         }
-
-        return builder.build();
+        return formula;
     }
 }

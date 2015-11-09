@@ -9,6 +9,6 @@ public class PtTerm {
     public Long isbasedontermdates;
     public String name;
     public Long parentreportingtermid;
-    public String startDate;
+    public String startdate;
     public Long termid;
 }

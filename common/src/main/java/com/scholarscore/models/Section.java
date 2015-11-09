@@ -8,8 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.scholarscore.models.assignment.Assignment;
-import com.scholarscore.models.gradeformula.AssignmentGradeFormula;
-import com.scholarscore.models.gradeformula.TermGradeFormulas;
+import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import org.hibernate.annotations.Fetch;
@@ -53,7 +52,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected Date endDate;
     protected String room;
     //For jackson & for java 
-    protected TermGradeFormulas gradeFormula;
+    protected GradeFormula gradeFormula;
     //For hibernate
     protected String gradeFormulaString;
     //The starting term
@@ -74,7 +73,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         teachers = Sets.newHashSet();
     }
 
-    public Section(Date startDate, Date endDate, String room, TermGradeFormulas gradeFormula, Integer numberOfTerms) {
+    public Section(Date startDate, Date endDate, String room, GradeFormula gradeFormula, Integer numberOfTerms) {
         this();
         this.startDate = startDate;
         this.endDate = endDate;
@@ -191,7 +190,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         } else {
             try {
                 this.gradeFormulaString = string;
-                this.gradeFormula = MAPPER.readValue( string, new TypeReference<Set<AssignmentGradeFormula>>(){});
+                this.gradeFormula = MAPPER.readValue( string, new TypeReference<GradeFormula>(){});
             } catch (IOException e) {
                 this.gradeFormula =  null;
                 this.gradeFormulaString = null;
@@ -287,11 +286,11 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     }
 
     @Transient
-    public Set<AssignmentGradeFormula> getGradeFormula() {
+    public GradeFormula getGradeFormula() {
         return gradeFormula;
     }
 
-    public void setGradeFormula(TermGradeFormulas gradeFormula) {
+    public void setGradeFormula(GradeFormula gradeFormula) {
         if(null == gradeFormula) {
             this.gradeFormula = null;
             this.gradeFormulaString = null;
@@ -395,7 +394,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         protected Date startDate;
         protected Date endDate;
         protected String room;
-        protected TermGradeFormulas gradeFormula;
+        protected GradeFormula gradeFormula;
         protected String gradeFormulaString;
         protected Term term;
         protected transient Course course;
@@ -433,7 +432,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             return this;
         }
 
-        public SectionBuilder withGradeFormula(final TermGradeFormulas formula){
+        public SectionBuilder withGradeFormula(final GradeFormula formula){
             this.gradeFormula = formula;
             return this;
         }

@@ -1,25 +1,24 @@
 package com.scholarscore.api.util;
 
-import com.scholarscore.models.gradeformula.AssignmentGradeFormula;
-import com.scholarscore.models.assignment.Assignment;
-import com.scholarscore.models.assignment.AssignmentType;
-import com.scholarscore.models.assignment.AttendanceAssignment;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.Gender;
-import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.AttendanceAssignment;
+import com.scholarscore.models.assignment.GradedAssignment;
+import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.goal.AssignmentGoal;
 import com.scholarscore.models.goal.AttendanceGoal;
 import com.scholarscore.models.goal.BehaviorGoal;
 import com.scholarscore.models.goal.CumulativeGradeGoal;
 import com.scholarscore.models.goal.Goal;
-import com.scholarscore.models.gradeformula.TermGradeFormulas;
+import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 
@@ -214,26 +213,26 @@ public class SchoolDataFactory {
             List<Student> students, 
             List<Teacher> teachers) {
         //Static set of grade formulas
-        List<AssignmentGradeFormula> gradeFormulas = new ArrayList<AssignmentGradeFormula>();
-        Map<AssignmentType, Integer> weight1 = new HashMap<AssignmentType, Integer>() {{
-            put(AssignmentType.ATTENDANCE, 10); put(AssignmentType.FINAL, 35);
-            put(AssignmentType.MIDTERM, 25); put(AssignmentType.HOMEWORK, 30);
+        List<GradeFormula> gradeFormulas = new ArrayList<GradeFormula>();
+        Map<AssignmentType, Double> weight1 = new HashMap<AssignmentType, Double>() {{
+            put(AssignmentType.ATTENDANCE, 10D); put(AssignmentType.FINAL, 35D);
+            put(AssignmentType.MIDTERM, 25D); put(AssignmentType.HOMEWORK, 30D);
         }};
-        Map<AssignmentType, Integer> weight2 = new HashMap<AssignmentType, Integer>() {{
-            put(AssignmentType.FINAL, 60); put(AssignmentType.MIDTERM, 40);
+        Map<AssignmentType, Double> weight2 = new HashMap<AssignmentType, Double>() {{
+            put(AssignmentType.FINAL, 60D); put(AssignmentType.MIDTERM, 40D);
         }};
-        Map<AssignmentType, Integer> weight3 = new HashMap<AssignmentType, Integer>() {{
-            put(AssignmentType.LAB, 40); put(AssignmentType.MIDTERM, 20);
-            put(AssignmentType.FINAL, 30); put(AssignmentType.QUIZ, 10);
+        Map<AssignmentType, Double> weight3 = new HashMap<AssignmentType, Double>() {{
+            put(AssignmentType.LAB, 40D); put(AssignmentType.MIDTERM, 20D);
+            put(AssignmentType.FINAL, 30D); put(AssignmentType.QUIZ, 10D);
         }};
-        Map<AssignmentType, Integer> weight4 = new HashMap<AssignmentType, Integer>() {{
-            put(AssignmentType.TEST, 25); put(AssignmentType.FINAL, 30);
-            put(AssignmentType.QUIZ, 10); put(AssignmentType.HOMEWORK, 35);
+        Map<AssignmentType, Double> weight4 = new HashMap<AssignmentType, Double>() {{
+            put(AssignmentType.TEST, 25D); put(AssignmentType.FINAL, 30D);
+            put(AssignmentType.QUIZ, 10D); put(AssignmentType.HOMEWORK, 35D);
         }};
-        gradeFormulas.add(new AssignmentGradeFormula(weight1));
-        gradeFormulas.add(new AssignmentGradeFormula(weight2));
-        gradeFormulas.add(new AssignmentGradeFormula(weight3));
-        gradeFormulas.add(new AssignmentGradeFormula(weight4));
+        gradeFormulas.add(new GradeFormula(weight1));
+        gradeFormulas.add(new GradeFormula(weight2));
+        gradeFormulas.add(new GradeFormula(weight3));
+        gradeFormulas.add(new GradeFormula(weight4));
         
         List<String> rooms = new ArrayList<String>(){{
             add("101"); add("102");
@@ -251,7 +250,7 @@ public class SchoolDataFactory {
                         t.getStartDate(), 
                         t.getEndDate(), 
                         rooms.get(new Random().nextInt(numRooms)),
-                        new TermGradeFormulas() {{ add(gradeFormulas.get(new Random().nextInt(gradeFormulas.size()))); }},
+                        gradeFormulas.get(new Random().nextInt(gradeFormulas.size())),
                         0);
                 section.setCourse(c);
                 section.setEnrolledStudents(new ArrayList<Student>());

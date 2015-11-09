@@ -111,7 +111,7 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
             "/PSM_FinalGradeSetup?" +
             getPageSizeParam() +
-            "&projection=*&q=finalgradesetuptype!=TotalPoints";
+            "&projection=*";
     }
 
     public String getSectionGradeFormula(long formulaId) {

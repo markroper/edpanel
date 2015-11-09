@@ -5,15 +5,14 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.gradeformula.AssignmentGradeFormula;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.models.gradeformula.GradeFormula;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by cwallace on 9/16/2015.
@@ -94,11 +93,11 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                         pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, schoolId, yearId, termId, sectionId);
                 if(null == assignmentResp.getCode() || assignmentResp.getCode().isOK()) {
                     //TODO: this applies a single formula to all assignments, instead we need to break it up by term
-                    Set<AssignmentGradeFormula> formula = sect.getValue().getGradeFormula();
+                    GradeFormula formula = sect.getValue().getGradeFormula();
                     Collection<StudentAssignment> assignments = assignmentResp.getValue();
                     if(null != formula && null != assignments) {
                         HashSet<StudentAssignment> assignmentSet = new HashSet<StudentAssignment>(assignments);
-                        Double calculatedGrade = formula.iterator().next().calculateGrade(assignmentSet);
+                        Double calculatedGrade = formula.calculateGrade(assignmentSet);
                         grade.setGrade(calculatedGrade);
                     }
                 }

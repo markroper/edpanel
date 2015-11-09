@@ -9,6 +9,8 @@ import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetup;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeighting;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeightingWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PtTerm;
+import com.scholarscore.etl.powerschool.api.model.section.PtTermWrapper;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
@@ -21,14 +23,17 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.AssignmentType;
-import com.scholarscore.models.gradeformula.AssignmentGradeFormula;
-import com.scholarscore.models.gradeformula.TermGradeFormulas;
+import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -206,47 +211,148 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 }
                 //If there is a formula other than using assignment points and weights to calculate the grade,
                 //Resolve that formula and set it on the section.
-                Long powerTeacherSectionId = null;
-                try {
-                    PsResponse<PtSectionWrapper> powerTeacherSection =
-                            powerSchool.getPowerTeacherSection(powerSection.getSection_number());
-                    for (PsResponseInner<PtSectionWrapper> ptSectWrap : powerTeacherSection.record) {
-                        powerTeacherSectionId = ptSectWrap.tables.psm_section.id;
-                        break;
-                    }
-                } catch(HttpClientException e) {
-                    LOGGER.warn(e.getLocalizedMessage());
-                }
-                if(null != powerTeacherSectionId && sectionIdToGradeFormula.containsKey(powerTeacherSectionId)) {
-                    Iterator<Map.Entry<Long, PsFinalGradeSetup>> it =
-                            sectionIdToGradeFormula.get(powerTeacherSectionId).entrySet().iterator();
-                    TermGradeFormulas gradeFormulasByTerm= new TermGradeFormulas();
-                    while(it.hasNext()) {
-                        Map.Entry<Long, PsFinalGradeSetup> setupEntry = it.next();
-                        PsFinalGradeSetup setup = setupEntry.getValue();
-                        PsResponse<PsSectionGradeFormulaWeightingWrapper> formulaWeightResponse =
-                                powerSchool.getGradeFormulaWeights(setup.gradingformulaid);
-                        AssignmentGradeFormula.GradeFormulaBuilder formulaBuilder = new AssignmentGradeFormula.GradeFormulaBuilder();
-                        //TODO: this is the powerTeacher termId, which we need to convert to PowerSchool termId, so we can then convert THAT to the appropriate EdPanel ID
-                        formulaBuilder.withTermId(setupEntry.getKey());
-
-                        for(PsResponseInner<PsSectionGradeFormulaWeightingWrapper> psweightwrapper:
-                                formulaWeightResponse.record) {
-                            PsSectionGradeFormulaWeighting psWeight = psweightwrapper.tables.psm_gradingformulaweighting;
-                            formulaBuilder.withAssignmentTypeWeight(
-                                    powerTeacherCategoryToEdPanelType.get(psWeight.assignmentcategoryid),
-                                    psWeight.weighting);
-                        }
-                        gradeFormulasByTerm.add(formulaBuilder.build());
-                    }
-                    edpanelSection.setGradeFormula(gradeFormulasByTerm);
-                }
+//                Long powerTeacherSectionId = null;
+//                try {
+//                    PsResponse<PtSectionWrapper> powerTeacherSection =
+//                            powerSchool.getPowerTeacherSection(powerSection.getSection_number());
+//                    for (PsResponseInner<PtSectionWrapper> ptSectWrap : powerTeacherSection.record) {
+//                        powerTeacherSectionId = ptSectWrap.tables.psm_section.id;
+//                        break;
+//                    }
+//                } catch(HttpClientException e) {
+//                    LOGGER.warn(e.getLocalizedMessage());
+//                }
+//                if(null != powerTeacherSectionId && sectionIdToGradeFormula.containsKey(powerTeacherSectionId)) {
+//                    Iterator<Map.Entry<Long, PsFinalGradeSetup>> it =
+//                            sectionIdToGradeFormula.get(powerTeacherSectionId).entrySet().iterator();
+//                    TermGradeFormulas gradeFormulasByTerm = new TermGradeFormulas();
+//                    while(it.hasNext()) {
+//                        Map.Entry<Long, PsFinalGradeSetup> setupEntry = it.next();
+//                        PsFinalGradeSetup setup = setupEntry.getValue();
+//                        PsResponse<PsSectionGradeFormulaWeightingWrapper> formulaWeightResponse =
+//                                powerSchool.getGradeFormulaWeights(setup.gradingformulaid);
+//                        AssignmentGradeFormula.GradeFormulaBuilder formulaBuilder = new AssignmentGradeFormula.GradeFormulaBuilder();
+////                        formulaBuilder.withTermId(setupEntry.getKey());
+//                        PsResponse<PtTermWrapper> powerTeacherTermResponse =
+//                                powerSchool.getPowerTeacherTerm(setupEntry.getKey());
+//                        if(null != powerTeacherTermResponse && powerTeacherTermResponse.record.size() > 0) {
+//                            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//                            String startDate = powerTeacherTermResponse.record.get(0).tables.psm_reportingterm.startdate;
+//                            String endDate = powerTeacherTermResponse.record.get(0).tables.psm_reportingterm.enddate;
+//                            try {
+//                                formulaBuilder.withStartDate(df.parse(startDate));
+//                                formulaBuilder.withEndDate(df.parse(endDate));
+//                            } catch (ParseException e) {
+//                                LOGGER.warn("Unable to parse start/end date for grading formula: " + e.getMessage());
+//                            }
+//                        }
+//                        for(PsResponseInner<PsSectionGradeFormulaWeightingWrapper> psweightwrapper:
+//                                formulaWeightResponse.record) {
+//                            PsSectionGradeFormulaWeighting psWeight = psweightwrapper.tables.psm_gradingformulaweighting;
+//                            formulaBuilder.withAssignmentTypeWeight(
+//                                    powerTeacherCategoryToEdPanelType.get(psWeight.assignmentcategoryid),
+//                                    psWeight.weighting);
+//                        }
+//                        gradeFormulasByTerm.add(formulaBuilder.build());
+//                    }
+//                    edpanelSection.setGradeFormula(gradeFormulasByTerm);
+//                }
+                edpanelSection.setGradeFormula(resolveSectionGradeFormula(powerSection));
                 result.put(powerSection.getId(), edpanelSection);
             }
         }
         return result;
     }
 
+    protected GradeFormula resolveSectionGradeFormula(PsSection powerSection) throws HttpClientException {
+        //If there is a formula other than using assignment points and weights to calculate the grade,
+        //Resolve that formula and set it on the section.
+        Long powerTeacherSectionId = null;
+        try {
+            PsResponse<PtSectionWrapper> powerTeacherSection =
+                    powerSchool.getPowerTeacherSection(powerSection.getSection_number());
+            for (PsResponseInner<PtSectionWrapper> ptSectWrap : powerTeacherSection.record) {
+                powerTeacherSectionId = ptSectWrap.tables.psm_section.id;
+                break;
+            }
+        } catch(HttpClientException e) {
+            LOGGER.warn(e.getLocalizedMessage());
+        }
+        if(null != powerTeacherSectionId && sectionIdToGradeFormula.containsKey(powerTeacherSectionId)) {
+            Iterator<Map.Entry<Long, PsFinalGradeSetup>> it =
+                    sectionIdToGradeFormula.get(powerTeacherSectionId).entrySet().iterator();
+            GradeFormula gradeFormulasByTerm = new GradeFormula();
+            HashMap<Long, GradeFormula> allSectionFormulas = new HashMap<>();
+            while(it.hasNext()) {
+                Map.Entry<Long, PsFinalGradeSetup> setupEntry = it.next();
+                GradeFormula gradeFormula = new GradeFormula();
+                PsFinalGradeSetup setup = setupEntry.getValue();
+                gradeFormula.setId(setupEntry.getKey());
+                PsResponse<PtTermWrapper> powerTeacherTermResponse =
+                        powerSchool.getPowerTeacherTerm(setupEntry.getKey());
+                Long reportingTermParentId = null;
+                if(null != powerTeacherTermResponse && powerTeacherTermResponse.record.size() > 0) {
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    PtTerm term = powerTeacherTermResponse.record.get(0).tables.psm_reportingterm;
+                    String startDate = term.startdate;
+                    String endDate = term.enddate;
+                    gradeFormula.setParentId(term.parentreportingtermid);
+                    try {
+                        gradeFormula.setStartDate(df.parse(startDate));
+                        gradeFormula.setEndDate(df.parse(endDate));
+                    } catch (ParseException e) {
+                        LOGGER.warn("Unable to parse start/end date for grading formula: " + e.getMessage());
+                    }
+                }
+
+                if(null != setup.gradingformulaid && !setup.gradingformulaid.equals(0L)) {
+                    PsResponse<PsSectionGradeFormulaWeightingWrapper> formulaWeightResponse =
+                            powerSchool.getGradeFormulaWeights(setup.gradingformulaid);
+                    Map<Long, Double> assignmentIdToPoints = new HashMap<>();
+                    Map<AssignmentType, Double> assignmentTypeToPoints = new HashMap<>();
+                    for (PsResponseInner<PsSectionGradeFormulaWeightingWrapper> psweightwrapper :
+                            formulaWeightResponse.record) {
+                        PsSectionGradeFormulaWeighting psWeight = psweightwrapper.tables.psm_gradingformulaweighting;
+                        if(null != psWeight.assignmentcategoryid && !psWeight.assignmentcategoryid.equals(0L)) {
+                            assignmentTypeToPoints.put(
+                                    powerTeacherCategoryToEdPanelType.get(psWeight.assignmentcategoryid),
+                                    psWeight.weighting);
+                        } else if(null != psWeight.assignmentid && !psWeight.assignmentid.equals(0L)) {
+                            assignmentIdToPoints.put(
+                                    psWeight.assignmentid,
+                                    psWeight.weighting);
+                        }
+                    }
+                    gradeFormula.setAssignmentTypeWeights(assignmentTypeToPoints);
+                    gradeFormula.setAssignmentWeights(assignmentIdToPoints);
+                }
+
+                //Put the formula in the map, and add it as a child to the parent
+                if(allSectionFormulas.containsKey(gradeFormula.getParentId())) {
+                    allSectionFormulas.get(gradeFormula.getParentId()).getChildren().add(gradeFormula);
+                } else {
+                    GradeFormula parent = new GradeFormula();
+                    parent.setId(gradeFormula.getParentId());
+                    parent.setChildren(new HashSet<GradeFormula>(){{ add(gradeFormula); }});
+                    allSectionFormulas.put(gradeFormula.getParentId(), parent);
+                }
+                if(allSectionFormulas.containsKey(gradeFormula.getId())) {
+                    GradeFormula imposter = allSectionFormulas.get(gradeFormula.getId());
+                    gradeFormula.setChildren(imposter.getChildren());
+                }
+                allSectionFormulas.put(gradeFormula.getId(), gradeFormula);
+            }
+            //Find the root formula and return it
+            Iterator<Map.Entry<Long, GradeFormula>> resultsIt = allSectionFormulas.entrySet().iterator();
+            while(resultsIt.hasNext()) {
+                GradeFormula formula = resultsIt.next().getValue();
+                if(null == formula.getParentId() || formula.getParentId().equals(0L)) {
+                    return formula;
+                }
+            }
+        }
+        return null;
+    }
     protected ConcurrentHashMap<Long, Section> resolveFromEdPanel() throws HttpClientException {
         Section[] sections = edPanel.getSections(school.getId());
         ConcurrentHashMap<Long, Section> sectionMap = new ConcurrentHashMap<>();
