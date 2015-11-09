@@ -1,6 +1,7 @@
 package com.scholarscore.models;
 
 import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.gradeformula.AssignmentGradeFormula;
 import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -9,17 +10,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * GradeFormulaBuilderUnitTest tests that we can build equivalent GradeFormula objects using setters and builders
+ * GradeFormulaBuilderUnitTest tests that we can build equivalent AssignmentGradeFormula objects using setters and builders
  * Created by cschneider on 10/11/15.
  */
 @Test(groups = { "unit" })
-public class GradeFormulaBuilderUnitTest extends AbstractBuilderUnitTest<GradeFormula>{
+public class GradeFormulaBuilderUnitTest extends AbstractBuilderUnitTest<AssignmentGradeFormula>{
 
     @DataProvider
     @Override
     public Object[][] builderProvider() {
-        GradeFormula emptyGradeFormula = new GradeFormula();
-        GradeFormula emptyGradeFormulaByBuilder = new GradeFormula.GradeFormulaBuilder().build();
+        AssignmentGradeFormula emptyGradeFormula = new AssignmentGradeFormula();
+        AssignmentGradeFormula emptyGradeFormulaByBuilder = new AssignmentGradeFormula.GradeFormulaBuilder().build();
 
         Map<AssignmentType, Integer> assignmentTypeWeights = new HashMap<>();
 
@@ -27,21 +28,21 @@ public class GradeFormulaBuilderUnitTest extends AbstractBuilderUnitTest<GradeFo
             assignmentTypeWeights.put(type, RandomUtils.nextInt(0, Integer.MAX_VALUE));
         }
 
-        GradeFormula fullGradeFormula = new GradeFormula();
+        AssignmentGradeFormula fullGradeFormula = new AssignmentGradeFormula();
 
         fullGradeFormula.setAssignmentTypeWeights(assignmentTypeWeights);
 
-        GradeFormula fullGradeFormulaBuilder = new GradeFormula.GradeFormulaBuilder().
+        AssignmentGradeFormula fullGradeFormulaBuilder = new AssignmentGradeFormula.GradeFormulaBuilder().
                 withAssignmentTypeWeights(assignmentTypeWeights).
                 build();
 
-        GradeFormula.GradeFormulaBuilder fullGradeFormulaOneByOneBuilder = new GradeFormula.GradeFormulaBuilder();
+        AssignmentGradeFormula.GradeFormulaBuilder fullGradeFormulaOneByOneBuilder = new AssignmentGradeFormula.GradeFormulaBuilder();
 
         for(Map.Entry<AssignmentType, Integer> weight : assignmentTypeWeights.entrySet()){
             fullGradeFormulaOneByOneBuilder.withAssignmentTypeWeight(weight.getKey(), weight.getValue());
         }
 
-        GradeFormula oneByOneBuilder = fullGradeFormulaOneByOneBuilder.build();
+        AssignmentGradeFormula oneByOneBuilder = fullGradeFormulaOneByOneBuilder.build();
 
         return new Object[][]{
                 {"Empty grade formula", emptyGradeFormulaByBuilder, emptyGradeFormula},

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://plugin.powerschool.pearson.com"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation='http://plugin.powerschool.pearson.com plugin.xsd'
+		xsi:schemaLocation="http://plugin.powerschool.pearson.com plugin.xsd"
 		name="EdPanel"
 		version="1.0.0"
 		description="EdPanel">
@@ -178,8 +178,6 @@
 		<field table="SectionScoresID" field="ID" access="ViewOnly" />
 		<field table="SectionScoresID" field="SectionID" access="ViewOnly" />
 		<field table="SectionScoresID" field="StudentID" access="ViewOnly" />
-
-
 		<field table="PGAssignments" field="DCID" access="ViewOnly" />
 		<field table="PGAssignments" field="Abbreviation" access="ViewOnly" />
 		<field table="PGAssignments" field="AssignmentID" access="ViewOnly" />
@@ -284,6 +282,13 @@
 		<field table="PSM_FinalGradeSetup" field="LowScoresToDiscard" access="ViewOnly" />
 		<field table="PSM_FinalGradeSetup" field="ReportingTermID" access="ViewOnly" />
 		<field table="PSM_FinalGradeSetup" field="SectionID" access="ViewOnly" />
+		<field table="PSM_ReportingTerm" field="EndDate" access="ViewOnly" />
+		<field table="PSM_ReportingTerm" field="ID" access="ViewOnly" />
+		<field table="PSM_ReportingTerm" field="IsBasedOnTermDates" access="ViewOnly" />
+		<field table="PSM_ReportingTerm" field="Name" access="ViewOnly" />
+		<field table="PSM_ReportingTerm" field="ParentReportingTermID" access="ViewOnly" />
+		<field table="PSM_ReportingTerm" field="StartDate" access="ViewOnly" />
+		<field table="PSM_ReportingTerm" field="TermID" access="ViewOnly" />
 		<field table="PSM_AssignmentCategory" field="Abbreviation" access="ViewOnly" />
 		<field table="PSM_AssignmentCategory" field="ContentGroupID" access="ViewOnly" />
 		<field table="PSM_AssignmentCategory" field="DefaultExtraCreditPoints" access="ViewOnly" />
@@ -342,50 +347,5 @@
 		<field table="PGGradeScalesMark" field="mark" access="ViewOnly" />
 		<field table="PGGradeScalesMark" field="pggradescaleid" access="ViewOnly" />
 		<field table="PGGradeScalesMark" field="sectionid" access="ViewOnly" />
-		<field table="PGFinalGrades" field="dcid" access="ViewOnly" />
-		<field table="PGFinalGrades" field="citizenship" access="ViewOnly" />
-		<field table="PGFinalGrades" field="enddate" access="ViewOnly" />
-		<field table="PGFinalGrades" field="finalgradename" access="ViewOnly" />
-		<field table="PGFinalGrades" field="grade" access="ViewOnly" />
-		<field table="PGFinalGrades" field="gradebooktype" access="ViewOnly" />
-		<field table="PGFinalGrades" field="lastgradeupdate" access="ViewOnly" />
-		<field table="PGFinalGrades" field="overridefg" access="ViewOnly" />
-		<field table="PGFinalGrades" field="percent" access="ViewOnly" />
-		<field table="PGFinalGrades" field="points" access="ViewOnly" />
-		<field table="PGFinalGrades" field="pointspossible" access="ViewOnly" />
-		<field table="PGFinalGrades" field="sectionid" access="ViewOnly" />
-		<field table="PGFinalGrades" field="startdate" access="ViewOnly" />
-		<field table="PGFinalGrades" field="studentid" access="ViewOnly" />
-		<field table="PGFinalGrades" field="varcredit" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="dcid" access="ViewOnly" />
-		<!-- ACCESS DENIED - REASON - PROCESS
-			{
-			message: "Access Denied. Reason: PROCESS"
-			errors: [0]
-			}
-		https://excelacademy.powerschool.com/ws/schema/table/PGFinalGrades?projection=citizenship,dcid,enddate,finalgradename,grade,percent,points,sectionid,studentid -->
-		<field table="PGFinalGradesSetup" field="abbreviation" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="begindate" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="changegradeto" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="CitizenshipAsmtName" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="CurrentGrade" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="DueDate" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="enddate" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="ExcludedMarks" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="FactorInfos" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="FactornumScoresToDrop" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="FactorTypes" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="FactorWeights" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="name" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="NumAttPoints" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="sectionid" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="schoolid" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="yearid" access="ViewOnly" />
-		<!-- Empty result set
-			FactorWeights (ver4.3.0/5.0.7)
-				Image
-				Weighting factor for each type (used in the Final Grades calculation).
-			https://excelacademy.powerschool.com/ws/schema/table/PGFinalGradesSetup?projection=name,dcid,sectionid,schoolid,yearid
-		-->
 	</access_request>
 </plugin>

@@ -1,5 +1,6 @@
 package com.scholarscore.api.util;
 
+import com.scholarscore.models.gradeformula.AssignmentGradeFormula;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.AttendanceAssignment;
@@ -7,7 +8,6 @@ import com.scholarscore.models.Behavior;
 import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.Gender;
-import com.scholarscore.models.GradeFormula;
 import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
@@ -19,6 +19,7 @@ import com.scholarscore.models.goal.AttendanceGoal;
 import com.scholarscore.models.goal.BehaviorGoal;
 import com.scholarscore.models.goal.CumulativeGradeGoal;
 import com.scholarscore.models.goal.Goal;
+import com.scholarscore.models.gradeformula.TermGradeFormulas;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 
@@ -213,7 +214,7 @@ public class SchoolDataFactory {
             List<Student> students, 
             List<Teacher> teachers) {
         //Static set of grade formulas
-        List<GradeFormula> gradeFormulas = new ArrayList<GradeFormula>();
+        List<AssignmentGradeFormula> gradeFormulas = new ArrayList<AssignmentGradeFormula>();
         Map<AssignmentType, Integer> weight1 = new HashMap<AssignmentType, Integer>() {{
             put(AssignmentType.ATTENDANCE, 10); put(AssignmentType.FINAL, 35);
             put(AssignmentType.MIDTERM, 25); put(AssignmentType.HOMEWORK, 30);
@@ -229,10 +230,10 @@ public class SchoolDataFactory {
             put(AssignmentType.TEST, 25); put(AssignmentType.FINAL, 30);
             put(AssignmentType.QUIZ, 10); put(AssignmentType.HOMEWORK, 35);
         }};
-        gradeFormulas.add(new GradeFormula(weight1));
-        gradeFormulas.add(new GradeFormula(weight2));
-        gradeFormulas.add(new GradeFormula(weight3));
-        gradeFormulas.add(new GradeFormula(weight4));
+        gradeFormulas.add(new AssignmentGradeFormula(weight1));
+        gradeFormulas.add(new AssignmentGradeFormula(weight2));
+        gradeFormulas.add(new AssignmentGradeFormula(weight3));
+        gradeFormulas.add(new AssignmentGradeFormula(weight4));
         
         List<String> rooms = new ArrayList<String>(){{
             add("101"); add("102");
@@ -249,8 +250,9 @@ public class SchoolDataFactory {
                 Section section = new Section(
                         t.getStartDate(), 
                         t.getEndDate(), 
-                        rooms.get(new Random().nextInt(numRooms)), 
-                        gradeFormulas.get(new Random().nextInt(gradeFormulas.size())));
+                        rooms.get(new Random().nextInt(numRooms)),
+                        new TermGradeFormulas() {{ add(gradeFormulas.get(new Random().nextInt(gradeFormulas.size()))); }},
+                        0);
                 section.setCourse(c);
                 section.setEnrolledStudents(new ArrayList<Student>());
                 //Add an alternating half of students to each section

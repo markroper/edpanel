@@ -92,12 +92,19 @@ public class PowerSchoolPaths {
     public String getPowerTeacherSectionPath(String sourceSectionId) {
         try {
             return SCHEMA_BASE +
-                    "/PSM_Section?" +
-                    getPageSizeParam() +
-                    "&projection=*&q=sectionidentifier==" + URLEncoder.encode(sourceSectionId, "UTF-8");
+                "/PSM_Section?" +
+                getPageSizeParam() +
+                "&projection=*&q=sectionidentifier==" + URLEncoder.encode(sourceSectionId, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             return null;
         }
+    }
+
+    public String getPowerTeacherTermPath(Long termId) {
+        return SCHEMA_BASE +
+            "/PSM_ReportingTerm?" +
+            getPageSizeParam() +
+            "&projection=*&q=id==" + termId;
     }
 
     public String getSectionGradesSetupPath() {
@@ -109,16 +116,16 @@ public class PowerSchoolPaths {
 
     public String getSectionGradeFormula(long formulaId) {
         return SCHEMA_BASE +
-                "/PSM_GradingFormula?" +
-                getPageSizeParam() +
-                "&projection=*&q=id==" + String.valueOf(formulaId);
+            "/PSM_GradingFormula?" +
+            getPageSizeParam() +
+            "&projection=*&q=id==" + String.valueOf(formulaId);
     }
 
     public String getSectionGradeFormulaWeights(long formulaId) {
         return SCHEMA_BASE +
-                "/PSM_GradingFormulaWeighting?" +
-                getPageSizeParam() +
-                "&projection=*&q=ParentGradingFormulaID==" + String.valueOf(formulaId);
+            "/PSM_GradingFormulaWeighting?" +
+            getPageSizeParam() +
+            "&projection=*&q=ParentGradingFormulaID==" + String.valueOf(formulaId);
     }
 
     public String getSectionEnrollmentPath() {
@@ -142,9 +149,9 @@ public class PowerSchoolPaths {
 
     public String getPowerTeacherAssignmentCategories() {
         return SCHEMA_BASE +
-                "/psm_assignmentcategory?" +
-                PAGE_NUM_PARAM +
-                "&projection=*&" + getPageSizeParam();
+            "/psm_assignmentcategory?" +
+            PAGE_NUM_PARAM +
+            "&projection=*&" + getPageSizeParam();
     }
 
     public String getSectionScoresPath() {

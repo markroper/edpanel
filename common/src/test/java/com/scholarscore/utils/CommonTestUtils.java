@@ -4,7 +4,6 @@ import com.scholarscore.models.Address;
 import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.Gender;
-import com.scholarscore.models.GradeFormula;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
@@ -15,6 +14,8 @@ import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.AttendanceAssignment;
 import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.goal.GoalType;
+import com.scholarscore.models.gradeformula.AssignmentGradeFormula;
+import com.scholarscore.models.gradeformula.TermGradeFormulas;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -260,7 +261,7 @@ public class CommonTestUtils {
         Date startDate = getRandomDate();
         Date endDate = DateUtils.addWeeks(startDate, RandomUtils.nextInt(1, 5));
         String room = RandomStringUtils.randomAlphanumeric(3);
-        GradeFormula gradeFormula = generateGradeFormula();
+        AssignmentGradeFormula gradeFormula = generateGradeFormula();
         String gradeFormulaString = RandomStringUtils.randomAlphanumeric(10);
         Term term = generateTerm(new Date(), DateUtils.addMonths(new Date(), 3), generateSchoolYear(generateSchool()));
         Course course = generateCourse();
@@ -271,7 +272,9 @@ public class CommonTestUtils {
                 withStartDate(startDate).
                 withEndDate(endDate).
                 withRoom(room).
-                withGradeFormula(gradeFormula).
+                withGradeFormula(new TermGradeFormulas() {{
+                    add(gradeFormula);
+                }}).
                 withGradeFormulaString(gradeFormulaString).
                 withTerm(term).
                 withCourse(course).build();
@@ -365,8 +368,8 @@ public class CommonTestUtils {
                 build();
     }
 
-    public static GradeFormula generateGradeFormula(){
-        GradeFormula.GradeFormulaBuilder builder = new GradeFormula.GradeFormulaBuilder();
+    public static AssignmentGradeFormula generateGradeFormula(){
+        AssignmentGradeFormula.GradeFormulaBuilder builder = new AssignmentGradeFormula.GradeFormulaBuilder();
 
         for(AssignmentType type : AssignmentType.values()){
             builder.withAssignmentTypeWeight(type, RandomUtils.nextInt(0, Integer.MAX_VALUE));
