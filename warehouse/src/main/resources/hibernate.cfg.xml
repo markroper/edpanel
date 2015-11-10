@@ -13,5 +13,6 @@
         <property name="order_inserts">true</property>
         <property name="hibernate.order_updates">true</property>
         <property name="hibernate.jdbc.batch_versioned_data">true</property>
+        <property name="hibernate.connection.requireSSL">true</property>
     </session-factory>
 </hibernate-configuration>
