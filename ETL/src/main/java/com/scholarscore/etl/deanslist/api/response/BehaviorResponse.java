@@ -72,15 +72,15 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
 
             // mostly-empty student with just student name (it's all we have)
             com.scholarscore.models.user.Student student = new com.scholarscore.models.user.Student();
-//            student.setName(getStudentName(dlBehavior));
-            student.setName("TEMPORARY");
+            student.setName(getStudentName(dlBehavior));
             out.setStudent(student);
             // mostly-empty teacher with just teacher name (it's all we have)
             com.scholarscore.models.user.Teacher teacher = new com.scholarscore.models.user.Teacher();
-//            teacher.setName(getStaffName(dlBehavior));
-            teacher.setName("TEMPORARY");
+            teacher.setName(getStaffName(dlBehavior));
             out.setTeacher(teacher);
 
+            out.setPointValue(dlBehavior.PointValue);
+            
             out.setRoster(dlBehavior.Roster);
             toReturn.add(out);
         }
@@ -111,7 +111,6 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
         return BehaviorCategory.OTHER;
     }
     
-    /*
     private String getStudentName(DlBehavior dlBehavior) { 
         return (StringUtils.isEmpty(dlBehavior.StudentFirstName) ? "" : dlBehavior.StudentFirstName + " ")
                 + (StringUtils.isEmpty(dlBehavior.StudentMiddleName) ? "" : dlBehavior.StudentMiddleName + " ")
@@ -125,5 +124,5 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
                 + (StringUtils.isEmpty(dlBehavior.StaffLastName) ? "" : dlBehavior.StaffLastName).trim();
         
     }
-    */
+
 }
