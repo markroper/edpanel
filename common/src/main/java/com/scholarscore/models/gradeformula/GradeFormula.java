@@ -3,7 +3,6 @@ package com.scholarscore.models.gradeformula;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.StudentAssignment;
-import com.scholarscore.util.GradeUtil;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.io.Serializable;
@@ -108,7 +107,7 @@ public class GradeFormula implements Serializable {
                     //to the next assignment:
                     if(assignmentWeights.containsKey(sa.getAssignment().getId())) {
                         Double weight = sa.getAssignment().getWeight();
-                        assignmentIdToPoints.put(sa.getAssignment().getId(), new MutablePair<Double,Double>(
+                        assignmentIdToPoints.put(sa.getAssignment().getId(), new MutablePair<>(
                                 sa.getAwardedPoints() * weight,
                                 sa.getAssignment().getAvailablePoints() * weight));
                         continue;
@@ -191,9 +190,50 @@ public class GradeFormula implements Serializable {
         } else {
             //Straight average every assignment in the period.
             //TODO: replace me with a calculation that respects startDate & endDate
-            return GradeUtil.calculateAverageGrade(studentAssignments);
+            //return GradeUtil.calculateAverageGrade(studentAssignments);
+            return straightAverageAllAssignmentsRespectingAssignmentWeights(studentAssignments);
         }
         return numerator / denominator;
+    }
+
+    private Double straightAverageAllAssignmentsRespectingAssignmentWeights(Set<StudentAssignment> studentAssignments) {
+        Double numerator = 0D;
+        Double denominator = 0D;
+        for(StudentAssignment sa : studentAssignments) {
+            Date dueDate = sa.getAssignment().getDueDate();
+            //If the assignment is within the term:
+            if ((dueDate.compareTo(startDate) >= 0 || new Long(0L).equals(getDateDiff(startDate, dueDate, TimeUnit.DAYS)))
+                    && (dueDate.compareTo(endDate) <= 0 || new Long(0L).equals(getDateDiff(endDate, dueDate, TimeUnit.DAYS)))) {
+                //Don't count exempt assignments
+                if (sa.getExempt() || !sa.getAssignment().getIncludeInFinalGrades()) {
+                    continue;
+                }
+                Double awardedPoints = sa.getAwardedPoints();
+                if (sa.getAssignment().getType().equals(AssignmentType.ATTENDANCE) && sa.getCompleted()) {
+                    awardedPoints = sa.getAvailablePoints().doubleValue();
+                }
+                //Assignments that are not exempted, are included in the section grade calculation,
+                //but have a null awarded points should have full points. So as not to penalize the student?
+                if (null == awardedPoints) {
+                    continue;
+                    //awardedPoints = sa.getAvailablePoints().doubleValue();
+                }
+                //Multiply by the weight!
+                if (null != sa.getAssignment().getWeight()) {
+                    awardedPoints = awardedPoints * sa.getAssignment().getWeight();
+                }
+                numerator += awardedPoints;
+                Double availablePoints = sa.getAssignment().getAvailablePoints().doubleValue();
+                if (null != sa.getAssignment().getWeight()) {
+                    availablePoints = availablePoints * sa.getAssignment().getWeight();
+                }
+                denominator += availablePoints;
+            }
+        }
+        if(null != denominator) {
+            return numerator / denominator;
+        }
+        return null;
     }
 
     /**
