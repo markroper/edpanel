@@ -1,4 +1,4 @@
-Scholar Score 
+EdPanel
 ================
 Scholar Score is a data warehouse application that exposes a REST API for CRUD operations on school districts, schools, grade levels, courses, assignments, teachers, students, student assignments and student courses. The platform is a multi-module application with a data warehouse, an analytics and visualization engine, and an ETL component used to populate the Warehouse with data from other systems.
 
