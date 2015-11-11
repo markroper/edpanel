@@ -368,7 +368,7 @@ public class CommonTestUtils {
     public static GradeFormula generateGradeFormula(){
         GradeFormula formula = new GradeFormula();
         for(AssignmentType type : AssignmentType.values()){
-            formula.getAssignmentTypeWeights().put(type, new Double(RandomUtils.nextInt(0, Integer.MAX_VALUE)));
+            formula.getAssignmentTypeWeights().put(type.name(), new Double(RandomUtils.nextInt(0, Integer.MAX_VALUE)));
         }
         return formula;
     }

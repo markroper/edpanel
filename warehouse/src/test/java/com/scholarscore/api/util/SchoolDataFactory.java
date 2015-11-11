@@ -214,20 +214,20 @@ public class SchoolDataFactory {
             List<Teacher> teachers) {
         //Static set of grade formulas
         List<GradeFormula> gradeFormulas = new ArrayList<GradeFormula>();
-        Map<AssignmentType, Double> weight1 = new HashMap<AssignmentType, Double>() {{
-            put(AssignmentType.ATTENDANCE, 10D); put(AssignmentType.FINAL, 35D);
-            put(AssignmentType.MIDTERM, 25D); put(AssignmentType.HOMEWORK, 30D);
+        Map<String, Double> weight1 = new HashMap<String, Double>() {{
+            put(AssignmentType.ATTENDANCE.name(), 10D); put(AssignmentType.FINAL.name(), 35D);
+            put(AssignmentType.MIDTERM.name(), 25D); put(AssignmentType.HOMEWORK.name(), 30D);
         }};
-        Map<AssignmentType, Double> weight2 = new HashMap<AssignmentType, Double>() {{
-            put(AssignmentType.FINAL, 60D); put(AssignmentType.MIDTERM, 40D);
+        Map<String, Double> weight2 = new HashMap<String, Double>() {{
+            put(AssignmentType.FINAL.name(), 60D); put(AssignmentType.MIDTERM.name(), 40D);
         }};
-        Map<AssignmentType, Double> weight3 = new HashMap<AssignmentType, Double>() {{
-            put(AssignmentType.LAB, 40D); put(AssignmentType.MIDTERM, 20D);
-            put(AssignmentType.FINAL, 30D); put(AssignmentType.QUIZ, 10D);
+        Map<String, Double> weight3 = new HashMap<String, Double>() {{
+            put(AssignmentType.LAB.name(), 40D); put(AssignmentType.MIDTERM.name(), 20D);
+            put(AssignmentType.FINAL.name(), 30D); put(AssignmentType.QUIZ.name(), 10D);
         }};
-        Map<AssignmentType, Double> weight4 = new HashMap<AssignmentType, Double>() {{
-            put(AssignmentType.TEST, 25D); put(AssignmentType.FINAL, 30D);
-            put(AssignmentType.QUIZ, 10D); put(AssignmentType.HOMEWORK, 35D);
+        Map<String, Double> weight4 = new HashMap<String, Double>() {{
+            put(AssignmentType.TEST.name(), 25D); put(AssignmentType.FINAL.name(), 30D);
+            put(AssignmentType.QUIZ.name(), 10D); put(AssignmentType.HOMEWORK.name(), 35D);
         }};
         gradeFormulas.add(new GradeFormula(weight1));
         gradeFormulas.add(new GradeFormula(weight2));

@@ -8,7 +8,6 @@ import com.scholarscore.etl.powerschool.api.model.PsSection;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetup;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeighting;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeightingWrapper;
-import com.scholarscore.etl.powerschool.api.model.section.PtSectionWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtTerm;
 import com.scholarscore.etl.powerschool.api.model.section.PtTermWrapper;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
@@ -22,7 +21,6 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
-import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
@@ -59,7 +57,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
     private StaffAssociator staffAssociator;
     private ConcurrentHashMap<Long, Section> sections;
     private Map<Long, Map<Long, PsFinalGradeSetup>> sectionIdToGradeFormula;
-    private Map<Long, AssignmentType> powerTeacherCategoryToEdPanelType;
+    private Map<Long, String> powerTeacherCategoryToEdPanelType;
     private SyncResult results;
 
     public SectionSyncRunnable(IPowerSchoolClient powerSchool,
@@ -71,7 +69,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                                StudentAssociator studentAssociator,
                                ConcurrentHashMap<Long, Section> sections,
                                Map<Long, Map<Long, PsFinalGradeSetup>> sectionIdToGradeFormula,
-                               Map<Long, AssignmentType> powerTeacherCategoryToEdPanelType,
+                               Map<Long, String> powerTeacherCategoryToEdPanelType,
                                SyncResult results) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
@@ -219,20 +217,9 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
     protected GradeFormula resolveSectionGradeFormula(PsSection powerSection) throws HttpClientException {
         //If there is a formula other than using assignment points and weights to calculate the grade,
         //Resolve that formula and set it on the section.
-        Long powerTeacherSectionId = null;
-        try {
-            PsResponse<PtSectionWrapper> powerTeacherSection =
-                    powerSchool.getPowerTeacherSection(powerSection.getSection_number());
-            for (PsResponseInner<PtSectionWrapper> ptSectWrap : powerTeacherSection.record) {
-                powerTeacherSectionId = ptSectWrap.tables.psm_section.id;
-                break;
-            }
-        } catch(HttpClientException e) {
-            LOGGER.warn(e.getLocalizedMessage());
-        }
-        if(null != powerTeacherSectionId && sectionIdToGradeFormula.containsKey(powerTeacherSectionId)) {
+        if(null != powerSection.getId() && sectionIdToGradeFormula.containsKey(powerSection.getId())) {
             Iterator<Map.Entry<Long, PsFinalGradeSetup>> it =
-                    sectionIdToGradeFormula.get(powerTeacherSectionId).entrySet().iterator();
+                    sectionIdToGradeFormula.get(powerSection.getId()).entrySet().iterator();
             HashMap<Long, GradeFormula> allSectionFormulas = new HashMap<>();
             while(it.hasNext()) {
                 Map.Entry<Long, PsFinalGradeSetup> setupEntry = it.next();
@@ -240,6 +227,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 PsFinalGradeSetup setup = setupEntry.getValue();
                 gradeFormula.setId(setupEntry.getKey());
                 gradeFormula.setSourceSystemDescription(setup.finalgradesetuptype);
+                gradeFormula.setLowScoreToDiscard(setup.lowscorestodiscard);
                 //Get the term so we can set the term date ranges on the formula & set the formula ID to the powerschool term id
                 PsResponse<PtTermWrapper> powerTeacherTermResponse =
                         powerSchool.getPowerTeacherTerm(setupEntry.getKey());
@@ -263,7 +251,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     PsResponse<PsSectionGradeFormulaWeightingWrapper> formulaWeightResponse =
                             powerSchool.getGradeFormulaWeights(setup.gradingformulaid);
                     Map<Long, Double> assignmentIdToPoints = new HashMap<>();
-                    Map<AssignmentType, Double> assignmentTypeToPoints = new HashMap<>();
+                    Map<String, Double> assignmentTypeToPoints = new HashMap<>();
                     for (PsResponseInner<PsSectionGradeFormulaWeightingWrapper> psweightwrapper :
                             formulaWeightResponse.record) {
                         //Powerschool supports assignment category weights and specific assignment weights

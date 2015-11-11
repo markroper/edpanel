@@ -124,6 +124,7 @@ public class HibernateConsts {
     public static final String STUDENT_SECTION_GRADE_COMPLETE = "complete";
     public static final String STUDENT_SECTION_GRADE_EXEMPT = "student_section_grade_exempt";
     public static final String STUDENT_SECTION_GRADE_GRADE = "grade";
+    public static final String STUDENT_SECTION_GRADE_TERM_GRADES = "term_grades";
     
     //Teacher constants
     public static final String TEACHER_TABLE = "teacher";

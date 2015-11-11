@@ -2,6 +2,9 @@ package com.scholarscore.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.models.user.Student;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -16,7 +19,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Objects;
 
 /**
@@ -31,9 +36,10 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentSectionGrade extends ApiModel implements Serializable, WeightedGradable, IApiModel<StudentSectionGrade> {
-
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     protected Boolean complete;
     protected Double grade;
+    protected HashMap<Long, Double> termGrades;
     protected Section section;
     protected Student student;
     protected Boolean exempt;
@@ -53,6 +59,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
         this.student = grade.student;
         this.section = grade.section;
         this.exempt = grade.exempt;
+        this.termGrades = grade.termGrades;
     }
     
     @Override
@@ -75,6 +82,37 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
         if (exempt == null) {
             exempt = mergeFrom.exempt;
         }
+        if (termGrades == null) {
+            termGrades = mergeFrom.termGrades;
+        }
+    }
+
+    @JsonIgnore
+    @Column(name = HibernateConsts.STUDENT_SECTION_GRADE_TERM_GRADES)
+    public String getTermGradesString() {
+        try {
+            return MAPPER.writeValueAsString(termGrades);
+        } catch (JsonProcessingException | NullPointerException e) {
+            return null;
+        }
+    }
+    @JsonIgnore
+    public void setTermGradesString(String gradesString) {
+        try {
+            this.termGrades = MAPPER.readValue(gradesString, new TypeReference<HashMap<Long, Double>>(){});
+        } catch (IOException | NullPointerException e) {
+            this.termGrades = null;
+        }
+    }
+
+
+    @Transient
+    public HashMap<Long, Double> getTermGrades() {
+        return termGrades;
+    }
+
+    public void setTermGrades(HashMap<Long, Double> termGrades) {
+        this.termGrades = termGrades;
     }
 
     @Override

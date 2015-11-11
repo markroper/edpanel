@@ -7,6 +7,7 @@ import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.gradeformula.GradeFormula;
 
@@ -91,9 +92,17 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
             if(null == sect.getCode() || sect.getCode().isOK()) {
                 ServiceResponse<Collection<StudentAssignment>> assignmentResp =
                         pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, schoolId, yearId, termId, sectionId);
+                ServiceResponse<Term> termResp = pm.getTermManager().getTerm(schoolId, yearId, termId);
+                Term term = null;
+                if(null == termResp.getCode() || termResp.getCode().isOK()) {
+                    term = termResp.getValue();
+                }
                 if(null == assignmentResp.getCode() || assignmentResp.getCode().isOK()) {
                     //TODO: this applies a single formula to all assignments, instead we need to break it up by term
                     GradeFormula formula = sect.getValue().getGradeFormula();
+                    if(null != term) {
+                        formula = formula.resolveFormulaMatchingDates(term.getStartDate(), term.getEndDate());
+                    }
                     Collection<StudentAssignment> assignments = assignmentResp.getValue();
                     if(null != formula && null != assignments) {
                         HashSet<StudentAssignment> assignmentSet = new HashSet<StudentAssignment>(assignments);
