@@ -1,4 +1,4 @@
-package com.scholarscore.etl;
+    package com.scholarscore.etl;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;

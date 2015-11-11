@@ -25,11 +25,10 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
 
     private final static Logger logger = LoggerFactory.getLogger(DeansListClient.class);
 
-    // instead of pulling ALL behavioral events that exist in as school's deanslist accont, we only 
-    // pull ones with dates from within the lookback period. As long as sync is run successfully at least once
-    // in the lookback period, all data should be migrated. Note that the sync is idempotent so MORE than one sync
-    // within the lookback period is absolutely fine.
-    private final int NUMBER_OF_DAYS_LOOKBACK = 90;
+    // if no date is included in the query, the deanslist api by default returns only the behavioral events
+    // for today. override this behavior and use the lookback specified below. additionally, this lookback can be
+    // overridden by providing an explicit date range as part of the request.
+    private static final int DEFAULT_LOOKBACK_DAYS = 30;
     
     // SimpleDateFormat is not thread-safe, so give one to each thread
     private static final ThreadLocal<SimpleDateFormat> formatter = new ThreadLocal<SimpleDateFormat>(){
@@ -108,7 +107,7 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
     public BehaviorResponse getBehaviorData() {
         BehaviorResponse behaviorResponse = null;
         try {
-            behaviorResponse = get(BehaviorResponse.class, PATH_GET_BEHAVIOR_DATA);
+            behaviorResponse = get(BehaviorResponse.class, buildGetBehaviorUrl());
         } catch (HttpClientException e) {
             e.printStackTrace();
         }
@@ -120,14 +119,16 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
         return "username=" + username + "&pw=" + password;
     }
  
-    private String buildGetBehaviorUrl() { 
-        Date defaultEndDate = Calendar.getInstance().getTime(); // default - get all behavioral events until now!
-//        defaultEndDate  // step back 
-        throw new RuntimeException("not implemented yet");
+    private String buildGetBehaviorUrl() {
+        Calendar c = Calendar.getInstance();
+        Date endDate = c.getTime(); // default - get all behavioral events until today...
+        c.add(Calendar.DAY_OF_MONTH, -DEFAULT_LOOKBACK_DAYS); // ... since <lookback> days ago
+        Date startDate = c.getTime();
+        return buildGetBehaviorUrlWithDates(startDate, endDate);
     }
     
     private String buildGetBehaviorUrlWithDates(Date behavioralEventsSince, Date behavioralEventsUntil) { 
-        return PATH_GET_BEHAVIOR_DATA + "&sdt=" + getFormatter().format(behavioralEventsSince) 
+        return PATH_GET_BEHAVIOR_DATA + "?sdt=" + getFormatter().format(behavioralEventsSince) 
                 + "&edt=" + getFormatter().format(behavioralEventsUntil);
     }
     
