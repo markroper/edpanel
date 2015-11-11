@@ -1,7 +1,5 @@
 package com.scholarscore.etl.powerschool.client;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -90,16 +88,18 @@ public class PowerSchoolPaths {
         return BASE + "/school/{0}/section?" + getPageSizeParam();
     }
 
-    public String getPowerTeacherSectionPath(String sourceSectionId) {
-        try {
-            return SCHEMA_BASE +
-                "/PSM_Section?" +
+    public String getPowerTeacherSectionPath(Long sourceSectionId) {
+        return SCHEMA_BASE +
+            "/SYNC_SectionMap?" +
+            "projection=*&q=SectionsDCID==" + sourceSectionId;
+    }
+
+    public String getPowerTeacherSectionMappingPath() {
+        return SCHEMA_BASE +
+                "/SYNC_SectionMap?" +
                 getPageSizeParam() +
                 "&" + PAGE_NUM_PARAM +
-                "&projection=*&q=sectionidentifier==" + URLEncoder.encode(sourceSectionId, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
+                "&projection=*";
     }
 
     public String getPowerTeacherTermPath(Long termId) {

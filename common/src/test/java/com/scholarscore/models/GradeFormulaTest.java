@@ -47,17 +47,17 @@ public class GradeFormulaTest {
         Double noFormulaGrade = ((70.0*10.0) + (100.0*15.0)) / (25.0 * 100);
 
         GradeFormula validFormula = new GradeFormula();
-        Map<AssignmentType, Double> assignmentTypeWeights = new HashMap<>();
-        assignmentTypeWeights.put(AssignmentType.ATTENDANCE, 15D);
-        assignmentTypeWeights.put(AssignmentType.TEST, 85D);
+        Map<String, Double> assignmentTypeWeights = new HashMap<>();
+        assignmentTypeWeights.put(AssignmentType.ATTENDANCE.name(), 15D);
+        assignmentTypeWeights.put(AssignmentType.TEST.name(), 85D);
         validFormula.setAssignmentTypeWeights(assignmentTypeWeights);
         //The formula is weighted to allow attendance to be 15% of the grade and graded work 85%:
         Double weightedFormulaGrade = (.7*85)+15;
 
         GradeFormula invalidFormula = new GradeFormula();
-        Map<AssignmentType, Double> invalidAssignmentWeights = new HashMap<>();
-        invalidAssignmentWeights.put(AssignmentType.ATTENDANCE, 15D);
-        invalidAssignmentWeights.put(AssignmentType.TEST, 90D);
+        Map<String, Double> invalidAssignmentWeights = new HashMap<>();
+        invalidAssignmentWeights.put(AssignmentType.ATTENDANCE.name(), 15D);
+        invalidAssignmentWeights.put(AssignmentType.TEST.name(), 90D);
         invalidFormula.setAssignmentTypeWeights(invalidAssignmentWeights);
        
         

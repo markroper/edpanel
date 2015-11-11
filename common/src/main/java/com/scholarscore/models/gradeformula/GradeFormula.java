@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * PowerSchool breaks the logical concept of a Grade Formula into three objects, each of which
@@ -23,9 +24,9 @@ import java.util.Set;
  *
  *                          school year
  *                         /           \
- *                    semester 1    semester 2
- *                   /         \    /         \
- *                  Q1         Q2  Q3         Q4
+ *                   semester 1     semester 2
+ *                  /          \   /          \
+ *                 Q1         Q2  Q3          Q4
  *
  * Each of these grade setups may have its own GradeFormula, which in turn have their own weights.  A setup
  * does not need to have a formula, and in these cases a strait sum(awarded_points)/sum(available_points) formula
@@ -50,9 +51,12 @@ public class GradeFormula implements Serializable {
     Date endDate;
     //Parent grade formula (e.g. a Quarter's grade formula may have a parent semester grade formula)
     Long parentId;
+    //TODO: migrated but not yet in use in calculateGrade(..)
+    Long lowScoreToDiscard;
     Set<GradeFormula> children = new HashSet<>();
-    //TODO: missing low score to discard?
-    Map<AssignmentType, Double> assignmentTypeWeights = new HashMap<>();
+    //User defined type string to weighting
+    Map<String, Double> assignmentTypeWeights = new HashMap<>();
+    Map<String, Double> assignmentTypeDefaultPoints = new HashMap<>();
     //keyed on sourceSystemId
     Map<Long, Double> assignmentWeights = new HashMap<>();
     Map<Long, Double> childWeights = new HashMap<>();
@@ -60,58 +64,85 @@ public class GradeFormula implements Serializable {
     public GradeFormula() {
 
     }
-    public GradeFormula(Map<AssignmentType, Double> weight) {
+    public GradeFormula(Map<String, Double> weight) {
         this.assignmentTypeWeights = weight;
     }
 
+    /**
+     * Ok, here goes.  Exempt any assignments outside the startDate and endDate bounds for the formula.
+     * Also exempt any assignments marked as 'exempt' from calculations, regardless of formula type.
+     * Ensure that if a students score is below the assignment minmum default score that the minimum default
+     * score is used.
+     * <p/>
+     * 1) If the GradeFormula instance has assignmentTypeWeights and/or assignmentWeights, use those to
+     * calculate the grade.  If there is a specific assignment weight, use that in the calculation, but
+     * exempts the assignment in question from inclusion in its assignment type bucket.
+     * <p/>
+     * 2) If the GradeFormula has childWieghts, calculate the grade for each child according to its
+     * formula, and create a weighted average from those children according to the weighting.
+     * <p/>
+     * 3) If the GradeFormula instance has no weightings, but does have children, straight average output
+     * of the child GradeFormula's grades.
+     * <p/>
+     * 4) If the GradeFormula instance has no weightings and no children, calculate the grade by the
+     * following formuls:
+     * sum(awarded points * weight)/sum(available points * weight)
+     *
+     * @param studentAssignments
+     * @return
+     */
     public Double calculateGrade(Set<StudentAssignment> studentAssignments) {
         Double numerator = 0D;
         Double denominator = 0D;
-        if(!childWeights.isEmpty()) {
-            //If there are child formulas & we have weights defined, delegate to those child formulas
-            //And calculate the grade based ona weighted average of those.
-            for(GradeFormula child: children) {
-                if(childWeights.containsKey(child.getId())) {
-                    numerator += child.calculateGrade(studentAssignments) * childWeights.get(child.getId());
-                    denominator += childWeights.get(child.getId());
-                }
-            }
-        } else if(!assignmentTypeWeights.isEmpty() || !assignmentWeights.isEmpty()) {
+        //TODO: what if there are both childWeights and assignmentTypeWeights?
+        if(!assignmentTypeWeights.isEmpty() || !assignmentWeights.isEmpty()) {
             //There are weightings defined for assignments or assignment types, so we use those!
-            Map<AssignmentType, MutablePair<Double, Double>> typeToAwardedAndAvailPoints = new HashMap<>();
+            Map<String, MutablePair<Double, Double>> typeToAwardedAndAvailPoints = new HashMap<>();
             Map<Long, MutablePair<Double, Double>> assignmentIdToPoints = new HashMap<>();
             for(StudentAssignment sa : studentAssignments) {
                 Date dueDate = sa.getAssignment().getDueDate();
                 //If the assignment is within the term:
-                if(dueDate.compareTo(startDate) >= 0 && dueDate.compareTo(endDate) <= 0) {
+                if((dueDate.compareTo(startDate) >= 0 || new Long(0L).equals(getDateDiff(startDate, dueDate, TimeUnit.DAYS)))
+                        && (dueDate.compareTo(endDate) <= 0 || new Long(0L).equals(getDateDiff(endDate, dueDate, TimeUnit.DAYS)))) {
+                    //If there is a weight for the particular assignment, calculate the values and move on
+                    //to the next assignment:
                     if(assignmentWeights.containsKey(sa.getAssignment().getId())) {
                         Double weight = sa.getAssignment().getWeight();
                         assignmentIdToPoints.put(sa.getAssignment().getId(), new MutablePair<Double,Double>(
                                 sa.getAwardedPoints() * weight,
                                 sa.getAssignment().getAvailablePoints() * weight));
+                        continue;
                     }
 
-                    AssignmentType type = sa.getAssignment().getType();
+                    String type = sa.getAssignment().getUserDefinedType();
                     //Don't count assignments that are not being included in the grade
                     if(!assignmentTypeWeights.containsKey(type)) {
                         continue;
                     }
                     //Don't count exempt assignments
-                    if(sa.getExempt()) {
+                    if(sa.getExempt() || !sa.getAssignment().getIncludeInFinalGrades()) {
                         continue;
                     }
-                    if(!typeToAwardedAndAvailPoints.containsKey(type)) {
-                        typeToAwardedAndAvailPoints.put(type, new MutablePair<Double, Double>(0D, 0D));
-                    }
-                    //TODO: handle min default score here or is it in the data?
                     //CALCULATE AND INCREMENT AWARDED POINTS
                     Double awardedPoints = sa.getAwardedPoints();
                     if(type.equals(AssignmentType.ATTENDANCE) && sa.getCompleted()) {
                         awardedPoints = sa.getAvailablePoints().doubleValue();
                     }
+                    //do not include assignments with null awarded points in calculation
                     if(null == awardedPoints) {
-                        awardedPoints = 0D;
+                        continue;
                     }
+                    if(!typeToAwardedAndAvailPoints.containsKey(type)) {
+                        typeToAwardedAndAvailPoints.put(type, new MutablePair<Double, Double>(0D, 0D));
+                    }
+                    //If there is a default point value for the category and the awarded points is less than it,
+                    //ise the default points
+                    Double defaultPoints = assignmentTypeDefaultPoints.get(type);
+                    if(null != defaultPoints &&
+                            awardedPoints < defaultPoints) {
+                        awardedPoints = defaultPoints;
+                    }
+                    //Multiply by the weight!
                     if(null != sa.getAssignment().getWeight()) {
                         awardedPoints = awardedPoints * sa.getAssignment().getWeight();
                     }
@@ -127,8 +158,9 @@ public class GradeFormula implements Serializable {
                     typeToAwardedAndAvailPoints.get(type).setRight(right + availablePoints);
                 }
             }
-            for(Map.Entry<AssignmentType, MutablePair<Double, Double>> entry : typeToAwardedAndAvailPoints.entrySet()) {
-                AssignmentType type = entry.getKey();
+            //Now that the buckets' awarded and available points are calculated, perform the bucket weighting
+            for(Map.Entry<String, MutablePair<Double, Double>> entry : typeToAwardedAndAvailPoints.entrySet()) {
+                String type = entry.getKey();
                 MutablePair<Double, Double> values = entry.getValue();
                 numerator += values.getLeft() / values.getRight() * assignmentTypeWeights.get(type);
                 denominator += assignmentTypeWeights.get(type);
@@ -137,11 +169,57 @@ public class GradeFormula implements Serializable {
                 numerator += entry.getValue().getLeft() / entry.getValue().getRight() * assignmentWeights.get(entry.getKey());
                 denominator += assignmentWeights.get(entry.getKey());
             }
+        } else if(!children.isEmpty()) {
+            //If there are child formulas & we have weights defined, delegate to those child formulas
+            //And calculate the grade based ona weighted average of those.
+            boolean weightChildren = !childWeights.isEmpty();
+            for(GradeFormula child: children) {
+                if(weightChildren) {
+                    //There are child weights, only include weighted children in the calculation, and include the
+                    //weight for those children in the calculation
+                    if (childWeights.containsKey(child.getId())) {
+                        numerator += child.calculateGrade(studentAssignments) * childWeights.get(child.getId());
+                        denominator += childWeights.get(child.getId());
+                    }
+                } else {
+                    //There are children, but no weighting for them.  Straight average the children scores.
+                    numerator += child.calculateGrade(studentAssignments);
+                    denominator += 1D;
+                }
+            }
         } else {
             //Straight average every assignment in the period.
+            //TODO: replace me with a calculation that respects startDate & endDate
             return GradeUtil.calculateAverageGrade(studentAssignments);
         }
         return numerator / denominator;
+    }
+
+    /**
+     * Depth first recursive search to find the formula matching the reporting dates requested.
+     * Will throw NPE if null startDate or endDate are provided as arguments
+     * @param startDate Non null date
+     * @param endDate   Non-null date
+     * @return GradeFormula matching the start and end date or else null
+     */
+    public GradeFormula resolveFormulaMatchingDates(Date startDate, Date endDate) {
+        //Soft match the dates since terms and reporting terms as migrated may be off by some number of minutes or days
+        if(null != this.startDate && getDateDiff(this.startDate, startDate, TimeUnit.DAYS) < 8 &&
+                null != this.endDate && getDateDiff(this.endDate, endDate, TimeUnit.DAYS) < 8) {
+            return this;
+        }
+        for(GradeFormula formula: children) {
+            GradeFormula potential = formula.resolveFormulaMatchingDates(startDate, endDate);
+            if(null != potential) {
+                return potential;
+            }
+        }
+        return null;
+    }
+
+    private static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+        long diffInMillies = Math.abs(date2.getTime() - date1.getTime());
+        return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
     }
 
     public Long getId() {
@@ -192,11 +270,11 @@ public class GradeFormula implements Serializable {
         this.children = children;
     }
 
-    public Map<AssignmentType, Double> getAssignmentTypeWeights() {
+    public Map<String, Double> getAssignmentTypeWeights() {
         return assignmentTypeWeights;
     }
 
-    public void setAssignmentTypeWeights(Map<AssignmentType, Double> assignmentTypeWeights) {
+    public void setAssignmentTypeWeights(Map<String, Double> assignmentTypeWeights) {
         this.assignmentTypeWeights = assignmentTypeWeights;
     }
 
@@ -224,10 +302,27 @@ public class GradeFormula implements Serializable {
         this.childWeights = childWeights;
     }
 
+    public Long getLowScoreToDiscard() {
+        return lowScoreToDiscard;
+    }
+
+    public void setLowScoreToDiscard(Long lowScoreToDiscard) {
+        this.lowScoreToDiscard = lowScoreToDiscard;
+    }
+
+    public Map<String, Double> getAssignmentTypeDefaultPoints() {
+        return assignmentTypeDefaultPoints;
+    }
+
+    public void setAssignmentTypeDefaultPoints(Map<String, Double> assignmentTypeDefaultPoints) {
+        this.assignmentTypeDefaultPoints = assignmentTypeDefaultPoints;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, startDate, endDate, parentId, children, assignmentTypeWeights,
-                assignmentWeights, childWeights, sourceSystemDescription);
+        return Objects.hash(id, name, startDate, endDate, parentId, children,
+                assignmentTypeWeights, assignmentWeights, childWeights, sourceSystemDescription,
+                lowScoreToDiscard, assignmentTypeDefaultPoints);
     }
 
     @Override
@@ -248,6 +343,8 @@ public class GradeFormula implements Serializable {
                 && Objects.equals(this.sourceSystemDescription, other.sourceSystemDescription)
                 && Objects.equals(this.assignmentTypeWeights, other.assignmentTypeWeights)
                 && Objects.equals(this.assignmentWeights, other.assignmentWeights)
+                && Objects.equals(this.lowScoreToDiscard, other.lowScoreToDiscard)
+                && Objects.equals(this.assignmentTypeDefaultPoints, other.assignmentTypeDefaultPoints)
                 && Objects.equals(this.childWeights, other.childWeights);
     }
 }

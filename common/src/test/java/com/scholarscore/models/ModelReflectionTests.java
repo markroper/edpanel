@@ -327,11 +327,11 @@ public class ModelReflectionTests {
 
         if (type.isAssignableFrom(GradeFormula.class)) {
             GradeFormula gradeFormula = new GradeFormula();
-            Map<AssignmentType, Double> map = new HashMap<>();
+            Map<String, Double> map = new HashMap<>();
             if (alt) {
-                map.put(AssignmentType.ATTENDANCE, 2D);
+                map.put(AssignmentType.ATTENDANCE.name(), 2D);
             } else {
-                map.put(AssignmentType.HOMEWORK, 4D);
+                map.put(AssignmentType.HOMEWORK.name(), 4D);
             }
             gradeFormula.setAssignmentTypeWeights(map);
             return gradeFormula;

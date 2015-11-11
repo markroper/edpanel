@@ -19,7 +19,7 @@ import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapp
 import com.scholarscore.etl.powerschool.api.model.section.PsGradeFormulaWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeightingWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeWrapper;
-import com.scholarscore.etl.powerschool.api.model.section.PtSectionWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PtSectionMapWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtTermWrapper;
 import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
@@ -246,9 +246,17 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
 
     @Override
-    public PsResponse<PtSectionWrapper> getPowerTeacherSection(String sourceSectionNumberVarchar) throws HttpClientException {
-        return get(new TypeReference<PsResponse<PtSectionWrapper>>() {},
-                paths.getPowerTeacherSectionPath(sourceSectionNumberVarchar),
+    public PsResponse<PtSectionMapWrapper> getPowerTeacherSectionMapping(Long sourceSectionId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtSectionMapWrapper>>() {},
+                paths.getPowerTeacherSectionPath(sourceSectionId),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PtSectionMapWrapper> getPowerTeacherSectionMappings() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtSectionMapWrapper>>() {},
+                paths.getPowerTeacherSectionMappingPath(),
                 PAGE_SIZE,
                 (String[]) null);
     }

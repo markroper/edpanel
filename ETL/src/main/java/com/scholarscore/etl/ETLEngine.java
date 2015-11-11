@@ -2,11 +2,12 @@ package com.scholarscore.etl;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
-import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentFactory;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCategory;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCategoryWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetup;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PtSectionMap;
+import com.scholarscore.etl.powerschool.api.model.section.PtSectionMapWrapper;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
@@ -24,7 +25,6 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
-import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.attendance.SchoolDay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -174,23 +174,35 @@ public class ETLEngine implements IETLEngine {
      */
     private void migrateSections() {
         this.sections = new ConcurrentHashMap<>();
-        ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-        //Resolve PowerTeacher section ID to grade formula setup mapping
+        //Resolve the lookup between PowerTeacher sectionID and PowerSchool sectionID:
+        Map<Long, Long> ptSectionIdToPsSectionId = new HashMap<>();
+        try {
+            PsResponse<PtSectionMapWrapper> powerTeacherSection = powerSchool.getPowerTeacherSectionMappings();
+            for (PsResponseInner<PtSectionMapWrapper> ptSectWrap : powerTeacherSection.record) {
+                PtSectionMap mapping = ptSectWrap.tables.sync_sectionmap;
+                ptSectionIdToPsSectionId.put(mapping.sectionid, mapping.sectionsdcid);
+            }
+        } catch (HttpClientException e) {
+            LOGGER.warn("Unable to resolve the powerTeacher->powerSchool section ID mapping. " + e.getMessage());
+        }
+
+        //Resolve PowerSchool section ID to PowerTeacher termID to grade setup mappings
         Map<Long, Map<Long, PsFinalGradeSetup>> sectionIdToGradeFormula = new HashMap<>();
         try {
             PsResponse<PsFinalGradeSetupWrapper> gradeSetups =  powerSchool.getFinalGradeSetups();
             for(PsResponseInner<PsFinalGradeSetupWrapper> wrapper : gradeSetups.record) {
                 PsFinalGradeSetup gradeSetup = wrapper.tables.psm_finalgradesetup;
-                if(!sectionIdToGradeFormula.containsKey(gradeSetup.sectionid)) {
-                    sectionIdToGradeFormula.put(gradeSetup.sectionid, new HashMap<>());
+                Long powerSchoolSectionId = ptSectionIdToPsSectionId.get(gradeSetup.sectionid);
+                if(!sectionIdToGradeFormula.containsKey(powerSchoolSectionId)) {
+                    sectionIdToGradeFormula.put(powerSchoolSectionId, new HashMap<>());
                 }
-                sectionIdToGradeFormula.get(gradeSetup.sectionid).put(gradeSetup.reportingtermid, gradeSetup);
+                sectionIdToGradeFormula.get(powerSchoolSectionId).put(gradeSetup.reportingtermid, gradeSetup);
             }
         } catch (HttpClientException | NullPointerException e) {
             LOGGER.warn(e.getLocalizedMessage());
         }
-        //Associate powerTeacher AssignmentCategories and EdPanel types
-        Map<Long, AssignmentType> powerTeacherCategoryToEdPanelType = new HashMap<>();
+        //Associate powerTeacher AssignmentCategoryID to a String value usable in EdPanel
+        Map<Long, String> powerTeacherCategoryToEdPanelType = new HashMap<>();
         try {
             PsResponse<PtAssignmentCategoryWrapper> powerTypes =
                     powerSchool.getPowerTeacherAssignmentCategory();
@@ -200,15 +212,15 @@ public class ETLEngine implements IETLEngine {
                         PtAssignmentCategory category = pat.tables.psm_assignmentcategory;
                         powerTeacherCategoryToEdPanelType.put(
                                 Long.valueOf(category.id),
-                                PsAssignmentFactory.resolveAssignmentType(category.abbreviation, category.name));
+                                category.name);
                     }
                 }
             }
         } catch(HttpClientException e) {
             LOGGER.warn(e.getLocalizedMessage());
         }
-
-
+        //Now we have the section resolution antecedent
+        ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
         for(Map.Entry<Long, School> school : this.schools.entrySet()) {
             Long sourceSystemSchoolId = Long.valueOf(school.getValue().getSourceSystemId());
             sections.put(sourceSystemSchoolId, new ConcurrentHashMap<>());
