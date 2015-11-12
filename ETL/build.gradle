@@ -1,6 +1,9 @@
-apply plugin: 'java'
-apply plugin: 'distribution'
+apply plugin: 'application'
 
+// apply plugin: 'java'
+// apply plugin: 'distribution'
+
+mainClassName = "com.scholarscore.etl.runner.ETLExecutable"
 
 //Dependencies section:
 ext {
