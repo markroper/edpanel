@@ -1,6 +1,6 @@
 package com.scholarscore.etl.deanslist;
 
-import com.scholarscore.etl.IETLEngine;
+import com.scholarscore.etl.IEtlEngine;
 import com.scholarscore.etl.SyncResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class DeansListMigrationTest extends AbstractTestNGSpringContextTests {
     final static Logger logger = LoggerFactory.getLogger(DeansListMigrationTest.class);
 
     @Autowired
-    private IETLEngine engine;
+    private IEtlEngine engine;
 
     // Test pulls behaviors from deanslist and matches to students in scholarscore
     public void testMigrateDistrict() {

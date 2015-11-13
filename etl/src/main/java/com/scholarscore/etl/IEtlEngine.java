@@ -3,7 +3,7 @@ package com.scholarscore.etl;
 /**
  * Created by mattg on 7/3/15.
  */
-public interface IETLEngine {
+public interface IEtlEngine {
 
     /**
      * Synchronize a district from the source system(s) to EdPanel.  Implementations should be idempotent

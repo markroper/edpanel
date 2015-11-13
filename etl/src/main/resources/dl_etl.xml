@@ -7,7 +7,7 @@
     <import resource="deanslist.xml"/>
     <import resource="edpanel.xml"/>
     
-    <bean id="dlEtlEngine" class="com.scholarscore.etl.DLETLEngine">
+    <bean id="dlEtlEngine" class="com.scholarscore.etl.DlEtlEngine">
         <property name="deansList" ref="deansListClient"/>
         <property name="scholarScore" ref="edpanelClient"/>
     </bean>

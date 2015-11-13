@@ -21,9 +21,9 @@ import java.util.List;
  * Date: 7/28/15
  * Time: 7:14 PM
  */
-public class DLETLEngine implements IETLEngine {
+public class DlEtlEngine implements IEtlEngine {
 
-    final static Logger logger = LoggerFactory.getLogger(DLETLEngine.class);
+    final static Logger logger = LoggerFactory.getLogger(DlEtlEngine.class);
     
     // wired up by spring
     private IDeansListClient deansList;

@@ -17,7 +17,7 @@
     </bean>
 
 
-    <bean id="etlEngine" class="com.scholarscore.etl.ETLEngine">
+    <bean id="etlEngine" class="com.scholarscore.etl.EtlEngine">
         <property name="powerSchool" ref="powerSchoolClient"/>
         <property name="edPanel" ref="edpanelClient"/>
     </bean>

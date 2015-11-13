@@ -1,7 +1,7 @@
 package com.scholarscore.etl.powerschool.sync.attendance;
 
 import com.scholarscore.client.IAPIClient;
-import com.scholarscore.etl.ETLEngine;
+import com.scholarscore.etl.EtlEngine;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
@@ -51,7 +51,7 @@ public class AttendanceSync implements ISync<Attendance> {
     public ConcurrentHashMap<Long, Attendance> syncCreateUpdateDelete(SyncResult results) {
         ConcurrentHashMap<Long, Attendance> response = new ConcurrentHashMap<>();
         Iterator<Map.Entry<Long, Student>> studentIterator = studentAssociator.getStudents().entrySet().iterator();
-        ExecutorService executor = Executors.newFixedThreadPool(ETLEngine.THREAD_POOL_SIZE);
+        ExecutorService executor = Executors.newFixedThreadPool(EtlEngine.THREAD_POOL_SIZE);
         while(studentIterator.hasNext()) {
             Student s = studentIterator.next().getValue();
             if(s.getCurrentSchoolId().equals(school.getId())) {
@@ -63,7 +63,7 @@ public class AttendanceSync implements ISync<Attendance> {
         executor.shutdown();
         //Spin while we wait for all the threads to complete
         try {
-            if (!executor.awaitTermination(ETLEngine.TOTAL_TTL_MINUTES, TimeUnit.MINUTES)) {
+            if (!executor.awaitTermination(EtlEngine.TOTAL_TTL_MINUTES, TimeUnit.MINUTES)) {
                 executor.shutdownNow();
             }
         } catch(InterruptedException e) {
