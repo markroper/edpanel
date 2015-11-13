@@ -86,7 +86,8 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         }
         StudentSectionGrade grade = studentSectionGradePersistence.select(sectionId, studentId);
         Boolean complete = grade.getComplete();
-        if(null == complete || complete.equals(Boolean.FALSE)) {
+        //Only calculate the grade if there is not a grade on it already
+        if((null == complete || complete.equals(Boolean.FALSE)) && null == grade.getGrade()) {
             //Get the section, and pull off the section formula
             ServiceResponse<Section> sect = pm.getSectionManager().getSection(schoolId, yearId, termId, sectionId);
             if(null == sect.getCode() || sect.getCode().isOK()) {
@@ -101,7 +102,13 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                     //TODO: this applies a single formula to all assignments, instead we need to break it up by term
                     GradeFormula formula = sect.getValue().getGradeFormula();
                     if(null != term) {
-                        formula = formula.resolveFormulaMatchingDates(term.getStartDate(), term.getEndDate());
+                        if(null == formula) {
+                            formula = new GradeFormula();
+                            formula.setStartDate(term.getStartDate());
+                            formula.setEndDate(term.getEndDate());
+                        } else {
+                            formula = formula.resolveFormulaMatchingDates(term.getStartDate(), term.getEndDate());
+                        }
                     }
                     Collection<StudentAssignment> assignments = assignmentResp.getValue();
                     if(null != formula && null != assignments) {
