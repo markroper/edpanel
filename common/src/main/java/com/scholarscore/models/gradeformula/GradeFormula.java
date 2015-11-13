@@ -194,6 +194,9 @@ public class GradeFormula implements Serializable {
             //return GradeUtil.calculateAverageGrade(studentAssignments);
             return straightAverageAllAssignmentsRespectingAssignmentWeights(studentAssignments);
         }
+        if(null != denominator && !denominator.equals(0D)) {
+            return numerator / denominator;
+        }
         return numerator / denominator;
     }
 
@@ -229,7 +232,7 @@ public class GradeFormula implements Serializable {
                 denominator += availablePoints;
             }
         }
-        if(null != denominator) {
+        if(null != denominator && !denominator.equals(0D)) {
             return numerator / denominator;
         }
         return null;
