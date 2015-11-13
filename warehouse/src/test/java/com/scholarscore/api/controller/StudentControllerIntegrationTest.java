@@ -100,7 +100,7 @@ public class StudentControllerIntegrationTest extends IntegrationBase {
         Long[] studentIds = new Long[] { createdStudent.getId() };
         String result = studentValidatingExecutor.getPrepScore(studentIds, null, null);
         assertNotNull(result);
-        assertTrue(result.contains(expectedPrepScore));
+        assertTrue(result.contains(expectedPrepScore), "result (" + result.toString() + ") does not contain expected prepscore (" + expectedPrepScore  + ")");
     }
 
     @Test
