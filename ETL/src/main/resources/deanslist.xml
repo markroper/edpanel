@@ -20,6 +20,8 @@
     <bean id="deansListClient"
           class="com.scholarscore.etl.deanslist.client.DeansListClient">
         <constructor-arg index="0" type="java.net.URI" value="${deanslist.client.url}"/>
+        <constructor-arg index="1" type="java.lang.String" value="${deanslist.client.user}"/>
+        <constructor-arg index="2" type="java.lang.String" value="${deanslist.client.pass}"/>
     </bean>
 
 </beans>

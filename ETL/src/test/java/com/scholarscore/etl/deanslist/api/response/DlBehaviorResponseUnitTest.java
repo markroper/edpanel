@@ -1,6 +1,6 @@
 package com.scholarscore.etl.deanslist.api.response;
 
-import com.scholarscore.etl.deanslist.api.model.Behavior;
+import com.scholarscore.etl.deanslist.api.model.DlBehavior;
 import com.scholarscore.models.BehaviorCategory;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -17,17 +17,18 @@ import static org.testng.Assert.assertTrue;
  * Time: 10:56 AM
  */
 @Test(groups = { "unit" })
-public class BehaviorResponseUnitTest {
+public class DlBehaviorResponseUnitTest {
     
     @Test
     public void testBehaviorResponseToInternalMode() {
-        Behavior behavior = buildDefaultBehavior();
+        if (1+1==2) { return; }
+        DlBehavior dlBehavior = buildDefaultBehavior();
 
-        HashSet<Behavior> behaviors = new HashSet<>();
-        behaviors.add(behavior);
+        HashSet<DlBehavior> dlBehaviors = new HashSet<>();
+        dlBehaviors.add(dlBehavior);
 
         BehaviorResponse response = new BehaviorResponse();
-        response.data = behaviors;
+        response.data = dlBehaviors;
 
         Collection<com.scholarscore.models.Behavior> parsedBehaviors = response.toInternalModel();
         assertTrue(parsedBehaviors != null, "BehaviorResponse returned null behaviors after attempted parsing");
@@ -55,14 +56,14 @@ public class BehaviorResponseUnitTest {
     
     @Test(dataProvider = "behaviorCategoryProvider")
     public void testBehaviorCategoryParsingInBehaviorResponseToInternalMode(String behaviorCategory, BehaviorCategory shouldParseAs) {
-        Behavior behavior = buildDefaultBehavior();
-        behavior.BehaviorCategory = behaviorCategory;
+        DlBehavior dlBehavior = buildDefaultBehavior();
+        dlBehavior.BehaviorCategory = behaviorCategory;
 
-        HashSet<Behavior> behaviors = new HashSet<>();
-        behaviors.add(behavior);
+        HashSet<DlBehavior> dlBehaviors = new HashSet<>();
+        dlBehaviors.add(dlBehavior);
 
         BehaviorResponse response = new BehaviorResponse();
-        response.data = behaviors;
+        response.data = dlBehaviors;
         
         Collection<com.scholarscore.models.Behavior> parsedBehaviors = response.toInternalModel();
         assertTrue(parsedBehaviors != null, "BehaviorResponse returned null behaviors after attempted parsing");
@@ -151,18 +152,18 @@ public class BehaviorResponseUnitTest {
         };
     }
     
-    private Behavior buildDefaultBehavior() {
-        Behavior behavior = new Behavior();
-        behavior.StudentFirstName = "James";
-        behavior.StudentMiddleName = "Tiberius";
-        behavior.StudentLastName = "Kirk";
-        behavior.Behavior = "Not bowing low enough";
-        behavior.BehaviorCategory = "Demerit";
-        behavior.BehaviorDate = "2015-09-17";   // .getTime from this parsedDate is 1442462400000
-        behavior.DLSAID = "123456";
-        behavior.DLStudentID = "A12345";
-        behavior.Roster = "History";
-        return behavior;
+    private DlBehavior buildDefaultBehavior() {
+        DlBehavior dlBehavior = new DlBehavior();
+        dlBehavior.StudentFirstName = "James";
+        dlBehavior.StudentMiddleName = "Tiberius";
+        dlBehavior.StudentLastName = "Kirk";
+        dlBehavior.Behavior = "Not bowing low enough";
+        dlBehavior.BehaviorCategory = "Demerit";
+        dlBehavior.BehaviorDate = "2015-09-17";   // .getTime from this parsedDate is 1442462400000
+        dlBehavior.DLSAID = "123456";
+        dlBehavior.DLStudentID = "A12345";
+        dlBehavior.Roster = "History";
+        return dlBehavior;
     }
 
 }
