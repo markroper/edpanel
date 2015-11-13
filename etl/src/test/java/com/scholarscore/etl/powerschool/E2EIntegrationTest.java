@@ -1,6 +1,6 @@
 package com.scholarscore.etl.powerschool;
 
-import com.scholarscore.etl.IETLEngine;
+import com.scholarscore.etl.IEtlEngine;
 import com.scholarscore.etl.SyncResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,7 +17,7 @@ import static org.testng.Assert.assertNotNull;
 public class E2EIntegrationTest extends AbstractTestNGSpringContextTests {
 
     @Autowired
-    private IETLEngine engine;
+    private IEtlEngine engine;
 
     // Test migrates everything
     public void testMigrateDistrict() {

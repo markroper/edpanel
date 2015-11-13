@@ -2,7 +2,7 @@ package com.scholarscore.etl.powerschool.sync.assignment;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
-import com.scholarscore.etl.ETLEngine;
+import com.scholarscore.etl.EtlEngine;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignment;
@@ -84,7 +84,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         }
         Iterator<Map.Entry<Long, Assignment>> sourceIterator = source.entrySet().iterator();
         //Find & perform the inserts and updates, if any
-        ExecutorService executor = Executors.newFixedThreadPool(ETLEngine.THREAD_POOL_SIZE);
+        ExecutorService executor = Executors.newFixedThreadPool(EtlEngine.THREAD_POOL_SIZE);
         while(sourceIterator.hasNext()) {
             Map.Entry<Long, Assignment> entry = sourceIterator.next();
             Assignment sourceAssignment = entry.getValue();
@@ -162,7 +162,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         }
         //Spin while we wait for all the threads to complete
         try {
-            if (!executor.awaitTermination(ETLEngine.TOTAL_TTL_MINUTES, TimeUnit.MINUTES)) {
+            if (!executor.awaitTermination(EtlEngine.TOTAL_TTL_MINUTES, TimeUnit.MINUTES)) {
                 executor.shutdownNow();
             }
         } catch(InterruptedException e) {

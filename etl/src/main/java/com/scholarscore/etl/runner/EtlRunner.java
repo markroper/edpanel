@@ -1,13 +1,8 @@
 package com.scholarscore.etl.runner;
 
-import com.scholarscore.etl.DLETLEngine;
-import com.scholarscore.etl.ETLEngine;
-import com.scholarscore.etl.IETLEngine;
+import com.scholarscore.etl.DlEtlEngine;
+import com.scholarscore.etl.EtlEngine;
 import com.scholarscore.etl.SyncResult;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 /**
  * User: jordan
@@ -16,9 +11,9 @@ import javax.annotation.Resource;
  */
 public class EtlRunner {
 
-    private ETLEngine etlEngine;
+    private EtlEngine etlEngine;
 
-    private DLETLEngine dlEtlEngine;
+    private DlEtlEngine dlEtlEngine;
 
     // Test migrates everything
     public void migrateDistrict() {
@@ -31,19 +26,19 @@ public class EtlRunner {
         System.out.println("Done! Migration result: " + dlResult);    
     }
 
-    public ETLEngine getEtlEngine() {
+    public EtlEngine getEtlEngine() {
         return etlEngine;
     }
 
-    public void setEtlEngine(ETLEngine etlEngine) {
+    public void setEtlEngine(EtlEngine etlEngine) {
         this.etlEngine = etlEngine;
     }
 
-    public DLETLEngine getDlEtlEngine() {
+    public DlEtlEngine getDlEtlEngine() {
         return dlEtlEngine;
     }
 
-    public void setDlEtlEngine(DLETLEngine dlEtlEngine) {
+    public void setDlEtlEngine(DlEtlEngine dlEtlEngine) {
         this.dlEtlEngine = dlEtlEngine;
     }
 }
