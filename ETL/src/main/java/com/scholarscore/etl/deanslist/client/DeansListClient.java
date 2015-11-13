@@ -3,6 +3,7 @@ package com.scholarscore.etl.deanslist.client;
 import com.scholarscore.client.BaseHttpClient;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.deanslist.api.response.BehaviorResponse;
+import com.scholarscore.util.EdPanelDateUtil;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -13,26 +14,50 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by jwinch on 7/22/15.
  */
 public class DeansListClient extends BaseHttpClient implements IDeansListClient {
 
-    final static Logger logger = LoggerFactory.getLogger(DeansListClient.class);
+    private final static Logger logger = LoggerFactory.getLogger(DeansListClient.class);
+
+    // if no date is included in the query, the deanslist api by default returns only the behavioral events
+    // for today. override this behavior and use the lookback specified below. additionally, this lookback can be
+    // overridden by providing an explicit date range as part of the request.
+    private static final int DEFAULT_LOOKBACK_DAYS = 30;
+    
+    // SimpleDateFormat is not thread-safe, so give one to each thread
+    private static final ThreadLocal<SimpleDateFormat> formatter = new ThreadLocal<SimpleDateFormat>(){
+        @Override
+        // this happens to work right now because EDPANEL_DATE_FORMAT is the same one that deanslist uses (YYYY-MM-DD)
+        // but if one changes and the other doesn't, this could break
+        protected SimpleDateFormat initialValue()
+        {
+            return new SimpleDateFormat(EdPanelDateUtil.EDPANEL_DATE_FORMAT);
+        }
+    };
     
     public static final String HEADER_LOCATION = "Location";
-    
+
     public static final String PATH_LOGIN = "/login.php";
-    // TODO: secure this when it's not just a demo account
-    private static final String CREDS_PAYLOAD = "username=mroper&pw=muskrat";
+    
+    private String username;
+    private String password;
     
     public static final String PATH_GET_BEHAVIOR_DATA = "/api/beta/export/get-behavior-data.php";
 
     private boolean authenticated = false;
     
-    public DeansListClient(URI uri) {
+    // username and password approach works, but should be switched to the APIKey approach once 
+    // an APIKey can be obtained from deanslist
+    public DeansListClient(URI uri, String username, String password) {
         super(uri);
+        this.username = username;
+        this.password = password;
         authenticate();
     }
 
@@ -47,7 +72,7 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
         try {
             HttpPost post = new HttpPost();
             post.setHeader(new BasicHeader(HEADER_CONTENT_TYPE_NAME, HEADER_CONTENT_TYPE_X_FORM_URLENCODED));
-            post.setEntity(new StringEntity(CREDS_PAYLOAD));
+            post.setEntity(new StringEntity(buildCredentialsEntity()));
             post.setURI(uri.resolve(PATH_LOGIN));
 
             HttpResponse response = httpclient.execute(post);
@@ -71,7 +96,7 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
         }
 
     }
-
+    
     @Override
     protected Boolean isAuthenticated() {
         return authenticated;
@@ -81,11 +106,33 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
     public BehaviorResponse getBehaviorData() {
         BehaviorResponse behaviorResponse = null;
         try {
-            behaviorResponse = get(BehaviorResponse.class, PATH_GET_BEHAVIOR_DATA);
+            behaviorResponse = get(BehaviorResponse.class, buildGetBehaviorUrl());
         } catch (HttpClientException e) {
             e.printStackTrace();
         }
         logger.debug("got behaviorResponse: " + behaviorResponse);
         return behaviorResponse;
     }
+
+    private String buildCredentialsEntity() {
+        return "username=" + username + "&pw=" + password;
+    }
+ 
+    private String buildGetBehaviorUrl() {
+        Calendar c = Calendar.getInstance();
+        Date endDate = c.getTime(); // default - get all behavioral events until today...
+        c.add(Calendar.DAY_OF_MONTH, -DEFAULT_LOOKBACK_DAYS); // ... since <lookback> days ago
+        Date startDate = c.getTime();
+        return buildGetBehaviorUrlWithDates(startDate, endDate);
+    }
+    
+    private String buildGetBehaviorUrlWithDates(Date behavioralEventsSince, Date behavioralEventsUntil) { 
+        return PATH_GET_BEHAVIOR_DATA + "?sdt=" + getFormatter().format(behavioralEventsSince) 
+                + "&edt=" + getFormatter().format(behavioralEventsUntil);
+    }
+    
+    private SimpleDateFormat getFormatter() {
+        return formatter.get();
+    }
+
 }

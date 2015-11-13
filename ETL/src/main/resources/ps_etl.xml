@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                     http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <import resource="powerschool.xml"/>
+    <import resource="edpanel.xml"/>
+
+    <bean
+            class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+            p:ignoreUnresolvablePlaceholders="true">
+        <property name="location">
+            <value>scholarscore.properties</value>
+        </property>
+    </bean>
+
+
+    <bean id="etlEngine" class="com.scholarscore.etl.ETLEngine">
+        <property name="powerSchool" ref="powerSchoolClient"/>
+        <property name="edPanel" ref="edpanelClient"/>
+    </bean>
+
+</beans>

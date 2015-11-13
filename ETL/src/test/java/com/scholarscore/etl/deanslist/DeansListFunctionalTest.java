@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
  * Created by jwinch on 7/22/15.
  */
 @Test
-@ContextConfiguration(locations = { "classpath:deanslist.xml" })
+@ContextConfiguration(locations = {"classpath:deanslist.xml"})
 public class DeansListFunctionalTest extends AbstractTestNGSpringContextTests {
 
     @Autowired
