@@ -4,7 +4,7 @@ import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.SyncResult;
-import com.scholarscore.etl.powerschool.api.model.PsTerm;
+import com.scholarscore.etl.powerschool.api.model.term.PsTerm;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.School;

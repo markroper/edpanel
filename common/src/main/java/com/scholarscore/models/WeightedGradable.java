@@ -9,5 +9,4 @@ public interface WeightedGradable {
     public Number getAwardedPoints();
     public Number getAvailablePoints();
     public int getWeight();
-    public Boolean getExempt();
 }

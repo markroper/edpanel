@@ -102,6 +102,30 @@ public class PowerSchoolPaths {
                 "&projection=*";
     }
 
+    public String getPowerTeacherTermnMappingPath() {
+        return SCHEMA_BASE +
+                "/SYNC_TermMap?" +
+                getPageSizeParam() +
+                "&" + PAGE_NUM_PARAM +
+                "&projection=*";
+    }
+
+    public String getPowerTeacherTermnBinMappingPath() {
+        return SCHEMA_BASE +
+                "/SYNC_ReportingTermMap?" +
+                getPageSizeParam() +
+                "&" + PAGE_NUM_PARAM +
+                "&projection=*";
+    }
+
+    public String getTermBinPath() {
+        return SCHEMA_BASE +
+                "/termbins?" +
+                getPageSizeParam() +
+                "&" + PAGE_NUM_PARAM +
+                "&projection=*";
+    }
+
     public String getPowerTeacherTermPath(Long termId) {
         return SCHEMA_BASE +
             "/PSM_ReportingTerm?" +
@@ -158,6 +182,29 @@ public class PowerSchoolPaths {
             "/psm_assignmentcategory?" +
             PAGE_NUM_PARAM +
             "&projection=*&" + getPageSizeParam();
+    }
+
+    public String getPowerTeacherFinalScores(Long sectionEnrollmentId) {
+        return SCHEMA_BASE +
+                "/psm_finalscore?" +
+                PAGE_NUM_PARAM +
+                "&q=sectionenrollmentid==" + sectionEnrollmentId +
+                "&projection=*&" + getPageSizeParam();
+    }
+
+    public String getPowerTeacherSectionEnrollment(Long powerTeacherSectionId) {
+        return SCHEMA_BASE +
+                "/PSM_SectionEnrollment?" +
+                PAGE_NUM_PARAM +
+                "&q=sectionid==" + powerTeacherSectionId +
+                "&projection=*&" + getPageSizeParam();
+    }
+
+    public String getPowerTeacherStudentMappings() {
+        return SCHEMA_BASE +
+                "/sync_studentmap?" +
+                PAGE_NUM_PARAM +
+                "&projection=*&" + getPageSizeParam();
     }
 
     public String getSectionScoresPath() {

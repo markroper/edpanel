@@ -1,5 +1,6 @@
 package com.scholarscore.etl.powerschool.sync.section;
 
+import com.google.common.collect.BiMap;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
@@ -10,6 +11,7 @@ import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaW
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeightingWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtTerm;
 import com.scholarscore.etl.powerschool.api.model.section.PtTermWrapper;
+import com.scholarscore.etl.powerschool.api.model.term.TermAssociator;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
@@ -58,6 +60,9 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
     private ConcurrentHashMap<Long, Section> sections;
     private Map<Long, Map<Long, PsFinalGradeSetup>> sectionIdToGradeFormula;
     private Map<Long, String> powerTeacherCategoryToEdPanelType;
+    private TermAssociator termAssociator;
+    private BiMap<Long, Long> ptSectionIdToPsSectionId;
+    private Map<Long, Long> ptStudentIdToPsStudentId;
     private SyncResult results;
 
     public SectionSyncRunnable(IPowerSchoolClient powerSchool,
@@ -70,6 +75,9 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                                ConcurrentHashMap<Long, Section> sections,
                                Map<Long, Map<Long, PsFinalGradeSetup>> sectionIdToGradeFormula,
                                Map<Long, String> powerTeacherCategoryToEdPanelType,
+                               TermAssociator termAssociator,
+                               BiMap<Long, Long> ptSectionIdToPsSectionId,
+                               Map<Long, Long> ptStudentIdToPsStudentId,
                                SyncResult results) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
@@ -81,6 +89,9 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
         this.sections = sections;
         this.sectionIdToGradeFormula = sectionIdToGradeFormula;
         this.powerTeacherCategoryToEdPanelType = powerTeacherCategoryToEdPanelType;
+        this.termAssociator = termAssociator;
+        this.ptSectionIdToPsSectionId = ptSectionIdToPsSectionId;
+        this.ptStudentIdToPsStudentId = ptStudentIdToPsStudentId;
         this.results = results;
     }
 
@@ -147,6 +158,9 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     edPanel,
                     school,
                     studentAssociator,
+                    termAssociator,
+                    ptSectionIdToPsSectionId,
+                    ptStudentIdToPsStudentId,
                     sourceSection);
             ssgSync.syncCreateUpdateDelete(results);
 
@@ -300,10 +314,9 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
         Section[] sections = edPanel.getSections(school.getId());
         ConcurrentHashMap<Long, Section> sectionMap = new ConcurrentHashMap<>();
         for(Section s : sections) {
-            Long id = null;
             String ssid = s.getSourceSystemId();
             if(null != ssid) {
-                id = Long.valueOf(ssid);
+                Long id = Long.valueOf(ssid);
                 sectionMap.put(id, s);
             }
         }

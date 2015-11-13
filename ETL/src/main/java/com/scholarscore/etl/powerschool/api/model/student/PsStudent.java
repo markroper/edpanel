@@ -1,5 +1,10 @@
-package com.scholarscore.etl.powerschool.api.model;
+package com.scholarscore.etl.powerschool.api.model.student;
 
+
+import com.scholarscore.etl.powerschool.api.model.PsDemographics;
+import com.scholarscore.etl.powerschool.api.model.PsEthnicityRace;
+import com.scholarscore.etl.powerschool.api.model.PsName;
+import com.scholarscore.etl.powerschool.api.model.PsSchoolEnrollment;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

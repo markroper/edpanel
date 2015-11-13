@@ -6,7 +6,9 @@ import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
-import com.scholarscore.etl.powerschool.api.model.PsStudents;
+import com.scholarscore.etl.powerschool.api.model.assignment.scores.PtFinalScoreWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PtSectionEnrollmentWrapper;
+import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScoreWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreIdWrapper;
@@ -21,6 +23,10 @@ import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaW
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMapWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtTermWrapper;
+import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMapWrapper;
+import com.scholarscore.etl.powerschool.api.model.term.PsTermBinWrapper;
+import com.scholarscore.etl.powerschool.api.model.term.PtPsTermBinReportingTermWrapper;
+import com.scholarscore.etl.powerschool.api.model.term.PtPsTermMapWrapper;
 import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
@@ -262,6 +268,46 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
 
     @Override
+    public PsResponse<PtPsTermMapWrapper> getPowerTeacherTermMappings() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtPsTermMapWrapper>>() {},
+                paths.getPowerTeacherTermnMappingPath(),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PtPsTermBinReportingTermWrapper> getPowerTeacherTermBinMappings() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtPsTermBinReportingTermWrapper>>() {},
+                paths.getPowerTeacherTermnBinMappingPath(),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PtPsStudentMapWrapper> getPowerTeacherStudentMappings() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtPsStudentMapWrapper>>() {},
+                paths.getPowerTeacherStudentMappings(),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PtSectionEnrollmentWrapper> getPowerTeacherSectionEnrollments(Long ptSectionId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtSectionEnrollmentWrapper>>() {},
+                paths.getPowerTeacherSectionEnrollment(ptSectionId),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PtFinalScoreWrapper> getPowerTeacherFinalScore(Long ptSectionEnrollmentId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtFinalScoreWrapper>>() {},
+                paths.getPowerTeacherFinalScores(ptSectionEnrollmentId),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
     public PsResponse<PtTermWrapper> getPowerTeacherTerm(Long powerTeacherTermId) throws HttpClientException {
         return get(new TypeReference<PsResponse<PtTermWrapper>>() {},
                 paths.getPowerTeacherTermPath(powerTeacherTermId),
@@ -292,6 +338,14 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     @Override
     public TermResponse getTermsBySchoolId(Long schoolId) throws HttpClientException {
         return get(TermResponse.class, paths.getTermPath(), schoolId.toString());
+    }
+
+    @Override
+    public PsResponse<PsTermBinWrapper> getTermBins() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsTermBinWrapper>>() {},
+                paths.getTermBinPath(),
+                PAGE_SIZE,
+                (String[]) null);
     }
 
     protected void setupCommonHeaders(HttpRequest req) {
