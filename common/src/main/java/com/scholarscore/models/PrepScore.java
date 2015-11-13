@@ -11,6 +11,10 @@ public class PrepScore {
 
     // this hardcoding is for the beta. future versions will allow this value to vary and eventually
     // customize the formula entirely.
+    //
+    // current implementation looks at behavior events to determine prep score. weeks without behavioral events
+    // do not naturally produce a prepscore, for any student-weeks that don't have a prepscore, just use the default
+    //
     //TODO: v2 expand/modify this implementation accordingly
     public static final int INITIAL_PREP_SCORE = 90;
 

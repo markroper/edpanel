@@ -59,8 +59,8 @@ public abstract class BaseHttpClient {
         // PowerSchool returns a single object rather than an array containing one object in cases where only
         // one value is returned We have to instruct Jackson to coerce this into the expected java List<>,
         // therefore: ACCEPT_SINGLE_VALUE_AS_ARRAY: true
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+//        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+//                .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
     }
 
     protected CloseableHttpClient createClient() throws HttpClientException {

@@ -18,9 +18,9 @@ import static org.testng.Assert.assertNotNull;
  */
 @Test
 @ContextConfiguration(locations = {"classpath:dl_etl.xml"})
-public class E2EIntegrationTest extends AbstractTestNGSpringContextTests {
+public class DeansListMigrationTest extends AbstractTestNGSpringContextTests {
 
-    final static Logger logger = LoggerFactory.getLogger(E2EIntegrationTest.class);
+    final static Logger logger = LoggerFactory.getLogger(DeansListMigrationTest.class);
 
     @Autowired
     private IETLEngine engine;
