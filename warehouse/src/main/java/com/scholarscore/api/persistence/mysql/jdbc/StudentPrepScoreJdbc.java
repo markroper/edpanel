@@ -137,11 +137,11 @@ public class StudentPrepScoreJdbc extends BaseJdbc implements StudentPrepScorePe
             //query for all records within this week, and bucket them appropriately
             // start_date column will be the saturday (beginning of the week of the prepscore in question)
             caseOneBuilder.append(" WHEN " + HibernateConsts.BEHAVIOR_DATE + " >= '" + saturdayDateString
-                    + "' AND " + HibernateConsts.BEHAVIOR_DATE + " < '" + fridayDateString
+                    + "' AND " + HibernateConsts.BEHAVIOR_DATE + " <= '" + fridayDateString
                     + "' THEN '" + saturdayDateString + "'");
             // end_date column will be the friday (ending of the week of the prepscore in question)
             caseTwoBuilder.append(" WHEN " + HibernateConsts.BEHAVIOR_DATE + " >= '" + saturdayDateString
-                    + "' AND " + HibernateConsts.BEHAVIOR_DATE + " < '" + fridayDateString
+                    + "' AND " + HibernateConsts.BEHAVIOR_DATE + " <= '" + fridayDateString
                     + "' THEN '" + fridayDateString + "'");
 
         }
