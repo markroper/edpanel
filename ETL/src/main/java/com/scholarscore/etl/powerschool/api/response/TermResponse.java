@@ -1,6 +1,6 @@
 package com.scholarscore.etl.powerschool.api.response;
 
-import com.scholarscore.etl.powerschool.api.model.PsTerms;
+import com.scholarscore.etl.powerschool.api.model.term.PsTerms;
 
 /**
  * Created by mattg on 7/3/15.

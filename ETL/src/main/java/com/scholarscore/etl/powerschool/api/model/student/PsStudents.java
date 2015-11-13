@@ -1,4 +1,4 @@
-package com.scholarscore.etl.powerschool.api.model;
+package com.scholarscore.etl.powerschool.api.model.student;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.scholarscore.etl.powerschool.api.deserializers.StudentsDeserializer;

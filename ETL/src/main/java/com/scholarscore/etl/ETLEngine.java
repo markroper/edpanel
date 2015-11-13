@@ -1,5 +1,7 @@
 package com.scholarscore.etl;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCategory;
@@ -8,6 +10,15 @@ import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetup;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMap;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMapWrapper;
+import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMap;
+import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMapWrapper;
+import com.scholarscore.etl.powerschool.api.model.term.PsTermBin;
+import com.scholarscore.etl.powerschool.api.model.term.PsTermBinWrapper;
+import com.scholarscore.etl.powerschool.api.model.term.PtPsTermBinReportingTerm;
+import com.scholarscore.etl.powerschool.api.model.term.PtPsTermBinReportingTermWrapper;
+import com.scholarscore.etl.powerschool.api.model.term.PtPsTermMap;
+import com.scholarscore.etl.powerschool.api.model.term.PtPsTermMapWrapper;
+import com.scholarscore.etl.powerschool.api.model.term.TermAssociator;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
@@ -72,6 +83,8 @@ public class ETLEngine implements IETLEngine {
     //a mapping of SSID to localId, all of which is encapsulated in the associator below
     private StaffAssociator staffAssociator = new StaffAssociator();
     private StudentAssociator studentAssociator = new StudentAssociator();
+    //Associates PowerTeacher terms and reporting terms with PowerSchool Terms and Term Bins, respectively
+    private TermAssociator termAssociator;
 
     public void setPowerSchool(IPowerSchoolClient powerSchool) {
         this.powerSchool = powerSchool;
@@ -175,16 +188,9 @@ public class ETLEngine implements IETLEngine {
     private void migrateSections() {
         this.sections = new ConcurrentHashMap<>();
         //Resolve the lookup between PowerTeacher sectionID and PowerSchool sectionID:
-        Map<Long, Long> ptSectionIdToPsSectionId = new HashMap<>();
-        try {
-            PsResponse<PtSectionMapWrapper> powerTeacherSection = powerSchool.getPowerTeacherSectionMappings();
-            for (PsResponseInner<PtSectionMapWrapper> ptSectWrap : powerTeacherSection.record) {
-                PtSectionMap mapping = ptSectWrap.tables.sync_sectionmap;
-                ptSectionIdToPsSectionId.put(mapping.sectionid, mapping.sectionsdcid);
-            }
-        } catch (HttpClientException e) {
-            LOGGER.warn("Unable to resolve the powerTeacher->powerSchool section ID mapping. " + e.getMessage());
-        }
+        BiMap<Long, Long> ptSectionIdToPsSectionId = resolveSectionIdMap();
+//        Map<Long, Long> ptTermIdToPsTermId = resolveTermIdMap();
+        Map<Long, Long> ptStudentIdToPStudentId = resolveStudentIdMap();
 
         //Resolve PowerSchool section ID to PowerTeacher termID to grade setup mappings
         Map<Long, Map<Long, PsFinalGradeSetup>> sectionIdToGradeFormula = new HashMap<>();
@@ -235,6 +241,9 @@ public class ETLEngine implements IETLEngine {
                     this.sections.get(sourceSystemSchoolId),
                     sectionIdToGradeFormula,
                     powerTeacherCategoryToEdPanelType,
+                    termAssociator,
+                    ptSectionIdToPsSectionId,
+                    ptStudentIdToPStudentId,
                     results);
             executor.execute(sectionRunnable);
         }
@@ -260,6 +269,7 @@ public class ETLEngine implements IETLEngine {
                 );
             }
         }
+        this.termAssociator = resolveTermAssociator();
     }
 
     private void createCourses() {
@@ -292,6 +302,92 @@ public class ETLEngine implements IETLEngine {
             School s = school.getValue();
             this.schools.put(s.getNumber(), s);
         }
+    }
+
+    /*
+        PRIVATE HELPER METHODS
+     */
+
+    private BiMap<Long, Long> resolveSectionIdMap() {
+        BiMap<Long, Long> ptSectionIdToPsSectionId = HashBiMap.create(1000);
+        try {
+            PsResponse<PtSectionMapWrapper> powerTeacherSection = powerSchool.getPowerTeacherSectionMappings();
+            for (PsResponseInner<PtSectionMapWrapper> ptSectWrap : powerTeacherSection.record) {
+                PtSectionMap mapping = ptSectWrap.tables.sync_sectionmap;
+                ptSectionIdToPsSectionId.put(mapping.sectionid, mapping.sectionsdcid);
+            }
+        } catch (HttpClientException e) {
+            LOGGER.warn("Unable to resolve the powerTeacher->powerSchool section ID mapping. " + e.getMessage());
+        }
+        return ptSectionIdToPsSectionId;
+    }
+
+    private TermAssociator resolveTermAssociator() {
+        BiMap<Long, Long> ptTermIdToPsTermId = resolveTermIdMap();
+        BiMap<Long, Long> reportingTermIdToTermBinIn = resolveReportingTermIdMap();
+        HashMap<Long, Long> psTermIdToTermBinId = resolveTermBinIdToTermId();
+        return new TermAssociator.TermAssociatorBuilder().
+                withPsTermBinIdToPsTermId(psTermIdToTermBinId).
+                withPtReportingTermIdToPsTermBinId(reportingTermIdToTermBinIn).
+                withPtTermIdToPsTermId(ptTermIdToPsTermId).
+                build();
+    }
+
+    private HashMap<Long, Long> resolveTermBinIdToTermId() {
+        HashMap<Long, Long> ptTermIdToPsTermId = new HashMap<>();
+        try {
+            PsResponse<PsTermBinWrapper> termBinResponse = powerSchool.getTermBins();
+            for (PsResponseInner<PsTermBinWrapper> ptTerBinWrap : termBinResponse.record) {
+                PsTermBin mapping = ptTerBinWrap.tables.termbins;
+                ptTermIdToPsTermId.put(mapping.dcid, mapping.termid);
+            }
+        } catch(HttpClientException e) {
+            LOGGER.warn("Unable to resolve the termId->termBinId mapping. " + e.getMessage());
+        }
+        return ptTermIdToPsTermId;
+    }
+
+    private BiMap<Long, Long> resolveTermIdMap() {
+        BiMap<Long, Long> ptTermIdToPsTermId = HashBiMap.create();
+        try {
+            PsResponse<PtPsTermMapWrapper> powerTeacherSection = powerSchool.getPowerTeacherTermMappings();
+            for (PsResponseInner<PtPsTermMapWrapper> ptTermWrap : powerTeacherSection.record) {
+                PtPsTermMap mapping = ptTermWrap.tables.sync_termmap;
+                ptTermIdToPsTermId.put(mapping.termid, mapping.termsdcid);
+            }
+        } catch(HttpClientException e) {
+            LOGGER.warn("Unable to resolve the powerTeacher->powerSchool term ID mapping. " + e.getMessage());
+        }
+        return ptTermIdToPsTermId;
+    }
+
+    private BiMap<Long, Long> resolveReportingTermIdMap() {
+        BiMap<Long, Long> ptTermIdToPsTermId = HashBiMap.create();
+        try {
+            PsResponse<PtPsTermBinReportingTermWrapper> powerTeacherSection = powerSchool.getPowerTeacherTermBinMappings();
+            for (PsResponseInner<PtPsTermBinReportingTermWrapper> ptTermWrap : powerTeacherSection.record) {
+                PtPsTermBinReportingTerm mapping = ptTermWrap.tables.sync_reportingtermmap;
+                ptTermIdToPsTermId.put(mapping.reportingtermid, mapping.termbinsdcid);
+            }
+        } catch(HttpClientException e) {
+            LOGGER.warn("Unable to resolve the powerTeacher->powerSchool reporting term ID to term bin ID mapping. "
+                    + e.getMessage());
+        }
+        return ptTermIdToPsTermId;
+    }
+
+    private Map<Long, Long> resolveStudentIdMap() {
+        Map<Long, Long> ptStudentIdToTermId = new HashMap<>();
+        try {
+            PsResponse<PtPsStudentMapWrapper> studentMapResponse = powerSchool.getPowerTeacherStudentMappings();
+            for (PsResponseInner<PtPsStudentMapWrapper> ptStudentMapWrap : studentMapResponse.record) {
+                PtPsStudentMap mapping = ptStudentMapWrap.tables.sync_studentmap;
+                ptStudentIdToTermId.put(mapping.studentid, mapping.studentsdcid);
+            }
+        } catch(HttpClientException e) {
+            LOGGER.warn("Unable to resolve the powerTeacher->powerSchool student ID mapping. " + e.getMessage());
+        }
+        return ptStudentIdToTermId;
     }
 
     /**

@@ -39,10 +39,9 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
     private static final ObjectMapper MAPPER = new ObjectMapper();
     protected Boolean complete;
     protected Double grade;
-    protected HashMap<Long, Double> termGrades;
+    protected HashMap<Long, Score> termGrades;
     protected Section section;
     protected Student student;
-    protected Boolean exempt;
     
     // teachers can grade assignments however they want, 
     // though currently each course must have a final grade out of 100
@@ -58,7 +57,6 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
         this.grade = grade.grade;
         this.student = grade.student;
         this.section = grade.section;
-        this.exempt = grade.exempt;
         this.termGrades = grade.termGrades;
     }
     
@@ -79,9 +77,6 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
         if (section == null) {
             section = mergeFrom.section;
         }
-        if (exempt == null) {
-            exempt = mergeFrom.exempt;
-        }
         if (termGrades == null) {
             termGrades = mergeFrom.termGrades;
         }
@@ -99,7 +94,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
     @JsonIgnore
     public void setTermGradesString(String gradesString) {
         try {
-            this.termGrades = MAPPER.readValue(gradesString, new TypeReference<HashMap<Long, Double>>(){});
+            this.termGrades = MAPPER.readValue(gradesString, new TypeReference<HashMap<Long, Score>>(){});
         } catch (IOException | NullPointerException e) {
             this.termGrades = null;
         }
@@ -107,22 +102,12 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
 
 
     @Transient
-    public HashMap<Long, Double> getTermGrades() {
+    public HashMap<Long, Score> getTermGrades() {
         return termGrades;
     }
 
-    public void setTermGrades(HashMap<Long, Double> termGrades) {
+    public void setTermGrades(HashMap<Long, Score> termGrades) {
         this.termGrades = termGrades;
-    }
-
-    @Override
-    @Column(name = HibernateConsts.STUDENT_SECTION_GRADE_EXEMPT)
-    public Boolean getExempt() {
-        return exempt;
-    }
-
-    public void setExempt(Boolean exempt) {
-        this.exempt = exempt;
     }
 
     @ManyToOne(optional = true, fetch=FetchType.LAZY)
@@ -188,13 +173,12 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
                 Objects.equals(this.complete, other.complete) &&
                 Objects.equals(this.grade, other.grade) &&
                 Objects.equals(this.student, other.student) &&
-                Objects.equals(this.exempt, other.exempt) &&
                 Objects.equals(this.section, other.section);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(id, complete, grade, exempt, student, section);
+        return 31 * super.hashCode() + Objects.hash(id, complete, grade, student, section);
     }
 
     @Override
@@ -225,7 +209,6 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
                 "id=" + id +
                 ", complete=" + complete +
                 ", grade=" + grade +
-                ", exempt=" + exempt +
                 ", section=" + (section !=null ? section.getId() : null) +
                 ", student=" + student +
                 '}';
@@ -241,15 +224,9 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
         protected Double grade;
         protected Section section;
         protected Student student;
-        protected Boolean exempt;
 
         public StudentSectionGradeBuilder withComplete(final Boolean complete){
             this.complete = complete;
-            return this;
-        }
-
-        public StudentSectionGradeBuilder withExempt(final Boolean exempt){
-            this.exempt = exempt;
             return this;
         }
 
@@ -273,7 +250,6 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
             sectionGrade.setComplete(complete);
             sectionGrade.setGrade(grade);
             sectionGrade.setSection(section);
-            sectionGrade.setExempt(exempt);
             sectionGrade.setStudent(student);
             return sectionGrade;
         }
