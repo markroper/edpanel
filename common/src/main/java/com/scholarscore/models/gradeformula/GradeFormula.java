@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  * has a one to many relationship to the next. GradeSetup < GradeFormula < GradeFormulaWeighting.
  * All three of these concepts are expressed in this class.
  *
- * In PowerSchool, GradeSetup can be a hierarchical graph, as in the following example:
+ * In PowerSchool, GradeSetup can be a rooted graph, as in the following example:
  *
  *                          school year
  *                         /           \
@@ -119,7 +119,8 @@ public class GradeFormula implements Serializable {
                         continue;
                     }
                     //Don't count exempt assignments
-                    if(sa.getExempt() || !sa.getAssignment().getIncludeInFinalGrades()) {
+                    if((null != sa.getExempt() && sa.getExempt()) ||
+                            (null != sa.getAssignment().getIncludeInFinalGrades() && !sa.getAssignment().getIncludeInFinalGrades())) {
                         continue;
                     }
                     //CALCULATE AND INCREMENT AWARDED POINTS
@@ -205,13 +206,11 @@ public class GradeFormula implements Serializable {
             if ((dueDate.compareTo(startDate) >= 0 || new Long(0L).equals(getDateDiff(startDate, dueDate, TimeUnit.DAYS)))
                     && (dueDate.compareTo(endDate) <= 0 || new Long(0L).equals(getDateDiff(endDate, dueDate, TimeUnit.DAYS)))) {
                 //Don't count exempt assignments
-                if (sa.getExempt() || !sa.getAssignment().getIncludeInFinalGrades()) {
+                if ((null != sa.getExempt() && sa.getExempt()) ||
+                        (null != sa.getAssignment().getIncludeInFinalGrades() && !sa.getAssignment().getIncludeInFinalGrades())) {
                     continue;
                 }
                 Double awardedPoints = sa.getAwardedPoints();
-                if (sa.getAssignment().getType().equals(AssignmentType.ATTENDANCE) && sa.getCompleted()) {
-                    awardedPoints = sa.getAvailablePoints().doubleValue();
-                }
                 //Assignments that are not exempted, are included in the section grade calculation,
                 //but have a null awarded points should have full points. So as not to penalize the student?
                 if (null == awardedPoints) {

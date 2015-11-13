@@ -238,6 +238,8 @@ CREATE TABLE `scholar_warehouse`.`assignment` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
+ALTER TABLE `scholar_warehouse`.`assignment` ADD INDEX (`user_defined_type`);
+
 CREATE TABLE `scholar_warehouse`.`student_assignment` (
   `student_assignment_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `student_assignment_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
