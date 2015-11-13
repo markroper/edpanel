@@ -43,7 +43,6 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
     
     public static final String HEADER_LOCATION = "Location";
 
-    // TODO jordan: (deanslist) secure this when it's not just a demo account
     public static final String PATH_LOGIN = "/login.php";
     
     private String username;
