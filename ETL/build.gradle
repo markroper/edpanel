@@ -1,6 +1,6 @@
 apply plugin: 'application'
 
-mainClassName = "com.scholarscore.etl.runner.ETLExecutable"
+mainClassName = "com.scholarscore.etl.runner.EtlExecutable"
 
 //Dependencies section:
 ext {
