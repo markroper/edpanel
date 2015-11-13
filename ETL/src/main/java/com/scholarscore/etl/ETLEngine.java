@@ -63,7 +63,7 @@ import java.util.concurrent.TimeUnit;
 public class ETLEngine implements IETLEngine {
     private final static Logger LOGGER = LoggerFactory.getLogger(ETLEngine.class);
     public static final Long TOTAL_TTL_MINUTES = 120L;
-    public static final int THREAD_POOL_SIZE = 6;
+    public static final int THREAD_POOL_SIZE = 10;
     //After a certain point in the past, we no longer want to sync expensive and large tables, like attendance
     //This date defines that cutoff point before which we will cease to sync updates.
     private Date syncCutoff;
