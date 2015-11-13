@@ -52,7 +52,7 @@ import java.util.Date;
  */
 public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSchoolClient {
     private PowerSchoolPaths paths = new PowerSchoolPaths();
-    private static final Integer PAGE_SIZE = 200;
+    private static final Integer PAGE_SIZE = 250;
     private static final String HEADER_AUTH_NAME = "Authorization";
     private static final String PATH_RESOURCE_DISTRICT = "/ws/v1/district";
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";

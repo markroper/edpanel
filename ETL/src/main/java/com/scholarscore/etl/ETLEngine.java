@@ -63,7 +63,7 @@ import java.util.concurrent.TimeUnit;
 public class ETLEngine implements IETLEngine {
     private final static Logger LOGGER = LoggerFactory.getLogger(ETLEngine.class);
     public static final Long TOTAL_TTL_MINUTES = 120L;
-    public static final int THREAD_POOL_SIZE = 8;
+    public static final int THREAD_POOL_SIZE = 6;
     //After a certain point in the past, we no longer want to sync expensive and large tables, like attendance
     //This date defines that cutoff point before which we will cease to sync updates.
     private Date syncCutoff;
@@ -83,8 +83,6 @@ public class ETLEngine implements IETLEngine {
     //a mapping of SSID to localId, all of which is encapsulated in the associator below
     private StaffAssociator staffAssociator = new StaffAssociator();
     private StudentAssociator studentAssociator = new StudentAssociator();
-    //Associates PowerTeacher terms and reporting terms with PowerSchool Terms and Term Bins, respectively
-    private TermAssociator termAssociator;
 
     public void setPowerSchool(IPowerSchoolClient powerSchool) {
         this.powerSchool = powerSchool;
@@ -189,7 +187,6 @@ public class ETLEngine implements IETLEngine {
         this.sections = new ConcurrentHashMap<>();
         //Resolve the lookup between PowerTeacher sectionID and PowerSchool sectionID:
         BiMap<Long, Long> ptSectionIdToPsSectionId = resolveSectionIdMap();
-//        Map<Long, Long> ptTermIdToPsTermId = resolveTermIdMap();
         Map<Long, Long> ptStudentIdToPStudentId = resolveStudentIdMap();
 
         //Resolve PowerSchool section ID to PowerTeacher termID to grade setup mappings
@@ -241,7 +238,6 @@ public class ETLEngine implements IETLEngine {
                     this.sections.get(sourceSystemSchoolId),
                     sectionIdToGradeFormula,
                     powerTeacherCategoryToEdPanelType,
-                    termAssociator,
                     ptSectionIdToPsSectionId,
                     ptStudentIdToPStudentId,
                     results);
@@ -269,7 +265,6 @@ public class ETLEngine implements IETLEngine {
                 );
             }
         }
-        this.termAssociator = resolveTermAssociator();
     }
 
     private void createCourses() {

@@ -9,19 +9,15 @@ import com.scholarscore.etl.powerschool.api.model.assignment.scores.PtFinalScore
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PtFinalScoreWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionEnrollment;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionEnrollmentWrapper;
-import com.scholarscore.etl.powerschool.api.model.term.TermAssociator;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.MissingStudentMigrator;
-import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
-import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Score;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
-import com.scholarscore.models.Term;
 import com.scholarscore.models.user.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,12 +39,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
     private School school;
-    private ConcurrentHashMap<Long, Course> courses;
-    private ConcurrentHashMap<Long, Term> terms;
     private StudentAssociator studentAssociator;
-    private StaffAssociator staffAssociator;
-    private ConcurrentHashMap<Long, Section> sections;
-    private TermAssociator termAssociator;
     private BiMap<Long, Long> ptSectionIdToPsSectionId;
     private Map<Long, Long> ptStudentIdToPsStudentId;
     private Section createdSection;
@@ -57,7 +48,6 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                                    IAPIClient edPanel,
                                    School school,
                                    StudentAssociator studentAssociator,
-                                   TermAssociator termAssociator,
                                    BiMap<Long, Long> ptSectionIdToPsSectionId,
                                    Map<Long, Long> ptStudentIdToPsStudentId,
                                    Section createdSection) {
@@ -65,7 +55,6 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
         this.edPanel = edPanel;
         this.school = school;
         this.studentAssociator = studentAssociator;
-        this.termAssociator = termAssociator;
         this.ptSectionIdToPsSectionId = ptSectionIdToPsSectionId;
         this.ptStudentIdToPsStudentId = ptStudentIdToPsStudentId;
         this.createdSection = createdSection;
