@@ -38,8 +38,10 @@ public class HibernateConsts {
     public static final String STUDENT_ASSIGNMENT_COMPLETED = "completed";
     public static final String STUDENT_ASSIGNMENT_AWARDED_POINTS = "awarded_points";
     public static final String STUDENT_ASSIGNMENT_COMPLETION_DATE = "completion_date";
+    public static final String STUDENT_ASSIGNMENT_COMMENT = "comment";
     public static final String STUDENT_ASSIGNMENT_ID = "student_assignment_id";
     public static final String STUDENT_ASSIGNMENT_NAME = "student_assignment_name";
+    public static final String STUDENT_ASSIGNMENT_EXEMPT = "student_assignment_exempt";
     public static final String STUDENT_SOURCE_SYSTEM_USER_ID = "student_source_system_user_id";
     public static final String ASSIGNMENT_FK = "assignment_fk";
     
@@ -104,6 +106,7 @@ public class HibernateConsts {
     public static final String COURSE_FK = "course_fk";
     public static final String TERM_FK = "term_fk";
     public static final String SECTION_SOURCE_SYSTEM_ID = "section_source_system_id";
+    public static final String SECTION_NUMBER_OF_TERMS = "number_of_terms";
     
     //Student constants
     public static final String STUDENT_TABLE = "student";
@@ -125,6 +128,7 @@ public class HibernateConsts {
     public static final String STUDENT_SECTION_GRADE_ID = "student_section_grade_id";
     public static final String STUDENT_SECTION_GRADE_COMPLETE = "complete";
     public static final String STUDENT_SECTION_GRADE_GRADE = "grade";
+    public static final String STUDENT_SECTION_GRADE_TERM_GRADES = "term_grades";
     
     //Teacher constants
     public static final String TEACHER_TABLE = "teacher";

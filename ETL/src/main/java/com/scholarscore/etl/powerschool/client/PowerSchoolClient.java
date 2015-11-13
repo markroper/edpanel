@@ -6,15 +6,27 @@ import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
-import com.scholarscore.etl.powerschool.api.model.PsStudents;
+import com.scholarscore.etl.powerschool.api.model.assignment.scores.PtFinalScoreWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PtSectionEnrollmentWrapper;
+import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScoreWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreIdWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentTypeWrapper;
+import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCategoryWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsCalendarDayWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PsGradeFormulaWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeightingWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PtSectionMapWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PtTermWrapper;
+import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMapWrapper;
+import com.scholarscore.etl.powerschool.api.model.term.PsTermBinWrapper;
+import com.scholarscore.etl.powerschool.api.model.term.PtPsTermBinReportingTermWrapper;
+import com.scholarscore.etl.powerschool.api.model.term.PtPsTermMapWrapper;
 import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
@@ -40,7 +52,7 @@ import java.util.Date;
  */
 public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSchoolClient {
     private PowerSchoolPaths paths = new PowerSchoolPaths();
-    private static final Integer PAGE_SIZE = 1000;
+    private static final Integer PAGE_SIZE = 250;
     private static final String HEADER_AUTH_NAME = "Authorization";
     private static final String PATH_RESOURCE_DISTRICT = "/ws/v1/district";
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";
@@ -129,7 +141,11 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
 
     @Override
     public PsStudents getStudentsBySchool(Long schoolId) throws HttpClientException {
-        return getJackson(PsStudents.class, paths.getStudentsPath(), schoolId.toString());
+        return get(
+                new TypeReference<PsStudents>() {},
+                paths.getStudentsPath(),
+                PAGE_SIZE,
+                schoolId.toString());
     }
 
     @Override
@@ -168,11 +184,19 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
 
     @Override
-    public PsResponse<PsAssignmentTypeWrapper> getAssignmentTypesBySectionId(Long sectionId) throws HttpClientException {
+    public PsResponse<PsAssignmentTypeWrapper> getAssignmentCategoriesBySectionId(Long sectionId) throws HttpClientException {
         return get(new TypeReference<PsResponse<PsAssignmentTypeWrapper>>(){},
                 paths.getSectionAssignmentCategories(),
                 PAGE_SIZE,
                 sectionId.toString());
+    }
+
+    @Override
+    public PsResponse<PtAssignmentCategoryWrapper> getPowerTeacherAssignmentCategory() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtAssignmentCategoryWrapper>>(){},
+                paths.getPowerTeacherAssignmentCategories(),
+                PAGE_SIZE,
+                (String[]) null);
     }
 
     @Override
@@ -219,6 +243,94 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
                 (String[]) null);
     }
 
+    @Override
+    public PsResponse<PsFinalGradeSetupWrapper> getFinalGradeSetups() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsFinalGradeSetupWrapper>>() {},
+                paths.getSectionGradesSetupPath(),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PtSectionMapWrapper> getPowerTeacherSectionMapping(Long sourceSectionId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtSectionMapWrapper>>() {},
+                paths.getPowerTeacherSectionPath(sourceSectionId),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PtSectionMapWrapper> getPowerTeacherSectionMappings() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtSectionMapWrapper>>() {},
+                paths.getPowerTeacherSectionMappingPath(),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PtPsTermMapWrapper> getPowerTeacherTermMappings() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtPsTermMapWrapper>>() {},
+                paths.getPowerTeacherTermnMappingPath(),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PtPsTermBinReportingTermWrapper> getPowerTeacherTermBinMappings() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtPsTermBinReportingTermWrapper>>() {},
+                paths.getPowerTeacherTermnBinMappingPath(),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PtPsStudentMapWrapper> getPowerTeacherStudentMappings() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtPsStudentMapWrapper>>() {},
+                paths.getPowerTeacherStudentMappings(),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PtSectionEnrollmentWrapper> getPowerTeacherSectionEnrollments(Long ptSectionId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtSectionEnrollmentWrapper>>() {},
+                paths.getPowerTeacherSectionEnrollment(ptSectionId),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PtFinalScoreWrapper> getPowerTeacherFinalScore(Long ptSectionEnrollmentId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtFinalScoreWrapper>>() {},
+                paths.getPowerTeacherFinalScores(ptSectionEnrollmentId),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PtTermWrapper> getPowerTeacherTerm(Long powerTeacherTermId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PtTermWrapper>>() {},
+                paths.getPowerTeacherTermPath(powerTeacherTermId),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PsGradeFormulaWrapper> getGradeFormula(Long gradeFormulaId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsGradeFormulaWrapper>>() {},
+                paths.getSectionGradeFormula(gradeFormulaId),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PsSectionGradeFormulaWeightingWrapper> getGradeFormulaWeights(Long gradeFormulaId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsSectionGradeFormulaWeightingWrapper>>() {},
+                paths.getSectionGradeFormulaWeights(gradeFormulaId),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+
     public Object getAsMap(String path) throws HttpClientException {
         return get(Object.class, path);
     }
@@ -226,6 +338,14 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     @Override
     public TermResponse getTermsBySchoolId(Long schoolId) throws HttpClientException {
         return get(TermResponse.class, paths.getTermPath(), schoolId.toString());
+    }
+
+    @Override
+    public PsResponse<PsTermBinWrapper> getTermBins() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsTermBinWrapper>>() {},
+                paths.getTermBinPath(),
+                PAGE_SIZE,
+                (String[]) null);
     }
 
     protected void setupCommonHeaders(HttpRequest req) {

@@ -3,7 +3,7 @@ package com.scholarscore.etl.powerschool.sync;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.SyncResult;
-import com.scholarscore.etl.powerschool.api.model.PsStudents;
+import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
 import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;

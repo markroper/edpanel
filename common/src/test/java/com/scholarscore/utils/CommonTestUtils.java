@@ -4,7 +4,6 @@ import com.scholarscore.models.Address;
 import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.Gender;
-import com.scholarscore.models.GradeFormula;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
@@ -15,6 +14,7 @@ import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.AttendanceAssignment;
 import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.goal.GoalType;
+import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -366,12 +366,10 @@ public class CommonTestUtils {
     }
 
     public static GradeFormula generateGradeFormula(){
-        GradeFormula.GradeFormulaBuilder builder = new GradeFormula.GradeFormulaBuilder();
-
+        GradeFormula formula = new GradeFormula();
         for(AssignmentType type : AssignmentType.values()){
-            builder.withAssignmentTypeWeight(type, RandomUtils.nextInt(0, Integer.MAX_VALUE));
+            formula.getAssignmentTypeWeights().put(type.name(), new Double(RandomUtils.nextInt(0, Integer.MAX_VALUE)));
         }
-
-        return builder.build();
+        return formula;
     }
 }

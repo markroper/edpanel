@@ -4,7 +4,7 @@ import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
 import com.scholarscore.etl.powerschool.api.model.PsSchool;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
-import com.scholarscore.etl.powerschool.api.model.PsStudents;
+import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
 import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;

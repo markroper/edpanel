@@ -1,24 +1,24 @@
 package com.scholarscore.api.util;
 
-import com.scholarscore.models.assignment.Assignment;
-import com.scholarscore.models.assignment.AssignmentType;
-import com.scholarscore.models.assignment.AttendanceAssignment;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.Gender;
-import com.scholarscore.models.GradeFormula;
-import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.AttendanceAssignment;
+import com.scholarscore.models.assignment.GradedAssignment;
+import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.goal.AssignmentGoal;
 import com.scholarscore.models.goal.AttendanceGoal;
 import com.scholarscore.models.goal.BehaviorGoal;
 import com.scholarscore.models.goal.CumulativeGradeGoal;
 import com.scholarscore.models.goal.Goal;
+import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 
@@ -214,20 +214,20 @@ public class SchoolDataFactory {
             List<Teacher> teachers) {
         //Static set of grade formulas
         List<GradeFormula> gradeFormulas = new ArrayList<GradeFormula>();
-        Map<AssignmentType, Integer> weight1 = new HashMap<AssignmentType, Integer>() {{
-            put(AssignmentType.ATTENDANCE, 10); put(AssignmentType.FINAL, 35);
-            put(AssignmentType.MIDTERM, 25); put(AssignmentType.HOMEWORK, 30);
+        Map<String, Double> weight1 = new HashMap<String, Double>() {{
+            put(AssignmentType.ATTENDANCE.name(), 10D); put(AssignmentType.FINAL.name(), 35D);
+            put(AssignmentType.MIDTERM.name(), 25D); put(AssignmentType.HOMEWORK.name(), 30D);
         }};
-        Map<AssignmentType, Integer> weight2 = new HashMap<AssignmentType, Integer>() {{
-            put(AssignmentType.FINAL, 60); put(AssignmentType.MIDTERM, 40);
+        Map<String, Double> weight2 = new HashMap<String, Double>() {{
+            put(AssignmentType.FINAL.name(), 60D); put(AssignmentType.MIDTERM.name(), 40D);
         }};
-        Map<AssignmentType, Integer> weight3 = new HashMap<AssignmentType, Integer>() {{
-            put(AssignmentType.LAB, 40); put(AssignmentType.MIDTERM, 20);
-            put(AssignmentType.FINAL, 30); put(AssignmentType.QUIZ, 10);
+        Map<String, Double> weight3 = new HashMap<String, Double>() {{
+            put(AssignmentType.LAB.name(), 40D); put(AssignmentType.MIDTERM.name(), 20D);
+            put(AssignmentType.FINAL.name(), 30D); put(AssignmentType.QUIZ.name(), 10D);
         }};
-        Map<AssignmentType, Integer> weight4 = new HashMap<AssignmentType, Integer>() {{
-            put(AssignmentType.TEST, 25); put(AssignmentType.FINAL, 30);
-            put(AssignmentType.QUIZ, 10); put(AssignmentType.HOMEWORK, 35);
+        Map<String, Double> weight4 = new HashMap<String, Double>() {{
+            put(AssignmentType.TEST.name(), 25D); put(AssignmentType.FINAL.name(), 30D);
+            put(AssignmentType.QUIZ.name(), 10D); put(AssignmentType.HOMEWORK.name(), 35D);
         }};
         gradeFormulas.add(new GradeFormula(weight1));
         gradeFormulas.add(new GradeFormula(weight2));
@@ -249,8 +249,9 @@ public class SchoolDataFactory {
                 Section section = new Section(
                         t.getStartDate(), 
                         t.getEndDate(), 
-                        rooms.get(new Random().nextInt(numRooms)), 
-                        gradeFormulas.get(new Random().nextInt(gradeFormulas.size())));
+                        rooms.get(new Random().nextInt(numRooms)),
+                        gradeFormulas.get(new Random().nextInt(gradeFormulas.size())),
+                        0);
                 section.setCourse(c);
                 section.setEnrolledStudents(new ArrayList<Student>());
                 //Add an alternating half of students to each section

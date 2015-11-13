@@ -33,8 +33,9 @@ public class PowerSchoolPaths {
 
     public String getStudentsPath() {
         return BASE +
-            "/school/{0}/student?pagesize=" +
-                pageSize +
+            "/school/{1}/student?pagesize=" +
+            pageSize +
+            "&" + PAGE_NUM_PARAM +
             "&expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup,school_enrollment";
     }
 
@@ -87,6 +88,76 @@ public class PowerSchoolPaths {
         return BASE + "/school/{0}/section?" + getPageSizeParam();
     }
 
+    public String getPowerTeacherSectionPath(Long sourceSectionId) {
+        return SCHEMA_BASE +
+            "/SYNC_SectionMap?" +
+            "projection=*&q=SectionsDCID==" + sourceSectionId;
+    }
+
+    public String getPowerTeacherSectionMappingPath() {
+        return SCHEMA_BASE +
+                "/SYNC_SectionMap?" +
+                getPageSizeParam() +
+                "&" + PAGE_NUM_PARAM +
+                "&projection=*";
+    }
+
+    public String getPowerTeacherTermnMappingPath() {
+        return SCHEMA_BASE +
+                "/SYNC_TermMap?" +
+                getPageSizeParam() +
+                "&" + PAGE_NUM_PARAM +
+                "&projection=*";
+    }
+
+    public String getPowerTeacherTermnBinMappingPath() {
+        return SCHEMA_BASE +
+                "/SYNC_ReportingTermMap?" +
+                getPageSizeParam() +
+                "&" + PAGE_NUM_PARAM +
+                "&projection=*";
+    }
+
+    public String getTermBinPath() {
+        return SCHEMA_BASE +
+                "/termbins?" +
+                getPageSizeParam() +
+                "&" + PAGE_NUM_PARAM +
+                "&projection=*";
+    }
+
+    public String getPowerTeacherTermPath(Long termId) {
+        return SCHEMA_BASE +
+            "/PSM_ReportingTerm?" +
+            getPageSizeParam() +
+            "&" + PAGE_NUM_PARAM +
+            "&projection=*&q=id==" + termId;
+    }
+
+    public String getSectionGradesSetupPath() {
+        return SCHEMA_BASE +
+            "/PSM_FinalGradeSetup?" +
+            getPageSizeParam() +
+            "&" + PAGE_NUM_PARAM +
+            "&projection=*";
+    }
+
+    public String getSectionGradeFormula(long formulaId) {
+        return SCHEMA_BASE +
+            "/PSM_GradingFormula?" +
+            getPageSizeParam() +
+            "&" + PAGE_NUM_PARAM +
+            "&projection=*&q=id==" + String.valueOf(formulaId);
+    }
+
+    public String getSectionGradeFormulaWeights(long formulaId) {
+        return SCHEMA_BASE +
+            "/PSM_GradingFormulaWeighting?" +
+            getPageSizeParam() +
+            "&" + PAGE_NUM_PARAM +
+            "&projection=*&q=ParentGradingFormulaID==" + String.valueOf(formulaId);
+    }
+
     public String getSectionEnrollmentPath() {
         return BASE + "/section/{0}/section_enrollment";
     }
@@ -102,7 +173,38 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
             "/pgcategories?q=SectionID=={1}&"+
             PAGE_NUM_PARAM +
+            "&" + getPageSizeParam() +
             "&projection=Abbreviation,DCID,DefaultPtsPoss,Description,ID,Name,SectionID";
+    }
+
+    public String getPowerTeacherAssignmentCategories() {
+        return SCHEMA_BASE +
+            "/psm_assignmentcategory?" +
+            PAGE_NUM_PARAM +
+            "&projection=*&" + getPageSizeParam();
+    }
+
+    public String getPowerTeacherFinalScores(Long sectionEnrollmentId) {
+        return SCHEMA_BASE +
+                "/psm_finalscore?" +
+                PAGE_NUM_PARAM +
+                "&q=sectionenrollmentid==" + sectionEnrollmentId +
+                "&projection=*&" + getPageSizeParam();
+    }
+
+    public String getPowerTeacherSectionEnrollment(Long powerTeacherSectionId) {
+        return SCHEMA_BASE +
+                "/PSM_SectionEnrollment?" +
+                PAGE_NUM_PARAM +
+                "&q=sectionid==" + powerTeacherSectionId +
+                "&projection=*&" + getPageSizeParam();
+    }
+
+    public String getPowerTeacherStudentMappings() {
+        return SCHEMA_BASE +
+                "/sync_studentmap?" +
+                PAGE_NUM_PARAM +
+                "&projection=*&" + getPageSizeParam();
     }
 
     public String getSectionScoresPath() {

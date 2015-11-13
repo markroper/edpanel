@@ -1,4 +1,4 @@
-package com.scholarscore.etl.powerschool.api.model;
+package com.scholarscore.etl.powerschool.api.model.term;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
