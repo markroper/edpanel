@@ -6,16 +6,8 @@
 
     <import resource="deanslist.xml"/>
     <import resource="edpanel.xml"/>
-
-    <bean
-            class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location">
-            <value>scholarscore.properties</value>
-        </property>
-    </bean>
-
-
-    <bean id="etlEngine" class="com.scholarscore.etl.DLETLEngine">
+    
+    <bean id="dlEtlEngine" class="com.scholarscore.etl.DLETLEngine">
         <property name="deansList" ref="deansListClient"/>
         <property name="scholarScore" ref="edpanelClient"/>
     </bean>

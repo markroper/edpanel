@@ -5,7 +5,7 @@ package com.scholarscore.etl.deanslist.api.model;
  * Date: 8/8/15
  * Time: 2:58 PM
  */
-public class Behavior {
+public class DlBehavior {
 
     public String DLOrganizationID;
     public String DLSchoolID;
