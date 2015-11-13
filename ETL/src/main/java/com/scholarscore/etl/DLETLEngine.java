@@ -1,4 +1,4 @@
-package com.scholarscore.etl;
+    package com.scholarscore.etl;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
@@ -102,17 +102,21 @@ public class DLETLEngine implements IETLEngine {
                 + " and teacher named " + (teacher == null ? "(teacher null)" : teacher.getName())
                 + " with point value " + behavior.getPointValue());
 
-        if (student != null && student.getName() != null
-                && teacher != null && teacher.getName() != null) {
+        if (student != null && student.getName() != null) { 
             Student existingStudent = studentLookup.get(stripAndLowerName(student.getName()));
-            Teacher existingTeacher = teacherLookup.get(stripAndLowerName(teacher.getName()));
-            if (existingStudent != null && existingTeacher != null) {
-                // student and teacher matched! migrate behavioral event
+            if (existingStudent != null) { 
+                // student matched! migrate behavioral event
                 behavior.setStudent(existingStudent);
-                behavior.setTeacher(existingTeacher);
+
+                // don't require teacher but populate it if present
+                if (teacher != null && teacher.getName() != null) {
+                    Teacher existingTeacher = teacherLookup.get(stripAndLowerName(teacher.getName()));
+                    behavior.setTeacher(existingTeacher);
+                }
+
                 logger.info("About to map Behavior " + behavior.getName()
-                        + " to student " + existingStudent.getName()
-                        + " and teacher " + existingTeacher.getName());
+                        + " to student " + existingStudent.getName());
+//                        + " and teacher " + behavior.get.getName() == null ? null : existingTeacher.getName());
                 long studentId = existingStudent.getId();
 
                 // check if this student's behavioral lookup has already been done

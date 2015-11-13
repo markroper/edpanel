@@ -1,30 +1,32 @@
 package com.scholarscore.etl.deanslist.api.response;
 
-import com.scholarscore.etl.deanslist.api.model.Behavior;
+import com.scholarscore.etl.deanslist.api.model.DlBehavior;
 import com.scholarscore.etl.powerschool.api.response.ITranslateCollection;
 import com.scholarscore.models.BehaviorCategory;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Created by jwinch on 7/23/15.
  */
-public class BehaviorResponse implements ITranslateCollection<com.scholarscore.models.Behavior> {
+public class BehaviorResponse implements Serializable, ITranslateCollection<com.scholarscore.models.Behavior> {
 
     private final static Logger logger = LoggerFactory.getLogger(BehaviorResponse.class);
     
     protected static final String DEANSLIST_SOURCE = "deanslist";
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-    Integer rowcount;
-    Set<Behavior> data;
+    public Integer rowcount;
+    public HashSet<DlBehavior> data;
 
     private static final String IN = "in";
     private static final String SCHOOL = "school";
@@ -37,47 +39,49 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
     public Collection<com.scholarscore.models.Behavior> toInternalModel() {
         ArrayList<com.scholarscore.models.Behavior> toReturn = new ArrayList<>();
 
-        for (Behavior behavior : data) {
+        for (DlBehavior dlBehavior : data) {
             com.scholarscore.models.Behavior out = new com.scholarscore.models.Behavior();
             out.setRemoteSystem(DEANSLIST_SOURCE);
-            out.setRemoteStudentId(behavior.DLStudentID);
-            out.setRemoteBehaviorId(behavior.DLSAID);
+            out.setRemoteStudentId(dlBehavior.DLStudentID);
+            out.setRemoteBehaviorId(dlBehavior.DLSAID);
             
             // we parse the category name down to a known enum but don't keep the raw
             // category name in the category field, so appending it to name so that no
             // data is lost.
             String behaviorName;
-            if (StringUtils.isEmpty(behavior.Behavior)) {
+            if (StringUtils.isEmpty(dlBehavior.Behavior)) {
                 behaviorName = "";
             } else {
-                behaviorName = behavior.Behavior;
+                behaviorName = dlBehavior.Behavior;
             }
-            if (!StringUtils.isEmpty(behavior.BehaviorCategory)) {
-                behaviorName = behavior.BehaviorCategory + " " + behaviorName;
+            if (!StringUtils.isEmpty(dlBehavior.BehaviorCategory)) {
+                behaviorName = dlBehavior.BehaviorCategory + " " + behaviorName;
             }
             out.setName(behaviorName);
             
-            BehaviorCategory parsedCategory = determineBehaviorCategory(behavior.BehaviorCategory);
+            BehaviorCategory parsedCategory = determineBehaviorCategory(dlBehavior.BehaviorCategory);
             if (parsedCategory == null) {
                 logger.warn("WARNING Could not parse category. Skipping...");
             }
             out.setBehaviorCategory(parsedCategory);
             try {
-                out.setBehaviorDate(sdf.parse(behavior.BehaviorDate));
+                out.setBehaviorDate(sdf.parse(dlBehavior.BehaviorDate));
             } catch (ParseException pe) {
                 logger.warn("WARNING Could not parse date. Skipping...");
             }
 
             // mostly-empty student with just student name (it's all we have)
             com.scholarscore.models.user.Student student = new com.scholarscore.models.user.Student();
-            student.setName(getStudentName(behavior));
+            student.setName(getStudentName(dlBehavior));
             out.setStudent(student);
             // mostly-empty teacher with just teacher name (it's all we have)
             com.scholarscore.models.user.Teacher teacher = new com.scholarscore.models.user.Teacher();
-            teacher.setName(getStaffName(behavior));
+            teacher.setName(getStaffName(dlBehavior));
             out.setTeacher(teacher);
 
-            out.setRoster(behavior.Roster);
+            out.setPointValue(dlBehavior.PointValue);
+            
+            out.setRoster(dlBehavior.Roster);
             toReturn.add(out);
         }
         return toReturn;
@@ -107,17 +111,18 @@ public class BehaviorResponse implements ITranslateCollection<com.scholarscore.m
         return BehaviorCategory.OTHER;
     }
     
-    private String getStudentName(Behavior behavior) { 
-        return (StringUtils.isEmpty(behavior.StudentFirstName) ? "" : behavior.StudentFirstName + " ")
-                + (StringUtils.isEmpty(behavior.StudentMiddleName) ? "" : behavior.StudentMiddleName + " ")
-                + (StringUtils.isEmpty(behavior.StudentLastName) ? "" : behavior.StudentLastName).trim();
+    private String getStudentName(DlBehavior dlBehavior) { 
+        return (StringUtils.isEmpty(dlBehavior.StudentFirstName) ? "" : dlBehavior.StudentFirstName + " ")
+                + (StringUtils.isEmpty(dlBehavior.StudentMiddleName) ? "" : dlBehavior.StudentMiddleName + " ")
+                + (StringUtils.isEmpty(dlBehavior.StudentLastName) ? "" : dlBehavior.StudentLastName).trim();
     }
     
-    private String getStaffName(Behavior behavior) { 
+    private String getStaffName(DlBehavior dlBehavior) { 
         return
-                (StringUtils.isEmpty(behavior.StaffFirstName) ? "" : behavior.StaffFirstName + " ")
-                + (StringUtils.isEmpty(behavior.StaffMiddleName) ? "" : behavior.StaffMiddleName + " ")
-                + (StringUtils.isEmpty(behavior.StaffLastName) ? "" : behavior.StaffLastName).trim();
+                (StringUtils.isEmpty(dlBehavior.StaffFirstName) ? "" : dlBehavior.StaffFirstName + " ")
+                + (StringUtils.isEmpty(dlBehavior.StaffMiddleName) ? "" : dlBehavior.StaffMiddleName + " ")
+                + (StringUtils.isEmpty(dlBehavior.StaffLastName) ? "" : dlBehavior.StaffLastName).trim();
         
     }
+
 }
