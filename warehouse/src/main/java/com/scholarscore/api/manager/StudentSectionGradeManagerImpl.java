@@ -5,10 +5,11 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.GradeFormula;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.models.gradeformula.GradeFormula;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -85,14 +86,30 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         }
         StudentSectionGrade grade = studentSectionGradePersistence.select(sectionId, studentId);
         Boolean complete = grade.getComplete();
-        if(null == complete || complete.equals(Boolean.FALSE)) {
+        //Only calculate the grade if there is not a grade on it already
+        if((null == complete || complete.equals(Boolean.FALSE)) && null == grade.getGrade()) {
             //Get the section, and pull off the section formula
             ServiceResponse<Section> sect = pm.getSectionManager().getSection(schoolId, yearId, termId, sectionId);
             if(null == sect.getCode() || sect.getCode().isOK()) {
                 ServiceResponse<Collection<StudentAssignment>> assignmentResp =
                         pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, schoolId, yearId, termId, sectionId);
+                ServiceResponse<Term> termResp = pm.getTermManager().getTerm(schoolId, yearId, termId);
+                Term term = null;
+                if(null == termResp.getCode() || termResp.getCode().isOK()) {
+                    term = termResp.getValue();
+                }
                 if(null == assignmentResp.getCode() || assignmentResp.getCode().isOK()) {
+                    //TODO: this applies a single formula to all assignments, instead we need to break it up by term
                     GradeFormula formula = sect.getValue().getGradeFormula();
+                    if(null != term) {
+                        if(null == formula) {
+                            formula = new GradeFormula();
+                            formula.setStartDate(term.getStartDate());
+                            formula.setEndDate(term.getEndDate());
+                        } else {
+                            formula = formula.resolveFormulaMatchingDates(term.getStartDate(), term.getEndDate());
+                        }
+                    }
                     Collection<StudentAssignment> assignments = assignmentResp.getValue();
                     if(null != formula && null != assignments) {
                         HashSet<StudentAssignment> assignmentSet = new HashSet<StudentAssignment>(assignments);

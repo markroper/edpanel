@@ -8,6 +8,7 @@ import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,19 +25,20 @@ public abstract class PowerSchoolHttpClient extends BaseHttpClient {
         T returnVal = null;
         Integer currentPage = 1;
         String unadulteredPath = path;
+        //No matter the powerschool query, we add a param that is page= to all queries to handle pagination.
+        if(null == params) {
+            params = new String[]{ currentPage.toString() };
+        } else {
+            String[] newParams = new String[params.length + 1];
+            newParams[0] = currentPage.toString();
+            for(int i = 0; i < params.length; i++) {
+                newParams[i + 1] = params[i];
+            }
+            params = newParams;
+        }
         while(makeRequest) {
             makeRequest = false;
             //No matter the powerschool query, we add a param that is page= to all queries to handle pagination.
-            if(null == params) {
-                params = new String[]{ currentPage.toString() };
-            } else {
-                String[] newParams = new String[params.length + 1];
-                newParams[0] = currentPage.toString();
-                for(int i = 0; i < params.length; i++) {
-                    newParams[i + 1] = params[i];
-                }
-                params = newParams;
-            }
             path = getPath(unadulteredPath, params);
             try {
                 HttpGet get = new HttpGet();
@@ -50,11 +52,24 @@ public abstract class PowerSchoolHttpClient extends BaseHttpClient {
                 //If we're dealing with a list, handle pagination...
                 if(tempVal instanceof PsResponse) {
                     List tempList = ((PsResponse)tempVal).record;
+                    if(!currentPage.equals(1)) {
+                        ((PsResponse) returnVal).record.addAll(tempList);
+                    }
                     //If we have exactly the page size number of results, try again to see if there is another page!
                     if(pageSize.equals(tempList.size())) {
                         makeRequest = true;
                         currentPage++;
-                        ((PsResponse)returnVal).record.addAll(tempList);
+                        params[0] = currentPage.toString();
+                    }
+                } else if(tempVal instanceof ArrayList) {
+                    List tempList = (List) tempVal;
+                    if(!currentPage.equals(1)) {
+                        ((List) returnVal).addAll(tempList);
+                    }
+                    if(pageSize.equals(tempList.size())) {
+                        makeRequest = true;
+                        currentPage++;
+                        params[0] = currentPage.toString();
                     }
                 }
             } catch (IOException e) {

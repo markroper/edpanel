@@ -53,6 +53,8 @@ import java.util.Objects;
     @JsonSubTypes.Type(value = GradedAssignment.class, name = "PARTICIPATION"),
     @JsonSubTypes.Type(value = GradedAssignment.class, name = "INTERIM_ASSESSMENT"),
     @JsonSubTypes.Type(value = GradedAssignment.class, name = "SUMMATIVE_ASSESSMENT"),
+    @JsonSubTypes.Type(value = GradedAssignment.class, name = "EXAM"),
+    @JsonSubTypes.Type(value = GradedAssignment.class, name = "PROJECT"),
     @JsonSubTypes.Type(value = GradedAssignment.class, name = "USER_DEFINED")
 })
 public abstract class Assignment 

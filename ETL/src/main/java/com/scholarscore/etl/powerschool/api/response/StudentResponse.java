@@ -1,6 +1,6 @@
 package com.scholarscore.etl.powerschool.api.response;
 
-import com.scholarscore.etl.powerschool.api.model.PsStudent;
+import com.scholarscore.etl.powerschool.api.model.student.PsStudent;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://plugin.powerschool.pearson.com"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation='http://plugin.powerschool.pearson.com plugin.xsd'
+		xsi:schemaLocation="http://plugin.powerschool.pearson.com plugin.xsd"
 		name="EdPanel"
 		version="1.0.0"
 		description="EdPanel">
@@ -262,6 +262,136 @@
 		<field table="StoredGrades" field="Teacher_Name" access="ViewOnly" />
 		<field table="StoredGrades" field="TermBinsName" access="ViewOnly" />
 		<field table="StoredGrades" field="TermID" access="ViewOnly" />
+		<!-- Below is what is needed to resolve grading formulas from PowerTeacher and
+			map those entities back to the PowerSchool identifiers-->
+		<field table="PSM_GradingFormula" field="ContentGroupID" access="ViewOnly" />
+		<field table="PSM_GradingFormula" field="GradeScaleID" access="ViewOnly" />
+		<field table="PSM_GradingFormula" field="ID" access="ViewOnly" />
+		<field table="PSM_GradingFormula" field="Name" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="AssignmentCategoryID" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="AssignmentID" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="GradingFormulaWeightingType" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="ID" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="LowScoresToDiscard" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="ParentGradingFormulaID" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="ReportCardItemID" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="ReportingTermID" access="ViewOnly" />
+		<field table="PSM_GradingFormulaWeighting" field="Weighting" access="ViewOnly" />
+		<field table="PSM_FinalGradeSetup" field="ContentGroupID" access="ViewOnly" />
+		<field table="PSM_FinalGradeSetup" field="FinalGradeSetupType" access="ViewOnly" />
+		<field table="PSM_FinalGradeSetup" field="GradingFormulaID" access="ViewOnly" />
+		<field table="PSM_FinalGradeSetup" field="ID" access="ViewOnly" />
+		<field table="PSM_FinalGradeSetup" field="LowScoresToDiscard" access="ViewOnly" />
+		<field table="PSM_FinalGradeSetup" field="ReportingTermID" access="ViewOnly" />
+		<field table="PSM_FinalGradeSetup" field="SectionID" access="ViewOnly" />
+		<field table="PSM_ReportingTerm" field="EndDate" access="ViewOnly" />
+		<field table="PSM_ReportingTerm" field="ID" access="ViewOnly" />
+		<field table="PSM_ReportingTerm" field="IsBasedOnTermDates" access="ViewOnly" />
+		<field table="PSM_ReportingTerm" field="Name" access="ViewOnly" />
+		<field table="PSM_ReportingTerm" field="ParentReportingTermID" access="ViewOnly" />
+		<field table="PSM_ReportingTerm" field="StartDate" access="ViewOnly" />
+		<field table="PSM_ReportingTerm" field="termid" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="Abbreviation" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="ContentGroupID" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="DefaultExtraCreditPoints" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="DefaultPoints" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="DefaultScoreType" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="Description" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="ID" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="IncludeInFinalGrades" access="ViewOnly" />
+		<field table="PSM_AssignmentCategory" field="Name" access="ViewOnly" />
+		<field table="SYNC_SectionMap" field="Created" access="ViewOnly" />
+		<field table="SYNC_SectionMap" field="DCID" access="ViewOnly" />
+		<field table="SYNC_SectionMap" field="ID" access="ViewOnly" />
+		<field table="SYNC_SectionMap" field="LastUpdated" access="ViewOnly" />
+		<field table="SYNC_SectionMap" field="SectionID" access="ViewOnly" />
+		<field table="SYNC_SectionMap" field="SectionsDCID" access="ViewOnly" />
+		<field table="SYNC_TermMap" field="Created" access="ViewOnly" />
+		<field table="SYNC_TermMap" field="DCID" access="ViewOnly" />
+		<field table="SYNC_TermMap" field="ID" access="ViewOnly" />
+		<field table="SYNC_TermMap" field="LastUpdated" access="ViewOnly" />
+		<field table="SYNC_TermMap" field="TermID" access="ViewOnly" />
+		<field table="SYNC_TermMap" field="TermsDCID" access="ViewOnly" />
+		<field table="SYNC_ReportingTermMap" field="Created" access="ViewOnly" />
+		<field table="SYNC_ReportingTermMap" field="DCID" access="ViewOnly" />
+		<field table="SYNC_ReportingTermMap" field="ID" access="ViewOnly" />
+		<field table="SYNC_ReportingTermMap" field="LastUpdated" access="ViewOnly" />
+		<field table="SYNC_ReportingTermMap" field="ReportingTermID" access="ViewOnly" />
+		<field table="SYNC_ReportingTermMap" field="TermBinsDCID" access="ViewOnly" />
+		<field table="TermBins" field="CitAsmt" access="ViewOnly" />
+		<field table="TermBins" field="ChangeGradeTo" access="ViewOnly" />
+		<field table="TermBins" field="Collect" access="ViewOnly" />
+		<field table="TermBins" field="CollectionDate" access="ViewOnly" />
+		<field table="TermBins" field="CreditPct" access="ViewOnly" />
+		<field table="TermBins" field="CreditString" access="ViewOnly" />
+		<field table="TermBins" field="CurrentGrade" access="ViewOnly" />
+		<field table="TermBins" field="Date1" access="ViewOnly" />
+		<field table="TermBins" field="Date2" access="ViewOnly" />
+		<field table="TermBins" field="DCID" access="ViewOnly" />
+		<field table="TermBins" field="Description" access="ViewOnly" />
+		<field table="TermBins" field="ExcludedMarks" access="ViewOnly" />
+		<field table="TermBins" field="GradeScaleID" access="ViewOnly" />
+		<field table="TermBins" field="ID" access="ViewOnly" />
+		<field table="TermBins" field="NumAttPoints" access="ViewOnly" />
+		<field table="TermBins" field="SchoolID" access="ViewOnly" />
+		<field table="TermBins" field="ShowOnSpreadSht" access="ViewOnly" />
+		<field table="TermBins" field="StoreCode" access="ViewOnly" />
+		<field table="TermBins" field="StoreGrades" access="ViewOnly" />
+		<field table="TermBins" field="SuppressLtrGrd" access="ViewOnly" />
+		<field table="TermBins" field="SuppressPercentScr" access="ViewOnly" />
+		<field table="TermBins" field="TermID" access="ViewOnly" />
+		<field table="TermBins" field="YearID" access="ViewOnly" />
+		<field table="Terms" field="Abbreviation" access="ViewOnly" />
+		<field table="Terms" field="Attendance_Calculation_Code" access="ViewOnly" />
+		<field table="Terms" field="AutoBuildBin" access="ViewOnly" />
+		<field table="Terms" field="Days_Per_Cycle" access="ViewOnly" />
+		<field table="Terms" field="DCID" access="ViewOnly" />
+		<field table="Terms" field="FirstDay" access="ViewOnly" />
+		<field table="Terms" field="ID" access="ViewOnly" />
+		<field table="Terms" field="ImportMap" access="ViewOnly" />
+		<field table="Terms" field="IsYearRec" access="ViewOnly" />
+		<field table="Terms" field="LastDay" access="ViewOnly" />
+		<field table="Terms" field="Name" access="ViewOnly" />
+		<field table="Terms" field="NoOfDays" access="ViewOnly" />
+		<field table="Terms" field="Periods_Per_Day" access="ViewOnly" />
+		<field table="Terms" field="Portion" access="ViewOnly" />
+		<field table="Terms" field="SchoolID" access="ViewOnly" />
+		<field table="Terms" field="Sterms" access="ViewOnly" />
+		<field table="Terms" field="TermInfo_guid" access="ViewOnly" />
+		<field table="Terms" field="TermsInYear" access="ViewOnly" />
+		<field table="Terms" field="YearID" access="ViewOnly" />
+		<field table="Terms" field="YearlyCreditHrs" access="ViewOnly" />
+		<!-- Below is whats needed to resolve student scores in sections and map them back to the
+			PowerSchool studentID from PowerTeacher-->
+		<field table="PSM_FinalScore" field="ActualScoreEntered" access="ViewOnly" />
+		<field table="PSM_FinalScore" field="CommentCode" access="ViewOnly" />
+		<field table="PSM_FinalScore" field="CommentValue" access="ViewOnly" />
+		<field table="PSM_FinalScore" field="ID" access="ViewOnly" />
+		<field table="PSM_FinalScore" field="LastUpdated" access="ViewOnly" />
+		<field table="PSM_FinalScore" field="LetterGrade" access="ViewOnly" />
+		<field table="PSM_FinalScore" field="ManualOverride" access="ViewOnly" />
+		<field table="PSM_FinalScore" field="PointsEarned" access="ViewOnly" />
+		<field table="PSM_FinalScore" field="PointsPossible" access="ViewOnly" />
+		<field table="PSM_FinalScore" field="PotentialVarCreditValue" access="ViewOnly" />
+		<field table="PSM_FinalScore" field="OutOfDate" access="ViewOnly" />
+		<field table="PSM_FinalScore" field="ReportingTermID" access="ViewOnly" />
+		<field table="PSM_FinalScore" field="Score" access="ViewOnly" />
+		<field table="PSM_FinalScore" field="SectionEnrollmentID" access="ViewOnly" />
+		<field table="PSM_FinalScore" field="VariableCreditValue" access="ViewOnly" />
+		<field table="PSM_SectionEnrollment" field="DateEnrolled" access="ViewOnly" />
+		<field table="PSM_SectionEnrollment" field="DateLeft" access="ViewOnly" />
+		<field table="PSM_SectionEnrollment" field="GradeScaleID" access="ViewOnly" />
+		<field table="PSM_SectionEnrollment" field="ID" access="ViewOnly" />
+		<field table="PSM_SectionEnrollment" field="SectionEnrollmentStatus" access="ViewOnly" />
+		<field table="PSM_SectionEnrollment" field="SectionID" access="ViewOnly" />
+		<field table="PSM_SectionEnrollment" field="StudentID" access="ViewOnly" />
+		<field table="PSM_SectionEnrollment" field="TeacherNotifiedFlag" access="ViewOnly" />
+		<field table="SYNC_StudentMap" field="Created" access="ViewOnly" />
+		<field table="SYNC_StudentMap" field="DCID" access="ViewOnly" />
+		<field table="SYNC_StudentMap" field="ID" access="ViewOnly" />
+		<field table="SYNC_StudentMap" field="LastUpdated" access="ViewOnly" />
+		<field table="SYNC_StudentMap" field="StudentID" access="ViewOnly" />
+		<field table="SYNC_StudentMap" field="StudentsDCID" access="ViewOnly" />
 		<!--Tables related to section grade formulas-->
 		<field table="GradeScaleItem" field="AddedValue" access="ViewOnly" />
 		<field table="GradeScaleItem" field="Alt_Grade_Points" access="ViewOnly" />
@@ -322,28 +452,5 @@
 			errors: [0]
 			}
 		https://excelacademy.powerschool.com/ws/schema/table/PGFinalGrades?projection=citizenship,dcid,enddate,finalgradename,grade,percent,points,sectionid,studentid -->
-		<field table="PGFinalGradesSetup" field="abbreviation" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="begindate" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="changegradeto" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="CitizenshipAsmtName" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="CurrentGrade" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="DueDate" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="enddate" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="ExcludedMarks" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="FactorInfos" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="FactornumScoresToDrop" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="FactorTypes" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="FactorWeights" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="name" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="NumAttPoints" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="sectionid" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="schoolid" access="ViewOnly" />
-		<field table="PGFinalGradesSetup" field="yearid" access="ViewOnly" />
-		<!-- Empty result set
-			FactorWeights (ver4.3.0/5.0.7)
-				Image
-				Weighting factor for each type (used in the Final Grades calculation).
-			https://excelacademy.powerschool.com/ws/schema/table/PGFinalGradesSetup?projection=name,dcid,sectionid,schoolid,yearid
-		-->
 	</access_request>
 </plugin>

@@ -15,25 +15,18 @@ public class GradeUtil {
     
     // returns the average grade on a scale from 0.0 (0%) to 1.0 (100%)
     public static Double calculateAverageGrade(Collection<? extends WeightedGradable> gradables) {
-        double numerator = 0D;
-        double denominator = 0D;
+        double percentageScore = 0D;
         for(WeightedGradable g : gradables) {
-            
             // awardedPoints and availablePoints can be set arbitrarily. The only important 
             // thing is the ratio between them. (4/5 == 80/100 == 160/200)
-            Double percentageScore = null;
             if (null != g.getAwardedPoints() && null != g.getAvailablePoints()) {
-                percentageScore = (g.getAwardedPoints().doubleValue() / g.getAvailablePoints().doubleValue())
-                        * ONE_HUNDRED_POINT_MULTIPLIER;
-
-                // weight is then factored in.
-                numerator += percentageScore * g.getWeight();
-                denominator += ONE_HUNDRED_POINT_MULTIPLIER * g.getWeight();
+                percentageScore +=
+                        g.getAwardedPoints().doubleValue() / g.getAvailablePoints().doubleValue() * g.getWeight();
             }
         }
         // to avoid NaN. assumption is that no completed classes should be thought of as '100%' and not '0%'
-        if (denominator == 0) { return 1D; }
-        return (numerator / denominator);
+        if (percentageScore == 0D) { return 1D; }
+        return (double)Math.round(percentageScore / gradables.size() * 1000D) / 1000D;
     }
     
     public static Double calculateGPA(Integer gpaScale, Collection<? extends WeightedGradable> gradables) {

@@ -181,9 +181,10 @@ CREATE TABLE `scholar_warehouse`.`section` (
   `section_start_date` DATETIME NULL COMMENT 'The section start date',
   `section_end_date` DATETIME NULL COMMENT 'The section end date',
   `room` VARCHAR(256) NULL COMMENT 'Human-readable room name',
-  `grade_formula` VARCHAR(1024) NULL COMMENT 'The section grading formula as a string',
+  `grade_formula` VARCHAR(16384) NULL COMMENT 'The section grading formula as a string',
   `course_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the school table',
   `term_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the term table',
+  `number_of_terms` INTEGER UNSIGNED NULL COMMENT 'The number of terms that the section spans',
   `section_source_system_id` VARCHAR(256) NULL UNIQUE COMMENT 'The source system from which the entity was imported - the id from that system',
   PRIMARY KEY (`section_id`),
   CONSTRAINT `fk_course$section`
@@ -237,14 +238,18 @@ CREATE TABLE `scholar_warehouse`.`assignment` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
+ALTER TABLE `scholar_warehouse`.`assignment` ADD INDEX (`user_defined_type`);
+
 CREATE TABLE `scholar_warehouse`.`student_assignment` (
   `student_assignment_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `student_assignment_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
+  `comment` VARCHAR(32768) NULL COMMENT 'Teacher comment on student assignment',
   `completed` BIT(1) COMMENT 'Boolean indicating whether or not the assignment was completed',
   `completion_date` DATETIME NULL COMMENT 'The date the student turned in the assignment',
   `awarded_points` DOUBLE NULL COMMENT 'The number of possible points to be awarded for an assignment',
   `assignment_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the section assignment table',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
+  `student_assignment_exempt` BIT(1) COMMENT 'Whether the student assignment is exempt from grade calculations',
   PRIMARY KEY (`student_assignment_id`),
   CONSTRAINT `fk_assignment$student_assignment`
     FOREIGN KEY (`assignment_fk`)
@@ -263,6 +268,7 @@ CREATE TABLE `scholar_warehouse`.`student_section_grade` (
   `student_section_grade_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `complete` BIT(1) COMMENT 'Indicates whether the course grade is final',
   `grade` DOUBLE COMMENT 'Represents a single student grade in a section',
+  `term_grades` VARCHAR(16384) NULL COMMENT 'Final term grades for the section, if they have been calulated',
   `section_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the section table',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
   PRIMARY KEY (`student_section_grade_id`),

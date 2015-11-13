@@ -6,6 +6,7 @@ import com.scholarscore.models.assignment.AttendanceAssignment;
 import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.SchoolDay;
+import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
@@ -326,11 +327,11 @@ public class ModelReflectionTests {
 
         if (type.isAssignableFrom(GradeFormula.class)) {
             GradeFormula gradeFormula = new GradeFormula();
-            Map<AssignmentType, Integer> map = new HashMap<>();
+            Map<String, Double> map = new HashMap<>();
             if (alt) {
-                map.put(AssignmentType.ATTENDANCE, 2);
+                map.put(AssignmentType.ATTENDANCE.name(), 2D);
             } else {
-                map.put(AssignmentType.HOMEWORK, 4);
+                map.put(AssignmentType.HOMEWORK.name(), 4D);
             }
             gradeFormula.setAssignmentTypeWeights(map);
             return gradeFormula;

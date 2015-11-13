@@ -5,9 +5,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.scholarscore.etl.DLETLEngine" level="DEBUG" />
-    
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>

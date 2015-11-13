@@ -96,10 +96,6 @@ public class SectionManagerImpl implements SectionManager {
 
     @Override
     public StatusCode sectionExists(long schoolId, long yearId, long termId, long sectionId) {
-        StatusCode code = pm.getTermManager().termExists(schoolId, yearId, termId);
-        if(!code.isOK()) {
-            return code;
-        }
         Section section = sectionPersistence.select(termId, sectionId);
         if(null == section) {
             return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{SECTION, sectionId});

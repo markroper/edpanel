@@ -16,6 +16,8 @@ import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.user.Student;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by markroper on 10/25/15.
  */
 public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAssignment> {
+    private final static Logger LOGGER = LoggerFactory.getLogger(StudentAssignmentSyncRunnable.class);
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
     private School school;
@@ -198,6 +201,12 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
             for (PsResponseInner<PsAssignmentScoreWrapper> sc : assScores.record) {
                 PsScore score = sc.tables.sectionscoresassignments;
                 StudentAssignment studAss = new StudentAssignment();
+                if(null != score.getExempt() && score.getExempt().equals("1")) {
+                    studAss.setExempt(true);
+                } else {
+                    studAss.setExempt(false);
+                }
+                studAss.setComment(score.getComment_value());
                 studAss.setAssignment(assignment);
                 //Resolve the student, or move on
                 MutablePair<Student, PsSectionScoreId> sectionScoreIdAndStudent =
@@ -212,14 +221,10 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                 try {
                     awardedPoints = Double.valueOf(score.getScore());
                 } catch (NumberFormatException e) {
-                    //NO OP
+                    LOGGER.debug("Unable to parse awarded points, will be set to null. " + score.getScore());
                 }
-                if (null == awardedPoints) {
-                    studAss.setCompleted(false);
-                } else {
-                    studAss.setAwardedPoints(awardedPoints);
-                    studAss.setCompleted(true);
-                }
+                studAss.setAwardedPoints(awardedPoints);
+                studAss.setCompleted(true);
                 studentAssignmentsToCreate.put(
                         Long.valueOf(studAss.getStudent().getSourceSystemId()),
                         studAss);
