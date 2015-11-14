@@ -131,7 +131,7 @@ public class DlEtlEngine implements IEtlEngine {
                         e.printStackTrace();
                     }
 
-                    HashMap<String, Behavior> studentBehaviorHashMap = populateLookup(studentBehaviors);
+                    HashMap<String, Behavior> studentBehaviorHashMap = populateBehaviorLookup(studentBehaviors);
                     existingBehaviorLookup.put(studentId, studentBehaviorHashMap);
                     studentBehaviorEvents = studentBehaviorHashMap;
                 }
@@ -183,6 +183,18 @@ public class DlEtlEngine implements IEtlEngine {
         return lookup;
     }
 
+    // 
+    private HashMap<String, Behavior> populateBehaviorLookup(Collection<Behavior> behaviors) {
+        HashMap<String, Behavior> lookup = new HashMap<>();
+        for (Behavior entry : behaviors) {
+            String entryName = entry.getRemoteBehaviorId();
+            if (entryName != null) {
+                lookup.put(entryName, entry);
+            }
+        }
+        return lookup; 
+    }
+    
     private String stripAndLowerName(String name) {
         if (null == name) { return null; }
         return name.toLowerCase().trim().replaceAll("\\s", "");
