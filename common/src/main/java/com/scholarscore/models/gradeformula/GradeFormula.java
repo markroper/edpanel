@@ -101,8 +101,8 @@ public class GradeFormula implements Serializable {
             for(StudentAssignment sa : studentAssignments) {
                 Date dueDate = sa.getAssignment().getDueDate();
                 //If the assignment is within the term:
-                if((dueDate.compareTo(startDate) >= 0 || new Long(0L).equals(getDateDiff(startDate, dueDate, TimeUnit.DAYS)))
-                        && (dueDate.compareTo(endDate) <= 0 || new Long(0L).equals(getDateDiff(endDate, dueDate, TimeUnit.DAYS)))) {
+                if((null == startDate || dueDate.compareTo(startDate) >= 0 || new Long(0L).equals(getDateDiff(startDate, dueDate, TimeUnit.DAYS)))
+                        && (null == endDate || dueDate.compareTo(endDate) <= 0 || new Long(0L).equals(getDateDiff(endDate, dueDate, TimeUnit.DAYS)))) {
                     //If there is a weight for the particular assignment, calculate the values and move on
                     //to the next assignment:
                     if(assignmentWeights.containsKey(sa.getAssignment().getId())) {
@@ -114,6 +114,9 @@ public class GradeFormula implements Serializable {
                     }
 
                     String type = sa.getAssignment().getUserDefinedType();
+                    if(null == type) {
+                        type = sa.getAssignment().getType().name();
+                    }
                     //Don't count assignments that are not being included in the grade
                     if(!assignmentTypeWeights.containsKey(type)) {
                         continue;
@@ -131,7 +134,7 @@ public class GradeFormula implements Serializable {
                     //Assignments that are not exempted, are included in the section grade calculation,
                     //but have a null awarded points should have full points. So as not to penalize the student?
                     if(null == awardedPoints) {
-                        awardedPoints = sa.getAvailablePoints().doubleValue();
+                        awardedPoints = 0D;
                     }
                     if(!typeToAwardedAndAvailPoints.containsKey(type)) {
                         typeToAwardedAndAvailPoints.put(type, new MutablePair<Double, Double>(0D, 0D));
@@ -148,13 +151,17 @@ public class GradeFormula implements Serializable {
                         awardedPoints = awardedPoints * sa.getAssignment().getWeight();
                     }
                     Double left = typeToAwardedAndAvailPoints.get(type).getLeft();
-                    typeToAwardedAndAvailPoints.get(type).setLeft(left + awardedPoints);
 
                     //CALCULATE AND INCREMENT AVAILABLE POINTS
                     Double availablePoints = sa.getAssignment().getAvailablePoints().doubleValue();
+                    if(null == availablePoints) {
+                        continue;
+                    }
                     if(null != sa.getAssignment().getWeight()) {
                         availablePoints = availablePoints * sa.getAssignment().getWeight();
                     }
+                    //Update numerator and denominator!
+                    typeToAwardedAndAvailPoints.get(type).setLeft(left + awardedPoints);
                     Double right = typeToAwardedAndAvailPoints.get(type).getRight();
                     typeToAwardedAndAvailPoints.get(type).setRight(right + availablePoints);
                 }

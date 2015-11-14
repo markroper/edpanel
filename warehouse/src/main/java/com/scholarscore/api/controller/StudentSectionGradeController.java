@@ -64,6 +64,31 @@ public class StudentSectionGradeController extends BaseController {
     }
 
     @ApiOperation(
+            value = "Get a student grade in a section by week",
+            notes = "Get a student grade in a section by week",
+            response = StudentSectionGrade.class)
+    @RequestMapping(
+            value = "/students/{studId}/weeks",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getStudentSectionGradeByWeek(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "yearId", required = true, value = "School year ID")
+            @PathVariable(value="yearId") Long yearId,
+            @ApiParam(name = "termId", required = true, value = "Term long ID")
+            @PathVariable(value="termId") Long termId,
+            @ApiParam(name = "sectId", required = true, value = "Section ID")
+            @PathVariable(value="sectId") Long sectId,
+            @ApiParam(name = "studId", required = true, value = "Student ID")
+            @PathVariable(value="studId") Long studId) {
+        return respond(pm.getStudentSectionGradeManager().getStudentSectionGradeByWeek(schoolId, yearId, termId, sectId, studId));
+    }
+
+
+
+    @ApiOperation(
             value = "Create a student grade in a section", 
             notes = "Creates, assigns and ID to, persists and returns a student section grade",
             response = EntityId.class)
