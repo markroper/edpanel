@@ -21,7 +21,6 @@ public class EtlRunner {
         SyncResult psResult = etlEngine.syncDistrict();
         System.out.println("Done! PS Migration result: " + psResult);
         
-        dlEtlEngine.syncDistrict();
         SyncResult dlResult = dlEtlEngine.syncDistrict();
         System.out.println("Done! Migration result: " + dlResult);    
     }
