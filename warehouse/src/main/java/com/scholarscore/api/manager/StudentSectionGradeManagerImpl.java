@@ -143,6 +143,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
 
         SectionGradeWithProgression gradeWithProgression = new SectionGradeWithProgression();
         gradeWithProgression.setCurrentOverallGrade(ssgResp.getValue().getGrade());
+        gradeWithProgression.setTermGrades(ssgResp.getValue().getTermGrades());
 
         List<GradeAsOfWeek> grades = new ArrayList<>();
         ServiceResponse<Section> sect = pm.getSectionManager().getSection(schoolId, yearId, termId, sectionId);
@@ -169,12 +170,12 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                     }
                 }
                 ArrayList<StudentAssignment> assignments = (ArrayList<StudentAssignment>)assignmentResp.getValue();
+                gradeWithProgression.setCurrentCategoryGrades(formula.calculateCategoryGrades(new HashSet<>(assignments)));
                 //Sort by due date
-                assignments.stream().sorted((object1, object2) ->
-                        object1.getAssignment().getDueDate().compareTo(object2.getAssignment().getDueDate()));
                 Date currentLastDayOfWeek = null;
-                int i = 1;
                 Calendar cal  = Calendar.getInstance();
+                int i = 1;
+                assignments.sort((object1, object2) -> object1.getAssignment().getDueDate().compareTo(object2.getAssignment().getDueDate()));
                 for(StudentAssignment a: assignments) {
                     Date dueDate = a.getAssignment().getDueDate();
                     cal.setTime(dueDate);
