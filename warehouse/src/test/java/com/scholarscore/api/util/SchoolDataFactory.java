@@ -299,6 +299,7 @@ public class SchoolDataFactory {
                 c.add(Calendar.DATE, i);
                 Date assignmentDate = c.getTime();
                 AttendanceAssignment attend = new AttendanceAssignment();
+                attend.setAvailablePoints(1L);
                 attend.setDueDate(assignmentDate);
                 returnMap.get(s.getId()).add(attend);
                 //For every other day, add a homework assignment
@@ -306,6 +307,7 @@ public class SchoolDataFactory {
                     GradedAssignment hw = new GradedAssignment();
                     hw.setAssignedDate(s.getStartDate());
                     hw.setDueDate(assignmentDate);
+                    hw.setAvailablePoints(5L);
                     hw.setType(AssignmentType.HOMEWORK);
                     returnMap.get(s.getId()).add(hw);
                 }
@@ -361,6 +363,10 @@ public class SchoolDataFactory {
                 if(null != a.getAvailablePoints() && a.getAvailablePoints() > 0 && completed) {
                     Integer awardedInt = new Random().nextInt(40);
                     awardedInt = ((int)(long)a.getAvailablePoints()) - awardedInt;
+                    if(awardedInt < 0) {
+                        awardedInt = ((int)(long)a.getAvailablePoints()) -
+                                new Random().nextInt((int)(long)a.getAvailablePoints());
+                    }
                     sa.setAwardedPoints(awardedInt.doubleValue());
                     sa.setCompletionDate(a.getDueDate());
                 }

@@ -2,7 +2,9 @@ package com.scholarscore.api.manager;
 
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
+import com.scholarscore.models.grade.GradeAsOfWeek;
 import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.SectionGradeWithProgression;
 
 import java.util.Collection;
 import java.util.List;
@@ -53,6 +55,20 @@ public interface StudentSectionGradeManager {
      * @return
      */
     public ServiceResponse<StudentSectionGrade> getStudentSectionGrade(
+            long schoolId, long yearId, long termId, long sectionId, long studentId);
+
+    /**
+     * Returns the student section grade with the ID provided, or in degenerate cases, a descriptive error
+     * code will be populated on the returned ServiceResponse instance.
+     *
+     * @param schoolId ID of parent school
+     * @param yearId the ID of the parent year
+     * @param termId the ID of the term
+     * @param sectionId the ID of the section
+     * @param studentId the ID of the student
+     * @return
+     */
+    public ServiceResponse<SectionGradeWithProgression> getStudentSectionGradeByWeek(
             long schoolId, long yearId, long termId, long sectionId, long studentId);
 
     /**

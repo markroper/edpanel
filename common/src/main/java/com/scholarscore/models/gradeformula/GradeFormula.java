@@ -95,78 +95,15 @@ public class GradeFormula implements Serializable {
         Double denominator = 0D;
         //TODO: what if there are both childWeights and assignmentTypeWeights?
         if(!assignmentTypeWeights.isEmpty() || !assignmentWeights.isEmpty()) {
-            //There are weightings defined for assignments or assignment types, so we use those!
-            Map<String, MutablePair<Double, Double>> typeToAwardedAndAvailPoints = new HashMap<>();
-            Map<Long, MutablePair<Double, Double>> assignmentIdToPoints = new HashMap<>();
-            for(StudentAssignment sa : studentAssignments) {
-                Date dueDate = sa.getAssignment().getDueDate();
-                //If the assignment is within the term:
-                if((dueDate.compareTo(startDate) >= 0 || new Long(0L).equals(getDateDiff(startDate, dueDate, TimeUnit.DAYS)))
-                        && (dueDate.compareTo(endDate) <= 0 || new Long(0L).equals(getDateDiff(endDate, dueDate, TimeUnit.DAYS)))) {
-                    //If there is a weight for the particular assignment, calculate the values and move on
-                    //to the next assignment:
-                    if(assignmentWeights.containsKey(sa.getAssignment().getId())) {
-                        Double weight = sa.getAssignment().getWeight();
-                        assignmentIdToPoints.put(sa.getAssignment().getId(), new MutablePair<>(
-                                sa.getAwardedPoints() * weight,
-                                sa.getAssignment().getAvailablePoints() * weight));
-                        continue;
-                    }
-
-                    String type = sa.getAssignment().getUserDefinedType();
-                    //Don't count assignments that are not being included in the grade
-                    if(!assignmentTypeWeights.containsKey(type)) {
-                        continue;
-                    }
-                    //Don't count exempt assignments
-                    if((null != sa.getExempt() && sa.getExempt()) ||
-                            (null != sa.getAssignment().getIncludeInFinalGrades() && !sa.getAssignment().getIncludeInFinalGrades())) {
-                        continue;
-                    }
-                    //CALCULATE AND INCREMENT AWARDED POINTS
-                    Double awardedPoints = sa.getAwardedPoints();
-                    if(type.equals(AssignmentType.ATTENDANCE) && sa.getCompleted()) {
-                        awardedPoints = sa.getAvailablePoints().doubleValue();
-                    }
-                    //Assignments that are not exempted, are included in the section grade calculation,
-                    //but have a null awarded points should have full points. So as not to penalize the student?
-                    if(null == awardedPoints) {
-                        awardedPoints = sa.getAvailablePoints().doubleValue();
-                    }
-                    if(!typeToAwardedAndAvailPoints.containsKey(type)) {
-                        typeToAwardedAndAvailPoints.put(type, new MutablePair<Double, Double>(0D, 0D));
-                    }
-                    //If there is a default point value for the category and the awarded points is less than it,
-                    //ise the default points
-                    Double defaultPoints = assignmentTypeDefaultPoints.get(type);
-                    if(null != defaultPoints &&
-                            awardedPoints < defaultPoints) {
-                        awardedPoints = defaultPoints;
-                    }
-                    //Multiply by the weight!
-                    if(null != sa.getAssignment().getWeight()) {
-                        awardedPoints = awardedPoints * sa.getAssignment().getWeight();
-                    }
-                    Double left = typeToAwardedAndAvailPoints.get(type).getLeft();
-                    typeToAwardedAndAvailPoints.get(type).setLeft(left + awardedPoints);
-
-                    //CALCULATE AND INCREMENT AVAILABLE POINTS
-                    Double availablePoints = sa.getAssignment().getAvailablePoints().doubleValue();
-                    if(null != sa.getAssignment().getWeight()) {
-                        availablePoints = availablePoints * sa.getAssignment().getWeight();
-                    }
-                    Double right = typeToAwardedAndAvailPoints.get(type).getRight();
-                    typeToAwardedAndAvailPoints.get(type).setRight(right + availablePoints);
-                }
-            }
+            AssignmentAndTypeGrades assignmentAndTypeGrades = this.calculateAssignmentTypeGrades(studentAssignments);
             //Now that the buckets' awarded and available points are calculated, perform the bucket weighting
-            for(Map.Entry<String, MutablePair<Double, Double>> entry : typeToAwardedAndAvailPoints.entrySet()) {
+            for(Map.Entry<String, MutablePair<Double, Double>> entry : assignmentAndTypeGrades.getTypeToAwardedAndAvailPoints().entrySet()) {
                 String type = entry.getKey();
                 MutablePair<Double, Double> values = entry.getValue();
                 numerator += values.getLeft() / values.getRight() * assignmentTypeWeights.get(type);
                 denominator += assignmentTypeWeights.get(type);
             }
-            for(Map.Entry<Long, MutablePair<Double,Double>> entry : assignmentIdToPoints.entrySet()) {
+            for(Map.Entry<Long, MutablePair<Double,Double>> entry : assignmentAndTypeGrades.getAssignmentIdToPoints().entrySet()) {
                 numerator += entry.getValue().getLeft() / entry.getValue().getRight() * assignmentWeights.get(entry.getKey());
                 denominator += assignmentWeights.get(entry.getKey());
             }
@@ -197,7 +134,103 @@ public class GradeFormula implements Serializable {
         if(null != denominator && !denominator.equals(0D)) {
             return numerator / denominator;
         }
-        return numerator / denominator;
+        return 1D;
+    }
+
+    public Map<String, Double> calculateCategoryGrades(Set<StudentAssignment> studentAssignments) {
+        Double numerator = 0D;
+        Double denominator = 0D;
+        AssignmentAndTypeGrades assignmentAndTypeGrades = this.calculateAssignmentTypeGrades(studentAssignments);
+        //Now that the buckets' awarded and available points are calculated, perform the bucket weighting
+        Map<String, Double> typeToGrade = new HashMap<>();
+        for(Map.Entry<String, MutablePair<Double, Double>> entry :
+                assignmentAndTypeGrades.getTypeToAwardedAndAvailPoints().entrySet()) {
+            Double typeGrade = 1D;
+            if(null != entry.getValue().getRight() && entry.getValue().getRight() > 0D) {
+                typeGrade = (double)(long)(entry.getValue().getLeft() / entry.getValue().getRight() * 100D);
+            }
+            typeToGrade.put(entry.getKey(), typeGrade);
+        }
+        return typeToGrade;
+    }
+
+    private AssignmentAndTypeGrades calculateAssignmentTypeGrades(Set<StudentAssignment> studentAssignments) {
+        //TODO: what if there are both childWeights and assignmentTypeWeights?
+        if(!assignmentTypeWeights.isEmpty() || !assignmentWeights.isEmpty()) {
+            //There are weightings defined for assignments or assignment types, so we use those!
+            Map<String, MutablePair<Double, Double>> typeToAwardedAndAvailPoints = new HashMap<>();
+            Map<Long, MutablePair<Double, Double>> assignmentIdToPoints = new HashMap<>();
+            for(StudentAssignment sa : studentAssignments) {
+                Date dueDate = sa.getAssignment().getDueDate();
+                //If the assignment is within the term:
+                if((null == startDate || dueDate.compareTo(startDate) >= 0 || new Long(0L).equals(getDateDiff(startDate, dueDate, TimeUnit.DAYS)))
+                        && (null == endDate || dueDate.compareTo(endDate) <= 0 || new Long(0L).equals(getDateDiff(endDate, dueDate, TimeUnit.DAYS)))) {
+                    //If there is a weight for the particular assignment, calculate the values and move on
+                    //to the next assignment:
+                    if(assignmentWeights.containsKey(sa.getAssignment().getId())) {
+                        Double weight = sa.getAssignment().getWeight();
+                        assignmentIdToPoints.put(sa.getAssignment().getId(), new MutablePair<>(
+                                sa.getAwardedPoints() * weight,
+                                sa.getAssignment().getAvailablePoints() * weight));
+                        continue;
+                    }
+
+                    String type = sa.getAssignment().getUserDefinedType();
+                    if(null == type) {
+                        type = sa.getAssignment().getType().name();
+                    }
+                    //Don't count assignments that are not being included in the grade
+                    if(!assignmentTypeWeights.containsKey(type)) {
+                        continue;
+                    }
+                    //Don't count exempt assignments
+                    if((null != sa.getExempt() && sa.getExempt()) ||
+                            (null != sa.getAssignment().getIncludeInFinalGrades() && !sa.getAssignment().getIncludeInFinalGrades())) {
+                        continue;
+                    }
+                    //CALCULATE AND INCREMENT AWARDED POINTS
+                    Double awardedPoints = sa.getAwardedPoints();
+                    if(type.equals(AssignmentType.ATTENDANCE) && sa.getCompleted()) {
+                        awardedPoints = sa.getAvailablePoints().doubleValue();
+                    }
+                    //Assignments that are not exempted, are included in the section grade calculation,
+                    //but have a null awarded points should have full points. So as not to penalize the student?
+                    if(null == awardedPoints) {
+                        awardedPoints = 0D;
+                    }
+                    if(!typeToAwardedAndAvailPoints.containsKey(type)) {
+                        typeToAwardedAndAvailPoints.put(type, new MutablePair<Double, Double>(0D, 0D));
+                    }
+                    //If there is a default point value for the category and the awarded points is less than it,
+                    //ise the default points
+                    Double defaultPoints = assignmentTypeDefaultPoints.get(type);
+                    if(null != defaultPoints &&
+                            awardedPoints < defaultPoints) {
+                        awardedPoints = defaultPoints;
+                    }
+                    //Multiply by the weight!
+                    if(null != sa.getAssignment().getWeight()) {
+                        awardedPoints = awardedPoints * sa.getAssignment().getWeight();
+                    }
+                    Double left = typeToAwardedAndAvailPoints.get(type).getLeft();
+
+                    //CALCULATE AND INCREMENT AVAILABLE POINTS
+                    Double availablePoints = sa.getAssignment().getAvailablePoints().doubleValue();
+                    if(null == availablePoints) {
+                        continue;
+                    }
+                    if(null != sa.getAssignment().getWeight()) {
+                        availablePoints = availablePoints * sa.getAssignment().getWeight();
+                    }
+                    //Update numerator and denominator!
+                    typeToAwardedAndAvailPoints.get(type).setLeft(left + awardedPoints);
+                    Double right = typeToAwardedAndAvailPoints.get(type).getRight();
+                    typeToAwardedAndAvailPoints.get(type).setRight(right + availablePoints);
+                }
+            }
+            return new AssignmentAndTypeGrades(typeToAwardedAndAvailPoints, assignmentIdToPoints);
+        }
+        return new AssignmentAndTypeGrades();
     }
 
     private Double straightAverageAllAssignmentsRespectingAssignmentWeights(Set<StudentAssignment> studentAssignments) {
@@ -235,7 +268,7 @@ public class GradeFormula implements Serializable {
         if(null != denominator && !denominator.equals(0D)) {
             return numerator / denominator;
         }
-        return null;
+        return 1D;
     }
 
     /**

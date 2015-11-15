@@ -35,6 +35,7 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentAssignment extends ApiModel implements Serializable, WeightedGradable, IApiModel<StudentAssignment> {
+    //TODO: remove this.  If there is an instance, the assignment was completed or entered with a score of 0/nuill for incomplete
     private Boolean completed;
     private Date completionDate;
     private Double awardedPoints;
