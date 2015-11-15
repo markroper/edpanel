@@ -169,6 +169,9 @@ public class StudentSectionGradeValidatingExecutor {
         if(method == HttpMethod.PATCH) {
             returnStudentSectionGrade.mergePropertiesIfNull(created);
         }
+        if(null == returnStudentSectionGrade.getGrade()) {
+            returnStudentSectionGrade.setGrade(created.getGrade());
+        }
         returnStudentSectionGrade.setId(created.getId());
         returnStudentSectionGrade.setStudent(created.getStudent());
         returnStudentSectionGrade.setSection(created.getSection());
