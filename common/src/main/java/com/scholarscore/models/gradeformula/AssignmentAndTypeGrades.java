@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
+ * An object wrapping two maps used while calculating section grades.
+ *
+ * @see GradeFormula
  * Created by markroper on 11/15/15.
  */
 public class AssignmentAndTypeGrades {

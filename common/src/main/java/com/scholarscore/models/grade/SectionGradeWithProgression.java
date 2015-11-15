@@ -9,6 +9,10 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
+ * A conglomerate object that is not persisted.  Its purpose is to communicate to the client various calculated
+ * values related to a student's performance in a section including the current grade, grade by assignment type,
+ * the grade pro    gression bucketed by week, and the grades within the various terms that the section spans.
+ *
  * Created by markroper on 11/14/15.
  */
 @SuppressWarnings("serial")
