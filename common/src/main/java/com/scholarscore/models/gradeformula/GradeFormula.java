@@ -95,6 +95,68 @@ public class GradeFormula implements Serializable {
         Double denominator = 0D;
         //TODO: what if there are both childWeights and assignmentTypeWeights?
         if(!assignmentTypeWeights.isEmpty() || !assignmentWeights.isEmpty()) {
+            AssignmentAndTypeGrades assignmentAndTypeGrades = this.calculateAssignmentTypeGrades(studentAssignments);
+            //Now that the buckets' awarded and available points are calculated, perform the bucket weighting
+            for(Map.Entry<String, MutablePair<Double, Double>> entry : assignmentAndTypeGrades.getTypeToAwardedAndAvailPoints().entrySet()) {
+                String type = entry.getKey();
+                MutablePair<Double, Double> values = entry.getValue();
+                numerator += values.getLeft() / values.getRight() * assignmentTypeWeights.get(type);
+                denominator += assignmentTypeWeights.get(type);
+            }
+            for(Map.Entry<Long, MutablePair<Double,Double>> entry : assignmentAndTypeGrades.getAssignmentIdToPoints().entrySet()) {
+                numerator += entry.getValue().getLeft() / entry.getValue().getRight() * assignmentWeights.get(entry.getKey());
+                denominator += assignmentWeights.get(entry.getKey());
+            }
+        } else if(!children.isEmpty()) {
+            //If there are child formulas & we have weights defined, delegate to those child formulas
+            //And calculate the grade based ona weighted average of those.
+            boolean weightChildren = !childWeights.isEmpty();
+            for(GradeFormula child: children) {
+                if(weightChildren) {
+                    //There are child weights, only include weighted children in the calculation, and include the
+                    //weight for those children in the calculation
+                    if (childWeights.containsKey(child.getId())) {
+                        numerator += child.calculateGrade(studentAssignments) * childWeights.get(child.getId());
+                        denominator += childWeights.get(child.getId());
+                    }
+                } else {
+                    //There are children, but no weighting for them.  Straight average the children scores.
+                    numerator += child.calculateGrade(studentAssignments);
+                    denominator += 1D;
+                }
+            }
+        } else {
+            //Straight average every assignment in the period.
+            //TODO: replace me with a calculation that respects startDate & endDate
+            //return GradeUtil.calculateAverageGrade(studentAssignments);
+            return straightAverageAllAssignmentsRespectingAssignmentWeights(studentAssignments);
+        }
+        if(null != denominator && !denominator.equals(0D)) {
+            return numerator / denominator;
+        }
+        return 1D;
+    }
+
+    public Map<String, Double> calculateCategoryGrades(Set<StudentAssignment> studentAssignments) {
+        Double numerator = 0D;
+        Double denominator = 0D;
+        AssignmentAndTypeGrades assignmentAndTypeGrades = this.calculateAssignmentTypeGrades(studentAssignments);
+        //Now that the buckets' awarded and available points are calculated, perform the bucket weighting
+        Map<String, Double> typeToGrade = new HashMap<>();
+        for(Map.Entry<String, MutablePair<Double, Double>> entry :
+                assignmentAndTypeGrades.getTypeToAwardedAndAvailPoints().entrySet()) {
+            Double typeGrade = 1D;
+            if(null != entry.getValue().getRight() && entry.getValue().getRight() > 0D) {
+                typeGrade = (double)(long)(entry.getValue().getLeft() / entry.getValue().getRight() * 100D);
+            }
+            typeToGrade.put(entry.getKey(), typeGrade);
+        }
+        return typeToGrade;
+    }
+
+    private AssignmentAndTypeGrades calculateAssignmentTypeGrades(Set<StudentAssignment> studentAssignments) {
+        //TODO: what if there are both childWeights and assignmentTypeWeights?
+        if(!assignmentTypeWeights.isEmpty() || !assignmentWeights.isEmpty()) {
             //There are weightings defined for assignments or assignment types, so we use those!
             Map<String, MutablePair<Double, Double>> typeToAwardedAndAvailPoints = new HashMap<>();
             Map<Long, MutablePair<Double, Double>> assignmentIdToPoints = new HashMap<>();
@@ -166,45 +228,9 @@ public class GradeFormula implements Serializable {
                     typeToAwardedAndAvailPoints.get(type).setRight(right + availablePoints);
                 }
             }
-            //Now that the buckets' awarded and available points are calculated, perform the bucket weighting
-            for(Map.Entry<String, MutablePair<Double, Double>> entry : typeToAwardedAndAvailPoints.entrySet()) {
-                String type = entry.getKey();
-                MutablePair<Double, Double> values = entry.getValue();
-                numerator += values.getLeft() / values.getRight() * assignmentTypeWeights.get(type);
-                denominator += assignmentTypeWeights.get(type);
-            }
-            for(Map.Entry<Long, MutablePair<Double,Double>> entry : assignmentIdToPoints.entrySet()) {
-                numerator += entry.getValue().getLeft() / entry.getValue().getRight() * assignmentWeights.get(entry.getKey());
-                denominator += assignmentWeights.get(entry.getKey());
-            }
-        } else if(!children.isEmpty()) {
-            //If there are child formulas & we have weights defined, delegate to those child formulas
-            //And calculate the grade based ona weighted average of those.
-            boolean weightChildren = !childWeights.isEmpty();
-            for(GradeFormula child: children) {
-                if(weightChildren) {
-                    //There are child weights, only include weighted children in the calculation, and include the
-                    //weight for those children in the calculation
-                    if (childWeights.containsKey(child.getId())) {
-                        numerator += child.calculateGrade(studentAssignments) * childWeights.get(child.getId());
-                        denominator += childWeights.get(child.getId());
-                    }
-                } else {
-                    //There are children, but no weighting for them.  Straight average the children scores.
-                    numerator += child.calculateGrade(studentAssignments);
-                    denominator += 1D;
-                }
-            }
-        } else {
-            //Straight average every assignment in the period.
-            //TODO: replace me with a calculation that respects startDate & endDate
-            //return GradeUtil.calculateAverageGrade(studentAssignments);
-            return straightAverageAllAssignmentsRespectingAssignmentWeights(studentAssignments);
+            return new AssignmentAndTypeGrades(typeToAwardedAndAvailPoints, assignmentIdToPoints);
         }
-        if(null != denominator && !denominator.equals(0D)) {
-            return numerator / denominator;
-        }
-        return numerator / denominator;
+        return new AssignmentAndTypeGrades();
     }
 
     private Double straightAverageAllAssignmentsRespectingAssignmentWeights(Set<StudentAssignment> studentAssignments) {
@@ -242,7 +268,7 @@ public class GradeFormula implements Serializable {
         if(null != denominator && !denominator.equals(0D)) {
             return numerator / denominator;
         }
-        return null;
+        return 1D;
     }
 
     /**
