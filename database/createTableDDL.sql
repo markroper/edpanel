@@ -12,13 +12,13 @@ CREATE TABLE `scholar_warehouse`.`address` (
 
 CREATE TABLE `scholar_warehouse`.`school` (
   `school_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key column for the school table.',
-  `school_name` VARCHAR(256) NULL COMMENT 'A human readable user-defined name',
+  `school_name` VARCHAR(255) NULL COMMENT 'A human readable user-defined name',
   `school_number` BIGINT UNSIGNED NULL COMMENT 'The school number within the district',
   `school_address_fk` BIGINT UNSIGNED COMMENT 'The FK pointer back to the address of the school',
-  `main_phone` VARCHAR(256) NULL COMMENT 'The school\'s main phone number',
-  `principal_name` VARCHAR(256) NULL COMMENT 'The principal\'s name',
-  `principal_email` VARCHAR(256) NULL COMMENT 'The principal\'s email address',
-  `sourceSystemId` VARCHAR(256) NULL UNIQUE COMMENT 'The source system from which the entity was imported - the id from that system',
+  `main_phone` VARCHAR(255) NULL COMMENT 'The school\'s main phone number',
+  `principal_name` VARCHAR(255) NULL COMMENT 'The principal\'s name',
+  `principal_email` VARCHAR(255) NULL COMMENT 'The principal\'s email address',
+  `sourceSystemId` VARCHAR(255) NULL UNIQUE COMMENT 'The source system from which the entity was imported - the id from that system',
   PRIMARY KEY (`school_id`))
 ENGINE = InnoDB;
 
@@ -54,9 +54,9 @@ CREATE TABLE `scholar_warehouse`.`contact_method` (
 ENGINE = InnoDB;
   
 CREATE TABLE `scholar_warehouse`.`student` (
-  `student_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
-  `source_system_id` VARCHAR(256) NULL UNIQUE COMMENT 'The identifier from the source system, if any',
-  `student_source_system_user_id` VARCHAR(256) NULL COMMENT 'The identifier of the user from the source system, if any',
+  `student_name` VARCHAR(255) NULL COMMENT 'User defined human-readable name',
+  `source_system_id` VARCHAR(255) NULL UNIQUE COMMENT 'The identifier from the source system, if any',
+  `student_source_system_user_id` VARCHAR(255) NULL COMMENT 'The identifier of the user from the source system, if any',
   `mailing_fk` BIGINT UNSIGNED NULL COMMENT 'The address FK for mailing address',
   `home_fk` BIGINT UNSIGNED NULL COMMENT 'The address FK for home address',
   `gender` INT NULL COMMENT 'The gender of the student',
@@ -64,7 +64,7 @@ CREATE TABLE `scholar_warehouse`.`student` (
   `birth_date` DATETIME NULL COMMENT 'The birth date of the student',
   `district_entry_date` DATETIME NULL COMMENT 'The date the student entered the school district',
   `projected_graduation_year` BIGINT UNSIGNED NULL COMMENT 'The projected year of graduation for the student. For example: 2020',
-  `social_security_number` VARCHAR(256) NULL COMMENT 'The student\'s social security number',
+  `social_security_number` VARCHAR(255) NULL COMMENT 'The student\'s social security number',
   `federal_race` VARCHAR(512) NULL COMMENT 'The student\'s race according to the federal gov\'t',
   `federal_ethnicity` VARCHAR(512) NULL COMMENT 'The student\'s ethnicity according to the federal gov\'t',
   `school_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the current school the student is enrolled in within the district',
