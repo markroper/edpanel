@@ -143,13 +143,15 @@ public class GradeFormula implements Serializable {
         AssignmentAndTypeGrades assignmentAndTypeGrades = this.calculateAssignmentTypeGrades(studentAssignments);
         //Now that the buckets' awarded and available points are calculated, perform the bucket weighting
         Map<String, Double> typeToGrade = new HashMap<>();
-        for(Map.Entry<String, MutablePair<Double, Double>> entry :
-                assignmentAndTypeGrades.getTypeToAwardedAndAvailPoints().entrySet()) {
-            Double typeGrade = 1D;
-            if(null != entry.getValue().getRight() && entry.getValue().getRight() > 0D) {
-                typeGrade = (double)(long)(entry.getValue().getLeft() / entry.getValue().getRight() * 100D);
+        for(Map.Entry<String, Double> entry : assignmentTypeWeights.entrySet()) {
+            MutablePair<Double, Double> typePoints = assignmentAndTypeGrades.getTypeToAwardedAndAvailPoints().get(entry.getKey());
+            if(null == typePoints) {
+                typeToGrade.put(entry.getKey(), null);
+            } else {
+                typeToGrade.put(
+                        entry.getKey(),
+                        (double)(long)(typePoints.getLeft() /  typePoints.getRight() * 100D));
             }
-            typeToGrade.put(entry.getKey(), typeGrade);
         }
         return typeToGrade;
     }

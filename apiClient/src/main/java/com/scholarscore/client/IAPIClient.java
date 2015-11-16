@@ -45,7 +45,6 @@ public interface IAPIClient {
     //USERS
     Teacher createTeacher(Teacher teacher) throws HttpClientException;
     Administrator createAdministrator(Administrator administrator) throws HttpClientException;
-    User createUser(User login) throws HttpClientException;
     User[] getUsers(Long schoolId) throws HttpClientException;
     User updateUser(User user) throws IOException;
     User replaceUser(User user) throws IOException;
