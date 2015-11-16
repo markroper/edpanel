@@ -79,7 +79,11 @@ public class StaffSync implements ISync<Person> {
                 ((Person) sourceUser).setCurrentSchoolId(school.getId());
                 User created = null;
                 try {
-                    created = edPanel.createUser(sourceUser);
+                    if(sourceUser instanceof Teacher) {
+                        created = edPanel.createTeacher((Teacher)sourceUser);
+                    } else if (sourceUser instanceof Administrator) {
+                        created = edPanel.createAdministrator((Administrator)sourceUser);
+                    }
                 } catch (HttpClientException e) {
                     results.staffCreateFailed(ssid);
                     continue;
