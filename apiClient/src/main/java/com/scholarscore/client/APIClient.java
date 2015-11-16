@@ -21,7 +21,6 @@ import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
-import com.scholarscore.models.user.UserType;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
@@ -243,14 +242,6 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     public Administrator createAdministrator(Administrator administrator) throws HttpClientException {
         EntityId id = create(administrator, ADMINISTRATOR_ENDPOINT);
         Administrator response = new Administrator(administrator);
-        response.setId(id.getId());
-        return response;
-    }
-
-    @Override
-    public User createUser(User usr) throws HttpClientException {
-        EntityId id = create(usr, USERS_ENDPOINT);
-        User response = UserType.clone(usr);
         response.setId(id.getId());
         return response;
     }
