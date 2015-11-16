@@ -77,10 +77,10 @@ public class DlEtlEngine implements IEtlEngine {
         }
         teacherLookup = populateLookup(existingTeachers);
 
-        logger.info("got " + behaviorsToMerge.size() + " behavior events from deanslist.");
+        logger.debug("got " + behaviorsToMerge.size() + " behavior events from deanslist.");
         for (Student student : existingStudents) { logger.info("Got scholarScore student: " + student); }
-        logger.info("got " + existingStudents.size() + " existing students as potential merge targets.");
-        logger.info("got " + existingTeachers.size() + " existing teachers as potential merge targets.");
+        logger.debug("got " + existingStudents.size() + " existing students as potential merge targets.");
+        logger.debug("got " + existingTeachers.size() + " existing teachers as potential merge targets.");
 
         existingBehaviorLookup = new HashMap<>();
         
@@ -97,7 +97,7 @@ public class DlEtlEngine implements IEtlEngine {
         Student student = behavior.getStudent();
         Teacher teacher = behavior.getTeacher();
 
-        logger.info("Got behavior event (" + behavior.getName() + ")"
+        logger.debug("Got behavior event (" + behavior.getName() + ")"
                 + " for student named " + (student == null ? "(student null)" : student.getName())
                 + " and teacher named " + (teacher == null ? "(teacher null)" : teacher.getName())
                 + " with point value " + behavior.getPointValue());
@@ -114,9 +114,8 @@ public class DlEtlEngine implements IEtlEngine {
                     behavior.setTeacher(existingTeacher);
                 }
 
-                logger.info("About to map Behavior " + behavior.getName()
+                logger.debug("About to map Behavior " + behavior.getName()
                         + " to student " + existingStudent.getName());
-//                        + " and teacher " + behavior.get.getName() == null ? null : existingTeacher.getName());
                 long studentId = existingStudent.getId();
 
                 // check if this student's behavioral lookup has already been done
@@ -183,7 +182,6 @@ public class DlEtlEngine implements IEtlEngine {
         return lookup;
     }
 
-    // 
     private HashMap<String, Behavior> populateBehaviorLookup(Collection<Behavior> behaviors) {
         HashMap<String, Behavior> lookup = new HashMap<>();
         for (Behavior entry : behaviors) {
