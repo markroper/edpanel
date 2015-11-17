@@ -23,7 +23,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -61,7 +60,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected transient Course course;
     protected transient List<Student> enrolledStudents;
     protected transient List<Assignment> assignments;
-    protected List<StudentSectionGrade> studentSectionGrades;
     protected Set<Teacher> teachers;
     protected String sourceSystemId;
     
@@ -69,7 +67,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         super();
         enrolledStudents = Lists.newArrayList();
         assignments = Lists.newArrayList();
-        studentSectionGrades = Lists.newArrayList();
         teachers = Sets.newHashSet();
     }
 
@@ -90,7 +87,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         room = sect.room;
         enrolledStudents = sect.enrolledStudents;
         assignments = sect.assignments;
-        studentSectionGrades = sect.studentSectionGrades;
         gradeFormula = sect.gradeFormula;
         sourceSystemId = sect.sourceSystemId;
         numberOfTerms = sect.numberOfTerms;
@@ -211,23 +207,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         enrolledStudents.add(enrolledStudent);
     }
 
-    @OneToMany(mappedBy = "section", fetch=FetchType.LAZY)
-    @Fetch(FetchMode.JOIN)
-    @JsonIgnore
-    public List<StudentSectionGrade> getStudentSectionGrades() {
-        return studentSectionGrades;
-    }
-
-    @JsonIgnore
-    public void setStudentSectionGrades(List<StudentSectionGrade> grades) {
-        this.studentSectionGrades = grades;
-    }
-
-    @JsonIgnore
-    public void addStudentSectionGrade(StudentSectionGrade grade) {
-        this.studentSectionGrades.add(grade);
-    }
-
     @Column(name = HibernateConsts.SECTION_SOURCE_SYSTEM_ID)
     public String getSourceSystemId() {
         return sourceSystemId;
@@ -330,9 +309,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         if(null == gradeFormula) {
             gradeFormula = mergeFrom.gradeFormula;
         }
-        if(null == studentSectionGrades) {
-            studentSectionGrades = mergeFrom.studentSectionGrades;
-        }
         if(null == sourceSystemId) {
             sourceSystemId = mergeFrom.sourceSystemId;
         }
@@ -353,7 +329,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 Objects.equals(this.room, other.room) &&
                 Objects.equals(this.enrolledStudents, other.enrolledStudents) &&
                 Objects.equals(this.assignments, other.assignments) &&
-                Objects.equals(this.studentSectionGrades, other.studentSectionGrades) &&
                 Objects.equals(this.sourceSystemId, other.sourceSystemId) &&
                 Objects.equals(this.numberOfTerms, other.numberOfTerms) &&
                 Objects.equals(this.gradeFormula, other.gradeFormula);
@@ -362,7 +337,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(course, startDate, endDate, sourceSystemId,
-                room, enrolledStudents, assignments, gradeFormula, numberOfTerms, studentSectionGrades);
+                room, enrolledStudents, assignments, gradeFormula, numberOfTerms);
     }
 
     @Override
@@ -377,7 +352,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 ", course=" + course +
                 ", enrolledStudents=" + enrolledStudents +
                 ", assignments=" + assignments +
-                ", studentSectionGrades=" + studentSectionGrades +
                 ", teachers=" + teachers +
                 ", numberOfTerms=" + numberOfTerms +
                 ", sourceSystemId='" + sourceSystemId + '\'' +
@@ -509,7 +483,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             section.setCourse(course);
             section.setEnrolledStudents(enrolledStudents);
             section.setAssignments(assignments);
-            section.setStudentSectionGrades(studentSectionGrades);
             section.setTeachers(teachers);
             section.setSourceSystemId(sourceSystemId);
             return section;

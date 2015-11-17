@@ -35,6 +35,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
     protected Date endDate;
     protected String sourceSystemId;
     protected SchoolYear schoolYear;
+    protected Long portion;
 
     public Term() {
         
@@ -46,6 +47,16 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         this.startDate = year.startDate;
         this.endDate = year.endDate;
         this.sourceSystemId = year.sourceSystemId;
+        this.portion = year.portion;
+    }
+
+    @Column(name = HibernateConsts.TERM_PORTION)
+    public Long getPortion() {
+        return portion;
+    }
+
+    public void setPortion(Long parentTermId) {
+        this.portion = parentTermId;
     }
 
     @Id
@@ -114,6 +125,9 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         if (null == this.sourceSystemId) {
             this.sourceSystemId = mergeFrom.sourceSystemId;
         }
+        if (null == this.portion) {
+            this.portion = mergeFrom.portion;
+        }
     }
 
     /**
@@ -123,7 +137,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
      */
     @Override
     public int hashCode() {
-        return 31 * Objects.hash(startDate, endDate, sourceSystemId, schoolYear);
+        return 31 * Objects.hash(startDate, endDate, sourceSystemId, schoolYear, portion);
     }
 
     @Override
@@ -141,6 +155,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         return Objects.equals(this.startDate, other.startDate)
                 && Objects.equals(this.endDate, other.endDate)
                 && Objects.equals(this.sourceSystemId, other.sourceSystemId)
+                && Objects.equals(this.portion, other.portion)
                 && Objects.equals(this.schoolYear, other.schoolYear);
     }
 
@@ -151,6 +166,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
                 ", endDate=" + endDate +
                 ", sourceSystemId=" + sourceSystemId +
                 ", schoolYear=" + schoolYear +
+                ", portion=" + portion +
                 '}';
     }
 
@@ -163,6 +179,13 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         protected Date startDate;
         protected Date endDate;
         protected SchoolYear schoolYear;
+        //Denominator part of the fraction of the year this term spans 1=full year 2=half 3=1/3, etc
+        protected Long portion;
+
+        public TermBuilder withParentTermId(final Long parentTermId){
+            this.portion = parentTermId;
+            return this;
+        }
 
         public TermBuilder withStartDate(final Date startDate){
             this.startDate = startDate;
@@ -183,7 +206,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
             Term term = super.build();
             term.setStartDate(startDate);
             term.setEndDate(endDate);
-            //TODO: make this reciprocal?
+            term.setPortion(portion);
             term.setSchoolYear(schoolYear);
             return term;
         }

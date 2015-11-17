@@ -3,6 +3,7 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 import com.scholarscore.api.persistence.EntityPersistence;
 import com.scholarscore.api.persistence.SectionPersistence;
 import com.scholarscore.models.Section;
+import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -84,15 +85,21 @@ public class SectionJdbc implements SectionPersistence {
     @Override
     public Collection<Section> selectAllSectionForStudent(long termId, long studentId) {
         String[] params = new String[]{"termId", "studentId"};
-        Object[] paramValues = new Object[]{ new Long(termId), new Long(studentId) }; 
+        Object[] paramValues = new Object[]{ new Long(termId), new Long(studentId) };
+
+
         List<?> objects = hibernateTemplate.findByNamedParam(
-                "from section s join s.studentSectionGrades ssg where s.term.id = :termId and ssg.student.id = :studentId", 
+                "select ssg from studentSectionGrade ssg " +
+                "join fetch ssg.student st left join fetch st.homeAddress left join fetch st.mailingAddress left join fetch st.contactMethods " +
+                "join fetch ssg.section s join fetch s.course c join fetch c.school " +
+                "join fetch s.term t join fetch t.schoolYear y join fetch y.school " +
+                "left join fetch s.teachers te left join fetch te.homeAddress left join fetch te.contactMethods " +
+                "where ssg.section.term.id = :termId and ssg.student.id = :studentId",
                 params, 
                 paramValues);
         ArrayList<Section> sectionList = new ArrayList<>();
         for(Object obj : objects) {
-            Object[] coll = (Object[]) obj;
-            sectionList.add((Section)coll[0]);    
+            sectionList.add(((StudentSectionGrade)obj).getSection());
         }
         return sectionList;
         

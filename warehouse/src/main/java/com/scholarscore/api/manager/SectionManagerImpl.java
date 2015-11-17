@@ -81,16 +81,6 @@ public class SectionManagerImpl implements SectionManager {
             return new ServiceResponse<Collection<Section>>(code);
         }
         Collection<Section> sections = sectionPersistence.selectAllSectionForStudent(termId, studentId);
-        for(Section s : sections) {
-            Collection<Student> students = studentPersistence.selectAllStudentsInSection(s.getId());
-            if(null != students && !students.isEmpty()) {
-                s.setEnrolledStudents(new ArrayList<Student>(students));
-            }
-            Collection<Assignment> assignments = assignmentPersistence.selectAll(s.getId());
-            if(null != assignments && !assignments.isEmpty()) {
-                s.setAssignments(new ArrayList<Assignment>(assignments));
-            }
-        }
         return new ServiceResponse<Collection<Section>>(sections);
     }
 

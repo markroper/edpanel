@@ -153,6 +153,7 @@ CREATE TABLE `scholar_warehouse`.`term` (
   `term_end_date` DATETIME NULL COMMENT 'The school term end date',
   `school_year_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the school table',
   `term_source_system_id` VARCHAR(256) NULL UNIQUE COMMENT 'The origin system id',
+  `term_portion` BIGINT UNSIGNED NULL COMMENT 'The denominator of the fraction of the year this term represents (1=all year, 2=half, 3=a third, etc)',
   PRIMARY KEY (`term_id`),
   CONSTRAINT `fk_school_year$school_term`
     FOREIGN KEY (`school_year_fk`)
