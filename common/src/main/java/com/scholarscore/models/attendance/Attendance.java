@@ -37,6 +37,7 @@ public class Attendance implements Serializable {
     private AttendanceStatus status;
     private String description;
     private String sourceSystemId;
+    private String attendanceCode;
     
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name=HibernateConsts.SCHOOL_DAY_FK)
@@ -91,6 +92,15 @@ public class Attendance implements Serializable {
     }
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
+    }
+
+    @Column(name = HibernateConsts.ATTENDANCE_CODE)
+    public String getAttendanceCode() {
+        return attendanceCode;
+    }
+
+    public void setAttendanceCode(String attendanceCode) {
+        this.attendanceCode = attendanceCode;
     }
 
     @Override

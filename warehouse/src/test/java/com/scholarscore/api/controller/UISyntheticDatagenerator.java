@@ -4,7 +4,6 @@ import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.api.util.SchoolDataFactory;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Course;
-import com.scholarscore.models.JsonAttributes;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
@@ -19,10 +18,8 @@ import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -51,42 +48,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                 SchoolDataFactory.generateSchool(), "Create base school");
         
         //create UI attributes for school
-        UiAttributes attrs = new UiAttributes();
-        attrs.setSchool(school);
-        try {
-            attrs.setAttributes(new JsonAttributes("{" +
-                 "\"attendance\":{" +
-                        "\"name\":\"Attendance\"," +
-                        "\"isTemporal\":true," +
-                        "\"thresholdChar\":\"#\"," +
-                        "\"green\":1," +
-                        "\"yellow\":4," +
-                        "\"period\":\"year\"" +
-                 "}," +
-                 "\"behavior\":{" +
-                        "\"name\":\"Attendance\"," +
-                        "\"isTemporal\":true," +
-                        "\"thresholdChar\":\"#\"," +
-                        "\"period\":\"week\"," +
-                        "\"green\":85," +
-                        "\"yellow\":75" +
-                 "}," +
-                 "\"homework\":{" +
-                        "\"name\":\"Attendance\"," +
-                        "\"isTemporal\":false," +
-                        "\"thresholdChar\":\"%\"" +
-                 "}," +
-                 "\"gpa\":{" +
-                        "\"name\":\"Attendance\"," +
-                        "\"isTemporal\":false," +
-                        "\"thresholdChar\":\"#\"," +
-                        "\"green\":3.3," +
-                        "\"yellow\":3" +
-                 "}" +
-               "}"));
-        } catch (IOException e) {
-            Assert.fail("failed to parse UI attrs");
-        }
+        UiAttributes attrs = UiAttributes.resolveDefaults(school);
         attrs = uiAttributesValidatingExecutor.create(school.getId(), attrs, "attrs to create");
         
         //Create teachers

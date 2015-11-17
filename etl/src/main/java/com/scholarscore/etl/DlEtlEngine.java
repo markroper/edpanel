@@ -78,7 +78,7 @@ public class DlEtlEngine implements IEtlEngine {
         teacherLookup = populateLookup(existingTeachers);
 
         logger.debug("got " + behaviorsToMerge.size() + " behavior events from deanslist.");
-        for (Student student : existingStudents) { logger.info("Got scholarScore student: " + student); }
+        for (Student student : existingStudents) { logger.debug("Got scholarScore student: " + student); }
         logger.debug("got " + existingStudents.size() + " existing students as potential merge targets.");
         logger.debug("got " + existingTeachers.size() + " existing teachers as potential merge targets.");
 
