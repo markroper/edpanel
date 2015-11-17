@@ -117,12 +117,13 @@ public class Attendance implements Serializable {
                 && Objects.equals(this.student, other.student)
                 && Objects.equals(this.status, other.status)
                 && Objects.equals(this.sourceSystemId, other.sourceSystemId)
+                && Objects.equals(this.attendanceCode, other.attendanceCode)
                 && Objects.equals(this.description, other.description);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(schoolDay, id, sourceSystemId, student, status, description);
+        return 31 * super.hashCode() + Objects.hash(schoolDay, id, sourceSystemId, student, status, description, attendanceCode);
     }
     
     @Override
@@ -134,6 +135,7 @@ public class Attendance implements Serializable {
                 ", status=" + status +
                 ", status=" + sourceSystemId +
                 ", description='" + description + '\'' +
+                ", attendanceCode='" + attendanceCode + '\'' +
                 '}';
     }
 
@@ -150,8 +152,14 @@ public class Attendance implements Serializable {
         private AttendanceStatus status;
         private String description;
         private String sourceSystemId;
+        private String attendanceCode;
 
         public AttendanceBuilder(){}
+
+        public AttendanceBuilder withAttendanceCode(final String code){
+            this.attendanceCode = code;
+            return this;
+        }
 
         public AttendanceBuilder withSchoolDay(final SchoolDay schoolDay){
             this.schoolDay = schoolDay;
@@ -190,6 +198,7 @@ public class Attendance implements Serializable {
             attendance.setStudent(student);
             attendance.setStatus(status);
             attendance.setDescription(description);
+            attendance.setAttendanceCode(attendanceCode);
             attendance.setSourceSystemId(sourceSystemId);
             return attendance;
         }
