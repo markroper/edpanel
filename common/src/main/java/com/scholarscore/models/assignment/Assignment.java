@@ -7,13 +7,13 @@ import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
 import com.scholarscore.models.Section;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -159,6 +159,7 @@ public abstract class Assignment
     }
 
     @Column(name = HibernateConsts.ASSIGNMENT_TYPE_FK)
+    @Enumerated(EnumType.STRING)
     public AssignmentType getType() {
         return this.type;
     }

@@ -154,6 +154,14 @@
 		<field table="Section_Meeting" field="SchoolID" access="ViewOnly" />
 		<field table="Section_Meeting" field="SectionID" access="ViewOnly" />
 		<field table="Section_Meeting" field="Year_ID" access="ViewOnly" />
+		<field table="Period" field="Abbreviation" access="ViewOnly" />
+		<field table="Period" field="DCID" access="ViewOnly" />
+		<field table="Period" field="ID" access="ViewOnly" />
+		<field table="Period" field="Name" access="ViewOnly" />
+		<field table="Period" field="Period_Number" access="ViewOnly" />
+		<field table="Period" field="SchoolID" access="ViewOnly" />
+		<field table="Period" field="Sort_Order" access="ViewOnly" />
+		<field table="Period" field="Year_ID" access="ViewOnly" />
 		<field table="SectionScores" field="DCID" access="ViewOnly" />
 		<field table="SectionScores" field="Assignment" access="ViewOnly" />
 		<field table="SectionScores" field="Comment" access="ViewOnly" />

@@ -1,6 +1,7 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
 import com.scholarscore.api.persistence.UiAttributesPersistence;
+import com.scholarscore.models.School;
 import com.scholarscore.models.UiAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -29,7 +30,9 @@ public class UiAttributesJdbc implements UiAttributesPersistence {
         if (uiAttributes.size() == 1) {
             return uiAttributes.get(0);
         }
-        return null;
+        School s = new School();
+        s.setId(schoolId);
+        return UiAttributes.resolveDefaults(s);
     }
 
     @Override

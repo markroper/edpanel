@@ -220,7 +220,7 @@ CREATE TABLE `scholar_warehouse`.`teacher_section` (
 CREATE TABLE `scholar_warehouse`.`assignment` (
   `assignment_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `assignment_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
-  `type_fk` INT NOT NULL COMMENT 'The assignment type string',
+  `type_fk` VARCHAR(255) NOT NULL COMMENT 'The assignment type string',
   `assignmentClass` VARCHAR(256) NULL COMMENT 'The section start date',
   `assigned_date` DATETIME NULL COMMENT 'The section start date',
   `due_date` DATETIME NULL COMMENT 'The section end date',
@@ -357,6 +357,7 @@ CREATE TABLE `scholar_warehouse`.`attendance` (
     `attendance_status` VARCHAR(64) NOT NULL COMMENT 'Maps to POJO enum values PRESENT, EXCUSED_ABSENT, ABSENT, TARDY',
     `attendance_description` VARCHAR(256) NULL COMMENT 'Description of the attendance status, if any',
     `attendance_source_system_id` VARCHAR(256) NULL,
+    `attendance_code` VARCHAR(255) null COMMENT 'Depending on source system, can be used to indicate school vs. class attendance or other',
     PRIMARY KEY (`attendance_id`),
     FOREIGN KEY (`school_day_fk`) REFERENCES `scholar_warehouse`.`school_day` (`school_day_id`)
         ON DELETE CASCADE
