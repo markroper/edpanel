@@ -355,12 +355,7 @@ public class SchoolDataFactory {
             for(Student s: students) {
                 StudentAssignment sa = new StudentAssignment();
                 sa.setAssignment(a);
-                Boolean completed = true;
-                if(a.getId() % 2 == 0 && a.getId() % 3 == 0) {
-                    completed = new Random().nextBoolean();
-                }
-                sa.setCompleted(completed);
-                if(null != a.getAvailablePoints() && a.getAvailablePoints() > 0 && completed) {
+                if(null != a.getAvailablePoints() && a.getAvailablePoints() > 0) {
                     Integer awardedInt = new Random().nextInt(40);
                     awardedInt = ((int)(long)a.getAvailablePoints()) - awardedInt;
                     if(awardedInt < 0) {

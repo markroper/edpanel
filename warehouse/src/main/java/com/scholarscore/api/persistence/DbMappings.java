@@ -5,6 +5,7 @@ import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
 import com.scholarscore.models.query.MeasureField;
+import com.scholarscore.models.query.dimension.AssignmentDimension;
 import com.scholarscore.models.query.dimension.CourseDimension;
 import com.scholarscore.models.query.dimension.SchoolDimension;
 import com.scholarscore.models.query.dimension.SchoolYearDimension;
@@ -88,6 +89,7 @@ public class DbMappings {
                put(Dimension.STUDENT, HibernateConsts.STUDENT_TABLE);
                put(Dimension.TEACHER, HibernateConsts.TEACHER_TABLE);
                put(Dimension.YEAR, HibernateConsts.SCHOOL_YEAR_TABLE);
+                put(Dimension.ASSIGNMENT, HibernateConsts.ASSIGNMENT_TABLE);
             }};
 
     public static final Map<DimensionField, String> DIMENSION_TO_COL_NAME = 
@@ -129,6 +131,10 @@ public class DbMappings {
         put(new DimensionField(Dimension.YEAR, SchoolYearDimension.ID), HibernateConsts.SCHOOL_YEAR_ID);
         put(new DimensionField(Dimension.YEAR, SchoolYearDimension.END_DATE), HibernateConsts.SCHOOL_YEAR_END_DATE);
         put(new DimensionField(Dimension.YEAR, SchoolYearDimension.START_DATE), HibernateConsts.SCHOOL_YEAR_START_DATE);
+        //ASSIGNMENT
+        put(new DimensionField(Dimension.ASSIGNMENT, AssignmentDimension.DUE_DATE), HibernateConsts.ASSIGNMENT_DUE_DATE);
+        put(new DimensionField(Dimension.ASSIGNMENT, AssignmentDimension.NAME), HibernateConsts.ASSIGNMENT_NAME);
+        put(new DimensionField(Dimension.ASSIGNMENT, AssignmentDimension.ID), HibernateConsts.ASSIGNMENT_ID);
     }};
 
     //TODO: straggler values here should be moved to ColumnConsts or removed altogether...
