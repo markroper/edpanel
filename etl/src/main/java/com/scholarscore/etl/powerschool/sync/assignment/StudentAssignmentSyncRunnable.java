@@ -224,7 +224,6 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                     LOGGER.debug("Unable to parse awarded points, will be set to null. " + score.getScore());
                 }
                 studAss.setAwardedPoints(awardedPoints);
-                studAss.setCompleted(true);
                 studentAssignmentsToCreate.put(
                         Long.valueOf(studAss.getStudent().getSourceSystemId()),
                         studAss);
