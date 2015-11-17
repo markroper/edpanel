@@ -20,13 +20,7 @@ To run the project you'll need to install the following on the development machi
     
 Once these dependencies are resolved, you'll need to create the database user needed to support the API persistence:
 
-`CREATE DATABASE scholar_warehouse;`
-
-`CREATE USER 'warehouse'@'localhost' IDENTIFIED BY 't3achTh3Childr3n';`
-
-`GRANT USAGE ON *.* TO 'warehouse'@'localhost';`
-
-`GRANT ALL PRIVILEGES ON scholar_warehouse.* TO 'warehouse'@'localhost';`
+(See the database folder for details)
 
 After this the the following gradle command to bootstrap the database (creating all the tables and relationships between those tables) `gradle refillDatabase`. Then you can import the project in your IDE and start working.  When you want to deploy to the local container, run the gradle command `gradle appRun` or if you want to attach your IDE debugger run `gradle appRunDebug` and then attach the debugger once the command has deployed to the container.
 
