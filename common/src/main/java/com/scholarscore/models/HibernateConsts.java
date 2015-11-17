@@ -144,6 +144,7 @@ public class HibernateConsts {
     public static final String TERM_ID = "term_id";
     public static final String TERM_NAME = "term_name";
     public static final String TERM_START_DATE = "term_start_date";
+    public static final String TERM_PORTION = "term_portion";
     public static final String TERM_END_DATE = "term_end_date";
     public static final String SCHOOL_YEAR_FK = "school_year_fk";
     public static final String TERM_SOURCE_SYSTEM_ID = "term_source_system_id";

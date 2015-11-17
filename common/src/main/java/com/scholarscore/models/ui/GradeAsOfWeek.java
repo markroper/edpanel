@@ -1,4 +1,4 @@
-package com.scholarscore.models.grade;
+package com.scholarscore.models.ui;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

@@ -110,7 +110,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
         this.termGrades = termGrades;
     }
 
-    @ManyToOne(optional = true, fetch=FetchType.LAZY)
+    @ManyToOne(optional = true, fetch=FetchType.EAGER)
     @JoinColumn(name=HibernateConsts.SECTION_FK)
     @Fetch(FetchMode.JOIN)
     public Section getSection() {
@@ -123,7 +123,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
         //section.addStudentSectionGrade(this);
     }
 
-    @ManyToOne(optional = true, fetch=FetchType.LAZY)
+    @ManyToOne(optional = true, fetch=FetchType.EAGER)
     @JoinColumn(name = HibernateConsts.STUDENT_FK)
     @Fetch(FetchMode.JOIN)
     public Student getStudent() {

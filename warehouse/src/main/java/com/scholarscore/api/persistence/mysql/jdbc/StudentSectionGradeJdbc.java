@@ -38,7 +38,12 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
     @SuppressWarnings("unchecked")
     public StudentSectionGrade select(long sectionId, long studentId) {
         List<StudentSectionGrade> gradeList = (List<StudentSectionGrade>) hibernateTemplate.findByNamedParam(
-                "from studentSectionGrade ssg where ssg.student.id = " + String.valueOf(studentId) +
+                "select ssg from studentSectionGrade ssg " +
+                "join fetch ssg.student st left join fetch st.homeAddress left join fetch st.mailingAddress left join fetch st.contactMethods " +
+                "join fetch ssg.section s join fetch s.course c join fetch c.school " +
+                "join fetch s.term t join fetch t.schoolYear y join fetch y.school " +
+                "left join fetch s.teachers te left join fetch te.homeAddress left join fetch te.contactMethods " +
+                " where ssg.student.id = " + String.valueOf(studentId) +
                 " and ssg.section.id = :sectionId", "sectionId", sectionId);
         if (null != gradeList && gradeList.size() > 0) {
             return gradeList.get(0);
@@ -92,7 +97,6 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
     public Long delete(long sectionId, long studentId) {
         StudentSectionGrade toDelete = select(sectionId, studentId);
         if (null != toDelete) {
-            toDelete.getSection().getStudentSectionGrades().remove(toDelete);
             hibernateTemplate.delete(toDelete);
         }
         return toDelete.getId();
