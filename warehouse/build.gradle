@@ -188,7 +188,8 @@ dependencies {
             "javax.validation:validation-api:1.1.0.Final",
             "org.hibernate:hibernate-validator:5.1.0.Final",
             "org.hibernate:hibernate-validator-annotation-processor:5.1.0.Final",
-            "org.hibernate:hibernate-validator-cdi:5.1.0.Final"
+            "org.hibernate:hibernate-validator-cdi:5.1.0.Final",
+            "c3p0:c3p0:0.9.1.2"
        
     testCompile "org.testng:testng:6.8.8",
             "org.apache.httpcomponents:httpclient:$apacheHttpVersion",
