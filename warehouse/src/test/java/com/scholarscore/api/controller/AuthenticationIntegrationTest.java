@@ -32,7 +32,7 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
 
     @Test
     public void testUserControllerGetCurrentUser() {
-        this.authValidatingExecutor.getCurrentUser("mroper");
+        this.authValidatingExecutor.getCurrentUser("mattg");
     }
 
     @Test
