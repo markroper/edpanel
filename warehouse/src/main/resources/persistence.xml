@@ -21,6 +21,7 @@
     </bean>
 
     <!-- Initialization for data source -->
+    <!--
     <bean id="dataSource"
           class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
@@ -28,7 +29,16 @@
         <property name="username" value="${database.user}"/>
         <property name="password" value="${database.pass}"/>
     </bean>
+    -->
 
+    <bean id="dataSource"
+          class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" value="#{'jdbc:mysql://${database.host}:${database.port}/${database.name}' + (${database.ssl} ? '?useSSL=true&amp;requireSSL=true&amp;verifyServerCertificate=false' : '')}" />
+        <property name="user" value="${database.user}" />
+        <property name="password" value="${database.pass}" />
+    </bean>
+    
     <bean id="sessionFactory"
           class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />

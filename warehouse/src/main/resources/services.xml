@@ -4,13 +4,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                      http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!--
-    <bean id="attendanceManager"
-          class="com.scholarscore.api.manager.AttendanceManagerImpl">
-        <property name="attendancePersistence" ref="attendancePersistence"/>
-        <property name="pm" ref="PM"/>
-    </bean>
-    -->
     <bean id="textMessageService" 
             class="com.scholarscore.api.service.TextMessageServiceImpl" />
     
