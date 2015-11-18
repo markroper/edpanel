@@ -116,6 +116,7 @@ public class TermSync implements ISync<Term> {
                 }
             }
         }
+
         //Delete anything IN EdPanel that is NOT in source system
         Iterator<Map.Entry<Long, Term>> edpanelIterator = edpanel.entrySet().iterator();
         while(edpanelIterator.hasNext()) {
@@ -152,6 +153,7 @@ public class TermSync implements ISync<Term> {
                 edpanelTerm.setStartDate(t.getStart_date());
                 edpanelTerm.setEndDate(t.getEnd_date());
                 edpanelTerm.setName(t.getName());
+                edpanelTerm.setPortion(t.getPortion());
                 edpanelTerm.setSourceSystemId(t.getId().toString());
                 if(null == yearToTerms.get(t.getStart_year())) {
                     yearToTerms.put(t.getStart_year(), Collections.synchronizedList(new ArrayList<>()));

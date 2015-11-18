@@ -83,6 +83,7 @@ public class IntegrationBase {
     private static final String STUDENT_ASSIGNMENT_ENDPOINT = "/studentassignments";
     private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
     private static final String TEACHER_ENDPOINT = "/teachers";
+    private static final String ADMINISTRATORS_ENDPOINT = "/administrators";
     private static final String QUERIES_ENDPOINT = "/queries";
     private static final String GPA_ENDPOINT = "/gpa";
     private static final String BEHAVIOR_ENDPOINT = "/behaviors";
@@ -182,7 +183,7 @@ public class IntegrationBase {
      */
     protected void authenticate() {
         //TODO: still a temporary solution for test user but no worse than before
-        authenticate("mroper", "admin");
+        authenticate("mattg", "admin");
     }
     
     protected void authenticate(String username, String password) {
@@ -819,6 +820,10 @@ public class IntegrationBase {
 
     public String getUsersEndpoint() {
         return BASE_API_ENDPOINT + USERS_ENDPOINT;
+    }
+
+    public String getAdminsEndpoint() {
+        return BASE_API_ENDPOINT + ADMINISTRATORS_ENDPOINT;
     }
 
     public String getUsersEndpoint(Long userId) {

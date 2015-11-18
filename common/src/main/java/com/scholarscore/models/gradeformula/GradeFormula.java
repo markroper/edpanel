@@ -192,7 +192,7 @@ public class GradeFormula implements Serializable {
                     }
                     //CALCULATE AND INCREMENT AWARDED POINTS
                     Double awardedPoints = sa.getAwardedPoints();
-                    if(type.equals(AssignmentType.ATTENDANCE) && sa.getCompleted()) {
+                    if(type.equals(AssignmentType.ATTENDANCE)) {
                         awardedPoints = sa.getAvailablePoints().doubleValue();
                     }
                     //Assignments that are not exempted, are included in the section grade calculation,

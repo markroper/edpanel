@@ -71,7 +71,6 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
         fullSection.setTeachers(teachers);
         fullSection.setEnrolledStudents(enrolledStudents);
         fullSection.setAssignments(assignments);
-        fullSection.setStudentSectionGrades(grades);
         fullSection.setSourceSystemId(sourceSystemId);
 
         Section fullSectionBuilder = new Section.SectionBuilder()

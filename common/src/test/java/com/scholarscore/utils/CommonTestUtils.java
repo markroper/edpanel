@@ -287,7 +287,6 @@ public class CommonTestUtils {
         for(int i= 0; i< RandomUtils.nextInt(5, 30); i++){
             Student student = generateStudent();
             section.addEnrolledStudent(student);
-            section.addStudentSectionGrade(generateSectionGrade(section, student));
         }
 
         return section;

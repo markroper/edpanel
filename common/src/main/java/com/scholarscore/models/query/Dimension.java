@@ -1,6 +1,7 @@
 package com.scholarscore.models.query;
 
 import com.scholarscore.models.query.dimension.AdministratorDimension;
+import com.scholarscore.models.query.dimension.AssignmentDimension;
 import com.scholarscore.models.query.dimension.CourseDimension;
 import com.scholarscore.models.query.dimension.GradeLevelDimension;
 import com.scholarscore.models.query.dimension.IDimension;
@@ -30,6 +31,7 @@ import java.util.Set;
 public enum Dimension {
     COURSE,
     SECTION,
+    ASSIGNMENT,
     TERM,
     YEAR,
     SUBJECT_AREA,
@@ -66,6 +68,8 @@ public enum Dimension {
                 return new StudentDimension();
             case ADMINISTRATOR:
                 return new AdministratorDimension();
+            case ASSIGNMENT:
+                return new AssignmentDimension();
             default:
                 return null;
             
@@ -95,6 +99,7 @@ public enum Dimension {
         add(Dimension.STUDENT);
         add(Dimension.TEACHER);
         add(Dimension.SECTION);
+        add(Dimension.ASSIGNMENT);
         add(Dimension.TERM);
         add(Dimension.YEAR);
         add(Dimension.COURSE);

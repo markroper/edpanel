@@ -16,6 +16,12 @@ import java.util.List;
 @Transactional
 public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
 
+    public static final String SSG_HQL_BASE =  "select ssg from studentSectionGrade ssg " +
+            "join fetch ssg.student st left join fetch st.homeAddress left join fetch st.mailingAddress " +
+            "left join fetch st.contactMethods " +
+            "join fetch ssg.section s join fetch s.course c join fetch c.school " +
+            "join fetch s.term t join fetch t.schoolYear y join fetch y.school " +
+            "left join fetch s.teachers te left join fetch te.homeAddress left join fetch te.contactMethods ";
     @Autowired
     private HibernateTemplate hibernateTemplate;
 
@@ -31,14 +37,17 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<StudentSectionGrade> selectAllByStudent(long studentId) {
-        return (Collection<StudentSectionGrade>)hibernateTemplate.findByNamedParam("from studentSectionGrade ssg where ssg.student.id = :id", "id", studentId);
+        return (Collection<StudentSectionGrade>)hibernateTemplate.findByNamedParam(
+                SSG_HQL_BASE +
+                "where ssg.student.id = :id", "id", studentId);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public StudentSectionGrade select(long sectionId, long studentId) {
         List<StudentSectionGrade> gradeList = (List<StudentSectionGrade>) hibernateTemplate.findByNamedParam(
-                "from studentSectionGrade ssg where ssg.student.id = " + String.valueOf(studentId) +
+                SSG_HQL_BASE +
+                " where ssg.student.id = " + String.valueOf(studentId) +
                 " and ssg.section.id = :sectionId", "sectionId", sectionId);
         if (null != gradeList && gradeList.size() > 0) {
             return gradeList.get(0);
@@ -92,7 +101,6 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
     public Long delete(long sectionId, long studentId) {
         StudentSectionGrade toDelete = select(sectionId, studentId);
         if (null != toDelete) {
-            toDelete.getSection().getStudentSectionGrades().remove(toDelete);
             hibernateTemplate.delete(toDelete);
         }
         return toDelete.getId();

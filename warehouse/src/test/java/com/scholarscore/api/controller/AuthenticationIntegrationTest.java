@@ -22,7 +22,7 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
     private static final String USER_PERMISSIONS_LOGIN = "student_user";
     private static final String USER_PERMISSIONS_PASS = "student_user";
     
-    private static final String ADMIN_PERMISSIONS_LOGIN = "mroper";
+    private static final String ADMIN_PERMISSIONS_LOGIN = "mattg";
     private static final String ADMIN_PERMISSIONS_PASS = "admin";
     
     @BeforeMethod
@@ -32,7 +32,7 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
 
     @Test
     public void testUserControllerGetCurrentUser() {
-        this.authValidatingExecutor.getCurrentUser("mroper");
+        this.authValidatingExecutor.getCurrentUser("mattg");
     }
 
     @Test

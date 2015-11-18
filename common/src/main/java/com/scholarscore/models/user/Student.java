@@ -7,6 +7,8 @@ import com.scholarscore.models.Gender;
 import com.scholarscore.models.HibernateConsts;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -114,6 +116,7 @@ public class Student extends Person implements Serializable {
     }
 
     @OneToOne(optional = true)
+    @Fetch(FetchMode.JOIN)
     @Cascade(CascadeType.ALL)
     @JoinColumn(name=HibernateConsts.STUDENT_MAILING_FK)
     public Address getMailingAddress() {
@@ -126,6 +129,7 @@ public class Student extends Person implements Serializable {
 
     @OneToOne(optional = true)
     @Cascade(CascadeType.ALL)
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name=HibernateConsts.STUDENT_HOME_FK)
     public Address getHomeAddress() {
         return homeAddress;

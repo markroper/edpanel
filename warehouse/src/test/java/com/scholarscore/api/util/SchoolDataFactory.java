@@ -19,6 +19,7 @@ import com.scholarscore.models.goal.BehaviorGoal;
 import com.scholarscore.models.goal.CumulativeGradeGoal;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.gradeformula.GradeFormula;
+import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 
@@ -61,7 +62,18 @@ public class SchoolDataFactory {
         school.setName("Xavier Academy");
         return school;
     }
-    
+
+    public static List<Administrator> generateAdmins(Long currentSchoolId) {
+        List<Administrator> admins = new ArrayList<>();
+        Administrator admin1 = new Administrator();
+        admin1.setName("Mark Roper");
+        admin1.setUsername("mroper");
+        admin1.setPassword("admin");
+        admin1.setEnabled(true);
+        admin1.setCurrentSchoolId(currentSchoolId);
+        admins.add(admin1);
+        return admins;
+    }
     /**
      * Generates and returns an arbitrary teacher object with the school FK set to 
      * currentSchoolId
@@ -72,10 +84,13 @@ public class SchoolDataFactory {
         List<Teacher> teachers = new ArrayList<Teacher>();
         Teacher teacher1 = new Teacher();
         teacher1.setName("Ms. Doe");
+        teacher1.setCurrentSchoolId(currentSchoolId);
         Teacher teacher2 = new Teacher();
         teacher2.setName("Mr. Smith");
+        teacher2.setCurrentSchoolId(currentSchoolId);
         Teacher teacher3 = new Teacher();
         teacher3.setName("Mrs. Matthews");
+        teacher3.setCurrentSchoolId(currentSchoolId);
         teachers.add(teacher1);
         teachers.add(teacher2);
         teachers.add(teacher3);
@@ -108,6 +123,7 @@ public class SchoolDataFactory {
         students.add(new Student(BLACK, PACIFIC_ISLANDER, currentSchoolId, Gender.MALE, "Otto Porter", 2016L));
         int i = 0;
         for(Student s : students) {
+            s.setCurrentSchoolId(currentSchoolId);
             s.setUsername(s.getName().split("\\s+")[0]);
             s.setPassword("password");
             s.setEnabled(true);
@@ -355,12 +371,7 @@ public class SchoolDataFactory {
             for(Student s: students) {
                 StudentAssignment sa = new StudentAssignment();
                 sa.setAssignment(a);
-                Boolean completed = true;
-                if(a.getId() % 2 == 0 && a.getId() % 3 == 0) {
-                    completed = new Random().nextBoolean();
-                }
-                sa.setCompleted(completed);
-                if(null != a.getAvailablePoints() && a.getAvailablePoints() > 0 && completed) {
+                if(null != a.getAvailablePoints() && a.getAvailablePoints() > 0) {
                     Integer awardedInt = new Random().nextInt(40);
                     awardedInt = ((int)(long)a.getAvailablePoints()) - awardedInt;
                     if(awardedInt < 0) {
