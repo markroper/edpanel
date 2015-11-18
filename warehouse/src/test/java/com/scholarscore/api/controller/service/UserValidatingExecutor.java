@@ -34,6 +34,14 @@ public class UserValidatingExecutor {
         return retrieveAndValidateCreatedUser(userId, user, HttpMethod.POST, msg);
     }
 
+    public Administrator createAdmin(Administrator admin, String msg) {
+        ResultActions response = serviceBase.makeRequest(HttpMethod.POST, serviceBase.getAdminsEndpoint(), null, admin);
+        EntityId userId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
+        Assert.assertNotNull(userId, "unexpected null app returned from create call for case: " + msg);
+        return (Administrator)retrieveAndValidateCreatedUser(userId, admin, HttpMethod.POST, msg);
+    }
+
+
     private User retrieveAndValidateCreatedUser(EntityId id, User submittedUser, HttpMethod method, String msg) {
         //Retrieve and validate the created assignment
         User createdUser = this.get(id.getId(), msg);

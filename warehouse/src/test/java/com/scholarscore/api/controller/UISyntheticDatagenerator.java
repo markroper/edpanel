@@ -16,6 +16,7 @@ import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.goal.Goal;
+import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import org.testng.annotations.Test;
@@ -55,6 +56,11 @@ public class UISyntheticDatagenerator extends IntegrationBase {
         List<Teacher> createdTeachers = new ArrayList<Teacher>();
         for(Teacher t : SchoolDataFactory.generateTeachers(school.getId())) {
             createdTeachers.add(teacherValidatingExecutor.create(t, t.getName()));
+        }
+
+        List<Administrator> createdAdministrators = new ArrayList<>();
+        for(Administrator a: SchoolDataFactory.generateAdmins(school.getId())) {
+            createdAdministrators.add(userValidatingExecutor.createAdmin(a, a.getName()));
         }
         
         //Create students

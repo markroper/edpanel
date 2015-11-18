@@ -89,7 +89,7 @@ public class SectionJdbc implements SectionPersistence {
 
 
         List<?> objects = hibernateTemplate.findByNamedParam(
-                StudentSectionGradeJdbc.SSG_HQL_BASE + 
+                StudentSectionGradeJdbc.SSG_HQL_BASE +
                 "where ssg.section.term.id = :termId and ssg.student.id = :studentId",
                 params, 
                 paramValues);

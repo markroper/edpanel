@@ -404,20 +404,17 @@ CREATE TABLE `scholar_warehouse`.`ui_attributes` (
         ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mroper', 'admin', 1);
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mattg', 'admin', 1);
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('student_user', 'student_user', 1);
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('student_user2', 'student_user', 1);
 
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (1, 'ADMINISTRATOR');
-insert into `scholar_warehouse`.`authorities` (user_id, authority) values (2, 'ADMINISTRATOR');
+insert into `scholar_warehouse`.`authorities` (user_id, authority) values (2, 'STUDENT');
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (3, 'STUDENT');
-insert into `scholar_warehouse`.`authorities` (user_id, authority) values (4, 'STUDENT');
 
 insert into `scholar_warehouse`.`school` (school_name) values ('FirstSchool');
 
-insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Mark Roper', 1, 1);
-insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Matt Greenwood', 2, 1);
-insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser', 3, 1);
-insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser2', 4, 1);
+insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Matt Greenwood', 1, 1);
+insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser', 2, 1);
+insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser2', 3, 1);
 
