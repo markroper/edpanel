@@ -63,7 +63,7 @@ import java.io.PrintWriter;
  *
  */
 @Configuration
-@ImportResource({"classpath:/dataSource.xml", "classpath:/persistence.xml"})
+@ImportResource({"classpath:/userauth.xml"})
 @EnableWebMvcSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String OPTIONS_VERB = "OPTIONS";
