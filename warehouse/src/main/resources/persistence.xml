@@ -20,17 +20,7 @@
         </property>
     </bean>
 
-    <!-- Initialization for data source -->
-    <!--
-    <bean id="dataSource"
-          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="#{'jdbc:mysql://${database.host}:${database.port}/${database.name}' + (${database.ssl} ? '?useSSL=true&amp;requireSSL=true&amp;verifyServerCertificate=false' : '')}"/>
-        <property name="username" value="${database.user}"/>
-        <property name="password" value="${database.pass}"/>
-    </bean>
-    -->
-
+    <!-- Initialization for data source using c3p0 -->
     <bean id="dataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="com.mysql.jdbc.Driver" />
