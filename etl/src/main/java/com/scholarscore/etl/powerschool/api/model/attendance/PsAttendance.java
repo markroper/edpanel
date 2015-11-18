@@ -48,6 +48,7 @@ public class PsAttendance implements IToApiModel<Attendance> {
         a.setSourceSystemId(String.valueOf(dcid));
         a.setDescription(att_comment);
         a.setSchoolDay(day);
+        a.setAttendanceCode(att_mode_code);
         //TODO: figure out this translation
         //a.setStatus();
         stud.setSourceSystemId(String.valueOf(studentid));

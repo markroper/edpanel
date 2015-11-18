@@ -106,8 +106,10 @@ public class StudentAssignmentJdbc
         Object[] paramValues = new Object[]{ new Long(sectionId), new Long(studentId) };
         List<StudentAssignment> studentAssignments = (List<StudentAssignment>)
                 hibernateTemplate.findByNamedParam(
-                        "select sa from student_assignment sa inner join fetch sa.assignment a inner join fetch sa.student s "
-                        + "where a.sectionFK = :sectionId and s.id = :studentId", 
+                        "select sa from student_assignment sa inner join fetch sa.assignment a " +
+                        "inner join fetch sa.student s left join fetch s.mailingAddress " +
+                        "left join fetch s.homeAddress left join fetch s.contactMethods " +
+                        "where a.sectionFK = :sectionId and s.id = :studentId",
                         paramNames, 
                         paramValues);
         return studentAssignments;

@@ -35,8 +35,6 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentAssignment extends ApiModel implements Serializable, WeightedGradable, IApiModel<StudentAssignment> {
-    //TODO: remove this.  If there is an instance, the assignment was completed or entered with a score of 0/nuill for incomplete
-    private Boolean completed;
     private Date completionDate;
     private Double awardedPoints;
     private Assignment assignment;
@@ -51,7 +49,6 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     public StudentAssignment(StudentAssignment sa) {
         super(sa);
         this.assignment = sa.assignment;
-        this.completed = sa.completed;
         this.awardedPoints = sa.awardedPoints;
         this.student = sa.student;
         this.completionDate = sa.completionDate;
@@ -66,9 +63,6 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         }
         if(null == this.assignment) {
             this.assignment = mergeFrom.assignment;
-        }
-        if(null == this.completed) {
-            this.completed = mergeFrom.completed;
         }
         if(null == this.awardedPoints) {
             this.awardedPoints = mergeFrom.awardedPoints;
@@ -85,15 +79,6 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         if(null == this.comment) {
             this.comment = mergeFrom.comment;
         }
-    }
-
-    @Column(name = HibernateConsts.STUDENT_ASSIGNMENT_COMPLETED)
-    public Boolean getCompleted() {
-        return completed;
-    }
-
-    public void setCompleted(Boolean completed) {
-        this.completed = completed;
     }
 
     @ManyToOne(optional = true, fetch=FetchType.LAZY)
@@ -192,8 +177,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
             return false;
         }
         final StudentAssignment other = (StudentAssignment) obj;
-        return Objects.equals(this.assignment, other.assignment) && 
-                Objects.equals(this.completed, other.completed) &&
+        return Objects.equals(this.assignment, other.assignment) &&
                 Objects.equals(this.awardedPoints, other.awardedPoints) &&
                 Objects.equals(this.student, other.student) &&
                 Objects.equals(this.exempt, other.exempt) &&
@@ -203,7 +187,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(assignment, completed, exempt, comment, awardedPoints, student, completionDate);
+        return 31 * super.hashCode() + Objects.hash(assignment, exempt, comment, awardedPoints, student, completionDate);
     }
 
     /**
@@ -257,7 +241,6 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
 
         public StudentAssignment build(){
             StudentAssignment studentAssignment = super.build();
-            studentAssignment.setCompleted(completed);
             studentAssignment.setCompletionDate(completionDate);
             studentAssignment.setAwardedPoints(awardedPoints);
             studentAssignment.setAssignment(assignment);

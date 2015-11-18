@@ -37,7 +37,11 @@ public class StudentJdbc implements StudentPersistence {
     @SuppressWarnings("unchecked")
     public Collection<Student> selectAll(Long schoolId) {
         if(null != schoolId) {
-            String sql = "FROM student s WHERE s.currentSchoolId = :schoolId";
+            String sql = "FROM student s " +
+                    "left join fetch s.homeAddress " +
+                    "left join fetch s.mailingAddress " +
+                    "left join fetch s.contactMethods " +
+                    "WHERE s.currentSchoolId = :schoolId";
             return (List<Student>) hibernateTemplate.findByNamedParam(sql, "schoolId", schoolId);
         } else {
             return hibernateTemplate.loadAll(Student.class);

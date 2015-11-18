@@ -155,7 +155,6 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                 results.studentSectionGradeDeleted(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), edPanelSsg.getId());
             }
         }
-        createdSection.setStudentSectionGrades(ssgs);
         return source;
     }
 

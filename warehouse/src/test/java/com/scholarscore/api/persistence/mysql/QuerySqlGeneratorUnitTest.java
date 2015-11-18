@@ -116,17 +116,15 @@ public class QuerySqlGeneratorUnitTest {
         Expression comb1 = new Expression(termClause, BinaryOperator.AND, yearClause);
         Expression comb2 = new Expression(comb1, BinaryOperator.AND, sectionClause);
         homeworkCompletionQuery.setFilter(comb2);
-        String homeworkSql = "SELECT student.student_user_fk, AVG( if(assignment.type_fk = 'HOMEWORK', if(student_assignment.completed is true, 1, 0), null)) "
-                + "FROM student "
-                + "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk "
-                + "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id "
-                + "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk "
-                + "LEFT OUTER JOIN term ON term.term_id = section.term_fk "
-                + "LEFT OUTER JOIN school_year ON school_year.school_year_id = term.school_year_fk "
-                + "WHERE  ( ( ( term.term_id  =  1 )  AND  ( school_year.school_year_id  =  1 ) )  "
-                + "AND  ( section.section_id  !=  0 ) ) "
-                + "GROUP BY student.student_user_fk";
-        
+        String homeworkSql = "SELECT student.student_user_fk, AVG( if(assignment.type_fk = 'HOMEWORK', " +
+                "if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points = 0, 0, 1)), null)) " +
+                "FROM student LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " +
+                "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id " +
+                "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk " +
+                "LEFT OUTER JOIN term ON term.term_id = section.term_fk " +
+                "LEFT OUTER JOIN school_year ON school_year.school_year_id = term.school_year_fk " +
+                "WHERE  ( ( ( term.term_id  =  1 )  AND  ( school_year.school_year_id  =  1 ) )  " +
+                "AND  ( section.section_id  !=  0 ) ) GROUP BY student.student_user_fk";
         
         Query attendanceQuery  = new Query();
         ArrayList<AggregateMeasure> attendanceMeasures = new ArrayList<>();

@@ -36,7 +36,6 @@ public class StudentAssignmentBuilderUnitTest extends AbstractBuilderUnitTest<St
 
         fullStudentAssignment.setId(id);
         fullStudentAssignment.setName(name);
-        fullStudentAssignment.setCompleted(completed);
         fullStudentAssignment.setCompletionDate(completionDate);
         fullStudentAssignment.setAwardedPoints(awardedPoints);
         fullStudentAssignment.setAssignment(assignment);

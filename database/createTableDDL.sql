@@ -153,6 +153,7 @@ CREATE TABLE `scholar_warehouse`.`term` (
   `term_end_date` DATETIME NULL COMMENT 'The school term end date',
   `school_year_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the school table',
   `term_source_system_id` VARCHAR(256) NULL UNIQUE COMMENT 'The origin system id',
+  `term_portion` BIGINT UNSIGNED NULL COMMENT 'The denominator of the fraction of the year this term represents (1=all year, 2=half, 3=a third, etc)',
   PRIMARY KEY (`term_id`),
   CONSTRAINT `fk_school_year$school_term`
     FOREIGN KEY (`school_year_fk`)
@@ -220,7 +221,7 @@ CREATE TABLE `scholar_warehouse`.`teacher_section` (
 CREATE TABLE `scholar_warehouse`.`assignment` (
   `assignment_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `assignment_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
-  `type_fk` INT NOT NULL COMMENT 'The assignment type string',
+  `type_fk` VARCHAR(255) NOT NULL COMMENT 'The assignment type string',
   `assignmentClass` VARCHAR(256) NULL COMMENT 'The section start date',
   `assigned_date` DATETIME NULL COMMENT 'The section start date',
   `due_date` DATETIME NULL COMMENT 'The section end date',
@@ -244,7 +245,6 @@ CREATE TABLE `scholar_warehouse`.`student_assignment` (
   `student_assignment_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `student_assignment_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `comment` VARCHAR(32768) NULL COMMENT 'Teacher comment on student assignment',
-  `completed` BIT(1) COMMENT 'Boolean indicating whether or not the assignment was completed',
   `completion_date` DATETIME NULL COMMENT 'The date the student turned in the assignment',
   `awarded_points` DOUBLE NULL COMMENT 'The number of possible points to be awarded for an assignment',
   `assignment_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the section assignment table',
@@ -357,6 +357,7 @@ CREATE TABLE `scholar_warehouse`.`attendance` (
     `attendance_status` VARCHAR(64) NOT NULL COMMENT 'Maps to POJO enum values PRESENT, EXCUSED_ABSENT, ABSENT, TARDY',
     `attendance_description` VARCHAR(256) NULL COMMENT 'Description of the attendance status, if any',
     `attendance_source_system_id` VARCHAR(256) NULL,
+    `attendance_code` VARCHAR(255) null COMMENT 'Depending on source system, can be used to indicate school vs. class attendance or other',
     PRIMARY KEY (`attendance_id`),
     FOREIGN KEY (`school_day_fk`) REFERENCES `scholar_warehouse`.`school_day` (`school_day_id`)
         ON DELETE CASCADE
@@ -403,20 +404,17 @@ CREATE TABLE `scholar_warehouse`.`ui_attributes` (
         ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mroper', 'admin', 1);
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mattg', 'admin', 1);
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('student_user', 'student_user', 1);
 insert into `scholar_warehouse`.`users` (username, password, enabled) values ('student_user2', 'student_user', 1);
 
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (1, 'ADMINISTRATOR');
-insert into `scholar_warehouse`.`authorities` (user_id, authority) values (2, 'ADMINISTRATOR');
+insert into `scholar_warehouse`.`authorities` (user_id, authority) values (2, 'STUDENT');
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (3, 'STUDENT');
-insert into `scholar_warehouse`.`authorities` (user_id, authority) values (4, 'STUDENT');
 
 insert into `scholar_warehouse`.`school` (school_name) values ('FirstSchool');
 
-insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Mark Roper', 1, 1);
-insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Matt Greenwood', 2, 1);
-insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser', 3, 1);
-insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser2', 4, 1);
+insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Matt Greenwood', 1, 1);
+insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser', 2, 1);
+insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser2', 3, 1);
 

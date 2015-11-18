@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -32,7 +33,47 @@ public class UiAttributes implements Serializable {
         }
         this.attributes = uiAttributes.attributes;
     }
-    
+
+    public static UiAttributes resolveDefaults(School s) {
+        //create UI attributes for school
+        UiAttributes attrs = new UiAttributes();
+        attrs.setSchool(s);
+        try {
+            attrs.setAttributes(new JsonAttributes("{" +
+                    "\"attendance\":{" +
+                    "\"name\":\"Attendance\"," +
+                    "\"isTemporal\":true," +
+                    "\"thresholdChar\":\"#\"," +
+                    "\"green\":1," +
+                    "\"yellow\":4," +
+                    "\"period\":\"year\"" +
+                    "}," +
+                    "\"behavior\":{" +
+                    "\"name\":\"Attendance\"," +
+                    "\"isTemporal\":true," +
+                    "\"thresholdChar\":\"#\"," +
+                    "\"period\":\"week\"," +
+                    "\"green\":85," +
+                    "\"yellow\":75" +
+                    "}," +
+                    "\"homework\":{" +
+                    "\"name\":\"Attendance\"," +
+                    "\"isTemporal\":false," +
+                    "\"thresholdChar\":\"%\"" +
+                    "}," +
+                    "\"gpa\":{" +
+                    "\"name\":\"Attendance\"," +
+                    "\"isTemporal\":false," +
+                    "\"thresholdChar\":\"#\"," +
+                    "\"green\":3.3," +
+                    "\"yellow\":3" +
+                    "}" +
+                    "}"));
+        } catch (IOException e) {
+        }
+        return attrs;
+    }
+
     @OneToOne(optional = false)
     @JoinColumn(name=HibernateConsts.SCHOOL_FK, nullable = false)
     public School getSchool() {

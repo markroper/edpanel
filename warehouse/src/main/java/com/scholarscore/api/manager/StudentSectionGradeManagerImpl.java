@@ -5,12 +5,12 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.grade.GradeAsOfWeek;
+import com.scholarscore.models.ui.GradeAsOfWeek;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.StudentAssignment;
-import com.scholarscore.models.grade.SectionGradeWithProgression;
+import com.scholarscore.models.ui.SectionGradeWithProgression;
 import com.scholarscore.models.gradeformula.GradeFormula;
 
 import java.util.ArrayList;
@@ -94,37 +94,30 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         Boolean complete = grade.getComplete();
         //Only calculate the grade if there is not a grade on it already
         if((null == complete || complete.equals(Boolean.FALSE)) && null == grade.getGrade()) {
-            //Get the section, and pull off the section formula
-            ServiceResponse<Section> sect = pm.getSectionManager().getSection(schoolId, yearId, termId, sectionId);
-            if(null == sect.getCode() || sect.getCode().isOK()) {
-                ServiceResponse<Collection<StudentAssignment>> assignmentResp =
-                        pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, schoolId, yearId, termId, sectionId);
-                ServiceResponse<Term> termResp = pm.getTermManager().getTerm(schoolId, yearId, termId);
-                Term term = null;
-                if(null == termResp.getCode() || termResp.getCode().isOK()) {
-                    term = termResp.getValue();
-                }
-                if(null == assignmentResp.getCode() || assignmentResp.getCode().isOK()) {
-                    //TODO: this applies a single formula to all assignments, instead we need to break it up by term
-                    GradeFormula formula = sect.getValue().getGradeFormula();
-                    if(null != term) {
+            Section sect = grade.getSection();
+            ServiceResponse<Collection<StudentAssignment>> assignmentResp =
+                    pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, schoolId, yearId, termId, sectionId);
+            Term term = sect.getTerm();
+            if(null == assignmentResp.getCode() || assignmentResp.getCode().isOK()) {
+                //TODO: this applies a single formula to all assignments, instead we need to break it up by term
+                GradeFormula formula = sect.getGradeFormula();
+                if(null != term) {
+                    if(null == formula) {
+                        formula = new GradeFormula();
+                        formula.setStartDate(term.getStartDate());
+                        formula.setEndDate(term.getEndDate());
+                    } else {
+                        formula = formula.resolveFormulaMatchingDates(term.getStartDate(), term.getEndDate());
                         if(null == formula) {
-                            formula = new GradeFormula();
-                            formula.setStartDate(term.getStartDate());
-                            formula.setEndDate(term.getEndDate());
-                        } else {
-                            formula = formula.resolveFormulaMatchingDates(term.getStartDate(), term.getEndDate());
-                            if(null == formula) {
-                                formula = sect.getValue().getGradeFormula();
-                            }
+                            formula = sect.getGradeFormula();
                         }
                     }
-                    Collection<StudentAssignment> assignments = assignmentResp.getValue();
-                    if(null != formula && null != assignments) {
-                        HashSet<StudentAssignment> assignmentSet = new HashSet<StudentAssignment>(assignments);
-                        Double calculatedGrade = formula.calculateGrade(assignmentSet);
-                        grade.setGrade(calculatedGrade);
-                    }
+                }
+                Collection<StudentAssignment> assignments = assignmentResp.getValue();
+                if(null != formula && null != assignments) {
+                    HashSet<StudentAssignment> assignmentSet = new HashSet<StudentAssignment>(assignments);
+                    Double calculatedGrade = formula.calculateGrade(assignmentSet);
+                    grade.setGrade(calculatedGrade);
                 }
             }
         }
@@ -144,57 +137,51 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         SectionGradeWithProgression gradeWithProgression = new SectionGradeWithProgression();
         gradeWithProgression.setCurrentOverallGrade(ssgResp.getValue().getGrade());
         gradeWithProgression.setTermGrades(ssgResp.getValue().getTermGrades());
+        Section section = ssgResp.getValue().getSection();
 
         List<GradeAsOfWeek> grades = new ArrayList<>();
-        ServiceResponse<Section> sect = pm.getSectionManager().getSection(schoolId, yearId, termId, sectionId);
-        if(null == sect.getCode() || sect.getCode().isOK()) {
-            ServiceResponse<Collection<StudentAssignment>> assignmentResp =
-                    pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, schoolId, yearId, termId, sectionId);
-            ServiceResponse<Term> termResp = pm.getTermManager().getTerm(schoolId, yearId, termId);
-            Term term = null;
-            if(null == termResp.getCode() || termResp.getCode().isOK()) {
-                term = termResp.getValue();
-            }
-            if(null == assignmentResp.getCode() || assignmentResp.getCode().isOK()) {
-                GradeFormula formula = sect.getValue().getGradeFormula();
-                if(null != term) {
+        ServiceResponse<Collection<StudentAssignment>> assignmentResp =
+                pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, schoolId, yearId, termId, sectionId);
+        Term term = section.getTerm();
+        if(null == assignmentResp.getCode() || assignmentResp.getCode().isOK()) {
+            GradeFormula formula = section.getGradeFormula();
+            if(null != term) {
+                if(null == formula) {
+                    formula = new GradeFormula();
+                    formula.setStartDate(term.getStartDate());
+                    formula.setEndDate(term.getEndDate());
+                } else {
+                    formula = formula.resolveFormulaMatchingDates(term.getStartDate(), term.getEndDate());
                     if(null == formula) {
-                        formula = new GradeFormula();
-                        formula.setStartDate(term.getStartDate());
-                        formula.setEndDate(term.getEndDate());
-                    } else {
-                        formula = formula.resolveFormulaMatchingDates(term.getStartDate(), term.getEndDate());
-                        if(null == formula) {
-                            formula = sect.getValue().getGradeFormula();
-                        }
+                        formula = section.getGradeFormula();
                     }
                 }
-                ArrayList<StudentAssignment> assignments = (ArrayList<StudentAssignment>)assignmentResp.getValue();
-                gradeWithProgression.setCurrentCategoryGrades(formula.calculateCategoryGrades(new HashSet<>(assignments)));
-                //Sort by due date
-                Date currentLastDayOfWeek = null;
-                Calendar cal  = Calendar.getInstance();
-                int i = 1;
-                assignments.sort((object1, object2) -> object1.getAssignment().getDueDate().compareTo(object2.getAssignment().getDueDate()));
-                for(StudentAssignment a: assignments) {
-                    Date dueDate = a.getAssignment().getDueDate();
-                    cal.setTime(dueDate);
-                    int currentDay = cal.get(Calendar.DAY_OF_WEEK);
-                    int leftDays= Calendar.SATURDAY - currentDay;
-                    cal.add(Calendar.DATE, leftDays);
-                    if(null == currentLastDayOfWeek) {
-                        currentLastDayOfWeek = cal.getTime();
-                    }
-                    if(!currentLastDayOfWeek.equals(cal.getTime())) {
-                        Set<StudentAssignment> subassignments = new HashSet<>(assignments.subList(0, i));
-                        GradeAsOfWeek g = new GradeAsOfWeek();
-                        g.setWeekEnding(currentLastDayOfWeek);
-                        g.setScore(formula.calculateGrade(subassignments));
-                        grades.add(g);
-                        currentLastDayOfWeek = cal.getTime();
-                    }
-                    i++;
+            }
+            ArrayList<StudentAssignment> assignments = (ArrayList<StudentAssignment>)assignmentResp.getValue();
+            gradeWithProgression.setCurrentCategoryGrades(formula.calculateCategoryGrades(new HashSet<>(assignments)));
+            //Sort by due date
+            Date currentLastDayOfWeek = null;
+            Calendar cal  = Calendar.getInstance();
+            int i = 1;
+            assignments.sort((object1, object2) -> object1.getAssignment().getDueDate().compareTo(object2.getAssignment().getDueDate()));
+            for(StudentAssignment a: assignments) {
+                Date dueDate = a.getAssignment().getDueDate();
+                cal.setTime(dueDate);
+                int currentDay = cal.get(Calendar.DAY_OF_WEEK);
+                int leftDays= Calendar.SATURDAY - currentDay;
+                cal.add(Calendar.DATE, leftDays);
+                if(null == currentLastDayOfWeek) {
+                    currentLastDayOfWeek = cal.getTime();
                 }
+                if(!currentLastDayOfWeek.equals(cal.getTime())) {
+                    Set<StudentAssignment> subassignments = new HashSet<>(assignments.subList(0, i));
+                    GradeAsOfWeek g = new GradeAsOfWeek();
+                    g.setWeekEnding(currentLastDayOfWeek);
+                    g.setScore(formula.calculateGrade(subassignments));
+                    grades.add(g);
+                    currentLastDayOfWeek = cal.getTime();
+                }
+                i++;
             }
         }
         gradeWithProgression.setWeeklyGradeProgression(grades);
