@@ -49,6 +49,7 @@ public class DbMappings {
                put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.STATUS), HibernateConsts.ATTENDANCE_STATUS);
                put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.STATUS_DESCRIPTION), HibernateConsts.ATTENDANCE_DESCRIPTION);
                put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
+               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.TYPE), HibernateConsts.ATTENDANCE_TYPE);
                
                put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.ID), HibernateConsts.BEHAVIOR_ID);
                put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
