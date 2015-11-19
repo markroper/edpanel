@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
+import com.scholarscore.etl.powerschool.api.model.PsPeriodWrapper;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PtFinalScoreWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionEnrollmentWrapper;
@@ -112,6 +113,14 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     @Override
     public SchoolsResponse getSchools() throws HttpClientException {
         return get(SchoolsResponse.class, paths.getSchoolPath());
+    }
+
+    @Override
+    public PsResponse<PsPeriodWrapper> getPeriods() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsPeriodWrapper>>(){},
+                paths.getPeriodPath(),
+                PAGE_SIZE,
+                (String[])null);
     }
 
     @Override

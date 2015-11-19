@@ -14,6 +14,7 @@ import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.School;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.AttendanceStatus;
+import com.scholarscore.models.attendance.AttendanceTypes;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.user.Student;
 
@@ -37,6 +38,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
     protected Student student;
     protected SyncResult results;
     protected Date syncCutoff;
+    protected Long dailyAbsenseTrigger;
 
     public AttendanceRunnable(IAPIClient edPanel,
                           IPowerSchoolClient powerSchool,
@@ -44,7 +46,8 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                           Student student,
                           ConcurrentHashMap<Date, SchoolDay> schoolDays,
                           SyncResult results,
-                          Date syncCutoff) {
+                          Date syncCutoff,
+                          Long dailyAbsenseTrigger) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
@@ -52,6 +55,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         this.schoolDays = schoolDays;
         this.results = results;
         this.syncCutoff = syncCutoff;
+        this.dailyAbsenseTrigger = dailyAbsenseTrigger;
     }
     @Override
     public void run() {
@@ -132,6 +136,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
 
     protected ConcurrentHashMap<Long, Attendance> resolveAllFromSourceSystem(Long sourceStudentId) throws HttpClientException {
         ConcurrentHashMap<Long, Attendance> result = new ConcurrentHashMap<>();
+        long syntheticDcid = -1;
         //First, get the attendance codes.
         PsResponse<PsAttendanceCodeWrapper> codeResponse = powerSchool.getAttendanceCodes();
         Map<Long, AttendanceStatus> codeMap = new HashMap<>();
@@ -141,15 +146,49 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         }
 
         PsResponse<PsAttendanceWrapper> response = powerSchool.getStudentAttendance(sourceStudentId);
+        Map<SchoolDay, List<Attendance>> schoolDayToAttendances = new HashMap<>();
         for(PsResponseInner<PsAttendanceWrapper> wrap : response.record) {
             PsAttendance psAttendance = wrap.tables.attendance;
             Attendance a = psAttendance.toApiModel();
             a.setSchoolDay(schoolDays.get(psAttendance.att_date));
             a.setStudent(student);
             a.setStatus(codeMap.get(psAttendance.attendance_codeid));
-            //TODO: currently EdPanel only tracks attendance at the DAY not period level...
-            if(null == psAttendance.periodid || psAttendance.periodid.equals(0L)) {
-                result.put(psAttendance.dcid, a);
+            if(!schoolDayToAttendances.containsKey(a.getSchoolDay())) {
+                schoolDayToAttendances.put(a.getSchoolDay(), new ArrayList<>());
+            }
+            schoolDayToAttendances.get(a.getSchoolDay()).add(a);
+            result.put(psAttendance.dcid, a);
+        }
+        //Ok, for schools that track only section level attendance and figure out daily attendance from that,
+        //we need to see if the student missed every period and then create a daily attendance event if they did...
+        if(null != dailyAbsenseTrigger) {
+            for (Map.Entry<SchoolDay, List<Attendance>> entry : schoolDayToAttendances.entrySet()) {
+                boolean hasDaily = false;
+                long absenses = 0;
+                for (Attendance a : entry.getValue()) {
+                    if (a.getType().equals(AttendanceTypes.DAILY)) {
+                        hasDaily = true;
+                        break;
+                    }
+                    if (a.getStatus().equals(AttendanceStatus.ABSENT)) {
+                        absenses++;
+                    }
+                }
+                //If the number of absenses is equal to the periods in the day minus one for lunch
+                //and there is no daily attendance event already created, create one.
+                if (!hasDaily && absenses >= dailyAbsenseTrigger) {
+                    Attendance a = new Attendance();
+                    a.setSchoolDay(entry.getKey());
+                    a.setStudent(student);
+                    a.setStatus(AttendanceStatus.ABSENT);
+                    a.setType(AttendanceTypes.DAILY);
+                    a.setSourceSystemId(String.valueOf(syntheticDcid));
+                    a.setDescription("EdPanel generated due to daily section absenses( " +
+                            absenses +
+                            ") exceeding limit: " + dailyAbsenseTrigger);
+                    result.put(syntheticDcid, a);
+                    syntheticDcid--;
+                }
             }
         }
         return result;
