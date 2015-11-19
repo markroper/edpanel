@@ -93,6 +93,14 @@ public class UiEndpointsController extends BaseController {
                 if(null == studAssesResp.getCode()) {
                     sectionDashData.setStudentAssignments(new ArrayList<>(studAssesResp.getValue()));
                 }
+                if(null == sectionDashData.getStudentAssignments() ||
+                        sectionDashData.getStudentAssignments().isEmpty()){
+                    continue;
+                } else {
+                    for(StudentAssignment sa: sectionDashData.getStudentAssignments()) {
+                        sa.setStudent(null);
+                    }
+                }
 
                 ServiceResponse<SectionGradeWithProgression> gradesByWeekResp =
                     pm.getStudentSectionGradeManager().getStudentSectionGradeByWeek(
@@ -103,6 +111,6 @@ public class UiEndpointsController extends BaseController {
                 response.add(sectionDashData);
             }
         }
-        return respond(new ServiceResponse<List<StudentSectionDashboardData>>(response));
+        return respond(new ServiceResponse<>(response));
     }
 }

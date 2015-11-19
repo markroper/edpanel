@@ -58,7 +58,7 @@ public class PowerSchoolPaths {
             "/attendance?" +
             getPageSizeParam() +
             "&" + PAGE_NUM_PARAM +
-            "&projection=*&q=studentid=={1};Att_Mode_Code!=ATT_ModeMeeting;att_date=gt="+ cutoffDate;
+            "&projection=*&q=studentid=={1};att_date=gt="+ cutoffDate;
     }
 
     public String getAttendanceCodePath() {
@@ -132,6 +132,14 @@ public class PowerSchoolPaths {
             getPageSizeParam() +
             "&" + PAGE_NUM_PARAM +
             "&projection=*&q=id==" + termId;
+    }
+
+    public String getPeriodPath() {
+        return SCHEMA_BASE +
+            "/period?" +
+            getPageSizeParam() +
+            "&" + PAGE_NUM_PARAM +
+            "&projection=*";
     }
 
     public String getSectionGradesSetupPath() {

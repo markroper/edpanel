@@ -4,6 +4,7 @@ import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.EtlEngine;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.SyncResult;
+import com.scholarscore.etl.powerschool.api.model.PsPeriod;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.School;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -32,19 +34,21 @@ public class AttendanceSync implements ISync<Attendance> {
     protected StudentAssociator studentAssociator;
     protected ConcurrentHashMap<Date, SchoolDay> schoolDays;
     protected Date syncCutoff;
-
+    protected Long dailyAbsenseTrigger;
     public AttendanceSync(IAPIClient edPanel,
                           IPowerSchoolClient powerSchool,
                           School s,
                           StudentAssociator studentAssociator,
                           ConcurrentHashMap<Date, SchoolDay> schoolDays,
-                          Date syncCutoff) {
+                          Date syncCutoff,
+                          Long dailyAbsenseTrigger) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
         this.studentAssociator = studentAssociator;
         this.schoolDays = schoolDays;
         this.syncCutoff = syncCutoff;
+        this.dailyAbsenseTrigger = dailyAbsenseTrigger;
     }
 
     @Override
@@ -56,7 +60,7 @@ public class AttendanceSync implements ISync<Attendance> {
             Student s = studentIterator.next().getValue();
             if(s.getCurrentSchoolId().equals(school.getId())) {
                 AttendanceRunnable runnable = new AttendanceRunnable(
-                        edPanel, powerSchool, school, s, schoolDays, results, syncCutoff);
+                        edPanel, powerSchool, school, s, schoolDays, results, syncCutoff, dailyAbsenseTrigger);
                 executor.execute(runnable);
             }
         }

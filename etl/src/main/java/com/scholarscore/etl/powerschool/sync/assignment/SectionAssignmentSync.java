@@ -66,6 +66,11 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         try {
             source = this.resolveAllFromSourceSystem(results);
         } catch (HttpClientException e) {
+            LOGGER.warn("Unable to resolve section assignments for section with name: " +
+                    createdSection.getName() +
+                    ", ID: " + createdSection.getId() +
+                    ", SSID: " + createdSection.getSourceSystemId() +
+                    ", & School ID: " + school.getId());
             results.sectionAssignmentSourceGetFailed(
                     Long.valueOf(createdSection.getSourceSystemId()),
                     Long.valueOf(createdSection.getSourceSystemId()),
