@@ -14,6 +14,7 @@ import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.AttendanceStatus;
+import com.scholarscore.models.attendance.AttendanceTypes;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.user.Administrator;
@@ -115,6 +116,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                 }
                 Attendance a = new Attendance();
                 a.setSchoolDay(day);
+                a.setType(AttendanceTypes.DAILY);
                 a.setStudent(s);
                 a.setStatus(status);
                 if(!studentIdToAttendance.containsKey(s.getId())) {
