@@ -38,6 +38,10 @@ public class Attendance implements Serializable {
     private String description;
     private String sourceSystemId;
     private String attendanceCode;
+    //Some attendance entries may be tied to a period in the day
+    private Long sourceSystemPeriodId;
+    //If an attendance entry is section-level, this value will be non null
+    private AttendanceTypes type;
     
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name=HibernateConsts.SCHOOL_DAY_FK)
@@ -103,6 +107,25 @@ public class Attendance implements Serializable {
         this.attendanceCode = attendanceCode;
     }
 
+    @Column(name = HibernateConsts.ATTENDANCE_PERIOD_ID)
+    public Long getSourceSystemPeriodId() {
+        return sourceSystemPeriodId;
+    }
+
+    public void setSourceSystemPeriodId(Long sourceSystemPeriodId) {
+        this.sourceSystemPeriodId = sourceSystemPeriodId;
+    }
+
+    @Column(name = HibernateConsts.ATTENDANCE_TYPE)
+    @Enumerated(EnumType.STRING)
+    public AttendanceTypes getType() {
+        return type;
+    }
+
+    public void setType(AttendanceTypes type) {
+        this.type = type;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -118,12 +141,15 @@ public class Attendance implements Serializable {
                 && Objects.equals(this.status, other.status)
                 && Objects.equals(this.sourceSystemId, other.sourceSystemId)
                 && Objects.equals(this.attendanceCode, other.attendanceCode)
+                && Objects.equals(this.sourceSystemPeriodId, other.sourceSystemPeriodId)
+                && Objects.equals(this.type, other.type)
                 && Objects.equals(this.description, other.description);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(schoolDay, id, sourceSystemId, student, status, description, attendanceCode);
+        return 31 * super.hashCode() + Objects.hash(schoolDay, id, sourceSystemId, student,
+                status, description, attendanceCode, sourceSystemPeriodId, type);
     }
     
     @Override
@@ -135,6 +161,8 @@ public class Attendance implements Serializable {
                 ", status=" + status +
                 ", status=" + sourceSystemId +
                 ", description='" + description + '\'' +
+                ", sourceSystemPeriodId='" + sourceSystemPeriodId + '\'' +
+                ", type='" + type + '\'' +
                 ", attendanceCode='" + attendanceCode + '\'' +
                 '}';
     }
@@ -153,8 +181,22 @@ public class Attendance implements Serializable {
         private String description;
         private String sourceSystemId;
         private String attendanceCode;
+        //Some attendance entries may be tied to a period in the day
+        private Long sourceSystemPeriodId;
+        //If an attendance entry is section-level, this value will be non null
+        private AttendanceTypes type;
 
         public AttendanceBuilder(){}
+
+        public AttendanceBuilder withSourceSystemPeriodId(final Long sourceSystemPeriodId){
+            this.sourceSystemPeriodId = sourceSystemPeriodId;
+            return this;
+        }
+
+        public AttendanceBuilder withType(final AttendanceTypes type){
+            this.type = type;
+            return this;
+        }
 
         public AttendanceBuilder withAttendanceCode(final String code){
             this.attendanceCode = code;
@@ -200,6 +242,8 @@ public class Attendance implements Serializable {
             attendance.setDescription(description);
             attendance.setAttendanceCode(attendanceCode);
             attendance.setSourceSystemId(sourceSystemId);
+            attendance.setSourceSystemPeriodId(sourceSystemPeriodId);
+            attendance.setType(type);
             return attendance;
         }
     }

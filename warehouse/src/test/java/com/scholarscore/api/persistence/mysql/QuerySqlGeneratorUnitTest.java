@@ -142,11 +142,14 @@ public class QuerySqlGeneratorUnitTest {
                 new DateOperand(date2));
         Expression attendanceDateRangeExpression = new Expression(greaterThanDate, BinaryOperator.AND, lessThanDate);
         attendanceQuery.setFilter(attendanceDateRangeExpression);
-        String attendanceSql = "SELECT student.student_user_fk, SUM( if(attendance.attendance_status in ('ABSENT', 'EXCUSED_ABSENT'), 1, 0)) "
-                + "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk "
-                + "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk "
-                + "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  "
-                + "AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) GROUP BY student.student_user_fk";
+        String attendanceSql = "SELECT student.student_user_fk, " +
+                "SUM( if(attendance.attendance_status in ('ABSENT'), 1, 0)) " +
+                "FROM student " +
+                "LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " +
+                "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk " +
+                "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  " +
+                "( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) " +
+                "GROUP BY student.student_user_fk";
         
         Query behaviorQuery = new Query();
         ArrayList<AggregateMeasure> behaviorMeasures = new ArrayList<>();

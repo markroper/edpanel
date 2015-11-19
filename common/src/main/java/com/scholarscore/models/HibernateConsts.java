@@ -201,6 +201,8 @@ public class HibernateConsts {
     public static final String ATTENDANCE_DESCRIPTION = "attendance_description";
     public static final String ATTENDANCE_SOURCE_SYSTEM_ID = "attendance_source_system_id";
     public static final String ATTENDANCE_CODE = "attendance_code";
+    public static final String ATTENDANCE_PERIOD_ID = "attendance_source_system_period_id";
+    public static final String ATTENDANCE_TYPE = "attendance_type";
     
     //UI attributes
     public static final String UI_ATTRIBUTES_TABLE = "ui_attributes";
