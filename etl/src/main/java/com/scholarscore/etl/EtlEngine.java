@@ -63,7 +63,7 @@ import java.util.concurrent.TimeUnit;
 public class EtlEngine implements IEtlEngine {
     private final static Logger LOGGER = LoggerFactory.getLogger(EtlEngine.class);
     public static final Long TOTAL_TTL_MINUTES = 120L;
-    public static final int THREAD_POOL_SIZE = 10;
+    public static final int THREAD_POOL_SIZE = 5;
     //After a certain point in the past, we no longer want to sync expensive and large tables, like attendance
     //This date defines that cutoff point before which we will cease to sync updates.
     private Date syncCutoff;
@@ -232,6 +232,7 @@ public class EtlEngine implements IEtlEngine {
         } catch(HttpClientException e) {
             LOGGER.warn(e.getLocalizedMessage());
         }
+        LOGGER.info("Section migration antecendents resolved (grade setups & assignment category mappings)");
         //Now we have the section resolution antecedent
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
         for(Map.Entry<Long, School> school : this.schools.entrySet()) {
