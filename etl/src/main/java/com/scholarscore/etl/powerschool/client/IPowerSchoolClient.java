@@ -2,6 +2,7 @@ package com.scholarscore.etl.powerschool.client;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
+import com.scholarscore.etl.powerschool.api.model.PsPeriodWrapper;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScoreWrapper;
@@ -41,6 +42,8 @@ public interface IPowerSchoolClient {
     void setSyncCutoff(Date date);
 
     SchoolsResponse getSchools() throws HttpClientException;
+
+    PsResponse<PsPeriodWrapper> getPeriods() throws HttpClientException;
 
     DistrictResponse getDistrict() throws HttpClientException;
 

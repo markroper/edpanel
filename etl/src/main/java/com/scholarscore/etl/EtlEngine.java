@@ -70,6 +70,7 @@ public class EtlEngine implements IEtlEngine {
     private SyncResult results = new SyncResult();
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
+    private Long dailyAbsenseTrigger;
     //The school_number attribute to school instance
     private ConcurrentHashMap<Long, School> schools;
     //Collections are by sourceSystemSchoolId and if there are nested maps, 
@@ -98,6 +99,14 @@ public class EtlEngine implements IEtlEngine {
 
     public IAPIClient getEdPanel() {
         return edPanel;
+    }
+
+    public Long getDailyAbsenseTrigger() {
+        return dailyAbsenseTrigger;
+    }
+
+    public void setDailyAbsenseTrigger(Long dailyAbsenseTrigger) {
+        this.dailyAbsenseTrigger = dailyAbsenseTrigger;
     }
 
     @Override
@@ -170,7 +179,8 @@ public class EtlEngine implements IEtlEngine {
                     school.getValue(),
                     studentAssociator,
                     this.schoolDays.get(schoolSsid),
-                    syncCutoff);
+                    syncCutoff,
+                    dailyAbsenseTrigger);
             a.syncCreateUpdateDelete(results);
         }
 
