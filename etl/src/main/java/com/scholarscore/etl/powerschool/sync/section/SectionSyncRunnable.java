@@ -112,6 +112,8 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
             results.sectionEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
             return new ConcurrentHashMap<>();
         }
+        LOGGER.debug("Resolved sections for school " + school.getName() +
+                " with ID " + school.getId() + " will now CRUD in EdPanel");
         Iterator<Map.Entry<Long, Section>> sourceIterator = source.entrySet().iterator();
         //Find & perform the inserts and updates, if any
         while(sourceIterator.hasNext()) {
@@ -166,8 +168,12 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     studentAssociator,
                     sourceSection
             );
+            LOGGER.info("Section, including assignments and student section grades created/updated. Section ID: " +
+                    sourceSection.getId() + ", school ID: " + school.getId());
             assignmentSync.syncCreateUpdateDelete(results);
         }
+        LOGGER.info("All sections created and updated in EdPanel for school " + school.getName() +
+                " with ID " + school.getId());
         //Delete anything IN EdPanel that is NOT in source system
         Iterator<Map.Entry<Long, Section>> edpanelIterator = ed.entrySet().iterator();
         while(edpanelIterator.hasNext()) {

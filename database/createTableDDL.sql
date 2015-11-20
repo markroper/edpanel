@@ -354,8 +354,10 @@ CREATE TABLE `scholar_warehouse`.`attendance` (
     `attendance_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'System generated ID',
     `school_day_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the school days table',
     `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the student table',
+    `attendance_type` VARCHAR(64) NOT NULL COMMENT 'DAILY, SECTION, other',
     `attendance_status` VARCHAR(64) NOT NULL COMMENT 'Maps to POJO enum values PRESENT, EXCUSED_ABSENT, ABSENT, TARDY',
     `attendance_description` VARCHAR(256) NULL COMMENT 'Description of the attendance status, if any',
+    `attendance_source_system_period_id` BIGINT UNSIGNED NULL,
     `attendance_source_system_id` VARCHAR(256) NULL,
     `attendance_code` VARCHAR(255) null COMMENT 'Depending on source system, can be used to indicate school vs. class attendance or other',
     PRIMARY KEY (`attendance_id`),
@@ -367,6 +369,9 @@ CREATE TABLE `scholar_warehouse`.`attendance` (
         ON UPDATE CASCADE
 )
 ENGINE = InnoDB;
+
+ALTER TABLE `scholar_warehouse`.`attendance` ADD INDEX (`attendance_type`);
+ALTER TABLE `scholar_warehouse`.`attendance` ADD INDEX (`attendance_status`);
 
 CREATE TABLE `scholar_warehouse`.`goal` (
   `goal_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a goal',

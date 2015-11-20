@@ -16,7 +16,7 @@ public class AttendanceSqlSerializer implements MeasureSqlSerializer {
     public String toSelectClause(AggregateFunction agg) {
         return agg.name() + 
                 "( if(" + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.ATTENDANCE_STATUS + " in ('" 
-                + AttendanceStatus.ABSENT + "', '" + AttendanceStatus.EXCUSED_ABSENT + "'), 1, 0))"; 
+                + AttendanceStatus.ABSENT + "'), 1, 0))";
     }
 
     @Override

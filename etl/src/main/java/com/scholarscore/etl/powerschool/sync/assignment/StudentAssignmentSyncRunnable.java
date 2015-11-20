@@ -69,6 +69,11 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
         try {
             source = resolveAllFromSourceSystem();
         } catch (HttpClientException e) {
+            LOGGER.warn("Unable to resolve student assignments for " +
+                    "section with name: " + createdSection.getName() +
+                    ", ID: " + createdSection.getId() +
+                    ", SSID: " + createdSection.getSourceSystemId() +
+                    ", & School ID: " + school.getId());
             results.studentAssignmentSourceGetFailed(
                     Long.valueOf(createdSection.getSourceSystemId()),
                     Long.valueOf(this.assignment.getSourceSystemId()),
