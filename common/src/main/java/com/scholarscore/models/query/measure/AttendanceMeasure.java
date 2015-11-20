@@ -18,9 +18,10 @@ public class AttendanceMeasure implements IMeasure {
     public static final String SCHOOL_FK = "School";
     public static final String DATE = "Date";
     public static final String STATUS = "Status";
+    public static final String TYPE = "Type";
     public static final String STATUS_DESCRIPTION = "Description";
     private static final Set<String> fields = 
-            ImmutableSet.of(ID, STUDENT_FK, SCHOOL_FK, DATE, STATUS, STATUS_DESCRIPTION);
+            ImmutableSet.of(ID, STUDENT_FK, SCHOOL_FK, DATE, STATUS, STATUS_DESCRIPTION, TYPE);
 
     @Override
     public Set<Dimension> getCompatibleDimensions() {
