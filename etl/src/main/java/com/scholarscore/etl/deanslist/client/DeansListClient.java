@@ -28,7 +28,7 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
     // if no date is included in the query, the deanslist api by default returns only the behavioral events
     // for today. override this behavior and use the lookback specified below. additionally, this lookback can be
     // overridden by providing an explicit date range as part of the request.
-    private static final int DEFAULT_LOOKBACK_DAYS = 30;
+    private static final int DEFAULT_LOOKBACK_DAYS = 180;
     
     // SimpleDateFormat is not thread-safe, so give one to each thread
     private static final ThreadLocal<SimpleDateFormat> formatter = new ThreadLocal<SimpleDateFormat>(){
