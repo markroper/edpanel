@@ -18,16 +18,16 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SectionGradeWithProgression {
-    protected List<GradeAsOfWeek> weeklyGradeProgression;
+    protected List<ScoreAsOfWeek> weeklyGradeProgression;
     protected Double currentOverallGrade;
     protected Map<String, Double> currentCategoryGrades;
     protected HashMap<Long, Score> termGrades;
 
-    public List<GradeAsOfWeek> getWeeklyGradeProgression() {
+    public List<ScoreAsOfWeek> getWeeklyGradeProgression() {
         return weeklyGradeProgression;
     }
 
-    public void setWeeklyGradeProgression(List<GradeAsOfWeek> weeklyGradeProgression) {
+    public void setWeeklyGradeProgression(List<ScoreAsOfWeek> weeklyGradeProgression) {
         this.weeklyGradeProgression = weeklyGradeProgression;
     }
 
