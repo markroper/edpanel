@@ -3,12 +3,12 @@ package com.scholarscore.api.manager;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.PrepScore;
+import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.user.Student;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * User: jordan
@@ -39,6 +39,6 @@ public interface StudentManager {
     
     public ServiceResponse<List<PrepScore>> getStudentPrepScore(Long studentIds[], Date startDate, Date endDate);
 
-    public ServiceResponse<Map<Date, Double>> getStudentHomeworkRates(Long studentId, Date startDate, Date endDate);
+    public ServiceResponse<List<ScoreAsOfWeek>> getStudentHomeworkRates(Long studentId, Date startDate, Date endDate);
 
 }
