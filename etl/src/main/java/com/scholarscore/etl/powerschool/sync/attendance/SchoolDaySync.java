@@ -10,6 +10,8 @@ import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.School;
 import com.scholarscore.models.attendance.SchoolDay;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by markroper on 10/30/15.
  */
 public class SchoolDaySync {
+    private final static Logger LOGGER = LoggerFactory.getLogger(SchoolDaySync.class);
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
     protected School school;
@@ -44,14 +47,26 @@ public class SchoolDaySync {
         try {
             source = resolveAllFromSourceSystem(Long.valueOf(school.getSourceSystemId()));
         } catch (HttpClientException e) {
-            results.schoolDaySourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-            return new ConcurrentHashMap<>();
+            try {
+                source = resolveAllFromSourceSystem(Long.valueOf(school.getSourceSystemId()));
+            } catch (HttpClientException ex) {
+                LOGGER.error("Unable to fetch school days from PowerSchool for school " + school.getName() +
+                        " with ID: " + school.getId());
+                results.schoolDaySourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+                return new ConcurrentHashMap<>();
+            }
         }
         try {
             ed = resolveFromEdPanel(school.getId());
         } catch (HttpClientException e) {
-            results.schoolDayEdPaneleGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-            return new ConcurrentHashMap<>();
+            try {
+                ed = resolveFromEdPanel(school.getId());
+            } catch (HttpClientException ex) {
+                LOGGER.error("Unable to fetch school days from EdPanel for school " + school.getName() +
+                        " with ID: " + school.getId());
+                results.schoolDayEdPaneleGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+                return new ConcurrentHashMap<>();
+            }
         }
         Iterator<Map.Entry<Date, SchoolDay>> sourceIterator = source.entrySet().iterator();
         List<SchoolDay> daysToCreate = new ArrayList<>();

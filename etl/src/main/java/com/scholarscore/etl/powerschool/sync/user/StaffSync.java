@@ -13,6 +13,8 @@ import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Person;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -25,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by markroper on 10/26/15.
  */
 public class StaffSync implements ISync<Person> {
+    private final static Logger LOGGER = LoggerFactory.getLogger(StaffSync.class);
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
     protected School school;
@@ -47,19 +50,31 @@ public class StaffSync implements ISync<Person> {
         try {
             sourceStaff = resolveAllFromSourceSystem();
         } catch (HttpClientException e) {
-            results.staffSourceGetFailed(Long.valueOf(
-                    school.getSourceSystemId()),
-                    school.getId());
-            return new ConcurrentHashMap<>();
+            try {
+                sourceStaff = resolveAllFromSourceSystem();
+            } catch (HttpClientException ex) {
+                LOGGER.error("Unable to fetch staff from PowerSchool for school " + school.getName() +
+                        " with ID: " + school.getId());
+                results.staffSourceGetFailed(Long.valueOf(
+                        school.getSourceSystemId()),
+                        school.getId());
+                return new ConcurrentHashMap<>();
+            }
         }
         ConcurrentHashMap<Long, Person> ed = null;
         try {
             ed = resolveFromEdPanel();
         } catch (HttpClientException e) {
-            results.staffEdPanelGetFailed(Long.valueOf(
-                            school.getSourceSystemId()),
-                    school.getId());
-            return new ConcurrentHashMap<>();
+            try {
+                ed = resolveFromEdPanel();
+            } catch (HttpClientException ex) {
+                LOGGER.error("Unable to fetch staff from EdPanel for school " + school.getName() +
+                        " with ID: " + school.getId());
+                results.staffEdPanelGetFailed(Long.valueOf(
+                                school.getSourceSystemId()),
+                        school.getId());
+                return new ConcurrentHashMap<>();
+            }
         }
         Iterator<Map.Entry<Long, Person>> sourceIterator = sourceStaff.entrySet().iterator();
         //Find & perform the inserts and updates, if any

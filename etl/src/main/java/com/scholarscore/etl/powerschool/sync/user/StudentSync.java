@@ -12,6 +12,8 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.user.Person;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -23,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by markroper on 10/26/15.
  */
 public class StudentSync implements ISync<Student> {
+    private final static Logger LOGGER = LoggerFactory.getLogger(StudentSync.class);
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
     protected School school;
@@ -45,15 +48,27 @@ public class StudentSync implements ISync<Student> {
         try {
             sourceStudents = resolveAllFromSourceSystem();
         } catch (HttpClientException e) {
-            results.studentSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-            return new ConcurrentHashMap<>();
+            try {
+                sourceStudents = resolveAllFromSourceSystem();
+            } catch (HttpClientException ex) {
+                LOGGER.error("Unable to fetch students from PowerSchool for school " + school.getName() +
+                        " with ID: " + school.getId());
+                results.studentSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+                return new ConcurrentHashMap<>();
+            }
         }
         ConcurrentHashMap<Long, Student> ed = null;
         try {
             ed = resolveFromEdPanel();
         } catch (HttpClientException e) {
-            results.studentEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-            return new ConcurrentHashMap<>();
+            try {
+                ed = resolveFromEdPanel();
+            } catch (HttpClientException ex) {
+                LOGGER.error("Unable to fetch students from EdPanel for school " + school.getName() +
+                        " with ID: " + school.getId());
+                results.studentEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+                return new ConcurrentHashMap<>();
+            }
         }
         Iterator<Map.Entry<Long, Student>> sourceIterator = sourceStudents.entrySet().iterator();
         //Find & perform the inserts and updates, if any
