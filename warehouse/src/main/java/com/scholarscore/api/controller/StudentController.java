@@ -211,7 +211,27 @@ public class StudentController extends BaseController {
     ) {
         return respond(pm.getStudentManager().getStudentPrepScore(new Long[] { studentId }, startDate, endDate));
     }
-    
+
+    @ApiOperation(
+            value = "Get one student's weekly HW completion percentage",
+            notes = "Bucketed by week, Sunday - Saturday",
+            response = List.class)
+    @RequestMapping(
+            value = "/{studentId}/homeworkrates",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getStudentHwCompletionRates(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "startDate", value = "Start Date")
+            @RequestParam(value="startDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date startDate,
+            @ApiParam(name = "endDate", value = "End Date")
+            @RequestParam(value="endDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date endDate
+    ) {
+        return respond(pm.getStudentManager().getStudentHomeworkRates(studentId, startDate, endDate));
+    }
+
     private String testThis() { return "this"; }
     
     @ApiOperation(
