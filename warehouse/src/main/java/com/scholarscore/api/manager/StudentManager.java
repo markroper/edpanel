@@ -3,6 +3,7 @@ package com.scholarscore.api.manager;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.PrepScore;
+import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.user.Student;
 
 import java.util.Collection;
@@ -37,5 +38,7 @@ public interface StudentManager {
     public ServiceResponse<Long> deleteStudent(long studentId);
     
     public ServiceResponse<List<PrepScore>> getStudentPrepScore(Long studentIds[], Date startDate, Date endDate);
+
+    public ServiceResponse<List<ScoreAsOfWeek>> getStudentHomeworkRates(Long studentId, Date startDate, Date endDate);
 
 }

@@ -7,8 +7,13 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.PrepScore;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.user.Student;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -109,4 +114,52 @@ public class StudentManagerImpl implements StudentManager {
         return new ServiceResponse<>(studentPrepScorePersistence.selectStudentPrepScore(studentIds, startDate, endDate));
     }
 
+    @Override
+    public ServiceResponse<List<ScoreAsOfWeek>> getStudentHomeworkRates(Long studentId, Date startDate, Date endDate) {
+        ServiceResponse<Collection<StudentAssignment>> studAssResp =
+                pm.getStudentAssignmentManager().getAllStudentAssignmentsBetweenDates(studentId, startDate, endDate);
+        List<ScoreAsOfWeek> weekEndToCompletion = new ArrayList<>();
+        if(null == studAssResp.getCode()) {
+            List<StudentAssignment> studentAssignments = new ArrayList<>(studAssResp.getValue());
+            studentAssignments.sort((object1, object2) ->
+                    object1.getAssignment().getDueDate().compareTo(object2.getAssignment().getDueDate()));
+            List<StudentAssignment> hwAssignments = new ArrayList<>();
+            //Sort by due date
+            Date currentLastDayOfWeek = null;
+            Calendar cal  = Calendar.getInstance();
+            for(StudentAssignment sa: studentAssignments) {
+                if(sa.getAssignment().getType().equals(AssignmentType.HOMEWORK)) {
+                    Date dueDate = sa.getAssignment().getDueDate();
+                    cal.setTime(dueDate);
+                    int currentDay = cal.get(Calendar.DAY_OF_WEEK);
+                    int leftDays= Calendar.SATURDAY - currentDay;
+                    cal.add(Calendar.DATE, leftDays);
+                    if(null == currentLastDayOfWeek) {
+                        currentLastDayOfWeek = cal.getTime();
+                    }
+                    if(!currentLastDayOfWeek.equals(cal.getTime())) {
+                        weekEndToCompletion.add(
+                                new ScoreAsOfWeek(currentLastDayOfWeek, calculateHwCompletionRate(hwAssignments)));
+                        hwAssignments = new ArrayList<>();
+                        currentLastDayOfWeek = cal.getTime();
+                    }
+                    hwAssignments.add(sa);
+                }
+            }
+            if(hwAssignments.size() > 0) {
+                weekEndToCompletion.add(
+                        new ScoreAsOfWeek(currentLastDayOfWeek, calculateHwCompletionRate(hwAssignments)));
+            }
+        }
+        return new ServiceResponse<>(weekEndToCompletion);
+    }
+    private static Double calculateHwCompletionRate(List<StudentAssignment> studentAssignments) {
+        Integer numerator = studentAssignments.size();
+        for(StudentAssignment a: studentAssignments) {
+            if(null == a.getAwardedPoints() || a.getAwardedPoints().equals(0l)) {
+                numerator--;
+            }
+        }
+        return numerator / (double) studentAssignments.size() * 100D;
+    }
 }

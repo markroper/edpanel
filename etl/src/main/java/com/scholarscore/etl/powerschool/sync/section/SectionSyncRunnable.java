@@ -102,8 +102,14 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
         try {
             source = resolveAllFromSourceSystem();
         } catch (HttpClientException e) {
-            results.sectionSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-            return new ConcurrentHashMap<>();
+            try {
+                source = resolveAllFromSourceSystem();
+            } catch (HttpClientException ex) {
+                LOGGER.warn("Failed to retrieve sections from PowerSchool for the school " +
+                        school.getName() + ", with ID: " + school.getId());
+                results.sectionSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+                return new ConcurrentHashMap<>();
+            }
         }
         ConcurrentHashMap<Long, Section> ed = null;
         try {

@@ -8,6 +8,7 @@ import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.assignment.StudentAssignment;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,6 +28,15 @@ public class StudentAssignmentManagerImpl implements  StudentAssignmentManager {
 
     public void setPm(OrchestrationManager pm) {
         this.pm = pm;
+    }
+
+    //STUDENT ASSIGNMENTS
+    @Override
+    public ServiceResponse<Collection<StudentAssignment>> getAllStudentAssignmentsBetweenDates(
+            long studentId, Date startDate, Date endDate) {
+        Collection<StudentAssignment> sas =
+                studentAssignmentPersistence.selectAllBetweenDates(studentId, startDate, endDate);
+        return new ServiceResponse<>(sas);
     }
 
     //STUDENT ASSIGNMENTS

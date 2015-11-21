@@ -10,6 +10,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Transactional
@@ -42,6 +43,20 @@ public class StudentAssignmentJdbc
         return objects;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection<StudentAssignment> selectAllBetweenDates(long studentId, Date start, Date end) {
+        String[] params = new String[]{"studentId", "startDate", "endDate"};
+        Object[] paramValues = new Object[]{ new Long(studentId), start, end };
+        List<StudentAssignment> objects = (List<StudentAssignment>) hibernateTemplate.findByNamedParam(
+                "from student_assignment s " +
+                "join fetch s.student st left join fetch st.homeAddress left join fetch st.mailingAddress " +
+                "left join fetch st.contactMethods join fetch s.assignment a " +
+                "where st.id = :studentId and a.dueDate >= :startDate and a.dueDate <= :endDate",
+                params,
+                paramValues);
+        return objects;
+    }
 
 
     @Override
