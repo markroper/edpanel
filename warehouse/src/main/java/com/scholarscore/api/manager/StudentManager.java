@@ -8,6 +8,7 @@ import com.scholarscore.models.user.Student;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * User: jordan
@@ -37,5 +38,7 @@ public interface StudentManager {
     public ServiceResponse<Long> deleteStudent(long studentId);
     
     public ServiceResponse<List<PrepScore>> getStudentPrepScore(Long studentIds[], Date startDate, Date endDate);
+
+    public ServiceResponse<Map<Date, Double>> getStudentHomeworkRates(Long studentId, Date startDate, Date endDate);
 
 }
