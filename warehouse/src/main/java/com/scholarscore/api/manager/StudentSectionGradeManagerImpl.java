@@ -5,7 +5,7 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.ui.GradeAsOfWeek;
+import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
@@ -139,7 +139,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         gradeWithProgression.setTermGrades(ssgResp.getValue().getTermGrades());
         Section section = ssgResp.getValue().getSection();
 
-        List<GradeAsOfWeek> grades = new ArrayList<>();
+        List<ScoreAsOfWeek> grades = new ArrayList<>();
         ServiceResponse<Collection<StudentAssignment>> assignmentResp =
                 pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, schoolId, yearId, termId, sectionId);
         Term term = section.getTerm();
@@ -175,7 +175,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                 }
                 if(!currentLastDayOfWeek.equals(cal.getTime())) {
                     Set<StudentAssignment> subassignments = new HashSet<>(assignments.subList(0, i));
-                    GradeAsOfWeek g = new GradeAsOfWeek();
+                    ScoreAsOfWeek g = new ScoreAsOfWeek();
                     g.setWeekEnding(currentLastDayOfWeek);
                     g.setScore(formula.calculateGrade(subassignments));
                     grades.add(g);

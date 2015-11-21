@@ -5,9 +5,20 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.assignment.StudentAssignment;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 public interface StudentAssignmentManager {
+    /**
+     * Return all student assignments within over a period of time
+     * @param studentId ID of student
+     * @param startDate Start date range
+     * @param endDate End date range
+     * @return
+     */
+    public ServiceResponse<Collection<StudentAssignment>> getAllStudentAssignmentsBetweenDates(
+            long studentId, Date startDate, Date endDate);
+
     /**
      * Return all student assignments within a section
      * @param schoolId ID of parent school
