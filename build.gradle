@@ -94,9 +94,9 @@ task refillDatabase(type: Exec) {
     def database_port = loadProperty(dbPropsFilePath, "database.port");
     def database_name = loadProperty(dbPropsFilePath, "database.name");
     def database_ssl  = loadProperty(dbPropsFilePath, "database.ssl");
-    
+   
     def args = ['mysql', '-u' + database_user, '-p' + database_pass, '--port=' + database_port, '--host=' + database_host]
-    if (database_ssl) { 
+    if (database_ssl?.equalsIgnoreCase("true")) { 
         println 'app configured to use SSL. Refilling DB over SSL...'
         args.add '--ssl-ca=/etc/ssl/certs/ssl-cert-myedpanel.ca-bundle'
     }
