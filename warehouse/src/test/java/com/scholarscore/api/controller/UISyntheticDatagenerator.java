@@ -108,10 +108,10 @@ public class UISyntheticDatagenerator extends IntegrationBase {
             day.setId(createdDayIds.get(i));
             i++;
             for(Student s : generatedStudents) {
-                int val = new Random().nextInt(100);
+                
                 AttendanceStatus status = AttendanceStatus.PRESENT;
-                //one in ten times, choose a random attendance status
-                if(val != 0 && val % 10 == 0) {
+                //one in ten times (choose an int between 0 and 9, so 10% chance of 0), choose a random attendance status
+                if(new Random().nextInt(10) == 0) {
                     status = AttendanceStatus.values()[new Random().nextInt(AttendanceStatus.values().length - 1)];
                 }
                 Attendance a = new Attendance();
