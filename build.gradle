@@ -86,13 +86,21 @@ task refillDatabase(type: Exec) {
     group 'Database'
     description 'creates everything needed within the database'
 
-    def database_user = loadProperty("/warehouse/src/main/resources/database.properties", "database.user");
-    def database_pass = loadProperty("/warehouse/src/main/resources/database.properties", "database.pass");
-    def database_host = loadProperty("/warehouse/src/main/resources/database.properties", "database.host");
-    def database_port = loadProperty("/warehouse/src/main/resources/database.properties", "database.port");
-    def database_name = loadProperty("/warehouse/src/main/resources/database.properties", "database.name");
-
-    commandLine 'mysql', '-u' + database_user, '-p' + database_pass, '--port=' + database_port, '--host=' + database_host
+    def dbPropsFilePath = "/warehouse/src/main/resources/database.properties"
+    
+    def database_user = loadProperty(dbPropsFilePath, "database.user");
+    def database_pass = loadProperty(dbPropsFilePath, "database.pass");
+    def database_host = loadProperty(dbPropsFilePath, "database.host");
+    def database_port = loadProperty(dbPropsFilePath, "database.port");
+    def database_name = loadProperty(dbPropsFilePath, "database.name");
+    def database_ssl  = loadProperty(dbPropsFilePath, "database.ssl");
+    
+    def args = ['mysql', '-u' + database_user, '-p' + database_pass, '--port=' + database_port, '--host=' + database_host]
+    if (database_ssl) { 
+        println 'app configured to use SSL. Refilling DB over SSL...'
+        args.add '--ssl-ca=/etc/ssl/certs/ssl-cert-myedpanel.ca-bundle'
+    }
+    commandLine args
     standardInput file("${project.rootDir.absolutePath}/database/createTableDDL.sql").newInputStream()
 }
 
