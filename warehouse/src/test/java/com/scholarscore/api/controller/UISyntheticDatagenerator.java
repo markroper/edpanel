@@ -22,6 +22,7 @@ import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import org.testng.annotations.Test;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -81,14 +82,11 @@ public class UISyntheticDatagenerator extends IntegrationBase {
         List<SchoolDay> daysToCreate = new ArrayList<>();
         List<Attendance> attendanceToCreate = new ArrayList<>();
         for(SchoolYear y : generatedSchoolYears) {
-            Date currentDate = y.getStartDate();
-            Calendar c = Calendar.getInstance();
-            
+            LocalDate currentDate = y.getStartDate();
             //Create the school days
             while(currentDate.compareTo(y.getEndDate()) < 0) {
-                c.setTime(currentDate);
-                int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-                if(dayOfWeek != 1 && dayOfWeek != 7) {
+                int dayOfWeek = currentDate.getDayOfWeek().getValue();
+                if(dayOfWeek != 6 && dayOfWeek != 7) {
                     //create a school day!
                     SchoolDay day = new SchoolDay();
                     day.setSchool(school);
@@ -96,8 +94,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                     daysToCreate.add(day);
                 }
                 //Increment the date
-                c.add(Calendar.DATE, 1);
-                currentDate = c.getTime();
+                currentDate = currentDate.plusDays(1l);
             }
         }
         Map<Long, List<Attendance>> studentIdToAttendance = new HashMap<>();
@@ -252,15 +249,15 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                 }
             }
         }
-        
-        Date beginDate = new Date();
-        Date endDate = new Date();
+
+        LocalDate beginDate = LocalDate.now();
+        LocalDate endDate = LocalDate.now();
         for(Map.Entry<Long, List<Term>> yearEntry: terms.entrySet()) {
             for(Term t : yearEntry.getValue()) {
-                if(t.getStartDate().getTime() < beginDate.getTime()) {
+                if(t.getStartDate().compareTo(beginDate) < 0) {
                     beginDate = t.getStartDate();
                 }
-                if(t.getEndDate().getTime() > endDate.getTime()) {
+                if(t.getEndDate().compareTo(endDate) > 0) {
                     endDate = t.getEndDate();
                 }
             }

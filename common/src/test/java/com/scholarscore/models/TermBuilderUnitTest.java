@@ -6,7 +6,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * TermBuilderUnitTest ensures that we create equivalent Term objects when using setters and builders
@@ -22,8 +22,8 @@ public class TermBuilderUnitTest extends AbstractBuilderUnitTest<Term>{
 
         String name = RandomStringUtils.randomAlphabetic(15);
         Long id = RandomUtils.nextLong(0L, Long.MAX_VALUE);
-        Date startDate = CommonTestUtils.getRandomDate();
-        Date endDate = CommonTestUtils.getRandomDate();
+        LocalDate startDate = CommonTestUtils.getRandomLocalDate();
+        LocalDate endDate = CommonTestUtils.getRandomLocalDate();
         SchoolYear schoolYear = CommonTestUtils.generateSchoolYear(CommonTestUtils.generateSchool());
         
         Term fullTerm = new Term();

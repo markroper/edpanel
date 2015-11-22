@@ -13,7 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -31,8 +31,8 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Term extends ApiModel implements Serializable, IApiModel<Term>{
-    protected Date startDate;
-    protected Date endDate;
+    protected LocalDate startDate;
+    protected LocalDate endDate;
     protected String sourceSystemId;
     protected SchoolYear schoolYear;
     protected Long portion;
@@ -73,16 +73,16 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
     }
 
     @Column(name = HibernateConsts.TERM_START_DATE)
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
     @Column(name = HibernateConsts.TERM_END_DATE)
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
@@ -97,7 +97,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
         this.schoolYear = schoolYear;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
@@ -176,8 +176,8 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
      * chain setting attributes together.
      */
     public static class TermBuilder extends ApiModelBuilder<TermBuilder, Term>{
-        protected Date startDate;
-        protected Date endDate;
+        protected LocalDate startDate;
+        protected LocalDate endDate;
         protected SchoolYear schoolYear;
         //Denominator part of the fraction of the year this term spans 1=full year 2=half 3=1/3, etc
         protected Long portion;
@@ -187,12 +187,12 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
             return this;
         }
 
-        public TermBuilder withStartDate(final Date startDate){
+        public TermBuilder withStartDate(final LocalDate startDate){
             this.startDate = startDate;
             return this;
         }
 
-        public TermBuilder withEndDate(final Date endDate){
+        public TermBuilder withEndDate(final LocalDate endDate){
             this.endDate = endDate;
             return this;
         }

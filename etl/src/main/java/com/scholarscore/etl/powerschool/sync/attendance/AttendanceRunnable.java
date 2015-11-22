@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,19 +38,19 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
     protected School school;
-    protected ConcurrentHashMap<Date, SchoolDay> schoolDays;
+    protected ConcurrentHashMap<LocalDate, SchoolDay> schoolDays;
     protected Student student;
     protected SyncResult results;
-    protected Date syncCutoff;
+    protected LocalDate syncCutoff;
     protected Long dailyAbsenseTrigger;
 
     public AttendanceRunnable(IAPIClient edPanel,
                           IPowerSchoolClient powerSchool,
                           School s,
                           Student student,
-                          ConcurrentHashMap<Date, SchoolDay> schoolDays,
+                          ConcurrentHashMap<LocalDate, SchoolDay> schoolDays,
                           SyncResult results,
-                          Date syncCutoff,
+                          LocalDate syncCutoff,
                           Long dailyAbsenseTrigger) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;

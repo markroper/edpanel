@@ -17,7 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -35,7 +35,7 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
     private String sourceSystemId;
     private Long sourceSystemOtherId;
     private School school;
-    private Date date;
+    private LocalDate date;
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,10 +48,10 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
     }
 
     @Column(name = HibernateConsts.SCHOOL_DAY_DATE)
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
@@ -153,7 +153,7 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
     public static class SchoolDayBuilder {
         private Long id;
         private School school;
-        private Date date;
+        private LocalDate date;
         private String sourceSystemId;
         private Long sourceSystemOtherId;
 
@@ -182,7 +182,7 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
             return this;
         }
 
-        public SchoolDayBuilder withDate(final Date date){
+        public SchoolDayBuilder withDate(final LocalDate date){
             this.date = date;
             return this;
         }

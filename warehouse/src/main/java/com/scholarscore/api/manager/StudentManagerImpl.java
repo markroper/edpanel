@@ -12,6 +12,8 @@ import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.user.Student;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -125,23 +127,21 @@ public class StudentManagerImpl implements StudentManager {
                     object1.getAssignment().getDueDate().compareTo(object2.getAssignment().getDueDate()));
             List<StudentAssignment> hwAssignments = new ArrayList<>();
             //Sort by due date
-            Date currentLastDayOfWeek = null;
+            LocalDate currentLastDayOfWeek = null;
             Calendar cal  = Calendar.getInstance();
             for(StudentAssignment sa: studentAssignments) {
                 if(sa.getAssignment().getType().equals(AssignmentType.HOMEWORK)) {
-                    Date dueDate = sa.getAssignment().getDueDate();
-                    cal.setTime(dueDate);
-                    int currentDay = cal.get(Calendar.DAY_OF_WEEK);
-                    int leftDays= Calendar.SATURDAY - currentDay;
-                    cal.add(Calendar.DATE, leftDays);
+                    LocalDate dueDate = sa.getAssignment().getDueDate();
+                    int daysToAdd = DayOfWeek.SATURDAY.getValue() - dueDate.getDayOfWeek().getValue();
+                    LocalDate endOfWeek = dueDate.plusDays(daysToAdd);
                     if(null == currentLastDayOfWeek) {
-                        currentLastDayOfWeek = cal.getTime();
+                        currentLastDayOfWeek = endOfWeek;
                     }
-                    if(!currentLastDayOfWeek.equals(cal.getTime())) {
+                    if(!currentLastDayOfWeek.equals(endOfWeek)) {
                         weekEndToCompletion.add(
                                 new ScoreAsOfWeek(currentLastDayOfWeek, calculateHwCompletionRate(hwAssignments)));
                         hwAssignments = new ArrayList<>();
-                        currentLastDayOfWeek = cal.getTime();
+                        currentLastDayOfWeek = endOfWeek;
                     }
                     hwAssignments.add(sa);
                 }

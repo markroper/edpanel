@@ -7,7 +7,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * AttendanceAssignmentBuilderUnitTest tests that we can build equivalent objects with setters and a builder
@@ -26,7 +26,7 @@ public class AttendanceAssignmentBuilderUnitTest extends AbstractBuilderUnitTest
         String name = CommonTestUtils.generateName();
         Long sectionFK = RandomUtils.nextLong(0L, Long.MAX_VALUE);
         Long availablePoints = RandomUtils.nextLong(0L, Long.MAX_VALUE);
-        Date dueDate = CommonTestUtils.getRandomDate();
+        LocalDate dueDate = CommonTestUtils.getRandomLocalDate();
         AssignmentType type = AssignmentType.ATTENDANCE;
         Section section = CommonTestUtils.generateSection();
         Double weight = RandomUtils.nextDouble(0D, Double.MAX_VALUE);

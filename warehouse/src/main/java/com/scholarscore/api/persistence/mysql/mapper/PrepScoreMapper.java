@@ -19,8 +19,8 @@ public class PrepScoreMapper implements RowMapper<PrepScore> {
         PrepScore prepScore = new PrepScore();
         prepScore.setScore(rs.getLong(HibernateConsts.BEHAVIOR_POINT_VALUE));
         prepScore.setStudentId(rs.getLong(HibernateConsts.STUDENT_USER_FK));
-        prepScore.setStartDate(rs.getDate(HibernateConsts.PREPSCORE_START_DATE));
-        prepScore.setEndDate(rs.getDate(HibernateConsts.PREPSCORE_END_DATE));
+        prepScore.setStartDate(rs.getDate(HibernateConsts.PREPSCORE_START_DATE).toLocalDate());
+        prepScore.setEndDate(rs.getDate(HibernateConsts.PREPSCORE_END_DATE).toLocalDate());
         return prepScore;
     }
 }

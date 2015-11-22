@@ -8,7 +8,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * StudentAssignmentBuilderUnitTest checks that we can make equivalent objects with setters and builders
@@ -25,7 +25,7 @@ public class StudentAssignmentBuilderUnitTest extends AbstractBuilderUnitTest<St
         Long id = RandomUtils.nextLong(0L, Long.MAX_VALUE);
         String name = CommonTestUtils.generateName();
         Boolean completed = CommonTestUtils.getRandomBoolean();
-        Date completionDate = CommonTestUtils.getRandomDate();
+        LocalDate completionDate = CommonTestUtils.getRandomLocalDate();
         Double awardedPoints = RandomUtils.nextDouble(0d, Double.MAX_VALUE);
         Section section = CommonTestUtils.generateSection();
         Assignment assignment = CommonTestUtils.generateAssignment(AssignmentType.CLASSWORK, section);

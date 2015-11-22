@@ -1,7 +1,7 @@
 package com.scholarscore.etl.powerschool.client;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * This class is a non-static path factory.  It is not static because a number of things can be dynamically changed
@@ -19,7 +19,7 @@ public class PowerSchoolPaths {
     public void setPageSize(Integer size) {
         pageSize = size;
     }
-    public void setCutoffDate(Date date) {
+    public void setCutoffDate(LocalDate date) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         cutoffDate = format.format(date);
     }

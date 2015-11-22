@@ -28,7 +28,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -47,8 +47,8 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Section extends ApiModel implements Serializable, IApiModel<Section> {
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    protected Date startDate;
-    protected Date endDate;
+    protected LocalDate startDate;
+    protected LocalDate endDate;
     protected String room;
     //For jackson & for java 
     protected GradeFormula gradeFormula;
@@ -70,7 +70,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         teachers = Sets.newHashSet();
     }
 
-    public Section(Date startDate, Date endDate, String room, GradeFormula gradeFormula, Integer numberOfTerms) {
+    public Section(LocalDate startDate, LocalDate endDate, String room, GradeFormula gradeFormula, Integer numberOfTerms) {
         this();
         this.startDate = startDate;
         this.endDate = endDate;
@@ -146,20 +146,20 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     }
 
     @Column(name = HibernateConsts.SECTION_START_DATE)
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
     @Column(name = HibernateConsts.SECTION_END_DATE)
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
@@ -365,8 +365,8 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
      */
     public static class SectionBuilder extends ApiModelBuilder<SectionBuilder, Section> {
 
-        protected Date startDate;
-        protected Date endDate;
+        protected LocalDate startDate;
+        protected LocalDate endDate;
         protected String room;
         protected GradeFormula gradeFormula;
         protected String gradeFormulaString;
@@ -391,12 +391,12 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             return this;
         }
 
-        public SectionBuilder withStartDate(final Date startDate){
+        public SectionBuilder withStartDate(final LocalDate startDate){
             this.startDate = startDate;
             return this;
         }
 
-        public SectionBuilder withEndDate(final Date endDate){
+        public SectionBuilder withEndDate(final LocalDate endDate){
             this.endDate = endDate;
             return this;
         }

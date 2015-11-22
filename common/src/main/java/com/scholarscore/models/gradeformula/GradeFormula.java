@@ -6,13 +6,13 @@ import com.scholarscore.models.assignment.StudentAssignment;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  * PowerSchool breaks the logical concept of a Grade Formula into three objects, each of which
@@ -45,9 +45,9 @@ public class GradeFormula implements Serializable {
     String name;
     String sourceSystemDescription;
     //Start date of the reporting term
-    Date startDate;
+    LocalDate startDate;
     //End date of the reporting term
-    Date endDate;
+    LocalDate endDate;
     //Parent grade formula (e.g. a Quarter's grade formula may have a parent semester grade formula)
     Long parentId;
     //TODO: migrated but not yet in use in calculateGrade(..)
@@ -163,10 +163,10 @@ public class GradeFormula implements Serializable {
             Map<String, MutablePair<Double, Double>> typeToAwardedAndAvailPoints = new HashMap<>();
             Map<Long, MutablePair<Double, Double>> assignmentIdToPoints = new HashMap<>();
             for(StudentAssignment sa : studentAssignments) {
-                Date dueDate = sa.getAssignment().getDueDate();
+                LocalDate dueDate = sa.getAssignment().getDueDate();
                 //If the assignment is within the term:
-                if((null == startDate || dueDate.compareTo(startDate) >= 0 || new Long(0L).equals(getDateDiff(startDate, dueDate, TimeUnit.DAYS)))
-                        && (null == endDate || dueDate.compareTo(endDate) <= 0 || new Long(0L).equals(getDateDiff(endDate, dueDate, TimeUnit.DAYS)))) {
+                if((null == startDate || dueDate.compareTo(startDate) >= 0 )
+                        && (null == endDate || dueDate.compareTo(endDate) <= 0)) {
                     //If there is a weight for the particular assignment, calculate the values and move on
                     //to the next assignment:
                     if(assignmentWeights.containsKey(sa.getAssignment().getId())) {
@@ -239,10 +239,9 @@ public class GradeFormula implements Serializable {
         Double numerator = 0D;
         Double denominator = 0D;
         for(StudentAssignment sa : studentAssignments) {
-            Date dueDate = sa.getAssignment().getDueDate();
+            LocalDate dueDate = sa.getAssignment().getDueDate();
             //If the assignment is within the term:
-            if ((dueDate.compareTo(startDate) >= 0 || new Long(0L).equals(getDateDiff(startDate, dueDate, TimeUnit.DAYS)))
-                    && (dueDate.compareTo(endDate) <= 0 || new Long(0L).equals(getDateDiff(endDate, dueDate, TimeUnit.DAYS)))) {
+            if (dueDate.compareTo(startDate) >= 0 && dueDate.compareTo(endDate) <= 0) {
                 //Don't count exempt assignments
                 if ((null != sa.getExempt() && sa.getExempt()) ||
                         (null != sa.getAssignment().getIncludeInFinalGrades() && !sa.getAssignment().getIncludeInFinalGrades())) {
@@ -280,10 +279,10 @@ public class GradeFormula implements Serializable {
      * @param endDate   Non-null date
      * @return GradeFormula matching the start and end date or else null
      */
-    public GradeFormula resolveFormulaMatchingDates(Date startDate, Date endDate) {
+    public GradeFormula resolveFormulaMatchingDates(LocalDate startDate, LocalDate endDate) {
         //Soft match the dates since terms and reporting terms as migrated may be off by some number of minutes or days
-        if(null != this.startDate && getDateDiff(this.startDate, startDate, TimeUnit.DAYS) < 8 &&
-                null != this.endDate && getDateDiff(this.endDate, endDate, TimeUnit.DAYS) < 8) {
+        if(null != this.startDate && getDateDiff(this.startDate, startDate) < 8 &&
+                null != this.endDate && getDateDiff(this.endDate, endDate) < 8) {
             return this;
         }
         for(GradeFormula formula: children) {
@@ -295,9 +294,8 @@ public class GradeFormula implements Serializable {
         return null;
     }
 
-    private static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
-        long diffInMillies = Math.abs(date2.getTime() - date1.getTime());
-        return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
+    private static long getDateDiff(LocalDate date1, LocalDate date2) {
+        return Math.abs( Duration.between(date1, date2).toDays() );
     }
 
     public Long getId() {
@@ -316,19 +314,19 @@ public class GradeFormula implements Serializable {
         this.name = name;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

@@ -15,7 +15,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,8 +32,8 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SchoolYear extends ApiModel implements Serializable, IApiModel<SchoolYear>{
-    protected Date startDate;
-    protected Date endDate;
+    protected LocalDate startDate;
+    protected LocalDate endDate;
     protected List<Term> terms;
     protected School school;
     
@@ -50,7 +50,7 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         this.school = year.school;
     }
     
-    public SchoolYear(Date startDate, Date endDate) {
+    public SchoolYear(LocalDate startDate, LocalDate endDate) {
         this();
         this.startDate = startDate;
         this.endDate = endDate;
@@ -81,20 +81,20 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
     }
 
     @Column(name = HibernateConsts.SCHOOL_YEAR_START_DATE)
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
     @Column(name = HibernateConsts.SCHOOL_YEAR_END_DATE)
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
@@ -181,8 +181,8 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
      */
     public static class SchoolYearBuilder extends ApiModelBuilder<SchoolYearBuilder, SchoolYear> {
 
-        protected Date startDate;
-        protected Date endDate;
+        protected LocalDate startDate;
+        protected LocalDate endDate;
         protected List<Term> terms;
         protected School school;
 
@@ -190,12 +190,12 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
             terms = Lists.newArrayList();
         }
 
-        public SchoolYearBuilder withStartDate(final Date startDate){
+        public SchoolYearBuilder withStartDate(final LocalDate startDate){
             this.startDate = startDate;
             return this;
         }
 
-        public SchoolYearBuilder withEndDate(final Date endDate){
+        public SchoolYearBuilder withEndDate(final LocalDate endDate){
             this.endDate = endDate;
             return this;
         }

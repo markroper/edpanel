@@ -3,7 +3,7 @@ package com.scholarscore.models.ui;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -12,23 +12,23 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ScoreAsOfWeek implements Serializable {
-    public Date weekEnding;
+    public LocalDate weekEnding;
     public Double score;
 
     public ScoreAsOfWeek() {
 
     }
 
-    public ScoreAsOfWeek(Date date, Double score) {
+    public ScoreAsOfWeek(LocalDate date, Double score) {
         this.weekEnding = date;
         this.score = score;
     }
 
-    public Date getWeekEnding() {
+    public LocalDate getWeekEnding() {
         return weekEnding;
     }
 
-    public void setWeekEnding(Date weekEnding) {
+    public void setWeekEnding(LocalDate weekEnding) {
         this.weekEnding = weekEnding;
     }
 

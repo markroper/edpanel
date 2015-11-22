@@ -5,18 +5,18 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.StudentAssignment;
-import com.scholarscore.models.ui.SectionGradeWithProgression;
 import com.scholarscore.models.gradeformula.GradeFormula;
+import com.scholarscore.models.ui.ScoreAsOfWeek;
+import com.scholarscore.models.ui.SectionGradeWithProgression;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -107,7 +107,9 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                         formula.setStartDate(term.getStartDate());
                         formula.setEndDate(term.getEndDate());
                     } else {
-                        formula = formula.resolveFormulaMatchingDates(term.getStartDate(), term.getEndDate());
+                        formula = formula.resolveFormulaMatchingDates(
+                                term.getStartDate(),
+                                term.getEndDate());
                         if(null == formula) {
                             formula = sect.getGradeFormula();
                         }
@@ -151,7 +153,9 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                     formula.setStartDate(term.getStartDate());
                     formula.setEndDate(term.getEndDate());
                 } else {
-                    formula = formula.resolveFormulaMatchingDates(term.getStartDate(), term.getEndDate());
+                    formula = formula.resolveFormulaMatchingDates(
+                            term.getStartDate(),
+                            term.getEndDate());
                     if(null == formula) {
                         formula = section.getGradeFormula();
                     }
@@ -160,26 +164,23 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
             ArrayList<StudentAssignment> assignments = (ArrayList<StudentAssignment>)assignmentResp.getValue();
             gradeWithProgression.setCurrentCategoryGrades(formula.calculateCategoryGrades(new HashSet<>(assignments)));
             //Sort by due date
-            Date currentLastDayOfWeek = null;
-            Calendar cal  = Calendar.getInstance();
+            LocalDate currentLastDayOfWeek = null;
             int i = 1;
             assignments.sort((object1, object2) -> object1.getAssignment().getDueDate().compareTo(object2.getAssignment().getDueDate()));
             for(StudentAssignment a: assignments) {
-                Date dueDate = a.getAssignment().getDueDate();
-                cal.setTime(dueDate);
-                int currentDay = cal.get(Calendar.DAY_OF_WEEK);
-                int leftDays= Calendar.SATURDAY - currentDay;
-                cal.add(Calendar.DATE, leftDays);
+                LocalDate dueDate = a.getAssignment().getDueDate();
+                int daysToAdd = DayOfWeek.SATURDAY.getValue() - dueDate.getDayOfWeek().getValue();
+                LocalDate endOfWeek = dueDate.plusDays(daysToAdd);
                 if(null == currentLastDayOfWeek) {
-                    currentLastDayOfWeek = cal.getTime();
+                    currentLastDayOfWeek = endOfWeek;
                 }
-                if(!currentLastDayOfWeek.equals(cal.getTime())) {
+                if(!currentLastDayOfWeek.equals(endOfWeek)) {
                     Set<StudentAssignment> subassignments = new HashSet<>(assignments.subList(0, i));
                     ScoreAsOfWeek g = new ScoreAsOfWeek();
                     g.setWeekEnding(currentLastDayOfWeek);
                     g.setScore(formula.calculateGrade(subassignments));
                     grades.add(g);
-                    currentLastDayOfWeek = cal.getTime();
+                    currentLastDayOfWeek = endOfWeek;
                 }
                 i++;
             }

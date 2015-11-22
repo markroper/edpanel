@@ -7,7 +7,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * BehaviorBuilderUnitTest tests that we can build an equivalent Behavior object with setters and with a builder
@@ -24,7 +24,7 @@ public class BehaviorBuilderUnitTest extends AbstractBuilderUnitTest<Behavior>{
         String remoteStudentId = RandomStringUtils.random(10);
         String remoteSystem = RandomStringUtils.random(10);
         String remoteBehaviorId = RandomStringUtils.random(10);
-        Date behaviorDate = CommonTestUtils.getRandomDate();
+        LocalDate behaviorDate = CommonTestUtils.getRandomLocalDate();
         BehaviorCategory behaviorCategory = CommonTestUtils.getRandomBehaviorCategory();
         String pointValue = RandomStringUtils.random(10);
         String roster = RandomStringUtils.random(10);
