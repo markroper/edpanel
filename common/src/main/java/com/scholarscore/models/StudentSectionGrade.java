@@ -135,7 +135,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
     }
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.STUDENT_SECTION_GRADE_ID)
     public Long getId() {
         return id;

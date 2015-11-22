@@ -60,7 +60,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
     }
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.TERM_ID)
     public Long getId() {
         return super.getId();

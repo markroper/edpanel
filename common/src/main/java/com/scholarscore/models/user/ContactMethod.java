@@ -49,7 +49,7 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
     }
     
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.CONTACT_METHOD_ID)
     public Long getId() {
         return id;

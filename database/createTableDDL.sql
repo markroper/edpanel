@@ -18,7 +18,7 @@ CREATE TABLE `scholar_warehouse`.`school` (
   `main_phone` VARCHAR(255) NULL COMMENT 'The school\'s main phone number',
   `principal_name` VARCHAR(255) NULL COMMENT 'The principal\'s name',
   `principal_email` VARCHAR(255) NULL COMMENT 'The principal\'s email address',
-  `sourceSystemId` VARCHAR(255) NULL UNIQUE COMMENT 'The source system from which the entity was imported - the id from that system',
+  `source_system_id` VARCHAR(255) NULL UNIQUE COMMENT 'The source system from which the entity was imported - the id from that system',
   PRIMARY KEY (`school_id`))
 ENGINE = InnoDB;
 
@@ -222,7 +222,7 @@ CREATE TABLE `scholar_warehouse`.`assignment` (
   `assignment_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `assignment_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `type_fk` VARCHAR(255) NOT NULL COMMENT 'The assignment type string',
-  `assignmentClass` VARCHAR(256) NULL COMMENT 'The section start date',
+  `assignment_class` VARCHAR(256) NULL COMMENT 'The section start date',
   `assigned_date` DATETIME NULL COMMENT 'The section start date',
   `due_date` DATETIME NULL COMMENT 'The section end date',
   `available_points` BIGINT UNSIGNED NULL COMMENT 'The number of possible points to be awarded for an assignment',
