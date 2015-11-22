@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 @Transactional
@@ -96,9 +96,9 @@ public class AttendanceJdbc implements AttendancePersistence {
     @Override
     public Collection<Attendance> selectAllAttendanceForTerm(Long schoolId,
             Long studentId, Long yearId, Long termId) {
-        String[] paramNames = new String[] { "schoolId", "studentId", "startDate", "endDate" }; 
-        Date startDate = null;
-        Date endDate = null;
+        String[] paramNames = new String[] { "schoolId", "studentId", "startDate", "endDate" };
+        LocalDate startDate = null;
+        LocalDate endDate = null;
         Term t = termPersistence.select(yearId, termId);
         if(null != t) {
             startDate = t.getStartDate();

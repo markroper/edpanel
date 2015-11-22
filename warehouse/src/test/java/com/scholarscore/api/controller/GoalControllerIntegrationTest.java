@@ -31,6 +31,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -104,8 +106,8 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         Date today = cal.getTime();
         cal.add(Calendar.YEAR, 1); // to get previous year add -1
         Date nextYear = cal.getTime();
-        sectionAssignment.setAssignedDate(today);
-        sectionAssignment.setDueDate(nextYear);
+        sectionAssignment.setAssignedDate(today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        sectionAssignment.setDueDate(nextYear.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         sectionAssignment = (GradedAssignment) sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(),
                 term.getId(), section.getId(), sectionAssignment, "create test base term");
 
@@ -125,11 +127,8 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
 
     @DataProvider(name = "createGoalDataProvider")
     public Object[][] createGoalDataMethod() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.MILLISECOND, 0);
-        Date today = cal.getTime();
-        cal.add(Calendar.YEAR, 1); // to get previous year add -1
-        Date nextYear = cal.getTime();
+        LocalDate today = LocalDate.now();
+        LocalDate nextYear = today.plusYears(1l);
 
         BehaviorGoal behaviorGoal = new BehaviorGoal();
         behaviorGoal.setStudent(student);
@@ -246,14 +245,9 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
     @DataProvider(name = "testCalculatedMethodDataProvider")
     public Object[][] testCalculatedValuesDateMethod() {
         Double EXPECTED_VALUE = 3D;
-
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.MILLISECOND, 0);
-        Date today = cal.getTime();
-        cal.add(Calendar.YEAR, -1); // to get previous year add -1
-        Date lastYear = cal.getTime();
-        cal.add(Calendar.MONTH, 1);
-        Date midDate = cal.getTime();
+        LocalDate today = LocalDate.now();
+        LocalDate lastYear = today.minusYears(1l);
+        LocalDate midDate = lastYear.plusMonths(1l);
 
         //Generate behaviors so we can test that calculatedValue matches
         Behavior namedBehavior = new Behavior();

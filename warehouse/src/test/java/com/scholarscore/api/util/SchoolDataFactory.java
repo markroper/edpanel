@@ -22,13 +22,13 @@ import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
+import org.apache.commons.lang3.RandomUtils;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -141,13 +141,13 @@ public class SchoolDataFactory {
      * @return
      */
     public static List<SchoolYear> generateSchoolYears() {
-        int year = 115;
+        int year = 2016;
         int startMonth = 8;
         int endMonth = 5;
         int day = 1;
         ArrayList<SchoolYear> years = new ArrayList<SchoolYear>();
         for(int i = 0; i < 1; i++) {
-            years.add(new SchoolYear(new Date(year - i, startMonth, day), new Date(year - i + 1, endMonth, day)));
+            years.add(new SchoolYear(LocalDate.of(year -1, startMonth, day), LocalDate.of(year - i + 1, endMonth, day)));
         }
         return years;
     }
@@ -197,18 +197,14 @@ public class SchoolDataFactory {
         for(SchoolYear year : schoolYears) {
             terms.put(year.getId(), new ArrayList<Term>());
             
-            Date start = year.getStartDate();
-            Date end = year.getEndDate();
-            
-            Calendar endCalendar = new GregorianCalendar();
-            endCalendar.setTime(end);
-            int endYear = endCalendar.get(Calendar.YEAR) - 1900;
+            LocalDate start = year.getStartDate();
+            LocalDate end = year.getEndDate();
             
             Term firstTerm = new Term();
             firstTerm.setStartDate(start);
-            firstTerm.setEndDate(new Date(endYear - 1, 12, 31));
+            firstTerm.setEndDate(end.plusMonths(-6l));
             Term secondTerm = new Term();
-            secondTerm.setStartDate(new Date(endYear, 1, 1));
+            secondTerm.setStartDate(end.plusMonths(-6l));
             secondTerm.setEndDate(end);
             
             terms.get(year.getId()).add(firstTerm);
@@ -305,15 +301,12 @@ public class SchoolDataFactory {
         Map<Long, List<Assignment>> returnMap = new HashMap<Long, List<Assignment>>();
         for(Section s: sections) {
             returnMap.put(s.getId(), new ArrayList<Assignment>());
-            Date startDate = s.getStartDate();
-            Date endDate = s.getEndDate();
-            int diffInDays = (int) ((endDate.getTime() - startDate.getTime())/ DAY_IN_MILLIS );
+            LocalDate startDate = s.getStartDate();
+            LocalDate endDate = s.getEndDate();
+            int diffInDays = (int)Duration.between(startDate, endDate).toDays();
             //Create HW Assignments & Attendance assignments
             for(int i = 0; i < diffInDays; i = i + 3) {
-                Calendar c = Calendar.getInstance();
-                c.setTime(startDate); // Now use today date.
-                c.add(Calendar.DATE, i);
-                Date assignmentDate = c.getTime();
+                LocalDate assignmentDate = LocalDate.now().plusDays(i);
                 AttendanceAssignment attend = new AttendanceAssignment();
                 attend.setAvailablePoints(1L);
                 attend.setDueDate(assignmentDate);
@@ -330,21 +323,16 @@ public class SchoolDataFactory {
                 
             }
             //Create midterm
-            Calendar c = Calendar.getInstance();
-            c.setTime(startDate); // Now use today date.
-            c.add(Calendar.DATE, diffInDays/2);
             GradedAssignment midterm = new GradedAssignment();
-            midterm.setDueDate(c.getTime());
+            midterm.setDueDate(startDate.plusDays(diffInDays/2));
             midterm.setType(AssignmentType.MIDTERM);
             midterm.setAvailablePoints(100L);
             midterm.setAssignedDate(startDate);
             returnMap.get(s.getId()).add(midterm);
             
             //Create final
-            c.setTime(endDate); // Now use today date.
-            c.add(Calendar.DATE, -2);
             GradedAssignment fin = new GradedAssignment();
-            fin.setDueDate(c.getTime());
+            fin.setDueDate(endDate.plusDays(-2l));
             fin.setType(AssignmentType.FINAL);
             fin.setAvailablePoints(100L);
             fin.setAssignedDate(startDate);
@@ -397,10 +385,11 @@ public class SchoolDataFactory {
      */
     public static Map<Long, ArrayList<Behavior>> generateBehaviorEvents(
             Collection<Student> students, 
-            List<Teacher> teachers, 
-            Date beginDate,
-            Date endDate) {
-        int numDates = (int)( (endDate.getTime() - beginDate.getTime()) / (1000 * 60 * 60 * 24));
+            List<Teacher> teachers,
+            LocalDate beginDate,
+            LocalDate endDate) {
+        Math.abs(Duration.between(beginDate, endDate).toDays());
+        int numDates = (int)Math.abs(Duration.between(beginDate, endDate).toDays());
         Map<Long, ArrayList<Behavior>> studentBehaviors = new HashMap<Long, ArrayList<Behavior>>();
         for(Student s: students) {
             int numEventsToProduce = new Random().nextInt(numDates/2);
@@ -408,11 +397,9 @@ public class SchoolDataFactory {
             for(int i = 0; i < numEventsToProduce; i++) {
                 int teacherIndex = new Random().nextInt(teachers.size() - 1);
                 Teacher t = teachers.get(teacherIndex);
-                long inputTs = beginDate.getTime() + ((long) (Math.random() * (endDate.getTime() - beginDate.getTime())));
-                inputTs = (inputTs / 1000L) * 1000L;
-                Date d = new Date(inputTs);
+                LocalDate local = beginDate.plusDays(RandomUtils.nextLong(0l, numDates));
                 Behavior b = new Behavior();
-                b.setBehaviorDate(d);
+                b.setBehaviorDate(local);
                 b.setBehaviorCategory(BehaviorCategory.DEMERIT);
                 b.setPointValue("-2");
                 b.setTeacher(t);
@@ -426,8 +413,8 @@ public class SchoolDataFactory {
     public static Map<Long, ArrayList<Goal>> generateGoalEvents(
             Collection<Student> students,
             Teacher teacher,
-            Date beginDate,
-            Date endDate,
+            LocalDate beginDate,
+            LocalDate endDate,
             Map<Long, List<Long>> studentToSSGId,
             Map<Long, List<Long>> studentToAssignmentId
     ) {

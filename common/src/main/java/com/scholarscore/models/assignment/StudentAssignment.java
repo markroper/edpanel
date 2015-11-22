@@ -21,7 +21,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -35,7 +35,7 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentAssignment extends ApiModel implements Serializable, WeightedGradable, IApiModel<StudentAssignment> {
-    private Date completionDate;
+    private LocalDate completionDate;
     private Double awardedPoints;
     private Assignment assignment;
     private Student student;
@@ -141,11 +141,11 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     }
 
     @Column(name = HibernateConsts.STUDENT_ASSIGNMENT_COMPLETION_DATE)
-    public Date getCompletionDate() {
+    public LocalDate getCompletionDate() {
         return completionDate;
     }
 
-    public void setCompletionDate(Date completionDate) {
+    public void setCompletionDate(LocalDate completionDate) {
         this.completionDate = completionDate;
     }
 
@@ -197,7 +197,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
      */
     public static class StudentAssignmentBuilder extends ApiModelBuilder<StudentAssignmentBuilder, StudentAssignment> {
         private Boolean completed;
-        private Date completionDate;
+        private LocalDate completionDate;
         private Double awardedPoints;
         private Assignment assignment;
         private Student student;
@@ -219,7 +219,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
             return this;
         }
 
-        public StudentAssignmentBuilder withCompletionDate(final Date completionDate){
+        public StudentAssignmentBuilder withCompletionDate(final LocalDate completionDate){
             this.completionDate = completionDate;
             return this;
         }

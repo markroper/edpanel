@@ -45,6 +45,7 @@ import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -69,11 +70,7 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         authenticate();
-
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.YEAR, -1); // to get previous year add -1
-        Date lastYear = cal.getTime();
-        paths.setCutoffDate(lastYear);
+        paths.setCutoffDate(LocalDate.now().minusYears(1l));
         paths.setPageSize(PAGE_SIZE);
     }
 
@@ -106,7 +103,7 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
 
     @Override
-    public void setSyncCutoff(Date date) {
+    public void setSyncCutoff(LocalDate date) {
         paths.setCutoffDate(date);
     }
 
