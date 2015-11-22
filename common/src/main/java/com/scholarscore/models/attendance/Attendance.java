@@ -54,7 +54,7 @@ public class Attendance implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.ATTENDANCE_ID)
     public Long getId() {
         return id;

@@ -5,7 +5,7 @@ import com.scholarscore.api.persistence.StudentAssignmentPersistence;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.assignment.StudentAssignment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate4.HibernateTemplate;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;

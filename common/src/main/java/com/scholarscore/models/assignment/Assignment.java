@@ -35,7 +35,7 @@ import java.util.Objects;
  */
 @Entity(name = HibernateConsts.ASSIGNMENT_TABLE)
 @Table(name = HibernateConsts.ASSIGNMENT_TABLE)
-@DiscriminatorColumn(name="assignmentClass", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name="assignment_class", discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -146,7 +146,7 @@ public abstract class Assignment
     }
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.ASSIGNMENT_ID)
     public Long getId() {
         return super.getId();

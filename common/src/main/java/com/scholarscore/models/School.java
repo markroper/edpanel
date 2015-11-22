@@ -51,7 +51,7 @@ public class School extends ApiModel implements Serializable, IApiModel<School> 
     }
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.SCHOOL_ID)
     public Long getId() {
         return super.getId();

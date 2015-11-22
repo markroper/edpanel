@@ -65,7 +65,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     }
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.BEHAVIOR_ID)
     public Long getId() {
         return super.getId();

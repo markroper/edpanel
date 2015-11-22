@@ -110,7 +110,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     }
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.SECTION_ID)
     public Long getId() {
         return super.getId();

@@ -150,7 +150,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     }
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.STUDENT_ASSIGNMENT_ID)
     public Long getId() {
         return super.getId();

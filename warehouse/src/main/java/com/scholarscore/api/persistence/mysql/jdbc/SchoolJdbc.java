@@ -3,7 +3,7 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 import com.scholarscore.api.persistence.SchoolPersistence;
 import com.scholarscore.models.School;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate4.HibernateTemplate;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
