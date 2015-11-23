@@ -30,9 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -267,9 +266,9 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     gradeFormula.setParentId(term.parentreportingtermid);
                     gradeFormula.setName(term.name);
                     try {
-                        gradeFormula.setStartDate(df.parse(startDate).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                        gradeFormula.setEndDate(df.parse(endDate).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                    } catch (ParseException e) {
+                        gradeFormula.setStartDate(LocalDate.parse(startDate));
+                        gradeFormula.setEndDate(LocalDate.parse(endDate));
+                    } catch (Exception e) {
                         LOGGER.warn("Unable to parse start/end date for grading formula: " + e.getMessage());
                     }
                 }
