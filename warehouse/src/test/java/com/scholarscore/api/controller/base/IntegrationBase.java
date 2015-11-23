@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.collect.ImmutableMap;
 import com.scholarscore.api.controller.service.AssignmentValidatingExecutor;
 import com.scholarscore.api.controller.service.AttendanceValidatingExecutor;
@@ -62,7 +63,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Class that contains all common methods for servicing requests
  */
 public class IntegrationBase {
-
+    private ObjectMapper MAPPER = new ObjectMapper();
     private NetMvc mockMvc;
     private static final String BASE_URI_KEY = "httpsEndpoint";
     private final static String CHARSET_UTF8_NAME = "UTF-8";
@@ -174,6 +175,7 @@ public class IntegrationBase {
         uiAttributesValidatingExecutor = new UiAttributesValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
+        MAPPER.registerModule(new JavaTimeModule());
     }
 
     /**
@@ -494,7 +496,7 @@ public class IntegrationBase {
         String testContentType = contentType.toLowerCase();
         switch (testContentType) {
             case "json":
-                mapper = new ObjectMapper();
+                mapper = MAPPER;
                 break;
             case "xml":
                 mapper = new XmlMapper();
@@ -506,6 +508,7 @@ public class IntegrationBase {
         // Configure the mapper
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.setLocale(locale.get());
+        mapper.registerModule(new JavaTimeModule());
 
         // Map the response content to the specified type
         T value = null;
@@ -788,9 +791,8 @@ public class IntegrationBase {
 
         byte[] out = null;
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            out = mapper.writeValueAsBytes(object);
+            MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            out = MAPPER.writeValueAsBytes(object);
             String bytes = new String(out);
             ////LOGGER.sys().info("JSON: " + new String(out, CHARSET_UTF8_NAME));
         } catch (Exception e) {
