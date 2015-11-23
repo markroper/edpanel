@@ -116,8 +116,9 @@ public class CommonTestUtils {
 
     public static LocalDate generateBirthDate(final int minAge, final int maxAge){
         LocalDate now = LocalDate.now();
-        now = now.plusYears(-1l * RandomUtils.nextInt(minAge, maxAge));
-        now = now.plusMonths(-1l * RandomUtils.nextInt(0, 11));
+        // .nextInt max value is exclusive, so add 1 to ensure passed-in maxAge as a possible selection
+        now = now.plusYears(-1l * RandomUtils.nextInt(minAge, maxAge + 1));
+        now = now.plusMonths(-1l * RandomUtils.nextInt(0, 12));
         return now;
     }
 
