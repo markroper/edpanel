@@ -9,7 +9,6 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Objects;
 /**
@@ -22,9 +21,6 @@ import java.util.Objects;
 @DiscriminatorValue(value = "ATTENDANCE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class AttendanceGoal extends Goal implements CalculatableAttendance{
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
     //References the sectionId of the section we have an attendance goal in
     private Long parentId;
     private LocalDate startDate;

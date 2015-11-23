@@ -1,6 +1,5 @@
 package com.scholarscore.models.goal;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -9,9 +8,6 @@ import java.util.Objects;
  * Created by cwallace on 10/15/2015.
  */
 public class AttendanceComponent extends GoalComponent implements CalculatableAttendance {
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
     private LocalDate startDate;
     private LocalDate endDate;
     private Long parentId;

@@ -2,7 +2,6 @@ package com.scholarscore.models.goal;
 
 import com.scholarscore.models.BehaviorCategory;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -11,9 +10,6 @@ import java.util.Objects;
  * Created by cwallace on 10/14/2015.
  */
 public class BehaviorComponent extends GoalComponent implements CalculatableBehavior {
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-
     private BehaviorCategory behaviorCategory;
     private LocalDate startDate;
     private LocalDate endDate;

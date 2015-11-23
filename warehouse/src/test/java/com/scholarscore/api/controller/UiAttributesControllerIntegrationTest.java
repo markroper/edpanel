@@ -1,14 +1,11 @@
 package com.scholarscore.api.controller;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.JsonAttributes;
 import com.scholarscore.models.School;
 import com.scholarscore.models.UiAttributes;
+import com.scholarscore.util.EdPanelObjectMapper;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -16,10 +13,6 @@ import org.testng.annotations.Test;
 
 @Test(groups = { "integration" })
 public class UiAttributesControllerIntegrationTest extends IntegrationBase {
-    private static ObjectMapper MAPPER = new ObjectMapper().
-            setSerializationInclusion(JsonInclude.Include.NON_NULL).
-            registerModule(new JavaTimeModule()).
-            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     private School school;
     private UiAttributes instanceAttrs;
     
@@ -35,7 +28,7 @@ public class UiAttributesControllerIntegrationTest extends IntegrationBase {
     @DataProvider
     public Object[][] createAttrsProvider() {
        UiAttributes populatedAttributes = new UiAttributes();
-       ObjectNode node = MAPPER.createObjectNode();
+       ObjectNode node = EdPanelObjectMapper.MAPPER.createObjectNode();
        node.put("chalupa", "grande");
        
        populatedAttributes.setSchool(school);

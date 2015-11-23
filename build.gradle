@@ -31,6 +31,7 @@ allprojects {
         jacksonVersion = "2.6.0"
         apacheHttpVersion = "4.3.3"
         hibernateVersion = "5.0.4.Final"
+        hibernateValidator = "5.2.2.Final"
     }
 }
 

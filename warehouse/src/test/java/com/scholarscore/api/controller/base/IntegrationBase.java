@@ -32,6 +32,7 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
+import com.scholarscore.util.EdPanelObjectMapper;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -64,10 +65,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Class that contains all common methods for servicing requests
  */
 public class IntegrationBase {
-    private ObjectMapper MAPPER = new ObjectMapper().
-            setSerializationInclusion(JsonInclude.Include.NON_NULL).
-            registerModule(new JavaTimeModule()).
-            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     private NetMvc mockMvc;
     private static final String BASE_URI_KEY = "httpsEndpoint";
     private final static String CHARSET_UTF8_NAME = "UTF-8";
@@ -179,8 +176,8 @@ public class IntegrationBase {
         uiAttributesValidatingExecutor = new UiAttributesValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
-        MAPPER.registerModule(new JavaTimeModule());
-        MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        EdPanelObjectMapper.MAPPER.registerModule(new JavaTimeModule());
+        EdPanelObjectMapper.MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     /**
@@ -501,7 +498,7 @@ public class IntegrationBase {
         String testContentType = contentType.toLowerCase();
         switch (testContentType) {
             case "json":
-                mapper = MAPPER;
+                mapper = EdPanelObjectMapper.MAPPER;
                 break;
             case "xml":
                 mapper = new XmlMapper();
@@ -796,8 +793,8 @@ public class IntegrationBase {
 
         byte[] out = null;
         try {
-            MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            out = MAPPER.writeValueAsBytes(object);
+            EdPanelObjectMapper.MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            out = EdPanelObjectMapper.MAPPER.writeValueAsBytes(object);
             String bytes = new String(out);
             ////LOGGER.sys().info("JSON: " + new String(out, CHARSET_UTF8_NAME));
         } catch (Exception e) {
