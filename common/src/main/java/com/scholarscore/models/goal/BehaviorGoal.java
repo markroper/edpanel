@@ -121,8 +121,8 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
                         + "GoalType: " + getGoalType() + "\n"
                         + "Student: " + getStudent() + "\n"
                         + "Teacher: " + getTeacher() + "\n"
-                        + "StartDate: " + (getStartDate() != null ? dateFormat.format(getStartDate()) : null) + "\n"
-                        + "EndDate: " + (getEndDate() != null ? dateFormat.format(getEndDate()) : null);
+                        + "StartDate: " + getStartDate() + "\n"
+                        + "EndDate: " + getEndDate();
     }
 
     /**

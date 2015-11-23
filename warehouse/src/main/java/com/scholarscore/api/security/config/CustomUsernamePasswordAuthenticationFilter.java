@@ -1,6 +1,9 @@
 package com.scholarscore.api.security.config;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.scholarscore.models.LoginRequest;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,7 +25,10 @@ import java.io.BufferedReader;
  */
 public class CustomUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private static final String HTTP_VERB = "POST";
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper().
+            setSerializationInclusion(JsonInclude.Include.NON_NULL).
+            registerModule(new JavaTimeModule()).
+            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     private LoginRequest resolveLoginRequest(HttpServletRequest req) {
         LoginRequest loginRequest = null;
         try {
@@ -34,7 +40,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
             while ((line = reader.readLine()) != null){
                 sb.append(line);
             }
-            loginRequest = mapper.readValue(sb.toString(), LoginRequest.class);
+            loginRequest = MAPPER.readValue(sb.toString(), LoginRequest.class);
         } catch (Exception e) {
         }
         return loginRequest;

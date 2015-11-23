@@ -1,6 +1,9 @@
 package com.scholarscore.api.security.config;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
@@ -80,7 +83,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             + " \"access-denied\":true,\"cause\":\"NOT AUTHENTICATED\"}";
     private static final String INVALID_CREDENTIALS_JSON = "{\"error\":\"Invalid credentials supplied\"}";
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper().
+            setSerializationInclusion(JsonInclude.Include.NON_NULL).
+            registerModule(new JavaTimeModule()).
+            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     /**
      * Adds CORS headers to the HTTP response provided.
      * 
@@ -350,11 +356,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 user.setPassword(null);
                 user.setOneTimePass(null);
                 user.setOneTimePassCreated(null);
-                String value = mapper.writeValueAsString(user);
+                String value = MAPPER.writeValueAsString(user);
                 out.print(value);
             } else if (authentication.getPrincipal() instanceof User) {
                 User principal = (User)authentication.getPrincipal();
-                out.print(mapper.writeValueAsString(principal));
+                out.print(MAPPER.writeValueAsString(principal));
             } else {
                 logger.error("authentication.getPrincipal() is not instanceof UserDetailsProxy or User");
                 throw new ClassCastException("authentication.getPrincipal() is not instanceof UserDetailsProxy or User");

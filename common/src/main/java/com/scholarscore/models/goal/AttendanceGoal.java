@@ -11,7 +11,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Objects;
 /**
  * Goal type for goals that are based on performance on attendance over a range of dates
@@ -117,7 +116,7 @@ public class AttendanceGoal extends Goal implements CalculatableAttendance{
                         + "Student: " + getStudent() + "\n"
                         + "Teacher: " + getTeacher() + "\n"
                         + "ParentId: " + getParentId() + "\n"
-                        + "StartDate:" + dateFormat.format(getStartDate()) + "\n"
-                        + "EndDate:" + dateFormat.format(getEndDate());
+                        + "StartDate: " + getStartDate() + "\n"
+                        + "EndDate: " + getEndDate();
     }
 }

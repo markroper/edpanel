@@ -1,7 +1,10 @@
 package com.scholarscore.models.query;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.scholarscore.models.query.dimension.SectionDimension;
 import com.scholarscore.models.query.dimension.StudentDimension;
 import com.scholarscore.models.query.expressions.Expression;
@@ -41,7 +44,10 @@ public class QuerySerializationTest {
     
     @Test(dataProvider = "queriesToSerialize")
     public void testJacksonSerializationAndDeserialization(String msg, Query q, boolean isValid) {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper().
+                setSerializationInclusion(JsonInclude.Include.NON_NULL).
+                registerModule(new JavaTimeModule()).
+                configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         String json = null;
         try {
             json = mapper.writeValueAsString(q);
