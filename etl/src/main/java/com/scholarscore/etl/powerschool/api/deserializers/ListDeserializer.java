@@ -1,12 +1,15 @@
 package com.scholarscore.etl.powerschool.api.deserializers;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import org.apache.commons.io.FileUtils;
 
@@ -23,7 +26,10 @@ import java.util.Optional;
  * Created by mattg on 7/15/15.
  */
 public abstract class ListDeserializer<T extends List, E> extends JsonDeserializer<T> {
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper().
+            setSerializationInclusion(JsonInclude.Include.NON_NULL).
+            registerModule(new JavaTimeModule()).
+            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     abstract String getEntityName();
 
     @Override
@@ -148,7 +154,7 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
 
     public static void main(String args[]) throws IOException {
         String json = FileUtils.readFileToString(new File("/home/mattg/dev/scholarscore/ETL/src/test/resources/staff.json"));
-        List staffs = mapper.readValue(json, PsStaffs.class);
+        List staffs = MAPPER.readValue(json, PsStaffs.class);
         System.out.println(staffs);
     }
 }

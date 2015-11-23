@@ -71,7 +71,7 @@ public class BehaviorComponent extends GoalComponent implements CalculatableBeha
                         + "ComponentType:" + getComponentType() + "\n"
                         + "Student: " + getStudent() + "\n"
                         + "Modifier: " + getModifier() + "\n"
-                        + "StartDate: " + dateFormat.format(getStartDate()) + "\n"
-                        + "EndDate: " + dateFormat.format(getEndDate());
+                        + "StartDate: " + getStartDate() + "\n"
+                        + "EndDate: " + getEndDate();
     }
 }

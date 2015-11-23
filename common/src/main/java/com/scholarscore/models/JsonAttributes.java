@@ -6,7 +6,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -29,18 +31,21 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class JsonAttributes implements Serializable  {
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper().
+            setSerializationInclusion(JsonInclude.Include.NON_NULL).
+            registerModule(new JavaTimeModule()).
+            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     protected transient JsonNode jsonNode;
     @JsonIgnore
     protected String jsonString;
     
     public JsonAttributes() {
-        
     }
     public JsonAttributes(JsonNode node) {
+        this();
         this.jsonNode = node;
         try {
-            this.jsonString = mapper.writeValueAsString(node);
+            this.jsonString = MAPPER.writeValueAsString(node);
         } catch (JsonProcessingException e) {
             //NO OP
         }
@@ -57,7 +62,7 @@ public class JsonAttributes implements Serializable  {
         if(null == string) {
             answer = JsonNodeFactory.instance.nullNode();
         } else {
-            answer = mapper.readTree(string);
+            answer = MAPPER.readTree(string);
         }
         return answer;
     }
@@ -69,7 +74,7 @@ public class JsonAttributes implements Serializable  {
     public void setJsonNode(JsonNode jsonNode) {
         this.jsonNode = jsonNode;
         try {
-            this.jsonString = mapper.writeValueAsString(jsonNode);
+            this.jsonString = MAPPER.writeValueAsString(jsonNode);
         } catch (JsonProcessingException e) {
             //No op?
         }

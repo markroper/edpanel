@@ -1,18 +1,19 @@
 package com.scholarscore.etl.powerschool.client;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
 import com.scholarscore.etl.powerschool.api.model.PsPeriodWrapper;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
-import com.scholarscore.etl.powerschool.api.model.assignment.scores.PtFinalScoreWrapper;
-import com.scholarscore.etl.powerschool.api.model.section.PtSectionEnrollmentWrapper;
-import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScoreWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreIdWrapper;
+import com.scholarscore.etl.powerschool.api.model.assignment.scores.PtFinalScoreWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentTypeWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCategoryWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
@@ -22,8 +23,10 @@ import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapp
 import com.scholarscore.etl.powerschool.api.model.section.PsGradeFormulaWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeightingWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeWrapper;
+import com.scholarscore.etl.powerschool.api.model.section.PtSectionEnrollmentWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMapWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtTermWrapper;
+import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
 import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMapWrapper;
 import com.scholarscore.etl.powerschool.api.model.term.PsTermBinWrapper;
 import com.scholarscore.etl.powerschool.api.model.term.PtPsTermBinReportingTermWrapper;
@@ -46,8 +49,6 @@ import org.apache.http.message.BasicHeader;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by mattg on 7/2/15.
@@ -62,7 +63,10 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     private final String clientSecret;
     private final String clientId;
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper().
+            setSerializationInclusion(JsonInclude.Include.NON_NULL).
+            registerModule(new JavaTimeModule()).
+            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     private OAuthResponse oauthToken;
 
     public PowerSchoolClient(String clientId, String clientSecret, URI uri) {
@@ -86,7 +90,7 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
             post.setURI(uri.resolve(URI_PATH_OATH));
             String json = getJSON(post);
             if (null != json) {
-                oauthToken = mapper.readValue(json, OAuthResponse.class);
+                oauthToken = MAPPER.readValue(json, OAuthResponse.class);
                 if (null == oauthToken || null == oauthToken.access_token) {
                     throw new PowerSchoolClientException("Unable to authenticate with power school, response: " + json);
                 }
@@ -139,7 +143,7 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
             setupCommonHeaders(get);
             get.setURI(uri.resolve(path));
             String json = getJSON(get);
-            return mapper.readValue(json, clazz);
+            return MAPPER.readValue(json, clazz);
         } catch (IOException e) {
             throw new HttpClientException(e);
         }

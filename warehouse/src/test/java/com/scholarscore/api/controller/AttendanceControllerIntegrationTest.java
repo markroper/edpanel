@@ -47,7 +47,7 @@ public class AttendanceControllerIntegrationTest extends IntegrationBase {
         schoolYear = new SchoolYear();
         schoolYear.setName(localeServiceUtil.generateName());
         schoolYear.setStartDate(LocalDate.of(2015, 9, 1));
-        schoolYear.setEndDate(LocalDate.of(116, 6, 1));
+        schoolYear.setEndDate(LocalDate.of(2016, 6, 1));
         schoolYear.setSchool(school);
         schoolYear = schoolYearValidatingExecutor.create(school.getId(), schoolYear, "create base schoolYear");
         
