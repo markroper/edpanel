@@ -1,11 +1,11 @@
 package com.scholarscore.api.security.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.util.RoleConstants;
+import com.scholarscore.util.EdPanelObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -84,7 +84,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // err on the side of caution
     private static final int BCRYPT_STRENGTH = 12;
 
-    private static final ObjectMapper mapper = new ObjectMapper();
     /**
      * Adds CORS headers to the HTTP response provided.
      * 
@@ -349,11 +348,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 user.setPassword(null);
                 user.setOneTimePass(null);
                 user.setOneTimePassCreated(null);
-                String value = mapper.writeValueAsString(user);
+                String value = EdPanelObjectMapper.MAPPER.writeValueAsString(user);
                 out.print(value);
             } else if (authentication.getPrincipal() instanceof User) {
                 User principal = (User)authentication.getPrincipal();
-                out.print(mapper.writeValueAsString(principal));
+                out.print(EdPanelObjectMapper.MAPPER.writeValueAsString(principal));
             } else {
                 logger.error("authentication.getPrincipal() is not instanceof UserDetailsProxy or User");
                 throw new ClassCastException("authentication.getPrincipal() is not instanceof UserDetailsProxy or User");

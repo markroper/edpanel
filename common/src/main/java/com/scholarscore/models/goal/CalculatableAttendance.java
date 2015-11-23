@@ -2,7 +2,7 @@ package com.scholarscore.models.goal;
 
 import com.scholarscore.models.user.Student;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * Interface for defining that a goal/component
@@ -11,13 +11,13 @@ import java.util.Date;
  */
 public interface CalculatableAttendance {
 
-    public Date getEndDate();
+    public LocalDate getEndDate();
 
-    public void setEndDate(Date date);
+    public void setEndDate(LocalDate date);
 
-    public Date getStartDate();
+    public LocalDate getStartDate();
 
-    public void setStartDate(Date date);
+    public void setStartDate(LocalDate date);
 
     public Long getParentId();
 

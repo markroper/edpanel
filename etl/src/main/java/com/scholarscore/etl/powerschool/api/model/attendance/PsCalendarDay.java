@@ -4,6 +4,7 @@ import com.scholarscore.etl.IToApiModel;
 import com.scholarscore.models.School;
 import com.scholarscore.models.attendance.SchoolDay;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -15,7 +16,7 @@ public class PsCalendarDay implements IToApiModel<SchoolDay> {
     public String membershipvalue;
     public Long dcid;
     public Long id;
-    public Date date_value;
+    public LocalDate date_value;
     public Long schoolid;
     public String type;
     public String scheduleid;

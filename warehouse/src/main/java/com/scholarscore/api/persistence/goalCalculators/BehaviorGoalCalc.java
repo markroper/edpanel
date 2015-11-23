@@ -27,7 +27,7 @@ public class BehaviorGoalCalc implements GoalCalc<CalculatableBehavior> {
         Collection<Behavior> studentBehaviors = behaviorPersistence.selectAll(goal.getStudent().getId());
         //Make sure behavior category matches and it is within the dates specified.
         Collection<Behavior> relevantBehaviors = studentBehaviors.stream().filter(bg -> bg.getBehaviorCategory().equals(goal.getBehaviorCategory()))
-                .filter(bg -> bg.getBehaviorDate().after(goal.getStartDate()) && bg.getBehaviorDate().before(goal.getEndDate()))
+                .filter(bg -> bg.getBehaviorDate().isAfter(goal.getStartDate()) && bg.getBehaviorDate().isBefore(goal.getEndDate()))
                 .collect(Collectors.toList());
 
         return new Double(relevantBehaviors.size());

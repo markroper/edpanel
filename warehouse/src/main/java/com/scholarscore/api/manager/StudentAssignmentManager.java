@@ -4,8 +4,8 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.assignment.StudentAssignment;
 
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 public interface StudentAssignmentManager {
@@ -17,7 +17,7 @@ public interface StudentAssignmentManager {
      * @return
      */
     public ServiceResponse<Collection<StudentAssignment>> getAllStudentAssignmentsBetweenDates(
-            long studentId, Date startDate, Date endDate);
+            long studentId, LocalDate startDate, LocalDate endDate);
 
     /**
      * Return all student assignments within a section

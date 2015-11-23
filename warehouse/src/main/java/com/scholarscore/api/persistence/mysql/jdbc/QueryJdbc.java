@@ -1,7 +1,6 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.QueryPersistence;
 import com.scholarscore.api.persistence.mysql.mapper.QueryMapper;
@@ -13,6 +12,7 @@ import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.QueryResults;
 import com.scholarscore.models.query.Record;
+import com.scholarscore.util.EdPanelObjectMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 public class QueryJdbc extends BaseJdbc implements QueryPersistence {
-    private static final ObjectMapper mapper = new ObjectMapper();
     private static String INSERT_REPORT_SQL = "INSERT INTO `"+ 
             DbMappings.DATABASE +"`.`" + DbMappings.REPORT_TABLE + "` " +
             "(" + HibernateConsts.SCHOOL_FK + ", " + DbMappings.REPORT_COL + ")" +
@@ -74,7 +73,7 @@ public class QueryJdbc extends BaseJdbc implements QueryPersistence {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Map<String, Object> params = new HashMap<>();     
         params.put("schoolfk", schoolId);
-        params.put("report", mapper.writeValueAsString(query));
+        params.put("report", EdPanelObjectMapper.MAPPER.writeValueAsString(query));
         jdbcTemplate.update(INSERT_REPORT_SQL, new MapSqlParameterSource(params), keyHolder);
         return keyHolder.getKey().longValue();
     }

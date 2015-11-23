@@ -10,9 +10,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.Table;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -25,11 +23,8 @@ import java.util.Objects;
 @DiscriminatorValue(value = "BEHAVIOR")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class BehaviorGoal extends Goal implements CalculatableBehavior {
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private BehaviorCategory behaviorCategory;
 
     public BehaviorGoal() {
@@ -47,20 +42,20 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
     }
 
     @Column(name = HibernateConsts.GOAL_START_DATE, columnDefinition="DATE")
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
     @Column(name = HibernateConsts.GOAL_END_DATE, columnDefinition = "DATE")
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
@@ -122,8 +117,8 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
                         + "GoalType: " + getGoalType() + "\n"
                         + "Student: " + getStudent() + "\n"
                         + "Teacher: " + getTeacher() + "\n"
-                        + "StartDate: " + (getStartDate() != null ? dateFormat.format(getStartDate()) : null) + "\n"
-                        + "EndDate: " + (getEndDate() != null ? dateFormat.format(getEndDate()) : null);
+                        + "StartDate: " + getStartDate() + "\n"
+                        + "EndDate: " + getEndDate();
     }
 
     /**
@@ -133,16 +128,16 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
      */
     public static class BehaviorGoalBuilder extends GoalBuilder<BehaviorGoalBuilder, BehaviorGoal> {
 
-        private Date startDate;
-        private Date endDate;
+        private LocalDate startDate;
+        private LocalDate endDate;
         private BehaviorCategory behaviorCategory;
 
-        public BehaviorGoalBuilder withStartDate(final Date startDate){
+        public BehaviorGoalBuilder withStartDate(final LocalDate startDate){
             this.startDate = startDate;
             return this;
         }
 
-        public BehaviorGoalBuilder withEndDate(final Date endDate){
+        public BehaviorGoalBuilder withEndDate(final LocalDate endDate){
             this.endDate = endDate;
             return this;
         }

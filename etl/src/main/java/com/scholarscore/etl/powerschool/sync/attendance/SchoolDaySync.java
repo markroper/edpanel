@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -29,21 +30,21 @@ public class SchoolDaySync {
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
     protected School school;
-    protected Date syncCutoff;
+    protected LocalDate syncCutoff;
 
     public SchoolDaySync(IAPIClient edPanel,
                       IPowerSchoolClient powerSchool,
                       School s,
-                     Date syncCutoff) {
+                      LocalDate syncCutoff) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
         this.syncCutoff = syncCutoff;
     }
 
-    public ConcurrentHashMap<Date, SchoolDay> syncCreateUpdateDelete(SyncResult results) {
-        ConcurrentHashMap<Date, SchoolDay> source = null;
-        ConcurrentHashMap<Date, SchoolDay> ed = null;
+    public ConcurrentHashMap<LocalDate, SchoolDay> syncCreateUpdateDelete(SyncResult results) {
+        ConcurrentHashMap<LocalDate, SchoolDay> source = null;
+        ConcurrentHashMap<LocalDate, SchoolDay> ed = null;
         try {
             source = resolveAllFromSourceSystem(Long.valueOf(school.getSourceSystemId()));
         } catch (HttpClientException e) {
@@ -68,11 +69,11 @@ public class SchoolDaySync {
                 return new ConcurrentHashMap<>();
             }
         }
-        Iterator<Map.Entry<Date, SchoolDay>> sourceIterator = source.entrySet().iterator();
+        Iterator<Map.Entry<LocalDate, SchoolDay>> sourceIterator = source.entrySet().iterator();
         List<SchoolDay> daysToCreate = new ArrayList<>();
         //Find & perform the inserts and updates, if any
         while(sourceIterator.hasNext()) {
-            Map.Entry<Date, SchoolDay> entry = sourceIterator.next();
+            Map.Entry<LocalDate, SchoolDay> entry = sourceIterator.next();
             SchoolDay schoolDay = entry.getValue();
             SchoolDay edPanelSchoolDay = ed.get(entry.getKey());
             if(null == edPanelSchoolDay){
@@ -115,9 +116,9 @@ public class SchoolDaySync {
             }
         }
         //Delete anything IN EdPanel that is NOT in source system
-        Iterator<Map.Entry<Date, SchoolDay>> edpanelIterator = ed.entrySet().iterator();
+        Iterator<Map.Entry<LocalDate, SchoolDay>> edpanelIterator = ed.entrySet().iterator();
         while(edpanelIterator.hasNext()) {
-            Map.Entry<Date, SchoolDay> entry = edpanelIterator.next();
+            Map.Entry<LocalDate, SchoolDay> entry = edpanelIterator.next();
             if(!source.containsKey(entry.getKey())
                     && entry.getValue().getDate().compareTo(syncCutoff) > 0) {
                 try {
@@ -138,8 +139,8 @@ public class SchoolDaySync {
         return source;
     }
 
-    protected ConcurrentHashMap<Date, SchoolDay> resolveAllFromSourceSystem(Long sourceSchoolId) throws HttpClientException {
-        ConcurrentHashMap<Date, SchoolDay> result = new ConcurrentHashMap<>();
+    protected ConcurrentHashMap<LocalDate, SchoolDay> resolveAllFromSourceSystem(Long sourceSchoolId) throws HttpClientException {
+        ConcurrentHashMap<LocalDate, SchoolDay> result = new ConcurrentHashMap<>();
         PsResponse<PsCalendarDayWrapper> response = powerSchool.getSchoolCalendarDays(school.getNumber());
         for(PsResponseInner<PsCalendarDayWrapper> wrap : response.record) {
             PsCalendarDay psCalDay = wrap.tables.calendar_day;
@@ -154,9 +155,9 @@ public class SchoolDaySync {
         return result;
     }
 
-    protected ConcurrentHashMap<Date, SchoolDay> resolveFromEdPanel(Long schoolId) throws HttpClientException {
+    protected ConcurrentHashMap<LocalDate, SchoolDay> resolveFromEdPanel(Long schoolId) throws HttpClientException {
         SchoolDay[] days = edPanel.getSchoolDays(school.getId());
-        ConcurrentHashMap<Date, SchoolDay> dayMap = new ConcurrentHashMap<>();
+        ConcurrentHashMap<LocalDate, SchoolDay> dayMap = new ConcurrentHashMap<>();
         for(SchoolDay c: days) {
             Long id = null;
             Long ssid = c.getSourceSystemOtherId();

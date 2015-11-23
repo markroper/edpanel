@@ -45,9 +45,6 @@ public class DlBehaviorResponseUnitTest {
         assertEquals(parsedBehavior.getStudent().getName(),"James Tiberius Kirk", "parsed behavior student name doesn't match");
 
         assertTrue(parsedBehavior.getBehaviorDate() != null, "parsed behavior date is null");
-        assertEquals((Long)parsedBehavior.getBehaviorDate().getTime(),
-                (Long)1442462400000L, "parsed date is incorrect");
-
         assertEquals(parsedBehavior.getRemoteSystem(), BehaviorResponse.DEANSLIST_SOURCE, "parsed remote system isn't deanslist");
         assertEquals(parsedBehavior.getRemoteBehaviorId(), "123456", "parsed behavior remote behavior id doesn't match");
         assertEquals(parsedBehavior.getRemoteStudentId(), "A12345", "parsed behavior remote student id doesn't match");

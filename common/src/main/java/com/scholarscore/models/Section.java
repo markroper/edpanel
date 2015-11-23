@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
+import com.scholarscore.util.EdPanelObjectMapper;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -28,7 +28,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -46,9 +46,8 @@ import java.util.Set;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Section extends ApiModel implements Serializable, IApiModel<Section> {
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-    protected Date startDate;
-    protected Date endDate;
+    protected LocalDate startDate;
+    protected LocalDate endDate;
     protected String room;
     //For jackson & for java 
     protected GradeFormula gradeFormula;
@@ -70,7 +69,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         teachers = Sets.newHashSet();
     }
 
-    public Section(Date startDate, Date endDate, String room, GradeFormula gradeFormula, Integer numberOfTerms) {
+    public Section(LocalDate startDate, LocalDate endDate, String room, GradeFormula gradeFormula, Integer numberOfTerms) {
         this();
         this.startDate = startDate;
         this.endDate = endDate;
@@ -110,7 +109,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     }
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.SECTION_ID)
     public Long getId() {
         return super.getId();
@@ -146,20 +145,20 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     }
 
     @Column(name = HibernateConsts.SECTION_START_DATE)
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
     @Column(name = HibernateConsts.SECTION_END_DATE)
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
@@ -186,7 +185,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         } else {
             try {
                 this.gradeFormulaString = string;
-                this.gradeFormula = MAPPER.readValue( string, new TypeReference<GradeFormula>(){});
+                this.gradeFormula = EdPanelObjectMapper.MAPPER.readValue( string, new TypeReference<GradeFormula>(){});
             } catch (IOException e) {
                 this.gradeFormula =  null;
                 this.gradeFormulaString = null;
@@ -276,7 +275,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         } else {
             try {
                 this.gradeFormula = gradeFormula;
-                this.gradeFormulaString = MAPPER.writeValueAsString(gradeFormula);
+                this.gradeFormulaString = EdPanelObjectMapper.MAPPER.writeValueAsString(gradeFormula);
             } catch (JsonProcessingException e) {
                 this.gradeFormulaString = null;
                 this.gradeFormula = null;
@@ -365,8 +364,8 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
      */
     public static class SectionBuilder extends ApiModelBuilder<SectionBuilder, Section> {
 
-        protected Date startDate;
-        protected Date endDate;
+        protected LocalDate startDate;
+        protected LocalDate endDate;
         protected String room;
         protected GradeFormula gradeFormula;
         protected String gradeFormulaString;
@@ -391,12 +390,12 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             return this;
         }
 
-        public SectionBuilder withStartDate(final Date startDate){
+        public SectionBuilder withStartDate(final LocalDate startDate){
             this.startDate = startDate;
             return this;
         }
 
-        public SectionBuilder withEndDate(final Date endDate){
+        public SectionBuilder withEndDate(final LocalDate endDate){
             this.endDate = endDate;
             return this;
         }

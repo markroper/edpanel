@@ -3,7 +3,7 @@ package com.scholarscore.models.goal;
 import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.user.Student;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * Interface for defining a goal/component based on behavior is calculatable
@@ -11,13 +11,13 @@ import java.util.Date;
  */
 public interface CalculatableBehavior {
 
-    public Date getStartDate();
+    public LocalDate getStartDate();
 
-    public void setStartDate(Date date);
+    public void setStartDate(LocalDate date);
 
-    public Date getEndDate();
+    public LocalDate getEndDate();
 
-    public void  setEndDate(Date date);
+    public void  setEndDate(LocalDate date);
 
     public BehaviorCategory getBehaviorCategory();
 

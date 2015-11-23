@@ -10,8 +10,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * User: jordan
@@ -42,7 +41,7 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
     public Object[][] createBehaviorProvider() {
         
         // all behaviors must have time
-        Date now = getNow();
+        LocalDate now = getNow();
 
         Behavior emptyBehavior = new Behavior();
         // teacher is always required or constraint exception
@@ -118,8 +117,8 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
     //Negative test cases
     @DataProvider
     public Object[][] createBehaviorNegativeProvider() {
-        
-        Date now = getNow();
+
+        LocalDate now = getNow();
 
         Behavior behaviorWithoutDate = new Behavior();
         behaviorWithoutDate.setStudent(student);

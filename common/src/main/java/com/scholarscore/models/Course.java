@@ -83,7 +83,7 @@ public class Course extends ApiModel implements Serializable, IApiModel<Course> 
     }
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.COURSE_ID)
     public Long getId() {
         return super.getId();

@@ -7,7 +7,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * GradedAssignmentBuilderUnitTest tests that we can build equivalent GradedAssignment objects with setters and with a
@@ -27,10 +27,10 @@ public class GradedAssignmentBuilderUnitTest extends AbstractBuilderUnitTest<Gra
         String name = CommonTestUtils.generateName();
         Long sectionFK = RandomUtils.nextLong(0L, Long.MAX_VALUE);
         Long availablePoints = RandomUtils.nextLong(0L, Long.MAX_VALUE);
-        Date dueDate = CommonTestUtils.getRandomDate();
+        LocalDate dueDate = CommonTestUtils.getRandomLocalDate();
         AssignmentType type = CommonTestUtils.getRandomAssignmentType();
         Section section = CommonTestUtils.generateSection();
-        Date assignedDate = CommonTestUtils.getRandomDate();
+        LocalDate assignedDate = CommonTestUtils.getRandomLocalDate();
 
         GradedAssignment fullGradedAssignment = new GradedAssignment();
 
