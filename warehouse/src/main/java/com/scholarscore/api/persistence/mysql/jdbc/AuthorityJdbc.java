@@ -24,11 +24,9 @@ public class AuthorityJdbc extends BaseJdbc implements AuthorityPersistence {
             DbMappings.DATABASE +"`.`" + DbMappings.AUTHORITY_TABLE + "` " +
             "(" + DbMappings.AUTHORITY_USER_ID_COL + "," + DbMappings.AUTHORITY_AUTHORITY_COL + ")" +
             " VALUES (:" + DbMappings.AUTHORITY_USER_ID_COL + ", :" + DbMappings.AUTHORITY_AUTHORITY_COL + ")";
-
     private static String DELETE_AUTHORITY_SQL = "DELETE FROM `"+ 
             DbMappings.DATABASE +"`.`" + DbMappings.AUTHORITY_TABLE + "` " +
             "WHERE `" + DbMappings.AUTHORITY_USER_ID_COL + "`= :" + DbMappings.AUTHORITY_USER_ID_COL + "";
-
     private static String SELECT_ALL_AUTHORITIES_JOIN_USER_SQL = "SELECT * FROM `"+
             DbMappings.DATABASE +"`.`" + DbMappings.AUTHORITY_TABLE + "`" +
             " JOIN `" + DbMappings.DATABASE + "`.`" + HibernateConsts.USERS_TABLE + "` ON " +
