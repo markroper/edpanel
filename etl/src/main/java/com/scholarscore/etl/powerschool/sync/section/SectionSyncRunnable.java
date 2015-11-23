@@ -105,7 +105,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
             try {
                 source = resolveAllFromSourceSystem();
             } catch (HttpClientException ex) {
-                LOGGER.warn("Failed to retrieve sections from PowerSchool for the school " +
+                LOGGER.error("Failed to retrieve sections from PowerSchool for the school " +
                         school.getName() + ", with ID: " + school.getId());
                 results.sectionSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
                 return new ConcurrentHashMap<>();
@@ -115,8 +115,14 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
         try {
             ed = resolveFromEdPanel();
         } catch (HttpClientException e) {
-            results.sectionEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-            return new ConcurrentHashMap<>();
+            try {
+                ed = resolveFromEdPanel();
+            } catch (HttpClientException ex) {
+                LOGGER.error("Failed to retrieve sections from EdPanel for the school " +
+                        school.getName() + ", with ID: " + school.getId());
+                results.sectionEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+                return new ConcurrentHashMap<>();
+            }
         }
         LOGGER.debug("Resolved sections for school " + school.getName() +
                 " with ID " + school.getId() + " will now CRUD in EdPanel");
@@ -174,7 +180,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     studentAssociator,
                     sourceSection
             );
-            LOGGER.info("Section, including assignments and student section grades created/updated. Section ID: " +
+            LOGGER.debug("Section, including assignments and student section grades created/updated. Section ID: " +
                     sourceSection.getId() + ", school ID: " + school.getId());
             assignmentSync.syncCreateUpdateDelete(results);
         }

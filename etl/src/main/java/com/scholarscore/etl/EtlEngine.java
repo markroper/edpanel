@@ -212,7 +212,8 @@ public class EtlEngine implements IEtlEngine {
                 sectionIdToGradeFormula.get(powerSchoolSectionId).put(gradeSetup.reportingtermid, gradeSetup);
             }
         } catch (HttpClientException | NullPointerException e) {
-            LOGGER.warn(e.getLocalizedMessage());
+            LOGGER.error("Failed to resolve PowerSchool grade setups prior to migrating sections: " +
+                    e.getLocalizedMessage());
         }
         //Associate powerTeacher AssignmentCategoryID to a String value usable in EdPanel
         Map<Long, String> powerTeacherCategoryToEdPanelType = new HashMap<>();
@@ -230,7 +231,8 @@ public class EtlEngine implements IEtlEngine {
                 }
             }
         } catch(HttpClientException e) {
-            LOGGER.warn(e.getLocalizedMessage());
+            LOGGER.error("Failed to resolve assignment categories from PowerSchool prior to migrating sections: " +
+                    e.getLocalizedMessage());
         }
         LOGGER.info("Section migration antecendents resolved (grade setups & assignment category mappings)");
         //Now we have the section resolution antecedent
@@ -279,7 +281,6 @@ public class EtlEngine implements IEtlEngine {
     }
 
     private void createCourses() {
-
         for (Map.Entry<Long, School> school : this.schools.entrySet()) {
             CourseSync sync = new CourseSync(edPanel, powerSchool, school.getValue());
             this.courses.put(Long.valueOf(school.getValue().getSourceSystemId()), sync.syncCreateUpdateDelete(results));
