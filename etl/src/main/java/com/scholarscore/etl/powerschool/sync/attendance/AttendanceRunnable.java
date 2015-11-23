@@ -17,6 +17,8 @@ import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.AttendanceTypes;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.user.Student;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by markroper on 11/1/15.
  */
 public class AttendanceRunnable implements Runnable, ISync<Attendance> {
+    private final static Logger LOGGER = LoggerFactory.getLogger(AttendanceRunnable.class);
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
     protected School school;
@@ -69,14 +72,26 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         try {
             source = resolveAllFromSourceSystem(Long.valueOf(student.getSourceSystemId()));
         } catch (HttpClientException e) {
-            results.attendanceSourceGetFailed(Long.valueOf(student.getSourceSystemId()), student.getId());
-            return new ConcurrentHashMap<>();
+            try {
+                source = resolveAllFromSourceSystem(Long.valueOf(student.getSourceSystemId()));
+            } catch (HttpClientException ex) {
+                LOGGER.error("Unable to fetch attendance from from PowerSchool for student " + student.getName() +
+                        " with ID: " + student.getId());
+                results.attendanceSourceGetFailed(Long.valueOf(student.getSourceSystemId()), student.getId());
+                return new ConcurrentHashMap<>();
+            }
         }
         try {
             ed = resolveFromEdPanel(student.getId());
         } catch (HttpClientException e) {
-            results.attendanceEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-            return new ConcurrentHashMap<>();
+            try {
+                ed = resolveFromEdPanel(student.getId());
+            } catch (HttpClientException ex) {
+                LOGGER.error("Unable to fetch attendance from from EdPanel for student " + student.getName() +
+                        " with ID: " + student.getId());
+                results.attendanceEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+                return new ConcurrentHashMap<>();
+            }
         }
         Iterator<Map.Entry<Long, Attendance>> sourceIterator = source.entrySet().iterator();
         List<Attendance> attendanceToCreate = new ArrayList<>();

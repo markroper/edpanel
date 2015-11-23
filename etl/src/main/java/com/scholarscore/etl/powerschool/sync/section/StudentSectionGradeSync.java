@@ -68,28 +68,41 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
         try {
             source = this.resolveAllFromSourceSystem(results);
         } catch (HttpClientException e) {
-            LOGGER.warn("Unable to resolve student section grades for section with name: " +
-                    createdSection.getName() +
-                    ", ID: " + createdSection.getId() +
-                    ", SSID: " + createdSection.getSourceSystemId() +
-                    ", & School ID: " + school.getId());
-            results.studentSectionGradeSourceGetFailed(
-                    Long.valueOf(createdSection.getSourceSystemId()),
-                    Long.valueOf(this.createdSection.getSourceSystemId()),
-                    this.createdSection.getId()
-            );
-            return new ConcurrentHashMap<>();
+            try {
+                source = this.resolveAllFromSourceSystem(results);
+            } catch (HttpClientException ex) {
+                LOGGER.warn("Unable to resolve student section grades from PowerSchool for section with name: " +
+                        createdSection.getName() +
+                        ", ID: " + createdSection.getId() +
+                        ", SSID: " + createdSection.getSourceSystemId() +
+                        ", & School ID: " + school.getId());
+                results.studentSectionGradeSourceGetFailed(
+                        Long.valueOf(createdSection.getSourceSystemId()),
+                        Long.valueOf(this.createdSection.getSourceSystemId()),
+                        this.createdSection.getId()
+                );
+                return new ConcurrentHashMap<>();
+            }
         }
         ConcurrentHashMap<Long, StudentSectionGrade> edpanelSsgMap = null;
         try {
             edpanelSsgMap = this.resolveFromEdPanel();
         } catch (HttpClientException e) {
-            results.studentSectionGradeEdPanelGetFailed(
-                    Long.valueOf(createdSection.getSourceSystemId()),
-                    Long.valueOf(this.createdSection.getSourceSystemId()),
-                    this.createdSection.getId()
-            );
-            return new ConcurrentHashMap<>();
+            try {
+                edpanelSsgMap = this.resolveFromEdPanel();
+            } catch (HttpClientException ex) {
+                LOGGER.warn("Unable to resolve student section grades from EdPanel for section with name: " +
+                        createdSection.getName() +
+                        ", ID: " + createdSection.getId() +
+                        ", SSID: " + createdSection.getSourceSystemId() +
+                        ", & School ID: " + school.getId());
+                results.studentSectionGradeEdPanelGetFailed(
+                        Long.valueOf(createdSection.getSourceSystemId()),
+                        Long.valueOf(this.createdSection.getSourceSystemId()),
+                        this.createdSection.getId()
+                );
+                return new ConcurrentHashMap<>();
+            }
         }
         Iterator<Map.Entry<Long, StudentSectionGrade>> sourceIterator = source.entrySet().iterator();
         ArrayList<StudentSectionGrade> ssgsToCreate = new ArrayList<>();
