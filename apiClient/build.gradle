@@ -18,7 +18,6 @@ dependencies {
             "org.apache.httpcomponents:httpcore:$apacheHttpVersion",
             "org.apache.httpcomponents:httpmime:$apacheHttpVersion"
         
-    testCompile "org.testng:testng:6.8.8",
-            "org.springframework:spring-test:$springVersion"
+    testCompile project (path: ":common", configuration: 'testArtifacts')
 
 }
