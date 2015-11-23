@@ -7,8 +7,8 @@ import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.assignment.StudentAssignment;
 
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,7 +33,7 @@ public class StudentAssignmentManagerImpl implements  StudentAssignmentManager {
     //STUDENT ASSIGNMENTS
     @Override
     public ServiceResponse<Collection<StudentAssignment>> getAllStudentAssignmentsBetweenDates(
-            long studentId, Date startDate, Date endDate) {
+            long studentId, LocalDate startDate, LocalDate endDate) {
         Collection<StudentAssignment> sas =
                 studentAssignmentPersistence.selectAllBetweenDates(studentId, startDate, endDate);
         return new ServiceResponse<>(sas);

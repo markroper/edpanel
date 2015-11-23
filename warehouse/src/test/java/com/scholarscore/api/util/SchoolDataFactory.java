@@ -24,8 +24,8 @@ import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import org.apache.commons.lang3.RandomUtils;
 
-import java.time.Duration;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -147,7 +147,7 @@ public class SchoolDataFactory {
         int day = 1;
         ArrayList<SchoolYear> years = new ArrayList<SchoolYear>();
         for(int i = 0; i < 1; i++) {
-            years.add(new SchoolYear(LocalDate.of(year -1, startMonth, day), LocalDate.of(year - i + 1, endMonth, day)));
+            years.add(new SchoolYear(LocalDate.of(year - 1, startMonth, day), LocalDate.of(year - i, endMonth, day)));
         }
         return years;
     }
@@ -303,10 +303,10 @@ public class SchoolDataFactory {
             returnMap.put(s.getId(), new ArrayList<Assignment>());
             LocalDate startDate = s.getStartDate();
             LocalDate endDate = s.getEndDate();
-            int diffInDays = (int)Duration.between(startDate, endDate).toDays();
+            int diffInDays = (int) ChronoUnit.DAYS.between(startDate, endDate);
             //Create HW Assignments & Attendance assignments
             for(int i = 0; i < diffInDays; i = i + 3) {
-                LocalDate assignmentDate = LocalDate.now().plusDays(i);
+                LocalDate assignmentDate = startDate.plusDays(i);
                 AttendanceAssignment attend = new AttendanceAssignment();
                 attend.setAvailablePoints(1L);
                 attend.setDueDate(assignmentDate);
@@ -388,8 +388,7 @@ public class SchoolDataFactory {
             List<Teacher> teachers,
             LocalDate beginDate,
             LocalDate endDate) {
-        Math.abs(Duration.between(beginDate, endDate).toDays());
-        int numDates = (int)Math.abs(Duration.between(beginDate, endDate).toDays());
+        int numDates = (int)Math.abs(ChronoUnit.DAYS.between(beginDate, endDate));
         Map<Long, ArrayList<Behavior>> studentBehaviors = new HashMap<Long, ArrayList<Behavior>>();
         for(Student s: students) {
             int numEventsToProduce = new Random().nextInt(numDates/2);
