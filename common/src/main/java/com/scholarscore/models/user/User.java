@@ -77,7 +77,6 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	}
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-//	@JoinColumn(name = HibernateConsts.CONTACT_METHOD_USER_FK, nullable = false)
 	@Fetch(FetchMode.JOIN)
 	@Cascade(CascadeType.ALL)
 	public Set<ContactMethod> getContactMethods() {
@@ -161,8 +160,8 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		return super.getId();
 	}
 
-	@Column(name = HibernateConsts.USER_PASSWORD)
-	public String getPassword() {
+	@Column(name = HibernateConsts.USER_PASSWORD, columnDefinition = "char")
+	public String getPassword() { 
 		return password;
 	}
 	

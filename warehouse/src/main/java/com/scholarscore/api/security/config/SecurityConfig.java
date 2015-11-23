@@ -22,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -79,6 +80,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String UNAUTHORIZED_JSON = "{\"message\":\"Authentication is required to access this resource.\","
             + " \"access-denied\":true,\"cause\":\"NOT AUTHENTICATED\"}";
     private static final String INVALID_CREDENTIALS_JSON = "{\"error\":\"Invalid credentials supplied\"}";
+    
+    // err on the side of caution
+    private static final int BCRYPT_STRENGTH = 12;
 
     private static final ObjectMapper mapper = new ObjectMapper();
     /**
@@ -115,13 +119,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private OneTimePassAuthProvider oneTimePassAuthProvider;
     
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.jdbcAuthentication()
-                .dataSource(dataSource)
-                .and()
-                .userDetailsService(customUserDetailService);
+    public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(customUserDetailService).passwordEncoder(new BCryptPasswordEncoder(BCRYPT_STRENGTH));
     }
-
+    
     @Bean(name="authenticationManager")
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -185,10 +186,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.apply(formLogin);
         
         
-        
         http.
-//            addFilterBefore(new )
-            addFilterBefore(new CustomUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class).
+//            addFilterBefore(new CustomUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class).
             //Require https:
             requiresChannel().
             anyRequest().
@@ -212,10 +211,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             authenticationEntryPoint(new CustomAuthenticationEntryPoint()).
             and().
                 // also check user's password against one-time password (which is used for initial setup and password reset flow)
-                        authenticationProvider(oneTimePassAuthProvider).
+                authenticationProvider(oneTimePassAuthProvider).
                 authorizeRequests().
             and().
-        authorizeRequests().
+            authorizeRequests().
             antMatchers(HttpMethod.POST, LOGIN_ENDPOINT).permitAll().
             antMatchers(HttpMethod.OPTIONS, LOGIN_ENDPOINT).permitAll().
             antMatchers(HttpMethod.OPTIONS, "/**").permitAll().
