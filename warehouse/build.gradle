@@ -170,6 +170,7 @@ dependencies {
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion",
             "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion",
             "com.fasterxml.jackson.module:jackson-module-scala_2.10:$jacksonVersion",
+            "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion",
             //Swagger for API documentation, & dependent JARs
             "org.hibernate:hibernate-core:$hibernateVersion",
             "org.hibernate:hibernate-java8:$hibernateVersion",

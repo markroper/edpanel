@@ -42,7 +42,7 @@
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
                 <property name="objectMapper">
-                    <bean class="com.knappsack.swagger4springweb.util.ScalaObjectMapper"/>
+                    <bean class="com.scholarscore.api.util.EdPanelScalaObjectMapper"/>
                 </property>
             </bean>
         </mvc:message-converters>
