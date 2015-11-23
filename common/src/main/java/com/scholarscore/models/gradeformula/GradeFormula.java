@@ -6,8 +6,8 @@ import com.scholarscore.models.assignment.StudentAssignment;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.io.Serializable;
-import java.time.Duration;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -295,7 +295,7 @@ public class GradeFormula implements Serializable {
     }
 
     private static long getDateDiff(LocalDate date1, LocalDate date2) {
-        return Math.abs( Duration.between(date1, date2).toDays() );
+        return Math.abs(ChronoUnit.DAYS.between(date1, date2));
     }
 
     public Long getId() {
