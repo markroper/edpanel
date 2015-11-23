@@ -117,7 +117,7 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public ServiceResponse<List<ScoreAsOfWeek>> getStudentHomeworkRates(Long studentId, Date startDate, Date endDate) {
+    public ServiceResponse<List<ScoreAsOfWeek>> getStudentHomeworkRates(Long studentId, LocalDate startDate, LocalDate endDate) {
         ServiceResponse<Collection<StudentAssignment>> studAssResp =
                 pm.getStudentAssignmentManager().getAllStudentAssignmentsBetweenDates(studentId, startDate, endDate);
         List<ScoreAsOfWeek> weekEndToCompletion = new ArrayList<>();

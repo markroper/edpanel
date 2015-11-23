@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 @Transactional
@@ -45,7 +45,7 @@ public class StudentAssignmentJdbc
 
     @Override
     @SuppressWarnings("unchecked")
-    public Collection<StudentAssignment> selectAllBetweenDates(long studentId, Date start, Date end) {
+    public Collection<StudentAssignment> selectAllBetweenDates(long studentId, LocalDate start, LocalDate end) {
         String[] params = new String[]{"studentId", "startDate", "endDate"};
         Object[] paramValues = new Object[]{ new Long(studentId), start, end };
         List<StudentAssignment> objects = (List<StudentAssignment>) hibernateTemplate.findByNamedParam(
