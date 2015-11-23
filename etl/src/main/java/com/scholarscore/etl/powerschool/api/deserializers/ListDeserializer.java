@@ -86,6 +86,7 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
      * @param <T>
      * @return
      */
+    @SuppressWarnings("unchecked")
     private <V> V readObj(JsonNode node, Class<V> clazz) {
         String name = null;
         try {
