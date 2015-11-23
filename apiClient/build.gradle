@@ -3,14 +3,6 @@ apply plugin: 'java'
 dependencies {
 
     compile project(':common'),
-
-            //Jackson for JSON & XML API serialization
-            "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
-            "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion",
-            "com.fasterxml.jackson.core:jackson-core:$jacksonVersion",
-            "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion",
-            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion",
-            "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion",
             "com.fasterxml.jackson.module:jackson-module-scala_2.10:$jacksonVersion",
             "org.springframework:spring-aop:$springVersion",
             "org.springframework:spring-aspects:$springVersion",
@@ -25,6 +17,7 @@ dependencies {
             "org.apache.httpcomponents:httpclient:$apacheHttpVersion",
             "org.apache.httpcomponents:httpcore:$apacheHttpVersion",
             "org.apache.httpcomponents:httpmime:$apacheHttpVersion"
+        
     testCompile "org.testng:testng:6.8.8",
             "org.springframework:spring-test:$springVersion"
 
