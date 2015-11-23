@@ -1,13 +1,17 @@
 package com.scholarscore.etl.powerschool.api.deserializers;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
+import com.scholarscore.util.EdPanelObjectMapper;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -15,6 +19,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +29,7 @@ import java.util.Optional;
  * Created by mattg on 7/15/15.
  */
 public abstract class ListDeserializer<T extends List, E> extends JsonDeserializer<T> {
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final DateTimeFormatter LOCAL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     abstract String getEntityName();
 
     @Override
@@ -77,10 +83,16 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
      * @param <T>
      * @return
      */
+    @SuppressWarnings("unchecked")
     private <V> V readObj(JsonNode node, Class<V> clazz) {
         String name = null;
         try {
-            V out = clazz.newInstance();
+            V out = null;
+            if(clazz.isAssignableFrom(LocalDate.class)) {
+                out = (V) LocalDate.now();
+            } else {
+                out = clazz.newInstance();
+            }
             for (Field field : clazz.getDeclaredFields()) {
                 name = field.getName();
                 switch (field.getType().getName()) {
@@ -93,6 +105,14 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
                     case "java.util.Date":
                         Date date = parseDate(asText(node, name));
                         field.set(out, date);
+                        break;
+                    case "java.time.LocalDate":
+                        if(null == asText(node, name)) {
+                            field.set(out, null);
+                        } else {
+                            LocalDate local = LocalDate.parse(asText(node, name), LOCAL_DATE_FORMATTER);
+                            field.set(out, local);
+                        }
                         break;
                     case "java.lang.List":
                         if (field.getClass().isAnnotationPresent(JsonDeserialize.class)) {
@@ -148,7 +168,7 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
 
     public static void main(String args[]) throws IOException {
         String json = FileUtils.readFileToString(new File("/home/mattg/dev/scholarscore/ETL/src/test/resources/staff.json"));
-        List staffs = mapper.readValue(json, PsStaffs.class);
+        List staffs = EdPanelObjectMapper.MAPPER.readValue(json, PsStaffs.class);
         System.out.println(staffs);
     }
 }

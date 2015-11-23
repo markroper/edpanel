@@ -28,7 +28,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.testng.annotations.Test;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * Created by mattg on 8/29/15.
@@ -133,18 +133,18 @@ public class BaseJdbcTest {
 
         section.setName("section1");
         section.setRoom("room1");
-        section.setStartDate(new Date());
-        section.setEndDate(new Date());
+        section.setStartDate(LocalDate.now());
+        section.setEndDate(LocalDate.now());
         section.setCourse(course);
 
         schoolYear.setName("2015");
-        schoolYear.setStartDate(new Date());
-        schoolYear.setEndDate(new Date());
+        schoolYear.setStartDate(LocalDate.now());
+        schoolYear.setEndDate(LocalDate.now());
         schoolYear.setSchool(school);
 
         term.setName("term1");
-        term.setStartDate(new Date());
-        term.setEndDate(new Date());
+        term.setStartDate(LocalDate.now());
+        term.setEndDate(LocalDate.now());
         term.setSchoolYear(schoolYear);
 
         behaviorGoal.setApproved(false);
@@ -153,8 +153,8 @@ public class BaseJdbcTest {
         behaviorGoal.setDesiredValue(5d);
         behaviorGoal.setName("Does this behave as expected");
         behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
-        behaviorGoal.setStartDate(new Date());
-        behaviorGoal.setEndDate(new Date());
+        behaviorGoal.setStartDate(LocalDate.now());
+        behaviorGoal.setEndDate(LocalDate.now());
 
         assignmentGoal.setApproved(false);
         assignmentGoal.setTeacher(teacher);
@@ -211,7 +211,7 @@ public class BaseJdbcTest {
             createdSection.setName("Section1");
             createdSection.setRoom("section_room_1");
             createdSection.setTerm(createTerm());
-            createdSection.setStartDate(new Date());
+            createdSection.setStartDate(LocalDate.now());
             createdSection.setCourse(createCourse());
             Long id = sectionDao.insert(createdSection.getTerm().getId(),
                     createdSection);
@@ -275,8 +275,8 @@ public class BaseJdbcTest {
         if (null == createdBehaviorGoal) {
             createdBehaviorGoal = new BehaviorGoal();
             createdBehaviorGoal.setName("Behaves nicely when created");
-            createdBehaviorGoal.setEndDate(new Date());
-            createdBehaviorGoal.setStartDate(new Date());
+            createdBehaviorGoal.setEndDate(LocalDate.now());
+            createdBehaviorGoal.setStartDate(LocalDate.now());
             createdBehaviorGoal.setStudent(createStudent());
             createdBehaviorGoal.setTeacher(createTeacher());
             createdBehaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);

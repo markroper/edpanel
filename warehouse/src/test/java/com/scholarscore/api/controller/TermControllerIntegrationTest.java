@@ -9,8 +9,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Test(groups = { "integration" })
 public class TermControllerIntegrationTest extends IntegrationBase {
@@ -36,12 +35,9 @@ public class TermControllerIntegrationTest extends IntegrationBase {
     @DataProvider
     public Object[][] createTermProvider() {
         Term emptyTerm = new Term();
-        
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.MILLISECOND, 0);
-        Date today = cal.getTime();
-        cal.add(Calendar.YEAR, 1); // to get previous year add -1
-        Date nextYear = cal.getTime();
+
+        LocalDate today = LocalDate.now();
+        LocalDate nextYear = today.plusYears(1l);
         
         Term namedTerm = new Term();
         namedTerm.setName(localeServiceUtil.generateName());

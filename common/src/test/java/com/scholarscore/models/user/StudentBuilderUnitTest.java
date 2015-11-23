@@ -10,6 +10,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -36,8 +37,8 @@ public class StudentBuilderUnitTest extends AbstractBuilderUnitTest<Student> {
         Address homeAddress = CommonTestUtils.generateAddress();
         //Demographics
         Gender gender = Gender.FEMALE;
-        Date birthDate = new Date();
-        Date districtEntryDate= DateUtils.addMonths(new Date(), -36);
+        LocalDate birthDate = LocalDate.now();
+        LocalDate districtEntryDate= LocalDate.now().plusMonths(-36l);
         Long projectedGraduationYear = DateUtils.addYears(new Date(), 3).getTime();
         String socialSecurityNumber = CommonTestUtils.generateSocialSecurityNumber();
         //EthnicityRace

@@ -4,7 +4,7 @@ import com.scholarscore.api.persistence.UiAttributesPersistence;
 import com.scholarscore.models.School;
 import com.scholarscore.models.UiAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate4.HibernateTemplate;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
 import java.util.List;

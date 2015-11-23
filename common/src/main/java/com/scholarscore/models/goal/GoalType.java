@@ -14,5 +14,4 @@ public enum GoalType implements Serializable {
     ASSIGNMENT,
     COMPLEX,
     CONSTANT
-
 }

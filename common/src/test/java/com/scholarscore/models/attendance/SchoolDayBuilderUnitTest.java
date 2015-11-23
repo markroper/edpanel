@@ -6,7 +6,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * SchoolDayBuilderUnitTest tests out the SchoolDay object's Builder to ensure that constructing an object with the builder
@@ -23,7 +23,7 @@ public class SchoolDayBuilderUnitTest extends AbstractBuilderUnitTest<SchoolDay>
 
         Long id = RandomUtils.nextLong(0L, Long.MAX_VALUE);
         School school = new School();
-        Date date = new Date();
+        LocalDate date = LocalDate.now();
         SchoolDay fullSchoolDay = new SchoolDay();
         fullSchoolDay.setSchool(school);
         fullSchoolDay.setId(id);

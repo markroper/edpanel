@@ -1,13 +1,13 @@
 package com.scholarscore.models.query;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.models.query.dimension.SectionDimension;
 import com.scholarscore.models.query.dimension.StudentDimension;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
 import com.scholarscore.models.query.expressions.operands.NumericOperand;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
+import com.scholarscore.util.EdPanelObjectMapper;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -41,22 +41,21 @@ public class QuerySerializationTest {
     
     @Test(dataProvider = "queriesToSerialize")
     public void testJacksonSerializationAndDeserialization(String msg, Query q, boolean isValid) {
-        ObjectMapper mapper = new ObjectMapper();
         String json = null;
         try {
-            json = mapper.writeValueAsString(q);
+            json = EdPanelObjectMapper.MAPPER.writeValueAsString(q);
         } catch (JsonProcessingException e) {
             Assert.fail("Failed to produce a JSON string for Query object: " + msg);
         }
         Query reanimatedQuery = null;
         try {
-            reanimatedQuery = mapper.readValue(json, Query.class);
+            reanimatedQuery = EdPanelObjectMapper.MAPPER.readValue(json, Query.class);
         } catch (IOException e) {
             Assert.fail("Failed to rehydrate a Query instance from JSON for case: " + msg);
         }
         Assert.assertNotNull(reanimatedQuery);
         try {
-            Assert.assertEquals(mapper.writeValueAsString(reanimatedQuery), json, "Unexpedctedly unequal Query instances for case: " + msg);
+            Assert.assertEquals(EdPanelObjectMapper.MAPPER.writeValueAsString(reanimatedQuery), json, "Unexpedctedly unequal Query instances for case: " + msg);
         } catch (JsonProcessingException e) {
             Assert.fail("Failed to produce JSON from the reanimated Query object" + e.getMessage());
         }

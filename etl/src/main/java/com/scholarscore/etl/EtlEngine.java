@@ -40,8 +40,7 @@ import com.scholarscore.models.attendance.SchoolDay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,7 +65,7 @@ public class EtlEngine implements IEtlEngine {
     public static final int THREAD_POOL_SIZE = 5;
     //After a certain point in the past, we no longer want to sync expensive and large tables, like attendance
     //This date defines that cutoff point before which we will cease to sync updates.
-    private Date syncCutoff;
+    private LocalDate syncCutoff;
     private SyncResult results = new SyncResult();
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
@@ -75,7 +74,7 @@ public class EtlEngine implements IEtlEngine {
     private ConcurrentHashMap<Long, School> schools;
     //Collections are by sourceSystemSchoolId and if there are nested maps, 
     //the keys are always sourceSystemIds of sub-entities
-    private ConcurrentHashMap<Long, ConcurrentHashMap<Date, SchoolDay>> schoolDays;
+    private ConcurrentHashMap<Long, ConcurrentHashMap<LocalDate, SchoolDay>> schoolDays;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Term>> terms;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Section>> sections;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Course>> courses = new ConcurrentHashMap<>();
@@ -111,9 +110,7 @@ public class EtlEngine implements IEtlEngine {
 
     @Override
     public SyncResult syncDistrict() {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.YEAR, -1); // to get previous year add -1
-        this.syncCutoff = cal.getTime();
+        this.syncCutoff = LocalDate.now().minusYears(1l);
         this.powerSchool.setSyncCutoff(this.syncCutoff);
 
         long startTime = System.currentTimeMillis();
@@ -183,7 +180,6 @@ public class EtlEngine implements IEtlEngine {
                     dailyAbsenseTrigger);
             a.syncCreateUpdateDelete(results);
         }
-
     }
 
     /**

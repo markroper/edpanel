@@ -14,6 +14,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -70,8 +71,8 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
         GradedAssignment namedAssignment = new GradedAssignment();
         namedAssignment.setType(AssignmentType.QUIZ);
         namedAssignment.setName(localeServiceUtil.generateName());
-        namedAssignment.setAssignedDate(today);
-        namedAssignment.setDueDate(nextYear);
+        namedAssignment.setAssignedDate(today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        namedAssignment.setDueDate(nextYear.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         
         return new Object[][] {
                 { "Empty section assignment", emptyAssignment },

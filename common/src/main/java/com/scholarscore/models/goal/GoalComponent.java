@@ -22,7 +22,6 @@ import java.util.Objects;
 
 })
 public abstract class GoalComponent implements Serializable {
-
     private Student student;
     private GoalType componentType;
     private Double modifier;

@@ -1,12 +1,5 @@
 apply plugin: 'java'
 
-//Dependencies section:
-ext {
-    jacksonVersion = "2.4.3"
-    apacheHttpVersion = "4.3.3"
-    springVersion = "4.0.3.RELEASE"
-}
-
 dependencies {
 
     compile project(':common'),
@@ -31,9 +24,7 @@ dependencies {
 
             "org.apache.httpcomponents:httpclient:$apacheHttpVersion",
             "org.apache.httpcomponents:httpcore:$apacheHttpVersion",
-            "org.apache.httpcomponents:httpmime:$apacheHttpVersion",
-            "com.google.code.gson:gson:2.3.1"
-
+            "org.apache.httpcomponents:httpmime:$apacheHttpVersion"
     testCompile "org.testng:testng:6.8.8",
             "org.springframework:spring-test:$springVersion"
 

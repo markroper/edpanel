@@ -23,6 +23,16 @@ allprojects {
     artifacts {
         testArtifacts testJar
     }
+
+    //Dependencies section:
+    ext {
+        springVersion = "4.2.3.RELEASE"
+        springSecurityVersion = "3.2.5.RELEASE"
+        jacksonVersion = "2.6.0"
+        apacheHttpVersion = "4.3.3"
+        hibernateVersion = "5.0.4.Final"
+        hibernateValidator = "5.2.2.Final"
+    }
 }
 
 

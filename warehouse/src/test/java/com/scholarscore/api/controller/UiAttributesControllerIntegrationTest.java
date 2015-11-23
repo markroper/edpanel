@@ -1,11 +1,11 @@
 package com.scholarscore.api.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.JsonAttributes;
 import com.scholarscore.models.School;
 import com.scholarscore.models.UiAttributes;
+import com.scholarscore.util.EdPanelObjectMapper;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -13,7 +13,6 @@ import org.testng.annotations.Test;
 
 @Test(groups = { "integration" })
 public class UiAttributesControllerIntegrationTest extends IntegrationBase {
-    private ObjectMapper mapper = new ObjectMapper();
     private School school;
     private UiAttributes instanceAttrs;
     
@@ -29,7 +28,7 @@ public class UiAttributesControllerIntegrationTest extends IntegrationBase {
     @DataProvider
     public Object[][] createAttrsProvider() {
        UiAttributes populatedAttributes = new UiAttributes();
-       ObjectNode node = mapper.createObjectNode();
+       ObjectNode node = EdPanelObjectMapper.MAPPER.createObjectNode();
        node.put("chalupa", "grande");
        
        populatedAttributes.setSchool(school);

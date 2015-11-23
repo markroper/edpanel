@@ -19,8 +19,8 @@ import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.lang3.time.DateUtils;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -110,16 +110,24 @@ public class CommonTestUtils {
         return RandomStringUtils.randomAlphabetic(6) + " " + RandomStringUtils.randomAlphabetic(6);
     }
 
-    public static Date generateBirthDate(){
+    public static LocalDate generateBirthDate(){
         return generateBirthDate(9, 18);
     }
 
-    public static Date generateBirthDate(final int minAge, final int maxAge){
-        return DateUtils.addMonths(DateUtils.addYears(new Date(), -1 * RandomUtils.nextInt(minAge, maxAge)), -1 * RandomUtils.nextInt(0, 11));
+    public static LocalDate generateBirthDate(final int minAge, final int maxAge){
+        LocalDate now = LocalDate.now();
+        // .nextInt max value is exclusive, so add 1 to ensure passed-in maxAge as a possible selection
+        now = now.plusYears(-1l * RandomUtils.nextInt(minAge, maxAge + 1));
+        now = now.plusMonths(-1l * RandomUtils.nextInt(0, 12));
+        return now;
     }
 
     public static Date getRandomDate(){
         return new Date(RandomUtils.nextLong(0L, Long.MAX_VALUE));
+    }
+
+    public static LocalDate getRandomLocalDate(){
+        return LocalDate.ofEpochDay(RandomUtils.nextLong(0L, Long.MAX_VALUE));
     }
 
     public static String generateSocialSecurityNumber(){
@@ -169,27 +177,27 @@ public class CommonTestUtils {
     }
 
     public static SchoolYear generateSchoolYear(final School parentSchool){
-        Date startDate = new Date();
+        LocalDate startDate = LocalDate.now();
         SchoolYear schoolYear = generateSchoolYearWithoutTerms(parentSchool);
-        schoolYear.addTerm(generateTerm(startDate, DateUtils.addMonths(startDate, 3), schoolYear));
-        schoolYear.addTerm(generateTerm(DateUtils.addMonths(startDate, 3), DateUtils.addMonths(startDate, 6), schoolYear));
-        schoolYear.addTerm(generateTerm(DateUtils.addMonths(startDate, 6), DateUtils.addMonths(startDate, 9), schoolYear));
+        schoolYear.addTerm(generateTerm(startDate.plusMonths(3l), startDate.plusMonths(3l), schoolYear));
+        schoolYear.addTerm(generateTerm(startDate.plusMonths(6l), startDate.plusMonths(6l), schoolYear));
+        schoolYear.addTerm(generateTerm(startDate.plusMonths(6l),startDate.plusMonths(9l), schoolYear));
         return schoolYear;
     }
 
     public static SchoolYear generateSchoolYearWithoutTerms(final School parentSchool){
-        Date startDate = new Date();
-        return new SchoolYear.SchoolYearBuilder().withSchool(parentSchool).withStartDate(startDate).withEndDate(DateUtils.addMonths(startDate, 9)).build();
+        LocalDate startDate = LocalDate.now();
+        return new SchoolYear.SchoolYearBuilder().withSchool(parentSchool).withStartDate(startDate).withEndDate(startDate.plusMonths(9l)).build();
     }
 
-    public static Term generateTerm(Date startDate, Date endDate, SchoolYear schoolYear){
+    public static Term generateTerm(LocalDate startDate, LocalDate endDate, SchoolYear schoolYear){
         Term term = generateTermWithoutSchoolYear(startDate, endDate);
         term.setSchoolYear(schoolYear);
 
         return term;
     }
 
-    public static Term generateTermWithoutSchoolYear(Date startDate, Date endDate){
+    public static Term generateTermWithoutSchoolYear(LocalDate startDate, LocalDate endDate){
         return new Term.TermBuilder()
                 .withStartDate(startDate)
                 .withEndDate(endDate)
@@ -209,8 +217,8 @@ public class CommonTestUtils {
         Address homeAddress = CommonTestUtils.generateAddress();
         //Demographics
         Gender gender = getRandomGender();
-        Date birthDate = generateBirthDate();
-        Date districtEntryDate= getRandomDate();
+        LocalDate birthDate = generateBirthDate();
+        LocalDate districtEntryDate= getRandomLocalDate();
         Long projectedGraduationYear = getRandomDate().getTime();
         String socialSecurityNumber = CommonTestUtils.generateSocialSecurityNumber();
         //EthnicityRace
@@ -257,12 +265,12 @@ public class CommonTestUtils {
     }
 
     public static Section generateSection(){
-        Date startDate = getRandomDate();
-        Date endDate = DateUtils.addWeeks(startDate, RandomUtils.nextInt(1, 5));
+        LocalDate startDate = getRandomLocalDate();
+        LocalDate endDate = startDate.plusWeeks(Long.valueOf(RandomUtils.nextInt(1, 5)));
         String room = RandomStringUtils.randomAlphanumeric(3);
         GradeFormula gradeFormula = generateGradeFormula();
         String gradeFormulaString = RandomStringUtils.randomAlphanumeric(10);
-        Term term = generateTerm(new Date(), DateUtils.addMonths(new Date(), 3), generateSchoolYear(generateSchool()));
+        Term term = generateTerm(LocalDate.now(), LocalDate.now().plusMonths(3), generateSchoolYear(generateSchool()));
         Course course = generateCourse();
 
         Section section = new Section.SectionBuilder().
@@ -308,14 +316,14 @@ public class CommonTestUtils {
                 builder = new AttendanceAssignment.AttendanceAssignmentBuilder();
                 break;
             default:
-                builder = new GradedAssignment.GradedAssignmentBuilder().withAssignedDate(getRandomDate());
+                builder = new GradedAssignment.GradedAssignmentBuilder().withAssignedDate(getRandomLocalDate());
 
         }
         return (Assignment)builder.
                 withName(generateName()).
                 withAvailablePoints(RandomUtils.nextLong(0L, Long.MAX_VALUE)).
                 withSection(section).
-                withDueDate(getRandomDate()).
+                withDueDate(getRandomLocalDate()).
                 withName(generateName()).
                 build();
     }
@@ -332,13 +340,13 @@ public class CommonTestUtils {
                 builder = new AttendanceAssignment.AttendanceAssignmentBuilder();
                 break;
             default:
-                builder = new GradedAssignment.GradedAssignmentBuilder().withAssignedDate(getRandomDate());
+                builder = new GradedAssignment.GradedAssignmentBuilder().withAssignedDate(getRandomLocalDate());
 
         }
         return (Assignment)builder.
                 withName(generateName()).
                 withAvailablePoints(RandomUtils.nextLong(0L, Long.MAX_VALUE)).
-                withDueDate(getRandomDate()).
+                withDueDate(getRandomLocalDate()).
                 withName(generateName()).
                 build();
     }

@@ -2,8 +2,7 @@ package com.scholarscore.models.goal;
 
 import com.scholarscore.models.BehaviorCategory;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -11,12 +10,9 @@ import java.util.Objects;
  * Created by cwallace on 10/14/2015.
  */
 public class BehaviorComponent extends GoalComponent implements CalculatableBehavior {
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-
     private BehaviorCategory behaviorCategory;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     public  BehaviorComponent() {
         setComponentType(GoalType.BEHAVIOR);
@@ -30,19 +26,19 @@ public class BehaviorComponent extends GoalComponent implements CalculatableBeha
         this.behaviorCategory = behaviorCategory;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
@@ -71,7 +67,7 @@ public class BehaviorComponent extends GoalComponent implements CalculatableBeha
                         + "ComponentType:" + getComponentType() + "\n"
                         + "Student: " + getStudent() + "\n"
                         + "Modifier: " + getModifier() + "\n"
-                        + "StartDate: " + dateFormat.format(getStartDate()) + "\n"
-                        + "EndDate: " + dateFormat.format(getEndDate());
+                        + "StartDate: " + getStartDate() + "\n"
+                        + "EndDate: " + getEndDate();
     }
 }

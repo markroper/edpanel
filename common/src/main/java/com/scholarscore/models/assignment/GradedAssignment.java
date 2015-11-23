@@ -8,9 +8,8 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -26,7 +25,7 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GradedAssignment extends Assignment implements Serializable {
-    private Date assignedDate;
+    private LocalDate assignedDate;
 
     public GradedAssignment() {
         super();
@@ -50,11 +49,11 @@ public class GradedAssignment extends Assignment implements Serializable {
     }
 
     @Column(name = HibernateConsts.ASSIGNMENT_ASSIGNED_DATE)
-    public Date getAssignedDate() {
+    public LocalDate getAssignedDate() {
         return assignedDate;
     }
 
-    public void setAssignedDate(Date assignedDate) {
+    public void setAssignedDate(LocalDate assignedDate) {
         this.assignedDate = assignedDate;
     }
 
@@ -78,9 +77,9 @@ public class GradedAssignment extends Assignment implements Serializable {
      * chain setting attributes together.
      */
     public static class GradedAssignmentBuilder extends AssignmentBuilder<GradedAssignmentBuilder, GradedAssignment>{
-        private Date assignedDate;
+        private LocalDate assignedDate;
 
-        public GradedAssignmentBuilder withAssignedDate(final Date assignedDate){
+        public GradedAssignmentBuilder withAssignedDate(final LocalDate assignedDate){
             this.assignedDate = assignedDate;
             return this;
         }

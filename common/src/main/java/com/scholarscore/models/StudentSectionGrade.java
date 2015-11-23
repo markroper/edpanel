@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.models.user.Student;
+import com.scholarscore.util.EdPanelObjectMapper;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -36,7 +36,6 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentSectionGrade extends ApiModel implements Serializable, WeightedGradable, IApiModel<StudentSectionGrade> {
-    private static final ObjectMapper MAPPER = new ObjectMapper();
     protected Boolean complete;
     protected Double grade;
     protected HashMap<Long, Score> termGrades;
@@ -86,7 +85,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
     @Column(name = HibernateConsts.STUDENT_SECTION_GRADE_TERM_GRADES)
     public String getTermGradesString() {
         try {
-            return MAPPER.writeValueAsString(termGrades);
+            return EdPanelObjectMapper.MAPPER.writeValueAsString(termGrades);
         } catch (JsonProcessingException | NullPointerException e) {
             return null;
         }
@@ -94,7 +93,8 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
     @JsonIgnore
     public void setTermGradesString(String gradesString) {
         try {
-            this.termGrades = MAPPER.readValue(gradesString, new TypeReference<HashMap<Long, Score>>(){});
+            this.termGrades = EdPanelObjectMapper.MAPPER.readValue(
+                    gradesString, new TypeReference<HashMap<Long, Score>>(){});
         } catch (IOException | NullPointerException e) {
             this.termGrades = null;
         }
@@ -135,7 +135,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
     }
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.STUDENT_SECTION_GRADE_ID)
     public Long getId() {
         return id;
