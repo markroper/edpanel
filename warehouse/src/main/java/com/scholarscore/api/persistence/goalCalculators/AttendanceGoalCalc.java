@@ -21,8 +21,8 @@ public class AttendanceGoalCalc implements GoalCalc<CalculatableAttendance> {
         Collection<StudentAssignment> attendances = studentAssignmentPersistence.selectAllAttendanceSection(goal.getParentId(), goal.getStudent().getId());
         Double missedClasses = 0d;
         for (StudentAssignment dayAttendance : attendances) {
-            if (dayAttendance.getAssignment().getDueDate().compareTo(goal.getEndDate()) > 0 ||
-                    dayAttendance.getAssignment().getDueDate().compareTo(goal.getStartDate()) < 0) {
+            if (dayAttendance.getAssignment().getDueDate().isAfter(goal.getEndDate()) ||
+                    dayAttendance.getAssignment().getDueDate().isBefore(goal.getStartDate())) {
                 continue;
             }
             Double points = dayAttendance.getAwardedPoints();

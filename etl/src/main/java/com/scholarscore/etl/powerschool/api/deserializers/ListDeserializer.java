@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
+import com.scholarscore.util.EdPanelObjectMapper;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -29,10 +30,6 @@ import java.util.Optional;
  */
 public abstract class ListDeserializer<T extends List, E> extends JsonDeserializer<T> {
     private static final DateTimeFormatter LOCAL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final ObjectMapper MAPPER = new ObjectMapper().
-            setSerializationInclusion(JsonInclude.Include.NON_NULL).
-            registerModule(new JavaTimeModule()).
-            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     abstract String getEntityName();
 
     @Override
@@ -171,7 +168,7 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
 
     public static void main(String args[]) throws IOException {
         String json = FileUtils.readFileToString(new File("/home/mattg/dev/scholarscore/ETL/src/test/resources/staff.json"));
-        List staffs = MAPPER.readValue(json, PsStaffs.class);
+        List staffs = EdPanelObjectMapper.MAPPER.readValue(json, PsStaffs.class);
         System.out.println(staffs);
     }
 }

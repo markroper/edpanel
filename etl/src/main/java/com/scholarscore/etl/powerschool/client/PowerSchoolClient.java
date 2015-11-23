@@ -1,10 +1,6 @@
 package com.scholarscore.etl.powerschool.client;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
@@ -62,11 +58,6 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     private static final String URI_PATH_OATH = "/oauth/access_token";
     private final String clientSecret;
     private final String clientId;
-
-    private static final ObjectMapper MAPPER = new ObjectMapper().
-            setSerializationInclusion(JsonInclude.Include.NON_NULL).
-            registerModule(new JavaTimeModule()).
-            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     private OAuthResponse oauthToken;
 
     public PowerSchoolClient(String clientId, String clientSecret, URI uri) {

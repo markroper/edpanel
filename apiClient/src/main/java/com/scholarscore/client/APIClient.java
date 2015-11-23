@@ -1,10 +1,6 @@
 package com.scholarscore.client;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.EntityId;
@@ -40,10 +36,6 @@ import java.util.List;
  * Created by mattg on 7/3/15.
  */
 public class APIClient extends BaseHttpClient implements IAPIClient {
-    private static final ObjectMapper MAPPER = new ObjectMapper().
-            setSerializationInclusion(JsonInclude.Include.NON_NULL).
-            registerModule(new JavaTimeModule()).
-            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     // warehouse is required because uri.resolve(path) erases the path
     private static final String BASE_API_ENDPOINT = "warehouse/api/v1";
     private static final String LOGIN_ENDPOINT = "/login";

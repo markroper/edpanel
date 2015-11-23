@@ -10,7 +10,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -24,9 +23,6 @@ import java.util.Objects;
 @DiscriminatorValue(value = "BEHAVIOR")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class BehaviorGoal extends Goal implements CalculatableBehavior {
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
     private LocalDate startDate;
     private LocalDate endDate;
     private BehaviorCategory behaviorCategory;

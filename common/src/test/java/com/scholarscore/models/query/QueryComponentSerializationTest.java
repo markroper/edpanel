@@ -1,10 +1,7 @@
 package com.scholarscore.models.query;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.scholarscore.util.EdPanelObjectMapper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -16,10 +13,6 @@ public class QueryComponentSerializationTest {
     @Test(enabled = false)
     public void testJacksonSerializationAndDeserialization() {
         QueryComponents qc = new QueryComponents();
-        ObjectMapper mapper = new ObjectMapper().
-                setSerializationInclusion(JsonInclude.Include.NON_NULL).
-                registerModule(new JavaTimeModule()).
-                configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         String json = null;
 
         String expectedJson = "{\"availableDimensions\":["
@@ -36,7 +29,7 @@ public class QueryComponentSerializationTest {
                 + "{\"compatibleMeasures\":[],\"compatibleDimensions\":[\"TERM\",\"YEAR\",\"STUDENT\",\"SCHOOL\",\"GRADE_LEVEL\"],\"name\":\"GPA\",\"measure\":\"GPA\"},"
                 + "{\"compatibleMeasures\":[],\"compatibleDimensions\":[\"TERM\",\"STUDENT\",\"SCHOOL\",\"SECTION\",\"YEAR\",\"GRADE_LEVEL\",\"TEACHER\"],\"name\":\"Homework Completion\",\"measure\":\"HW_COMPLETION\"}]}";
         try {
-            json = mapper.writeValueAsString(qc);
+            json = EdPanelObjectMapper.MAPPER.writeValueAsString(qc);
         } catch (JsonProcessingException e) {
             Assert.fail("Failed to produce a JSON string for QueryComponents object");
         }
@@ -47,7 +40,7 @@ public class QueryComponentSerializationTest {
             // it will break the test which it does on my machine
             //JsonNode actualObj = mapper.readTree(json);
             //JsonNode expectedObj = mapper.readTree(expectedJson);
-            QueryComponents expectedValue = mapper.readValue(expectedJson, QueryComponents.class);
+            QueryComponents expectedValue = EdPanelObjectMapper.MAPPER.readValue(expectedJson, QueryComponents.class);
             Assert.assertEquals(expectedValue, qc);
         } catch (IOException e) {
             Assert.fail("Unable to parse JSON strings");

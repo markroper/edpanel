@@ -15,7 +15,6 @@ import com.scholarscore.models.user.Student;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -128,7 +127,6 @@ public class StudentManagerImpl implements StudentManager {
             List<StudentAssignment> hwAssignments = new ArrayList<>();
             //Sort by due date
             LocalDate currentLastDayOfWeek = null;
-            Calendar cal  = Calendar.getInstance();
             for(StudentAssignment sa: studentAssignments) {
                 if(sa.getAssignment().getType().equals(AssignmentType.HOMEWORK)) {
                     LocalDate dueDate = sa.getAssignment().getDueDate();
