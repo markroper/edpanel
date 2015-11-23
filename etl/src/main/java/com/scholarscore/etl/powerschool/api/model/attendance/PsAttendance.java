@@ -6,7 +6,7 @@ import com.scholarscore.models.attendance.AttendanceTypes;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.user.Student;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * Created by markroper on 10/30/15.
@@ -14,7 +14,7 @@ import java.util.Date;
 public class PsAttendance implements IToApiModel<Attendance> {
     public Long periodid;
     public Long lock_teacher_yn;
-    public Date att_date;
+    public LocalDate att_date;
     public Long ccid;
     public String att_mode_code;
     public Long ada_value_code;

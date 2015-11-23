@@ -1,6 +1,5 @@
 package com.scholarscore.etl.powerschool.client;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 
 /**
@@ -20,8 +19,7 @@ public class PowerSchoolPaths {
         pageSize = size;
     }
     public void setCutoffDate(LocalDate date) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        cutoffDate = format.format(date);
+        cutoffDate = date.toString();
     }
 
     public String getPageSizeParam() {

@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +28,7 @@ import java.util.Optional;
  * Created by mattg on 7/15/15.
  */
 public abstract class ListDeserializer<T extends List, E> extends JsonDeserializer<T> {
+    private static final DateTimeFormatter LOCAL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final ObjectMapper MAPPER = new ObjectMapper().
             setSerializationInclusion(JsonInclude.Include.NON_NULL).
             registerModule(new JavaTimeModule()).
@@ -86,7 +89,12 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
     private <V> V readObj(JsonNode node, Class<V> clazz) {
         String name = null;
         try {
-            V out = clazz.newInstance();
+            V out = null;
+            if(clazz.isAssignableFrom(LocalDate.class)) {
+                out = (V) LocalDate.now();
+            } else {
+                out = clazz.newInstance();
+            }
             for (Field field : clazz.getDeclaredFields()) {
                 name = field.getName();
                 switch (field.getType().getName()) {
@@ -99,6 +107,14 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
                     case "java.util.Date":
                         Date date = parseDate(asText(node, name));
                         field.set(out, date);
+                        break;
+                    case "java.time.LocalDate":
+                        if(null == asText(node, name)) {
+                            field.set(out, null);
+                        } else {
+                            LocalDate local = LocalDate.parse(asText(node, name), LOCAL_DATE_FORMATTER);
+                            field.set(out, local);
+                        }
                         break;
                     case "java.lang.List":
                         if (field.getClass().isAnnotationPresent(JsonDeserialize.class)) {
