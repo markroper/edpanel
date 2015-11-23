@@ -17,10 +17,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 
 @Test(groups = { "integration" })
@@ -77,11 +76,8 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
         sectionAssignment = new GradedAssignment();
         sectionAssignment.setType(AssignmentType.FINAL);
         sectionAssignment.setName(localeServiceUtil.generateName());
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.MILLISECOND, 0);
-        Date today = cal.getTime();
-        cal.add(Calendar.YEAR, 1); // to get previous year add -1
-        Date nextYear = cal.getTime();
+        LocalDate today = LocalDate.now();
+        LocalDate nextYear =today.plusYears(1l);
         sectionAssignment.setAssignedDate(today);
         sectionAssignment.setDueDate(nextYear);
         sectionAssignment = (GradedAssignment) sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(), 

@@ -67,7 +67,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     }
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.GOAL_ID)
     public Long getId() {
         return super.getId();

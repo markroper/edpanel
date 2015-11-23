@@ -1,17 +1,14 @@
 package com.scholarscore.models;
 
 import com.beust.jcommander.internal.Lists;
-import com.beust.jcommander.internal.Sets;
 import com.scholarscore.utils.CommonTestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 /**
  * SchoolYearBuilderUnitTest tests that we can build equivalent SchoolYear objects using both setters and builders
@@ -29,12 +26,12 @@ public class SchoolYearBuilderUnitTest extends AbstractBuilderUnitTest<SchoolYea
         String name = RandomStringUtils.randomAlphabetic(15);
         Long id = RandomUtils.nextLong(0L, Long.MAX_VALUE);
         School parentSchool = CommonTestUtils.generateSchool();
-        Date startDate = new Date();
-        Date endDate = DateUtils.addMonths(startDate, 9);
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusMonths(9);
         List<Term> terms = Lists.newArrayList();
         int numTerms = RandomUtils.nextInt(2, 5);
         for(int i = 0; i < numTerms; i++){
-            terms.add(CommonTestUtils.generateTermWithoutSchoolYear(startDate, DateUtils.addMonths(startDate, 12 / numTerms)));
+            terms.add(CommonTestUtils.generateTermWithoutSchoolYear(startDate, startDate.plusMonths(12l/numTerms)));
         }
         SchoolYear fullSchoolYear = new SchoolYear();
         fullSchoolYear.setId(id);

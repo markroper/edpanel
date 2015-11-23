@@ -14,6 +14,7 @@ import com.scholarscore.models.user.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -32,15 +33,15 @@ public class AttendanceSync implements ISync<Attendance> {
     protected IPowerSchoolClient powerSchool;
     protected School school;
     protected StudentAssociator studentAssociator;
-    protected ConcurrentHashMap<Date, SchoolDay> schoolDays;
-    protected Date syncCutoff;
+    protected ConcurrentHashMap<LocalDate, SchoolDay> schoolDays;
+    protected LocalDate syncCutoff;
     protected Long dailyAbsenseTrigger;
     public AttendanceSync(IAPIClient edPanel,
                           IPowerSchoolClient powerSchool,
                           School s,
                           StudentAssociator studentAssociator,
-                          ConcurrentHashMap<Date, SchoolDay> schoolDays,
-                          Date syncCutoff,
+                          ConcurrentHashMap<LocalDate, SchoolDay> schoolDays,
+                          LocalDate syncCutoff,
                           Long dailyAbsenseTrigger) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;

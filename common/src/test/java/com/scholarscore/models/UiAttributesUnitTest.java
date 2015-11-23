@@ -3,8 +3,8 @@ package com.scholarscore.models;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.scholarscore.util.EdPanelObjectMapper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -12,14 +12,12 @@ import java.io.IOException;
 
 @Test(groups = { "unit" })
 public class UiAttributesUnitTest {
-    ObjectMapper mapper = new ObjectMapper();
-    
     @Test
     public void uiAttributesSerializationTest() throws JsonParseException, JsonMappingException, IOException {
         School school = new School();
         school.setName("Test School");
         UiAttributes populatedAttributes = new UiAttributes();
-        ObjectNode node = mapper.createObjectNode();
+        ObjectNode node = EdPanelObjectMapper.MAPPER.createObjectNode();
         node.put("chalupa", "grande");
         
         populatedAttributes.setSchool(school);
@@ -27,11 +25,11 @@ public class UiAttributesUnitTest {
         
         String json = null;
         try {
-            json = mapper.writeValueAsString(populatedAttributes);
+            json = EdPanelObjectMapper.MAPPER.writeValueAsString(populatedAttributes);
         } catch (JsonProcessingException e) {
             Assert.fail();
         }
-        UiAttributes reanimated = mapper.readValue(json, UiAttributes.class);
+        UiAttributes reanimated = EdPanelObjectMapper.MAPPER.readValue(json, UiAttributes.class);
         Assert.assertEquals(populatedAttributes, reanimated);
     }
 }

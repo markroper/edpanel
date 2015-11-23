@@ -5,7 +5,7 @@ import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.GradedAssignment;
 import org.testng.annotations.Test;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
@@ -24,7 +24,7 @@ public class AssignmentJdbcTest extends BaseJdbcTest {
         assignment.setName("Section Test 1");
         assignment.setAvailablePoints(10L);
         assignment.setType(AssignmentType.ATTENDANCE);
-        assignment.setDueDate(new Date());
+        assignment.setDueDate(LocalDate.now());
         assignment.setSection(createSection());
         Long id = assignmentDao.insert(section.getId(), assignment);
         assertNotNull(id, "Expected assignment id to not be null");

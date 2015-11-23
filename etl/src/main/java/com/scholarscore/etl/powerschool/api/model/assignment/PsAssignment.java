@@ -1,6 +1,6 @@
 package com.scholarscore.etl.powerschool.api.model.assignment;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * PsAssignment model
@@ -15,7 +15,7 @@ public class PsAssignment {
     private String name;
     private String abbreviation;
     private String description;
-    private Date datedue;
+    private LocalDate datedue;
     private String pgcategoriesid;
     private Long sectionid;
     private String includeinfinalgrades;
@@ -23,7 +23,7 @@ public class PsAssignment {
     private String publishscores;
     private String publishstate;
     private Long publishdaysbeforedue;
-    private Date publishspecificdate;
+    private LocalDate publishspecificdate;
     private Double weight;
 
     public Long getDcid() {
@@ -58,10 +58,10 @@ public class PsAssignment {
     public void setDescription(String description) {
         this.description = description;
     }
-    public Date getDatedue() {
+    public LocalDate getDatedue() {
         return datedue;
     }
-    public void setDatedue(Date datedue) {
+    public void setDatedue(LocalDate datedue) {
         this.datedue = datedue;
     }
     public String getPgcategoriesid() {
@@ -106,10 +106,10 @@ public class PsAssignment {
     public void setPublishdaysbeforedue(Long publishdaysbeforedue) {
         this.publishdaysbeforedue = publishdaysbeforedue;
     }
-    public Date getPublishspecificdate() {
+    public LocalDate getPublishspecificdate() {
         return publishspecificdate;
     }
-    public void setPublishspecificdate(Date publishspecificdate) {
+    public void setPublishspecificdate(LocalDate publishspecificdate) {
         this.publishspecificdate = publishspecificdate;
     }
     public Double getWeight() {

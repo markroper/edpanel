@@ -9,8 +9,7 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -23,11 +22,8 @@ public class GradeFormulaTest {
     public Object[][] formulasToTest() {
         Set<StudentAssignment> studentAssignments = new HashSet<>();
 
-        Date startDate = new Date();
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date()); // Now use today date.
-        c.add(Calendar.DATE, 15);
-        Date endDate = c.getTime();
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusDays(15l);
         for(long i = 1; i <= 10; i++) {
             GradedAssignment sect = new GradedAssignment();
             sect.setAvailablePoints(10L);

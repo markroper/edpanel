@@ -1,7 +1,10 @@
 package com.scholarscore.client;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -45,8 +48,16 @@ public abstract class BaseHttpClient {
 
     protected CloseableHttpClient httpclient;
     protected final URI uri;
-
-    protected static final ObjectMapper mapper = new ObjectMapper();
+    // PowerSchool adds some things we don't map to the response objects, thus FAIL_ON_UNKNOWN_PROPERTIES: false
+    // PowerSchool returns a single object rather than an array containing one object in cases where only
+    // one value is returned We have to instruct Jackson to coerce this into the expected java List<>,
+    // therefore: ACCEPT_SINGLE_VALUE_AS_ARRAY: true
+    protected static final ObjectMapper MAPPER = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            .registerModule(new JavaTimeModule())
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
     public BaseHttpClient(URI uri) {
         this.uri = uri;
@@ -55,12 +66,6 @@ public abstract class BaseHttpClient {
         } catch (HttpClientException e) {
             e.printStackTrace();
         }
-        // PowerSchool adds some things we don't map to the response objects, thus FAIL_ON_UNKNOWN_PROPERTIES: false
-        // PowerSchool returns a single object rather than an array containing one object in cases where only
-        // one value is returned We have to instruct Jackson to coerce this into the expected java List<>,
-        // therefore: ACCEPT_SINGLE_VALUE_AS_ARRAY: true
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
     }
 
     protected CloseableHttpClient createClient() throws HttpClientException {
@@ -166,7 +171,7 @@ public abstract class BaseHttpClient {
             setupCommonHeaders(get);
             get.setURI(uri.resolve(path));
             String json = getJSON(get);
-            return mapper.readValue(json, clazz);
+            return MAPPER.readValue(json, clazz);
         } catch (IOException e) {
             throw new HttpClientException(e);
         }

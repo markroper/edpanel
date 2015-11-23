@@ -14,11 +14,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -47,8 +46,8 @@ public class AttendanceControllerIntegrationTest extends IntegrationBase {
         
         schoolYear = new SchoolYear();
         schoolYear.setName(localeServiceUtil.generateName());
-        schoolYear.setStartDate(new Date(115, 9, 1));
-        schoolYear.setEndDate(new Date(116, 6, 1));
+        schoolYear.setStartDate(LocalDate.of(2015, 9, 1));
+        schoolYear.setEndDate(LocalDate.of(2016, 6, 1));
         schoolYear.setSchool(school);
         schoolYear = schoolYearValidatingExecutor.create(school.getId(), schoolYear, "create base schoolYear");
         
@@ -63,10 +62,7 @@ public class AttendanceControllerIntegrationTest extends IntegrationBase {
         //Make some school days
         days = new ArrayList<>();     
         for(int i = 0; i < AttendanceStatus.values().length; i++) {
-            Calendar c = Calendar.getInstance();
-            c.setTime(term.getStartDate()); // Now use today date.
-            c.add(Calendar.DATE, i);
-            Date date = c.getTime();
+            LocalDate date = term.getStartDate().plusDays(i);
             SchoolDay day = new SchoolDay();
             day.setSchool(school);
             day.setDate(date);

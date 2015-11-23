@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -225,9 +226,9 @@ public class StudentController extends BaseController {
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
             @ApiParam(name = "startDate", value = "Start Date")
-            @RequestParam(value="startDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date startDate,
+            @RequestParam(value="startDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) LocalDate startDate,
             @ApiParam(name = "endDate", value = "End Date")
-            @RequestParam(value="endDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Date endDate
+            @RequestParam(value="endDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) LocalDate endDate
     ) {
         return respond(pm.getStudentManager().getStudentHomeworkRates(studentId, startDate, endDate));
     }

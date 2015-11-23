@@ -154,7 +154,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	}
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = HibernateConsts.USER_ID)
 	public Long getId() {
 		return super.getId();

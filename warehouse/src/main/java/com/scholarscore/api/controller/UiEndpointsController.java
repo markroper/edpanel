@@ -5,8 +5,12 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.models.goal.CumulativeGradeGoal;
+import com.scholarscore.models.goal.Goal;
+import com.scholarscore.models.goal.GoalType;
 import com.scholarscore.models.ui.SectionGradeWithProgression;
 import com.scholarscore.models.ui.StudentSectionDashboardData;
+import com.scholarscore.models.user.Student;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -51,10 +56,38 @@ public class UiEndpointsController extends BaseController {
         List<StudentSectionDashboardData> response = new ArrayList<>();
         ServiceResponse<Collection<Section>> sectionsResponse =
                 pm.getSectionManager().getAllSections(studentId, schoolId, schoolYearId, termId);
+        //TODO thinbk about if this is optimal or should be done in HQL
+        ServiceResponse<Collection<Goal>> goalsResponse = pm.getGoalManager().getAllGoals(studentId);
+        HashMap<Long, CumulativeGradeGoal> sectionGoalMap = new HashMap<>();
+        for (Goal goal: goalsResponse.getValue()) {
+            if (goal.getGoalType() == GoalType.CUMULATIVE_GRADE) {
+                CumulativeGradeGoal cumGoal = (CumulativeGradeGoal)goal;
+                sectionGoalMap.put(cumGoal.getParentId(), cumGoal);
+
+            }
+        }
+
+        Student onlyIdStudent = new Student.StudentBuilder().withId(studentId).build();
+
         if(null == sectionsResponse.getCode()) {
             for(Section s: sectionsResponse.getValue()) {
                 StudentSectionDashboardData sectionDashData = new StudentSectionDashboardData();
                 sectionDashData.setSection(s);
+                CumulativeGradeGoal sectionGoal = sectionGoalMap.get(s.getId());
+                if ( null != sectionGoal) {
+                    sectionDashData.setGradeGoal(sectionGoal);
+                } else {
+                    CumulativeGradeGoal fullCumulativeGradeGoalByBuilder = new CumulativeGradeGoal.CumulativeGradeGoalBuilder().
+                            withParentId(s.getId()).
+                            withStudent(onlyIdStudent).
+                            withApproved(Boolean.FALSE).
+                            withDesiredValue(80D).
+                            withName("Section Goal").
+                            withTeacher(s.getTeachers().iterator().next()).
+                            build();
+                    sectionDashData.setGradeGoal(fullCumulativeGradeGoalByBuilder);
+                    pm.getGoalManager().createGoal(studentId, fullCumulativeGradeGoalByBuilder);
+                }
                 ServiceResponse<Collection<StudentAssignment>> studAssesResp = pm.getStudentAssignmentManager().
                         getOneSectionOneStudentsAssignments(studentId, schoolId, schoolYearId, termId, s.getId());
                 if(null == studAssesResp.getCode()) {

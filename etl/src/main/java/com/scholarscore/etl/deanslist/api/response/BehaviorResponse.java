@@ -8,12 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by jwinch on 7/23/15.
@@ -23,7 +22,8 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
     private final static Logger logger = LoggerFactory.getLogger(BehaviorResponse.class);
     
     protected static final String DEANSLIST_SOURCE = "deanslist";
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private static DateTimeFormatter sdf =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public Integer rowcount;
     public HashSet<DlBehavior> data;
@@ -64,11 +64,7 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
                 logger.warn("WARNING Could not parse category. Skipping...");
             }
             out.setBehaviorCategory(parsedCategory);
-            try {
-                out.setBehaviorDate(sdf.parse(dlBehavior.BehaviorDate));
-            } catch (ParseException pe) {
-                logger.warn("WARNING Could not parse date. Skipping...");
-            }
+            out.setBehaviorDate(LocalDate.parse(dlBehavior.BehaviorDate, sdf));
 
             // mostly-empty student with just student name (it's all we have)
             com.scholarscore.models.user.Student student = new com.scholarscore.models.user.Student();
