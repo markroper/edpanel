@@ -202,10 +202,12 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	}
 
 	@Column(name = HibernateConsts.USER_ONETIME_PASS_CREATED)
+	@JsonIgnore
 	public Date getOneTimePassCreated() {
 		return oneTimePassCreated;
 	}
 
+	@JsonIgnore
 	public void setOneTimePassCreated(Date oneTimePassCreated) {
 		this.oneTimePassCreated = oneTimePassCreated;
 	}

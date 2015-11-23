@@ -9,6 +9,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.Date;
+
 import static org.testng.Assert.assertEquals;
 
 /**
@@ -49,13 +51,17 @@ public class UserControllerIntegrationTest extends IntegrationBase {
 
         createdUser.setPassword("password_changed");
         createdUser.setOneTimePass("one time pass");
+        createdUser.setOneTimePassCreated(new Date());
+        createdUser.setEnabled(true);
 
         // note the 'false' on the next line actually skips the validation -- the user that is returned does
         // not actually match the user that was sent, because certain fields are not set on the server.
         // we could also consider returning an error in these situations.
         User returnedUser = userValidatingExecutor.replace(createdUser.getId(), createdUser, "error replacing user: " + msg, false);
-        assertEquals(returnedUser.getPassword(), "abcdef");
-        assertEquals(returnedUser.getOneTimePass(), "1time");
+        assertEquals(returnedUser.getPassword(), null);
+        assertEquals(returnedUser.getOneTimePass(), null);
+        assertEquals(returnedUser.getOneTimePassCreated(), null);
+        assertEquals(returnedUser.getEnabled(), (Boolean)false);
         userValidatingExecutor.delete(createdUser.getId(), "error deleting user: " + msg);
     }
     
@@ -70,27 +76,21 @@ public class UserControllerIntegrationTest extends IntegrationBase {
     public Object[][] userProvider() {
         User studentUser = new Student();
         studentUser.setUsername(localeServiceUtil.generateName(12));
-        studentUser.setPassword("abcdef");
-        studentUser.setOneTimePass("1time");
         studentUser.setName("student user");
         studentUser.setEmail("bluemarker@gmail.com");
         
         User teacherUser = new Teacher();
         teacherUser.setName(localeServiceUtil.generateName(12));
-        teacherUser.setPassword("abcdef");
-        teacherUser.setOneTimePass("1time");
-        teacherUser.setUsername("someteacheruser");
+        teacherUser.setUsername(localeServiceUtil.generateName(12));
         
         User adminUser = new Administrator();
         adminUser.setName(localeServiceUtil.generateName(12));
-        adminUser.setPassword("abcdef");
-        adminUser.setOneTimePass("1time");
-        adminUser.setUsername("someadminuser");
+        adminUser.setUsername(localeServiceUtil.generateName(12));
 
         return new Object[][] { 
                 { "Student User", studentUser },
-//                { "Teacher User", teacherUser },
-//                { "Administrator User", adminUser },
+                { "Teacher User", teacherUser },
+                { "Administrator User", adminUser },
         };
     }
     

@@ -38,7 +38,6 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
     @Test
     public void testStudentLogin() {
         Student user = new Student();
-        user.setPassword("password");
         user.setUsername(UUID.randomUUID().toString());
         User studentUser = userValidatingExecutor.create(user, "Creating test student user");
         assertNotNull(studentUser);
