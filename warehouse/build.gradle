@@ -44,7 +44,7 @@ cargo {
             property 'cargo.tomcat.connector.clientAuth', 'false'
         }
         outputFile = file("build/catalina.log")
-        timeout = 12000000
+        timeout = 120000
     }
 
     remote {
