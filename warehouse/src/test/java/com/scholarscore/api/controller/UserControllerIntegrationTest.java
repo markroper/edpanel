@@ -49,6 +49,11 @@ public class UserControllerIntegrationTest extends IntegrationBase {
     public void replaceUserShouldNotChangeCertainFields(String msg, User user) {
         User createdUser = userValidatingExecutor.create(user, "error creating user: " + msg);
 
+        assertEquals(createdUser.getPassword(), null);
+        assertEquals(createdUser.getOneTimePass(), null);
+        assertEquals(createdUser.getOneTimePassCreated(), null);
+        assertEquals(createdUser.getEnabled(), (Boolean)false);
+
         createdUser.setPassword("password_changed");
         createdUser.setOneTimePass("one time pass");
         createdUser.setOneTimePassCreated(new Date());
