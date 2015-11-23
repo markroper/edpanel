@@ -8,6 +8,8 @@ import com.scholarscore.etl.powerschool.api.model.PsCourses;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -19,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by markroper on 10/27/15.
  */
 public class CourseSync implements ISync<Course> {
+    private final static Logger LOGGER = LoggerFactory.getLogger(CourseSync.class);
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
     protected School school;
@@ -37,15 +40,27 @@ public class CourseSync implements ISync<Course> {
         try {
             source = resolveAllFromSourceSystem();
         } catch (HttpClientException e) {
-            results.courseSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-            return new ConcurrentHashMap<>();
+            try {
+                source = resolveAllFromSourceSystem();
+            } catch (HttpClientException ex) {
+                LOGGER.error("Unable to extract courses from PowerSchool for school: " + school.getName() +
+                        " with EdPanel ID: " + school.getId());
+                results.courseSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+                return new ConcurrentHashMap<>();
+            }
         }
         ConcurrentHashMap<Long, Course> edpanel = null;
         try {
             edpanel = resolveFromEdPanel();
         } catch (HttpClientException e) {
-            results.courseEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-            return new ConcurrentHashMap<>();
+            try {
+                edpanel = resolveFromEdPanel();
+            } catch (HttpClientException ex) {
+                LOGGER.error("Unable to extract courses from EdPanel for school: " + school.getName() +
+                        " with EdPanel ID: " + school.getId());
+                results.courseEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+                return new ConcurrentHashMap<>();
+            }
         }
         Iterator<Map.Entry<Long, Course>> sourceIterator = source.entrySet().iterator();
         //Find & perform the inserts and updates, if any
