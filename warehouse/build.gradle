@@ -163,16 +163,9 @@ dependencies {
             "org.springframework.security:spring-security-config:$springSecurityVersion",
 
             //Jackson for JSON & XML API serialization
-            "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
-            "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion",
-            "com.fasterxml.jackson.core:jackson-core:$jacksonVersion",
-            "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion",
-            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion",
-            "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion",
             "com.fasterxml.jackson.module:jackson-module-scala_2.10:$jacksonVersion",
-            "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion",
+
             //Swagger for API documentation, & dependent JARs
-            "org.hibernate:hibernate-core:$hibernateVersion",
             "org.hibernate:hibernate-java8:$hibernateVersion",
             "com.wordnik:swagger-core_2.10:1.3.2",
             "com.wordnik:swagger-annotations:1.3.2",
@@ -181,16 +174,9 @@ dependencies {
             "org.javassist:javassist:3.17.1-GA",
             //Needed for hibernate bean validation which was added to support swagger
             "javax.validation:validation-api:1.1.0.Final",
-            "org.hibernate:hibernate-validator:$hibernateValidator",
-            "org.hibernate:hibernate-validator-annotation-processor:$hibernateValidator",
-            "org.hibernate:hibernate-validator-cdi:$hibernateValidator",
             "c3p0:c3p0:0.9.1.2"
        
-    testCompile "org.testng:testng:6.8.8",
-            "org.apache.httpcomponents:httpclient:$apacheHttpVersion",
-            "org.apache.httpcomponents:httpcore:$apacheHttpVersion",
-            "org.apache.httpcomponents:httpmime:$apacheHttpVersion",
-            "org.springframework:spring-test:$springVersion"
+    testCompile project (path: ":common", configuration: 'testArtifacts')
 
     runtime "javax.servlet:jstl:1.2"
 }
