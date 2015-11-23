@@ -1,8 +1,6 @@
 package com.scholarscore.client;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.EntityId;
@@ -38,7 +36,6 @@ import java.util.List;
  * Created by mattg on 7/3/15.
  */
 public class APIClient extends BaseHttpClient implements IAPIClient {
-
     // warehouse is required because uri.resolve(path) erases the path
     private static final String BASE_API_ENDPOINT = "warehouse/api/v1";
     private static final String LOGIN_ENDPOINT = "/login";
@@ -126,7 +123,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
             throw new HttpClientException(e);
         }
         try {
-            return mapper.readValue(json, new TypeReference<List<Long>>() {});
+            return MAPPER.readValue(json, new TypeReference<List<Long>>() {});
         } catch (IOException e) {
             throw new HttpClientException(e);
         }
@@ -140,7 +137,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
             throw new HttpClientException(e);
         }
         try {
-            return mapper.readValue(jsonCreateResponse, EntityId.class);
+            return MAPPER.readValue(jsonCreateResponse, EntityId.class);
         } catch (IOException e) {
             throw new HttpClientException(e);
         }
@@ -154,7 +151,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
             throw new HttpClientException(e);
         }
         try {
-            return mapper.readValue(jsonCreateResponse, EntityId.class);
+            return MAPPER.readValue(jsonCreateResponse, EntityId.class);
         } catch (IOException e) {
             throw new HttpClientException(e);
         }
@@ -736,9 +733,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
 
         byte[] out = null;
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            out = mapper.writeValueAsBytes(object);
+            out = MAPPER.writeValueAsBytes(object);
             ////LOGGER.sys().info("JSON: " + new String(out, CHARSET_UTF8_NAME));
         } catch (Exception e) {
             throw new HttpClientException(e);

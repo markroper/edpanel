@@ -17,7 +17,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Transient;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -37,8 +37,8 @@ public class Student extends Person implements Serializable {
     private Address mailingAddress;
     //Demographics
     private Gender gender;
-    private Date birthDate;
-    private Date districtEntryDate;
+    private LocalDate birthDate;
+    private LocalDate districtEntryDate;
     private Long projectedGraduationYear;
     private String socialSecurityNumber;
     //EthnicityRace
@@ -145,20 +145,20 @@ public class Student extends Person implements Serializable {
     }
 
     @Column(name = HibernateConsts.STUDENT_BIRTH_DATE)
-    public Date getBirthDate() {
+    public LocalDate getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(Date birthDate) {
+    public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 
     @Column(name = HibernateConsts.STUDENT_DISTRICT_ENTRY_DATE)
-    public Date getDistrictEntryDate() {
+    public LocalDate getDistrictEntryDate() {
         return districtEntryDate;
     }
 
-    public void setDistrictEntryDate(Date districtEntryDate) {
+    public void setDistrictEntryDate(LocalDate districtEntryDate) {
         this.districtEntryDate = districtEntryDate;
     }
 
@@ -288,8 +288,8 @@ public class Student extends Person implements Serializable {
         private Address homeAddress;
         //Demographics
         private Gender gender;
-        private Date birthDate;
-        private Date districtEntryDate;
+        private LocalDate birthDate;
+        private LocalDate districtEntryDate;
         private Long projectedGraduationYear;
         private String socialSecurityNumber;
         //EthnicityRace
@@ -317,12 +317,12 @@ public class Student extends Person implements Serializable {
             return this;
         }
 
-        public StudentBuilder withBirthDate(final Date birthDate){
+        public StudentBuilder withBirthDate(final LocalDate birthDate){
             this.birthDate = birthDate;
             return this;
         }
 
-        public StudentBuilder withDistrictEntryDate(final Date districtEntryDate){
+        public StudentBuilder withDistrictEntryDate(final LocalDate districtEntryDate){
             this.districtEntryDate = districtEntryDate;
             return this;
         }

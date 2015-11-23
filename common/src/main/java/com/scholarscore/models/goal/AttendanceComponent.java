@@ -1,7 +1,6 @@
 package com.scholarscore.models.goal;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -9,11 +8,8 @@ import java.util.Objects;
  * Created by cwallace on 10/15/2015.
  */
 public class AttendanceComponent extends GoalComponent implements CalculatableAttendance {
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Long parentId;
 
     public AttendanceComponent() {
@@ -21,20 +17,20 @@ public class AttendanceComponent extends GoalComponent implements CalculatableAt
     }
 
     @Override
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
     @Override
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
@@ -71,7 +67,7 @@ public class AttendanceComponent extends GoalComponent implements CalculatableAt
                         + "ComponentType:" + getComponentType() + "\n"
                         + "Student: " + getStudent() + "\n"
                         + "Modifier: " + getModifier() + "\n"
-                        + "StartDate: " + dateFormat.format(getStartDate()) + "\n"
-                        + "EndDate: " + dateFormat.format(getEndDate());
+                        + "StartDate: " + getStartDate() + "\n"
+                        + "EndDate: " + getEndDate();
     }
 }

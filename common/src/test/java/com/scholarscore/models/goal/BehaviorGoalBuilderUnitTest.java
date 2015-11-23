@@ -9,7 +9,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * BehaviorGoalBuilderUnitTest tests that we can build equivalent objects with setters and a builder
@@ -25,8 +25,8 @@ public class BehaviorGoalBuilderUnitTest extends AbstractBuilderUnitTest<Behavio
         BehaviorGoal emptyBehaviorGoalByBuilder = new BehaviorGoal.BehaviorGoalBuilder().build();
 
         Long id = RandomUtils.nextLong(0L, Long.MAX_VALUE);
-        Date startDate = CommonTestUtils.getRandomDate();
-        Date endDate = CommonTestUtils.getRandomDate();
+        LocalDate startDate = CommonTestUtils.getRandomLocalDate();
+        LocalDate endDate = CommonTestUtils.getRandomLocalDate();
         BehaviorCategory behaviorCategory = CommonTestUtils.getRandomBehaviorCategory();
         Student student = CommonTestUtils.generateStudent();
         Double calculatedValue = RandomUtils.nextDouble(0d, Double.MIN_VALUE);

@@ -24,6 +24,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
@@ -35,7 +36,7 @@ import java.util.Objects;
  */
 @Entity(name = HibernateConsts.ASSIGNMENT_TABLE)
 @Table(name = HibernateConsts.ASSIGNMENT_TABLE)
-@DiscriminatorColumn(name="assignmentClass", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name="assignment_class", discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -61,7 +62,7 @@ public abstract class Assignment
         extends ApiModel implements Serializable, IApiModel<Assignment> {
     private AssignmentType type;
     private String userDefinedType;
-    private Date dueDate;
+    private LocalDate dueDate;
     private Long availablePoints;
     protected transient Section section;
     protected Long sectionFK;
@@ -146,7 +147,7 @@ public abstract class Assignment
     }
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.ASSIGNMENT_ID)
     public Long getId() {
         return super.getId();
@@ -169,11 +170,11 @@ public abstract class Assignment
     }
 
     @Column(name = HibernateConsts.ASSIGNMENT_DUE_DATE)
-    public Date getDueDate() {
+    public LocalDate getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(Date dueDate) {
+    public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
     }
 
@@ -250,7 +251,7 @@ public abstract class Assignment
     public static abstract class AssignmentBuilder<U extends AssignmentBuilder<U, T>, T extends Assignment> extends ApiModelBuilder<U,T>{
 
         private AssignmentType type;
-        private Date dueDate;
+        private LocalDate dueDate;
         private Long availablePoints;
         protected transient Section section;
         protected Long sectionFK;
@@ -279,7 +280,7 @@ public abstract class Assignment
             return me();
         }
 
-        public U withDueDate(final Date dueDate){
+        public U withDueDate(final LocalDate dueDate){
             this.dueDate = dueDate;
             return me();
         }

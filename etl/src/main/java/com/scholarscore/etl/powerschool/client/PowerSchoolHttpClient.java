@@ -45,7 +45,7 @@ public abstract class PowerSchoolHttpClient extends BaseHttpClient {
                 setupCommonHeaders(get);
                 get.setURI(uri.resolve(path));
                 String json = getJSON(get);
-                T tempVal = mapper.readValue(json,typeRef);
+                T tempVal = MAPPER.readValue(json,typeRef);
                 if(null == returnVal) {
                     returnVal = tempVal;
                 }

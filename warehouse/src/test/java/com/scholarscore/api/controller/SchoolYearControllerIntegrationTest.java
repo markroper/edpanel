@@ -9,9 +9,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @Test(groups = { "integration" })
@@ -37,12 +36,9 @@ public class SchoolYearControllerIntegrationTest extends IntegrationBase {
         SchoolYear namedSchoolYear = new SchoolYear();
         namedSchoolYear.setName(localeServiceUtil.generateName());
         namedSchoolYear.setSchool(school);
-        
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.MILLISECOND, 0);
-        Date today = cal.getTime();
-        cal.add(Calendar.YEAR, 1); // to get previous year add -1
-        Date nextYear = cal.getTime();
+
+        LocalDate today = LocalDate.now();
+        LocalDate nextYear = today.plusYears(1l);
         SchoolYear schoolYearWithDates = new SchoolYear(namedSchoolYear);
         schoolYearWithDates.setStartDate(today);
         schoolYearWithDates.setEndDate(nextYear);

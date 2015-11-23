@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.collect.ImmutableMap;
 import com.scholarscore.api.controller.service.AssignmentValidatingExecutor;
 import com.scholarscore.api.controller.service.AttendanceValidatingExecutor;
@@ -30,6 +32,7 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
+import com.scholarscore.util.EdPanelObjectMapper;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -50,9 +53,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -63,7 +65,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Class that contains all common methods for servicing requests
  */
 public class IntegrationBase {
-
     private NetMvc mockMvc;
     private static final String BASE_URI_KEY = "httpsEndpoint";
     private final static String CHARSET_UTF8_NAME = "UTF-8";
@@ -175,6 +176,8 @@ public class IntegrationBase {
         uiAttributesValidatingExecutor = new UiAttributesValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
+        EdPanelObjectMapper.MAPPER.registerModule(new JavaTimeModule());
+        EdPanelObjectMapper.MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     /**
@@ -495,7 +498,7 @@ public class IntegrationBase {
         String testContentType = contentType.toLowerCase();
         switch (testContentType) {
             case "json":
-                mapper = new ObjectMapper();
+                mapper = EdPanelObjectMapper.MAPPER;
                 break;
             case "xml":
                 mapper = new XmlMapper();
@@ -507,6 +510,7 @@ public class IntegrationBase {
         // Configure the mapper
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.setLocale(locale.get());
+        mapper.registerModule(new JavaTimeModule());
 
         // Map the response content to the specified type
         T value = null;
@@ -789,9 +793,8 @@ public class IntegrationBase {
 
         byte[] out = null;
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            out = mapper.writeValueAsBytes(object);
+            EdPanelObjectMapper.MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            out = EdPanelObjectMapper.MAPPER.writeValueAsBytes(object);
             String bytes = new String(out);
             ////LOGGER.sys().info("JSON: " + new String(out, CHARSET_UTF8_NAME));
         } catch (Exception e) {
@@ -832,13 +835,8 @@ public class IntegrationBase {
 
     protected void invalidateCookie() { mockMvc.setjSessionId(null); }
     
-    protected Date getNow() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal.getTime();
+    protected LocalDate getNow() {
+        return LocalDate.now();
     }
 
 

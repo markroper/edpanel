@@ -6,7 +6,7 @@ import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate4.HibernateTemplate;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;

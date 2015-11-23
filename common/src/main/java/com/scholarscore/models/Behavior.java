@@ -15,7 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -38,7 +38,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     private String remoteBehaviorId;
     @Size(min=1, max=256)
     private String remoteStudentId;    // currently always deanslist DLSAID
-    private Date behaviorDate;
+    private LocalDate behaviorDate;
     private BehaviorCategory behaviorCategory;
     @Size(min=1, max=256)
     private String pointValue;
@@ -65,7 +65,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     }
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.BEHAVIOR_ID)
     public Long getId() {
         return super.getId();
@@ -138,11 +138,11 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     }
     
     @Column(name = HibernateConsts.BEHAVIOR_DATE)
-    public Date getBehaviorDate() {
+    public LocalDate getBehaviorDate() {
         return behaviorDate;
     }
 
-    public void setBehaviorDate(Date behaviorDate) {
+    public void setBehaviorDate(LocalDate behaviorDate) {
         this.behaviorDate = behaviorDate;
     }
 
@@ -244,7 +244,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
         private String remoteSystem;
         private String remoteBehaviorId;
         private String remoteStudentId;
-        private Date behaviorDate;
+        private LocalDate behaviorDate;
         private BehaviorCategory behaviorCategory;
         private String pointValue;
         private String roster;
@@ -266,7 +266,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
             return this;
         }
 
-        public BehaviorBuilder withBehaviorDate(final Date behaviorDate){
+        public BehaviorBuilder withBehaviorDate(final LocalDate behaviorDate){
             this.behaviorDate = behaviorDate;
             return this;
         }

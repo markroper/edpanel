@@ -6,12 +6,12 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.attendance.SchoolDay;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate4.HibernateTemplate;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 @Transactional
@@ -70,8 +70,8 @@ public class SchoolDayJdbc implements SchoolDayPersistence {
     public Collection<SchoolDay> selectAllSchoolDaysInYear(long schoolId, long schoolYearId) {
         String[] paramNames = new String[] { "id", "startDate", "endDate"}; 
         School s = schoolPersistence.selectSchool(schoolId);
-        Date startDate = null;
-        Date endDate = null;
+        LocalDate startDate = null;
+        LocalDate endDate = null;
         if(null != s.getYears()) {
             for(SchoolYear year: s.getYears()) {
                 if(year.getId().equals(schoolYearId)) {
