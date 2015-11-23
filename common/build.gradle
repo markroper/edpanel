@@ -14,7 +14,9 @@ dependencies {
             "org.hibernate:hibernate-validator:$hibernateValidator",
             "org.hibernate:hibernate-validator-annotation-processor:$hibernateValidator",
             "org.hibernate:hibernate-validator-cdi:$hibernateValidator",
-            //Apache commons
+            "javax.el:javax.el-api:3.0.0",
+            // required for hibernate validator
+        //Apache commons
             "commons-io:commons-io:2.4",
             "org.apache.commons:commons-lang3:3.3.2",
             //Guava utils
