@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -37,6 +38,20 @@ public class DlEtlEngine implements IEtlEngine {
     // key: deansListBehaviorId, value: behavior object
     private HashMap<Long, HashMap<String, Behavior>> existingBehaviorLookup;
 
+    // // // // // // // 
+    // These fields are not required for core ETL functionality but are used to record/measure results
+    private int behaviorEventsWithoutStudents = 0;
+    private int behaviorEventsWithUnmatchedStudents = 0;
+    private final HashSet<String> studentsNotMatched = new HashSet<>();
+
+    private int behaviorEventsWithoutTeachers = 0;
+    private int behaviorEventsWithUnmatchedTeachers = 0;
+    private final HashSet<String> teachersNotMatched = new HashSet<>();
+
+    private int behaviorsAdded = 0;
+    private int behaviorsUpdated = 0;
+    // // // // // // //
+    
     public IDeansListClient getDeansList() {
         return deansList;
     }
@@ -93,6 +108,7 @@ public class DlEtlEngine implements IEtlEngine {
     }
     
     private void handleBehavior(Behavior behavior) {
+        
         // at this point, the only thing populated in the student (from deanslist) is their name
         Student student = behavior.getStudent();
         Teacher teacher = behavior.getTeacher();
@@ -111,7 +127,16 @@ public class DlEtlEngine implements IEtlEngine {
                 // don't require teacher but populate it if present
                 if (teacher != null && teacher.getName() != null) {
                     Teacher existingTeacher = teacherLookup.get(stripAndLowerName(teacher.getName()));
-                    behavior.setTeacher(existingTeacher);
+                    
+                    if (existingTeacher != null) {
+                        behavior.setTeacher(existingTeacher);
+                    } else {
+                        behaviorEventsWithUnmatchedTeachers++;
+                        teachersNotMatched.add(teacher.getName());
+                    }
+                } else {
+                    // deanslist did not contain teacher information with this record
+                    behaviorEventsWithoutTeachers++;
                 }
 
                 logger.debug("About to map Behavior " + behavior.getName()
@@ -146,10 +171,14 @@ public class DlEtlEngine implements IEtlEngine {
                         e.printStackTrace();
                     }
                     // ... and save in cache
-                    studentBehaviorEvents.put(createdBehavior.getRemoteBehaviorId(), createdBehavior);
+                    if (createdBehavior != null) {  // this should always be true...
+                        studentBehaviorEvents.put(createdBehavior.getRemoteBehaviorId(), createdBehavior);
+                        behaviorsAdded++;
+                    }
                 } else {
                     // behavior exists already in scholarscore (with id scholarScoreBehaviorId), update it
                     Long behaviorId = scholarScoreBehavior.getId();
+                    behaviorsUpdated++;
                     try {
                         scholarScore.updateBehavior(studentId, behaviorId, behavior);
                     } catch (HttpClientException e) {
@@ -157,9 +186,14 @@ public class DlEtlEngine implements IEtlEngine {
                     }
                 }
 
+            } else {
+                logger.warn("WARN: Deanslist specified a unknown student: " + student.getName());
+                behaviorEventsWithUnmatchedStudents++;
+                studentsNotMatched.add(student.getName());
             }
         } else {
-            logger.warn("WARN: Student and/or Teacher was null, skipping behavior event...");
+            logger.warn("WARN: Student was null, skipping this behavior event...");
+            behaviorEventsWithoutStudents++;
         }
     }
 
