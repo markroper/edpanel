@@ -1,5 +1,7 @@
 package com.scholarscore.etl;
 
+import com.scholarscore.etl.runner.EtlSettings;
+
 /**
  * Created by mattg on 7/3/15.
  */
@@ -21,6 +23,8 @@ public interface IEtlEngine {
      *      iii. Synchronize the assignments
      *      iv.  Synchronize the student scores on the assignments
      * @return A descriptive migration result indicating what was done and what failed during the sync
+     * @param settings
      */
+    SyncResult syncDistrict(EtlSettings settings);
     SyncResult syncDistrict();
 }
