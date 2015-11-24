@@ -3,9 +3,6 @@ package com.scholarscore.etl.runner;
 import com.scholarscore.etl.DlEtlEngine;
 import com.scholarscore.etl.EtlEngine;
 import com.scholarscore.etl.SyncResult;
-import org.apache.commons.cli.*;
-
-import java.io.File;
 
 /**
  * User: jordan
@@ -21,15 +18,9 @@ public class EtlRunner {
     // Test migrates everything
     public void migrateDistrict(EtlSettings settings) {
         System.out.println("Migration running...");
-        SyncResult psResult = etlEngine.syncDistrict();
+        SyncResult psResult = etlEngine.syncDistrict(settings);
         System.out.println("Done! PS Migration result: " + psResult);
-
-        File gpaFile = settings.getGpaImportFile();
-        if (null != gpaFile && gpaFile.canRead() && gpaFile.isFile()) {
-            // parse the gpa file from disk assuming the file type is CSV and of a specific format
-        }
-        
-        SyncResult dlResult = dlEtlEngine.syncDistrict();
+        SyncResult dlResult = dlEtlEngine.syncDistrict(settings);
         System.out.println("Done! Migration result: " + dlResult);    
     }
 
