@@ -1,4 +1,4 @@
-package com.scholarscore.etl.powerschool.sync.student;
+package com.scholarscore.etl.powerschool.sync.student.gpa;
 
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;

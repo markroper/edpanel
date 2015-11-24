@@ -1,9 +1,7 @@
 package com.scholarscore.etl.sync.student;
 
-import com.scholarscore.etl.powerschool.sync.student.GPAParser;
+import com.scholarscore.etl.powerschool.sync.student.gpa.GPAParser;
 import org.testng.annotations.Test;
-
-import java.io.FileInputStream;
 
 /**
  * Created by mattg on 11/24/15.
