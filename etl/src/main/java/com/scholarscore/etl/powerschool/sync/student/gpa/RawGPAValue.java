@@ -8,7 +8,7 @@ import java.util.HashMap;
 /**
  * Created by mattg on 11/24/15.
  */
-class RawGPAValue {
+public class RawGPAValue {
     private GPAType type;
     private Double gpaValue;
     private Long id;
