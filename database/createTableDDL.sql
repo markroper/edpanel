@@ -286,6 +286,24 @@ CREATE TABLE `scholar_warehouse`.`student_section_grade` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
+CREATE TABLE `scholar_warehouse`.`gpa` (
+  `gpa_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Auto incrementing primary key identity column',
+  `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the student table',
+  `gpa_start_date` DATE NULL COMMENT 'The start date for the period for which the GPA is calculated',
+  `gpa_end_date` DATE NULL COMMENT 'The end date for the period for which the GPA was calculated',
+  `gpa_calc_date` DATE NOT NULL COMMENT 'The date the GPA was calculated',
+  `gpa_type` VARCHAR(64) NOT NULL COMMENT 'Indicates the GPA calculation method',
+  `gpa_score` DOUBLE NOT NULL COMMENT 'The GPA value',
+  PRIMARY KEY (`gpa_id`),
+  CONSTRAINT `uniq_calc_date$student`
+    UNIQUE (`gpa_calc_date`,`student_fk`,`gpa_type`),
+  CONSTRAINT `fk_student$gpa`
+    FOREIGN KEY (`student_fk`)
+    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ ENGINE = InnoDB;
+
 CREATE TABLE `scholar_warehouse`.`report` (
   `report_id`  INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key identity column',
   `school_fk` BIGINT UNSIGNED COMMENT 'The foreign key to the school table',

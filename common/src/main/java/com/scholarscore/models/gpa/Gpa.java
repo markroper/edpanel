@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Objects;
@@ -99,12 +100,20 @@ public abstract class Gpa {
      *
      * @return
      */
+    @Transient
     public abstract GpaTypes getType();
 
+    @Transient
     public void setType(GpaTypes type) {
         //NO OP, we don't really set type
     }
 
+    /**
+     * There are various methods for calculating GPA, each subclass should implement its method and return a
+     * Double value that is the GPA based on the sections provided it.
+     * @param sections
+     * @return
+     */
     public abstract Double calculateGpa(Collection<StudentSectionGrade> sections);
 
     @Override
