@@ -264,7 +264,7 @@ public class UserManagerImpl implements UserManager {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, username}));
         }
         
-        // TODO Jordan: if user is a logged in administrator, maybe supply 
+        // TODO Jordan: if user is a logged in administrator, maybe supply some more information about where the password was sent
         
         String code = generateCode();
         Date codeCreated = new Date();
@@ -339,9 +339,10 @@ public class UserManagerImpl implements UserManager {
         user.setPassword(newPassword);
         updateUser(user.getId(), user);
         
-        // TODO Jordan: (DONE, GOTTA TEST!) right here, if the user is logged in with temporary password (ROLE_ONLY_CHANGE_PASSWORD) 
-        // should switch them to  login with their real password -- we are doing this now.
-        // However, we should only bother to do this if the user has ROLE_MUST_CHANGE_PASSWORD and not something normal.
+        // if the user is logged in with temporary password role (ROLE_ONLY_CHANGE_PASSWORD), they are severely limited
+        // in the actions they can take -- basically, they can just change their password. Now that they've done so,
+        // switch them back to whatever their role would be if they logged in with their real password.
+        // We only bother to do this if the user currently has role ROLE_MUST_CHANGE_PASSWORD.
         if (currentUserHasRole(RoleConstants.ROLE_MUST_CHANGE_PASSWORD)) {
             logger.debug("The user has ROLE_MUST_CHANGE_PASSWORD so switching their auth back to normal.");
 
