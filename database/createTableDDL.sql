@@ -303,6 +303,24 @@ CREATE TABLE `scholar_warehouse`.`gpa` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
  ENGINE = InnoDB;
+ ALTER TABLE `scholar_warehouse`.`gpa` ADD INDEX (`gpa_type`);
+
+ CREATE TABLE `scholar_warehouse`.`current_gpa` (
+  `current_gpa_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Auto incrementing primary key identity column',
+  `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the student table',
+  `gpa_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the GPA table',
+  PRIMARY KEY (`current_gpa_id`),
+  CONSTRAINT `fk_student$current_gpa`
+    FOREIGN KEY (`student_fk`)
+    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_gpa$current_gpa`
+    FOREIGN KEY (`gpa_fk`)
+    REFERENCES `scholar_warehouse`.`gpa`(`gpa_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`report` (
   `report_id`  INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key identity column',

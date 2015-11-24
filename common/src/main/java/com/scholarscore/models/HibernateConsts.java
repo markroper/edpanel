@@ -205,7 +205,7 @@ public class HibernateConsts {
     public static final String ATTENDANCE_PERIOD_ID = "attendance_source_system_period_id";
     public static final String ATTENDANCE_TYPE = "attendance_type";
 
-    //Attendance
+    //GPA
     public static final String GPA_ID = "gpa_id";
     public static final String GPA_TABLE = "gpa";
     public static final String GPA_TYPE = "gpa_type";
@@ -213,6 +213,10 @@ public class HibernateConsts {
     public static final String GPA_END_DATE = "gpa_end_date";
     public static final String GPA_SCORE = "gpa_score";
     public static final String GPA_CALCULATION_DATE = "gpa_calc_date";
+    //CURRENT GPA
+    public static final String CURRENT_GPA_TABLE = "current_gpa";
+    public static final String CURRENT_GPA_ID = "current_gpa_id";
+    public static final String GPA_FK = "gpa_fk";
 
     //UI attributes
     public static final String UI_ATTRIBUTES_TABLE = "ui_attributes";
