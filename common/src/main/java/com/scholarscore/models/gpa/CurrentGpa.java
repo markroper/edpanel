@@ -1,5 +1,6 @@
 package com.scholarscore.models.gpa;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.user.Student;
 import org.hibernate.annotations.Fetch;
@@ -15,8 +16,14 @@ import javax.persistence.Table;
 import java.util.Objects;
 
 /**
+ * This objects points to the most current stored GPA for a student. This is helpful for
+ * querying because EdPanel can store multiple Gpa instances for a single student, and when we
+ * query for GPA, in most cases we want to return only the lastest GPAs.  We can do so by leveraging this
+ * object in a Hibernate query.
+ *
  * Created by markroper on 11/24/15.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity(name = HibernateConsts.CURRENT_GPA_TABLE)
 @Table(name = HibernateConsts.CURRENT_GPA_TABLE)
 public class CurrentGpa {
