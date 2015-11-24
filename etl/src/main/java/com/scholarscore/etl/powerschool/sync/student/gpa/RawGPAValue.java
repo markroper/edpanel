@@ -52,27 +52,27 @@ public class RawGPAValue {
         switch (type) {
             case added_value:
                 gpa = new AddedValueGpa();
-                gpa.setId(getId());
+                gpa.setStudentId(getId());
                 gpa.setScore(value);
                 gpa.setCalculationDate(LocalDate.now());
                 gpa.setType(GpaTypes.ADDED_VALUE);
                 break;
             case simple_percent:
                 gpa = new SimplePercentGpa();
-                gpa.setId(getId());
+                gpa.setStudentId(getId());
                 gpa.setScore(value);
                 gpa.setCalculationDate(LocalDate.now());
                 gpa.setType(GpaTypes.SIMPLE_PERCENT);
                 break;
             case simple:
                 gpa = new SimpleGpa();
-                gpa.setId(getId());
+                gpa.setStudentId(getId());
                 gpa.setScore(value);
                 gpa.setCalculationDate(LocalDate.now());
                 gpa.setType(GpaTypes.SIMPLE);
                 break;
         }
-        return null;
+        return gpa;
     }
 
     public Long getId() {

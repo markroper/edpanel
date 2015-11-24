@@ -2,6 +2,7 @@ package com.scholarscore.etl.sync.student;
 
 import com.scholarscore.etl.powerschool.sync.student.gpa.GPAParser;
 import com.scholarscore.etl.powerschool.sync.student.gpa.RawGPAValue;
+import com.scholarscore.models.gpa.Gpa;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -20,5 +21,10 @@ public class GPAParserTest {
         List<RawGPAValue> gpas = parser.parse(GPAParserTest.class.getClassLoader().getResourceAsStream("student_gpa.csv"));
         assertNotNull("Expected non-null response from parser-parse for GPA csv file");
         assertEquals(21, gpas.size(), "Expected 21 gpa entries");
+
+        for (RawGPAValue value : gpas) {
+            Gpa gpaValue =  value.emit();
+            assertNotNull("Expected non-null GPA value", gpaValue);
+        }
     }
 }
