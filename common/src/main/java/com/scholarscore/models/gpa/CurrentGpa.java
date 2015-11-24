@@ -1,6 +1,7 @@
 package com.scholarscore.models.gpa;
 
 import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.user.Student;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -20,6 +21,7 @@ import java.util.Objects;
 @Table(name = HibernateConsts.CURRENT_GPA_TABLE)
 public class CurrentGpa {
     protected Gpa gpa;
+    protected Student student;
     protected Long id;
 
     @Id
@@ -43,9 +45,20 @@ public class CurrentGpa {
         this.gpa = gpa;
     }
 
+    @OneToOne(optional = true, fetch= FetchType.EAGER)
+    @Fetch(FetchMode.JOIN)
+    @JoinColumn(name = HibernateConsts.STUDENT_FK)
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(gpa, id);
+        return Objects.hash(gpa, id, student);
     }
 
     @Override
@@ -58,6 +71,7 @@ public class CurrentGpa {
         }
         final CurrentGpa other = (CurrentGpa) obj;
         return Objects.equals(this.gpa, other.gpa)
+                && Objects.equals(this.student, other.student)
                 && Objects.equals(this.id, other.id);
     }
 }
