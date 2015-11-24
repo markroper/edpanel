@@ -1,4 +1,4 @@
-package com.scholarscore.etl.powerschool.sync.student;
+package com.scholarscore.etl.powerschool.sync.student.gpa;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -6,9 +6,7 @@ import org.apache.commons.csv.CSVRecord;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,61 +18,6 @@ public class GPAParser {
     private final static String ID = "ID";
     private final static Pattern GPA_METHOD_MATCHER = Pattern.compile(".*gpa_method=\"([^\"]+)\"(_term=\"([^\"]+)\")?");
     private final static String GPA_METHOD_MARKER = "*gpa_method";
-
-    enum GPAType {
-        simple,
-        simple_percent,
-        added_value;
-
-        public static GPAType fromString(String value) {
-            for (GPAType type : values()) {
-                if (type.name().equalsIgnoreCase(value)) {
-                    return type;
-                }
-            }
-            return null;
-        }
-    }
-
-    class RawGPAValue {
-        private GPAType type;
-        private Double gpaValue;
-        private String id;
-        private HashMap<String, Double> termValues = new HashMap<>();
-        private Double value;
-
-        public void setType(GPAType type) {
-            this.type = type;
-        }
-
-        public GPAType getType() {
-            return type;
-        }
-
-        public Double getGpaValue() {
-            return gpaValue;
-        }
-
-        public void setGpaValue(Double gpaValue) {
-            this.gpaValue = gpaValue;
-        }
-
-        public HashMap<String, Double> getTermValues() {
-            return termValues;
-        }
-
-        public void setTermValues(HashMap<String, Double> termValues) {
-            this.termValues = termValues;
-        }
-
-        public void setValue(Double value) {
-            this.value = value;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-    }
 
     public List<RawGPAValue> parse(InputStream is) {
         List<RawGPAValue> results = new ArrayList<>();

@@ -30,7 +30,7 @@ import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.etl.powerschool.sync.attendance.AttendanceSync;
 import com.scholarscore.etl.powerschool.sync.attendance.SchoolDaySync;
 import com.scholarscore.etl.powerschool.sync.section.SectionSyncRunnable;
-import com.scholarscore.etl.powerschool.sync.student.GPASync;
+import com.scholarscore.etl.powerschool.sync.student.gpa.GPASync;
 import com.scholarscore.etl.powerschool.sync.user.StaffSync;
 import com.scholarscore.etl.powerschool.sync.user.StudentSync;
 import com.scholarscore.etl.runner.EtlSettings;
