@@ -14,6 +14,7 @@ import com.scholarscore.api.controller.service.AuthValidatingExecutor;
 import com.scholarscore.api.controller.service.BehaviorValidatingExecutor;
 import com.scholarscore.api.controller.service.CourseValidatingExecutor;
 import com.scholarscore.api.controller.service.GoalValidatingExecutor;
+import com.scholarscore.api.controller.service.GpaValidatingExecutor;
 import com.scholarscore.api.controller.service.LocaleServiceUtil;
 import com.scholarscore.api.controller.service.QueryValidatingExecutor;
 import com.scholarscore.api.controller.service.SchoolDayValidatingExecutor;
@@ -86,7 +87,6 @@ public class IntegrationBase {
     private static final String TEACHER_ENDPOINT = "/teachers";
     private static final String ADMINISTRATORS_ENDPOINT = "/administrators";
     private static final String QUERIES_ENDPOINT = "/queries";
-    private static final String GPA_ENDPOINT = "/gpa";
     private static final String BEHAVIOR_ENDPOINT = "/behaviors";
     private static final String AUTH_ENDPOINT = "/auth";
     private static final String USERS_ENDPOINT = "/users";
@@ -94,6 +94,7 @@ public class IntegrationBase {
     private static final String SCHOOL_DAY_ENDPOINT = "/days";
     private static final String ATTENDANCE_ENDPOINT = "/attendance";
     private static final String UI_ATTRIBUTES_ENDPOINT = "/uiattributes";
+    private static final String GPA_ENDPOINT = "/gpas";
 
     public LocaleServiceUtil localeServiceUtil;
     public CourseValidatingExecutor courseValidatingExecutor;
@@ -114,6 +115,7 @@ public class IntegrationBase {
     public SchoolDayValidatingExecutor schoolDayValidatingExecutor;
     public AttendanceValidatingExecutor attendanceValidatingExecutor;
     public UiAttributesValidatingExecutor uiAttributesValidatingExecutor;
+    public GpaValidatingExecutor gpaValidatingExecutor;
 
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Student> studentsCreated = new CopyOnWriteArrayList<>();
@@ -174,6 +176,7 @@ public class IntegrationBase {
         attendanceValidatingExecutor = new AttendanceValidatingExecutor(this);
         schoolDayValidatingExecutor = new SchoolDayValidatingExecutor(this);
         uiAttributesValidatingExecutor = new UiAttributesValidatingExecutor(this);
+        gpaValidatingExecutor = new GpaValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
         EdPanelObjectMapper.MAPPER.registerModule(new JavaTimeModule());
@@ -224,6 +227,7 @@ public class IntegrationBase {
         Assert.assertNotNull(attendanceValidatingExecutor, "Unable to configure auth service");
         Assert.assertNotNull(schoolDayValidatingExecutor, "Unable to configure user service");
         Assert.assertNotNull(uiAttributesValidatingExecutor, "Unable to configure ui attrs service");
+        Assert.assertNotNull(gpaValidatingExecutor, "Unable to configure GPA service");
     }
 
     /**
@@ -741,12 +745,20 @@ public class IntegrationBase {
                 + STUDENT_ASSIGNMENT_ENDPOINT;
     }
     
-    public String getBehaviorEndpoint(Long studentId) { 
-        return getStudentEndpoint(studentId) + BEHAVIOR_ENDPOINT;
+    public String getGpaEndpoint(Long studentId) {
+        return getStudentEndpoint(studentId) + GPA_ENDPOINT;
     }
     
-    public String getBehaviorEndpoint(Long studentId, Long behaviorId) { 
-        return getBehaviorEndpoint(studentId) + pathify(behaviorId);
+    public String getGpaEndpoint(Long studentId, Long gpaId) {
+        return getGpaEndpoint(studentId) + pathify(gpaId);
+    }
+
+    public String getBehaviorEndpoint(Long studentId) {
+        return getStudentEndpoint(studentId) + BEHAVIOR_ENDPOINT;
+    }
+
+    public String getBehaviorEndpoint(Long studentId, Long gpa) {
+        return getBehaviorEndpoint(studentId) + pathify(gpa);
     }
 
     public String getGoalEndpoint(Long studentId) {
