@@ -50,7 +50,7 @@ public class GpaControllerIntegrationTest extends IntegrationBase {
         for(Student s: students) {
             AddedValueGpa g = new AddedValueGpa();
             g.setStudentId(s.getId());
-            g.setCalculationDate(LocalDate.now());
+            g.setCalculationDate(LocalDate.now().plusDays(100L));
             g.setScore(RandomUtils.nextDouble(0D, 5D));
             objects[i][0] = "GPA: " + i;
             objects[i][1] = g;
@@ -71,6 +71,7 @@ public class GpaControllerIntegrationTest extends IntegrationBase {
         student.setCurrentSchoolId(school.getId());
         student = studentValidatingExecutor.create(student, "create base student");
         LocalDate maxDate = LocalDate.now();
+        List<Long> ids = new ArrayList<>();
         for(int i = 0; i < 5; i++) {
             AddedValueGpa g = new AddedValueGpa();
             g.setStudentId(student.getId());
@@ -79,7 +80,7 @@ public class GpaControllerIntegrationTest extends IntegrationBase {
             if(maxDate.isBefore(g.getCalculationDate())) {
                 maxDate = g.getCalculationDate();
             }
-            gpaValidatingExecutor.create(student.getId(), g, "craete multiple GPAs for one student");
+            ids.add(gpaValidatingExecutor.create(student.getId(), g, "craete multiple GPAs for one student").getId());
         }
         Gpa mostRecent = gpaValidatingExecutor.get(student.getId(), "get the most recent of many");
         assertEquals(mostRecent.getCalculationDate(), maxDate, "Unequal calc dates");
