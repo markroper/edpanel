@@ -6,6 +6,7 @@ import com.scholarscore.models.gpa.Gpa;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,11 +14,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by markroper on 11/24/15.
  */
+@Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/students/{studentId}/gpas")
 public class GpaController extends BaseController {
     //TODO: remove the GPA related endpoint in StudentController.js, replace references to it to an API here
@@ -33,10 +37,7 @@ public class GpaController extends BaseController {
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value = "studentId") Long studentId)
     {
-//        Collection<? extends WeightedGradable> courseGrades =
-//                pm.getStudentSectionGradeManager().getSectionGradesForStudent(studentId).getValue();
-//        return respond(GradeUtil.calculateGPA(gpaScale, courseGrades));
-        return null;
+        return respond(pm.getGpaManager().getGpa(studentId));
     }
 
     @ApiOperation(
@@ -52,10 +53,9 @@ public class GpaController extends BaseController {
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value = "studentId") Long studentId)
     {
-//        Collection<? extends WeightedGradable> courseGrades =
-//                pm.getStudentSectionGradeManager().getSectionGradesForStudent(studentId).getValue();
-//        return respond(GradeUtil.calculateGPA(gpaScale, courseGrades));
-        return null;
+        List<Long> studentIds = new ArrayList<>();
+        studentIds.add(studentId);
+        return respond(pm.getGpaManager().getAllGpasForStudents(studentIds, LocalDate.of(2000, 1, 1), LocalDate.now()));
     }
 
     @ApiOperation(
@@ -71,10 +71,7 @@ public class GpaController extends BaseController {
             @PathVariable(value = "studentId") Long studentId,
             @RequestBody @Valid Gpa gpa)
     {
-//        Collection<? extends WeightedGradable> courseGrades =
-//                pm.getStudentSectionGradeManager().getSectionGradesForStudent(studentId).getValue();
-//        return respond(GradeUtil.calculateGPA(gpaScale, courseGrades));
-        return null;
+        return respond(pm.getGpaManager().createGpa(studentId, gpa));
     }
 
     @ApiOperation(
@@ -92,10 +89,7 @@ public class GpaController extends BaseController {
             @ApiParam(name = "gpaId", required = true, value = "GPA ID")
             @PathVariable(value = "gpaId") Long gpaId)
     {
-//        Collection<? extends WeightedGradable> courseGrades =
-//                pm.getStudentSectionGradeManager().getSectionGradesForStudent(studentId).getValue();
-//        return respond(GradeUtil.calculateGPA(gpaScale, courseGrades));
-        return null;
+        return respond(pm.getGpaManager().deleteGpa(studentId, gpaId));
     }
 
     @ApiOperation(
@@ -114,9 +108,6 @@ public class GpaController extends BaseController {
             @PathVariable(value = "gpaId") Long gpaId,
             @RequestBody @Valid Gpa gpa)
     {
-//        Collection<? extends WeightedGradable> courseGrades =
-//                pm.getStudentSectionGradeManager().getSectionGradesForStudent(studentId).getValue();
-//        return respond(GradeUtil.calculateGPA(gpaScale, courseGrades));
-        return null;
+        return respond(pm.getGpaManager().updateGpa(studentId, gpaId, gpa));
     }
 }
