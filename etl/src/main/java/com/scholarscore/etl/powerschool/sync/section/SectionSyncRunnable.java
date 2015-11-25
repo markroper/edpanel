@@ -220,7 +220,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 Course c = this.courses.get(Long.valueOf(powerSection.getCourse_id()));
                 if(null != c) {
                     edpanelSection.setCourse(c);
-                    edpanelSection.setName(c.getName());
+                    edpanelSection.setName(c.getName() + " " + powerSection.getExpression());
                 }
                 //Resolve the EdPanel Term and set it on the Section
                 Term sectionTerm = this.terms.get(powerSection.getTerm_id());
