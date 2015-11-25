@@ -25,7 +25,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -36,7 +35,7 @@ import java.util.Objects;
  */
 @Entity(name = HibernateConsts.ASSIGNMENT_TABLE)
 @Table(name = HibernateConsts.ASSIGNMENT_TABLE)
-@DiscriminatorColumn(name="assignment_class", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name= HibernateConsts.ASSIGNMENT_CLASS, discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
