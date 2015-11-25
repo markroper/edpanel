@@ -14,6 +14,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.testng.Assert.assertEquals;
+
 /**
  * Created by markroper on 11/24/15.
  */
@@ -58,9 +60,30 @@ public class GpaControllerIntegrationTest extends IntegrationBase {
     }
 
     @Test(dataProvider = "createGpaProvider")
-    public void createGpas(String msg, Gpa gpa) {
-        this.gpaValidatingExecutor.create(gpa.getStudentId(), gpa, msg);
+    public void createAndDeleteGpas(String msg, Gpa gpa) {
+        Gpa created = this.gpaValidatingExecutor.create(gpa.getStudentId(), gpa, msg);
+        this.gpaValidatingExecutor.delete(gpa.getStudentId(), created.getId(), msg);
     }
 
+    public void createMultipleGpasForOneStudent() {
+        Student student = new Student();
+        student.setName(localeServiceUtil.generateName());
+        student.setCurrentSchoolId(school.getId());
+        student = studentValidatingExecutor.create(student, "create base student");
+        LocalDate maxDate = LocalDate.now();
+        for(int i = 0; i < 5; i++) {
+            AddedValueGpa g = new AddedValueGpa();
+            g.setStudentId(student.getId());
+            g.setCalculationDate(LocalDate.now().plusDays(1L + i));
+            g.setScore(RandomUtils.nextDouble(0D, 5D));
+            if(maxDate.isBefore(g.getCalculationDate())) {
+                maxDate = g.getCalculationDate();
+            }
+            gpaValidatingExecutor.create(student.getId(), g, "craete multiple GPAs for one student");
+        }
+        Gpa mostRecent = gpaValidatingExecutor.get(student.getId(), "get the most recent of many");
+        assertEquals(mostRecent.getCalculationDate(), maxDate, "Unequal calc dates");
+        gpaValidatingExecutor.getAll(student.getId(), 5, "Number of items returned doesn't match number created");
+    }
 
 }

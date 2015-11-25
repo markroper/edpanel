@@ -40,7 +40,7 @@ public class GpaJdbc implements GpaPersistence {
             newCurrGpa.setGpa(gpa);
             if(curr != null) {
                 newCurrGpa.setId(curr.getId());
-                hibernateTemplate.update(newCurrGpa);
+                hibernateTemplate.merge(newCurrGpa);
             } else {
                 hibernateTemplate.save(newCurrGpa);
             }
@@ -124,7 +124,8 @@ public class GpaJdbc implements GpaPersistence {
      */
     @Override
     public void delete(long studentId, long gpaId) {
-        hibernateTemplate.delete(gpaId);
+        Gpa toDelete = hibernateTemplate.get(Gpa.class, gpaId);
+        hibernateTemplate.delete(toDelete);
     }
 
     @SuppressWarnings("unchecked")

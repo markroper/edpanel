@@ -55,7 +55,8 @@ public class GpaController extends BaseController {
     {
         List<Long> studentIds = new ArrayList<>();
         studentIds.add(studentId);
-        return respond(pm.getGpaManager().getAllGpasForStudents(studentIds, LocalDate.of(2000, 1, 1), LocalDate.now()));
+        return respond(pm.getGpaManager().getAllGpasForStudents(
+                studentIds, LocalDate.of(2000, 1, 1), LocalDate.now().plusYears(1L)));
     }
 
     @ApiOperation(
