@@ -286,6 +286,42 @@ CREATE TABLE `scholar_warehouse`.`student_section_grade` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
+CREATE TABLE `scholar_warehouse`.`gpa` (
+  `gpa_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Auto incrementing primary key identity column',
+  `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the student table',
+  `gpa_start_date` DATE NULL COMMENT 'The start date for the period for which the GPA is calculated',
+  `gpa_end_date` DATE NULL COMMENT 'The end date for the period for which the GPA was calculated',
+  `gpa_calc_date` DATE NOT NULL COMMENT 'The date the GPA was calculated',
+  `gpa_type` VARCHAR(64) NOT NULL COMMENT 'Indicates the GPA calculation method',
+  `gpa_score` DOUBLE NOT NULL COMMENT 'The GPA value',
+  PRIMARY KEY (`gpa_id`),
+  CONSTRAINT `uniq_calc_date$student`
+    UNIQUE (`gpa_calc_date`,`student_fk`,`gpa_type`),
+  CONSTRAINT `fk_student$gpa`
+    FOREIGN KEY (`student_fk`)
+    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ ENGINE = InnoDB;
+ ALTER TABLE `scholar_warehouse`.`gpa` ADD INDEX (`gpa_type`);
+
+ CREATE TABLE `scholar_warehouse`.`current_gpa` (
+  `current_gpa_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Auto incrementing primary key identity column',
+  `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the student table',
+  `gpa_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the GPA table',
+  PRIMARY KEY (`current_gpa_id`),
+  CONSTRAINT `fk_student$current_gpa`
+    FOREIGN KEY (`student_fk`)
+    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_gpa$current_gpa`
+    FOREIGN KEY (`gpa_fk`)
+    REFERENCES `scholar_warehouse`.`gpa`(`gpa_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ ENGINE = InnoDB;
+
 CREATE TABLE `scholar_warehouse`.`report` (
   `report_id`  INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key identity column',
   `school_fk` BIGINT UNSIGNED COMMENT 'The foreign key to the school table',
@@ -379,7 +415,7 @@ CREATE TABLE `scholar_warehouse`.`goal` (
   `parent_fk` BIGINT(20) COMMENT 'Foreign key that could associate many different places depending on the goal. For assignment goals it points to student assignmnet id',
   `desired_value` DOUBLE NOT NULL COMMENT 'The value the student is attempting to reach with this goal',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the student this is assigned to',
-  `teacher_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the teacher who needs to approve this goal',
+  `teacher_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key linking to the teacher who needs to approve this goal',
   `goal_type` varchar(45) NOT NULL COMMENT ' Corresponds to enum GoalType, defines what subclass of goal we are dealing with',
   `start_date` DATE DEFAULT NULL COMMENT ' Certain goals occur over a time range, this indicates that starting point',
   `end_date` DATE DEFAULT NULL COMMENT ' Certain goals occur over a time range, this indicates the end date',
@@ -395,7 +431,7 @@ PRIMARY KEY (`goal_id`),
   CONSTRAINT `fk_teacher_goal`
     FOREIGN KEY (`teacher_fk`)
     REFERENCES `scholar_warehouse`.`teacher`(`teacher_user_fk`)
-    ON DELETE CASCADE
+    ON DELETE SET NULL
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 

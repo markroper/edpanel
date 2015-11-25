@@ -30,8 +30,16 @@ public class OrchestrationManager {
     private SchoolDayManager schoolDayManager;
     private AttendanceManager attendanceManager;
     private UiAttributesManager uiAttributesManager;
+    private GpaManager gpaManager;
 
-    
+    public GpaManager getGpaManager() {
+        return gpaManager;
+    }
+
+    public void setGpaManager(GpaManager gpaManager) {
+        this.gpaManager = gpaManager;
+    }
+
     public UiAttributesManager getUiAttributesManager() {
         return uiAttributesManager;
     }
