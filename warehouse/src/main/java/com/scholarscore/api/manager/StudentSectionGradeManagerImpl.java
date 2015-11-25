@@ -153,12 +153,12 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                     formula.setStartDate(term.getStartDate());
                     formula.setEndDate(term.getEndDate());
                 } else {
-                    formula = formula.resolveFormulaMatchingDates(
-                            term.getStartDate(),
-                            term.getEndDate());
+                    formula = formula.resolveFormulaMatchingDate(LocalDate.now());
                     if(null == formula) {
                         formula = section.getGradeFormula();
                     }
+                    formula.setStartDate(section.getGradeFormula().getStartDate());
+                    formula.setEndDate(section.getGradeFormula().getEndDate());
                 }
             }
             ArrayList<StudentAssignment> assignments = (ArrayList<StudentAssignment>)assignmentResp.getValue();
