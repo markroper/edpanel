@@ -270,6 +270,59 @@
 		<field table="StoredGrades" field="Teacher_Name" access="ViewOnly" />
 		<field table="StoredGrades" field="TermBinsName" access="ViewOnly" />
 		<field table="StoredGrades" field="TermID" access="ViewOnly" />
+
+		<field table="Students" field="AllowWebAccess" access="ViewOnly" />
+		<field table="Students" field="ClassOf" access="ViewOnly" />
+		<field table="Students" field="Cumulative_GPA" access="ViewOnly" />
+		<field table="Students" field="Cumulative_Pct" access="ViewOnly" />
+		<field table="Students" field="CustomRank_GPA" access="ViewOnly" />
+		<field table="Students" field="DCID" access="ViewOnly" />
+		<field table="Students" field="DistrictEntryDate" access="ViewOnly" />
+		<field table="Students" field="DistrictEntryGradeLevel" access="ViewOnly" />
+		<field table="Students" field="DistrictOfResidence" access="ViewOnly" />
+		<field table="Students" field="DOB" access="ViewOnly" />
+		<field table="Students" field="Enroll_Status" access="ViewOnly" />
+		<field table="Students" field="Enrollment_SchoolID" access="ViewOnly" />
+		<field table="Students" field="EnrollmentCode" access="ViewOnly" />
+		<field table="Students" field="EnrollmentType" access="ViewOnly" />
+		<field table="Students" field="EntryCode" access="ViewOnly" />
+		<field table="Students" field="EntryDate" access="ViewOnly" />
+		<field table="Students" field="ExitCode" access="ViewOnly" />
+		<field table="Students" field="ExitComment" access="ViewOnly" />
+		<field table="Students" field="Graduated_Rank" access="ViewOnly" />
+		<field table="Students" field="ID" access="ViewOnly" />
+		<field table="Students" field="Simple_GPA" access="ViewOnly" />
+		<field table="Students" field="Simple_PCT" access="ViewOnly" />
+		<field table="Students" field="State_StudentNumber" access="ViewOnly"/>
+		<field table="Students" field="SSN" access="ViewOnly" />
+		<field table="Students" field="track" access="ViewOnly" />
+		<field table="Gen" field="Cat" access="ViewOnly" />
+		<field table="Gen" field="Date_Value" access="ViewOnly" />
+		<field table="Gen" field="Date2" access="ViewOnly" />
+		<field table="Gen" field="DCID" access="ViewOnly" />
+		<field table="Gen" field="ID" access="ViewOnly" />
+		<field table="Gen" field="Log" access="ViewOnly" />
+		<field table="Gen" field="Name" access="ViewOnly" />
+		<field table="Gen" field="PowerLink" access="ViewOnly" />
+		<field table="Gen" field="PowerLinkSpan" access="ViewOnly" />
+		<field table="Gen" field="SchoolID" access="ViewOnly" />
+		<field table="Gen" field="SortOrder" access="ViewOnly" />
+		<field table="Gen" field="Time1" access="ViewOnly" />
+		<field table="Gen" field="Time2" access="ViewOnly" />
+		<field table="Gen" field="Value" access="ViewOnly" />
+		<field table="Gen" field="Value2" access="ViewOnly" />
+		<field table="Gen" field="ValueLi" access="ViewOnly" />
+		<field table="Gen" field="ValueLi2" access="ViewOnly" />
+		<field table="Gen" field="ValueLi3" access="ViewOnly" />
+		<field table="Gen" field="ValueLi4" access="ViewOnly" />
+		<field table="Gen" field="ValueR" access="ViewOnly" />
+		<field table="Gen" field="ValueR2" access="ViewOnly" />
+		<field table="Gen" field="ValueT" access="ViewOnly" />
+		<field table="Gen" field="ValueT2" access="ViewOnly" />
+		<field table="Gen" field="Value_X" access="ViewOnly" />
+		<field table="Gen" field="YearID" access="ViewOnly" />
+		<field table="Gen" field="Spedindicator" access="ViewOnly" />
+
 		<!-- Below is what is needed to resolve grading formulas from PowerTeacher and
 			map those entities back to the PowerSchool identifiers-->
 		<field table="PSM_GradingFormula" field="ContentGroupID" access="ViewOnly" />
