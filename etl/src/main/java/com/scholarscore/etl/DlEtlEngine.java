@@ -109,21 +109,6 @@ public class DlEtlEngine implements IEtlEngine {
         return new SyncResult();
     }
 
-    /* 
-    *     // These fields are not required for core ETL functionality but are used to record/measure results
-    private int behaviorEventsWithoutStudents = 0;
-    private int behaviorEventsWithUnmatchedStudents = 0;
-    private final HashSet<String> studentsNotMatched = new HashSet<>();
-
-    private int behaviorEventsWithoutTeachers = 0;
-    private int behaviorEventsWithUnmatchedTeachers = 0;
-    private final HashSet<String> teachersNotMatched = new HashSet<>();
-
-    private int behaviorsAdded = 0;
-    private int behaviorsUpdated = 0;
-
-    * * * */
-    
     private void printResults() {
         LOGGER.info("--");
         LOGGER.info("Behavior Events Added: " + behaviorsAdded);
