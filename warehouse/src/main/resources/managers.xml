@@ -112,6 +112,12 @@
            <property name="attendancePersistence" ref="attendancePersistence"/>
            <property name="pm" ref="PM"/>
     </bean>
+
+    <bean id="gpaManager"
+          class="com.scholarscore.api.manager.GpaManagerImpl">
+        <property name="gpaPersistence" ref="gpaPersistence"/>
+        <property name="pm" ref="PM"/>
+    </bean>
     
     <bean id="uiAttributesManager"
           class="com.scholarscore.api.manager.UiAttributesManagerImpl">

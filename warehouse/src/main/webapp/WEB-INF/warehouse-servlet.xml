@@ -69,6 +69,7 @@
         <property name="attendanceManager" ref="attendanceManager"/>
         <property name="uiAttributesManager" ref="uiAttributesManager"/>
         <property name="adminManager" ref="adminManager"/>
+        <property name="gpaManager" ref="gpaManager"/>
     </bean>
 
 

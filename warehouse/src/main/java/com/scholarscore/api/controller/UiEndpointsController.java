@@ -11,6 +11,7 @@ import com.scholarscore.models.goal.GoalType;
 import com.scholarscore.models.ui.SectionGradeWithProgression;
 import com.scholarscore.models.ui.StudentSectionDashboardData;
 import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 /**
  * These may be moved out of the core API and into a UI server in the future.
@@ -56,19 +58,15 @@ public class UiEndpointsController extends BaseController {
         List<StudentSectionDashboardData> response = new ArrayList<>();
         ServiceResponse<Collection<Section>> sectionsResponse =
                 pm.getSectionManager().getAllSections(studentId, schoolId, schoolYearId, termId);
-        //TODO thinbk about if this is optimal or should be done in HQL
         ServiceResponse<Collection<Goal>> goalsResponse = pm.getGoalManager().getAllGoals(studentId);
         HashMap<Long, CumulativeGradeGoal> sectionGoalMap = new HashMap<>();
         for (Goal goal: goalsResponse.getValue()) {
             if (goal.getGoalType() == GoalType.CUMULATIVE_GRADE) {
                 CumulativeGradeGoal cumGoal = (CumulativeGradeGoal)goal;
                 sectionGoalMap.put(cumGoal.getParentId(), cumGoal);
-
             }
         }
-
         Student onlyIdStudent = new Student.StudentBuilder().withId(studentId).build();
-
         if(null == sectionsResponse.getCode()) {
             for(Section s: sectionsResponse.getValue()) {
                 StudentSectionDashboardData sectionDashData = new StudentSectionDashboardData();
@@ -77,13 +75,18 @@ public class UiEndpointsController extends BaseController {
                 if ( null != sectionGoal) {
                     sectionDashData.setGradeGoal(sectionGoal);
                 } else {
+                    Set<Teacher> teachers = s.getTeachers();
+                    Teacher t = null;
+                    if(null != teachers && !teachers.isEmpty()) {
+                        t = teachers.iterator().next();
+                    }
                     CumulativeGradeGoal fullCumulativeGradeGoalByBuilder = new CumulativeGradeGoal.CumulativeGradeGoalBuilder().
                             withParentId(s.getId()).
                             withStudent(onlyIdStudent).
                             withApproved(Boolean.FALSE).
                             withDesiredValue(80D).
                             withName("Section Goal").
-                            withTeacher(s.getTeachers().iterator().next()).
+                            withTeacher(t).
                             build();
                     sectionDashData.setGradeGoal(fullCumulativeGradeGoalByBuilder);
                     pm.getGoalManager().createGoal(studentId, fullCumulativeGradeGoalByBuilder);
