@@ -6,6 +6,7 @@ import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.user.Student;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 /**
  * @author markroper on 11/24/15.
  */
+@Transactional
 public class GpaJdbc implements GpaPersistence {
     private HibernateTemplate hibernateTemplate;
 
@@ -38,8 +40,10 @@ public class GpaJdbc implements GpaPersistence {
             newCurrGpa.setGpa(gpa);
             if(curr != null) {
                 newCurrGpa.setId(curr.getId());
+                hibernateTemplate.update(newCurrGpa);
+            } else {
+                hibernateTemplate.save(newCurrGpa);
             }
-            hibernateTemplate.update(newCurrGpa);
         }
         return gpa.getId();
     }
