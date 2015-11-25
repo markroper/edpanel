@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -181,6 +180,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
             for (Map.Entry<SchoolDay, List<Attendance>> entry : schoolDayToAttendances.entrySet()) {
                 boolean hasDaily = false;
                 long absenses = 0;
+                long tardies = 0;
                 for (Attendance a : entry.getValue()) {
                     if (a.getType().equals(AttendanceTypes.DAILY)) {
                         hasDaily = true;
@@ -189,21 +189,36 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                     if (a.getStatus().equals(AttendanceStatus.ABSENT)) {
                         absenses++;
                     }
+                    if(a.getStatus().equals(AttendanceStatus.TARDY)) {
+                        tardies++;
+                    }
                 }
                 //If the number of absenses is equal to the periods in the day minus one for lunch
                 //and there is no daily attendance event already created, create one.
-                if (!hasDaily && absenses >= dailyAbsenseTrigger) {
-                    Attendance a = new Attendance();
-                    a.setSchoolDay(entry.getKey());
-                    a.setStudent(student);
-                    a.setStatus(AttendanceStatus.ABSENT);
-                    a.setType(AttendanceTypes.DAILY);
-                    a.setSourceSystemId(String.valueOf(syntheticDcid));
-                    a.setDescription("EdPanel generated due to daily section absenses( " +
-                            absenses +
-                            ") exceeding limit: " + dailyAbsenseTrigger);
-                    result.put(syntheticDcid, a);
-                    syntheticDcid--;
+                if (!hasDaily) {
+                    if (absenses >= dailyAbsenseTrigger) {
+                        Attendance a = new Attendance();
+                        a.setSchoolDay(entry.getKey());
+                        a.setStudent(student);
+                        a.setStatus(AttendanceStatus.ABSENT);
+                        a.setType(AttendanceTypes.DAILY);
+                        a.setSourceSystemId(String.valueOf(syntheticDcid));
+                        a.setDescription("EdPanel generated due to daily section absenses( " +
+                                absenses +
+                                ") exceeding limit: " + dailyAbsenseTrigger);
+                        result.put(syntheticDcid, a);
+                        syntheticDcid--;
+                    } else if(absenses > 0 || tardies > 0){
+                        Attendance a = new Attendance();
+                        a.setSchoolDay(entry.getKey());
+                        a.setStudent(student);
+                        a.setStatus(AttendanceStatus.ABSENT);
+                        a.setType(AttendanceTypes.DAILY);
+                        a.setSourceSystemId(String.valueOf(syntheticDcid));
+                        a.setDescription("EdPanel generated due to daily section absenses( " +
+                                absenses +
+                                ") exceeding limit: ");
+                    }
                 }
             }
         }
