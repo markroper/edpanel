@@ -3,6 +3,8 @@ package com.scholarscore.api.manager;
 import com.scholarscore.api.persistence.GpaPersistence;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
+import com.scholarscore.api.util.StatusCodeType;
+import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.gpa.Gpa;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -45,7 +47,13 @@ public class GpaManagerImpl implements GpaManager {
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
         }
-        return new ServiceResponse<>(gpaPersistence.selectGpa(studentId));
+        Gpa gpa = gpaPersistence.selectGpa(studentId);
+        if(null == gpa) {
+            return new ServiceResponse<>(
+                    StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{ GPA }));
+        } else {
+            return new ServiceResponse<>(gpa);
+        }
     }
 
     @Override
