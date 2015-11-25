@@ -12,10 +12,13 @@ import org.apache.commons.csv.CSVRecord;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Defines the pattern for updating GPA entries into the EdPanel API from a powerschool extract GPA file
+ * 
  * Created by mattg on 11/24/15.
  */
 public class GPASync implements ISync<Gpa> {
@@ -35,9 +38,26 @@ public class GPASync implements ISync<Gpa> {
         this.syncCutoff = syncCutoff;
     }
 
+    /**
+     * There's not enough details to determine how to perform add update, delete - unless the timestamp info is relevant to 'now' and only now, in which
+     * case this method is always a create and nothing else?
+     *
+     * @param results A SynchResult instance to update as the sync proceeds
+     * @return
+     */
     @Override
     public ConcurrentHashMap<Long, Gpa> syncCreateUpdateDelete(SyncResult results) {
+        GPAParser parser = new GPAParser();
+        ConcurrentHashMap<Long, Gpa> resultValues = new ConcurrentHashMap<>();
+        try {
+            List<RawGPAValue> gpas = parser.parse(new FileInputStream(gpaFile));
+            for (RawGPAValue value : gpas) {
+                Gpa gpa = value.emit();
+                resultValues.put(gpa.getStudentId(), gpa);
+            }
+        } catch (FileNotFoundException e) {
 
-        return null;
+        }
+        return resultValues;
     }
 }

@@ -11,6 +11,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Parses the generated CSV file from the CasperJS script, assumes a particular naming convention to determine the
+ * header values and the associated types.  The expected header format is as follows:
+ *
+ * ID,*gpa_method="added_value",*gpa_method="simple",*gpa_method="simple_percent",*gpa_method="added_value"_term="Q1",*gpa_method="simple"_term="Q1",*gpa_method="simple_percent"_term="Q1",*gpa_method="added_value"_term="Q2",*gpa_method="simple"_term="Q2",*gpa_method="simple_percent"_term="Q2",*gpa_method="added_value"_term="Q3",*gpa_method="simple"_term="Q3",*gpa_method="simple_percent"_term="Q3",*gpa_method="added_value"_term="Q4",*gpa_method="simple"_term="Q4",*gpa_method="simple_percent"_term="Q4"
  *
  * Created by mattg on 11/24/15.
  */
