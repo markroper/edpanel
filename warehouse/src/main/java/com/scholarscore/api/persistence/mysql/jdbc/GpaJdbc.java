@@ -75,7 +75,7 @@ public class GpaJdbc implements GpaPersistence {
             newCurrent.setGpa(gpa);
             newCurrent.setId(curr.getId());
             newCurrent.setStudent(curr.getStudent());
-            hibernateTemplate.update(newCurrent);
+            hibernateTemplate.merge(newCurrent);
         }
         return gpa.getId();
     }
