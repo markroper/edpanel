@@ -37,7 +37,7 @@ public class RestErrorHandler extends BaseController {
     @ResponseBody
     public ResponseEntity<StatusCode> processValidationError(MethodArgumentNotValidException ex) {
         BindingResult result = ex.getBindingResult();
-        StatusCode error = new StatusCode(StatusCodes.UNPARSABLE_REQUEST_CODE, result.getFieldError().getDefaultMessage());
+        StatusCode error = new StatusCode(StatusCodes.UNPARSABLE_REQUEST_CODE, result.getFieldError().getDefaultMessage() + " (field:) " + result.getFieldError().getField());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
     

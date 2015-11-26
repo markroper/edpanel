@@ -2,7 +2,7 @@ package com.scholarscore.etl.powerschool.sync.user;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
-import com.scholarscore.etl.SyncResult;
+import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.ISync;
@@ -44,7 +44,7 @@ public class StaffSync implements ISync<Person> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Person> syncCreateUpdateDelete(SyncResult results) {
+    public ConcurrentHashMap<Long, Person> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         Long psSchoolId = new Long(school.getSourceSystemId());
         ConcurrentHashMap<Long, Person> sourceStaff = null;
         try {
