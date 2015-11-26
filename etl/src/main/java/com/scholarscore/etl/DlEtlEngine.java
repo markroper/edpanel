@@ -97,9 +97,6 @@ public class DlEtlEngine implements IEtlEngine {
         return result;
     }
 
-    private void printResults() {
-    }
-
     private void handleBehavior(Behavior behavior, DeansListSyncResult result) {
         
         // at this point, the only thing populated in the student (from deanslist) is their name
