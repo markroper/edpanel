@@ -18,8 +18,8 @@ public class EtlRunner {
     // Test migrates everything
     public void migrateDistrict() {
         System.out.println("Migration running...");
-        SyncResult psResult = etlEngine.syncDistrict();
-        System.out.println("Done! PS Migration result: " + psResult);
+//        SyncResult psResult = etlEngine.syncDistrict();
+//        System.out.println("Done! PS Migration result: " + psResult);
         
         SyncResult dlResult = dlEtlEngine.syncDistrict();
         System.out.println("Done! Migration result: " + dlResult);    

@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -38,20 +37,6 @@ public class DlEtlEngine implements IEtlEngine {
     // key: deansListBehaviorId, value: behavior object
     private HashMap<Long, HashMap<String, Behavior>> existingBehaviorLookup;
 
-    // // // // // // // 
-    // These fields are not required for core ETL functionality but are used to record/measure results
-    private int behaviorEventsWithoutStudents = 0;
-    private int behaviorEventsWithUnmatchedStudents = 0;
-    private final HashSet<String> studentsNotMatched = new HashSet<>();
-
-    private int behaviorEventsWithoutTeachers = 0;
-    private int behaviorEventsWithUnmatchedTeachers = 0;
-    private final HashSet<String> teachersNotMatched = new HashSet<>();
-
-    private int behaviorsAdded = 0;
-    private int behaviorsUpdated = 0;
-    // // // // // // //
-    
     public IDeansListClient getDeansList() {
         return deansList;
     }
@@ -93,50 +78,29 @@ public class DlEtlEngine implements IEtlEngine {
         teacherLookup = populateLookup(existingTeachers);
 
         LOGGER.debug("got " + behaviorsToMerge.size() + " behavior events from deanslist.");
-        for (Student student : existingStudents) { LOGGER.debug("Got scholarScore student: " + student); }
-        LOGGER.debug("got " + existingStudents.size() + " existing students as potential merge targets.");
-        LOGGER.debug("got " + existingTeachers.size() + " existing teachers as potential merge targets.");
+        if (existingStudents != null) {
+            for (Student student : existingStudents) {
+                LOGGER.debug("Got scholarScore student: " + student);
+            }
+            LOGGER.debug("got " + existingStudents.size() + " existing students as potential merge targets.");
+            LOGGER.debug("got " + existingTeachers.size() + " existing teachers as potential merge targets.");
+        }
 
         existingBehaviorLookup = new HashMap<>();
         
+        DeansListSyncResult result = new DeansListSyncResult();
+        
         for (Behavior behavior : behaviorsToMerge) {
-            handleBehavior(behavior);
+            handleBehavior(behavior, result);
         }
 
-        printResults();
-        
-        // TODO Jordan: What to return, if anything, in migration result?
-        return new SyncResult();
+        return result;
     }
 
     private void printResults() {
-        LOGGER.info("--");
-        LOGGER.info("Behavior Events Added: " + behaviorsAdded);
-        LOGGER.info("Behavior Events Updated: " + behaviorsUpdated);
-        LOGGER.info("--");
-        LOGGER.info("Behavior Events Without Matching EdPanel Teachers: " + behaviorEventsWithUnmatchedTeachers);
-        LOGGER.info("Behavior Events Without Teachers: " + behaviorEventsWithoutTeachers);
-        LOGGER.info("--");
-        LOGGER.info("Behavior Events Without Matching EdPanel Students: " + behaviorEventsWithUnmatchedStudents);
-        LOGGER.info("Behavior Events Without Students: " + behaviorEventsWithoutStudents);
-        LOGGER.info("--");
-        if (teachersNotMatched.size() > 0) {
-            LOGGER.info("Unmatched Teachers: ");
-            for (String unmatchedTeacherName : teachersNotMatched) {
-                LOGGER.info("  " + unmatchedTeacherName);
-            }
-            LOGGER.info("--");
-        }
-        if (studentsNotMatched.size() > 0) {
-            LOGGER.info("Unmatched Students: ");
-            for (String unmatchedStudentName : studentsNotMatched) {
-                LOGGER.info("  " + unmatchedStudentName);
-            }
-            LOGGER.info("--");
-        }
     }
 
-    private void handleBehavior(Behavior behavior) {
+    private void handleBehavior(Behavior behavior, DeansListSyncResult result) {
         
         // at this point, the only thing populated in the student (from deanslist) is their name
         Student student = behavior.getStudent();
@@ -160,12 +124,14 @@ public class DlEtlEngine implements IEtlEngine {
                     if (existingTeacher != null) {
                         behavior.setTeacher(existingTeacher);
                     } else {
-                        behaviorEventsWithUnmatchedTeachers++;
-                        teachersNotMatched.add(teacher.getName());
+                        // null out the teacher that cannot be associated or we will get an error when submitting
+                        // (we would need to create this teacher, and DL sync only creates behavior events)
+                        behavior.setTeacher(null);
+                        result.incrementUnmatchedTeacher(teacher.getName());
                     }
                 } else {
                     // deanslist did not contain teacher information with this record
-                    behaviorEventsWithoutTeachers++;
+                    result.incrementBehaviorWithoutTeacher();
                 }
 
                 LOGGER.debug("About to map Behavior " + behavior.getName()
@@ -202,12 +168,12 @@ public class DlEtlEngine implements IEtlEngine {
                     // ... and save in cache
                     if (createdBehavior != null) {  // this should always be true...
                         studentBehaviorEvents.put(createdBehavior.getRemoteBehaviorId(), createdBehavior);
-                        behaviorsAdded++;
+                        result.incrementBehaviorAdded();
                     }
                 } else {
                     // behavior exists already in scholarscore (with id scholarScoreBehaviorId), update it
                     Long behaviorId = scholarScoreBehavior.getId();
-                    behaviorsUpdated++;
+                    result.incrementBehaviorUpdated();
                     try {
                         scholarScore.updateBehavior(studentId, behaviorId, behavior);
                     } catch (HttpClientException e) {
@@ -217,12 +183,11 @@ public class DlEtlEngine implements IEtlEngine {
 
             } else {
                 LOGGER.warn("WARN: Deanslist specified a unknown student: " + student.getName());
-                behaviorEventsWithUnmatchedStudents++;
-                studentsNotMatched.add(student.getName());
+                result.incrementUnmatchedStudent(student.getName());
             }
         } else {
             LOGGER.warn("WARN: Student was null, skipping this behavior event...");
-            behaviorEventsWithoutStudents++;
+            result.incrementBehaviorWithoutStudent();
         }
     }
 
