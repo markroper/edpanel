@@ -66,7 +66,7 @@ public class EtlEngine implements IEtlEngine {
     //After a certain point in the past, we no longer want to sync expensive and large tables, like attendance
     //This date defines that cutoff point before which we will cease to sync updates.
     private LocalDate syncCutoff;
-    private SyncResult results = new SyncResult();
+    private PowerSchoolSyncResult results = new PowerSchoolSyncResult();
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
     private Long dailyAbsenseTrigger;
@@ -109,7 +109,7 @@ public class EtlEngine implements IEtlEngine {
     }
 
     @Override
-    public SyncResult syncDistrict() {
+    public PowerSchoolSyncResult syncDistrict() {
         this.syncCutoff = LocalDate.now().minusYears(1l);
         this.powerSchool.setSyncCutoff(this.syncCutoff);
 
@@ -397,7 +397,7 @@ public class EtlEngine implements IEtlEngine {
      * TODO: figure out how we actually want to output these results.  For now, its a series of sys outs
      * @param results
      */
-    private static void outputResults(SyncResult results) {
+    private static void outputResults(PowerSchoolSyncResult results) {
         LOGGER.info("--");
         LOGGER.info("Created Schools: " + results.getSchools().getCreated().size());
         LOGGER.info("Failed school creations: " + results.getSchools().getFailedCreates().size());
