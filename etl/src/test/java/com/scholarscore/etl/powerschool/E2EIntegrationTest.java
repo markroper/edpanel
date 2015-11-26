@@ -1,6 +1,7 @@
 package com.scholarscore.etl.powerschool;
 
 import com.scholarscore.etl.IEtlEngine;
+import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.SyncResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
