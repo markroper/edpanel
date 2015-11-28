@@ -294,6 +294,22 @@ public class GradeFormula implements Serializable {
         return null;
     }
 
+    public GradeFormula resolveFormulaMatchingDate(LocalDate curr) {
+        GradeFormula matching = null;
+        if(null != children && !children.isEmpty()) {
+            for(GradeFormula f: children) {
+                matching = f.resolveFormulaMatchingDate(curr);
+                if(null != matching) {
+                    break;
+                }
+            }
+        } else if(null != startDate && startDate.compareTo(curr) <= 0 &&
+                null != endDate && endDate.compareTo(curr) >= 0) {
+            matching = this;
+        }
+        return matching;
+    }
+
     private static long getDateDiff(LocalDate date1, LocalDate date2) {
         return Math.abs(ChronoUnit.DAYS.between(date1, date2));
     }

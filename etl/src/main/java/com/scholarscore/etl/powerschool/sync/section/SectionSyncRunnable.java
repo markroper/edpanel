@@ -4,7 +4,7 @@ import com.google.common.collect.BiMap;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
-import com.scholarscore.etl.SyncResult;
+import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsSection;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetup;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeighting;
@@ -61,7 +61,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
     private Map<Long, String> powerTeacherCategoryToEdPanelType;
     private BiMap<Long, Long> ptSectionIdToPsSectionId;
     private Map<Long, Long> ptStudentIdToPsStudentId;
-    private SyncResult results;
+    private PowerSchoolSyncResult results;
 
     public SectionSyncRunnable(IPowerSchoolClient powerSchool,
                                IAPIClient edPanel,
@@ -75,7 +75,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                                Map<Long, String> powerTeacherCategoryToEdPanelType,
                                BiMap<Long, Long> ptSectionIdToPsSectionId,
                                Map<Long, Long> ptStudentIdToPsStudentId,
-                               SyncResult results) {
+                               PowerSchoolSyncResult results) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
         this.school = school;
@@ -97,7 +97,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Section> syncCreateUpdateDelete(SyncResult results) {
+    public ConcurrentHashMap<Long, Section> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<Long, Section> source = null;
         try {
             source = resolveAllFromSourceSystem();
@@ -220,7 +220,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 Course c = this.courses.get(Long.valueOf(powerSection.getCourse_id()));
                 if(null != c) {
                     edpanelSection.setCourse(c);
-                    edpanelSection.setName(c.getName());
+                    edpanelSection.setName(c.getName() + " " + powerSection.getExpression());
                 }
                 //Resolve the EdPanel Term and set it on the Section
                 Term sectionTerm = this.terms.get(powerSection.getTerm_id());
