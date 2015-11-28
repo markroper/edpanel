@@ -311,8 +311,6 @@ public class UserManagerImpl implements UserManager {
         return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"No Data"}));
     }
 
-    // TODO Jordan: don't take password in the URL, take it in the payload
-    
     /* 
      * Resets the user's password.
      *
