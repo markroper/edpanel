@@ -75,7 +75,7 @@ public class DeansListSyncResult extends BaseSyncResult {
     }
     
     public void incrementUnmatchedTeacher(String unmatchedTeacherName) { 
-        behaviorEventsWithoutTeachers++;
+        behaviorEventsWithUnmatchedTeachers++;
         teachersNotMatched.add(unmatchedTeacherName);
     }
     
