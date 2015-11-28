@@ -10,6 +10,8 @@ import com.scholarscore.models.gpa.Gpa;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -23,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by mattg on 11/24/15.
  */
 public class GPASync implements ISync<Gpa> {
+    private final static Logger LOGGER = LoggerFactory.getLogger(GPASync.class);
 
     private final LocalDate syncCutoff;
     private final StudentAssociator studentAssociator;
@@ -54,13 +57,13 @@ public class GPASync implements ISync<Gpa> {
             List<RawGPAValue> gpas = parser.parse(new FileInputStream(gpaFile));
             for (RawGPAValue value : gpas) {
                 Gpa gpa = value.emit();
-                resultValues.put(gpa.getStudentId(), gpa);
 
                 // Create the GPA entry for the student by studentId
-                edPanel.createGPA(gpa.getStudentId(), gpa);
+                Gpa responseGpa = edPanel.createGPA(gpa.getStudentId(), gpa);
+                resultValues.put(gpa.getStudentId(), responseGpa);
             }
-        } catch (FileNotFoundException e) {
-
+        } catch (IOException e) {
+            LOGGER.error("Failed to create new GPA", e);
         }
         return resultValues;
     }
