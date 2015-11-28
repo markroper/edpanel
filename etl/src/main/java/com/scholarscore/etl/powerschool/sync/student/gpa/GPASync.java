@@ -55,6 +55,9 @@ public class GPASync implements ISync<Gpa> {
             for (RawGPAValue value : gpas) {
                 Gpa gpa = value.emit();
                 resultValues.put(gpa.getStudentId(), gpa);
+
+                // Create the GPA entry for the student by studentId
+                edPanel.createGPA(gpa.getStudentId(), gpa);
             }
         } catch (FileNotFoundException e) {
 
