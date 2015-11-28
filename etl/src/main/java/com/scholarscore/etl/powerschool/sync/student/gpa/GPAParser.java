@@ -39,7 +39,7 @@ public class GPAParser {
                     String name = header[i];
                     if (name.equalsIgnoreCase(ID)) {
                         String id = record.get(i);
-                        gpa.setId(Long.valueOf(id));
+                        gpa.setStudentId(Long.valueOf(id));
                     } else if (name.startsWith(GPA_METHOD_MARKER)) {
                         Matcher m = GPA_METHOD_MATCHER.matcher(name);
                         if (m.matches()) {

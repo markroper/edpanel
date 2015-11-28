@@ -14,6 +14,7 @@ public class RawGPAValue {
     private Long id;
     private HashMap<String, Double> termValues = new HashMap<>();
     private Double value;
+    private Long studentId;
 
     public void setType(GPAType type) {
         this.type = type;
@@ -43,30 +44,26 @@ public class RawGPAValue {
         this.value = value;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public Gpa emit() {
         Gpa gpa = null;
         switch (type) {
             case added_value:
                 gpa = new AddedValueGpa();
-                gpa.setStudentId(getId());
+                gpa.setStudentId(getStudentId());
                 gpa.setScore(value);
                 gpa.setCalculationDate(LocalDate.now());
                 gpa.setType(GpaTypes.ADDED_VALUE);
                 break;
             case simple_percent:
                 gpa = new SimplePercentGpa();
-                gpa.setStudentId(getId());
+                gpa.setStudentId(getStudentId());
                 gpa.setScore(value);
                 gpa.setCalculationDate(LocalDate.now());
                 gpa.setType(GpaTypes.SIMPLE_PERCENT);
                 break;
             case simple:
                 gpa = new SimpleGpa();
-                gpa.setStudentId(getId());
+                gpa.setStudentId(getStudentId());
                 gpa.setScore(value);
                 gpa.setCalculationDate(LocalDate.now());
                 gpa.setType(GpaTypes.SIMPLE);
@@ -75,7 +72,11 @@ public class RawGPAValue {
         return gpa;
     }
 
-    public Long getId() {
-        return id;
+    public void setStudentId(Long studentId) {
+        this.studentId = studentId;
+    }
+
+    public Long getStudentId() {
+        return studentId;
     }
 }
