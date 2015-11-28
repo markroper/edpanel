@@ -3,7 +3,7 @@ package com.scholarscore.etl.powerschool.sync;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
-import com.scholarscore.etl.SyncResult;
+import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.term.PsTerm;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
@@ -43,7 +43,7 @@ public class TermSync implements ISync<Term> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Term> syncCreateUpdateDelete(SyncResult results) {
+    public ConcurrentHashMap<Long, Term> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<Long, Term> source = null;
         try {
             source = resolveAllFromSourceSystem();
