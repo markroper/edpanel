@@ -3,8 +3,7 @@ package com.scholarscore.etl.powerschool.sync.attendance;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.EtlEngine;
 import com.scholarscore.etl.ISync;
-import com.scholarscore.etl.SyncResult;
-import com.scholarscore.etl.powerschool.api.model.PsPeriod;
+import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.School;
@@ -15,9 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -53,7 +50,7 @@ public class AttendanceSync implements ISync<Attendance> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Attendance> syncCreateUpdateDelete(SyncResult results) {
+    public ConcurrentHashMap<Long, Attendance> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<Long, Attendance> response = new ConcurrentHashMap<>();
         Iterator<Map.Entry<Long, Student>> studentIterator = studentAssociator.getStudents().entrySet().iterator();
         ExecutorService executor = Executors.newFixedThreadPool(EtlEngine.THREAD_POOL_SIZE);

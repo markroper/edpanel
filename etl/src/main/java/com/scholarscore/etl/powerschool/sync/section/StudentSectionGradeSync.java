@@ -4,7 +4,7 @@ import com.google.common.collect.BiMap;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
-import com.scholarscore.etl.SyncResult;
+import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PtFinalScore;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PtFinalScoreWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionEnrollment;
@@ -61,7 +61,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, StudentSectionGrade> syncCreateUpdateDelete(SyncResult results) {
+    public ConcurrentHashMap<Long, StudentSectionGrade> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         //To populate and set on the createdSection
         List<StudentSectionGrade> ssgs = Collections.synchronizedList(new ArrayList<>());
         ConcurrentHashMap<Long, StudentSectionGrade> source = null;
@@ -176,7 +176,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
         return source;
     }
 
-    protected ConcurrentHashMap<Long, StudentSectionGrade> resolveAllFromSourceSystem(SyncResult results) throws HttpClientException {
+    protected ConcurrentHashMap<Long, StudentSectionGrade> resolveAllFromSourceSystem(PowerSchoolSyncResult results) throws HttpClientException {
         ConcurrentHashMap<Long, StudentSectionGrade> source = new ConcurrentHashMap<>();
         Long ptSectionId = ptSectionIdToPsSectionId.inverse().get(Long.valueOf(createdSection.getSourceSystemId()));
         if(null != ptSectionId) {

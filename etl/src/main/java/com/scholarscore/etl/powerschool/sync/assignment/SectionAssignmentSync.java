@@ -4,7 +4,7 @@ import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.EtlEngine;
 import com.scholarscore.etl.ISync;
-import com.scholarscore.etl.SyncResult;
+import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignment;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentFactory;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentWrapper;
@@ -61,7 +61,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Assignment> syncCreateUpdateDelete(SyncResult results) {
+    public ConcurrentHashMap<Long, Assignment> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<Long, Assignment> source = null;
         try {
             source = this.resolveAllFromSourceSystem(results);
@@ -176,7 +176,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         return source;
     }
 
-    protected ConcurrentHashMap<Long, Assignment> resolveAllFromSourceSystem(SyncResult results) throws HttpClientException {
+    protected ConcurrentHashMap<Long, Assignment> resolveAllFromSourceSystem(PowerSchoolSyncResult results) throws HttpClientException {
         //first resolve the assignment categories, so we can construct the appropriate EdPanel assignment subclass
         PsResponse<PsAssignmentTypeWrapper> powerTypes =
                 powerSchool.getAssignmentCategoriesBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
