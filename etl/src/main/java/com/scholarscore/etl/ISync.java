@@ -50,6 +50,6 @@ public interface ISync<T> {
      *          end state of what is in EdPanel after all the CREATE/UPDATE/DELETE operations have been
      *          performed to synchronize EdPanel's state with the source system state.
      */
-    ConcurrentHashMap<Long, T> syncCreateUpdateDelete(SyncResult results);
+    ConcurrentHashMap<Long, T> syncCreateUpdateDelete(PowerSchoolSyncResult results);
 
 }

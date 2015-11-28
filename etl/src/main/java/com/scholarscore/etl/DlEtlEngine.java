@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class DlEtlEngine implements IEtlEngine {
 
-    final static Logger logger = LoggerFactory.getLogger(DlEtlEngine.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(DlEtlEngine.class);
     
     // wired up by spring
     private IDeansListClient deansList;
@@ -77,27 +77,33 @@ public class DlEtlEngine implements IEtlEngine {
         }
         teacherLookup = populateLookup(existingTeachers);
 
-        logger.debug("got " + behaviorsToMerge.size() + " behavior events from deanslist.");
-        for (Student student : existingStudents) { logger.debug("Got scholarScore student: " + student); }
-        logger.debug("got " + existingStudents.size() + " existing students as potential merge targets.");
-        logger.debug("got " + existingTeachers.size() + " existing teachers as potential merge targets.");
+        LOGGER.debug("got " + behaviorsToMerge.size() + " behavior events from deanslist.");
+        if (existingStudents != null) {
+            for (Student student : existingStudents) {
+                LOGGER.debug("Got scholarScore student: " + student);
+            }
+            LOGGER.debug("got " + existingStudents.size() + " existing students as potential merge targets.");
+            LOGGER.debug("got " + existingTeachers.size() + " existing teachers as potential merge targets.");
+        }
 
         existingBehaviorLookup = new HashMap<>();
         
+        DeansListSyncResult result = new DeansListSyncResult();
+        
         for (Behavior behavior : behaviorsToMerge) {
-            handleBehavior(behavior);
+            handleBehavior(behavior, result);
         }
 
-        // TODO Jordan: What to return, if anything, in migration result?
-        return new SyncResult();
+        return result;
     }
-    
-    private void handleBehavior(Behavior behavior) {
+
+    private void handleBehavior(Behavior behavior, DeansListSyncResult result) {
+        
         // at this point, the only thing populated in the student (from deanslist) is their name
         Student student = behavior.getStudent();
         Teacher teacher = behavior.getTeacher();
 
-        logger.debug("Got behavior event (" + behavior.getName() + ")"
+        LOGGER.debug("Got behavior event (" + behavior.getName() + ")"
                 + " for student named " + (student == null ? "(student null)" : student.getName())
                 + " and teacher named " + (teacher == null ? "(teacher null)" : teacher.getName())
                 + " with point value " + behavior.getPointValue());
@@ -111,10 +117,21 @@ public class DlEtlEngine implements IEtlEngine {
                 // don't require teacher but populate it if present
                 if (teacher != null && teacher.getName() != null) {
                     Teacher existingTeacher = teacherLookup.get(stripAndLowerName(teacher.getName()));
-                    behavior.setTeacher(existingTeacher);
+                    
+                    if (existingTeacher != null) {
+                        behavior.setTeacher(existingTeacher);
+                    } else {
+                        // null out the teacher that cannot be associated or we will get an error when submitting
+                        // (we would need to create this teacher, and DL sync only creates behavior events)
+                        behavior.setTeacher(null);
+                        result.incrementUnmatchedTeacher(teacher.getName());
+                    }
+                } else {
+                    // deanslist did not contain teacher information with this record
+                    result.incrementBehaviorWithoutTeacher();
                 }
 
-                logger.debug("About to map Behavior " + behavior.getName()
+                LOGGER.debug("About to map Behavior " + behavior.getName()
                         + " to student " + existingStudent.getName());
                 long studentId = existingStudent.getId();
 
@@ -146,10 +163,14 @@ public class DlEtlEngine implements IEtlEngine {
                         e.printStackTrace();
                     }
                     // ... and save in cache
-                    studentBehaviorEvents.put(createdBehavior.getRemoteBehaviorId(), createdBehavior);
+                    if (createdBehavior != null) {  // this should always be true...
+                        studentBehaviorEvents.put(createdBehavior.getRemoteBehaviorId(), createdBehavior);
+                        result.incrementBehaviorAdded();
+                    }
                 } else {
                     // behavior exists already in scholarscore (with id scholarScoreBehaviorId), update it
                     Long behaviorId = scholarScoreBehavior.getId();
+                    result.incrementBehaviorUpdated();
                     try {
                         scholarScore.updateBehavior(studentId, behaviorId, behavior);
                     } catch (HttpClientException e) {
@@ -157,9 +178,13 @@ public class DlEtlEngine implements IEtlEngine {
                     }
                 }
 
+            } else {
+                LOGGER.warn("WARN: Deanslist specified a unknown student: " + student.getName());
+                result.incrementUnmatchedStudent(student.getName());
             }
         } else {
-            logger.warn("WARN: Student and/or Teacher was null, skipping behavior event...");
+            LOGGER.warn("WARN: Student was null, skipping this behavior event...");
+            result.incrementBehaviorWithoutStudent();
         }
     }
 

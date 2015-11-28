@@ -2,7 +2,7 @@ package com.scholarscore.etl.powerschool.sync.attendance;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
-import com.scholarscore.etl.SyncResult;
+import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsCalendarDay;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsCalendarDayWrapper;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +41,7 @@ public class SchoolDaySync {
         this.syncCutoff = syncCutoff;
     }
 
-    public ConcurrentHashMap<LocalDate, SchoolDay> syncCreateUpdateDelete(SyncResult results) {
+    public ConcurrentHashMap<LocalDate, SchoolDay> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<LocalDate, SchoolDay> source = null;
         ConcurrentHashMap<LocalDate, SchoolDay> ed = null;
         try {
