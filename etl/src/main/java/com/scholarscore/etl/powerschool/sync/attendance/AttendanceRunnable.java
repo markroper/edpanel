@@ -3,7 +3,7 @@ package com.scholarscore.etl.powerschool.sync.attendance;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
-import com.scholarscore.etl.SyncResult;
+import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendance;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCode;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
@@ -39,7 +39,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
     protected School school;
     protected ConcurrentHashMap<LocalDate, SchoolDay> schoolDays;
     protected Student student;
-    protected SyncResult results;
+    protected PowerSchoolSyncResult results;
     protected LocalDate syncCutoff;
     protected Long dailyAbsenseTrigger;
 
@@ -48,7 +48,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                           School s,
                           Student student,
                           ConcurrentHashMap<LocalDate, SchoolDay> schoolDays,
-                          SyncResult results,
+                          PowerSchoolSyncResult results,
                           LocalDate syncCutoff,
                           Long dailyAbsenseTrigger) {
         this.edPanel = edPanel;
@@ -66,7 +66,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Attendance> syncCreateUpdateDelete(SyncResult results) {
+    public ConcurrentHashMap<Long, Attendance> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<Long, Attendance> source = null;
         ConcurrentHashMap<Long, Attendance> ed = null;
         try {

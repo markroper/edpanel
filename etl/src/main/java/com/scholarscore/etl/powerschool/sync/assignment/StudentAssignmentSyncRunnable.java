@@ -3,7 +3,7 @@ package com.scholarscore.etl.powerschool.sync.assignment;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
-import com.scholarscore.etl.SyncResult;
+import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScoreWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsScore;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreId;
@@ -40,7 +40,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
     private Section createdSection;
     private Assignment assignment;
     private Map<Long, MutablePair<Student, PsSectionScoreId>> ssidToStudent;
-    private SyncResult results;
+    private PowerSchoolSyncResult results;
 
     public StudentAssignmentSyncRunnable(IPowerSchoolClient powerSchool,
                                          IAPIClient edPanel,
@@ -48,7 +48,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                                          Section createdSection,
                                          Assignment assignment,
                                          Map<Long, MutablePair<Student, PsSectionScoreId>> ssidToStudent,
-                                         SyncResult results) {
+                                         PowerSchoolSyncResult results) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
         this.school = school;
@@ -64,7 +64,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
     }
 
     @Override
-    public ConcurrentHashMap<Long, StudentAssignment> syncCreateUpdateDelete(SyncResult results) {
+    public ConcurrentHashMap<Long, StudentAssignment> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<Long, StudentAssignment> source = null;
         try {
             source = resolveAllFromSourceSystem();

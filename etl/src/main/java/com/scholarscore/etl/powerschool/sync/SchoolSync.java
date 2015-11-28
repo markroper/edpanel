@@ -3,7 +3,7 @@ package com.scholarscore.etl.powerschool.sync;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
-import com.scholarscore.etl.SyncResult;
+import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.School;
@@ -26,7 +26,7 @@ public class SchoolSync implements ISync<School> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, School> syncCreateUpdateDelete(SyncResult results) {
+    public ConcurrentHashMap<Long, School> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<Long, School> source = null;
         try {
             source = resolveAllFromSourceSystem();
