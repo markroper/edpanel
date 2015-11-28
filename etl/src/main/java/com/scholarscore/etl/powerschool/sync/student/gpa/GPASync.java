@@ -2,6 +2,7 @@ package com.scholarscore.etl.powerschool.sync.student.gpa;
 
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
+import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
@@ -18,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Defines the pattern for updating GPA entries into the EdPanel API from a powerschool extract GPA file
- * 
+ *
  * Created by mattg on 11/24/15.
  */
 public class GPASync implements ISync<Gpa> {
@@ -46,7 +47,7 @@ public class GPASync implements ISync<Gpa> {
      * @return
      */
     @Override
-    public ConcurrentHashMap<Long, Gpa> syncCreateUpdateDelete(SyncResult results) {
+    public ConcurrentHashMap<Long, Gpa> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         GPAParser parser = new GPAParser();
         ConcurrentHashMap<Long, Gpa> resultValues = new ConcurrentHashMap<>();
         try {

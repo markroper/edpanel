@@ -90,7 +90,7 @@ public class DlEtlEngine implements IEtlEngine {
         }
 
         // TODO Jordan: What to return, if anything, in migration result?
-        return new SyncResult();
+        return new PowerSchoolSyncResult();
     }
 
     @Override
