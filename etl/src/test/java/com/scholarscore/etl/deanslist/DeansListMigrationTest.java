@@ -1,6 +1,7 @@
 package com.scholarscore.etl.deanslist;
 
 import com.scholarscore.etl.IEtlEngine;
+import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.SyncResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

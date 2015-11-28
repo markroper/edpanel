@@ -3,7 +3,7 @@ package com.scholarscore.etl.powerschool.sync.attendance;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
-import com.scholarscore.etl.SyncResult;
+import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendance;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCode;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -40,7 +39,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
     protected School school;
     protected ConcurrentHashMap<LocalDate, SchoolDay> schoolDays;
     protected Student student;
-    protected SyncResult results;
+    protected PowerSchoolSyncResult results;
     protected LocalDate syncCutoff;
     protected Long dailyAbsenseTrigger;
 
@@ -49,7 +48,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                           School s,
                           Student student,
                           ConcurrentHashMap<LocalDate, SchoolDay> schoolDays,
-                          SyncResult results,
+                          PowerSchoolSyncResult results,
                           LocalDate syncCutoff,
                           Long dailyAbsenseTrigger) {
         this.edPanel = edPanel;
@@ -67,7 +66,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Attendance> syncCreateUpdateDelete(SyncResult results) {
+    public ConcurrentHashMap<Long, Attendance> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<Long, Attendance> source = null;
         ConcurrentHashMap<Long, Attendance> ed = null;
         try {
@@ -181,6 +180,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
             for (Map.Entry<SchoolDay, List<Attendance>> entry : schoolDayToAttendances.entrySet()) {
                 boolean hasDaily = false;
                 long absenses = 0;
+                long tardies = 0;
                 for (Attendance a : entry.getValue()) {
                     if (a.getType().equals(AttendanceTypes.DAILY)) {
                         hasDaily = true;
@@ -189,21 +189,36 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                     if (a.getStatus().equals(AttendanceStatus.ABSENT)) {
                         absenses++;
                     }
+                    if(a.getStatus().equals(AttendanceStatus.TARDY)) {
+                        tardies++;
+                    }
                 }
                 //If the number of absenses is equal to the periods in the day minus one for lunch
                 //and there is no daily attendance event already created, create one.
-                if (!hasDaily && absenses >= dailyAbsenseTrigger) {
-                    Attendance a = new Attendance();
-                    a.setSchoolDay(entry.getKey());
-                    a.setStudent(student);
-                    a.setStatus(AttendanceStatus.ABSENT);
-                    a.setType(AttendanceTypes.DAILY);
-                    a.setSourceSystemId(String.valueOf(syntheticDcid));
-                    a.setDescription("EdPanel generated due to daily section absenses( " +
-                            absenses +
-                            ") exceeding limit: " + dailyAbsenseTrigger);
-                    result.put(syntheticDcid, a);
-                    syntheticDcid--;
+                if (!hasDaily) {
+                    if (absenses >= dailyAbsenseTrigger) {
+                        Attendance a = new Attendance();
+                        a.setSchoolDay(entry.getKey());
+                        a.setStudent(student);
+                        a.setStatus(AttendanceStatus.ABSENT);
+                        a.setType(AttendanceTypes.DAILY);
+                        a.setSourceSystemId(String.valueOf(syntheticDcid));
+                        a.setDescription("EdPanel generated due to daily section absenses( " +
+                                absenses +
+                                ") exceeding limit: " + dailyAbsenseTrigger);
+                        result.put(syntheticDcid, a);
+                        syntheticDcid--;
+                    } else if(absenses > 0 || tardies > 0){
+                        Attendance a = new Attendance();
+                        a.setSchoolDay(entry.getKey());
+                        a.setStudent(student);
+                        a.setStatus(AttendanceStatus.ABSENT);
+                        a.setType(AttendanceTypes.DAILY);
+                        a.setSourceSystemId(String.valueOf(syntheticDcid));
+                        a.setDescription("EdPanel generated due to daily section absenses( " +
+                                absenses +
+                                ") exceeding limit: ");
+                    }
                 }
             }
         }
