@@ -109,14 +109,14 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
   
     // TODO Jordan: revisit middle names (may be a clue in more advanced matching)
     private String getStudentName(DlBehavior dlBehavior) { 
-        return (StringUtils.isEmpty(dlBehavior.StudentFirstName) ? "" : dlBehavior.StudentFirstName + " ")
+        return (StringUtils.isEmpty(dlBehavior.StudentFirstName) ? "" : dlBehavior.StudentFirstName.trim() + " ")
 //                + (StringUtils.isEmpty(dlBehavior.StudentMiddleName) ? "" : dlBehavior.StudentMiddleName + " ")
                 + (StringUtils.isEmpty(dlBehavior.StudentLastName) ? "" : dlBehavior.StudentLastName).trim();
     }
     
     private String getStaffName(DlBehavior dlBehavior) { 
         return
-                (StringUtils.isEmpty(dlBehavior.StaffFirstName) ? "" : dlBehavior.StaffFirstName + " ")
+                (StringUtils.isEmpty(dlBehavior.StaffFirstName) ? "" : dlBehavior.StaffFirstName.trim() + " ")
 //                + (StringUtils.isEmpty(dlBehavior.StaffMiddleName) ? "" : dlBehavior.StaffMiddleName + " ")
                 + (StringUtils.isEmpty(dlBehavior.StaffLastName) ? "" : dlBehavior.StaffLastName).trim();
         
