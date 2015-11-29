@@ -89,6 +89,7 @@ public class DlEtlEngine implements IEtlEngine {
         existingBehaviorLookup = new HashMap<>();
         
         DeansListSyncResult result = new DeansListSyncResult();
+        result.setTotalBehaviorsInPeriod(behaviorsToMerge.size());
         
         for (Behavior behavior : behaviorsToMerge) {
             handleBehavior(behavior, result);
