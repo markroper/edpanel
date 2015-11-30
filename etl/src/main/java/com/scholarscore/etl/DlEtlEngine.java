@@ -6,8 +6,10 @@ import com.scholarscore.etl.deanslist.api.response.BehaviorResponse;
 import com.scholarscore.etl.deanslist.client.IDeansListClient;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.Behavior;
+import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +34,7 @@ public class DlEtlEngine implements IEtlEngine {
     // created and used locally - not handled by spring
     private HashMap<String, Student> studentLookup; // key: studentName, value: student
     private HashMap<String, Teacher> teacherLookup; // key: teacherName, value: teacher
+    private HashMap<String, Administrator> adminLookup; // key: adminName, value: admin
 
     // key: scholarScoreStudentID, value: *(nested, next)*
     // key: deansListBehaviorId, value: behavior object
@@ -64,7 +67,9 @@ public class DlEtlEngine implements IEtlEngine {
         try {
             existingStudents = scholarScore.getStudents(null);
         } catch (HttpClientException e) {
+            LOGGER.warn("Encountered a problem trying to get all students...");
             e.printStackTrace();
+            return null;
         }
         studentLookup = populateLookup(existingStudents);
 
@@ -76,6 +81,15 @@ public class DlEtlEngine implements IEtlEngine {
             e.printStackTrace();
         }
         teacherLookup = populateLookup(existingTeachers);
+
+        // get administrators from scholarscore -- these users also assign behavioral events to students
+        Collection<Administrator> existingAdministrators = null;
+        try {
+            existingAdministrators = scholarScore.getAdministrators();
+        } catch (HttpClientException e) {
+            e.printStackTrace();
+        }
+        adminLookup = populateLookup(existingAdministrators);
 
         LOGGER.debug("got " + behaviorsToMerge.size() + " behavior events from deanslist.");
         if (existingStudents != null) {
@@ -89,6 +103,7 @@ public class DlEtlEngine implements IEtlEngine {
         existingBehaviorLookup = new HashMap<>();
         
         DeansListSyncResult result = new DeansListSyncResult();
+        result.setTotalBehaviorsInPeriod(behaviorsToMerge.size());
         
         for (Behavior behavior : behaviorsToMerge) {
             handleBehavior(behavior, result);
@@ -101,30 +116,39 @@ public class DlEtlEngine implements IEtlEngine {
         
         // at this point, the only thing populated in the student (from deanslist) is their name
         Student student = behavior.getStudent();
-        Teacher teacher = behavior.getTeacher();
+        User assigner = behavior.getAssigner();
 
         LOGGER.debug("Got behavior event (" + behavior.getName() + ")"
                 + " for student named " + (student == null ? "(student null)" : student.getName())
-                + " and teacher named " + (teacher == null ? "(teacher null)" : teacher.getName())
+                + " and assigner named " + (assigner == null ? "(assigner null)" : assigner.getName())
                 + " with point value " + behavior.getPointValue());
 
         if (student != null && student.getName() != null) { 
-            Student existingStudent = studentLookup.get(stripAndLowerName(student.getName()));
+            Student existingStudent = studentLookup.get(stripAndLowerMatchableName(student.getName()));
             if (existingStudent != null) { 
                 // student matched! migrate behavioral event
                 behavior.setStudent(existingStudent);
 
                 // don't require teacher but populate it if present
-                if (teacher != null && teacher.getName() != null) {
-                    Teacher existingTeacher = teacherLookup.get(stripAndLowerName(teacher.getName()));
+                if (assigner != null && assigner.getName() != null) {
+                    Teacher existingTeacher = teacherLookup.get(stripAndLowerMatchableName(assigner.getName()));
                     
                     if (existingTeacher != null) {
-                        behavior.setTeacher(existingTeacher);
+                        behavior.setAssigner(existingTeacher);
+                        result.incrementBehaviorMatchedTeacher();
                     } else {
-                        // null out the teacher that cannot be associated or we will get an error when submitting
-                        // (we would need to create this teacher, and DL sync only creates behavior events)
-                        behavior.setTeacher(null);
-                        result.incrementUnmatchedTeacher(teacher.getName());
+                       // 'teacher' may be a misnomer - it may also be an administrator 
+                        Administrator existingAdmin = adminLookup.get(stripAndLowerMatchableName(assigner.getName()));
+                        
+                        if (existingAdmin != null) {
+                            behavior.setAssigner(existingAdmin);
+                            result.incrementBehaviorMatchedAdmin();
+                        } else {
+                            // null out the teacher that cannot be associated or we will get an error when submitting
+                            // (we would need to create this teacher, and DL sync only creates behavior events)
+                            behavior.setAssigner(null);
+                            result.incrementUnmatchedTeacher(assigner.getName());
+                        }
                     }
                 } else {
                     // deanslist did not contain teacher information with this record
@@ -201,7 +225,7 @@ public class DlEtlEngine implements IEtlEngine {
         for (T entry : collection) {
             String entryName = entry.getName();
             if (entryName != null) {
-                lookup.put(stripAndLowerName(entryName), entry);
+                lookup.put(stripAndLowerMatchableName(entryName), entry);
             }
         }
         return lookup;
@@ -221,6 +245,24 @@ public class DlEtlEngine implements IEtlEngine {
     private String stripAndLowerName(String name) {
         if (null == name) { return null; }
         return name.toLowerCase().trim().replaceAll("\\s", "");
+    }
+
+    // TODO Jordan: temporary hack to get students matching. Today nina's school puts "Nmh" or a middle initial
+    // for a student's middle name in a lot of the deanslist behavioral records. Should try to match on 
+    // first+middle+last if possible, then fall back to matching first+last if necessary. Should refactor DB to store 
+    // first+middle+last separately first.
+    private String stripAndLowerMatchableName(String name) {
+        if (null == name) { return null; }
+
+        String matchableName = null;
+        
+        String[] nameWords = name.trim().split("\\s+");
+        if (nameWords.length == 0) { matchableName = ""; }                   // no name
+        if (nameWords.length == 1) { matchableName = nameWords[0]; }         // one name only
+        if (nameWords.length == 2) { matchableName = nameWords[0] + " " + nameWords[1]; }    // first and last
+        if (nameWords.length == 3) { matchableName = nameWords[0] + " " + nameWords[2]; }    // first, IGNORE MIDDLE, last
+        if (nameWords.length > 3) { matchableName = nameWords[0] + " " + nameWords[nameWords.length - 1]; }  // just guessing...
+        return stripAndLowerName(matchableName);
     }
 
     private List<Behavior> getBehaviorData() {

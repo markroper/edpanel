@@ -20,7 +20,7 @@
     <bean id="etlEngine" class="com.scholarscore.etl.EtlEngine">
         <property name="powerSchool" ref="powerSchoolClient"/>
         <property name="edPanel" ref="edpanelClient"/>
-        <property name="dailyAbsenseTrigger" value="${scholarscore.etl.sectionabsencestriggeringdailyabsence}"/>
+        <property name="dailyAbsenceTrigger" value="${scholarscore.etl.sectionabsencestriggeringdailyabsence}"/>
     </bean>
 
 </beans>

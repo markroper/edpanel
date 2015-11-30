@@ -3,6 +3,7 @@ package com.scholarscore.models;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.User;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,7 +46,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     @Size(min=1, max=256)
     private String roster; // the class the behavior event occurred within
     private Student student;
-    private Teacher teacher;
+    private User assigner;
     
     public Behavior() { }
     
@@ -61,7 +62,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
         this.roster = behavior.roster; // the class the behavior event occurred within
 
         this.student = behavior.student;
-        this.teacher = behavior.teacher;
+        this.assigner = behavior.assigner;
     }
 
     @Id
@@ -105,8 +106,8 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
         if (null == student) {
             this.student = mergeFrom.student;
         }
-        if (null == teacher) {
-            this.teacher = mergeFrom.teacher;
+        if (null == assigner) {
+            this.assigner = mergeFrom.assigner;
         }
     }
 
@@ -185,13 +186,13 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     }
 
     @OneToOne(optional = true)
-    @JoinColumn(name=HibernateConsts.TEACHER_FK, nullable = true)
-    public Teacher getTeacher() {
-        return teacher;
+    @JoinColumn(name=HibernateConsts.BEHAVIOR_ASSIGNER_FK, nullable = true)
+    public User getAssigner() {
+        return assigner;
     }
 
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
+    public void setAssigner(User assigner) {
+        this.assigner = assigner;
     }
 
     @Override
@@ -208,14 +209,14 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
                 && Objects.equals(this.pointValue, other.pointValue)
                 && Objects.equals(this.roster, other.roster)
                 && Objects.equals(this.student, other.student)
-                && Objects.equals(this.teacher, other.teacher);
+                && Objects.equals(this.assigner, other.assigner);
     }
 
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + 
                 Objects.hash(remoteSystem, remoteBehaviorId, remoteStudentId, behaviorDate,
-                        behaviorCategory, pointValue, roster, student, teacher);
+                        behaviorCategory, pointValue, roster, student, assigner);
     }
     
     @Override
@@ -232,7 +233,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
                 + "Point Value: " + getPointValue() + "\n"
                 + "Roster: " + getRoster() + "\n"
                 + "Student: " + getStudent() + "\n"
-                + "Teacher: " + getTeacher() + "\n";
+                + "Assigner: " + getAssigner() + "\n";
     }
 
     /**
@@ -249,7 +250,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
         private String pointValue;
         private String roster;
         private Student student;
-        private Teacher teacher;
+        private User assigner;
 
         public BehaviorBuilder withRemoteSystem(final String remoteSystem){
             this.remoteSystem = remoteSystem;
@@ -291,8 +292,8 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
             return this;
         }
 
-        public BehaviorBuilder withTeacher(final Teacher teacher){
-            this.teacher = teacher;
+        public BehaviorBuilder withAssigner(final User assigner){
+            this.assigner = assigner;
             return this;
         }
 
@@ -306,7 +307,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
             behavior.setPointValue(pointValue);
             behavior.setRoster(roster);
             behavior.setStudent(student);
-            behavior.setTeacher(teacher);
+            behavior.setAssigner(assigner);
             return behavior;
         }
 

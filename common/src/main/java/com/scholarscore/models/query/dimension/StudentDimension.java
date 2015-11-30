@@ -19,9 +19,10 @@ public class StudentDimension implements IDimension {
     public static final String HOME_ADDRESS = "Home Address";
     public static final String MAILING_ADDRESS = "Mailing Address";
     public static final String PROJECTED_GRADUATION_YEAR = "Proj. Graduation Year";
+    public static final String SCHOOL = "School";
     public static final Set<String> DIMENSION_FIELDS = 
             ImmutableSet.of(ID, NAME, GENDER, AGE, ETHNICITY, RACE, CITY_OF_RESIDENCE, 
-                    HOME_ADDRESS, MAILING_ADDRESS, PROJECTED_GRADUATION_YEAR);
+                    HOME_ADDRESS, MAILING_ADDRESS, PROJECTED_GRADUATION_YEAR, SCHOOL);
     public static final Set<Dimension> PARENT_DIMENSIONS = 
             ImmutableSet.of(Dimension.SCHOOL, Dimension.GRADE_LEVEL);
     

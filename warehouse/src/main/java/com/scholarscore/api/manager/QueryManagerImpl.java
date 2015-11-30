@@ -91,10 +91,6 @@ public class QueryManagerImpl implements QueryManager {
                 StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND));
     }
 
-
-
-
-
     @Override
     public ServiceResponse<QueryResults> getQueryResults(Query query) {
         QueryResults results = queryPersistence.generateQueryResults(query);
