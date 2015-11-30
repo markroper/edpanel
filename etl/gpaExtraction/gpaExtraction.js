@@ -6,6 +6,9 @@ var gpaQuery = '    ID \n\
 ^(*gpa method="simple" term="Q1") \n\
 ^(*gpa method="simple percent" term="Q1")';
 
+var exportSelector = "#lnk_QuickExport";
+var formClass = '.noSubmitLoading';
+
 var casper = require('casper').create({
     clientScripts: ["./jquery-1.11.3.js"],
     verbose: true,
@@ -45,7 +48,6 @@ function downloadStudents(casper, selector, fileName) {
 		casper.then(function() {
 
 			casper.waitForSelector(selector,function(){
-			//casper.click(selector);
 				casper.click(selector);
 			});
 
@@ -55,15 +57,15 @@ function downloadStudents(casper, selector, fileName) {
 				});
 			
 			//Appears from a dropdown, moves us the page we can select new prompt
-			casper.waitUntilVisible("#lnk_QuickExport", function() {
-				casper.click("#lnk_QuickExport");
+			casper.waitUntilVisible(exportSelector, function() {
+				casper.click(exportSelector);
 				});
 
 			//Url for the GPA query page
 			casper.waitForUrl("admin/importexport/exportstudents.html?dothisfor=selected", function() {
 				
-			if (casper.exists('.noSubmitLoading')) {
-				casper.fill('.noSubmitLoading', {
+			if (casper.exists(formClass)) {
+				casper.fill(formClass, {
 					"fielddelim": "Comma"
 				}, false);
 				//Text area for the GPA query
@@ -75,7 +77,7 @@ function downloadStudents(casper, selector, fileName) {
 				var res = casper.page.evaluate(function() {
 					
 					var res={};
-					var f=$(".noSubmitLoading");
+					var f=$(formClass);
 					res.action = f.attr('action');
 
 					res.post = f.serialize();
