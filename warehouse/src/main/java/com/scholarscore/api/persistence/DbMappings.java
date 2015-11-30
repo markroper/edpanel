@@ -105,6 +105,7 @@ public class DbMappings {
                put(Dimension.TERM, HibernateConsts.TERM_TABLE);
                put(Dimension.STUDENT, HibernateConsts.STUDENT_TABLE);
                put(Dimension.TEACHER, HibernateConsts.TEACHER_TABLE);
+               put(Dimension.ADMINISTRATOR, HibernateConsts.ADMIN_TABLE);
                put(Dimension.YEAR, HibernateConsts.SCHOOL_YEAR_TABLE);
                 put(Dimension.ASSIGNMENT, HibernateConsts.ASSIGNMENT_TABLE);
             }};
@@ -125,6 +126,9 @@ public class DbMappings {
         put(new DimensionField(Dimension.TEACHER, TeacherDimension.NAME), HibernateConsts.TEACHER_NAME);
         put(new DimensionField(Dimension.TEACHER, TeacherDimension.ID), HibernateConsts.TEACHER_USER_FK);
         put(new DimensionField(Dimension.TEACHER, TeacherDimension.SCHOOL), HibernateConsts.SCHOOL_FK);
+        put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.NAME), HibernateConsts.ADMIN_NAME);
+        put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.ID), HibernateConsts.ADMIN_USER_FK);
+        put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.SCHOOL), HibernateConsts.SCHOOL_FK);
 
         //School dimension field to DB column name lookup
         put(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME), HibernateConsts.SCHOOL_NAME);
