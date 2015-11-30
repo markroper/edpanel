@@ -41,7 +41,7 @@ public class BehaviorBuilderUnitTest extends AbstractBuilderUnitTest<Behavior>{
         fullBehavior.setPointValue(pointValue);
         fullBehavior.setRoster(roster);
         fullBehavior.setStudent(student);
-        fullBehavior.setTeacher(teacher);
+        fullBehavior.setAssigner(teacher);
 
         Behavior fullBehaviorByBuilder = new Behavior.BehaviorBuilder().
                 withRemoteStudentId(remoteStudentId).
@@ -52,7 +52,7 @@ public class BehaviorBuilderUnitTest extends AbstractBuilderUnitTest<Behavior>{
                 withPointValue(pointValue).
                 withRoster(roster).
                 withStudent(student).
-                withTeacher(teacher).
+                withAssigner(teacher).
                 build();
 
         return new Object[][]{
