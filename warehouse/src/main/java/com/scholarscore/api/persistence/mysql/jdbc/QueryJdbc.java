@@ -101,7 +101,7 @@ public class QueryJdbc extends BaseJdbc implements QueryPersistence {
         } catch(SqlGenerationException e) {
             return null;
         }
-        List<Record> results = jdbcTemplate.query(
+            List<Record> results = jdbcTemplate.query(
                 sqlQuery.getSql(), 
                 sqlQuery.getParams(), 
                 new QueryResultsMapper());

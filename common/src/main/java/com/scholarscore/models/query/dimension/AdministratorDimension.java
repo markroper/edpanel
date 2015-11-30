@@ -12,14 +12,15 @@ public class AdministratorDimension implements IDimension {
     public static final String ID = "ID";
     public static final String NAME = "Name";
     public static final String EMAIL = "Email";
+    public static final String SCHOOL = "School";
     public static final Set<String> DIMENSION_FIELDS = 
-            ImmutableSet.of(ID, NAME, EMAIL);
+            ImmutableSet.of(ID, NAME, EMAIL, SCHOOL);
     public static final Set<Dimension> PARENT_DIMENSIONS = 
             ImmutableSet.of(Dimension.SCHOOL);
     
     @Override
     public Dimension getType() {
-        return Dimension.TEACHER;
+        return Dimension.ADMINISTRATOR;
     }
 
     @Override
