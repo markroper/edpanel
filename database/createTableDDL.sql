@@ -337,7 +337,6 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`behavior` (
   `behavior_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key identity column',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
---  `teacher_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the teacher table',
   `assigner_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the user table',
   `name` VARCHAR(256) NULL COMMENT 'Human readable name of behavior event',
   `date` DATE NOT NULL COMMENT 'Date the behavior event occurred',
