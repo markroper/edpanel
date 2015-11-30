@@ -13,10 +13,16 @@ public class MeasureSqlSerializerFactory {
                 return new HomeworkCompletionSqlSerializer();
             case ATTENDANCE:
                 return new AttendanceSqlSerializer();
+            case ABSENCE:
+                return new DailyAbsenceSqlSerializer();
+            case TARDY:
+                return new DailyTardySqlSerializer();
             case DEMERIT:
                 return new DemeritSqlSerializer();
+            case MERIT:
+                return new MeritSqlSerializer();
             default:
                 return null;
         }
-    };
+    }
 }

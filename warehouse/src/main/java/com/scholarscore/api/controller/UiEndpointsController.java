@@ -110,6 +110,7 @@ public class UiEndpointsController extends BaseController {
                             schoolId, schoolYearId, termId, s.getId(), studentId);
                 if(null == gradesByWeekResp.getCode()) {
                     sectionDashData.setGradeProgression(gradesByWeekResp.getValue());
+                    sectionDashData.getGradeGoal().setCalculatedValue(gradesByWeekResp.getValue().getCurrentOverallGrade());
                 }
                 response.add(sectionDashData);
             }

@@ -46,20 +46,20 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
         Behavior emptyBehavior = new Behavior();
         // teacher is always required or constraint exception
         emptyBehavior.setStudent(student);
-        emptyBehavior.setTeacher(teacher);
+        emptyBehavior.setAssigner(teacher);
         emptyBehavior.setBehaviorDate(now);
 
         Behavior namedBehavior = new Behavior();
         // teacher is always required or constraint exception
         namedBehavior.setStudent(student);
-        namedBehavior.setTeacher(teacher);
+        namedBehavior.setAssigner(teacher);
         namedBehavior.setBehaviorDate(now);
         namedBehavior.setName("BehaviorEvent");
 
         Behavior populatedBehavior = new Behavior();
         populatedBehavior.setName("Good Eye Contact");
         populatedBehavior.setStudent(student);
-        populatedBehavior.setTeacher(teacher);
+        populatedBehavior.setAssigner(teacher);
         populatedBehavior.setBehaviorCategory(BehaviorCategory.MERIT);
         populatedBehavior.setBehaviorDate(now);
         populatedBehavior.setPointValue("1");
@@ -89,7 +89,7 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
     public void replaceBehaviorTest(String msg, Behavior behavior) {
         Behavior newBehavior = new Behavior();
         newBehavior.setStudent(student);
-        newBehavior.setTeacher(teacher);
+        newBehavior.setAssigner(teacher);
         newBehavior.setBehaviorDate(getNow());
         
         Behavior createdBehavior = behaviorValidatingExecutor.create(student.getId(), behavior, msg);
@@ -101,7 +101,7 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
     public void updateBehaviorTest(String msg, Behavior behavior) { 
         Behavior createdBehavior = behaviorValidatingExecutor.create(student.getId(), behavior, msg);
         Behavior updatedBehavior = new Behavior();
-        updatedBehavior.setTeacher(teacher);
+        updatedBehavior.setAssigner(teacher);
         updatedBehavior.setStudent(student);
         updatedBehavior.setName(localeServiceUtil.generateName());
         //PATCH the existing record with a new name.
@@ -122,30 +122,30 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
 
         Behavior behaviorWithoutDate = new Behavior();
         behaviorWithoutDate.setStudent(student);
-        behaviorWithoutDate.setTeacher(teacher);
+        behaviorWithoutDate.setAssigner(teacher);
         behaviorWithoutDate.setName(localeServiceUtil.generateName(24));
         
         Behavior behaviorNameTooLong = new Behavior();
         behaviorNameTooLong.setStudent(student);
-        behaviorNameTooLong.setTeacher(teacher);
+        behaviorNameTooLong.setAssigner(teacher);
         behaviorNameTooLong.setName(localeServiceUtil.generateName(257));
         behaviorNameTooLong.setBehaviorDate(now);
 
         Behavior remoteStudentIdTooLong = new Behavior();
         remoteStudentIdTooLong.setStudent(student);
-        remoteStudentIdTooLong.setTeacher(teacher);
+        remoteStudentIdTooLong.setAssigner(teacher);
         remoteStudentIdTooLong.setRemoteStudentId(localeServiceUtil.generateName(257));
         remoteStudentIdTooLong.setBehaviorDate(now);
 
         Behavior pointValueTooLong = new Behavior();
         pointValueTooLong.setStudent(student);
-        pointValueTooLong.setTeacher(teacher);
+        pointValueTooLong.setAssigner(teacher);
         pointValueTooLong.setPointValue(localeServiceUtil.generateName(257));
         pointValueTooLong.setBehaviorDate(now);
         
         Behavior rosterTooLong = new Behavior();
         rosterTooLong.setStudent(student);
-        rosterTooLong.setTeacher(teacher);
+        rosterTooLong.setAssigner(teacher);
         rosterTooLong.setRoster(localeServiceUtil.generateName(257));
         rosterTooLong.setBehaviorDate(now);
         
@@ -167,7 +167,7 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
     public void replaceSchoolYearNegativeTest(String msg, Behavior behavior, HttpStatus expectedStatus) {
         Behavior updatedBehavior = new Behavior();
         updatedBehavior.setStudent(student);
-        updatedBehavior.setTeacher(teacher);
+        updatedBehavior.setAssigner(teacher);
         updatedBehavior.setBehaviorDate(getNow());
         Behavior created = behaviorValidatingExecutor.create(student.getId(), updatedBehavior, msg);
         behaviorValidatingExecutor.replaceNegative(student.getId(), created.getId(), behavior, expectedStatus, msg);
