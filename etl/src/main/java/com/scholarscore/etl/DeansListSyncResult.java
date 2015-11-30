@@ -24,6 +24,22 @@ public class DeansListSyncResult extends BaseSyncResult {
 
     private int behaviorsMatchedTeacher = 0;
     private int behaviorsMatchedAdmin = 0;
+
+    // both first and last names match
+    private int behaviorEventsMatchedStudentLastAndFirst = 0;
+    // if only one user has the same last name as the one we're trying to match, we'll match it regardless
+    // but if the first names don't match, this will be incremented
+    private int behaviorEventsMatchedStudentLastButNotFirst = 0;
+    // if more than one user has the same last name and no first names match, the record won't be imported and this will be incremented
+    private int behaviorEventsFailedToMatchFirstWithMultipleStudents = 0;
+
+    private int behaviorEventsMatchedTeacherLastAndFirst = 0;
+    private int behaviorEventsMatchedTeacherLastButNotFirst = 0;
+    private int behaviorEventsFailedToMatchFirstWithMultipleTeachers = 0;
+    
+    private int behaviorEventsMatchedAdminLastAndFirst = 0;
+    private int behaviorEventsMatchedAdminLastButNotFirst = 0;
+    private int behaviorEventsFailedToMatchFirstWithMultipleAdmins = 0;
     
     @Override
     public String getResultString() {
@@ -97,5 +113,23 @@ public class DeansListSyncResult extends BaseSyncResult {
     public void incrementBehaviorMatchedAdmin() { behaviorsMatchedAdmin++; }
     
     public void setTotalBehaviorsInPeriod(int totalBehaviorsInPeriod) { this.totalBehaviorsInPeriod = totalBehaviorsInPeriod; }
+
+    public void incrementBehaviorEventsMatchedStudentLastAndFirst() { behaviorEventsMatchedStudentLastAndFirst++; }
+    
+    public void incrementBehaviorEventsMatchedStudentLastButNotFirst() { behaviorEventsMatchedStudentLastButNotFirst++; }
+    
+    public void incrementBehaviorEventsFailedToMatchFirstWithMultipleStudents() { behaviorEventsFailedToMatchFirstWithMultipleStudents++; }
+
+    public void incrementBehaviorEventsMatchedTeacherLastAndFirst() { behaviorEventsMatchedTeacherLastAndFirst++; }
+
+    public void incrementBehaviorEventsMatchedTeacherLastButNotFirst() { behaviorEventsMatchedTeacherLastButNotFirst++; }
+
+    public void incrementBehaviorEventsFailedToMatchFirstWithMultipleTeachers() { behaviorEventsFailedToMatchFirstWithMultipleTeachers++; }
+
+    public void incrementBehaviorEventsMatchedAdminLastAndFirst() { behaviorEventsMatchedAdminLastAndFirst++; }
+
+    public void incrementBehaviorEventsMatchedAdminLastButNotFirst() { behaviorEventsMatchedAdminLastButNotFirst++; }
+
+    public void incrementBehaviorEventsFailedToMatchFirstWithMultipleAdmins() { behaviorEventsFailedToMatchFirstWithMultipleAdmins++; }
     
 }

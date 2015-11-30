@@ -32,10 +32,15 @@ public class DlEtlEngine implements IEtlEngine {
     private IAPIClient scholarScore;
 
     // created and used locally - not handled by spring
-    private HashMap<String, Student> studentLookup; // key: studentName, value: student
-    private HashMap<String, Teacher> teacherLookup; // key: teacherName, value: teacher
-    private HashMap<String, Administrator> adminLookup; // key: adminName, value: admin
-
+//    private HashMap<String, Student> studentLookup; // key: studentName, value: student
+//    private HashMap<String, Teacher> teacherLookup; // key: teacherName, value: teacher
+//    private HashMap<String, Administrator> adminLookup; // key: adminName, value: admin
+    
+    // key: studentLastName, value: hashmap of students w/ that last name (key: student first name, value: student)
+    private HashMap<String, HashMap<String, Student>> studentLastNameLookup;
+    private HashMap<String, HashMap<String, Teacher>> teacherLastNameLookup;
+    private HashMap<String, HashMap<String, Administrator>> adminLastNameLookup;
+     
     // key: scholarScoreStudentID, value: *(nested, next)*
     // key: deansListBehaviorId, value: behavior object
     private HashMap<Long, HashMap<String, Behavior>> existingBehaviorLookup;
@@ -71,7 +76,7 @@ public class DlEtlEngine implements IEtlEngine {
             e.printStackTrace();
             return null;
         }
-        studentLookup = populateLookup(existingStudents);
+        studentLastNameLookup = populateNestedNameLookup(existingStudents);
 
         // get teachers from scholarscore -- we need to match names to behavior events
         Collection<Teacher> existingTeachers = null;
@@ -80,7 +85,7 @@ public class DlEtlEngine implements IEtlEngine {
         } catch (HttpClientException e) {
             e.printStackTrace();
         }
-        teacherLookup = populateLookup(existingTeachers);
+        teacherLastNameLookup = populateNestedNameLookup(existingTeachers);
 
         // get administrators from scholarscore -- these users also assign behavioral events to students
         Collection<Administrator> existingAdministrators = null;
@@ -89,7 +94,7 @@ public class DlEtlEngine implements IEtlEngine {
         } catch (HttpClientException e) {
             e.printStackTrace();
         }
-        adminLookup = populateLookup(existingAdministrators);
+        adminLastNameLookup = populateNestedNameLookup(existingAdministrators);
 
         LOGGER.debug("got " + behaviorsToMerge.size() + " behavior events from deanslist.");
         if (existingStudents != null) {
@@ -112,6 +117,52 @@ public class DlEtlEngine implements IEtlEngine {
         return result;
     }
 
+    private <T extends User> T findUserByName(String name, HashMap<String, HashMap<String, T>> nestedNameLookup, DeansListSyncResult result) {
+        if (name == null) { return null; }
+        
+        String userToFindLastName = stripAndLowerMatchableName(name, KeyType.LAST_NAME);
+        HashMap<String, T> usersWithThisLastName = nestedNameLookup.get(userToFindLastName);
+
+        if (usersWithThisLastName != null) {
+            
+            String userToFindFirstName = stripAndLowerMatchableName(name, KeyType.FIRST_NAME);
+            T existingUser = null;
+            
+            if (usersWithThisLastName.size() == 1) {
+                // exactly one user with this last name -- take it regardless of first name, but warn if no match
+                existingUser = usersWithThisLastName.get(usersWithThisLastName.keySet().iterator().next());
+                // now a sanity check because this is a fuzzy matching choice
+                String existingUserFirstName = stripAndLowerMatchableName(existingUser.getName(), KeyType.FIRST_NAME);
+                if (existingUserFirstName == null ||
+                        !existingUserFirstName.equals(userToFindFirstName)) {
+                    LOGGER.warn("WARN - Matching '" + userToFindFirstName + " " + userToFindLastName + "' to '"
+                            + existingUserFirstName + " " + userToFindLastName + "'"
+                            + " because this is the only record with that last name, even though first names don't match" );
+                    // TODO Jordan: right now this will be ALL users -- inc admins and teachers --, not just students.
+                    result.incrementBehaviorEventsMatchedStudentLastButNotFirst();
+                }
+            } else if (usersWithThisLastName.size() > 1) {
+                // more than one student with this last name -- match on first name too.
+                existingUser = usersWithThisLastName.get(userToFindFirstName);
+                if (existingUser == null) {
+                    // failed to match on first name -- failure!
+                    LOGGER.error("ERROR - More than one person found with last name " + userToFindFirstName + ", "
+                            + " but cannot find any with name " + userToFindFirstName);
+                    // TODO Jordan: right now this will be ALL users -- inc admins and teachers --, not just students.
+                    result.incrementUnmatchedStudent(userToFindFirstName + " " + userToFindLastName);
+                } else {
+                    // we have matched the student firstname lastname which is good enough for now! rejoice!
+                    return existingUser;
+                }
+
+            } else {
+                LOGGER.error("ERROR: empty hashmap found for lastname " + userToFindLastName
+                        + " which means the DlEtlEngine isn't populating it correctly.");
+            }
+        }
+            return null;
+    } 
+    
     private void handleBehavior(Behavior behavior, DeansListSyncResult result) {
         
         // at this point, the only thing populated in the student (from deanslist) is their name
@@ -123,23 +174,22 @@ public class DlEtlEngine implements IEtlEngine {
                 + " and assigner named " + (assigner == null ? "(assigner null)" : assigner.getName())
                 + " with point value " + behavior.getPointValue());
 
-        if (student != null && student.getName() != null) { 
-            Student existingStudent = studentLookup.get(stripAndLowerMatchableName(student.getName(), KeyType.FIRST_NAME_AND_LAST_NAME));
+        if (student != null && student.getName() != null) {
+
+            Student existingStudent = findUserByName(student.getName(), studentLastNameLookup, result);
             if (existingStudent != null) { 
                 // student matched! migrate behavioral event
                 behavior.setStudent(existingStudent);
 
                 // don't require teacher but populate it if present
                 if (assigner != null && assigner.getName() != null) {
-                    Teacher existingTeacher = teacherLookup.get(stripAndLowerMatchableName(assigner.getName(), KeyType.FIRST_NAME_AND_LAST_NAME));
-                    
+                    Teacher existingTeacher = findUserByName(assigner.getName(), teacherLastNameLookup, result);
                     if (existingTeacher != null) {
                         behavior.setAssigner(existingTeacher);
                         result.incrementBehaviorMatchedTeacher();
                     } else {
                        // 'teacher' may be a misnomer - it may also be an administrator 
-                        Administrator existingAdmin = adminLookup.get(stripAndLowerMatchableName(assigner.getName(), KeyType.FIRST_NAME_AND_LAST_NAME));
-                        
+                        Administrator existingAdmin = findUserByName(assigner.getName(), adminLastNameLookup, result);
                         if (existingAdmin != null) {
                             behavior.setAssigner(existingAdmin);
                             result.incrementBehaviorMatchedAdmin();
@@ -231,6 +281,46 @@ public class DlEtlEngine implements IEtlEngine {
         return lookup;
     }
 
+    private <T extends ApiModel> HashMap<String, HashMap<String, T>> populateNestedNameLookup(Collection<T> collection) {
+        HashMap<String, HashMap<String, T>> lastNameLookup = new HashMap<>();
+        for (T entry : collection) {
+            String entryName = entry.getName();
+            if (entryName != null) {
+                String lastNameKeyString = stripAndLowerMatchableName(entryName,KeyType.LAST_NAME);
+                HashMap<String, T> firstNameLookupForOneLastName = lastNameLookup.get(lastNameKeyString);
+
+                // - if there is no existing hashmap for this person's last name...
+                //     - create a map for students with this last name
+                //     - add the map of students with this last name to map of all last names, using last name as key
+                // - then, either way...
+                // - add this current student to the map of students with this last name, using first name as key (although warn if they already exist)
+
+
+                if (firstNameLookupForOneLastName == null) {
+                    // hashmap for this last name doesn't exist, so create it
+                    firstNameLookupForOneLastName = new HashMap<String, T>();
+                    // 
+                    lastNameLookup.put(stripAndLowerMatchableName(entryName, KeyType.LAST_NAME), firstNameLookupForOneLastName);
+                } else {
+                    // first name map for this specific last name already exists... any action needed?
+                }
+                String firstNameKeyString = stripAndLowerMatchableName(entryName, KeyType.FIRST_NAME);
+                if (firstNameLookupForOneLastName.get(firstNameKeyString) != null) {
+                    //
+                    LOGGER.error("ERROR - trying to populate lookup but can't add duplicate student with name "
+                            + firstNameKeyString + " " + lastNameKeyString);
+                    LOGGER.error("NOTE -- may need to implement matching on middle name, if provided");
+                } else {
+                    firstNameLookupForOneLastName.put(firstNameKeyString, entry);
+                }
+            } else {
+                // warning? -- no name, cannot save in hashmap
+                LOGGER.warn("WARN - populatedNestedNameLookup cannot get name for entry, ignoring...");
+            }
+        }
+        return lastNameLookup;
+    }
+
     private HashMap<String, Behavior> populateBehaviorLookup(Collection<Behavior> behaviors) {
         HashMap<String, Behavior> lookup = new HashMap<>();
         for (Behavior entry : behaviors) {
@@ -274,7 +364,12 @@ public class DlEtlEngine implements IEtlEngine {
                     matchableName = nameWords[nameWords.length - 1];
                     break;
                 case FIRST_NAME_AND_LAST_NAME:
-                    matchableName = nameWords[0] + " " + nameWords[1];
+                    if (nameWords.length >= 2) {
+                        matchableName = nameWords[0] + " " + nameWords[nameWords.length - 1];
+                    } else {
+                        // first and last name requested but only one name found. use it.
+                        matchableName = nameWords[0];
+                    }
                     break;
                 case WHOLE_NAME:
                     matchableName = name;
