@@ -89,6 +89,7 @@ public class DlEtlEngine implements IEtlEngine {
         existingBehaviorLookup = new HashMap<>();
         
         DeansListSyncResult result = new DeansListSyncResult();
+        result.setTotalBehaviorsInPeriod(behaviorsToMerge.size());
         
         for (Behavior behavior : behaviorsToMerge) {
             handleBehavior(behavior, result);
@@ -109,14 +110,14 @@ public class DlEtlEngine implements IEtlEngine {
                 + " with point value " + behavior.getPointValue());
 
         if (student != null && student.getName() != null) { 
-            Student existingStudent = studentLookup.get(stripAndLowerName(student.getName()));
+            Student existingStudent = studentLookup.get(stripAndLowerMatchableName(student.getName()));
             if (existingStudent != null) { 
                 // student matched! migrate behavioral event
                 behavior.setStudent(existingStudent);
 
                 // don't require teacher but populate it if present
                 if (teacher != null && teacher.getName() != null) {
-                    Teacher existingTeacher = teacherLookup.get(stripAndLowerName(teacher.getName()));
+                    Teacher existingTeacher = teacherLookup.get(stripAndLowerMatchableName(teacher.getName()));
                     
                     if (existingTeacher != null) {
                         behavior.setTeacher(existingTeacher);
@@ -201,7 +202,7 @@ public class DlEtlEngine implements IEtlEngine {
         for (T entry : collection) {
             String entryName = entry.getName();
             if (entryName != null) {
-                lookup.put(stripAndLowerName(entryName), entry);
+                lookup.put(stripAndLowerMatchableName(entryName), entry);
             }
         }
         return lookup;
@@ -221,6 +222,24 @@ public class DlEtlEngine implements IEtlEngine {
     private String stripAndLowerName(String name) {
         if (null == name) { return null; }
         return name.toLowerCase().trim().replaceAll("\\s", "");
+    }
+
+    // TODO Jordan: temporary hack to get students matching. Today nina's school puts "Nmh" or a middle initial
+    // for a student's middle name in a lot of the deanslist behavioral records. Should try to match on 
+    // first+middle+last if possible, then fall back to matching first+last if necessary. Should refactor DB to store 
+    // first+middle+last separately first.
+    private String stripAndLowerMatchableName(String name) {
+        if (null == name) { return null; }
+
+        String matchableName = null;
+        
+        String[] nameWords = name.trim().split("\\s+");
+        if (nameWords.length == 0) { matchableName = ""; }                   // no name
+        if (nameWords.length == 1) { matchableName = nameWords[0]; }         // one name only
+        if (nameWords.length == 2) { matchableName = nameWords[0] + " " + nameWords[1]; }    // first and last
+        if (nameWords.length == 3) { matchableName = nameWords[0] + " " + nameWords[2]; }    // first, IGNORE MIDDLE, last
+        if (nameWords.length > 3) { matchableName = nameWords[0] + " " + nameWords[nameWords.length - 1]; }  // just guessing...
+        return stripAndLowerName(matchableName);
     }
 
     private List<Behavior> getBehaviorData() {
