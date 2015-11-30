@@ -124,21 +124,21 @@ public class DlEtlEngine implements IEtlEngine {
                 + " with point value " + behavior.getPointValue());
 
         if (student != null && student.getName() != null) { 
-            Student existingStudent = studentLookup.get(stripAndLowerMatchableName(student.getName()));
+            Student existingStudent = studentLookup.get(stripAndLowerMatchableName(student.getName(), KeyType.FIRST_NAME_AND_LAST_NAME));
             if (existingStudent != null) { 
                 // student matched! migrate behavioral event
                 behavior.setStudent(existingStudent);
 
                 // don't require teacher but populate it if present
                 if (assigner != null && assigner.getName() != null) {
-                    Teacher existingTeacher = teacherLookup.get(stripAndLowerMatchableName(assigner.getName()));
+                    Teacher existingTeacher = teacherLookup.get(stripAndLowerMatchableName(assigner.getName(), KeyType.FIRST_NAME_AND_LAST_NAME));
                     
                     if (existingTeacher != null) {
                         behavior.setAssigner(existingTeacher);
                         result.incrementBehaviorMatchedTeacher();
                     } else {
                        // 'teacher' may be a misnomer - it may also be an administrator 
-                        Administrator existingAdmin = adminLookup.get(stripAndLowerMatchableName(assigner.getName()));
+                        Administrator existingAdmin = adminLookup.get(stripAndLowerMatchableName(assigner.getName(), KeyType.FIRST_NAME_AND_LAST_NAME));
                         
                         if (existingAdmin != null) {
                             behavior.setAssigner(existingAdmin);
@@ -225,7 +225,7 @@ public class DlEtlEngine implements IEtlEngine {
         for (T entry : collection) {
             String entryName = entry.getName();
             if (entryName != null) {
-                lookup.put(stripAndLowerMatchableName(entryName), entry);
+                lookup.put(stripAndLowerMatchableName(entryName,KeyType.FIRST_NAME_AND_LAST_NAME), entry);
             }
         }
         return lookup;
@@ -247,34 +247,48 @@ public class DlEtlEngine implements IEtlEngine {
         return name.toLowerCase().trim().replaceAll("\\s", "");
     }
 
+    private enum KeyType { 
+        FIRST_NAME, // key is first word in name
+        LAST_NAME, // key is last word in name
+        FIRST_NAME_AND_LAST_NAME,   // key is first word and last word in name
+        WHOLE_NAME  // key is entire name, whatever may be in it
+    }
+    
     // TODO Jordan: temporary hack to get students matching. Today nina's school puts "Nmh" or a middle initial
     // for a student's middle name in a lot of the deanslist behavioral records. Should try to match on 
     // first+middle+last if possible, then fall back to matching first+last if necessary. Should refactor DB to store 
     // first+middle+last separately first.
-    private String stripAndLowerMatchableName(String name) {
+    private String stripAndLowerMatchableName(String name, KeyType keyType) {
         if (null == name) { return null; }
 
         String matchableName = null;
         
         String[] nameWords = name.trim().split("\\s+");
-        if (nameWords.length == 0) { matchableName = ""; }                   // no name
-        if (nameWords.length == 1) { matchableName = nameWords[0]; }         // one name only
-        if (nameWords.length == 2) { matchableName = nameWords[0] + " " + nameWords[1]; }    // first and last
+        if (nameWords.length == 0) { matchableName = ""; }                   // no name, keytype doesn't matter
+        if (nameWords.length >= 1) {
+            switch (keyType) {
+                case FIRST_NAME:
+                    matchableName = nameWords[0];
+                    break;
+                case LAST_NAME:
+                    matchableName = nameWords[nameWords.length - 1];
+                    break;
+                case FIRST_NAME_AND_LAST_NAME:
+                    matchableName = nameWords[0] + " " + nameWords[1];
+                    break;
+                case WHOLE_NAME:
+                    matchableName = name;
+                    break;
+                default:
+                    throw new RuntimeException("unrecognized KeyType in stripAndLowerMatchable name");
+            }
+        }
+            
         if (nameWords.length == 3) { matchableName = nameWords[0] + " " + nameWords[2]; }    // first, IGNORE MIDDLE, last
         if (nameWords.length > 3) { matchableName = nameWords[0] + " " + nameWords[nameWords.length - 1]; }  // just guessing...
         return stripAndLowerName(matchableName);
     }
     
-    private String stripAndLowerLastName(String name) {
-        if (null == name) { return null; }
-        String[] nameWords = name.trim().split("\\s+");
-        if (nameWords.length > 0) {
-            return stripAndLowerName(nameWords[nameWords.length-1]);
-        } else {
-            return "";
-        }
-    }
-
     private List<Behavior> getBehaviorData() {
         BehaviorResponse response = deansList.getBehaviorData();
         return new ArrayList<>(response.toInternalModel());
