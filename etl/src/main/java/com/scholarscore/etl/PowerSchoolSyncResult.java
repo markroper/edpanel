@@ -598,7 +598,7 @@ public class PowerSchoolSyncResult extends BaseSyncResult implements SyncResult 
         appendWithNewLine(output, "--");
         appendWithNewLine(output, "Created sections: " + results.getSections().getCreated().size());
         appendWithNewLine(output, "Updated sections: " + results.getSections().getUpdated().size());
-        appendWithNewLine(output, "Deleted sections: " + results.getSections().getUpdated().size());
+        appendWithNewLine(output, "Deleted sections: " + results.getSections().getDeleted().size());
         appendWithNewLine(output, "Failed sections creations: " + results.getSections().getFailedCreates().size());
         appendWithNewLine(output, "Failed sections source gets: " + results.getSections().getSourceGetFailed().size());
         appendWithNewLine(output, "Failed sections edpanel gets: " + results.getSections().getEdPanelGetFailed().size());
