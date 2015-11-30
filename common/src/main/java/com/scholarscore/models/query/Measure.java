@@ -3,6 +3,8 @@ package com.scholarscore.models.query;
 import com.scholarscore.models.query.measure.AssignmentGradeMeasure;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
 import com.scholarscore.models.query.measure.CourseGradeMeasure;
+import com.scholarscore.models.query.measure.DailyAbsenceMeasure;
+import com.scholarscore.models.query.measure.DailyTardyMeasure;
 import com.scholarscore.models.query.measure.DemeritMeasure;
 import com.scholarscore.models.query.measure.DetentionMeasure;
 import com.scholarscore.models.query.measure.GpaMeasure;
@@ -31,6 +33,8 @@ import com.scholarscore.models.query.measure.SuspensionMeasure;
  */
 public enum Measure {
     ATTENDANCE,
+    ABSENCE,
+    TARDY,
     //Behavioral measures
     DEMERIT,
     MERIT,
@@ -68,6 +72,10 @@ public enum Measure {
                 return new SuspensionMeasure();
             case ATTENDANCE:
                 return new AttendanceMeasure();
+            case ABSENCE:
+                return new DailyAbsenceMeasure();
+            case TARDY:
+                return new DailyTardyMeasure();
             default:
                 return null;   
         }

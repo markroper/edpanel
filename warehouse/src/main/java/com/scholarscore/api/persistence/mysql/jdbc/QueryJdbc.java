@@ -107,5 +107,4 @@ public class QueryJdbc extends BaseJdbc implements QueryPersistence {
                 new QueryResultsMapper());
         return new QueryResults(results);
     }
-
 }
