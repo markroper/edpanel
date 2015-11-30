@@ -34,6 +34,8 @@ public class DbMappings {
                put(Measure.SUSPENSION, HibernateConsts.BEHAVIOR_TABLE);
                put(Measure.DETENTION, HibernateConsts.BEHAVIOR_TABLE);
                put(Measure.ATTENDANCE, HibernateConsts.ATTENDANCE_TABLE);
+               put(Measure.ABSENCE, HibernateConsts.ATTENDANCE_TABLE);
+               put(Measure.TARDY, HibernateConsts.ATTENDANCE_TABLE);
            }};
    public static final Map<Measure, String> MEASURE_TO_COL_NAME = 
            new HashMap<Measure, String>() {{
@@ -50,6 +52,20 @@ public class DbMappings {
                put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.STATUS_DESCRIPTION), HibernateConsts.ATTENDANCE_DESCRIPTION);
                put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
                put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.TYPE), HibernateConsts.ATTENDANCE_TYPE);
+               put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.ID), HibernateConsts.ATTENDANCE_ID);
+               put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.DATE), HibernateConsts.SCHOOL_DAY_DATE);
+               put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.SCHOOL_FK), HibernateConsts.SCHOOL_FK);
+               put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.STATUS), HibernateConsts.ATTENDANCE_STATUS);
+               put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.STATUS_DESCRIPTION), HibernateConsts.ATTENDANCE_DESCRIPTION);
+               put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
+               put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.TYPE), HibernateConsts.ATTENDANCE_TYPE);
+               put(new MeasureField(Measure.TARDY, AttendanceMeasure.ID), HibernateConsts.ATTENDANCE_ID);
+               put(new MeasureField(Measure.TARDY, AttendanceMeasure.DATE), HibernateConsts.SCHOOL_DAY_DATE);
+               put(new MeasureField(Measure.TARDY, AttendanceMeasure.SCHOOL_FK), HibernateConsts.SCHOOL_FK);
+               put(new MeasureField(Measure.TARDY, AttendanceMeasure.STATUS), HibernateConsts.ATTENDANCE_STATUS);
+               put(new MeasureField(Measure.TARDY, AttendanceMeasure.STATUS_DESCRIPTION), HibernateConsts.ATTENDANCE_DESCRIPTION);
+               put(new MeasureField(Measure.TARDY, AttendanceMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
+               put(new MeasureField(Measure.TARDY, AttendanceMeasure.TYPE), HibernateConsts.ATTENDANCE_TYPE);
                
                put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.ID), HibernateConsts.BEHAVIOR_ID);
                put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
@@ -89,6 +105,7 @@ public class DbMappings {
                put(Dimension.TERM, HibernateConsts.TERM_TABLE);
                put(Dimension.STUDENT, HibernateConsts.STUDENT_TABLE);
                put(Dimension.TEACHER, HibernateConsts.TEACHER_TABLE);
+               put(Dimension.ADMINISTRATOR, HibernateConsts.ADMIN_TABLE);
                put(Dimension.YEAR, HibernateConsts.SCHOOL_YEAR_TABLE);
                 put(Dimension.ASSIGNMENT, HibernateConsts.ASSIGNMENT_TABLE);
             }};
@@ -104,9 +121,14 @@ public class DbMappings {
         put(new DimensionField(Dimension.STUDENT, StudentDimension.RACE), HibernateConsts.STUDENT_FEDERAL_RACE);
         put(new DimensionField(Dimension.STUDENT, StudentDimension.HOME_ADDRESS), STUDENT_HOME_STREET_COL);
         put(new DimensionField(Dimension.STUDENT, StudentDimension.CITY_OF_RESIDENCE), STUDENT_HOME_CITY_COL);
+        put(new DimensionField(Dimension.STUDENT, StudentDimension.SCHOOL), HibernateConsts.SCHOOL_FK);
         //Teacher dimension field to DB column name lookup
         put(new DimensionField(Dimension.TEACHER, TeacherDimension.NAME), HibernateConsts.TEACHER_NAME);
         put(new DimensionField(Dimension.TEACHER, TeacherDimension.ID), HibernateConsts.TEACHER_USER_FK);
+        put(new DimensionField(Dimension.TEACHER, TeacherDimension.SCHOOL), HibernateConsts.SCHOOL_FK);
+        put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.NAME), HibernateConsts.ADMIN_NAME);
+        put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.ID), HibernateConsts.ADMIN_USER_FK);
+        put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.SCHOOL), HibernateConsts.SCHOOL_FK);
 
         //School dimension field to DB column name lookup
         put(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME), HibernateConsts.SCHOOL_NAME);
