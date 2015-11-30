@@ -224,6 +224,10 @@ public class DlEtlEngine implements IEtlEngine {
         return name.toLowerCase().trim().replaceAll("\\s", "");
     }
 
+    // TODO Jordan: temporary hack to get students matching. Today nina's school puts "Nmh" or a middle initial
+    // for a student's middle name in a lot of the deanslist behavioral records. Should try to match on 
+    // first+middle+last if possible, then fall back to matching first+last if necessary. Should refactor DB to store 
+    // first+middle+last separately first.
     private String stripAndLowerMatchableName(String name) {
         if (null == name) { return null; }
 
