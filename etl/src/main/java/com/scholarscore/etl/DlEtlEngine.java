@@ -67,7 +67,7 @@ public class DlEtlEngine implements IEtlEngine {
         try {
             existingStudents = scholarScore.getStudents(null);
         } catch (HttpClientException e) {
-            LOGGER.warn("Encountered a problem trying to get all students...");
+            LOGGER.error("Encountered a problem trying to get all students...");
             e.printStackTrace();
             return null;
         }
@@ -203,7 +203,7 @@ public class DlEtlEngine implements IEtlEngine {
                 }
 
             } else {
-                LOGGER.warn("WARN: Deanslist specified a unknown student: " + student.getName());
+                LOGGER.error("WARN: Unable to match to student specified by deanslist: " + student.getName());
                 result.incrementUnmatchedStudent(student.getName());
             }
         } else {
@@ -263,6 +263,16 @@ public class DlEtlEngine implements IEtlEngine {
         if (nameWords.length == 3) { matchableName = nameWords[0] + " " + nameWords[2]; }    // first, IGNORE MIDDLE, last
         if (nameWords.length > 3) { matchableName = nameWords[0] + " " + nameWords[nameWords.length - 1]; }  // just guessing...
         return stripAndLowerName(matchableName);
+    }
+    
+    private String stripAndLowerLastName(String name) {
+        if (null == name) { return null; }
+        String[] nameWords = name.trim().split("\\s+");
+        if (nameWords.length > 0) {
+            return stripAndLowerName(nameWords[nameWords.length-1]);
+        } else {
+            return "";
+        }
     }
 
     private List<Behavior> getBehaviorData() {
