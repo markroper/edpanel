@@ -22,6 +22,9 @@ public class DeansListSyncResult extends BaseSyncResult {
     private int behaviorsAdded = 0;
     private int behaviorsUpdated = 0;
 
+    private int behaviorsMatchedTeacher = 0;
+    private int behaviorsMatchedAdmin = 0;
+    
     @Override
     public String getResultString() {
         StringBuilder builder = new StringBuilder();
@@ -33,15 +36,19 @@ public class DeansListSyncResult extends BaseSyncResult {
         builder.append("\n");
         builder.append("Behavior Events Updated: " + behaviorsUpdated);
         builder.append("\n");
+        builder.append("Behavior Events Matching Teachers: " + behaviorsMatchedTeacher);
+        builder.append("\n");
+        builder.append("Behavior Events Matching Admins: " + behaviorsMatchedAdmin);
+        builder.append("\n");
         builder.append("Behavior Events Failed (student missing from DL): " + behaviorEventsWithoutStudents);
         builder.append("\n");
         builder.append("Behavior Events Failed (student unmatched in EP): " + behaviorEventsWithUnmatchedStudents);
         builder.append("\n");
         builder.append("--");
         builder.append("\n");
-        builder.append("Behavior Events Without Matching EdPanel Teachers: " + behaviorEventsWithUnmatchedTeachers);
+        builder.append("Behavior Events Without Matching EdPanel Teachers/Admins: " + behaviorEventsWithUnmatchedTeachers);
         builder.append("\n");
-        builder.append("Behavior Events Without Teachers: " + behaviorEventsWithoutTeachers);
+        builder.append("Behavior Events Without Any Specified Teachers/Admins: " + behaviorEventsWithoutTeachers);
         builder.append("\n");
         builder.append("--");
         builder.append("\n");
@@ -84,6 +91,10 @@ public class DeansListSyncResult extends BaseSyncResult {
     public void incrementBehaviorAdded() { behaviorsAdded++; }
     
     public void incrementBehaviorUpdated() { behaviorsUpdated++; }
+    
+    public void incrementBehaviorMatchedTeacher() { behaviorsMatchedTeacher++; }
+    
+    public void incrementBehaviorMatchedAdmin() { behaviorsMatchedAdmin++; }
     
     public void setTotalBehaviorsInPeriod(int totalBehaviorsInPeriod) { this.totalBehaviorsInPeriod = totalBehaviorsInPeriod; }
     

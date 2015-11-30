@@ -57,6 +57,7 @@ public class HibernateConsts {
     public static final String BEHAVIOR_CATEGORY = "category";
     public static final String BEHAVIOR_POINT_VALUE = "point_value";
     public static final String BEHAVIOR_ROSTER = "roster";
+    public static final String BEHAVIOR_ASSIGNER_FK = "assigner_fk";
     
     // the following column names are used in multiple places in different tables
     public static final String STUDENT_FK = "student_fk";

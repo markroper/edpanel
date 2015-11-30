@@ -73,7 +73,7 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
             // mostly-empty teacher with just teacher name (it's all we have)
             com.scholarscore.models.user.Teacher teacher = new com.scholarscore.models.user.Teacher();
             teacher.setName(getStaffName(dlBehavior));
-            out.setTeacher(teacher);
+            out.setAssigner(teacher);
 
             out.setPointValue(dlBehavior.PointValue);
             
