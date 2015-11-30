@@ -117,7 +117,6 @@ public class DlEtlEngine implements IEtlEngine {
         // at this point, the only thing populated in the student (from deanslist) is their name
         Student student = behavior.getStudent();
         User assigner = behavior.getAssigner();
-//        Teacher teacher = behavior.getTeacher();
 
         LOGGER.debug("Got behavior event (" + behavior.getName() + ")"
                 + " for student named " + (student == null ? "(student null)" : student.getName())
