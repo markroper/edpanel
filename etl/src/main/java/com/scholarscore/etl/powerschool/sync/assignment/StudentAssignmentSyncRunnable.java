@@ -136,33 +136,35 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                 }
             }
         }
-        //Perform the bulk creates!
-        try {
-            List<Long> ids = edPanel.createStudentAssignments(
-                    school.getId(),
-                    createdSection.getTerm().getSchoolYear().getId(),
-                    createdSection.getTerm().getId(),
-                    createdSection.getId(),
-                    assignment.getId(),
-                    studentAssignmentsToCreate);
+        if(null != studentAssignmentsToCreate && studentAssignmentsToCreate.isEmpty()) {
+            //Perform the bulk creates!
+            try {
+                List<Long> ids = edPanel.createStudentAssignments(
+                        school.getId(),
+                        createdSection.getTerm().getSchoolYear().getId(),
+                        createdSection.getTerm().getId(),
+                        createdSection.getId(),
+                        assignment.getId(),
+                        studentAssignmentsToCreate);
 
-            int i = 0;
-            for(StudentAssignment s: studentAssignmentsToCreate) {
-                results.studentAssignmentCreated(
-                        Long.valueOf(createdSection.getSourceSystemId()),
-                        Long.valueOf(this.assignment.getSourceSystemId()),
-                        Long.valueOf(s.getStudent().getSourceSystemId()),
-                        ids.get(i));
-                i++;
-            }
-        } catch (HttpClientException e) {
-            for(StudentAssignment s: studentAssignmentsToCreate) {
-                // NOTE - we couldn't create the student assignments for any of the assignment,
-                // so use the parent ID in this case.
-                results.studentAssignmentCreateFailed(
-                        Long.valueOf(createdSection.getSourceSystemId()),
-                        Long.valueOf(this.assignment.getSourceSystemId()),
-                        Long.valueOf(assignment.getSourceSystemId()));
+                int i = 0;
+                for (StudentAssignment s : studentAssignmentsToCreate) {
+                    results.studentAssignmentCreated(
+                            Long.valueOf(createdSection.getSourceSystemId()),
+                            Long.valueOf(this.assignment.getSourceSystemId()),
+                            Long.valueOf(s.getStudent().getSourceSystemId()),
+                            ids.get(i));
+                    i++;
+                }
+            } catch (HttpClientException e) {
+                for (StudentAssignment s : studentAssignmentsToCreate) {
+                    // NOTE - we couldn't create the student assignments for any of the assignment,
+                    // so use the parent ID in this case.
+                    results.studentAssignmentCreateFailed(
+                            Long.valueOf(createdSection.getSourceSystemId()),
+                            Long.valueOf(this.assignment.getSourceSystemId()),
+                            Long.valueOf(assignment.getSourceSystemId()));
+                }
             }
         }
 
