@@ -212,12 +212,14 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                         Attendance a = new Attendance();
                         a.setSchoolDay(entry.getKey());
                         a.setStudent(student);
-                        a.setStatus(AttendanceStatus.ABSENT);
+                        a.setStatus(AttendanceStatus.TARDY);
                         a.setType(AttendanceTypes.DAILY);
                         a.setSourceSystemId(String.valueOf(syntheticDcid));
                         a.setDescription("EdPanel generated due to daily section absenses( " +
                                 absenses +
                                 ") exceeding limit: ");
+                        result.put(syntheticDcid, a);
+                        syntheticDcid--;
                     }
                 }
             }

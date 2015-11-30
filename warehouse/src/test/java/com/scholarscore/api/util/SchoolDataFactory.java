@@ -401,7 +401,7 @@ public class SchoolDataFactory {
                 b.setBehaviorDate(local);
                 b.setBehaviorCategory(BehaviorCategory.DEMERIT);
                 b.setPointValue("-2");
-                b.setTeacher(t);
+                b.setAssigner(t);
                 b.setStudent(s);
                 studentBehaviors.get(s.getId()).add(b);
             }

@@ -73,7 +73,7 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
             // mostly-empty teacher with just teacher name (it's all we have)
             com.scholarscore.models.user.Teacher teacher = new com.scholarscore.models.user.Teacher();
             teacher.setName(getStaffName(dlBehavior));
-            out.setTeacher(teacher);
+            out.setAssigner(teacher);
 
             out.setPointValue(dlBehavior.PointValue);
             
@@ -107,17 +107,16 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
         return BehaviorCategory.OTHER;
     }
   
-    // TODO Jordan: revisit middle names (may be a clue in more advanced matching)
     private String getStudentName(DlBehavior dlBehavior) { 
-        return (StringUtils.isEmpty(dlBehavior.StudentFirstName) ? "" : dlBehavior.StudentFirstName + " ")
-//                + (StringUtils.isEmpty(dlBehavior.StudentMiddleName) ? "" : dlBehavior.StudentMiddleName + " ")
+        return (StringUtils.isEmpty(dlBehavior.StudentFirstName) ? "" : dlBehavior.StudentFirstName.trim() + " ")
+                + (StringUtils.isEmpty(dlBehavior.StudentMiddleName) ? "" : dlBehavior.StudentMiddleName + " ")
                 + (StringUtils.isEmpty(dlBehavior.StudentLastName) ? "" : dlBehavior.StudentLastName).trim();
     }
     
     private String getStaffName(DlBehavior dlBehavior) { 
         return
-                (StringUtils.isEmpty(dlBehavior.StaffFirstName) ? "" : dlBehavior.StaffFirstName + " ")
-//                + (StringUtils.isEmpty(dlBehavior.StaffMiddleName) ? "" : dlBehavior.StaffMiddleName + " ")
+                (StringUtils.isEmpty(dlBehavior.StaffFirstName) ? "" : dlBehavior.StaffFirstName.trim() + " ")
+                + (StringUtils.isEmpty(dlBehavior.StaffMiddleName) ? "" : dlBehavior.StaffMiddleName + " ")
                 + (StringUtils.isEmpty(dlBehavior.StaffLastName) ? "" : dlBehavior.StaffLastName).trim();
         
     }

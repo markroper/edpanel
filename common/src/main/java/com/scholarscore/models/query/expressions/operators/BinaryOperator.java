@@ -11,5 +11,5 @@ import java.io.Serializable;
  */
 public enum BinaryOperator implements IOperator, Serializable {
     OR,
-    AND;
+    AND
 }

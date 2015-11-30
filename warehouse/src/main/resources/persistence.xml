@@ -23,6 +23,10 @@
         <property name="jdbcUrl" value="#{'jdbc:mysql://${database.host}:${database.port}/${database.name}' + (${database.ssl} ? '?useSSL=true&amp;requireSSL=true&amp;verifyServerCertificate=false' : '')}" />
         <property name="user" value="${database.user}" />
         <property name="password" value="${database.pass}" />
+        
+        <property name="idleConnectionTestPeriod" value="300" />
+        <property name="testConnectionOnCheckout" value="false" />
+        <property name="testConnectionOnCheckin" value="true" />
     </bean>
     
     <bean id="sessionFactory"
