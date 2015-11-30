@@ -75,7 +75,7 @@ function downloadStudents(casper, selector, fileName) {
 
 				//Get the form data to casper
 				var res = casper.page.evaluate(function() {
-					
+					var formClass = '.noSubmitLoading';
 					var res={};
 					var f=$(formClass);
 					res.action = f.attr('action');
