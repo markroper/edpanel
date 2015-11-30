@@ -107,18 +107,16 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
         return BehaviorCategory.OTHER;
     }
   
-    // TODO Jordan: store names seperately, and conditionally consider middle names if present 
-    // for more advanced matching (doesn't apply to nina's school right now as deanslist records don't have middle names on them)
     private String getStudentName(DlBehavior dlBehavior) { 
         return (StringUtils.isEmpty(dlBehavior.StudentFirstName) ? "" : dlBehavior.StudentFirstName.trim() + " ")
-//                + (StringUtils.isEmpty(dlBehavior.StudentMiddleName) ? "" : dlBehavior.StudentMiddleName + " ")
+                + (StringUtils.isEmpty(dlBehavior.StudentMiddleName) ? "" : dlBehavior.StudentMiddleName + " ")
                 + (StringUtils.isEmpty(dlBehavior.StudentLastName) ? "" : dlBehavior.StudentLastName).trim();
     }
     
     private String getStaffName(DlBehavior dlBehavior) { 
         return
                 (StringUtils.isEmpty(dlBehavior.StaffFirstName) ? "" : dlBehavior.StaffFirstName.trim() + " ")
-//                + (StringUtils.isEmpty(dlBehavior.StaffMiddleName) ? "" : dlBehavior.StaffMiddleName + " ")
+                + (StringUtils.isEmpty(dlBehavior.StaffMiddleName) ? "" : dlBehavior.StaffMiddleName + " ")
                 + (StringUtils.isEmpty(dlBehavior.StaffLastName) ? "" : dlBehavior.StaffLastName).trim();
         
     }
