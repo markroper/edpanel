@@ -69,7 +69,7 @@ public class EtlEngine implements IEtlEngine {
     private PowerSchoolSyncResult results = new PowerSchoolSyncResult();
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
-    private Long dailyAbsenseTrigger;
+    private Long dailyAbsenceTrigger;
     //The school_number attribute to school instance
     private ConcurrentHashMap<Long, School> schools;
     //Collections are by sourceSystemSchoolId and if there are nested maps, 
@@ -100,12 +100,12 @@ public class EtlEngine implements IEtlEngine {
         return edPanel;
     }
 
-    public Long getDailyAbsenseTrigger() {
-        return dailyAbsenseTrigger;
+    public Long getDailyAbsenceTrigger() {
+        return dailyAbsenceTrigger;
     }
 
-    public void setDailyAbsenseTrigger(Long dailyAbsenseTrigger) {
-        this.dailyAbsenseTrigger = dailyAbsenseTrigger;
+    public void setDailyAbsenceTrigger(Long dailyAbsenceTrigger) {
+        this.dailyAbsenceTrigger = dailyAbsenceTrigger;
     }
 
     @Override
@@ -158,7 +158,6 @@ public class EtlEngine implements IEtlEngine {
                 " seconds, \ncourses: " + courseCreationComplete +
                 " seconds, \nsections: " + sectionCreationComplete +
                 " seconds");
-        outputResults(results);
         return results;
     }
 
@@ -177,7 +176,7 @@ public class EtlEngine implements IEtlEngine {
                     studentAssociator,
                     this.schoolDays.get(schoolSsid),
                     syncCutoff,
-                    dailyAbsenseTrigger);
+                    dailyAbsenceTrigger);
             a.syncCreateUpdateDelete(results);
         }
     }
@@ -392,114 +391,5 @@ public class EtlEngine implements IEtlEngine {
         }
         return ptStudentIdToTermId;
     }
-
-    /**
-     * TODO: figure out how we actually want to output these results.  For now, its a series of sys outs
-     * @param results
-     */
-    private static void outputResults(PowerSchoolSyncResult results) {
-        LOGGER.info("--");
-        LOGGER.info("Created Schools: " + results.getSchools().getCreated().size());
-        LOGGER.info("Failed school creations: " + results.getSchools().getFailedCreates().size());
-        LOGGER.info("Failed school source gets: " + results.getSchools().getSourceGetFailed().size());
-        LOGGER.info("Failed school edpanel gets: " + results.getSchools().getEdPanelGetFailed().size());
-        LOGGER.info("--");
-        LOGGER.info("Created Courses: " + results.getCourses().getCreated().size());
-        LOGGER.info("Updated Courses: " + results.getCourses().getUpdated().size());
-        LOGGER.info("Failed courses creations: " + results.getCourses().getFailedCreates().size());
-        LOGGER.info("Failed courses source gets: " + results.getCourses().getSourceGetFailed().size());
-        LOGGER.info("Failed courses edpanel gets: " + results.getCourses().getEdPanelGetFailed().size());
-        LOGGER.info("--");
-        LOGGER.info("Created Terms: " + results.getTerms().getCreated().size());
-        LOGGER.info("Updated Terms: " + results.getTerms().getUpdated().size());
-        LOGGER.info("Failed terms creations: " + results.getTerms().getFailedCreates().size());
-        LOGGER.info("Failed terms source gets: " + results.getTerms().getSourceGetFailed().size());
-        LOGGER.info("Failed terms edpanel gets: " + results.getTerms().getEdPanelGetFailed().size());
-        LOGGER.info("--");
-        LOGGER.info("Created staff: " + results.getStaff().getCreated().size());
-        LOGGER.info("Updated staff: " + results.getStaff().getUpdated().size());
-        LOGGER.info("Failed staff creations: " + results.getStaff().getFailedCreates().size());
-        LOGGER.info("Failed staff source gets: " + results.getStaff().getSourceGetFailed().size());
-        LOGGER.info("Failed staff edpanel gets: " + results.getStaff().getEdPanelGetFailed().size());
-        LOGGER.info("--");
-        LOGGER.info("Created students: " + results.getStudents().getCreated().size());
-        LOGGER.info("Updated students: " + results.getStudents().getUpdated().size());
-        LOGGER.info("Deleted students: " + results.getStudents().getDeleted().size());
-        LOGGER.info("Failed students creations: " + results.getStudents().getFailedCreates().size());
-        LOGGER.info("Failed students source gets: " + results.getStudents().getSourceGetFailed().size());
-        LOGGER.info("Failed students edpanel gets: " + results.getStudents().getEdPanelGetFailed().size());
-        LOGGER.info("--");
-        LOGGER.info("Created sections: " + results.getSections().getCreated().size());
-        LOGGER.info("Updated sections: " + results.getSections().getUpdated().size());
-        LOGGER.info("Deleted sections: " + results.getSections().getUpdated().size());
-        LOGGER.info("Failed sections creations: " + results.getSections().getFailedCreates().size());
-        LOGGER.info("Failed sections source gets: " + results.getSections().getSourceGetFailed().size());
-        LOGGER.info("Failed sections edpanel gets: " + results.getSections().getEdPanelGetFailed().size());
-        LOGGER.info("--");
-        Integer studAssignments = 0;
-        Integer studUpdatedAssignments = 0;
-        Integer studDeletedAssignments = 0;
-        Integer studAssFailedCreates = 0;
-        Integer studAssFailedSourceGets = 0;
-        Integer studAssFailedEdPanelGets = 0;
-        for(Map.Entry<Long, EntitySyncResult> sa : results.getSectionAssignments().entrySet()) {
-            studAssignments += sa.getValue().getCreated().size();
-            studUpdatedAssignments += sa.getValue().getUpdated().size();
-            studDeletedAssignments += sa.getValue().getDeleted().size();
-            studAssFailedCreates += sa.getValue().getFailedCreates().size();
-            studAssFailedSourceGets += sa.getValue().getSourceGetFailed().size();
-            studAssFailedEdPanelGets += sa.getValue().getEdPanelGetFailed().size();
-        }
-        LOGGER.info("Created section assignments: " + studAssignments);
-        LOGGER.info("Updated section assignments: " + studUpdatedAssignments);
-        LOGGER.info("Deleted section assignments: " + studDeletedAssignments);
-        LOGGER.info("Failed section assignments creations: " + studAssFailedCreates);
-        LOGGER.info("Failed section assignments source gets: " + studAssFailedSourceGets);
-        LOGGER.info("Failed section assignments edpanel gets: " + studAssFailedEdPanelGets);
-        LOGGER.info("--");
-
-        Integer ssgs = 0;
-        Integer ssgsUpdated = 0;
-        Integer ssgsDeleted = 0;
-        Integer ssgFailedCreates = 0;
-        Integer ssgFailedSourceGets = 0;
-        Integer ssgFailedEdPanelGets = 0;
-        for(Map.Entry<Long, EntitySyncResult> sa : results.getStudentSectionGrades().entrySet()) {
-            ssgs += sa.getValue().getCreated().size();
-            ssgsUpdated += sa.getValue().getUpdated().size();
-            ssgsDeleted += sa.getValue().getDeleted().size();
-            ssgFailedCreates += sa.getValue().getFailedCreates().size();
-            ssgFailedSourceGets += sa.getValue().getSourceGetFailed().size();
-            ssgFailedEdPanelGets += sa.getValue().getEdPanelGetFailed().size();
-        }
-        LOGGER.info("Created section student grades: " + ssgs);
-        LOGGER.info("Updated section student grades: " + ssgsUpdated);
-        LOGGER.info("Deleted section student grades: " + ssgsDeleted);
-        LOGGER.info("Failed ssg creations: " + ssgFailedCreates);
-        LOGGER.info("Failed ssg source gets: " + ssgFailedSourceGets);
-        LOGGER.info("Failed ssg edpanel gets: " + ssgFailedEdPanelGets);
-        LOGGER.info("--");
-        Integer sectAss = 0;
-        Integer sectAssUpdated = 0;
-        Integer sectAssDeleted = 0;
-        Integer sectAssFailedCreates = 0;
-        Integer sectAssFailedSourceGets = 0;
-        Integer sectAssFailedEdPanelGets = 0;
-        for(Map.Entry<Long, ConcurrentHashMap<Long, EntitySyncResult>> sa : results.getStudentAssignments().entrySet()) {
-            for(Map.Entry<Long, EntitySyncResult> a : sa.getValue().entrySet()) {
-                sectAss += a.getValue().getCreated().size();
-                sectAssUpdated += a.getValue().getUpdated().size();
-                sectAssDeleted += a.getValue().getDeleted().size();
-                sectAssFailedCreates += a.getValue().getFailedCreates().size();
-                sectAssFailedSourceGets += a.getValue().getSourceGetFailed().size();
-                sectAssFailedEdPanelGets += a.getValue().getEdPanelGetFailed().size();
-            }
-        }
-        LOGGER.info("Created student assignments: " + sectAss);
-        LOGGER.info("Updated student assignments: " + sectAssUpdated);
-        LOGGER.info("Deleted student assignments: " + sectAssDeleted);
-        LOGGER.info("Failed student assignments creations: " + sectAssFailedCreates);
-        LOGGER.info("Failed student assignments source gets: " + sectAssFailedSourceGets);
-        LOGGER.info("Failed student assignments edpanel gets: " + sectAssFailedEdPanelGets);
-    }
+    
 }

@@ -252,7 +252,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         //Generate behaviors so we can test that calculatedValue matches
         Behavior namedBehavior = new Behavior();
         namedBehavior.setStudent(student);
-        namedBehavior.setTeacher(teacher);
+        namedBehavior.setAssigner(teacher);
         namedBehavior.setName("BehaviorEvent");
         namedBehavior.setBehaviorCategory(BehaviorCategory.DEMERIT);
         namedBehavior.setPointValue("1");
