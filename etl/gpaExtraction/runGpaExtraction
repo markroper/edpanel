@@ -7,6 +7,3 @@ casperjs --ssl-protocol=any gpaExtraction.js
 
 ## after running this, there will be one or more .csv files in this directory. 
 ## this directory path can be provided to the ETL runner which should consume these files
-
-# to invoke the ETL passing in the GPA extract directory and csv file(s) name prefix
-# java -jar etljar.jar --dir-path /path/to/csvdir --prefix gpaExtract
