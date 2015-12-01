@@ -105,7 +105,7 @@ public class GPASync implements ISync<Gpa> {
                             gpa.setStudentId(s.getId());
                             resultValues.put(gpa.getStudentId(), gpa);
                         } else {
-                            LOGGER.error("Unable to resolve the student with source system ID of: " +
+                            LOGGER.warn("Unable to resolve the student with source system ID of: " +
                                     gpa.getStudentId());
                         }
                     }
