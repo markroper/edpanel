@@ -23,6 +23,15 @@ dependencies {
 
 }
 
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'com.scholarscore.etl.runner.EtlExecutable'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 task createPlugin(type:Zip){
     from ('src/main/resources/plugin/') {
         include '**/*.xml'
