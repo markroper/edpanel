@@ -3,6 +3,7 @@ package com.scholarscore.etl.sync.student;
 import com.scholarscore.etl.powerschool.sync.student.gpa.GPAParser;
 import com.scholarscore.etl.powerschool.sync.student.gpa.RawGPAValue;
 import com.scholarscore.models.gpa.Gpa;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -16,15 +17,26 @@ import static org.testng.AssertJUnit.assertNotNull;
 @Test(groups = {"unit"})
 public class GPAParserTest {
 
-    public void testStaticFileParsing() {
+    @DataProvider
+    private Object[][] fileBasedParseDataProvider() {
+        return new Object[][] {
+                { "Complete student GPA file", "student_gpa.csv", 115 },
+                { "GPA 1 file", "gpaExtract1.csv", 56 },
+                { "GPA 2 file", "gpaExtract2.csv", 59 },
+        };
+    }
+
+    @Test(dataProvider = "fileBasedParseDataProvider")
+    public void testStaticFileParsing(String msg, String resourceFile, int expectedNumberOfGPAs) {
         GPAParser parser = new GPAParser();
-        List<RawGPAValue> gpas = parser.parse(GPAParserTest.class.getClassLoader().getResourceAsStream("student_gpa.csv"));
+        List<RawGPAValue> gpas = parser.parse(GPAParserTest.class.getClassLoader().getResourceAsStream(resourceFile));
         assertNotNull("Expected non-null response from parser-parse for GPA csv file");
-        assertEquals(115, gpas.size(), "Expected 115 gpa entries");
+        assertEquals(expectedNumberOfGPAs, gpas.size(), "Expected " + expectedNumberOfGPAs + " gpa entries for test: " + msg);
 
         for (RawGPAValue value : gpas) {
             Gpa gpaValue =  value.emit();
             assertNotNull("Expected non-null GPA value", gpaValue);
+            assertNotNull("Expected GPA Student ID to not be null", gpaValue.getStudentId());
         }
     }
 }
