@@ -4,6 +4,7 @@ import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.deanslist.api.response.BehaviorResponse;
 import com.scholarscore.etl.deanslist.client.IDeansListClient;
+import com.scholarscore.etl.runner.EtlSettings;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.user.Administrator;
@@ -59,7 +60,7 @@ public class DlEtlEngine implements IEtlEngine {
     }
 
     @Override
-    public SyncResult syncDistrict() {
+    public SyncResult syncDistrict(EtlSettings settings) {
 
         // grab behaviors from deanslist
         Collection<Behavior> behaviorsToMerge = getBehaviorData();
@@ -106,7 +107,7 @@ public class DlEtlEngine implements IEtlEngine {
         
         DeansListSyncResult result = new DeansListSyncResult();
         result.setTotalBehaviorsInPeriod(behaviorsToMerge.size());
-        
+
         for (Behavior behavior : behaviorsToMerge) {
             handleBehavior(behavior, result);
         }
@@ -183,8 +184,13 @@ public class DlEtlEngine implements IEtlEngine {
         return null;
     } 
     
+    @Override
+    public SyncResult syncDistrict() {
+        return syncDistrict(new EtlSettings());
+    }
+
     private void handleBehavior(Behavior behavior, DeansListSyncResult result) {
-        
+
         // at this point, the only thing populated in the student (from deanslist) is their name
         Student student = behavior.getStudent();
         User assigner = behavior.getAssigner();
