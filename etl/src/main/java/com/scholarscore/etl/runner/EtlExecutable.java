@@ -1,10 +1,16 @@
 package com.scholarscore.etl.runner;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
+import java.io.FilenameFilter;
 
 /**
  * User: jordan
@@ -13,8 +19,11 @@ import java.io.File;
  */
 public class EtlExecutable {
 
-    public static final String ARGS_GPA_FILE_SETTINGS = "g";
-    public static final String ARGS_GPA_FILE_SETTINGS_LONG = "gpa-file";
+    public static final String ARGS_GPA_DIR = "d";
+    public static final String ARGS_GPA_DIR_LONG = "dir-path";
+
+    public static final String ARGS_FILE_PREFIX = "p";
+    public static final String ARGS_FILE_PREFIX_LONG = "prefix";
 
     private static final String ETL_SPRING_CONTEXT_FILENAME = "etl.xml";
     
@@ -28,17 +37,30 @@ public class EtlExecutable {
 
         Options options = new Options();
         //String opt, String longOpt, boolean hasArg, String description)
-        options.addOption(new Option(ARGS_GPA_FILE_SETTINGS, ARGS_GPA_FILE_SETTINGS_LONG, false,
-                "Specify the GPA file to parse as part of ETL loading from the external source"));
+        options.addOption(new Option(ARGS_GPA_DIR, ARGS_GPA_DIR_LONG, true,
+                "Specify the directory containing the GPA .csv files to load"));
+
+        options.addOption(new Option(ARGS_FILE_PREFIX, ARGS_FILE_PREFIX_LONG, true,
+                "Specify the filename prefix (e.g. 'gpa-' -> gpa-1.csv, gpa-2.csv)"));
 
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse( options, args);
-
         EtlSettings settings = new EtlSettings();
 
-        if (cmd.hasOption(ARGS_GPA_FILE_SETTINGS)) {
-            settings.setGpaImportFile(new File(cmd.getOptionValue(ARGS_GPA_FILE_SETTINGS)));
+        if (cmd.hasOption(ARGS_GPA_DIR) && cmd.hasOption(ARGS_FILE_PREFIX)) {
+            String fileNamePrefix = cmd.getOptionValue(ARGS_FILE_PREFIX);
+            File dir = new File(cmd.getOptionValue(ARGS_GPA_DIR));
+            File[] foundFiles = dir.listFiles(new FilenameFilter() {
+                public boolean accept(File dir, String name) {
+                    return name.startsWith(new String(fileNamePrefix));
+                }
+            });
+
+            for (File file : foundFiles) {
+                settings.getGpaImportFiles().add(file);
+            }
         }
+
         return settings;
     }
 

@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -137,8 +138,8 @@ public class EtlEngine implements IEtlEngine {
         endTime = System.currentTimeMillis();
         LOGGER.info("Student sync complete");
 
-        File gpaFile = settings.getGpaImportFile();
-        syncGPA(gpaFile);
+        List<File> gpaFiles = settings.getGpaImportFiles();
+        syncGPA(gpaFiles);
         long gpaFileComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
         LOGGER.info("GPA sync complete");
@@ -175,10 +176,10 @@ public class EtlEngine implements IEtlEngine {
         return syncDistrict(new EtlSettings());
     }
 
-    private void syncGPA(File gpaFile) {
-        if (null != gpaFile && gpaFile.canRead() && gpaFile.isFile()) {
+    private void syncGPA(List<File> gpaFiles) {
+        if (null != gpaFiles) {
             // parse the gpa file from disk assuming the file type is CSV and of a specific format
-            GPASync gpaSync = new GPASync(gpaFile, edPanel, powerSchool, studentAssociator, syncCutoff);
+            GPASync gpaSync = new GPASync(gpaFiles, edPanel, powerSchool, studentAssociator, syncCutoff);
         }
     }
 
