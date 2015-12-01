@@ -4,6 +4,7 @@ import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.deanslist.api.response.BehaviorResponse;
 import com.scholarscore.etl.deanslist.client.IDeansListClient;
+import com.scholarscore.etl.runner.EtlSettings;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.user.Administrator;
@@ -59,7 +60,7 @@ public class DlEtlEngine implements IEtlEngine {
     }
 
     @Override
-    public SyncResult syncDistrict() {
+    public SyncResult syncDistrict(EtlSettings settings) {
 
         // grab behaviors from deanslist
         Collection<Behavior> behaviorsToMerge = getBehaviorData();
@@ -106,7 +107,7 @@ public class DlEtlEngine implements IEtlEngine {
         
         DeansListSyncResult result = new DeansListSyncResult();
         result.setTotalBehaviorsInPeriod(behaviorsToMerge.size());
-        
+
         for (Behavior behavior : behaviorsToMerge) {
             handleBehavior(behavior, result);
         }
@@ -157,16 +158,7 @@ public class DlEtlEngine implements IEtlEngine {
                     // failed to match on first name -- failure!
                     LOGGER.error("ERROR - More than one person found with last name " + userToFindFirstName + ", "
                             + " but cannot find any with name " + userToFindFirstName);
-                    // TODO Jordan: closest match wins? 
-
-//                    if (existingUser instanceof Student) {
-//                        result.incrementBehaviorEventsFailedToMatchFirstWithMultipleStudents(userToFindFirstName + " " + userToFindLastName);
-//                    } else if (existingUser instanceof Teacher) {
-//                        result.incrementBehaviorEventsFailedToMatchFirstWithMultipleTeachers();
-//                    } else if (existingUser instanceof Administrator) {
-//                        result.incrementBehaviorEventsFailedToMatchFirstWithMultipleAdmins();
-//                    }
-
+                    // TODO Jordan: closest match wins?
                     // don't log anything to results here as it will result in false positives when 
                     // we search for admins in the teacher list and vice versa
                 } else {
@@ -183,8 +175,13 @@ public class DlEtlEngine implements IEtlEngine {
         return null;
     } 
     
+    @Override
+    public SyncResult syncDistrict() {
+        return syncDistrict(new EtlSettings());
+    }
+
     private void handleBehavior(Behavior behavior, DeansListSyncResult result) {
-        
+
         // at this point, the only thing populated in the student (from deanslist) is their name
         Student student = behavior.getStudent();
         User assigner = behavior.getAssigner();
