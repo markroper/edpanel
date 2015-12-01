@@ -61,7 +61,9 @@ public class GPAParser {
                         }
                     }
                 }
-                results.add(gpa);
+                if (gpa.getStudentId() != null) {
+                    results.add(gpa);
+                }
             }
 
         } catch (IOException e) {

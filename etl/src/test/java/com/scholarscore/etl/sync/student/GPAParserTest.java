@@ -20,7 +20,7 @@ public class GPAParserTest {
         GPAParser parser = new GPAParser();
         List<RawGPAValue> gpas = parser.parse(GPAParserTest.class.getClassLoader().getResourceAsStream("student_gpa.csv"));
         assertNotNull("Expected non-null response from parser-parse for GPA csv file");
-        assertEquals(21, gpas.size(), "Expected 21 gpa entries");
+        assertEquals(115, gpas.size(), "Expected 115 gpa entries");
 
         for (RawGPAValue value : gpas) {
             Gpa gpaValue =  value.emit();
