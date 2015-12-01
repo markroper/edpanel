@@ -16,18 +16,18 @@ import java.util.regex.Pattern;
  * Parses the generated CSV file from the CasperJS script, assumes a particular naming convention to determine the
  * header values and the associated types.  The expected header format is as follows:
  *
- * ID,*gpa_method="added_value",*gpa_method="simple",*gpa_method="simple_percent",*gpa_method="added_value"_term="Q1",*gpa_method="simple"_term="Q1",*gpa_method="simple_percent"_term="Q1",*gpa_method="added_value"_term="Q2",*gpa_method="simple"_term="Q2",*gpa_method="simple_percent"_term="Q2",*gpa_method="added_value"_term="Q3",*gpa_method="simple"_term="Q3",*gpa_method="simple_percent"_term="Q3",*gpa_method="added_value"_term="Q4",*gpa_method="simple"_term="Q4",*gpa_method="simple_percent"_term="Q4"
+ * ID,*gpa_method="ADDED_VALUE",*gpa_method="simple",*gpa_method="SIMPLE_PERCENT",*gpa_method="ADDED_VALUE"_term="Q1",*gpa_method="simple"_term="Q1",*gpa_method="SIMPLE_PERCENT"_term="Q1",*gpa_method="ADDED_VALUE"_term="Q2",*gpa_method="simple"_term="Q2",*gpa_method="SIMPLE_PERCENT"_term="Q2",*gpa_method="ADDED_VALUE"_term="Q3",*gpa_method="simple"_term="Q3",*gpa_method="SIMPLE_PERCENT"_term="Q3",*gpa_method="ADDED_VALUE"_term="Q4",*gpa_method="simple"_term="Q4",*gpa_method="SIMPLE_PERCENT"_term="Q4"
  *
  * Created by mattg on 11/24/15.
  */
-public class GPAParser {
-    private final static Logger LOGGER = LoggerFactory.getLogger(GPAParser.class);
+public class GpaParser {
+    private final static Logger LOGGER = LoggerFactory.getLogger(GpaParser.class);
     private final static String ID = "ID";
     private final static Pattern GPA_METHOD_MATCHER = Pattern.compile(".*gpa_method=\"([^\"]+)\"(_term=\"([^\"]+)\")?");
     private final static String GPA_METHOD_MARKER = "*gpa_method";
 
-    public List<RawGPAValue> parse(InputStream iis) {
-        List<RawGPAValue> results = new ArrayList<>();
+    public List<RawGpaValue> parse(InputStream iis) {
+        List<RawGpaValue> results = new ArrayList<>();
         try {
             BufferedInputStream is = new BufferedInputStream(iis);
             is.mark(0);
@@ -38,7 +38,7 @@ public class GPAParser {
             CSVParser parser = CSVFormat.DEFAULT.parse(in);
 
             for (CSVRecord record : parser.getRecords()) {
-                RawGPAValue gpa = new RawGPAValue();
+                RawGpaValue gpa = new RawGpaValue();
                 for (int i = 0; i < record.size(); i++) {
                     String name = header[i];
                     if (name.equalsIgnoreCase(ID)) {
@@ -54,7 +54,7 @@ public class GPAParser {
                         if (m.matches()) {
                             if (m.groupCount() >= 1) {
                                 String type = m.group(1);
-                                gpa.setType(GPAType.fromString(type));
+                                gpa.setType(GpaType.fromString(type));
                                 gpa.setValue(convertToDouble(record.get(i)));
                             }
                             if (m.groupCount() >= 2) {

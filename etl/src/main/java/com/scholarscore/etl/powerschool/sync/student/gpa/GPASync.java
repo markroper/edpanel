@@ -25,8 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * Created by mattg on 11/24/15.
  */
-public class GPASync implements ISync<Gpa> {
-    private final static Logger LOGGER = LoggerFactory.getLogger(GPASync.class);
+public class GpaSync implements ISync<Gpa> {
+    private final static Logger LOGGER = LoggerFactory.getLogger(GpaSync.class);
 
     private final LocalDate syncCutoff;
     private final StudentAssociator studentAssociator;
@@ -35,7 +35,7 @@ public class GPASync implements ISync<Gpa> {
     private final List<File> gpaFiles;
 
 
-    public GPASync(List<File> gpaFiles,
+    public GpaSync(List<File> gpaFiles,
                    IAPIClient edPanel,
                    IPowerSchoolClient powerSchool,
                    StudentAssociator studentAssociator,
@@ -72,7 +72,7 @@ public class GPASync implements ISync<Gpa> {
             Gpa edPanelGpa = edPanelValues.get(sourceGpa.getStudentId());
             if(null == edPanelGpa || !edPanelGpa.getCalculationDate().equals(sourceGpa.getCalculationDate())) {
                 try {
-                    Gpa responseGpa = edPanel.createGPA(sourceGpa.getStudentId(), sourceGpa);
+                    Gpa responseGpa = edPanel.createGpa(sourceGpa.getStudentId(), sourceGpa);
                     sourceGpa.setId(responseGpa.getId());
                 } catch (HttpClientException e) {
                     LOGGER.error("Failed to create GPA in EdPanel." + sourceGpa.toString());
@@ -92,15 +92,15 @@ public class GPASync implements ISync<Gpa> {
     }
 
     protected ConcurrentHashMap<Long, Gpa> resolveAllFromSourceSystem() {
-        GPAParser parser = new GPAParser();
+        GpaParser parser = new GpaParser();
         ConcurrentHashMap<Long, Gpa> resultValues = new ConcurrentHashMap<>();
         try {
             for(File gpaFile : gpaFiles){
                 if(gpaFile.canRead() && gpaFile.isFile()) {
-                    List<RawGPAValue> gpas = parser.parse(new FileInputStream(gpaFile));
-                    for (RawGPAValue value : gpas) {
+                    List<RawGpaValue> gpas = parser.parse(new FileInputStream(gpaFile));
+                    for (RawGpaValue value : gpas) {
                         Gpa gpa = value.emit();
-                        Student s = studentAssociator.findBySourceSystemId(gpa.getStudentId());
+                        Student s = studentAssociator.findBySourceSystemId(value.getStudentId());
                         if(null != s) {
                             gpa.setStudentId(s.getId());
                             resultValues.put(gpa.getStudentId(), gpa);
