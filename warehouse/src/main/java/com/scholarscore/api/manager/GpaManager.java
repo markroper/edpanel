@@ -1,7 +1,6 @@
 package com.scholarscore.api.manager;
 
 import com.scholarscore.api.util.ServiceResponse;
-import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.gpa.Gpa;
 
 import java.time.LocalDate;
@@ -26,6 +25,8 @@ public interface GpaManager {
 
     public ServiceResponse<Collection<Gpa>> getAllGpasForStudents(
             List<Long> studentIds, LocalDate startDate, LocalDate endDate);
+
+    public ServiceResponse<Collection<Gpa>> getAllCurrentGpas();
 
     public ServiceResponse<Long> updateGpa(long studentId, long gpaId, Gpa gpa);
 

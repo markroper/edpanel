@@ -1,10 +1,7 @@
 var gpaQuery = '    ID \n\
 ^(*gpa method="added value") \n\
-^(*gpa method="simple") \n\
-^(*gpa method="simple percent") \n\
 ^(*gpa method="added value" term="Q1") \n\
-^(*gpa method="simple" term="Q1") \n\
-^(*gpa method="simple percent" term="Q1")';
+^(*gpa method="added value" term="Q2")';
 
 var exportSelector = "#lnk_QuickExport";
 var formClass = '.noSubmitLoading';
@@ -16,13 +13,20 @@ var casper = require('casper').create({
     logLevel: "debug",
     waitTimeout: 10000
 });
-
+var fs = require('fs');
+var propFile = fs.open("powerschool.properties", "r");
+var lines = propFile.read().split("\n");
 casper.userAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X)');
 var utils = require('utils');
 casper.options.viewportSize = {width: 900, height: 600};
 
-var username = "***REMOVED***";
-var password = "***REMOVED***1";
+var username = lines[0].split("=")[1];
+var password = lines[1].split("=")[1];
+
+if (username.length == 0 || password.length == 0) {
+	casper.echo("Credentials invalid, did you set the properties file?");
+	casper.exit();
+}
 var domain = "https://excelacademy.powerschool.com";
 
 
@@ -108,7 +112,7 @@ function downloadStudents(casper, selector, fileName, attempt) {
 					console.log("form.action = " + res.action);
 					console.log("form.post = " + res.post);
 
-					casper.download(res.action, "gpaExtract" + fileName + ".csv", "POST", res.post);
+					casper.download(res.action, "extractedGpa" + fileName + ".csv", "POST", res.post);
 				}
 				else {
 					console.log("Unable to extract form properties for file download!");

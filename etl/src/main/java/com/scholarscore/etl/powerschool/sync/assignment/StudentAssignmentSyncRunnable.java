@@ -136,7 +136,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                 }
             }
         }
-        if(null != studentAssignmentsToCreate && studentAssignmentsToCreate.isEmpty()) {
+        if(null != studentAssignmentsToCreate && !studentAssignmentsToCreate.isEmpty()) {
             //Perform the bulk creates!
             try {
                 List<Long> ids = edPanel.createStudentAssignments(

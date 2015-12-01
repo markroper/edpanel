@@ -62,7 +62,7 @@ public class GpaJdbc implements GpaPersistence {
     public Long updateGpa(long studentId, long gpaId, Gpa gpa) {
         gpa.setId(gpaId);
         CurrentGpa curr = getCurrentGpaByGpaStudentId(studentId);
-        hibernateTemplate.update(gpa);
+        hibernateTemplate.merge(gpa);
         if(null == curr) {
             CurrentGpa newCurrent = new CurrentGpa();
             newCurrent.setGpa(gpa);
@@ -93,6 +93,19 @@ public class GpaJdbc implements GpaPersistence {
             return null;
         }
         return curr.getGpa();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Gpa> selectAllCurrentGpas() {
+        List<CurrentGpa> currs = (List<CurrentGpa>)hibernateTemplate.find("from current_gpa g " +
+                "join fetch g.student st left join fetch st.homeAddress left join fetch st.mailingAddress " +
+                "left join fetch st.contactMethods join fetch g.gpa gpa");
+        ArrayList<Gpa> gpas = new ArrayList<>();
+        for(CurrentGpa curr : currs) {
+            gpas.add(curr.getGpa());
+        }
+        return gpas;
     }
 
     /**
