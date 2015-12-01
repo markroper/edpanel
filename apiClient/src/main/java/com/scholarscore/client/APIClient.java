@@ -15,6 +15,7 @@ import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.factory.AssignmentFactory;
+import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
@@ -53,6 +54,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     private static final String BEHAVIOR_ENDPOINT = "/behaviors";
     private static final String DAYS_ENDPOINT = "/days";
     private static final String ATTENDANCE_ENDPOINT = "/attendance";
+    private static final String GPA_ENDPOINT = "/gpas";
 
     // TODO: Create this end point
     private static final String ADMINISTRATOR_ENDPOINT = "/administrators";
@@ -687,6 +689,27 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
                 STUDENT_ASSIGNMENT_ENDPOINT + "/" + studentAssignment.getId());
     }
 
+    @Override
+    public Gpa createGPA(Long studentId, Gpa gpa) throws HttpClientException {
+        EntityId id = create(gpa, GPA_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId);
+        gpa.setId(id.id);
+        return gpa;
+    }
+
+    @Override
+    public void updateGpa(Long studentId, Gpa gpa) throws IOException {
+        put(convertObjectToJsonBytes(gpa),
+                BASE_API_ENDPOINT + GPA_ENDPOINT + "/" + gpa.getId() + STUDENT_ENDPOINT + "/" + studentId);
+    }
+
+    @Override
+    public Gpa[] getGpas() throws HttpClientException {
+        Gpa[] gpas = get(
+                Gpa[].class,
+                BASE_API_ENDPOINT + GPA_ENDPOINT);
+        return gpas;
+    }
+
     /**
      * A method to authenticate a user and store the returned auth cookie for subsequent requests.
      * Called by all integration test classes that are testing protected endpoints.
@@ -740,4 +763,6 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         }
         return out;
     }
+
+
 }

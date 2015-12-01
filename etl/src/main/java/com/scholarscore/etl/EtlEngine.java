@@ -30,8 +30,10 @@ import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.etl.powerschool.sync.attendance.AttendanceSync;
 import com.scholarscore.etl.powerschool.sync.attendance.SchoolDaySync;
 import com.scholarscore.etl.powerschool.sync.section.SectionSyncRunnable;
+import com.scholarscore.etl.powerschool.sync.student.gpa.GPASync;
 import com.scholarscore.etl.powerschool.sync.user.StaffSync;
 import com.scholarscore.etl.powerschool.sync.user.StudentSync;
+import com.scholarscore.etl.runner.EtlSettings;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
@@ -40,8 +42,10 @@ import com.scholarscore.models.attendance.SchoolDay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -109,7 +113,7 @@ public class EtlEngine implements IEtlEngine {
     }
 
     @Override
-    public PowerSchoolSyncResult syncDistrict() {
+    public SyncResult syncDistrict(EtlSettings settings) {
         this.syncCutoff = LocalDate.now().minusYears(1l);
         this.powerSchool.setSyncCutoff(this.syncCutoff);
 
@@ -133,6 +137,12 @@ public class EtlEngine implements IEtlEngine {
         long studentCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
         LOGGER.info("Student sync complete");
+
+        List<File> gpaFiles = settings.getGpaImportFiles();
+        syncGPA(gpaFiles);
+        long gpaFileComplete = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+        LOGGER.info("GPA sync complete");
 
         syncSchoolDaysAndAttendance();
         long schoolDayCreationComplete = (System.currentTimeMillis() - endTime)/1000;
@@ -159,6 +169,19 @@ public class EtlEngine implements IEtlEngine {
                 " seconds, \nsections: " + sectionCreationComplete +
                 " seconds");
         return results;
+    }
+
+    @Override
+    public SyncResult syncDistrict() {
+        return syncDistrict(new EtlSettings());
+    }
+
+    private void syncGPA(List<File> gpaFiles) {
+        if (null != gpaFiles) {
+            // parse the gpa file from disk assuming the file type is CSV and of a specific format
+            GPASync gpaSync = new GPASync(gpaFiles, edPanel, powerSchool, studentAssociator, syncCutoff);
+            gpaSync.syncCreateUpdateDelete(results);
+        }
     }
 
     private void syncSchoolDaysAndAttendance() {
