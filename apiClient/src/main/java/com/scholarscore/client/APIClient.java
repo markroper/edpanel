@@ -690,11 +690,24 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Gpa createGPA(Long studentId, Gpa gpa) throws IOException {
-        EntityId id = create(gpa,
-                BASE_API_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId + "/" + GPA_ENDPOINT);
+    public Gpa createGPA(Long studentId, Gpa gpa) throws HttpClientException {
+        EntityId id = create(gpa, GPA_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId);
         gpa.setId(id.id);
         return gpa;
+    }
+
+    @Override
+    public void updateGpa(Long studentId, Gpa gpa) throws IOException {
+        put(convertObjectToJsonBytes(gpa),
+                BASE_API_ENDPOINT + GPA_ENDPOINT + "/" + gpa.getId() + STUDENT_ENDPOINT + "/" + studentId);
+    }
+
+    @Override
+    public Gpa[] getGpas() throws HttpClientException {
+        Gpa[] gpas = get(
+                Gpa[].class,
+                BASE_API_ENDPOINT + GPA_ENDPOINT);
+        return gpas;
     }
 
     /**
