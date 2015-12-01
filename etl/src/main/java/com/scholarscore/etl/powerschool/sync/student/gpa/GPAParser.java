@@ -23,9 +23,10 @@ public class GPAParser {
     private final static Pattern GPA_METHOD_MATCHER = Pattern.compile(".*gpa_method=\"([^\"]+)\"(_term=\"([^\"]+)\")?");
     private final static String GPA_METHOD_MARKER = "*gpa_method";
 
-    public List<RawGPAValue> parse(InputStream is) {
+    public List<RawGPAValue> parse(InputStream iis) {
         List<RawGPAValue> results = new ArrayList<>();
         try {
+            BufferedInputStream is = new BufferedInputStream(iis);
             is.mark(0);
             Reader in = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
