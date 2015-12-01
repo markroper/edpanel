@@ -30,7 +30,7 @@ import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.etl.powerschool.sync.attendance.AttendanceSync;
 import com.scholarscore.etl.powerschool.sync.attendance.SchoolDaySync;
 import com.scholarscore.etl.powerschool.sync.section.SectionSyncRunnable;
-import com.scholarscore.etl.powerschool.sync.student.gpa.GPASync;
+import com.scholarscore.etl.powerschool.sync.student.gpa.GpaSync;
 import com.scholarscore.etl.powerschool.sync.user.StaffSync;
 import com.scholarscore.etl.powerschool.sync.user.StudentSync;
 import com.scholarscore.etl.runner.EtlSettings;
@@ -139,7 +139,7 @@ public class EtlEngine implements IEtlEngine {
         LOGGER.info("Student sync complete");
 
         List<File> gpaFiles = settings.getGpaImportFiles();
-        syncGPA(gpaFiles);
+        syncGpa(gpaFiles);
         long gpaFileComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
         LOGGER.info("GPA sync complete");
@@ -176,10 +176,10 @@ public class EtlEngine implements IEtlEngine {
         return syncDistrict(new EtlSettings());
     }
 
-    private void syncGPA(List<File> gpaFiles) {
+    private void syncGpa(List<File> gpaFiles) {
         if (null != gpaFiles) {
             // parse the gpa file from disk assuming the file type is CSV and of a specific format
-            GPASync gpaSync = new GPASync(gpaFiles, edPanel, powerSchool, studentAssociator, syncCutoff);
+            GpaSync gpaSync = new GpaSync(gpaFiles, edPanel, powerSchool, studentAssociator, syncCutoff);
             gpaSync.syncCreateUpdateDelete(results);
         }
     }
