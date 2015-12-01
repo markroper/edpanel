@@ -6,6 +6,8 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -19,7 +21,10 @@ import java.io.FilenameFilter;
  */
 public class EtlExecutable {
 
-    public static final String ARGS_GPA_DIR = "d";
+    private final static Logger LOGGER = LoggerFactory.getLogger(EtlExecutable.class);
+
+
+    public static final String ARGS_GPA_DIR = "d";  
     public static final String ARGS_GPA_DIR_LONG = "dir-path";
 
     public static final String ARGS_FILE_PREFIX = "p";
@@ -56,8 +61,13 @@ public class EtlExecutable {
                 }
             });
 
-            for (File file : foundFiles) {
-                settings.getGpaImportFiles().add(file);
+            if (foundFiles != null) {
+                for (File file : foundFiles) {
+                    settings.getGpaImportFiles().add(file);
+                    LOGGER.info("Imported GPA file " + file);
+                }
+            } else {
+                LOGGER.warn("WARN: --dir-path and --prefix set, but no files found");
             }
         }
 
