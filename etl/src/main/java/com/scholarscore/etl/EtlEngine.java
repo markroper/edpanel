@@ -180,6 +180,7 @@ public class EtlEngine implements IEtlEngine {
         if (null != gpaFiles) {
             // parse the gpa file from disk assuming the file type is CSV and of a specific format
             GPASync gpaSync = new GPASync(gpaFiles, edPanel, powerSchool, studentAssociator, syncCutoff);
+            gpaSync.syncCreateUpdateDelete(results);
         }
     }
 
