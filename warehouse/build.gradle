@@ -175,8 +175,12 @@ dependencies {
             //Needed for hibernate bean validation which was added to support swagger
             "javax.validation:validation-api:1.1.0.Final",
             "c3p0:c3p0:0.9.1.2"
-       
-    testCompile project (path: ":common", configuration: 'testArtifacts')
+
+    testCompile "org.testng:testng:6.8.8",
+            "org.apache.httpcomponents:httpclient:$apacheHttpVersion",
+            "org.apache.httpcomponents:httpcore:$apacheHttpVersion",
+            "org.apache.httpcomponents:httpmime:$apacheHttpVersion",
+            "org.springframework:spring-test:$springVersion"
 
     runtime "javax.servlet:jstl:1.2"
 }
