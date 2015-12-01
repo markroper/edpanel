@@ -193,5 +193,7 @@ public interface IAPIClient {
     ) throws IOException;
 
     // GPA
-    Gpa createGPA(Long studentId, Gpa gpa) throws IOException;
+    Gpa createGPA(Long studentId, Gpa gpa) throws HttpClientException;
+    void updateGpa(Long studentId, Gpa gpa) throws IOException;
+    Gpa[] getGpas() throws HttpClientException;
 }

@@ -1,11 +1,13 @@
 package com.scholarscore.etl.powerschool.sync.student.gpa;
 
+import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.gpa.Gpa;
+import com.scholarscore.models.user.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +15,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -52,6 +56,40 @@ public class GPASync implements ISync<Gpa> {
      */
     @Override
     public ConcurrentHashMap<Long, Gpa> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
+        ConcurrentHashMap<Long, Gpa> sourceValues = resolveAllFromSourceSystem();
+        ConcurrentHashMap<Long, Gpa> edPanelValues = null;
+        try {
+            edPanelValues = resolveFromEdPanel();
+        } catch (HttpClientException e) {
+            LOGGER.error("failed to resolve GPAs from EdPanel", e);
+            return null;
+        }
+
+        Iterator<Map.Entry<Long, Gpa>> sourceIterator = sourceValues.entrySet().iterator();
+        while(sourceIterator.hasNext()) {
+            Map.Entry<Long, Gpa> sourceEntry = sourceIterator.next();
+            Gpa sourceGpa = sourceEntry.getValue();
+            Gpa edPanelGpa = edPanelValues.get(sourceGpa.getStudentId());
+            if(null == edPanelGpa || !edPanelGpa.getCalculationDate().equals(sourceGpa.getCalculationDate())) {
+                try {
+                    Gpa responseGpa = edPanel.createGPA(sourceGpa.getStudentId(), sourceGpa);
+                    sourceGpa.setId(responseGpa.getId());
+                } catch (HttpClientException e) {
+                    LOGGER.error("Failed to create GPA in EdPanel." + sourceGpa.toString());
+                }
+            } else {
+                try {
+                    sourceGpa.setId(edPanelGpa.getId());
+                    edPanel.updateGpa(sourceGpa.getStudentId(), sourceGpa);
+                } catch (IOException e) {
+                    LOGGER.error("Failed to update GPA in EdPanel." + sourceGpa.toString());
+                }
+            }
+        }
+        return sourceValues;
+    }
+
+    protected ConcurrentHashMap<Long, Gpa> resolveAllFromSourceSystem() {
         GPAParser parser = new GPAParser();
         ConcurrentHashMap<Long, Gpa> resultValues = new ConcurrentHashMap<>();
         try {
@@ -60,16 +98,29 @@ public class GPASync implements ISync<Gpa> {
                     List<RawGPAValue> gpas = parser.parse(new FileInputStream(gpaFile));
                     for (RawGPAValue value : gpas) {
                         Gpa gpa = value.emit();
-                        gpa.setStudentId(studentAssociator.findBySourceSystemId(gpa.getStudentId()).getId());
-                        // Create the GPA entry for the student by studentId
-                        Gpa responseGpa = edPanel.createGPA(gpa.getStudentId(), gpa);
-                        resultValues.put(gpa.getStudentId(), responseGpa);
+                        Student s = studentAssociator.findBySourceSystemId(gpa.getStudentId());
+                        if(null != s) {
+                            gpa.setStudentId(s.getId());
+                            resultValues.put(gpa.getStudentId(), gpa);
+                        } else {
+                            LOGGER.error("Unable to resolve the student with source system ID of: " +
+                                    gpa.getStudentId());
+                        }
                     }
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("Failed to create new GPA", e);
+            LOGGER.error("Failed to resolve GPA from file", e);
         }
         return resultValues;
+    }
+
+    protected ConcurrentHashMap<Long, Gpa> resolveFromEdPanel() throws HttpClientException {
+        Gpa[] gpas = edPanel.getGpas();
+        ConcurrentHashMap<Long, Gpa> gpaMap = new ConcurrentHashMap<>();
+        for(Gpa gpa: gpas) {
+            gpaMap.put(gpa.getStudentId(), gpa);
+        }
+        return gpaMap;
     }
 }

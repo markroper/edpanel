@@ -64,6 +64,12 @@ public class GpaManagerImpl implements GpaManager {
     }
 
     @Override
+    public ServiceResponse<Collection<Gpa>> getAllCurrentGpas() {
+        return new ServiceResponse<>(
+                gpaPersistence.selectAllCurrentGpas());
+    }
+
+    @Override
     public ServiceResponse<Long> updateGpa(long studentId, long gpaId, Gpa gpa) {
         StatusCode code = pm.getStudentManager().studentExists(studentId);
         if(!code.isOK()) {
