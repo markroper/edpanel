@@ -158,16 +158,7 @@ public class DlEtlEngine implements IEtlEngine {
                     // failed to match on first name -- failure!
                     LOGGER.error("ERROR - More than one person found with last name " + userToFindFirstName + ", "
                             + " but cannot find any with name " + userToFindFirstName);
-                    // TODO Jordan: closest match wins? 
-
-//                    if (existingUser instanceof Student) {
-//                        result.incrementBehaviorEventsFailedToMatchFirstWithMultipleStudents(userToFindFirstName + " " + userToFindLastName);
-//                    } else if (existingUser instanceof Teacher) {
-//                        result.incrementBehaviorEventsFailedToMatchFirstWithMultipleTeachers();
-//                    } else if (existingUser instanceof Administrator) {
-//                        result.incrementBehaviorEventsFailedToMatchFirstWithMultipleAdmins();
-//                    }
-
+                    // TODO Jordan: closest match wins?
                     // don't log anything to results here as it will result in false positives when 
                     // we search for admins in the teacher list and vice versa
                 } else {
