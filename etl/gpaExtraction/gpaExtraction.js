@@ -1,10 +1,7 @@
 var gpaQuery = '    ID \n\
 ^(*gpa method="added value") \n\
-^(*gpa method="simple") \n\
-^(*gpa method="simple percent") \n\
 ^(*gpa method="added value" term="Q1") \n\
-^(*gpa method="simple" term="Q1") \n\
-^(*gpa method="simple percent" term="Q1")';
+^(*gpa method="added value" term="Q2")';
 
 var exportSelector = "#lnk_QuickExport";
 var formClass = '.noSubmitLoading';
