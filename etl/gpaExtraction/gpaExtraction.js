@@ -16,13 +16,20 @@ var casper = require('casper').create({
     logLevel: "debug",
     waitTimeout: 10000
 });
-
+var fs = require('fs');
+var propFile = fs.open("powerschool.properties", "r");
+var lines = propFile.read().split("\n");
 casper.userAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X)');
 var utils = require('utils');
 casper.options.viewportSize = {width: 900, height: 600};
 
-var username = "jkim";
-var password = "EA.password1";
+var username = lines[0].split("=")[1];
+var password = lines[1].split("=")[1];
+
+if (username.length == 0 || password.length == 0) {
+	casper.echo("Credentials invalid, did you set the properties file?");
+	casper.exit();
+}
 var domain = "https://excelacademy.powerschool.com";
 
 
