@@ -1,5 +1,16 @@
 apply plugin: 'application'
 
+apply plugin: 'gradle-one-jar'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.github.rholder:gradle-one-jar:1.0.4'
+    }
+}
+
 mainClassName = "com.scholarscore.etl.runner.EtlExecutable"
 
 dependencies {
@@ -23,6 +34,10 @@ dependencies {
             "org.springframework:spring-test:$springVersion",
             project (path: ":common", configuration: 'testArtifacts')
 
+}
+
+task fatJar(type: OneJar) {
+    mainClass = mainClassName
 }
 
 task createPlugin(type:Zip){

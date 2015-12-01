@@ -160,13 +160,13 @@ public class DlEtlEngine implements IEtlEngine {
                             + " but cannot find any with name " + userToFindFirstName);
                     // TODO Jordan: closest match wins? 
 
-                    if (existingUser instanceof Student) {
-                        result.incrementBehaviorEventsFailedToMatchFirstWithMultipleStudents(userToFindFirstName + " " + userToFindLastName);
-                    } else if (existingUser instanceof Teacher) {
-                        result.incrementBehaviorEventsFailedToMatchFirstWithMultipleTeachers();
-                    } else if (existingUser instanceof Administrator) {
-                        result.incrementBehaviorEventsFailedToMatchFirstWithMultipleAdmins();
-                    }
+//                    if (existingUser instanceof Student) {
+//                        result.incrementBehaviorEventsFailedToMatchFirstWithMultipleStudents(userToFindFirstName + " " + userToFindLastName);
+//                    } else if (existingUser instanceof Teacher) {
+//                        result.incrementBehaviorEventsFailedToMatchFirstWithMultipleTeachers();
+//                    } else if (existingUser instanceof Administrator) {
+//                        result.incrementBehaviorEventsFailedToMatchFirstWithMultipleAdmins();
+//                    }
 
                     // don't log anything to results here as it will result in false positives when 
                     // we search for admins in the teacher list and vice versa
