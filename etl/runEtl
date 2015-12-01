@@ -1,3 +1,11 @@
 #!/bin/bash
+
 cd gpaExtraction
 ./runGpaExtraction
+cd ..
+
+## build fat jar if not up-to-date?
+## gradle fatJar
+
+## todo - does this need to be ../../gpaExtraction (it starts in JAR directory instead of user.dir?)
+java -Done-jar.silent=true -jar build/libs/etl-standalone.jar --dir-path ./gpaExtraction --prefix extractedGpa 

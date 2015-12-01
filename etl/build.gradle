@@ -1,5 +1,16 @@
 apply plugin: 'application'
 
+apply plugin: 'gradle-one-jar'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.github.rholder:gradle-one-jar:1.0.4'
+    }
+}
+
 mainClassName = "com.scholarscore.etl.runner.EtlExecutable"
 
 dependencies {
@@ -25,13 +36,8 @@ dependencies {
 
 }
 
-task fatJar(type: Jar) {
-    manifest {
-        attributes 'Main-Class': 'com.scholarscore.etl.runner.EtlExecutable'
-    }
-    baseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
+task fatJar(type: OneJar) {
+    mainClass = mainClassName
 }
 
 task createPlugin(type:Zip){
