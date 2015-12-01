@@ -3,6 +3,8 @@ package com.scholarscore.etl.powerschool.sync.student.gpa;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.regex.Pattern;
  * Created by mattg on 11/24/15.
  */
 public class GPAParser {
+    private final static Logger LOGGER = LoggerFactory.getLogger(GPAParser.class);
     private final static String ID = "ID";
     private final static Pattern GPA_METHOD_MATCHER = Pattern.compile(".*gpa_method=\"([^\"]+)\"(_term=\"([^\"]+)\")?");
     private final static String GPA_METHOD_MARKER = "*gpa_method";
@@ -68,7 +71,7 @@ public class GPAParser {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Unable to parse GPA CSV.", e);
         }
         return results;
     }
