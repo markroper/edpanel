@@ -8,19 +8,19 @@ import java.util.HashMap;
 /**
  * Created by mattg on 11/24/15.
  */
-public class RawGPAValue {
-    private GPAType type;
+public class RawGpaValue {
+    private GpaType type;
     private Double gpaValue;
     private Long id;
     private HashMap<String, Double> termValues = new HashMap<>();
     private Double value;
     private Long studentId;
 
-    public void setType(GPAType type) {
+    public void setType(GpaType type) {
         this.type = type;
     }
 
-    public GPAType getType() {
+    public GpaType getType() {
         return type;
     }
 
@@ -47,23 +47,20 @@ public class RawGPAValue {
     public Gpa emit() {
         Gpa gpa = null;
         switch (type) {
-            case added_value:
+            case ADDED_VALUE:
                 gpa = new AddedValueGpa();
-                gpa.setStudentId(getStudentId());
                 gpa.setScore(value);
                 gpa.setCalculationDate(LocalDate.now());
                 gpa.setType(GpaTypes.ADDED_VALUE);
                 break;
-            case simple_percent:
+            case SIMPLE_PERCENT:
                 gpa = new SimplePercentGpa();
-                gpa.setStudentId(getStudentId());
                 gpa.setScore(value);
                 gpa.setCalculationDate(LocalDate.now());
                 gpa.setType(GpaTypes.SIMPLE_PERCENT);
                 break;
-            case simple:
+            case SIMPLE:
                 gpa = new SimpleGpa();
-                gpa.setStudentId(getStudentId());
                 gpa.setScore(value);
                 gpa.setCalculationDate(LocalDate.now());
                 gpa.setType(GpaTypes.SIMPLE);

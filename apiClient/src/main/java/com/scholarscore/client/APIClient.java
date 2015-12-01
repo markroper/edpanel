@@ -690,7 +690,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Gpa createGPA(Long studentId, Gpa gpa) throws HttpClientException {
+    public Gpa createGpa(Long studentId, Gpa gpa) throws HttpClientException {
         EntityId id = create(gpa, GPA_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId);
         gpa.setId(id.id);
         return gpa;
