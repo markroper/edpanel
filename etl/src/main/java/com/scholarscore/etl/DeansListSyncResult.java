@@ -19,8 +19,8 @@ public class DeansListSyncResult extends BaseSyncResult {
     private final HashSet<String> studentsNotMatched = new HashSet<>();
 
     private int behaviorEventsWithoutTeachers = 0;
-    private int behaviorEventsWithUnmatchedTeachers = 0;
-    private final HashSet<String> teachersNotMatched = new HashSet<>();
+    private int behaviorEventsWithUnmatchedAssigners = 0;
+    private final HashSet<String> assignersNotMatched = new HashSet<>();
 
     private int behaviorsAdded = 0;
     private int behaviorsUpdated = 0;
@@ -44,9 +44,17 @@ public class DeansListSyncResult extends BaseSyncResult {
     private int behaviorEventsMatchedAdminLastButNotFirst = 0;
     private int behaviorEventsFailedToMatchFirstWithMultipleAdmins = 0;
     
-    private ArrayList<Pair<String, String>> studentsFuzzyMatched = new ArrayList<>();
-    private ArrayList<Pair<String, String>> teachersFuzzyMatched = new ArrayList<>();
-    private ArrayList<Pair<String, String>> adminsFuzzyMatched = new ArrayList<>();
+    private HashSet<Pair<String, String>> studentsFuzzyMatched = new HashSet<>();
+    private HashSet<Pair<String, String>> teachersFuzzyMatched = new HashSet<>();
+    private HashSet<Pair<String, String>> adminsFuzzyMatched = new HashSet<>();
+    
+    private HashSet<String> studentsNotMatchedBecauseMultipleLastName = new HashSet<>();
+    // right now this is kinda shitty because these collections are separate...
+    // really, since any assigner is generally a teacher OR an admin but not necessarily both,
+    // we are only worried about names that appear in BOTH of these sets
+    // (at least until the dl is upgraded again to combine these lists into one, for whatever that entails)
+//    private HashSet<String> teachersNotMatchedBecauseMultipleLastName = new HashSet<>();
+//    private HashSet<String> adminsNotMatchedBecauseMultipleLastName = new HashSet<>();
     
     @Override
     public String getResultString() {
@@ -69,16 +77,16 @@ public class DeansListSyncResult extends BaseSyncResult {
         builder.append("\n");
         builder.append("--");
         builder.append("\n");
-        builder.append("Behavior Events Without Matching EdPanel Teachers/Admins: " + behaviorEventsWithUnmatchedTeachers);
+        builder.append("Behavior Events Without Matching EdPanel Teachers/Admins: " + behaviorEventsWithUnmatchedAssigners);
         builder.append("\n");
         builder.append("Behavior Events Without Any Specified Teachers/Admins: " + behaviorEventsWithoutTeachers);
         builder.append("\n");
         builder.append("--");
         builder.append("\n");
-        if (teachersNotMatched.size() > 0) {
-            builder.append("Unmatched Teachers (" + teachersNotMatched.size() + "): ");
+        if (assignersNotMatched.size() > 0) {
+            builder.append("Unmatched Teachers (" + assignersNotMatched.size() + "): ");
             builder.append("\n");
-            for (String unmatchedTeacherName : teachersNotMatched) {
+            for (String unmatchedTeacherName : assignersNotMatched) {
                 builder.append("  " + unmatchedTeacherName);
                 builder.append("\n");
             }
@@ -106,9 +114,9 @@ public class DeansListSyncResult extends BaseSyncResult {
         studentsNotMatched.add(unmatchedStudentName);
     }
     
-    public void incrementUnmatchedTeacher(String unmatchedTeacherName) { 
-        behaviorEventsWithUnmatchedTeachers++;
-        teachersNotMatched.add(unmatchedTeacherName);
+    public void incrementUnmatchedAssigner(String unmatchedAssignerName) { 
+        behaviorEventsWithUnmatchedAssigners++;
+        assignersNotMatched.add(unmatchedAssignerName);
     }
     
     public void incrementBehaviorAdded() { behaviorsAdded++; }
@@ -128,7 +136,10 @@ public class DeansListSyncResult extends BaseSyncResult {
         studentsFuzzyMatched.add(Pair.of(mappedFrom, mappedTo));
     }
     
-    public void incrementBehaviorEventsFailedToMatchFirstWithMultipleStudents() { behaviorEventsFailedToMatchFirstWithMultipleStudents++; }
+    public void incrementBehaviorEventsFailedToMatchFirstWithMultipleStudents(String failedToMatch) { 
+        behaviorEventsFailedToMatchFirstWithMultipleStudents++; 
+        studentsNotMatchedBecauseMultipleLastName.add(failedToMatch);
+    }
 
     public void incrementBehaviorEventsMatchedTeacherLastAndFirst() { behaviorEventsMatchedTeacherLastAndFirst++; }
 
