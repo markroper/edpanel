@@ -141,6 +141,14 @@ public class DlEtlEngine implements IEtlEngine {
                     } else if (existingUser instanceof Administrator) {
                         result.incrementBehaviorEventsMatchedAdminLastButNotFirst(deanslistName, existingName);
                     }
+                } else {
+                    if (existingUser instanceof Student) {
+                        result.incrementBehaviorEventsMatchedStudentLastAndFirst();
+                    } else if (existingUser instanceof Teacher) {
+                        result.incrementBehaviorEventsMatchedTeacherLastAndFirst();
+                    } else if (existingUser instanceof Administrator) {
+                        result.incrementBehaviorEventsMatchedAdminLastAndFirst();
+                    }
                 }
             } else if (usersWithThisLastName.size() > 1) {
                 // more than one student with this last name -- match on first name too.
@@ -150,6 +158,14 @@ public class DlEtlEngine implements IEtlEngine {
                     LOGGER.error("ERROR - More than one person found with last name " + userToFindFirstName + ", "
                             + " but cannot find any with name " + userToFindFirstName);
                     // TODO Jordan: closest match wins? 
+
+                    if (existingUser instanceof Student) {
+                        result.incrementBehaviorEventsFailedToMatchFirstWithMultipleStudents(userToFindFirstName + " " + userToFindLastName);
+                    } else if (existingUser instanceof Teacher) {
+                        result.incrementBehaviorEventsFailedToMatchFirstWithMultipleTeachers();
+                    } else if (existingUser instanceof Administrator) {
+                        result.incrementBehaviorEventsFailedToMatchFirstWithMultipleAdmins();
+                    }
 
                     // don't log anything to results here as it will result in false positives when 
                     // we search for admins in the teacher list and vice versa
@@ -192,7 +208,6 @@ public class DlEtlEngine implements IEtlEngine {
                         behavior.setAssigner(existingTeacher);
                         result.incrementBehaviorMatchedTeacher();
                     } else {
-                       // 'teacher' may be a misnomer - it may also be an administrator 
                         Administrator existingAdmin = findUserByName(assigner.getName(), adminLastNameLookup, result);
                         if (existingAdmin != null) {
                             behavior.setAssigner(existingAdmin);
@@ -201,7 +216,7 @@ public class DlEtlEngine implements IEtlEngine {
                             // null out the teacher that cannot be associated or we will get an error when submitting
                             // (we would need to create this teacher, and DL sync only creates behavior events)
                             behavior.setAssigner(null);
-                            result.incrementUnmatchedTeacher(assigner.getName());
+                            result.incrementUnmatchedAssigner(assigner.getName());
                         }
                     }
                 } else {
