@@ -11,6 +11,7 @@ import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.SchoolDay;
+import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
@@ -21,6 +22,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * Defines a contract for communicating via external process with the EdPanel REST interface
+ *
  * Created by mattg on 7/3/15.
  */
 public interface IAPIClient {
@@ -189,4 +192,8 @@ public interface IAPIClient {
             StudentAssignment studentAssignment
     ) throws IOException;
 
+    // GPA
+    Gpa createGpa(Long studentId, Gpa gpa) throws HttpClientException;
+    void updateGpa(Long studentId, Gpa gpa) throws IOException;
+    Gpa[] getGpas() throws HttpClientException;
 }

@@ -744,13 +744,16 @@ public class IntegrationBase {
         return getSectionAssignmentEndpoint(schoolId, schoolYearId, termId, sectionId, sectionAssignmentId) 
                 + STUDENT_ASSIGNMENT_ENDPOINT;
     }
-    
+
+    public String getGpaEndpoint() {
+        return BASE_API_ENDPOINT + GPA_ENDPOINT;
+    }
     public String getGpaEndpoint(Long studentId) {
-        return getStudentEndpoint(studentId) + GPA_ENDPOINT;
+        return getGpaEndpoint() + STUDENT_ENDPOINT + pathify(studentId);
     }
     
     public String getGpaEndpoint(Long studentId, Long gpaId) {
-        return getGpaEndpoint(studentId) + pathify(gpaId);
+        return getGpaEndpoint() + pathify(gpaId) + STUDENT_ENDPOINT + pathify(studentId);
     }
 
     public String getBehaviorEndpoint(Long studentId) {
