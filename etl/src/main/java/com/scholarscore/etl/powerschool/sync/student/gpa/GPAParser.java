@@ -26,11 +26,11 @@ public class GPAParser {
     public List<RawGPAValue> parse(InputStream is) {
         List<RawGPAValue> results = new ArrayList<>();
         try {
+            is.mark(0);
             Reader in = new InputStreamReader(is);
-
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String header[] = br.readLine().split(",");
-
+            is.reset();
             CSVParser parser = CSVFormat.DEFAULT.parse(in);
 
             for (CSVRecord record : parser.getRecords()) {
@@ -39,7 +39,12 @@ public class GPAParser {
                     String name = header[i];
                     if (name.equalsIgnoreCase(ID)) {
                         String id = record.get(i);
-                        gpa.setStudentId(Long.valueOf(id));
+                        if (id.matches("[0-9]{1,}")) {
+                            gpa.setStudentId(Long.valueOf(id));
+                        }
+                        else {
+                            break;
+                        }
                     } else if (name.startsWith(GPA_METHOD_MARKER)) {
                         Matcher m = GPA_METHOD_MATCHER.matcher(name);
                         if (m.matches()) {
