@@ -32,9 +32,6 @@ public class DlEtlEngine implements IEtlEngine {
     private IAPIClient scholarScore;
 
     // created and used locally - not handled by spring
-//    private HashMap<String, Student> studentLookup; // key: studentName, value: student
-//    private HashMap<String, Teacher> teacherLookup; // key: teacherName, value: teacher
-//    private HashMap<String, Administrator> adminLookup; // key: adminName, value: admin
     
     // key: studentLastName, value: hashmap of students w/ that last name (key: student first name, value: student)
     private HashMap<String, HashMap<String, Student>> studentLastNameLookup;
@@ -135,11 +132,15 @@ public class DlEtlEngine implements IEtlEngine {
                 String existingUserFirstName = stripAndLowerMatchableName(existingUser.getName(), KeyType.FIRST_NAME);
                 if (existingUserFirstName == null ||
                         !existingUserFirstName.equals(userToFindFirstName)) {
-                    LOGGER.warn("WARN - Matching '" + userToFindFirstName + " " + userToFindLastName + "' to '"
-                            + existingUserFirstName + " " + userToFindLastName + "'"
-                            + " because this is the only record with that last name, even though first names don't match" );
-                    // TODO Jordan: right now this will be ALL users -- inc admins and teachers --, not just students.
-                    result.incrementBehaviorEventsMatchedStudentLastButNotFirst();
+                    String deanslistName = userToFindFirstName + " " + userToFindLastName;
+                    String existingName = existingUserFirstName + " " + userToFindLastName;
+                    if (existingUser instanceof Student) {
+                        result.incrementBehaviorEventsMatchedStudentLastButNotFirst(deanslistName, existingName);
+                    } else if (existingUser instanceof Teacher) {
+                        result.incrementBehaviorEventsMatchedTeacherLastButNotFirst(deanslistName, existingName);
+                    } else if (existingUser instanceof Administrator) {
+                        result.incrementBehaviorEventsMatchedAdminLastButNotFirst(deanslistName, existingName);
+                    }
                 }
             } else if (usersWithThisLastName.size() > 1) {
                 // more than one student with this last name -- match on first name too.
@@ -148,8 +149,10 @@ public class DlEtlEngine implements IEtlEngine {
                     // failed to match on first name -- failure!
                     LOGGER.error("ERROR - More than one person found with last name " + userToFindFirstName + ", "
                             + " but cannot find any with name " + userToFindFirstName);
-                    // TODO Jordan: right now this will be ALL users -- inc admins and teachers --, not just students.
-                    result.incrementUnmatchedStudent(userToFindFirstName + " " + userToFindLastName);
+                    // TODO Jordan: closest match wins? 
+
+                    // don't log anything to results here as it will result in false positives when 
+                    // we search for admins in the teacher list and vice versa
                 } else {
                     // we have matched the student firstname lastname which is good enough for now! rejoice!
                     return existingUser;
@@ -159,8 +162,9 @@ public class DlEtlEngine implements IEtlEngine {
                 LOGGER.error("ERROR: empty hashmap found for lastname " + userToFindLastName
                         + " which means the DlEtlEngine isn't populating it correctly.");
             }
+            return existingUser;
         }
-            return null;
+        return null;
     } 
     
     private void handleBehavior(Behavior behavior, DeansListSyncResult result) {
@@ -378,9 +382,6 @@ public class DlEtlEngine implements IEtlEngine {
                     throw new RuntimeException("unrecognized KeyType in stripAndLowerMatchable name");
             }
         }
-            
-        if (nameWords.length == 3) { matchableName = nameWords[0] + " " + nameWords[2]; }    // first, IGNORE MIDDLE, last
-        if (nameWords.length > 3) { matchableName = nameWords[0] + " " + nameWords[nameWords.length - 1]; }  // just guessing...
         return stripAndLowerName(matchableName);
     }
     

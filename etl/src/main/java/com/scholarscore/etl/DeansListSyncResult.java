@@ -1,5 +1,8 @@
 package com.scholarscore.etl;
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -40,6 +43,10 @@ public class DeansListSyncResult extends BaseSyncResult {
     private int behaviorEventsMatchedAdminLastAndFirst = 0;
     private int behaviorEventsMatchedAdminLastButNotFirst = 0;
     private int behaviorEventsFailedToMatchFirstWithMultipleAdmins = 0;
+    
+    private ArrayList<Pair<String, String>> studentsFuzzyMatched = new ArrayList<>();
+    private ArrayList<Pair<String, String>> teachersFuzzyMatched = new ArrayList<>();
+    private ArrayList<Pair<String, String>> adminsFuzzyMatched = new ArrayList<>();
     
     @Override
     public String getResultString() {
@@ -116,19 +123,28 @@ public class DeansListSyncResult extends BaseSyncResult {
 
     public void incrementBehaviorEventsMatchedStudentLastAndFirst() { behaviorEventsMatchedStudentLastAndFirst++; }
     
-    public void incrementBehaviorEventsMatchedStudentLastButNotFirst() { behaviorEventsMatchedStudentLastButNotFirst++; }
+    public void incrementBehaviorEventsMatchedStudentLastButNotFirst(String mappedFrom, String mappedTo) {
+        behaviorEventsMatchedStudentLastButNotFirst++; 
+        studentsFuzzyMatched.add(Pair.of(mappedFrom, mappedTo));
+    }
     
     public void incrementBehaviorEventsFailedToMatchFirstWithMultipleStudents() { behaviorEventsFailedToMatchFirstWithMultipleStudents++; }
 
     public void incrementBehaviorEventsMatchedTeacherLastAndFirst() { behaviorEventsMatchedTeacherLastAndFirst++; }
 
-    public void incrementBehaviorEventsMatchedTeacherLastButNotFirst() { behaviorEventsMatchedTeacherLastButNotFirst++; }
+    public void incrementBehaviorEventsMatchedTeacherLastButNotFirst(String mappedFrom, String mappedTo) {
+        behaviorEventsMatchedTeacherLastButNotFirst++; 
+        teachersFuzzyMatched.add(Pair.of(mappedFrom, mappedTo));
+    }
 
     public void incrementBehaviorEventsFailedToMatchFirstWithMultipleTeachers() { behaviorEventsFailedToMatchFirstWithMultipleTeachers++; }
 
     public void incrementBehaviorEventsMatchedAdminLastAndFirst() { behaviorEventsMatchedAdminLastAndFirst++; }
 
-    public void incrementBehaviorEventsMatchedAdminLastButNotFirst() { behaviorEventsMatchedAdminLastButNotFirst++; }
+    public void incrementBehaviorEventsMatchedAdminLastButNotFirst(String mappedFrom, String mappedTo) { 
+        behaviorEventsMatchedAdminLastButNotFirst++; 
+        adminsFuzzyMatched.add(Pair.of(mappedFrom, mappedTo));
+    }
 
     public void incrementBehaviorEventsFailedToMatchFirstWithMultipleAdmins() { behaviorEventsFailedToMatchFirstWithMultipleAdmins++; }
     
