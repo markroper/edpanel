@@ -114,4 +114,12 @@ public class JsonAttributes implements Serializable  {
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(jsonString, jsonNode);
     }
+
+    @Override
+    public String toString() {
+        return "JsonAttributes{" +
+                "jsonNode=" + jsonNode +
+                ", jsonString='" + jsonString + '\'' +
+                '}';
+    }
 }
