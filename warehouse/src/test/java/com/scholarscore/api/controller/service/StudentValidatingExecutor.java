@@ -209,15 +209,14 @@ public class StudentValidatingExecutor {
         Student returnStudent = new Student(submitted);
         if(method == HttpMethod.PATCH) {
             returnStudent.mergePropertiesIfNull(created);
-        } else if(null != returnStudent && null == returnStudent.getId()) {
+        } else if(null == returnStudent.getId()) {
             returnStudent.setId(created.getId());
         }
-        if(null == returnStudent.getPassword()) {
-            returnStudent.setPassword(created.getPassword());
-        }
+        returnStudent.setPassword(null);
         if(null == returnStudent.getUsername()) {
             returnStudent.setUsername(created.getUsername());
         }
+        returnStudent.setEnabled(created.getEnabled());
         returnStudent.setUserId(created.getUserId());
         returnStudent.setId(created.getId());
         return returnStudent;
