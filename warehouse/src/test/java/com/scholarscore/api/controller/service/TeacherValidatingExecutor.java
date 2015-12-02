@@ -163,9 +163,8 @@ public class TeacherValidatingExecutor {
         } else if(null != returnTeacher && null == returnTeacher.getId()) {
             returnTeacher.setId(created.getId());
         }
-        if(null == returnTeacher.getPassword()) {
-            returnTeacher.setPassword(created.getPassword());
-        }
+        returnTeacher.setEnabled(created.getEnabled());
+        returnTeacher.setPassword(null);
         if(null == returnTeacher.getUsername()) {
             returnTeacher.setUsername(created.getUsername());
         }
