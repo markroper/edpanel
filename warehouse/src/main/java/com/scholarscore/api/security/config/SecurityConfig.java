@@ -199,7 +199,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         FormLoginConfigurer formLogin = new FormLoginConfigurer();
         formLogin.
             successHandler(successHandler).
-                failureHandler(failureHandler).
+            failureHandler(failureHandler).
             loginProcessingUrl(LOGIN_ENDPOINT);
         http.apply(formLogin);
         
