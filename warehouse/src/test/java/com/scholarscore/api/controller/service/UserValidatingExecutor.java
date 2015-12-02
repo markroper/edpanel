@@ -116,6 +116,9 @@ public class UserValidatingExecutor {
             fail("Failure - unknown user type");
         }
         
+        returnUser.setPassword(null);
+        returnUser.setEnabled(created.getEnabled());
+        
         ((Person)returnUser).setUserId(created.getId());
 
         if(method == HttpMethod.PATCH) {
