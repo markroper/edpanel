@@ -18,7 +18,7 @@ import static org.testng.Assert.assertNotNull;
 @Test(groups = {"integration"})
 public class AuthenticationIntegrationTest extends IntegrationBase {
 
-    // break this out into resource file (or something)0
+    // break this out into resource file (or something)
     private static final String USER_PERMISSIONS_LOGIN = "student_user";
     private static final String USER_PERMISSIONS_PASS = "student_user";
     
@@ -38,8 +38,6 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
     @Test
     public void testStudentLogin() {
         Student user = new Student();
-        user.setPassword("password");
-        user.setEnabled(true);
         user.setUsername(UUID.randomUUID().toString());
         User studentUser = userValidatingExecutor.create(user, "Creating test student user");
         assertNotNull(studentUser);
