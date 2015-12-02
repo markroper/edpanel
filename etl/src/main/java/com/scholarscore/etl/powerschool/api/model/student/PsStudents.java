@@ -74,6 +74,7 @@ public class PsStudents extends ArrayList<PsStudent> implements ITranslateCollec
                 model.setDistrictEntryDate(student.demographics.district_entry_date);
                 model.setSocialSecurityNumber(student.demographics.ssn);
             }
+            model.setEnabled(true);
             response.add(model);
         });
 

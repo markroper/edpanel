@@ -7,6 +7,7 @@ import com.scholarscore.models.Authority;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.user.Student;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
@@ -92,7 +93,20 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
     @Override
     public Long createStudent(Student student) {
         setDefaultsIfNull(student, null);
-        Student out = hibernateTemplate.merge(student);
+        Student out = null;
+        boolean repeat = true;
+        int suffix = 0;
+        //Handle non-unique usernames by incrementing and appending a suffix
+        while(repeat && suffix < MAX_RETRIES) {
+            repeat = false;
+            try {
+                out = hibernateTemplate.merge(student);
+            } catch (DataAccessException de) {
+                repeat = true;
+                suffix++;
+                student.setUsername(student.getUsername() + suffix);
+            }
+        }
         student.setId(out.getId());
         Authority auth = new Authority();
         auth.setAuthority(RoleConstants.STUDENT);

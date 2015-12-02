@@ -6,6 +6,7 @@ import com.scholarscore.api.util.RoleConstants;
 import com.scholarscore.models.Authority;
 import com.scholarscore.models.user.Administrator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
@@ -56,13 +57,26 @@ public class AdministratorJdbc extends UserBaseJdbc implements AdministratorPers
     @Override
     public Long createAdministrator(Administrator administrator) {
         setDefaultsIfNull(administrator, null);
-        Administrator adminOut = hibernateTemplate.merge(administrator);
-        administrator.setId(adminOut.getId());
+        Administrator out = null;
+        boolean repeat = true;
+        int suffix = 0;
+        //Handle non-unique usernames by incrementing and appending a suffix
+        while(repeat && suffix < MAX_RETRIES) {
+            repeat = false;
+            try {
+                out = hibernateTemplate.merge(administrator);
+            } catch (DataAccessException de) {
+                repeat = true;
+                suffix++;
+                administrator.setUsername(administrator.getUsername() + suffix);
+            }
+        }
+        administrator.setId(out.getId());
         Authority auth = new Authority();
         auth.setAuthority(RoleConstants.ADMINISTRATOR);
-        auth.setUserId(adminOut.getId());
+        auth.setUserId(out.getId());
         authorityPersistence.createAuthority(auth);
-        return adminOut.getId();
+        return out.getId();
     }
 
     @Override

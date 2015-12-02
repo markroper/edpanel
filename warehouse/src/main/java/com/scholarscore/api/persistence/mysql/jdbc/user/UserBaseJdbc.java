@@ -9,6 +9,7 @@ import java.util.Random;
  * Created by markroper on 12/2/15.
  */
 public class UserBaseJdbc {
+    protected static final int MAX_RETRIES = 15;
     private static final String CHARS = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXYyzZ0123456789";
     private static final int LENGTH = 8;
 
