@@ -32,6 +32,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
 
     private static final String STUDENT_SECTION_GRADE = "student section grade";
 
+
     public void setStudentSectionGradePersistence(StudentSectionGradePersistence studentSectionGradePersistence) {
         this.studentSectionGradePersistence = studentSectionGradePersistence;
     }
@@ -50,6 +51,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         return new ServiceResponse<>(studentSectionGradePersistence.selectAll(sectionId));
     }
 
+    @Override
     public ServiceResponse<Collection<StudentSectionGrade>> getAllStudentSectionGradesByTerm(
             long schoolId, long yearId, long termId) {
         return new ServiceResponse<>(studentSectionGradePersistence.selectAllByTerm(termId, schoolId));
