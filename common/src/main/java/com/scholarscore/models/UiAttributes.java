@@ -39,36 +39,39 @@ public class UiAttributes implements Serializable {
         UiAttributes attrs = new UiAttributes();
         attrs.setSchool(s);
         try {
-            attrs.setAttributes(new JsonAttributes("{" +
-                    "\"attendance\":{" +
-                    "\"name\":\"Attendance\"," +
-                    "\"isTemporal\":true," +
-                    "\"thresholdChar\":\"#\"," +
-                    "\"green\":1," +
-                    "\"yellow\":4," +
-                    "\"period\":\"year\"" +
-                    "}," +
-                    "\"behavior\":{" +
-                    "\"name\":\"Attendance\"," +
-                    "\"isTemporal\":true," +
-                    "\"thresholdChar\":\"#\"," +
-                    "\"period\":\"week\"," +
-                    "\"green\":85," +
-                    "\"yellow\":75" +
-                    "}," +
-                    "\"homework\":{" +
-                    "\"name\":\"Attendance\"," +
-                    "\"isTemporal\":false," +
-                    "\"thresholdChar\":\"%\"" +
-                    "}," +
-                    "\"gpa\":{" +
-                    "\"name\":\"Attendance\"," +
-                    "\"isTemporal\":false," +
-                    "\"thresholdChar\":\"#\"," +
-                    "\"green\":3.3," +
-                    "\"yellow\":3" +
-                    "}" +
-                    "}"));
+            attrs.setAttributes(new JsonAttributes("{"+
+                "\"attendance\": {"+
+                "\"name\": \"Attendance\","+
+                "\"isTemporal\": true,"+
+                "\"thresholdChar\": \"#\","+
+                "\"green\": 1,"+
+                "\"yellow\": 4,"+
+                "\"period\": \"year\""+
+                "},"+
+                "\"behavior\": {"+
+                "\"name\": \"Behavior\","+
+                "\"isTemporal\": true,"+
+                "\"thresholdChar\": \"#\","+
+                "\"period\": \"week\","+
+                "\"green\": 89,"+
+                "\"yellow\": 75"+
+                "},"+
+                "\"homework\": {"+
+                "\"name\": \"Homework\","+
+                "\"isTemporal\": false,"+
+                "\"thresholdChar\": \"%\","+
+                "\"green\": 95,"+
+                "\"yellow\": 90,"+
+                "\"period\": \"term\""+
+                "},"+
+                "\"gpa\": {"+
+                "\"name\": \"GPA\","+
+                "\"isTemporal\": false,"+
+                "\"thresholdChar\": \"#\","+
+                "\"green\": 3.2,"+
+                "\"yellow\": 2.5"+
+                "}"+
+                "}"));
         } catch (IOException e) {
         }
         return attrs;
