@@ -16,7 +16,7 @@ public interface GpaPersistence {
 
     public Gpa selectGpa(long studentId);
 
-    public List<Gpa> selectAllCurrentGpas();
+    public List<Gpa> selectAllCurrentGpas(Long schoolId);
 
     public List<Gpa> selectStudentGpas(List<Long> studentIds, LocalDate startDate, LocalDate endDate);
 

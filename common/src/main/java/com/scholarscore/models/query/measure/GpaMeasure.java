@@ -10,9 +10,14 @@ import java.util.Set;
 
 @SuppressWarnings("serial")
 public class GpaMeasure implements IMeasure {
+    public static final String DATE = "Date";
+    public static final String TYPE = "Type";
+    public static final String STUDENT = "Student";
+    private static final Set<String> FIELDS =
+            ImmutableSet.of(DATE, TYPE, STUDENT);
+
     final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(new HashSet<Measure>());
-    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR,
-            Dimension.STUDENT, Dimension.SCHOOL, Dimension.GRADE_LEVEL);
+    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT);
     
     @Override
     public Set<Dimension> getCompatibleDimensions() {
@@ -36,7 +41,7 @@ public class GpaMeasure implements IMeasure {
 
     @Override
     public Set<String> getFields() {
-        return new HashSet<String>();
+        return FIELDS;
     }
 
 }

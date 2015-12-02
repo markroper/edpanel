@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
@@ -33,8 +34,10 @@ public class GpaController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity getAllCurrentGpas() {
-        return respond(pm.getGpaManager().getAllCurrentGpas());
+    public @ResponseBody ResponseEntity getAllCurrentGpas(
+            @ApiParam(name = "schoolId", required = false)
+            @RequestParam(value="schoolId") Long schoolId) {
+        return respond(pm.getGpaManager().getAllCurrentGpas(schoolId));
     }
 
     @ApiOperation(
