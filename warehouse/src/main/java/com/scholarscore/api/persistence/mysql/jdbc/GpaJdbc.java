@@ -18,6 +18,9 @@ import java.util.List;
 public class GpaJdbc implements GpaPersistence {
     private HibernateTemplate hibernateTemplate;
 
+    private static final String CURR_GPA_HQL = "from current_gpa g " +
+            "join fetch g.student st left join fetch st.homeAddress left join fetch st.mailingAddress " +
+            "left join fetch st.contactMethods join fetch g.gpa gpa";
     /**
      * Insert the GPA for the student.  Get the current GPA for the student.  If the calc date
      * of the inserted GPA is greater than the calc day of the current, replace the current to point
@@ -97,10 +100,20 @@ public class GpaJdbc implements GpaPersistence {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Gpa> selectAllCurrentGpas() {
-        List<CurrentGpa> currs = (List<CurrentGpa>)hibernateTemplate.find("from current_gpa g " +
-                "join fetch g.student st left join fetch st.homeAddress left join fetch st.mailingAddress " +
-                "left join fetch st.contactMethods join fetch g.gpa gpa");
+    public List<Gpa> selectAllCurrentGpas(Long schoolId) {
+        String queryString = CURR_GPA_HQL;
+        List<CurrentGpa> currs = null;
+        if(null != schoolId) {
+            queryString += " where st.currentSchoolId = :schoolId";
+            String[] params = new String[]{"schoolId" };
+            Object[] paramValues = new Object[]{ schoolId };
+            currs = (List<CurrentGpa>) hibernateTemplate.findByNamedParam(
+                    queryString,
+                    params,
+                    paramValues);
+        } else {
+            currs = (List<CurrentGpa>) hibernateTemplate.find(queryString);
+        }
         ArrayList<Gpa> gpas = new ArrayList<>();
         for(CurrentGpa curr : currs) {
             gpas.add(curr.getGpa());
@@ -146,10 +159,7 @@ public class GpaJdbc implements GpaPersistence {
         String[] params = new String[]{"studentIds" };
         Object[] paramValues = new Object[]{ studentIds };
         List<CurrentGpa> objects = (List<CurrentGpa>) hibernateTemplate.findByNamedParam(
-                "from current_gpa g " +
-                "join fetch g.student st left join fetch st.homeAddress left join fetch st.mailingAddress " +
-                "left join fetch st.contactMethods join fetch g.gpa gpa " +
-                "where st.id in (:studentIds)",
+                CURR_GPA_HQL + " where st.id in (:studentIds)",
                 params,
                 paramValues);
         if(null == objects || objects.isEmpty()) {
@@ -179,10 +189,7 @@ public class GpaJdbc implements GpaPersistence {
         String[] params = new String[]{"studentId" };
         Object[] paramValues = new Object[]{ new Long(studentId) };
         List<CurrentGpa> objects = (List<CurrentGpa>) hibernateTemplate.findByNamedParam(
-                "from current_gpa g " +
-                "join fetch g.student st left join fetch st.homeAddress left join fetch st.mailingAddress " +
-                "left join fetch st.contactMethods join fetch g.gpa gpa " +
-                "where st.id = :studentId",
+                CURR_GPA_HQL + " where st.id = :studentId",
                 params,
                 paramValues);
         if(null == objects || objects.isEmpty()) {

@@ -26,7 +26,7 @@ public interface GpaManager {
     public ServiceResponse<Collection<Gpa>> getAllGpasForStudents(
             List<Long> studentIds, LocalDate startDate, LocalDate endDate);
 
-    public ServiceResponse<Collection<Gpa>> getAllCurrentGpas();
+    public ServiceResponse<Collection<Gpa>> getAllCurrentGpas(Long schoolId);
 
     public ServiceResponse<Long> updateGpa(long studentId, long gpaId, Gpa gpa);
 
