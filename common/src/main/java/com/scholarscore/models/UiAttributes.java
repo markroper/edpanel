@@ -40,36 +40,36 @@ public class UiAttributes implements Serializable {
         attrs.setSchool(s);
         try {
             attrs.setAttributes(new JsonAttributes("{"+
-                "\"attendance\": {"+
-                "\"name\": \"Attendance\","+
-                "\"isTemporal\": true,"+
-                "\"thresholdChar\": \"#\","+
-                "\"green\": 1,"+
-                "\"yellow\": 4,"+
-                "\"period\": \"year\""+
+                "\"attendance\":{"+
+                "\"name\":\"Attendance\","+
+                "\"isTemporal\":true,"+
+                "\"thresholdChar\":\"#\","+
+                "\"green\":1,"+
+                "\"yellow\":4,"+
+                "\"period\":\"year\""+
                 "},"+
-                "\"behavior\": {"+
-                "\"name\": \"Behavior\","+
-                "\"isTemporal\": true,"+
-                "\"thresholdChar\": \"#\","+
-                "\"period\": \"week\","+
-                "\"green\": 89,"+
-                "\"yellow\": 75"+
+                "\"behavior\":{"+
+                "\"name\":\"Behavior\","+
+                "\"isTemporal\":true,"+
+                "\"thresholdChar\":\"#\","+
+                "\"period\":\"week\","+
+                "\"green\":89,"+
+                "\"yellow\":75"+
                 "},"+
-                "\"homework\": {"+
-                "\"name\": \"Homework\","+
-                "\"isTemporal\": false,"+
-                "\"thresholdChar\": \"%\","+
-                "\"green\": 95,"+
-                "\"yellow\": 90,"+
-                "\"period\": \"term\""+
+                "\"homework\":{"+
+                "\"name\":\"Homework\","+
+                "\"isTemporal\":false,"+
+                "\"thresholdChar\":\"%\","+
+                "\"green\":95,"+
+                "\"yellow\":90,"+
+                "\"period\":\"term\""+
                 "},"+
-                "\"gpa\": {"+
-                "\"name\": \"GPA\","+
-                "\"isTemporal\": false,"+
-                "\"thresholdChar\": \"#\","+
-                "\"green\": 3.2,"+
-                "\"yellow\": 2.5"+
+                "\"gpa\":{"+
+                "\"name\":\"GPA\","+
+                "\"isTemporal\":false,"+
+                "\"thresholdChar\":\"#\","+
+                "\"green\":3.2,"+
+                "\"yellow\":2.5"+
                 "}"+
                 "}"));
         } catch (IOException e) {
@@ -128,5 +128,14 @@ public class UiAttributes implements Serializable {
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(school, attributes, id);
+    }
+
+    @Override
+    public String toString() {
+        return "UiAttributes{" +
+                "id=" + id +
+                ", school=" + school +
+                ", attributes=" + attributes +
+                '}';
     }
 }
