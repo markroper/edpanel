@@ -25,7 +25,7 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`users` (
     `user_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
     `username` varchar(50) NOT NULL COMMENT 'the username used to login',
-    `password` varchar(50) CHARACTER SET UTF8 NOT NULL COMMENT 'the password',
+    `password` varchar(50) CHARACTER SET UTF8 NULL COMMENT 'the password',
     `enabled` BOOLEAN NOT NULL COMMENT 'if the user has ever logged in and created a password',
     `onetime_pass` varchar(50) CHARACTER SET UTF8 NULL COMMENT 'one-time access token used for initial user setup and forgot password', 
     `onetime_pass_created` DATETIME NULL COMMENT 'when the one time pass was last generated', 
