@@ -15,6 +15,7 @@ import com.scholarscore.models.query.dimension.TeacherDimension;
 import com.scholarscore.models.query.dimension.TermDimension;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
 import com.scholarscore.models.query.measure.BehaviorMeasure;
+import com.scholarscore.models.query.measure.GpaMeasure;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -66,7 +67,9 @@ public class DbMappings {
                put(new MeasureField(Measure.TARDY, AttendanceMeasure.STATUS_DESCRIPTION), HibernateConsts.ATTENDANCE_DESCRIPTION);
                put(new MeasureField(Measure.TARDY, AttendanceMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
                put(new MeasureField(Measure.TARDY, AttendanceMeasure.TYPE), HibernateConsts.ATTENDANCE_TYPE);
-               
+               put(new MeasureField(Measure.GPA, GpaMeasure.DATE), HibernateConsts.GPA_CALCULATION_DATE);
+               put(new MeasureField(Measure.GPA, GpaMeasure.STUDENT), HibernateConsts.STUDENT_FK);
+               put(new MeasureField(Measure.GPA, GpaMeasure.TYPE), HibernateConsts.GPA_TYPE);
                put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.ID), HibernateConsts.BEHAVIOR_ID);
                put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
                put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.TEACHER_FK), HibernateConsts.TEACHER_FK);
