@@ -13,6 +13,7 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -22,11 +23,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
@@ -79,6 +81,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String UNAUTHORIZED_JSON = "{\"message\":\"Authentication is required to access this resource.\","
             + " \"access-denied\":true,\"cause\":\"NOT AUTHENTICATED\"}";
     private static final String INVALID_CREDENTIALS_JSON = "{\"error\":\"Invalid credentials supplied\"}";
+    
+    // err on the side of caution
+    private static final int BCRYPT_STRENGTH = 12;
 
     /**
      * Adds CORS headers to the HTTP response provided.
@@ -113,18 +118,34 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private OneTimePassAuthProvider oneTimePassAuthProvider;
     
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.jdbcAuthentication()
-                .dataSource(dataSource)
-                .and()
-                .userDetailsService(customUserDetailService);
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authenticationProvider());  // regular password check, using bcrypt hash
+        auth.authenticationProvider(oneTimePassAuthProvider);   // check user's password against any saved one-time password
     }
-
+    
     @Bean(name="authenticationManager")
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        authenticationProvider.setUserDetailsService(customUserDetailService);
+        return authenticationProvider;
+    }
+    
+    @Override
+    protected UserDetailsService userDetailsService() { 
+        return customUserDetailService;
     }
     
     /**
@@ -172,8 +193,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // This was pasted out of the super.configure(http) as I needed to remove it
-        http.formLogin().and().httpBasic();
+        http.formLogin();
         CustomAuthenticationSuccessHandler successHandler = new CustomAuthenticationSuccessHandler();
         CustomAuthenticationFailureHandler failureHandler = new CustomAuthenticationFailureHandler();
         FormLoginConfigurer formLogin = new FormLoginConfigurer();
@@ -183,11 +203,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             loginProcessingUrl(LOGIN_ENDPOINT);
         http.apply(formLogin);
         
-        
-        
         http.
-//            addFilterBefore(new )
-            addFilterBefore(new CustomUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class).
             //Require https:
             requiresChannel().
             anyRequest().
@@ -205,16 +221,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             and().
             sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).
             and().
-            userDetailsService(customUserDetailService).
             exceptionHandling().
             accessDeniedHandler(new CustomAccessDeniedHandler()).
             authenticationEntryPoint(new CustomAuthenticationEntryPoint()).
             and().
-                // also check user's password against one-time password (which is used for initial setup and password reset flow)
-                        authenticationProvider(oneTimePassAuthProvider).
-                authorizeRequests().
-            and().
-        authorizeRequests().
+            authorizeRequests().
             antMatchers(HttpMethod.POST, LOGIN_ENDPOINT).permitAll().
             antMatchers(HttpMethod.OPTIONS, LOGIN_ENDPOINT).permitAll().
             antMatchers(HttpMethod.OPTIONS, "/**").permitAll().

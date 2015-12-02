@@ -33,8 +33,6 @@ import java.util.Set;
  * Created by cwallace on 9/16/2015.
  */
 public class UserManagerImpl implements UserManager {
-
-    
     
     final static Logger logger = LoggerFactory.getLogger(UserManagerImpl.class);
     
@@ -247,13 +245,24 @@ public class UserManagerImpl implements UserManager {
     * Generates a one-time password and saves it in the database, then either (a) delivers it to the user, if the user
     * has a validated contact method on file, or if not (b) alerts the school administrator that a user needs
     * a one-time password delivered to them.
+    * 
+    * It is possible that this action may be initiated by the user whose password is being reset, although
+    * it also may be initiated by an administrator user who is assisting a student reset their password. 
+    * 
+    * NOTE: This method is *NOT* required for the most simple password-reset flow, where a user knows their (old) password
+    * and uses it to log in, then changes their password to a new value. Calling this method is ONLY necessary when the user has
+    * forgotten their password and needs a "one-time password" delivered either to their contact method on file or to the
+    * administrator 
     */
+    
     @Override
     public ServiceResponse<String> startPasswordReset(String username) {
         User user = userPersistence.selectUserByName(username);
         if (null == user) {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, username}));
         }
+        
+        // TODO Jordan: if user is a logged in administrator, maybe supply some more information about where the password was sent
         
         String code = generateCode();
         Date codeCreated = new Date();
@@ -300,9 +309,8 @@ public class UserManagerImpl implements UserManager {
         return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"No Data"}));
     }
 
-    // TODO Jordan: don't take password in the URL, take it in the payload
-    
-    /* Resets the user's password.
+    /* 
+     * Resets the user's password.
      */
     @Override
     public ServiceResponse<String> resetPassword(Long userId, String newPassword) {
@@ -325,9 +333,10 @@ public class UserManagerImpl implements UserManager {
         user.setPassword(newPassword);
         updateUser(user.getId(), user);
         
-        // TODO Jordan: (DONE, GOTTA TEST!) right here, if the user is logged in with temporary password (ROLE_ONLY_CHANGE_PASSWORD) 
-        // should switch them to  login with their real password -- we are doing this now.
-        // However, we should only bother to do this if the user has ROLE_MUST_CHANGE_PASSWORD and not something normal.
+        // if the user is logged in with temporary password role (ROLE_ONLY_CHANGE_PASSWORD), they are severely limited
+        // in the actions they can take -- basically, they can just change their password. Now that they've done so,
+        // switch them back to whatever their role would be if they logged in with their real password.
+        // We only bother to do this if the user currently has role ROLE_MUST_CHANGE_PASSWORD.
         if (currentUserHasRole(RoleConstants.ROLE_MUST_CHANGE_PASSWORD)) {
             logger.debug("The user has ROLE_MUST_CHANGE_PASSWORD so switching their auth back to normal.");
 

@@ -170,6 +170,7 @@ public class UserController extends BaseController {
 		return respond(pm.getUserManager().startPasswordReset(username));
 	}
 
+	// TODO Jordan: don't take password in the URL, take it in the payload
 	@ApiOperation(
 			value = "Set new password",
 			response = Void.class)
