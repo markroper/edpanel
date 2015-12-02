@@ -64,9 +64,9 @@ public class GpaManagerImpl implements GpaManager {
     }
 
     @Override
-    public ServiceResponse<Collection<Gpa>> getAllCurrentGpas() {
+    public ServiceResponse<Collection<Gpa>> getAllCurrentGpas(Long schoolId) {
         return new ServiceResponse<>(
-                gpaPersistence.selectAllCurrentGpas());
+                gpaPersistence.selectAllCurrentGpas(schoolId));
     }
 
     @Override
