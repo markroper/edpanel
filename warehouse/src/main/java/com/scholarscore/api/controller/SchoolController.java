@@ -1,10 +1,10 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.School;
-import com.scholarscore.models.WeightedGradable;
-import com.scholarscore.util.GradeUtil;
+import com.scholarscore.models.gpa.Gpa;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -118,25 +119,27 @@ public class SchoolController extends BaseController {
             notes = "Get a map of studentId to GPA for a list of provided student IDs",
             response = Map.class)
     @RequestMapping(
-            value = "/{schoolId}/gpas/{gpaScale}",
+            value = "/{schoolId}/gpas",
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getGpas(
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "gpaScale", required = true)
-            @PathVariable(value="gpaScale") Integer gpaScale,
             @ApiParam(name = "id", required = true)
-            @RequestParam(value="id") Integer[] id)
+            @RequestParam(value="id") Long[] id)
     {
-        Map<Integer, Double> studentToGpa = new HashMap<>();
-        for(int studentId : id) {
-            Collection<? extends WeightedGradable> courseGrades =
-                    pm.getStudentSectionGradeManager().getSectionGradesForStudent(studentId).getValue();
-            studentToGpa.put(studentId, GradeUtil.calculateGPA(gpaScale, courseGrades));
+        Map<Long, Double> studentToGpa = new HashMap<>();
+        ArrayList<Long> studentIds = new ArrayList<Long>(Arrays.asList(id));
+        ServiceResponse<Collection<Gpa>> resp = pm.getGpaManager().getAllGpasForStudents(studentIds, null, null);
+        if(null != resp.getValue()) {
+            for(Gpa g: resp.getValue()) {
+                studentToGpa.put(g.getStudentId(), g.getScore());
+            }
+            return respond(new ServiceResponse<>(studentToGpa));
+        } else {
+            return respond(resp);
         }
-        return respond(studentToGpa);
     }
 
     @ApiOperation(
