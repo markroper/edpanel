@@ -119,7 +119,7 @@ public class SchoolController extends BaseController {
             notes = "Get a map of studentId to GPA for a list of provided student IDs",
             response = Map.class)
     @RequestMapping(
-            value = "/{schoolId}/gpas/{gpaScale}",
+            value = "/{schoolId}/gpas",
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
