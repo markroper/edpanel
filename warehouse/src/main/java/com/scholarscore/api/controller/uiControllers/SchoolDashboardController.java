@@ -61,7 +61,8 @@ public class SchoolDashboardController extends BaseController {
 
         for (StudentSectionGrade grade : studentSectionGrades) {
             totalStudents.add(grade.getStudent());
-            if (grade.getGrade() < 70) {
+
+            if (grade.getGrade() != null && grade.getGrade() < 70) {
                 Integer numberOfFailedSections = studentsFailing.get(grade.getStudent());
                 Student student = grade.getStudent();
                 if (null != numberOfFailedSections) {
