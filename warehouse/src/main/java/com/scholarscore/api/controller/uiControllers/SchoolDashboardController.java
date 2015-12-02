@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.*;
 
 /**
+ * This serves as a UI server for information needed for the School Data Dashboard,
+ * it renders information in ready to go chart form
  * Created by cwallace on 12/2/15.
  */
 @Controller
@@ -34,8 +36,8 @@ import java.util.*;
 public class SchoolDashboardController extends BaseController {
 
     @ApiOperation(
-            value = "Get all the data for a single student needed for the student dashboard",
-            notes = "Returns the current sections, section grades, section assignments, and grade progressions for a student",
+            value = "Get all the data needed to generate teh failing classes chart",
+            notes = "Returns two arrays of arrays, see stackedbar directive for return object",
             response = School.class)
     @RequestMapping(
             value = "/years/{schoolYearId}/terms/{termId}/classes",
