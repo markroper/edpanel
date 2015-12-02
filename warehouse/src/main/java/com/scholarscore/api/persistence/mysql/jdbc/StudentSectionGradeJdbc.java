@@ -7,9 +7,11 @@ import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
+import scala.unchecked;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,6 +34,15 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
     @SuppressWarnings("unchecked")
     public Collection<StudentSectionGrade> selectAll(long sectionId) {
         return (Collection<StudentSectionGrade>)hibernateTemplate.findByNamedParam("from studentSectionGrade ssg where ssg.section.id = :id", "id", sectionId);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection<StudentSectionGrade> selectAllByTerm(long termId, long schoolId) {
+        return (Collection<StudentSectionGrade>)hibernateTemplate.findByNamedParam(
+                SSG_HQL_BASE +
+                        "where y.school.id = :schoolId", "schoolId", schoolId
+        );
     }
 
     @Override
