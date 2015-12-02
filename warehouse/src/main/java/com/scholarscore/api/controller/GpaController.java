@@ -36,7 +36,7 @@ public class GpaController extends BaseController {
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity getAllCurrentGpas(
             @ApiParam(name = "schoolId", required = false)
-            @RequestParam(value="schoolId") Long schoolId) {
+            @RequestParam(value="schoolId", required=false) Long schoolId) {
         return respond(pm.getGpaManager().getAllCurrentGpas(schoolId));
     }
 
