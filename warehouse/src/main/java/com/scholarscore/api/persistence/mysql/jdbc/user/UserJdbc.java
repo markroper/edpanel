@@ -68,7 +68,7 @@ public class UserJdbc extends UserBaseJdbc implements UserPersistence {
     
     @Override
     public Long createUser(User user) {
-        setDefaultsIfNull(user, null);
+        transformUserValues(user, null);
         User out = hibernateTemplate.merge(user);
         return out.getId();
     }
@@ -76,7 +76,7 @@ public class UserJdbc extends UserBaseJdbc implements UserPersistence {
     @Override
     public Long replaceUser(Long userId, User value) {
         User fromDB = selectUser(userId);
-        setDefaultsIfNull(value, fromDB);
+        transformUserValues(value, fromDB);
         value.setType(fromDB.getType());
         ContactMethod.mergeContactMethods(value.getContactMethods(), fromDB.getContactMethods());
         hibernateTemplate.merge(value);

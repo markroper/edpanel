@@ -56,7 +56,7 @@ public class AdministratorJdbc extends UserBaseJdbc implements AdministratorPers
 
     @Override
     public Long createAdministrator(Administrator administrator) {
-        setDefaultsIfNull(administrator, null);
+        transformUserValues(administrator, null);
         Administrator out = null;
         boolean repeat = true;
         int suffix = 0;
@@ -81,7 +81,7 @@ public class AdministratorJdbc extends UserBaseJdbc implements AdministratorPers
 
     @Override
     public void replaceAdministrator(long administratorId, Administrator administrator) {
-        setDefaultsIfNull(administrator, select(administratorId));
+        transformUserValues(administrator, select(administratorId));
         hibernateTemplate.merge(administrator);
     }
 

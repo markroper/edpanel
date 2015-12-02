@@ -2,8 +2,8 @@ package com.scholarscore.api.persistence.mysql.jdbc.user;
 
 import com.scholarscore.models.user.User;
 
+import java.security.SecureRandom;
 import java.util.Date;
-import java.util.Random;
 
 /**
  * Created by markroper on 12/2/15.
@@ -12,9 +12,8 @@ public class UserBaseJdbc {
     protected static final int MAX_RETRIES = 15;
     private static final String CHARS = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXYyzZ0123456789";
     private static final int LENGTH = 8;
-
     private static String generatePassword() {
-        Random rand = new Random();
+        SecureRandom rand = new SecureRandom();
         char[] text = new char[LENGTH];
         for (int i = 0; i < LENGTH; i++)
         {
@@ -24,7 +23,7 @@ public class UserBaseJdbc {
     }
 
     /**
-     * Controls for the special fields on a User object, amking sure that in the create and update cases these
+     * Controls for the special fields on a User object, making sure that in the create and update cases these
      * values are handled propertly.  The special values are:
      *   oneTimePass
      *   oneTimePassCreated
@@ -40,7 +39,7 @@ public class UserBaseJdbc {
      * @param newUser
      * @param previousUser
      */
-    protected void setDefaultsIfNull(User newUser, User previousUser) {
+    protected void transformUserValues(User newUser, User previousUser) {
         if(null != previousUser) {
             //For updating an existing user, never allow a user to change the ID, set a username to null,
             //or change the enabled, oneTimePassCreated, oneTimePass or password values.
@@ -65,8 +64,13 @@ public class UserBaseJdbc {
             newUser.setOneTimePass(generatePassword());
             newUser.setOneTimePassCreated(new Date());
             if(null == newUser.getUsername()) {
-                newUser.setUsername(newUser.getName().replaceAll("\\s+",""));
+                newUser.setUsername(genUserName(newUser.getName()));
             }
         }
+    }
+
+    private static String genUserName(String name) {
+        String[] names = name.split(" ");
+        return (names[0].charAt(0) + names[names.length - 1]).toLowerCase();
     }
 }

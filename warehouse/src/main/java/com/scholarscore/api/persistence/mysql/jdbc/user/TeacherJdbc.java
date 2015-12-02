@@ -54,7 +54,7 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
 
     @Override
     public Long createTeacher(Teacher teacher) {
-        setDefaultsIfNull(teacher, null);
+        transformUserValues(teacher, null);
         Teacher out = null;
         boolean repeat = true;
         int suffix = 0;
@@ -78,7 +78,7 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
 
     @Override
     public void replaceTeacher(long id, Teacher teacher) {
-        setDefaultsIfNull(teacher, select(id));
+        transformUserValues(teacher, select(id));
         hibernateTemplate.merge(teacher);
     }
 
