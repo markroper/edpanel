@@ -33,8 +33,6 @@ import java.util.Set;
  * Created by cwallace on 9/16/2015.
  */
 public class UserManagerImpl implements UserManager {
-
-    
     
     final static Logger logger = LoggerFactory.getLogger(UserManagerImpl.class);
     
@@ -313,8 +311,6 @@ public class UserManagerImpl implements UserManager {
 
     /* 
      * Resets the user's password.
-     *
-     * This method   
      */
     @Override
     public ServiceResponse<String> resetPassword(Long userId, String newPassword) {
