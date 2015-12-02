@@ -38,7 +38,7 @@ public class SchoolDashboardController extends BaseController {
             notes = "Returns the current sections, section grades, section assignments, and grade progressions for a student",
             response = School.class)
     @RequestMapping(
-            value = "/years/{schoolYearId}/terms/{termId}",
+            value = "/years/{schoolYearId}/terms/{termId}/classes",
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -56,7 +56,7 @@ public class SchoolDashboardController extends BaseController {
         Map<Student, Integer> studentsFailing = new HashMap<>();
         HashSet<Student> totalStudents = new HashSet<Student>();
         Integer maxFailedClasses = 0;
-        
+
         for (StudentSectionGrade grade : studentSectionGrades) {
             totalStudents.add(grade.getStudent());
             if (grade.getGrade() < 70) {
