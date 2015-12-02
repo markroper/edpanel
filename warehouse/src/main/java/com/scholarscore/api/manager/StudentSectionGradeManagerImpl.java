@@ -50,6 +50,12 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         return new ServiceResponse<>(studentSectionGradePersistence.selectAll(sectionId));
     }
 
+    public ServiceResponse<Collection<StudentSectionGrade>> getAllStudentSectionGradesByTerm(
+            long schoolId, long yearId, long termId) {
+        return new ServiceResponse<>(studentSectionGradePersistence.selectAllByTerm(termId, schoolId));
+    }
+
+
     @Override
     public ServiceResponse<Collection<StudentSectionGrade>> getSectionGradesForStudent(long studentId) {
         StatusCode code = pm.getStudentManager().studentExists(studentId);

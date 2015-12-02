@@ -21,6 +21,8 @@ public interface StudentSectionGradeManager {
     public ServiceResponse<Collection<StudentSectionGrade>> getAllStudentSectionGrades(
             long schoolId, long yearId, long termId, long sectionId);
 
+    public ServiceResponse<Collection<StudentSectionGrade>> getAllStudentSectionGradesByTerm(
+            long schoolId, long yearId, long termId);
     /**
      * Return all section grades completed by a student
      * @param studentId the ID of the student
