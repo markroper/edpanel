@@ -25,7 +25,7 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`users` (
     `user_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
     `username` varchar(50) NOT NULL COMMENT 'the username used to login',
-    `password` varchar(50) CHARACTER SET UTF8 NOT NULL COMMENT 'the password',
+    `password` CHAR(60) CHARACTER SET UTF8 COLLATE UTF8_BIN NULL COMMENT 'the password',
     `enabled` BOOLEAN NOT NULL COMMENT 'if the user has ever logged in and created a password',
     `onetime_pass` varchar(50) CHARACTER SET UTF8 NULL COMMENT 'one-time access token used for initial user setup and forgot password', 
     `onetime_pass_created` DATETIME NULL COMMENT 'when the one time pass was last generated', 
@@ -445,14 +445,14 @@ CREATE TABLE `scholar_warehouse`.`ui_attributes` (
         ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mattg', 'admin', 1);
-insert into `scholar_warehouse`.`users` (username, password, enabled) values ('student_user', 'student_user', 1);
-insert into `scholar_warehouse`.`users` (username, password, enabled) values ('student_user2', 'student_user', 1);
+insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mattg', '$2a$12$QEJJY2BIGzObt/qXynvaHOYmbvvdlcJzUV7PlmDgs0St1C.m4bkrK', 1);  -- password: admin
+insert into `scholar_warehouse`.`users` (username, password, enabled) values ('student_user', '$2a$12$Pn09UsgNBeM0mAYDt.avDOtCqzuUUHM1.6bGDxFjCXVO7HR6S4AuK', 1); -- password: student_user
+insert into `scholar_warehouse`.`users` (username, password, enabled) values ('student_user2', '$2a$12$azyhUsbLFMPFMoPzZXgM0OnbYpKndw83pVZ2lF0LJ.A4zrELH3dca', 1); -- password: student_user
 
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (1, 'ADMINISTRATOR');
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (2, 'STUDENT');
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (3, 'STUDENT');
-
+  
 insert into `scholar_warehouse`.`school` (school_name) values ('FirstSchool');
 
 insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Matt Greenwood', 1, 1);

@@ -62,7 +62,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	// where the user has logged in with a temporary/one-time password. 
 	// If this value is true, this user will be severely limited in the endpoints
 	// they are capable of accessing (until they call the resetPassword endpoint)
-	private Boolean mustResetPassword; 
+	private Boolean mustResetPassword;
 	
 	public User() { }
 	
@@ -77,7 +77,6 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	}
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-//	@JoinColumn(name = HibernateConsts.CONTACT_METHOD_USER_FK, nullable = false)
 	@Fetch(FetchMode.JOIN)
 	@Cascade(CascadeType.ALL)
 	public Set<ContactMethod> getContactMethods() {
@@ -161,11 +160,13 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		return super.getId();
 	}
 
-	@Column(name = HibernateConsts.USER_PASSWORD)
-	public String getPassword() {
+	@Column(name = HibernateConsts.USER_PASSWORD, columnDefinition = "char")
+	@JsonIgnore
+	public String getPassword() { 
 		return password;
 	}
-	
+
+	@JsonIgnore
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -179,27 +180,34 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	}
 
 	@Column(name = HibernateConsts.USER_ENABLED)
+	@JsonIgnore
 	public Boolean getEnabled() {
 		return enabled;
 	}
+
+	@JsonIgnore
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 
 	@Column(name = HibernateConsts.USER_ONETIME_PASS)
+	@JsonIgnore
 	public String getOneTimePass() {
 		return oneTimePass;
 	}
 
+	@JsonIgnore
 	public void setOneTimePass(String oneTimePass) {
 		this.oneTimePass = oneTimePass;
 	}
 
 	@Column(name = HibernateConsts.USER_ONETIME_PASS_CREATED)
+	@JsonIgnore
 	public Date getOneTimePassCreated() {
 		return oneTimePassCreated;
 	}
 
+	@JsonIgnore
 	public void setOneTimePassCreated(Date oneTimePassCreated) {
 		this.oneTimePassCreated = oneTimePassCreated;
 	}
