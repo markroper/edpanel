@@ -92,7 +92,7 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
 
     @Override
     public Long createStudent(Student student) {
-        setDefaultsIfNull(student, null);
+        transformUserValues(student, null);
         Student out = null;
         boolean repeat = true;
         int suffix = 0;
@@ -117,7 +117,7 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
 
     @Override
     public Long replaceStudent(long studentId, Student student) {
-        setDefaultsIfNull(student, select(studentId));
+        transformUserValues(student, select(studentId));
         hibernateTemplate.merge(student);
         return studentId;
     }
