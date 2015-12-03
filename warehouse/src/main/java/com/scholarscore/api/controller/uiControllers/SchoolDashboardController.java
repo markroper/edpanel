@@ -10,10 +10,7 @@ import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.goal.CumulativeGradeGoal;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.goal.GoalType;
-import com.scholarscore.models.ui.BreakdownCategories;
-import com.scholarscore.models.ui.GenderBreakdown;
-import com.scholarscore.models.ui.SectionGradeWithProgression;
-import com.scholarscore.models.ui.StudentSectionDashboardData;
+import com.scholarscore.models.ui.*;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -58,16 +55,30 @@ public class SchoolDashboardController extends BaseController {
 
         Collection<StudentSectionGrade> studentSectionGrades = pm.getStudentSectionGradeManager().getAllStudentSectionGradesByTerm(schoolId, schoolYearId, termId).getValue();
 
-        GenderBreakdown genderBreakdown = new GenderBreakdown();
-        for (StudentSectionGrade grade : studentSectionGrades) {
-            //totalStudents.add(grade.getStudent());
-            genderBreakdown.addToTotal(grade.getStudent());
-            if (grade.getGrade() != null && grade.getGrade() < 70) {
-                genderBreakdown.addFailingGrade(grade.getStudent());
+        if (breakdown == BreakdownCategories.RACE) {
+            RaceBreakdown raceBreakdown = new RaceBreakdown();
+            for (StudentSectionGrade grade : studentSectionGrades) {
+                raceBreakdown.addToTotal(grade.getStudent());
+
+                if (grade.getGrade() != null && grade.getGrade() < 70) {
+                    raceBreakdown.addFailingGrade(grade.getStudent());
+                }
             }
+
+            return respond(raceBreakdown.buildReturnObject());
+
+        } else {
+            GenderBreakdown genderBreakdown = new GenderBreakdown();
+            for (StudentSectionGrade grade : studentSectionGrades) {
+                genderBreakdown.addToTotal(grade.getStudent());
+
+                if (grade.getGrade() != null && grade.getGrade() < 70) {
+                    genderBreakdown.addFailingGrade(grade.getStudent());
+                }
+            }
+
+            return respond(genderBreakdown.buildReturnObject());
         }
 
-
-        return respond(genderBreakdown.buildReturnObject());
     }
 }
