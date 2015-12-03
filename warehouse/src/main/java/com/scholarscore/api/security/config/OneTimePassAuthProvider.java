@@ -32,6 +32,7 @@ public class OneTimePassAuthProvider implements AuthenticationProvider {
         User user = userPersistence.selectUserByName(name);
         if (null != user && null != password) {
             if (password.equals(user.getOneTimePass())) {
+                user.setMustResetPassword(true);
                 List<GrantedAuthority> grantedAuths = buildMustChangePasswordGrantedAuthorities();
                 List<Authority> authorities = buildMustChangePasswordAuthorities(user.getId());
                 UserDetailsProxy userDetailsProxy = new UserDetailsProxy(user, authorities);

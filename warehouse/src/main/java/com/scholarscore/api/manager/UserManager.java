@@ -39,5 +39,5 @@ public interface UserManager {
 
     ServiceResponse<String> startPasswordReset(String username);
 
-    ServiceResponse<String> resetPassword(Long userId, String newPassword);
+    ServiceResponse<User> resetPassword(Long userId, String newPassword);
 }
