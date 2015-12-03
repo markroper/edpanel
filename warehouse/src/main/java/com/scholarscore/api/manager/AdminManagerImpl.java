@@ -14,8 +14,7 @@ import java.util.Collection;
  * Created by cwallace on 9/16/2015.
  */
 public class AdminManagerImpl implements  AdminManager {
-
-
+    private static final int CREATE_RETRY_MAX = 15;
     private static final String ADMINISTRATOR = "administrator";
 
     @Autowired
@@ -59,8 +58,23 @@ public class AdminManagerImpl implements  AdminManager {
 
     @Override
     public ServiceResponse<Long> createAdministrator(Administrator admin) {
-        System.out.println("Admin persistence: " + administratorPersistence);
-        return new ServiceResponse<>(administratorPersistence.createAdministrator(admin));
+        String initUsername = admin.getUsername();
+        boolean retry = true;
+        int suffix = 0;
+        while(retry && suffix < CREATE_RETRY_MAX) {
+            retry = false;
+            try {
+                return new ServiceResponse<>(administratorPersistence.createAdministrator(admin));
+            } catch (Throwable e) {
+                suffix++;
+                retry = true;
+                if (null == initUsername) {
+                    initUsername = admin.getUsername();
+                }
+                admin.setUsername(initUsername + suffix);
+            }
+        }
+        return null;
     }
 
     @Override

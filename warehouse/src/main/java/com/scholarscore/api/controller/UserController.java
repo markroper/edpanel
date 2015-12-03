@@ -20,11 +20,38 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/users")
 public class UserController extends BaseController {
 
+	@ApiOperation(
+			value = "Get all unverified users with one time passwords",
+			notes = "Retrieve all unverified users and include their one time passwords",
+			response = List.class)
+	@RequestMapping(
+			value = "/unverified",
+			method = RequestMethod.GET,
+			produces = { JSON_ACCEPT_HEADER })
+	@SuppressWarnings("rawtypes")
+	public @ResponseBody ResponseEntity getAllUnverifiedUsersWithOneTimePasswords(
+			@RequestParam(required = false, value = "schoolId") Long schoolId) {
+		ServiceResponse<Collection<User>> users;
+		if(null != schoolId) {
+			users = pm.getUserManager().getAllUsersInSchool(schoolId, false);
+		} else {
+			users = pm.getUserManager().getAllUsers();
+		}
+		List<UserWithOneTimePass> usersWrapped = new ArrayList<>();
+		if(null != users.getValue()) {
+			usersWrapped.addAll(
+					users.getValue().stream().map(UserWithOneTimePass::new).collect(Collectors.toList()));
+			return respond(new ServiceResponse<>(usersWrapped));
+		} else {
+			return respond(users);
+		}
+	}
 
 	@ApiOperation(
 	        value = "Get all users", 
@@ -39,18 +66,8 @@ public class UserController extends BaseController {
             @RequestParam(value = "enabled") Boolean enabled) {
 	    if(null != schoolId) {
 	        if(null != enabled) {
-				//Return a collection of UserWrappers so that the one time password will be included in the JSON
-				List<UserWithOneTimePass> usersWrapped = new ArrayList<>();
-				ServiceResponse<Collection<User>> users = pm.getUserManager().getAllUsersInSchool(schoolId, enabled);
-				if(null != users.getValue()) {
-					for(User u : users.getValue()) {
-						usersWrapped.add(new UserWithOneTimePass(u));
-					}
-					return respond(new ServiceResponse<List<UserWithOneTimePass>>(usersWrapped));
-				} else {
-					return respond(users);
-				}
-	        }
+				return respond(pm.getUserManager().getAllUsersInSchool(schoolId, enabled));
+			}
 	        return respond(pm.getUserManager().getAllUsersInSchool(schoolId));
 	    }
 	    return respond(pm.getUserManager().getAllUsers());
