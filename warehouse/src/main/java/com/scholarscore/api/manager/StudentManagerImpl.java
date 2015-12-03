@@ -23,7 +23,7 @@ import java.util.List;
  * Created by cwallace on 9/16/2015.
  */
 public class StudentManagerImpl implements StudentManager {
-
+    private static final int CREATE_RETRY_MAX = 10;
     StudentPersistence studentPersistence;
     StudentPrepScorePersistence studentPrepScorePersistence;
 
@@ -46,8 +46,24 @@ public class StudentManagerImpl implements StudentManager {
     //Student
     @Override
     public ServiceResponse<Long> createStudent(Student student) {
-        return new ServiceResponse<>(studentPersistence.createStudent(student));
-    }
+        String initUsername = student.getUsername();
+        boolean retry = true;
+        int suffix = 0;
+        while(retry && suffix < CREATE_RETRY_MAX) {
+            retry = false;
+            try {
+                return new ServiceResponse<>(studentPersistence.createStudent(student));
+            } catch (Throwable e) {
+                suffix++;
+                retry = true;
+                if (null == initUsername) {
+                    initUsername = student.getUsername();
+                }
+                student.setUsername(initUsername + suffix);
+            }
+        }
+        return null;
+     }
 
     @Override
     public StatusCode studentExists(long studentId) {

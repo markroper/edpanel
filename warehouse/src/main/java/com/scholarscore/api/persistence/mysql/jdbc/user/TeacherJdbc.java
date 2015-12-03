@@ -6,7 +6,6 @@ import com.scholarscore.api.util.RoleConstants;
 import com.scholarscore.models.Authority;
 import com.scholarscore.models.user.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
@@ -55,20 +54,7 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
     @Override
     public Long createTeacher(Teacher teacher) {
         transformUserValues(teacher, null);
-        Teacher out = null;
-        boolean repeat = true;
-        int suffix = 0;
-        //Handle non-unique usernames by incrementing and appending a suffix
-        while(repeat && suffix < MAX_RETRIES) {
-            repeat = false;
-            try {
-                out = hibernateTemplate.merge(teacher);
-            } catch (DataAccessException de) {
-                repeat = true;
-                suffix++;
-                teacher.setUsername(teacher.getUsername() + suffix);
-            }
-        }
+        Teacher out = hibernateTemplate.merge(teacher);
         Authority auth = new Authority();
         auth.setAuthority(RoleConstants.TEACHER);
         auth.setUserId(out.getId());

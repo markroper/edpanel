@@ -13,7 +13,7 @@ import java.util.Collection;
  * Created by cwallace on 9/16/2015.
  */
 public class TeacherManagerImpl implements TeacherManager {
-
+    private static final int CREATE_RETRY_MAX = 15;
     private TeacherPersistence teacherPersistence;
 
     private OrchestrationManager pm;
@@ -30,7 +30,23 @@ public class TeacherManagerImpl implements TeacherManager {
 
     @Override
     public ServiceResponse<Long> createTeacher(Teacher teacher) {
-        return new ServiceResponse<Long>(teacherPersistence.createTeacher(teacher));
+        String initUsername = teacher.getUsername();
+        boolean retry = true;
+        int suffix = 0;
+        while(retry && suffix < CREATE_RETRY_MAX) {
+            retry = false;
+            try {
+                return new ServiceResponse<Long>(teacherPersistence.createTeacher(teacher));
+            } catch (Throwable e) {
+                suffix++;
+                retry = true;
+                if (null == initUsername) {
+                    initUsername = teacher.getUsername();
+                }
+                teacher.setUsername(initUsername + suffix);
+            }
+        }
+        return null;
     }
 
     @Override

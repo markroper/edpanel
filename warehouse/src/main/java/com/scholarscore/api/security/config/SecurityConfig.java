@@ -72,6 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String LOGIN_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/login";
     private static final String QUERY_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/schools/*/queries/results";
     private static final String LOGOUT_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/logout";
+    private static final String UNVERIFIED_USER_GET = ApiConsts.API_V1_ENDPOINT + "/users/unverified";
     private static final String CONFIRM_EMAIL_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/users/*/validation/email/*";
     private static final String CONFIRM_PHONE_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/users/*/validation/phone/*";
     private static final String INITIATE_CHANGE_PASSWORD_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/users/requestPasswordReset/*";
@@ -234,6 +235,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             antMatchers(HttpMethod.GET, INITIATE_CHANGE_PASSWORD_ENDPOINT).permitAll().
             antMatchers(HttpMethod.PUT, CHANGE_PASSWORD_ENDPOINT).hasAnyRole(append(AUTHENTICATED, RoleConstants.ROLE_MUST_CHANGE_PASSWORD)).
             antMatchers(HttpMethod.POST, LOGOUT_ENDPOINT).hasAnyRole(AUTHENTICATED).
+            antMatchers(HttpMethod.GET, UNVERIFIED_USER_GET).hasAnyRole(RoleConstants.ADMINISTRATOR, RoleConstants.SUPER_ADMINISTRATOR).
             antMatchers(HttpMethod.GET, "/**").hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.POST, QUERY_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.POST, "/**").hasRole(RoleConstants.ADMINISTRATOR).
