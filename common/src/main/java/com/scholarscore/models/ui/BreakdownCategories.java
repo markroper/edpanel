@@ -5,5 +5,6 @@ package com.scholarscore.models.ui;
  */
 public enum BreakdownCategories {
     GENDER,
+    RACE,
     NONE
 }
