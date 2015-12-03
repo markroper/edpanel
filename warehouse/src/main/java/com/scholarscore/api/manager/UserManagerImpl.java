@@ -354,7 +354,7 @@ public class UserManagerImpl implements UserManager {
         if (currentUserHasRole(RoleConstants.ROLE_MUST_CHANGE_PASSWORD)) {
             logger.debug("The user has ROLE_MUST_CHANGE_PASSWORD so switching their auth back to normal.");
 
-            Authentication authRequest = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+            Authentication authRequest = new UsernamePasswordAuthenticationToken(user.getUsername(), newPassword);
             Authentication authenticated = authenticationManager.authenticate(authRequest);
             if (authenticated.isAuthenticated()) {
                 logger.info("Reauthenticated user after password change");
@@ -385,6 +385,9 @@ public class UserManagerImpl implements UserManager {
     
     private boolean currentUserHasRole(String role) { 
         if (role == null) { return false; }
+        if (!role.startsWith("ROLE_")) { 
+            role = "ROLE_" + role;
+        }
         UserDetailsProxy detailsProxy = getCurrentUserDetails();
         if (detailsProxy != null) {
             Collection<? extends GrantedAuthority> authorities = detailsProxy.getAuthorities();
