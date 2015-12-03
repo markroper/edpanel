@@ -43,12 +43,18 @@ public class UserJdbc extends UserBaseJdbc implements UserPersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<User> selectAllUsersInSchool(
             Long schoolId,
             boolean enabled) {
-        @SuppressWarnings("unchecked")
-        List<User> values = 
-                (List<User>) hibernateTemplate.findByNamedParam("from user u where u.enabled = :enabled", "enabled", enabled);
+        List<User> values;
+        if(enabled) {
+            values = (List<User>) hibernateTemplate.findByNamedParam(
+                    "from user u where u.enabled = :enabled and u.password is not null", "enabled", enabled);
+        } else {
+            values = (List<User>) hibernateTemplate.find(
+                    "from user u where u.oneTimePass is not null and u.password is null");
+        }
         return filterUsersBySchool(values, schoolId);
     }
 

@@ -1,8 +1,10 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.user.ContactType;
 import com.scholarscore.models.user.User;
+import com.scholarscore.models.user.UserWithOneTimePass;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Controller
@@ -35,7 +39,17 @@ public class UserController extends BaseController {
             @RequestParam(value = "enabled") Boolean enabled) {
 	    if(null != schoolId) {
 	        if(null != enabled) {
-	            return respond(pm.getUserManager().getAllUsersInSchool(schoolId, enabled));
+				//Return a collection of UserWrappers so that the one time password will be included in the JSON
+				List<UserWithOneTimePass> usersWrapped = new ArrayList<>();
+				ServiceResponse<Collection<User>> users = pm.getUserManager().getAllUsersInSchool(schoolId, enabled);
+				if(null != users.getValue()) {
+					for(User u : users.getValue()) {
+						usersWrapped.add(new UserWithOneTimePass(u));
+					}
+					return respond(new ServiceResponse<List<UserWithOneTimePass>>(usersWrapped));
+				} else {
+					return respond(users);
+				}
 	        }
 	        return respond(pm.getUserManager().getAllUsersInSchool(schoolId));
 	    }
