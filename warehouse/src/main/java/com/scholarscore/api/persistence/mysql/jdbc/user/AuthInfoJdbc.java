@@ -27,7 +27,9 @@ public class AuthInfoJdbc extends BaseJdbc implements AuthInfoPersistence {
     
     @Override
     public void updatePassword(Long userId, String newPassword) {
-        if (StringUtils.isEmpty(newPassword)) {
+        if (userId == null || userId <= 0) {
+            LOGGER.error("ERROR - attempting to set password on an invalid userId (" + userId + "), ignoring.");
+        } else if (StringUtils.isEmpty(newPassword)) {
             LOGGER.error("ERROR - attempting to set password to a null/empty value, ignoring.");
         } else {
             String password;
@@ -36,10 +38,16 @@ public class AuthInfoJdbc extends BaseJdbc implements AuthInfoPersistence {
             } else {
                 password = newPassword;
             }
-            
+ 
+            // in addition to setting the new password,
+            // we must always clear any existing one-time password
             StringBuilder queryBuilder = new StringBuilder();
             queryBuilder.append("UPDATE " + HibernateConsts.USERS_TABLE + " ");
             queryBuilder.append("SET " + HibernateConsts.USER_PASSWORD + "='" + password +"'");
+            queryBuilder.append(",");
+            queryBuilder.append(HibernateConsts.USER_ONETIME_PASS + "=NULL");
+            queryBuilder.append(",");
+            queryBuilder.append(HibernateConsts.USER_ONETIME_PASS_CREATED + "=NULL");
             queryBuilder.append(" WHERE USER_ID = " + userId);
 
             jdbcTemplate.update(queryBuilder.toString(), (HashMap<String, ?>) null);
