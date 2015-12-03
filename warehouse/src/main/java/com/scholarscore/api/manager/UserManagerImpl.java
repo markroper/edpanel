@@ -23,7 +23,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import scala.tools.scalap.scalax.util.StringUtil;
 
 import javax.validation.constraints.Null;
 import java.math.BigInteger;
@@ -326,7 +325,7 @@ public class UserManagerImpl implements UserManager {
      * Resets the user's password.
      */
     @Override
-    public ServiceResponse<String> resetPassword(Long userId, String newPassword) {
+    public ServiceResponse<User> resetPassword(Long userId, String newPassword) {
         User user = userPersistence.selectUser(userId);
         if (null == user) {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, userId}));
@@ -366,8 +365,8 @@ public class UserManagerImpl implements UserManager {
                 throw new RuntimeException("Failed to re-authenticate user after change of password");
             }
         }
-        
-        return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"Password successfully reset"}));
+
+        return new ServiceResponse<>(user);
     }
     
     
@@ -390,11 +389,11 @@ public class UserManagerImpl implements UserManager {
         if (detailsProxy != null) {
             Collection<? extends GrantedAuthority> authorities = detailsProxy.getAuthorities();
             for (GrantedAuthority authority : authorities) {
-                if (role.toString().equals(authority.getAuthority())) {
-                    logger.info("!! !! !! Matched on authority " + role.toString() );
+                if (role.equals(authority.getAuthority())) {
+                    logger.info("Matched on authority " + role );
                     return true;
                 } else {
-                    logger.info("!! !! !! Faile to match GrantedAuthority " + authority.getAuthority() + " with " + role.toString());
+                    logger.info("Failed to match GrantedAuthority " + authority.getAuthority() + " with " + role);
                 }
             }
         }
