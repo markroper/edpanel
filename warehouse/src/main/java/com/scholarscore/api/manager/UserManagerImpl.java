@@ -347,8 +347,6 @@ public class UserManagerImpl implements UserManager {
         if (!StringUtils.isEmpty(newPassword)) {
             authInfoPersistence.updatePassword(userId, newPassword);
         }
-//        user.setPassword(newPassword);
-        updateUser(user.getId(), user);
         
         // if the user is logged in with temporary password role (ROLE_ONLY_CHANGE_PASSWORD), they are severely limited
         // in the actions they can take -- basically, they can just change their password. Now that they've done so,
