@@ -99,6 +99,7 @@
     <bean id="userManager"
           class="com.scholarscore.api.manager.UserManagerImpl">
            <property name="userPersistence" ref="userPersistence"/>
+           <property name="authInfoPersistence" ref="authInfoPersistence"/>
            <property name="pm" ref="PM"/>
     </bean>
     <bean id="schoolDayManager"

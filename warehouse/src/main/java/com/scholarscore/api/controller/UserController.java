@@ -2,6 +2,7 @@ package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.util.ServiceResponse;
+import com.scholarscore.models.ui.PasswordUpdate;
 import com.scholarscore.models.user.ContactType;
 import com.scholarscore.models.user.User;
 import com.scholarscore.models.user.UserWithOneTimePass;
@@ -201,21 +202,20 @@ public class UserController extends BaseController {
 		return respond(pm.getUserManager().startPasswordReset(username));
 	}
 
-	// TODO Jordan: don't take password in the URL, take it in the payload
 	@ApiOperation(
 			value = "Set new password",
 			response = Void.class)
 	@RequestMapping(
-			value = "/passwordReset/{userId}/{password}",
+			value = "/passwordReset/{userId}",
 			method = RequestMethod.PUT,
 			produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity submitPassword(
 			@ApiParam(name = "userId", required = true, value = "User ID")
 			@PathVariable(value = "userId") Long userId,
-			@ApiParam(name = "password", required = true, value = "password")
-			@PathVariable(value = "password") String password
+			@RequestBody @Valid PasswordUpdate passwordUpdate
 	) {
+		String password = passwordUpdate.getNewPassword();
 		return respond(pm.getUserManager().resetPassword(userId, password) );
 	}
 	
