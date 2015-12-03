@@ -17,15 +17,15 @@ import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.AttendanceTypes;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.goal.Goal;
+import com.scholarscore.models.gpa.AddedValueGpa;
 import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
+import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.Test;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -69,6 +69,14 @@ public class UISyntheticDatagenerator extends IntegrationBase {
         List<Student> generatedStudents = new ArrayList<Student>();
         for(Student s: SchoolDataFactory.generateStudents(school.getId())) {
             generatedStudents.add(studentValidatingExecutor.create(s, s.getName()));
+        }
+
+        for(Student s: generatedStudents) {
+            AddedValueGpa gpa = new AddedValueGpa();
+            gpa.setScore(RandomUtils.nextDouble(0d, 4d));
+            gpa.setCalculationDate(LocalDate.now());
+            gpa.setStudentId(s.getId());
+            gpaValidatingExecutor.create(s.getId(), gpa, "creating random GPA for student");
         }
         
         //School years
