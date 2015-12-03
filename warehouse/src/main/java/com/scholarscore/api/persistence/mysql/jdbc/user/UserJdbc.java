@@ -1,4 +1,4 @@
-package com.scholarscore.api.persistence.mysql.jdbc;
+package com.scholarscore.api.persistence.mysql.jdbc.user;
 
 import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
@@ -14,7 +14,6 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Maintain User identities separate from Student / Teacher entities for Spring Security
@@ -22,8 +21,7 @@ import java.util.UUID;
  * @author mattg
  */
 @Transactional
-public class UserJdbc implements UserPersistence {
-
+public class UserJdbc extends UserBaseJdbc implements UserPersistence {
     private TeacherPersistence teacherPersistence;
     private AdministratorPersistence administratorPersistence;
     private StudentPersistence studentPersistence;
@@ -70,26 +68,17 @@ public class UserJdbc implements UserPersistence {
     
     @Override
     public Long createUser(User user) {
-        assignDefaults(user);
+        transformUserValues(user, null);
         User out = hibernateTemplate.merge(user);
         return out.getId();
     }
 
     @Override
     public Long replaceUser(Long userId, User value) {
-
         User fromDB = selectUser(userId);
-        
-        // a subset of a fields are 'internal' to the state of the user object and are preserved 
-        // even when the rest of the object is replaced.
-        value.setId(userId);
+        transformUserValues(value, fromDB);
         value.setType(fromDB.getType());
-        value.setPassword(fromDB.getPassword());
-        value.setOneTimePass(fromDB.getOneTimePass());
-        value.setOneTimePassCreated(fromDB.getOneTimePassCreated());
-        value.setEnabled(fromDB.getEnabled());
         ContactMethod.mergeContactMethods(value.getContactMethods(), fromDB.getContactMethods());
-                
         hibernateTemplate.merge(value);
         return userId;
     }
@@ -115,15 +104,6 @@ public class UserJdbc implements UserPersistence {
             }  
         }
         return filteredValues;
-    }
-
-    private static void assignDefaults(User user) {
-        if(null == user.getPassword()) {
-            user.setPassword(UUID.randomUUID().toString());
-        }
-        if(null == user.getUsername()) {
-            user.setUsername(UUID.randomUUID().toString());
-        }
     }
 
     public HibernateTemplate getHibernateTemplate() {

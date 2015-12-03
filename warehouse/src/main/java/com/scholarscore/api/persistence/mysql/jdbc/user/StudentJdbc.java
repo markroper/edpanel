@@ -1,4 +1,4 @@
-package com.scholarscore.api.persistence.mysql.jdbc;
+package com.scholarscore.api.persistence.mysql.jdbc.user;
 
 import com.scholarscore.api.persistence.AuthorityPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
@@ -7,16 +7,16 @@ import com.scholarscore.models.Authority;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.user.Student;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 @Transactional
-public class StudentJdbc implements StudentPersistence {
+public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
 
     @Autowired
     private HibernateTemplate hibernateTemplate;
@@ -92,8 +92,21 @@ public class StudentJdbc implements StudentPersistence {
 
     @Override
     public Long createStudent(Student student) {
-        assignDefaults(student);
-        Student out = hibernateTemplate.merge(student);
+        transformUserValues(student, null);
+        Student out = null;
+        boolean repeat = true;
+        int suffix = 0;
+        //Handle non-unique usernames by incrementing and appending a suffix
+        while(repeat && suffix < MAX_RETRIES) {
+            repeat = false;
+            try {
+                out = hibernateTemplate.merge(student);
+            } catch (DataAccessException de) {
+                repeat = true;
+                suffix++;
+                student.setUsername(student.getUsername() + suffix);
+            }
+        }
         student.setId(out.getId());
         Authority auth = new Authority();
         auth.setAuthority(RoleConstants.STUDENT);
@@ -104,7 +117,7 @@ public class StudentJdbc implements StudentPersistence {
 
     @Override
     public Long replaceStudent(long studentId, Student student) {
-        assignDefaults(student);
+        transformUserValues(student, select(studentId));
         hibernateTemplate.merge(student);
         return studentId;
     }
@@ -116,15 +129,6 @@ public class StudentJdbc implements StudentPersistence {
             hibernateTemplate.delete(student);
         }
         return studentId;
-    }
-    
-    private static void assignDefaults(Student student) {
-        if(null == student.getPassword()) {
-            student.setPassword(UUID.randomUUID().toString());
-        }
-        if(null == student.getUsername()) {
-            student.setUsername(UUID.randomUUID().toString());
-        }
     }
 
     public void setAuthorityPersistence(AuthorityPersistence authorityPersistence) {

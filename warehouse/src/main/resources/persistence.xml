@@ -53,7 +53,7 @@
     </bean>
 
     <bean id="administratorPersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.AdministratorJdbc">
+          class="com.scholarscore.api.persistence.mysql.jdbc.user.AdministratorJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
         <property name="authorityPersistence" ref="authorityPersistence"/>
     </bean>
@@ -69,12 +69,12 @@
     </bean>
 
     <bean id="teacherPersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.TeacherJdbc">
+          class="com.scholarscore.api.persistence.mysql.jdbc.user.TeacherJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
         <property name="authorityPersistence" ref="authorityPersistence"/>
     </bean>
     <bean id="studentPersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.StudentJdbc">
+          class="com.scholarscore.api.persistence.mysql.jdbc.user.StudentJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
         <property name="authorityPersistence" ref="authorityPersistence"/>
     </bean>
@@ -111,7 +111,7 @@
     </bean>
 
     <bean id="userPersistence"
-          class="com.scholarscore.api.persistence.mysql.jdbc.UserJdbc">
+          class="com.scholarscore.api.persistence.mysql.jdbc.user.UserJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
         <property name="administratorPersistence" ref="administratorPersistence"/>
         <property name="studentPersistence" ref="studentPersistence"/>

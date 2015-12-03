@@ -11,3 +11,4 @@ test-output/
 gradlew
 gradlew.bat
 gradle/
+logback-test.xml
