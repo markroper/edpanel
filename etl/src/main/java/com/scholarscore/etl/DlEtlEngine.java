@@ -158,17 +158,19 @@ public class DlEtlEngine implements IEtlEngine {
                     // failed to match on first name -- failure!
                     LOGGER.error("ERROR - More than one person found with last name " + userToFindFirstName + ", "
                             + " but cannot find any with name " + userToFindFirstName);
-                    // TODO Jordan: closest match wins?
-                    // don't log anything to results here as it will result in false positives when 
-                    // we search for admins in the teacher list and vice versa
+                    // TODO Jordan: Must better handle the case when we find multiple people with the same last name,
+                    // but none of their first names match exactly (e.g. "Ben" in one system and "Benjamin" in another). 
+                    // Determine the 'closest' name using various tricks (one a substring of the other, levenshtein distance) and use it
+                    // (using this option is likely to result in all records being matched,
+                    //  but is also more likely to match incorrectly. It could/should be exposed as a configurable option on dl-etl)
                 } else {
                     // we have matched the student firstname lastname which is good enough for now! rejoice!
                     return existingUser;
                 }
 
             } else {
-                LOGGER.error("ERROR: empty hashmap found for lastname " + userToFindLastName
-                        + " which means the DlEtlEngine isn't populating it correctly.");
+                LOGGER.error("ERROR: empty hashmap exists for lastname " + userToFindLastName
+                        + ", which should never happen. The DlEtlEngine isn't populating it correctly.");
             }
             return existingUser;
         }
@@ -361,9 +363,13 @@ public class DlEtlEngine implements IEtlEngine {
     }
     
     // TODO Jordan: temporary hack to get students matching. Today nina's school puts "Nmh" or a middle initial
-    // for a student's middle name in a lot of the deanslist behavioral records. Should try to match on 
-    // first+middle+last if possible, then fall back to matching first+last if necessary. Should refactor DB to store 
-    // first+middle+last separately first.
+    // for a student's middle name in a lot of the deanslist behavioral records. This method takes in a raw
+    // student name (which can contain first, middle, last, spaces, etc) and returns a lowercased version 
+    // with whitespace characters stripped. Depending on the KeyType, the returned string may be further transformed,
+    // e.g. stripping away the middle name.
+    //
+    // Should probably refactor DB to store 
+    // first+middle+last separately before cleaning this up.
     private String stripAndLowerMatchableName(String name, KeyType keyType) {
         if (null == name) { return null; }
 
