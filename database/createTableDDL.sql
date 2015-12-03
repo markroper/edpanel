@@ -244,7 +244,7 @@ ALTER TABLE `scholar_warehouse`.`assignment` ADD INDEX (`user_defined_type`);
 CREATE TABLE `scholar_warehouse`.`student_assignment` (
   `student_assignment_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `student_assignment_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
-  `comment` VARCHAR(32768) NULL COMMENT 'Teacher comment on student assignment',
+  `comment` BLOB NULL COMMENT 'Teacher comment on student assignment',
   `completion_date` DATE NULL COMMENT 'The date the student turned in the assignment',
   `awarded_points` DOUBLE NULL COMMENT 'The number of possible points to be awarded for an assignment',
   `assignment_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the section assignment table',

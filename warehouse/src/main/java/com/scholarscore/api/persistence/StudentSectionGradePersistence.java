@@ -2,6 +2,7 @@ package com.scholarscore.api.persistence;
 
 import com.scholarscore.models.StudentSectionGrade;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -11,6 +12,9 @@ public interface StudentSectionGradePersistence {
 
     public Collection<StudentSectionGrade> selectAllByStudent(
             long studentId);
+
+    public Collection<StudentSectionGrade> selectAllByTerm(
+            long termId, long schoolId);
 
     public StudentSectionGrade select(
             long sectionId,

@@ -1,6 +1,7 @@
-package com.scholarscore.api.controller;
+package com.scholarscore.api.controller.uiControllers;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.controller.BaseController;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;

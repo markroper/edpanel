@@ -112,7 +112,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
         return 1;
     }
 
-    @Column(name = HibernateConsts.STUDENT_ASSIGNMENT_COMMENT)
+    @Column(name = HibernateConsts.STUDENT_ASSIGNMENT_COMMENT,columnDefinition="blob")
     public String getComment() {
         return comment;
     }
