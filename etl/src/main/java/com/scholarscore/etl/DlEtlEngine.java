@@ -160,7 +160,7 @@ public class DlEtlEngine implements IEtlEngine {
                             + " but cannot find any with name " + userToFindFirstName);
                     // TODO Jordan: Must better handle the case when we find multiple people with the same last name,
                     // but none of their first names match exactly (e.g. "Ben" in one system and "Benjamin" in another). 
-                    // Determine the 'closest' name using various tricks (one a substring of the other,  and use it
+                    // Determine the 'closest' name using various tricks (one a substring of the other, levenshtein distance) and use it
                     // (using this option is likely to result in all records being matched,
                     //  but is also more likely to match incorrectly. It could/should be exposed as a configurable option on dl-etl)
                 } else {
