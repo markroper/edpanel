@@ -1,4 +1,4 @@
-package com.scholarscore.api.persistence.mysql.jdbc;
+package com.scholarscore.api.persistence.mysql.jdbc.user;
 
 import com.scholarscore.api.persistence.AuthorityPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
@@ -6,15 +6,15 @@ import com.scholarscore.api.util.RoleConstants;
 import com.scholarscore.models.Authority;
 import com.scholarscore.models.user.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 @Transactional
-public class TeacherJdbc implements TeacherPersistence {
+public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
 
     @Autowired
     private HibernateTemplate hibernateTemplate;
@@ -54,8 +54,21 @@ public class TeacherJdbc implements TeacherPersistence {
 
     @Override
     public Long createTeacher(Teacher teacher) {
-        assignDefaults(teacher);
-        Teacher out = hibernateTemplate.merge(teacher);
+        transformUserValues(teacher, null);
+        Teacher out = null;
+        boolean repeat = true;
+        int suffix = 0;
+        //Handle non-unique usernames by incrementing and appending a suffix
+        while(repeat && suffix < MAX_RETRIES) {
+            repeat = false;
+            try {
+                out = hibernateTemplate.merge(teacher);
+            } catch (DataAccessException de) {
+                repeat = true;
+                suffix++;
+                teacher.setUsername(teacher.getUsername() + suffix);
+            }
+        }
         Authority auth = new Authority();
         auth.setAuthority(RoleConstants.TEACHER);
         auth.setUserId(out.getId());
@@ -65,7 +78,7 @@ public class TeacherJdbc implements TeacherPersistence {
 
     @Override
     public void replaceTeacher(long id, Teacher teacher) {
-        assignDefaults(teacher);
+        transformUserValues(teacher, select(id));
         hibernateTemplate.merge(teacher);
     }
 
@@ -74,15 +87,6 @@ public class TeacherJdbc implements TeacherPersistence {
         Teacher teacher = hibernateTemplate.get(Teacher.class, id);
         hibernateTemplate.delete(teacher);
         return id;
-    }
-    
-    private static void assignDefaults(Teacher teacher) {
-        if(null == teacher.getPassword()) {
-            teacher.setPassword(UUID.randomUUID().toString());
-        }
-        if(null == teacher.getUsername()) {
-            teacher.setUsername(UUID.randomUUID().toString());
-        }
     }
     
     public void setAuthorityPersistence(AuthorityPersistence authorityPersistence) {

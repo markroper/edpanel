@@ -1,4 +1,4 @@
-package com.scholarscore.api.persistence.mysql.jdbc;
+package com.scholarscore.api.persistence.mysql.jdbc.user;
 
 import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.AuthorityPersistence;
@@ -6,16 +6,16 @@ import com.scholarscore.api.util.RoleConstants;
 import com.scholarscore.models.Authority;
 import com.scholarscore.models.user.Administrator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 
 @Transactional
-public class AdministratorJdbc implements AdministratorPersistence {
+public class AdministratorJdbc extends UserBaseJdbc implements AdministratorPersistence {
 
     @Autowired
     private HibernateTemplate hibernateTemplate;
@@ -56,19 +56,32 @@ public class AdministratorJdbc implements AdministratorPersistence {
 
     @Override
     public Long createAdministrator(Administrator administrator) {
-        setDefaultsIfNull(administrator);
-        Administrator adminOut = hibernateTemplate.merge(administrator);
-        administrator.setId(adminOut.getId());
+        transformUserValues(administrator, null);
+        Administrator out = null;
+        boolean repeat = true;
+        int suffix = 0;
+        //Handle non-unique usernames by incrementing and appending a suffix
+        while(repeat && suffix < MAX_RETRIES) {
+            repeat = false;
+            try {
+                out = hibernateTemplate.merge(administrator);
+            } catch (DataAccessException de) {
+                repeat = true;
+                suffix++;
+                administrator.setUsername(administrator.getUsername() + suffix);
+            }
+        }
+        administrator.setId(out.getId());
         Authority auth = new Authority();
         auth.setAuthority(RoleConstants.ADMINISTRATOR);
-        auth.setUserId(adminOut.getId());
+        auth.setUserId(out.getId());
         authorityPersistence.createAuthority(auth);
-        return adminOut.getId();
+        return out.getId();
     }
 
     @Override
     public void replaceAdministrator(long administratorId, Administrator administrator) {
-        setDefaultsIfNull(administrator);
+        transformUserValues(administrator, select(administratorId));
         hibernateTemplate.merge(administrator);
     }
 
@@ -77,14 +90,6 @@ public class AdministratorJdbc implements AdministratorPersistence {
         Administrator admin = hibernateTemplate.get(Administrator.class, administratorId);
         hibernateTemplate.delete(admin);
         return administratorId;
-    }
-    private void setDefaultsIfNull(Administrator administrator) {
-        if(null == administrator.getPassword()) {
-            administrator.setPassword(UUID.randomUUID().toString());
-        }
-        if(null == administrator.getUsername()) {
-            administrator.setUsername(UUID.randomUUID().toString());
-        }
     }
     
     public void setAuthorityPersistence(AuthorityPersistence authorityPersistence) {
