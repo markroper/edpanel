@@ -225,7 +225,17 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	 * @param t
 	 */
 	public void setType(UserType t){}
-	
+
+	@Transient
+	public Boolean getMustResetPassword() {
+		return mustResetPassword;
+	}
+
+	@Transient
+	public void setMustResetPassword(Boolean mustResetPassword) {
+		this.mustResetPassword = mustResetPassword;
+	}
+
 	@Override
 	public void mergePropertiesIfNull(User mergeFrom) {
 		super.mergePropertiesIfNull(mergeFrom);
@@ -250,6 +260,9 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		} else {
 			// contact methods require special handling
 			ContactMethod.mergeContactMethods(this.contactMethods, mergeFrom.getContactMethods());
+		}
+		if (null == mustResetPassword) {
+			this.mustResetPassword = mergeFrom.getMustResetPassword();
 		}
     }
 	
