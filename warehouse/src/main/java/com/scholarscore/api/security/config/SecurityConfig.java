@@ -83,8 +83,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             + " \"access-denied\":true,\"cause\":\"NOT AUTHENTICATED\"}";
     private static final String INVALID_CREDENTIALS_JSON = "{\"error\":\"Invalid credentials supplied\"}";
     
-    // err on the side of caution
-    private static final int BCRYPT_STRENGTH = 12;
+    // err on the side of speed (increase this for more complex hashes that take longer to compute)
+    private static final int BCRYPT_STRENGTH = 10;
 
     /**
      * Adds CORS headers to the HTTP response provided.
@@ -133,7 +133,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(BCRYPT_STRENGTH);
     }
 
     @Bean

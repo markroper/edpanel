@@ -1,5 +1,6 @@
 package com.scholarscore.api.manager;
 
+import com.scholarscore.api.persistence.AuthInfoPersistence;
 import com.scholarscore.api.persistence.UserPersistence;
 import com.scholarscore.api.security.config.UserDetailsProxy;
 import com.scholarscore.api.service.EmailService;
@@ -12,6 +13,7 @@ import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.user.ContactMethod;
 import com.scholarscore.models.user.ContactType;
 import com.scholarscore.models.user.User;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import scala.tools.scalap.scalax.util.StringUtil;
 
 import javax.validation.constraints.Null;
 import java.math.BigInteger;
@@ -41,6 +44,8 @@ public class UserManagerImpl implements UserManager {
     
     private UserPersistence userPersistence;
 
+    private AuthInfoPersistence authInfoPersistence;
+    
     @Autowired
     private EmailService emailService;
     @Autowired
@@ -61,6 +66,14 @@ public class UserManagerImpl implements UserManager {
 
     public void setPm(OrchestrationManager pm) {
         this.pm = pm;
+    }
+
+    public AuthInfoPersistence getAuthInfoPersistence() {
+        return authInfoPersistence;
+    }
+
+    public void setAuthInfoPersistence(AuthInfoPersistence authInfoPersistence) {
+        this.authInfoPersistence = authInfoPersistence;
     }
 
     @Override
@@ -328,9 +341,13 @@ public class UserManagerImpl implements UserManager {
         // user logged in is not the userId that the password reset is for. maybe just take no id?
 
         // always clear onetime password + creation date when password is reset
+        // TODO Jordan: provide way to clear onetime password and time
         user.setOneTimePass(null);
         user.setOneTimePassCreated(null);
-        user.setPassword(newPassword);
+        if (!StringUtils.isEmpty(newPassword)) {
+            authInfoPersistence.updatePassword(userId, newPassword);
+        }
+//        user.setPassword(newPassword);
         updateUser(user.getId(), user);
         
         // if the user is logged in with temporary password role (ROLE_ONLY_CHANGE_PASSWORD), they are severely limited
