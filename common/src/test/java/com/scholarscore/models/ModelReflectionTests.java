@@ -307,8 +307,6 @@ public class ModelReflectionTests {
 
         // this needs more work -- how to capture generic type of list, and create dummy of same type?
         if (type.isAssignableFrom(List.class)) {
-            System.out.println("!! Found a type that is assignable from List.class... (" + type + ")");
-//            type.getGenericSuperclass()
             List list = new ArrayList<>();
             if (alt) {
                 list.add(new Object());
@@ -317,12 +315,6 @@ public class ModelReflectionTests {
             }
             return list;
         }
-        
-//        if (type.isAssignableFrom(Set.class)) {
-//            HashSet set = new HashSet();
-//            set.add(new Object());
-//            return 
-//        }
         
         // this trick is to simplify definitions of stuff that extends APImodel
         // however it does not apply to abstract classes, as well as classes that don't have empty constructors
