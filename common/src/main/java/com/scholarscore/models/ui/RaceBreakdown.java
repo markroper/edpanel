@@ -72,12 +72,12 @@ public class RaceBreakdown extends Breakdown {
     }
 
     public ArrayList<ArrayList<Object>> buildReturnObject() {
-        addStudentDatapoints("White", totalWhite, whiteStudentsFailing);
-        addStudentDatapoints("Black", totalBlack, blackStudentsFailing);
+        addStudentDatapoints("Caucasian", totalWhite, whiteStudentsFailing);
+        addStudentDatapoints("African American", totalBlack, blackStudentsFailing);
         addStudentDatapoints("Asian", totalAsian, asianStudentsFailing);
-        addStudentDatapoints("Indian", totalIndian, indianStudentsFailing);
-        addStudentDatapoints("Pacific", totalPacific, pacificStudentsFailing);
-        addStudentDatapoints("Hispanic", totalHispanic, hispanicStudentsFailing);
+        addStudentDatapoints("American Indian", totalIndian, indianStudentsFailing);
+        addStudentDatapoints("Pacific Islander", totalPacific, pacificStudentsFailing);
+        addStudentDatapoints("Hispanic or Latino", totalHispanic, hispanicStudentsFailing);
 
         return super.buildReturnObject();
     }
