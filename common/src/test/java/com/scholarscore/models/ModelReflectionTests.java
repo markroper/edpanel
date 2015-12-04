@@ -318,11 +318,11 @@ public class ModelReflectionTests {
             return list;
         }
         
-        if (type.isAssignableFrom(Set.class)) {
-            HashSet set = new HashSet();
-            set.add(new Object());
-            return 
-        }
+//        if (type.isAssignableFrom(Set.class)) {
+//            HashSet set = new HashSet();
+//            set.add(new Object());
+//            return 
+//        }
         
         // this trick is to simplify definitions of stuff that extends APImodel
         // however it does not apply to abstract classes, as well as classes that don't have empty constructors
