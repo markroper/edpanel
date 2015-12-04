@@ -117,7 +117,7 @@ public class QuerySqlGeneratorUnitTest {
         Expression comb2 = new Expression(comb1, BinaryOperator.AND, sectionClause);
         homeworkCompletionQuery.setFilter(comb2);
         String homeworkSql = "SELECT student.student_user_fk, AVG( if(assignment.type_fk = 'HOMEWORK', " +
-                "if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points = 0, 0, 1)), null)) " +
+                "if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) " +
                 "FROM student LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " +
                 "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id " +
                 "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk " +
