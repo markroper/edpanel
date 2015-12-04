@@ -14,19 +14,36 @@ public abstract class Breakdown {
     protected Integer maxClassesFailed = 0;
     protected ArrayList<ArrayList<Object>> chartingArray = new ArrayList<>();
 
-    protected void countFailing(Student student, String studentValue, String comparitor, Map<Student,Integer> studentsFailing) {
+    protected void countFailing(Student student, String studentValue, String comparitor, Map<Student,Integer> studentsFailing, Boolean isHispanic) {
         if (comparitor.equals(studentValue)) {
-            Integer sectionsFailed = studentsFailing.get(student);
-            if (null != sectionsFailed) {
-                studentsFailing.put(student, sectionsFailed + 1);
-                if (maxClassesFailed < sectionsFailed + 1) {
-                    maxClassesFailed = sectionsFailed + 1;
-                }
+            if (null == isHispanic) {
+                incrementMaxClasses(student, studentsFailing);
             } else {
-                studentsFailing.put(student, 1);
-                if (maxClassesFailed < 1) {
-                    maxClassesFailed = 1;
+                if (isHispanic) {
+                    if (("YES").equals(student.getFederalRace())) {
+                        incrementMaxClasses(student, studentsFailing);
+                    }
+                } else {
+                    if (("NO").equals(student.getFederalRace())) {
+                        incrementMaxClasses(student, studentsFailing);
+                    }
                 }
+            }
+
+        }
+    }
+
+    private void incrementMaxClasses(Student student, Map<Student, Integer> studentsFailing) {
+        Integer sectionsFailed = studentsFailing.get(student);
+        if (null != sectionsFailed) {
+            studentsFailing.put(student, sectionsFailed + 1);
+            if (maxClassesFailed < sectionsFailed + 1) {
+                maxClassesFailed = sectionsFailed + 1;
+            }
+        } else {
+            studentsFailing.put(student, 1);
+            if (maxClassesFailed < 1) {
+                maxClassesFailed = 1;
             }
         }
     }
@@ -47,7 +64,10 @@ public abstract class Breakdown {
             studentDatapoints.set(failingIndex,presentNumberFailing+1);
 
         }
-        chartingArray.add(studentDatapoints);
+        if (totalStudents.size() != 0) {
+            chartingArray.add(studentDatapoints);
+        }
+
     }
 
     public ArrayList<ArrayList<Object>> buildReturnObject() {
