@@ -207,10 +207,6 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
         // then put the incoming contact methods into the same set -- this handles both 'add' and 'replace' cases
         // as new contact methods will override existing ones if they are the same type
         if (newContactMethods != null && !newContactMethods.isEmpty()) {
-//            for (ContactMethod contactMethod : newContactMethods) {
-//                ContactMethod existingContactMethod = mergedContactMethods.get(contactMethod.getContactType());
-//                mergedContactMethods.put(contactMethod.getContactType(), contactMethod);
-//            }
             addContactMethodsToMap(newContactMethods, mergedContactMethods);
         }
         
