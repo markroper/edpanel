@@ -211,34 +211,6 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
         }
         
         return new HashSet<>(mergedContactMethods.values());
-        
-        
-        //////
-        /*
-        if (existingContactMethods != null) {
-            // any non-null fields on this object are, in the spirit of this method, supposed to
-            // overwrite values previously existing on the object. However in this case,
-            for (ContactMethod existingMethod : existingContactMethods) {
-                boolean contactMethodUpdated = false;
-                ContactType existingContactType = existingMethod.getContactType();
-                for (ContactMethod newMethod : newContactMethods) {
-                    if (newMethod.getContactType().equals(existingContactType)) {
-                        // the user has submitted a new value for a contact that already exists (this one)
-                        // take the ID from this contact and merge it to the new value so it will update instead of create
-                        newMethod.setId(existingMethod.getId());
-                        contactMethodUpdated = true;
-                        break;
-                    }
-                }
-                if (!contactMethodUpdated) {
-                    // this old contact method was not given a new value, so merge it
-                    newContactMethods.add(existingMethod);
-                }
-            }
-        }
-        */
-        
-        //////
     }
     
     private static void addContactMethodsToMap(Set<ContactMethod> contactMethodSet, Map<ContactType, ContactMethod> map) {
