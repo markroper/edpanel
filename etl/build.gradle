@@ -36,6 +36,10 @@ dependencies {
 
 }
 
+task runEtl(type: Exec) { 
+    commandLine './runEtl'
+}
+
 task fatJar(type: OneJar) {
     mainClass = mainClassName
 }
