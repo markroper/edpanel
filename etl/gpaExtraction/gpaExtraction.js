@@ -36,11 +36,6 @@ for (var i = 0; i < lines.length; i++) {
     
 }
 
-// TODO: find properties by name 'powerschool.username' and 'powerschool.password'
-// this current implementation doesn't check names, but requires the prop
-//var username = lines[0].split("=")[1];
-//## var password = lines[1].split("=")[1];
-
 if (username.length == 0 || password.length == 0) {
 	casper.echo("Credentials invalid, did you set the properties file?");
 	casper.exit();
