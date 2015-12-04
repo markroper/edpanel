@@ -192,7 +192,7 @@ public class UserController extends BaseController {
 			value = "/requestPasswordReset/{username}",
 			// This is made a GET so that it can be accessed directly as a link
 			// from the user's email
-			method = RequestMethod.POST,
+			method = RequestMethod.GET,
 			produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
 	public @ResponseBody ResponseEntity startPasswordReset(

@@ -174,7 +174,7 @@ public class UserManagerImpl implements UserManager {
         ContactMethod selectedContactMethod = getContactMethod(user.getContactMethods(), contactType);
         if (selectedContactMethod == null) {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"contact method with type not found", contactType}));
-        } else if (selectedContactMethod.confirmed()) {
+        } else if (selectedContactMethod.getConfirmed()) {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK, new Object[]{"contact of type " + contactType + " already confirmed."}));
         }
         
@@ -235,7 +235,7 @@ public class UserManagerImpl implements UserManager {
         
         boolean codeMatched = IGNORE_CASE_ON_CONFIRM_CONTACT ? confirmCode.equalsIgnoreCase(providedCode) : confirmCode.equals(providedCode);
         if (codeMatched) {
-            if (selectedContactMethod.confirmed()) {
+            if (selectedContactMethod.getConfirmed()) {
                 logger.warn("User somehow has valid confirm code for an already-confirmed contact. Clearing these values...");
             } else {
                 selectedContactMethod.setConfirmed(true);
@@ -274,23 +274,19 @@ public class UserManagerImpl implements UserManager {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{USER, username}));
         }
         
-        // TODO Jordan: if user is a logged in administrator, maybe supply some more information about where the password was sent
-        
         String code = generateCode();
-        Date codeCreated = new Date();
-        user.setOneTimePass(code);
-        user.setOneTimePassCreated(codeCreated);
-        updateUser(user.getId(), user);
+        authInfoPersistence.setOneTimePassword(user.getId(), code);
 
         boolean passwordSent = false;
         // if we can find a validated/confirmed contact, send OTP there.
         if (user.getContactMethods() != null) { 
             for (ContactMethod selectedContactMethod : user.getContactMethods()) {
-                if (selectedContactMethod.confirmed()) {
+                if (selectedContactMethod.getConfirmed()) {
                     if (ContactType.EMAIL.equals(selectedContactMethod.getContactType())) {
                         String toAddress = selectedContactMethod.getContactValue();
                         String subject = "(DEV) password reset @ EdPanel";
-                        String message = "Hello! Please login with this one-time password @ edpanel: ( " + code + " ). ";
+                        String message = "Hello! Please login with this one-time password @ https://myedpanel.com\n"
+                        + "Your code is ( " + code + " )";
                         emailService.sendMessage(toAddress, subject, message);
                     } else if (ContactType.PHONE.equals(selectedContactMethod.getContactType())) {
                         String toNumber = selectedContactMethod.getContactValue();
