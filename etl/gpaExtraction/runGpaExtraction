@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ## clear all existing CSV files? 
+rm -f *.csv
 
 # To run the casper extract using Chris's gpaExtraction.js
 casperjs --ssl-protocol=any gpaExtraction.js
