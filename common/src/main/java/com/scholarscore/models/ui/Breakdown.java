@@ -20,11 +20,11 @@ public abstract class Breakdown {
                 incrementMaxClasses(student, studentsFailing);
             } else {
                 if (isHispanic) {
-                    if (("YES").equals(student.getFederalRace())) {
+                    if (("YES").equals(student.getFederalEthnicity())) {
                         incrementMaxClasses(student, studentsFailing);
                     }
                 } else {
-                    if (("NO").equals(student.getFederalRace())) {
+                    if (("NO").equals(student.getFederalEthnicity())) {
                         incrementMaxClasses(student, studentsFailing);
                     }
                 }
