@@ -259,7 +259,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 			this.contactMethods = mergeFrom.getContactMethods();
 		} else {
 			// contact methods require special handling
-			ContactMethod.mergeContactMethods(this.contactMethods, mergeFrom.getContactMethods());
+			this.contactMethods = ContactMethod.mergeContactMethods(this.contactMethods, mergeFrom.getContactMethods());
 		}
 		if (null == mustResetPassword) {
 			this.mustResetPassword = mergeFrom.getMustResetPassword();
