@@ -42,7 +42,12 @@ public class RaceBreakdown extends Breakdown {
                     totalAsian.add(student);
                     break;
                 case "I":
-                    totalIndian.add(student);
+                    if (student.getFederalEthnicity().equals("YES")) {
+                        totalHispanic.add(student);
+                    } else {
+                        totalIndian.add(student);
+                    }
+
                     break;
                 case "P":
                     totalPacific.add(student);
@@ -57,12 +62,12 @@ public class RaceBreakdown extends Breakdown {
 
     public void addFailingGrade(Student student) {
         String studentRace = student.getFederalRace();
-        countFailing(student,studentRace, "W", whiteStudentsFailing);
-        countFailing(student,studentRace, "B", blackStudentsFailing);
-        countFailing(student,studentRace, "A", asianStudentsFailing);
-        countFailing(student,studentRace, "I", indianStudentsFailing);
-        countFailing(student,studentRace, "P", pacificStudentsFailing);
-        countFailing(student,studentRace, "H", hispanicStudentsFailing);
+        countFailing(student,studentRace, "W", whiteStudentsFailing, null);
+        countFailing(student,studentRace, "B", blackStudentsFailing, null);
+        countFailing(student,studentRace, "A", asianStudentsFailing, null);
+        countFailing(student,studentRace, "I", indianStudentsFailing, false);
+        countFailing(student,studentRace, "P", pacificStudentsFailing, false);
+        countFailing(student,studentRace, "H", hispanicStudentsFailing, true);
 
     }
 
