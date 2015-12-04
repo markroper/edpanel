@@ -66,8 +66,8 @@ public class RaceBreakdown extends Breakdown {
         countFailing(student,studentRace, "B", blackStudentsFailing, null);
         countFailing(student,studentRace, "A", asianStudentsFailing, null);
         countFailing(student,studentRace, "I", indianStudentsFailing, false);
-        countFailing(student,studentRace, "P", pacificStudentsFailing, false);
-        countFailing(student,studentRace, "H", hispanicStudentsFailing, true);
+        countFailing(student,studentRace, "P", pacificStudentsFailing, null);
+        countFailing(student,studentRace, "I", hispanicStudentsFailing, true);
 
     }
 
