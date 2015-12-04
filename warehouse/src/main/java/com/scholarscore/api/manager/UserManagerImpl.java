@@ -286,7 +286,8 @@ public class UserManagerImpl implements UserManager {
                         String toAddress = selectedContactMethod.getContactValue();
                         String subject = "Password Reset For EdPanel";
                         String message = "Hello! Please login with this temporary password @ https://myedpanel.com\n"
-                        + "Your temporary password is ( " + code + " )";
+                        + "Your username is " + user.getUsername() + " and "
+                        + "your temporary password is ( " + code + " )";
                         emailService.sendMessage(toAddress, subject, message);
                     } else if (ContactType.PHONE.equals(selectedContactMethod.getContactType())) {
                         String toNumber = selectedContactMethod.getContactValue();
