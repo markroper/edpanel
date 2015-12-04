@@ -79,7 +79,7 @@ public class AdminManagerImpl implements  AdminManager {
 
     @Override
     public ServiceResponse<Long> replaceAdministrator(long administratorId, Administrator administrator) {
-        StatusCode code = pm.getTeacherManager().teacherExists(administratorId);
+        StatusCode code = pm.getAdminManager().administratorExists(administratorId);
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
         }

@@ -41,7 +41,7 @@ CREATE TABLE `scholar_warehouse`.`contact_method` (
   `contact_value` varchar(256) NOT NULL COMMENT 'the actual contact info - the email address, phone number, etc',
   `confirm_code` varchar(64) NULL COMMENT 'the confirmation code sent to the user via the specified medium',
   `confirm_code_created` DATETIME NULL COMMENT 'the time this confirmation code was generated and sent',
-  `confirmed` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'if this email has been confirmed as belonging to the user',
+  `confirmed` BOOLEAN NOT NULL COMMENT 'if this email has been confirmed as belonging to the user',
     PRIMARY KEY (`contact_method_id`),
   CONSTRAINT `user_fk$contact_method`
   FOREIGN KEY (`user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
