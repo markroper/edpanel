@@ -32,6 +32,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -57,7 +60,6 @@ public class ModelReflectionTests {
     private int numberOfFailedDefaultFieldAttempts = 0;
     private Set<String> fieldsThatNeedDefaults = new HashSet<>();
     
-//    private boolean loggingEnabled = false;
     private boolean loggingEnabled = false;
     
     private final String packageToScan = this.getClass().getPackage().getName();
@@ -286,16 +288,24 @@ public class ModelReflectionTests {
         return getValueForType(type, true);
     }
     
+    // the reflection tests above will test equality methods of the objects under test -- but this requires being able to get
+    // two distinct values for each object type. The below method is responsible for generating two data values
+    // (which of the two values is returned  depends on the 'alt' flag) for the type passed in.
     private Object getValueForType(Class<?> type, boolean alt) {
         if (type.isAssignableFrom(Double.class)) { return alt ? 777D : 76D; }
         if (type.isAssignableFrom(Long.class)) { return alt ? 22L : 2L; }
         if (type.isAssignableFrom(String.class)) { return alt ? "anotherStringValue" : "stringValue"; }
         if (type.isAssignableFrom(Boolean.class)) { return !alt; }
         if (type.isAssignableFrom(Integer.class)) { return alt ? 33: 3; }
-        if (type.isAssignableFrom(Date.class)) { return alt ? new Date(1322462400000L) : new Date(1442462400000L); }
+        
+        long epochSecondsFirstDate = 1322462400000L;
+        long epochSecondsAltDate = 1442462400000L;
+        if (type.isAssignableFrom(Date.class)) { return alt ? new Date(epochSecondsAltDate) : new Date(epochSecondsFirstDate); }
+        if (type.isAssignableFrom(LocalDate.class)) { return LocalDateTime.ofEpochSecond((alt ? epochSecondsAltDate : epochSecondsFirstDate), 0, ZoneOffset.UTC).toLocalDate(); }
 
         if (type.isAssignableFrom(IOperand.class)) { return alt ? new DimensionOperand() : new Expression(); }
-        
+
+        // this needs more work -- how to capture generic type of list, and create dummy of same type?
         if (type.isAssignableFrom(List.class)) {
             List list = new ArrayList<>();
             if (alt) {
