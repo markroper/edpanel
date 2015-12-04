@@ -97,7 +97,7 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
     }
 
     @Column(name = HibernateConsts.CONTACT_METHOD_CONFIRMED)
-    public Boolean confirmed() {
+    public Boolean getConfirmed() {
         return confirmed;
     }
 
@@ -132,6 +132,9 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
         }
         if (confirmCodeCreated == null) {
             this.confirmCodeCreated = mergeFrom.confirmCodeCreated;
+        }
+        if (confirmed == null) {
+            this.confirmed = mergeFrom.confirmed;
         }
     }
 
