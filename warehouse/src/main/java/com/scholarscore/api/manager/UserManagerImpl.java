@@ -284,9 +284,9 @@ public class UserManagerImpl implements UserManager {
                 if (selectedContactMethod.getConfirmed()) {
                     if (ContactType.EMAIL.equals(selectedContactMethod.getContactType())) {
                         String toAddress = selectedContactMethod.getContactValue();
-                        String subject = "(DEV) password reset @ EdPanel";
-                        String message = "Hello! Please login with this one-time password @ https://myedpanel.com\n"
-                        + "Your code is ( " + code + " )";
+                        String subject = "Password Reset For EdPanel";
+                        String message = "Hello! Please login with this temporary password @ https://myedpanel.com\n"
+                        + "Your temporary password is ( " + code + " )";
                         emailService.sendMessage(toAddress, subject, message);
                     } else if (ContactType.PHONE.equals(selectedContactMethod.getContactType())) {
                         String toNumber = selectedContactMethod.getContactValue();
