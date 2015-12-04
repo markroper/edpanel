@@ -20,8 +20,26 @@ casper.userAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X)');
 var utils = require('utils');
 casper.options.viewportSize = {width: 900, height: 600};
 
-var username = lines[0].split("=")[1];
-var password = lines[1].split("=")[1];
+var username = "";
+var password = "";
+
+for (var i = 0; i < lines.length; i++) { 
+    var usernameIndex = lines[i].search("powerschool.username=");
+    if (usernameIndex > -1) { 
+        username = lines[i].split("=")[1];
+    } else { 
+        var passwordIndex = lines[i].search("powerschool.password=");
+        if (passwordIndex > -1) { 
+            password = lines[i].split("=")[1];
+        }
+    }
+    
+}
+
+// TODO: find properties by name 'powerschool.username' and 'powerschool.password'
+// this current implementation doesn't check names, but requires the prop
+//var username = lines[0].split("=")[1];
+//## var password = lines[1].split("=")[1];
 
 if (username.length == 0 || password.length == 0) {
 	casper.echo("Credentials invalid, did you set the properties file?");
