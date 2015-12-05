@@ -12,6 +12,12 @@ import java.util.Map;
  * Created by cwallace on 12/3/15.
  */
 public class RaceBreakdown extends Breakdown {
+    private static String WHITE = "W";
+    private static String BLACK = "B";
+    private static String HISPANIC = "I";
+    private static String INDIAN = "I";
+    private static String PACIFIC = "P";
+    private static String ASIAN = "A";
 
     private HashSet<Student> totalWhite = new HashSet<>();
     private HashSet<Student> totalBlack = new HashSet<>();
@@ -62,12 +68,12 @@ public class RaceBreakdown extends Breakdown {
 
     public void addFailingGrade(Student student) {
         String studentRace = student.getFederalRace();
-        countFailing(student,studentRace, "W", whiteStudentsFailing, null);
-        countFailing(student,studentRace, "B", blackStudentsFailing, null);
-        countFailing(student,studentRace, "A", asianStudentsFailing, null);
-        countFailing(student,studentRace, "I", indianStudentsFailing, false);
-        countFailing(student,studentRace, "P", pacificStudentsFailing, null);
-        countFailing(student,studentRace, "I", hispanicStudentsFailing, true);
+        countFailing(student,studentRace, WHITE, whiteStudentsFailing, null);
+        countFailing(student,studentRace, BLACK, blackStudentsFailing, null);
+        countFailing(student,studentRace, ASIAN, asianStudentsFailing, null);
+        countFailing(student,studentRace, INDIAN, indianStudentsFailing, false);
+        countFailing(student,studentRace, PACIFIC, pacificStudentsFailing, null);
+        countFailing(student,studentRace, HISPANIC, hispanicStudentsFailing, true);
 
     }
 
