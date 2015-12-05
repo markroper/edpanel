@@ -304,7 +304,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		// login name
 		private String username;
 		private String password;
-		private Boolean enabled = false;
+		private Boolean enabled;
 
 		public U withUsername(final String username){
 			this.username = username;
