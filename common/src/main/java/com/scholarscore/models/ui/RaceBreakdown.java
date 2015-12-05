@@ -12,12 +12,12 @@ import java.util.Map;
  * Created by cwallace on 12/3/15.
  */
 public class RaceBreakdown extends Breakdown {
-    private static String WHITE = "W";
-    private static String BLACK = "B";
-    private static String HISPANIC = "I";
-    private static String INDIAN = "I";
-    private static String PACIFIC = "P";
-    private static String ASIAN = "A";
+    private static final String WHITE = "W";
+    private static final String BLACK = "B";
+    private static final String HISPANIC = "I";
+    private static final String INDIAN = "I";
+    private static final String PACIFIC = "P";
+    private static final String ASIAN = "A";
 
     private HashSet<Student> totalWhite = new HashSet<>();
     private HashSet<Student> totalBlack = new HashSet<>();
@@ -38,16 +38,16 @@ public class RaceBreakdown extends Breakdown {
             totalWhite.add(student);
         } else {
             switch (student.getFederalRace()) {
-                case "W":
+                case WHITE:
                     totalWhite.add(student);
                     break;
-                case "B":
+                case BLACK:
                     totalBlack.add(student);
                     break;
-                case "A":
+                case ASIAN:
                     totalAsian.add(student);
                     break;
-                case "I":
+                case INDIAN:
                     if (student.getFederalEthnicity().equals("YES")) {
                         totalHispanic.add(student);
                     } else {
@@ -55,11 +55,8 @@ public class RaceBreakdown extends Breakdown {
                     }
 
                     break;
-                case "P":
+                case PACIFIC:
                     totalPacific.add(student);
-                    break;
-                case "H":
-                    totalHispanic.add(student);
                     break;
             }
         }
