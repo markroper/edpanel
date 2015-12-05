@@ -52,12 +52,10 @@ public class UserControllerIntegrationTest extends IntegrationBase {
         assertEquals(createdUser.getPassword(), null);
         assertEquals(createdUser.getOneTimePass(), null);
         assertEquals(createdUser.getOneTimePassCreated(), null);
-        assertEquals(createdUser.getEnabled(), (Boolean)false);
 
         createdUser.setPassword("password_changed");
         createdUser.setOneTimePass("one time pass");
         createdUser.setOneTimePassCreated(new Date());
-        createdUser.setEnabled(true);
 
         // note the 'false' on the next line actually skips the validation -- the user that is returned does
         // not actually match the user that was sent, because certain fields are not set on the server.
@@ -66,7 +64,6 @@ public class UserControllerIntegrationTest extends IntegrationBase {
         assertEquals(returnedUser.getPassword(), null);
         assertEquals(returnedUser.getOneTimePass(), null);
         assertEquals(returnedUser.getOneTimePassCreated(), null);
-        assertEquals(returnedUser.getEnabled(), (Boolean)false);
         userValidatingExecutor.delete(createdUser.getId(), "error deleting user: " + msg);
     }
     
