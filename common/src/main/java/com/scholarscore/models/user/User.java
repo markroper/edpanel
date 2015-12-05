@@ -52,7 +52,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	private String username;
 	private String password;
 	// Indicates whether the user is a login user and can login (by default this is disabled until the user has set a username/password)
-	private Boolean enabled = false;
+	private Boolean enabled;
 	private String oneTimePass;
 	private Date oneTimePassCreated;
 
@@ -180,12 +180,10 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	}
 
 	@Column(name = HibernateConsts.USER_ENABLED)
-	@JsonIgnore
 	public Boolean getEnabled() {
 		return enabled;
 	}
 
-	@JsonIgnore
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
