@@ -221,7 +221,9 @@ public abstract class BaseHttpClient {
         } catch (IOException e) {
             throw new HttpClientException(e);
         } finally {
-            response.getEntity().getContent().close();
+            if (response != null) {
+                response.getEntity().getContent().close();
+            }
         }
     }
 
