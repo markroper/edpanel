@@ -5,8 +5,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                      http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean
-            class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+    <import resource="edpanel.xml"/>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
             p:searchSystemEnvironment="true"
             p:ignoreResourceNotFound="true"
             p:systemPropertiesModeName="SYSTEM_PROPERTIES_MODE_OVERRIDE"
@@ -22,6 +23,12 @@
         <constructor-arg index="0" type="java.lang.String" value="${powerschool.client.id}"/>
         <constructor-arg index="1" type="java.lang.String" value="${powerschool.client.secret}"/>
         <constructor-arg index="2" type="java.net.URI" value="${powerschool.client.url}"/>
+    </bean>
+
+    <bean id="etlEngine" class="com.scholarscore.etl.EtlEngine">
+        <property name="powerSchool" ref="powerSchoolClient"/>
+        <property name="edPanel" ref="edpanelClient"/>
+        <property name="dailyAbsenceTrigger" value="${powerschool.client.sectionabsencestriggeringdailyabsence}"/>
     </bean>
 
 </beans>
