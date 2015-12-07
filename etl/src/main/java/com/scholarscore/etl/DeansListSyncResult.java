@@ -57,6 +57,8 @@ public class DeansListSyncResult extends BaseSyncResult {
 //    private HashSet<String> teachersNotMatchedBecauseMultipleLastName = new HashSet<>();
 //    private HashSet<String> adminsNotMatchedBecauseMultipleLastName = new HashSet<>();
     
+    public HashSet<Pair<String, String>> usersLevMatched = new HashSet<>();
+    
     @Override
     public String getResultString() {
         StringBuilder builder = new StringBuilder();
