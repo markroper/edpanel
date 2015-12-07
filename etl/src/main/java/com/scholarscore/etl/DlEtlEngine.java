@@ -252,12 +252,14 @@ public class DlEtlEngine implements IEtlEngine {
                     try {
                         createdBehavior = scholarScore.createBehavior(studentId, behavior);
                     } catch (HttpClientException e) {
-                        e.printStackTrace();
+                        // e.printStackTrace();
                     }
                     // ... and save in cache
-                    if (createdBehavior != null) {  // this should always be true...
+                    if (createdBehavior != null) { 
                         studentBehaviorEvents.put(createdBehavior.getRemoteBehaviorId(), createdBehavior);
                         result.incrementBehaviorAdded();
+                    } else {
+                        // 
                     }
                 } else {
                     // behavior exists already in scholarscore (with id scholarScoreBehaviorId), update it

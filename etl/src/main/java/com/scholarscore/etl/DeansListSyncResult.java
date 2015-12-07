@@ -35,21 +35,21 @@ public class DeansListSyncResult extends BaseSyncResult {
     // but if the first names don't match, this will be incremented
     private int behaviorEventsMatchedStudentLastButNotFirst = 0;
     // if more than one user has the same last name and no first names match, the record won't be imported and this will be incremented
-    private int behaviorEventsFailedToMatchFirstWithMultipleStudents = 0;
+//    private int behaviorEventsFailedToMatchFirstWithMultipleStudents = 0;
 
     private int behaviorEventsMatchedTeacherLastAndFirst = 0;
     private int behaviorEventsMatchedTeacherLastButNotFirst = 0;
-    private int behaviorEventsFailedToMatchFirstWithMultipleTeachers = 0;
+//    private int behaviorEventsFailedToMatchFirstWithMultipleTeachers = 0;
     
     private int behaviorEventsMatchedAdminLastAndFirst = 0;
     private int behaviorEventsMatchedAdminLastButNotFirst = 0;
-    private int behaviorEventsFailedToMatchFirstWithMultipleAdmins = 0;
+//    private int behaviorEventsFailedToMatchFirstWithMultipleAdmins = 0;
     
     private HashSet<Pair<String, String>> studentsFuzzyMatched = new HashSet<>();
     private HashSet<Pair<String, String>> teachersFuzzyMatched = new HashSet<>();
     private HashSet<Pair<String, String>> adminsFuzzyMatched = new HashSet<>();
     
-    private HashSet<String> studentsNotMatchedBecauseMultipleLastName = new HashSet<>();
+//    private HashSet<String> studentsNotMatchedBecauseMultipleLastName = new HashSet<>();
     // right now this is kinda shitty because these collections are separate...
     // really, since any assigner is generally a teacher OR an admin but not necessarily both,
     // we are only worried about names that appear in BOTH of these sets
@@ -68,19 +68,30 @@ public class DeansListSyncResult extends BaseSyncResult {
         builder.append("\n");
         builder.append("Behavior Events Updated: " + behaviorsUpdated);
         builder.append("\n");
-        builder.append("Behavior Events Matching Teachers: " + behaviorsMatchedTeacher);
+        builder.append("Behavior Events Exactly Matching Teachers: " + behaviorEventsMatchedTeacherLastAndFirst);
         builder.append("\n");
-        builder.append("Behavior Events Matching Admins: " + behaviorsMatchedAdmin);
+        builder.append("Behavior Events Fuzzy Matching Teachers (Last Name Only): " + behaviorEventsMatchedTeacherLastButNotFirst);
         builder.append("\n");
-        builder.append("Behavior Events Failed (student missing from DL): " + behaviorEventsWithoutStudents);
+        builder.append("Behavior Events Exactly Matching Admins: " + behaviorEventsMatchedAdminLastAndFirst);
         builder.append("\n");
-        builder.append("Behavior Events Failed (student unmatched in EP): " + behaviorEventsWithUnmatchedStudents);
+        builder.append("Behavior Events Fuzzy Matching Admins (Last Name Only): " + behaviorEventsMatchedAdminLastButNotFirst);
+        builder.append("\n");
+        builder.append("Behavior Events Exactly Matching Students: " + behaviorEventsMatchedStudentLastAndFirst);
+        builder.append("\n");
+        builder.append("Behavior Events Fuzzy Matching Students (Last Name Only): " + behaviorEventsMatchedStudentLastButNotFirst);
         builder.append("\n");
         builder.append("--");
         builder.append("\n");
-        builder.append("Behavior Events Without Matching EdPanel Teachers/Admins: " + behaviorEventsWithUnmatchedAssigners);
-        builder.append("\n");
-        builder.append("Behavior Events Without Any Specified Teachers/Admins: " + behaviorEventsWithoutTeachers);
+        if (behaviorEventsWithoutStudents > 0) {
+            builder.append("Behavior Events Failed to import because lacking student identifier (student unspecified): " + behaviorEventsWithoutStudents);
+            builder.append("\n");
+        }
+        if (behaviorEventsWithUnmatchedStudents > 0) {
+            builder.append("Behavior Events Failed to import because lacking student match (student unmatched in EP): " + behaviorEventsWithUnmatchedStudents);
+        }
+        if (behaviorEventsWithUnmatchedAssigners > 0) {
+            builder.append("Behavior Events Failed to import because lacking assigner match (teacher/admin unmatched in EP): " + behaviorEventsWithUnmatchedAssigners);
+        }
         builder.append("\n");
         builder.append("--");
         builder.append("\n");
@@ -116,24 +127,27 @@ public class DeansListSyncResult extends BaseSyncResult {
                 builder.append("Mapped student " + fuzzyMatchedMapping.getLeft() + " to " + fuzzyMatchedMapping.getRight());
                 builder.append("\n");
             }
+            builder.append("--");
         }
         
         if (teachersFuzzyMatched != null && teachersFuzzyMatched.size() > 0) {
             builder.append("WARNING: Needed to fuzzy match teacher(s):" + "\n");
             builder.append("\n");
             for (Pair<String, String> fuzzyMatchedMapping: teachersFuzzyMatched) {
-                builder.append("Mapped student " + fuzzyMatchedMapping.getLeft() + " to " + fuzzyMatchedMapping.getRight());
+                builder.append("Mapped teacher " + fuzzyMatchedMapping.getLeft() + " to " + fuzzyMatchedMapping.getRight());
                 builder.append("\n");
             }
+            builder.append("--");
         }
 
         if (adminsFuzzyMatched != null && adminsFuzzyMatched.size() > 0) {
-            builder.append("WARNING: Needed to fuzzy match teacher(s):" + "\n");
+            builder.append("WARNING: Needed to fuzzy match admin(s):" + "\n");
             builder.append("\n");
             for (Pair<String, String> fuzzyMatchedMapping: adminsFuzzyMatched) {
-                builder.append("Mapped student " + fuzzyMatchedMapping.getLeft() + " to " + fuzzyMatchedMapping.getRight());
+                builder.append("Mapped admin " + fuzzyMatchedMapping.getLeft() + " to " + fuzzyMatchedMapping.getRight());
                 builder.append("\n");
             }
+            builder.append("--");
         }
 
         builder.append("Behavior Events Without Any Specified Teachers/Admins: " + behaviorEventsWithoutTeachers);
@@ -172,20 +186,13 @@ public class DeansListSyncResult extends BaseSyncResult {
         studentsFuzzyMatched.add(Pair.of(mappedFrom, mappedTo));
     }
     
-    public void incrementBehaviorEventsFailedToMatchFirstWithMultipleStudents(String failedToMatch) { 
-        behaviorEventsFailedToMatchFirstWithMultipleStudents++; 
-        studentsNotMatchedBecauseMultipleLastName.add(failedToMatch);
-    }
-
     public void incrementBehaviorEventsMatchedTeacherLastAndFirst() { behaviorEventsMatchedTeacherLastAndFirst++; }
 
     public void incrementBehaviorEventsMatchedTeacherLastButNotFirst(String mappedFrom, String mappedTo) {
         behaviorEventsMatchedTeacherLastButNotFirst++; 
         teachersFuzzyMatched.add(Pair.of(mappedFrom, mappedTo));
     }
-
-    public void incrementBehaviorEventsFailedToMatchFirstWithMultipleTeachers() { behaviorEventsFailedToMatchFirstWithMultipleTeachers++; }
-
+    
     public void incrementBehaviorEventsMatchedAdminLastAndFirst() { behaviorEventsMatchedAdminLastAndFirst++; }
 
     public void incrementBehaviorEventsMatchedAdminLastButNotFirst(String mappedFrom, String mappedTo) { 
@@ -193,6 +200,4 @@ public class DeansListSyncResult extends BaseSyncResult {
         adminsFuzzyMatched.add(Pair.of(mappedFrom, mappedTo));
     }
 
-    public void incrementBehaviorEventsFailedToMatchFirstWithMultipleAdmins() { behaviorEventsFailedToMatchFirstWithMultipleAdmins++; }
-    
 }
