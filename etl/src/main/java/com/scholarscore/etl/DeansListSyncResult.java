@@ -151,6 +151,17 @@ public class DeansListSyncResult extends BaseSyncResult {
             }
             builder.append("--");
         }
+        
+        if (usersLevMatched != null && usersLevMatched.size() > 0) {
+            builder.append("WARNING: Needed to fuzzy match users with LEV distance:" + "\n");
+            builder.append("\n");
+            for (Pair<String, String> fuzzyMatchedMapping: usersLevMatched) {
+                builder.append("Mapped user " + fuzzyMatchedMapping.getLeft() + " to " + fuzzyMatchedMapping.getRight());
+                builder.append("\n");
+            }
+            builder.append("--");
+
+        }
 
         builder.append("Behavior Events Without Any Specified Teachers/Admins: " + behaviorEventsWithoutTeachers);
 
