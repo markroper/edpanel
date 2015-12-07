@@ -159,14 +159,7 @@ public class DlEtlEngine implements IEtlEngine {
                 // more than one person with this last name -- match on first name too.
                 existingUser = usersWithThisLastName.get(userToFindFirstName);
                 if (existingUser == null) {
-                    // failed to match on first name -- failure!
-                    LOGGER.error("ERROR - More than one person found with last name " + userToFindFirstName + ", "
-                            + " but cannot find any with name " + userToFindFirstName);
-                    // TODO Jordan: Must better handle the case when we find multiple people with the same last name,
-                    // but none of their first names match exactly (e.g. "Ben" in one system and "Benjamin" in another). 
-                    // Determine the 'closest' name using various tricks (one a substring of the other, levenshtein distance) and use it
-                    // (using this option is likely to result in all records being matched,
-                    //  but is also more likely to match incorrectly. It could/should be exposed as a configurable option on dl-etl)
+                    // most than one person with this last name and no first name match, must use lev distance for best guess
                     int bestLevDistanceSoFar = Integer.MAX_VALUE;
                     HashSet<T> usersWithBestLevDistance = new HashSet<>();
                     for (Map.Entry<String, T> entry : usersWithThisLastName.entrySet()) {
