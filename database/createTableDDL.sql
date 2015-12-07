@@ -445,17 +445,12 @@ CREATE TABLE `scholar_warehouse`.`ui_attributes` (
         ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mattg', '$2a$12$QEJJY2BIGzObt/qXynvaHOYmbvvdlcJzUV7PlmDgs0St1C.m4bkrK', 1);  -- password: admin
-insert into `scholar_warehouse`.`users` (username, password, enabled) values ('student_user', '$2a$12$Pn09UsgNBeM0mAYDt.avDOtCqzuUUHM1.6bGDxFjCXVO7HR6S4AuK', 1); -- password: student_user
-insert into `scholar_warehouse`.`users` (username, password, enabled) values ('student_user2', '$2a$12$azyhUsbLFMPFMoPzZXgM0OnbYpKndw83pVZ2lF0LJ.A4zrELH3dca', 1); -- password: student_user
-
+insert into `scholar_warehouse`.`users` (username, password, enabled) values ('sudo', '$2a$10$58xdNpK1WZ6ARZuzY9PmPOGugdrLgfpNs4yRmK/hLZYujweZgdBi6', 1);
 insert into `scholar_warehouse`.`authorities` (user_id, authority) values (1, 'ADMINISTRATOR');
-insert into `scholar_warehouse`.`authorities` (user_id, authority) values (2, 'STUDENT');
-insert into `scholar_warehouse`.`authorities` (user_id, authority) values (3, 'STUDENT');
-  
-insert into `scholar_warehouse`.`school` (school_name) values ('FirstSchool');
+insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('EdPanel Super Admin', 1, null);
 
-insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Matt Greenwood', 1, null);
-insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser', 2, 1);
-insert into `scholar_warehouse`.`student`       (student_name, student_user_fk, school_fk)             values ('StudentUser2', 3, 1);
+-- TODO: move this out to another file that only gets run in test and developer environments
+insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mattg', '$2a$12$QEJJY2BIGzObt/qXynvaHOYmbvvdlcJzUV7PlmDgs0St1C.m4bkrK', 1);  -- password: admin
+insert into `scholar_warehouse`.`authorities` (user_id, authority) values (2, 'ADMINISTRATOR');
+insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Matt Greenwood', 2, null);
 
