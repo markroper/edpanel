@@ -21,7 +21,7 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
     // break this out into resource file (or something)
     private static final String USER_PERMISSIONS_LOGIN = "student_user";
     private static final String USER_PERMISSIONS_PASS = "student_user";
-    
+
     private static final String ADMIN_PERMISSIONS_LOGIN = "mattg";
     private static final String ADMIN_PERMISSIONS_PASS = "admin";
     
@@ -62,7 +62,7 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
         School school = new School();
         school.setName("school");
 
-        schoolValidatingExecutor.createNegative(school, HttpStatus.FORBIDDEN, "regular user shouldn't be able to create school");
+        schoolValidatingExecutor.createNegative(school, HttpStatus.UNAUTHORIZED, "regular user shouldn't be able to create school");
 
         authenticate(ADMIN_PERMISSIONS_LOGIN, ADMIN_PERMISSIONS_PASS);
         // positive admin

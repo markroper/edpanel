@@ -170,7 +170,10 @@ public class StudentManagerImpl implements StudentManager {
     private static Double calculateHwCompletionRate(List<StudentAssignment> studentAssignments) {
         Integer numerator = studentAssignments.size();
         for(StudentAssignment a: studentAssignments) {
-            if(null == a.getAwardedPoints() || a.getAwardedPoints().equals(0l)) {
+            //TODO: at excel 35% is give for incomplete, need to generify this for other schools.
+            if(null == a.getAwardedPoints() ||
+                    a.getAwardedPoints().equals(0l) ||
+                    a.getAwardedPoints() / a.getAssignment().getAvailablePoints() <= 0.35D) {
                 numerator--;
             }
         }
