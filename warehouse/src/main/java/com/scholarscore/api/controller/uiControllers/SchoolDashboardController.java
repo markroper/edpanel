@@ -4,6 +4,7 @@ import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.controller.BaseController;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.School;
+import com.scholarscore.models.Score;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.assignment.StudentAssignment;
@@ -59,10 +60,17 @@ public class SchoolDashboardController extends BaseController {
             RaceBreakdown raceBreakdown = new RaceBreakdown();
             for (StudentSectionGrade grade : studentSectionGrades) {
                 raceBreakdown.addToTotal(grade.getStudent());
+                if (grade.getTermGrades() != null) {
+                    Score termScore = grade.getTermGrades().get(termId);
+                    if (null != termScore) {
+                        Double termGrade = termScore.getScore();
+                        if (termGrade != null && termGrade < 70) {
+                            raceBreakdown.addFailingGrade(grade.getStudent());
+                        }
+                    }
 
-                if (grade.getGrade() != null && grade.getGrade() < 70) {
-                    raceBreakdown.addFailingGrade(grade.getStudent());
                 }
+
             }
 
             return respond(raceBreakdown.buildReturnObject());
@@ -71,9 +79,14 @@ public class SchoolDashboardController extends BaseController {
             GenderBreakdown genderBreakdown = new GenderBreakdown();
             for (StudentSectionGrade grade : studentSectionGrades) {
                 genderBreakdown.addToTotal(grade.getStudent());
-
-                if (grade.getGrade() != null && grade.getGrade() < 70) {
-                    genderBreakdown.addFailingGrade(grade.getStudent());
+                if (grade.getTermGrades() != null) {
+                    Score termScore = grade.getTermGrades().get(termId);
+                    if (null != termScore) {
+                        Double termGrade = termScore.getScore();
+                        if (termGrade != null && termGrade < 70) {
+                            genderBreakdown.addFailingGrade(grade.getStudent());
+                        }
+                    }
                 }
             }
 
