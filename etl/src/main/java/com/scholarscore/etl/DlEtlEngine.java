@@ -11,15 +11,19 @@ import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
-/**
+    /**
  * User: jordan
  * Date: 7/28/15
  * Time: 7:14 PM
@@ -152,7 +156,7 @@ public class DlEtlEngine implements IEtlEngine {
                     }
                 }
             } else if (usersWithThisLastName.size() > 1) {
-                // more than one student with this last name -- match on first name too.
+                // more than one person with this last name -- match on first name too.
                 existingUser = usersWithThisLastName.get(userToFindFirstName);
                 if (existingUser == null) {
                     // failed to match on first name -- failure!
@@ -163,6 +167,39 @@ public class DlEtlEngine implements IEtlEngine {
                     // Determine the 'closest' name using various tricks (one a substring of the other, levenshtein distance) and use it
                     // (using this option is likely to result in all records being matched,
                     //  but is also more likely to match incorrectly. It could/should be exposed as a configurable option on dl-etl)
+                    int bestLevDistanceSoFar = Integer.MAX_VALUE;
+                    HashSet<T> usersWithBestLevDistance = new HashSet<>();
+                    for (Map.Entry<String, T> entry : usersWithThisLastName.entrySet()) {
+                        T user = entry.getValue();
+                        String candidateFirstName = stripAndLowerMatchableName(user.getName(), KeyType.FIRST_NAME);
+                        int curLevDistance = StringUtils.getLevenshteinDistance(candidateFirstName, userToFindFirstName);
+                        if (curLevDistance < bestLevDistanceSoFar) {
+                            bestLevDistanceSoFar = curLevDistance;
+                            // blow away the set, this is a new low
+                            usersWithBestLevDistance = new HashSet<>();
+                            usersWithBestLevDistance.add(user);
+                        } else if (curLevDistance == bestLevDistanceSoFar) {
+                            // keep the set, these are all candidates with the same lev distance
+                            usersWithBestLevDistance.add(user);
+                        }
+                    }
+                    if (usersWithBestLevDistance.size() > 1) {
+                        // still too many users, even with lev matching
+                        String error = "More than one user with matching last name " + userToFindLastName
+                                + " and with ambiguous match on first name (" + userToFindFirstName + ") with lev distance " + bestLevDistanceSoFar + ", candidate first names: ";
+                        for (User user : usersWithBestLevDistance) {
+                            error += stripAndLowerMatchableName(user.getName(), KeyType.FIRST_NAME) + " ";
+                        }
+                        LOGGER.error(error);
+                    } else if (usersWithBestLevDistance.size() == 1) {
+                        // one user has a better score than any other with lev matching, use it
+                        T user = usersWithBestLevDistance.iterator().next();
+                        String candidateName = stripAndLowerMatchableName(user.getName(), KeyType.FIRST_NAME_AND_LAST_NAME);
+                        result.usersLevMatched.add(Pair.of(candidateName, userToFindFirstName + " " + userToFindLastName));
+                        return user;
+                    } else {
+                        LOGGER.error("Programmer error -- usersWithBestLevDistance should never be empty");
+                    }
                 } else {
                     // we have matched the student firstname lastname which is good enough for now! rejoice!
                     return existingUser;
@@ -259,7 +296,7 @@ public class DlEtlEngine implements IEtlEngine {
                         studentBehaviorEvents.put(createdBehavior.getRemoteBehaviorId(), createdBehavior);
                         result.incrementBehaviorAdded();
                     } else {
-                        // 
+                        // TODO Jordan: document failures to create
                     }
                 } else {
                     // behavior exists already in scholarscore (with id scholarScoreBehaviorId), update it
