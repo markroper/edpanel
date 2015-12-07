@@ -445,12 +445,3 @@ CREATE TABLE `scholar_warehouse`.`ui_attributes` (
         ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-insert into `scholar_warehouse`.`users` (username, password, enabled) values ('sudo', '$2a$10$58xdNpK1WZ6ARZuzY9PmPOGugdrLgfpNs4yRmK/hLZYujweZgdBi6', 1);
-insert into `scholar_warehouse`.`authorities` (user_id, authority) values (1, 'ADMINISTRATOR');
-insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('EdPanel Super Admin', 1, null);
-
--- TODO: move this out to another file that only gets run in test and developer environments
-insert into `scholar_warehouse`.`users` (username, password, enabled) values ('mattg', '$2a$12$QEJJY2BIGzObt/qXynvaHOYmbvvdlcJzUV7PlmDgs0St1C.m4bkrK', 1);  -- password: admin
-insert into `scholar_warehouse`.`authorities` (user_id, authority) values (2, 'ADMINISTRATOR');
-insert into `scholar_warehouse`.`administrator` (administrator_name, administrator_user_fk, school_fk) values ('Matt Greenwood', 2, null);
-
