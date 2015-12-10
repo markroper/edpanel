@@ -89,6 +89,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         gradeFormula = sect.gradeFormula;
         sourceSystemId = sect.sourceSystemId;
         numberOfTerms = sect.numberOfTerms;
+        this.teachers = sect.teachers;
     }
 
     @ManyToMany(fetch = FetchType.EAGER)
