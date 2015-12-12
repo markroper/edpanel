@@ -32,6 +32,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -61,12 +63,14 @@ public class ModelReflectionTests {
     private Set<String> fieldsThatNeedDefaults = new HashSet<>();
     
     private boolean loggingEnabled = false;
+//        private boolean loggingEnabled = true;
     
     private final String packageToScan = this.getClass().getPackage().getName();
     private final String testClassName = this.getClass().getSimpleName();   // class name without packagename
     private final Set<String> excludedClassNames = new HashSet<String>() {{
         // if you want to exclude a model class from this test, add it here (including packageToScan)...
         add(packageToScan + "." + testClassName);
+        add(packageToScan + "." + "StudentSectionGrade");
     }};
     
     public String getPackageToScan() {
@@ -122,9 +126,9 @@ public class ModelReflectionTests {
             debugStringBuilder.append("\nDONE. \n"
                     + "One or more test(s) (" + numberOfFailedDefaultFieldAttempts + ", " + fieldsThatNeedDefaults.size() + " unique) were skipped because \n"
                     + "of an inability to construct objects with sensible default values."
-                    + "\n(To fix this, please see the " + this.getClass().getSimpleName() + ".getValueForType method "
+                    + "\n(To fix this, please see the " + this.getClass().getSimpleName() + ".getValueForField method "
                     + "and follow the example there.)\n\n"
-                    + "The following fields need sensible defaults defined in getValueForType...\n");
+                    + "The following fields need sensible defaults defined in getValueForField...\n");
             for (String field : fieldsThatNeedDefaults) {
                 debugStringBuilder.append("\n" + field);
             }
@@ -258,9 +262,9 @@ public class ModelReflectionTests {
 
                 Object value;
                 if (field.getName().equals(fieldNameToModify)) {
-                    value = getAnotherValueForType(field.getType());
+                    value = getAnotherValueForField(field);
                 } else {
-                    value = getSensibleValueForType(field.getType());
+                    value = getSensibleValueForField(field);
                 }
 
                 if (value == null) {
@@ -280,14 +284,73 @@ public class ModelReflectionTests {
         }
     }
 
-    private Object getSensibleValueForType(Class<?> type) {
-        return getValueForType(type, false);
+    private Object getSensibleValueForField(Field field) {
+        return getValueForField(field.getGenericType(), false);
     }
 
-    private Object getAnotherValueForType(Class<?> type) {
-        return getValueForType(type, true);
+    private Object getAnotherValueForField(Field field) {
+        return getValueForField(field.getGenericType(), true);
     }
     
+    private Object getValueForField(Type genericType/*Field field*/, boolean alt) {
+
+        Class<?> genericClass = genericType.getClass();
+        Class<?> type = null;
+
+        ////////////////
+        try {
+            String splitClassName = genericType.getTypeName().split("<")[0];
+            Class<?> derivedObjectClass = Class.forName(splitClassName);
+            type = derivedObjectClass;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException("ERROR: this approach actually sucks and maybe you do too");
+        }
+        ////////////////
+        
+        // TODO Jordan: must handle primitives somewhere too
+
+        // first let's figure out if it's a collection type, regardless of any generic stuff
+        // if it is, we'll set this to something other than null
+        StructureToPopulate stp = null;
+
+        if (type.isAssignableFrom(HashMap.class)) {
+            stp = new HashMapToPopulate();
+        } else if (type.isAssignableFrom(HashSet.class)) {
+            stp = new HashSetToPopulate();
+        }
+
+        // okay, we have a (known) collection/map, so handle it special by trying to figure out what to put into it
+        if (stp != null) {
+            // if this is true, this object is parameterized AND a collection
+            if (genericClass != null && ParameterizedType.class.isAssignableFrom(genericClass)) {
+                ParameterizedType parameterizedInnerType = (ParameterizedType) genericType;
+                Type[] actualInnerTypeArgs = parameterizedInnerType.getActualTypeArguments();
+                Object[] typedValuesToPopulate = new Object[actualInnerTypeArgs.length];
+                int index = 0;
+                for (Type actualInnerTypeArg : actualInnerTypeArgs) {
+                    // diving deeper...
+                    typedValuesToPopulate[index++] = getValueForField(actualInnerTypeArg, alt);
+                }
+                Object populatedCollection = null;
+                try {
+                    populatedCollection = stp.validateAndPopulate(typedValuesToPopulate);
+                } catch (RuntimeException re) {
+                    System.out.println("Hit runtime exception trying to get populated collection of type " + stp );
+                    System.out.println("Values: ");
+                    for (int i = 0; i < actualInnerTypeArgs.length; i++) {
+                        System.out.println("Type: " + actualInnerTypeArgs[i] + ", Value: " + typedValuesToPopulate[i]);
+                    }
+                }
+                return populatedCollection;
+        }  
+            // TODO Jordan: here, need to handle collection without any generic specification (just return new objects I guess)
+            
+        }
+        
+        return getValueForType(type, alt);
+    }
+
     // the reflection tests above will test equality methods of the objects under test -- but this requires being able to get
     // two distinct values for each object type. The below method is responsible for generating two data values
     // (which of the two values is returned  depends on the 'alt' flag) for the type passed in.
@@ -305,7 +368,12 @@ public class ModelReflectionTests {
 
         if (type.isAssignableFrom(IOperand.class)) { return alt ? new DimensionOperand() : new Expression(); }
 
+        if (type.isAssignableFrom(HashMap.class)) {
+
+        }
+        
         // this needs more work -- how to capture generic type of list, and create dummy of same type?
+        // TODO Jordan: remove this in favor of the above approach
         if (type.isAssignableFrom(List.class)) {
             List list = new ArrayList<>();
             if (alt) {
@@ -384,5 +452,78 @@ public class ModelReflectionTests {
             System.out.println(msg);
         }
     }
-    
+
+    private interface StructureToPopulate {
+        Object validateAndPopulate(Object[] arguments);
+    }
+
+    private static abstract class BaseStructureToPopulate implements StructureToPopulate {
+
+        @Override
+        public Object validateAndPopulate(Object[] arguments) {
+            validate(arguments);
+            return populate(arguments);
+        }
+
+        private void validate(Object[] arguments) {
+            if (arguments == null || arguments.length != numberOfArguments()) {
+                if (arguments == null) {
+                    throw new RuntimeException("Arguments are null on me: " + this.toString());
+                } else if (arguments.length != numberOfArguments()) {
+                    throw new RuntimeException("Arguments don't match the expected number (" + numberOfArguments() + "): " + this.toString());
+                }
+            }
+
+            for (Object object : arguments) {
+                if (object == null) {
+                    System.out.println("Null field en in object " + object + "- This should probably be an exception...");
+                    throw new RuntimeException("Arguments failed to validate on me: " + this.toString());
+                }
+            }
+        }
+
+        public abstract Object populate(Object[] arguments);
+        public abstract int numberOfArguments();
+        public abstract Class classAssignableFrom();
+    }
+
+    private static class HashMapToPopulate extends BaseStructureToPopulate {
+
+        @Override
+        public Object populate(Object[] arguments) {
+            HashMap hashMap = new HashMap();
+            hashMap.put(arguments[0], arguments[1]);
+            return hashMap;
+        }
+
+        @Override
+        public int numberOfArguments() {
+            return 2;
+        }
+
+        @Override
+        public Class classAssignableFrom() {
+            return HashMap.class;
+        }
+    }
+
+    private static class HashSetToPopulate extends BaseStructureToPopulate {
+
+        @Override
+        public Object populate(Object[] arguments) {
+            HashSet hashSet = new HashSet();
+            hashSet.add(arguments[0]);
+            return hashSet;
+        }
+
+        @Override
+        public int numberOfArguments() {
+            return 1;
+        }
+
+        @Override
+        public Class classAssignableFrom() {
+            return HashSet.class;
+        }
+    }
 }
