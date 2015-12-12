@@ -2,10 +2,12 @@
 
 ## run screenscraper. it doesn't matter how it works as long as it has an executable called 'runGpaExtraction' 
 ## and it results in CSV files being produced that start with 'extractedGpa'
-cd gpaExtraction
-./runGpaExtraction
-cd ..
+## cd gpaExtraction
+## ./runGpaExtraction
+## cd ..
 
+
+java -Done-jar.silent=true -jar build/libs/etl-standalone.jar ## --dir-path ./gpaExtraction --prefix extractedGpa 
 ## todo - what is the correct way to specify path here? this path should *always* be relative to this script's current directory, not the userdir
 ## run the java ETL, which does the bulk of the work
-java -Done-jar.silent=true -jar build/libs/etl-standalone.jar --dir-path ./gpaExtraction --prefix extractedGpa 
+## java -Done-jar.silent=true -jar build/libs/etl-standalone.jar --dir-path ./gpaExtraction --prefix extractedGpa 
