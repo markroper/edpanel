@@ -1,5 +1,7 @@
 package com.scholarscore.models;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.AttendanceAssignment;
@@ -7,6 +9,11 @@ import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.AttendanceTypes;
 import com.scholarscore.models.attendance.SchoolDay;
+import com.scholarscore.models.goal.BehaviorComponent;
+import com.scholarscore.models.goal.GoalComponent;
+import com.scholarscore.models.gpa.Gpa;
+import com.scholarscore.models.gpa.SimpleGpa;
+import com.scholarscore.models.gpa.WeightedGpa;
 import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.AggregateMeasure;
@@ -111,12 +118,19 @@ public class ModelReflectionTests {
         Set<Class<?>> classes = getClassesInPackage(getPackageToScan());
 
         for (Class clazz : classes) {
+            String className = clazz.getName();
+            // for purposes of exclusion, identify inner classes as the same as their outer class file
+            className = className.split("\\$")[0];
             if (Modifier.isAbstract(clazz.getModifiers())) {
                 logDebug("Skipping Class " + clazz + " as it is abstract...");
                 logDebug("");
                 continue;
-            } else if (getExcludedClassNames().contains(clazz.getName())) {
+            } else if (getExcludedClassNames().contains(className)) {
                 logDebug("Skipping Class " + clazz + " as it is explicitly excluded...");
+                logDebug("");
+                continue;
+            } else if (className.toLowerCase().endsWith("test")) {
+                logDebug("Skipping class " + clazz + " as it contains 'test'...");
                 logDebug("");
                 continue;
             } else {
@@ -235,6 +249,14 @@ public class ModelReflectionTests {
             String objMsg = "For class " + clazz + ", ";
             String equalsMsg = objMsg + "Equals() returned true even though objects have different values for field " + field.getName() + "\n" + both;
             String hashMsg = objMsg + "hashcode() returned identical values even though objects have different values for field " + field.getName() + "\n" + both;
+            try {
+                field.setAccessible(true);
+                Object unmodifiedValue = field.get(unmodifiedInstance);
+                Object modifiedValue = field.get(instanceWithTweakedField);
+                equalsMsg += "(Unmodified value: " + unmodifiedValue + ", Modified value: " + modifiedValue + ")";
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
             assertNotEquals(unmodifiedInstance, instanceWithTweakedField, equalsMsg);
             assertNotEquals(unmodifiedInstance.hashCode(), instanceWithTweakedField.hashCode(), hashMsg);
         }
@@ -256,9 +278,16 @@ public class ModelReflectionTests {
     
     private Object buildPopulatedObject(Class clazz, String fieldNameToModify) {
         try {
-            Object instance = clazz.newInstance();
-            
+            Object instance;
+            try {
+                instance = clazz.newInstance();
+            } catch (InstantiationException ie) {
+                // this is expected to happen if we can't build the object with a no-arg constructor, just move on.
+                return null;
+            }
+                
             Field[] fields = clazz.getDeclaredFields();
+            boolean fieldTweaked = false;
             for (Field field : fields) {
                 if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
                     // ignore static/final
@@ -280,9 +309,15 @@ public class ModelReflectionTests {
                 }
                 field.setAccessible(true);
                 field.set(instance, value);
+                fieldTweaked = true;
+            }
+            if (!fieldTweaked && fieldNameToModify != null) {
+                System.out.println("WARNING - object " + instance + " being returned without tweaking field " + fieldNameToModify);
             }
             return instance;
-        } catch (InstantiationException|IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
+            System.out.println("IllegalAccessException " + e);
+            e.printStackTrace();
             return null;
         }
     }
@@ -435,6 +470,11 @@ public class ModelReflectionTests {
         if (type.isAssignableFrom(ContactType.class)) { return alt ? ContactType.EMAIL : ContactType.PHONE; }
         if (type.isAssignableFrom(ScoreAsOfWeek.class)) { return buildPopulatedObject(ScoreAsOfWeek.class, "score", alt); }
         if (type.isAssignableFrom(AttendanceTypes.class)) { return alt ? AttendanceTypes.DAILY : AttendanceTypes.SECTION; }
+        if (type.isAssignableFrom(JsonAttributes.class)) { return buildPopulatedObject(JsonAttributes.class, "jsonString", alt); }
+        if (type.isAssignableFrom(JsonNode.class)) { return new TextNode(alt ? "string1" : "string2"); }
+        if (type.isAssignableFrom(Score.class)) { return buildPopulatedObject(Score.class, "comment", alt); }
+        if (type.isAssignableFrom(GoalComponent.class)) { return buildPopulatedObject(BehaviorComponent.class, "startDate", alt); }
+        if (type.isAssignableFrom(Gpa.class)) { return alt ? new SimpleGpa() : new WeightedGpa();  }
         if (type.isAssignableFrom(Record.class)) { 
             List list = new ArrayList<>();
             list.add(new Object());
