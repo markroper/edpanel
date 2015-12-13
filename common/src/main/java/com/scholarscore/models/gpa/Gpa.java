@@ -121,7 +121,7 @@ public abstract class Gpa {
 
     @Override
     public int hashCode() {
-        return Objects.hash(studentId, score, endDate, startDate, calculationDate, id);
+        return Objects.hash(studentId, score, endDate, startDate, calculationDate, id, getType());
     }
 
     @Override
