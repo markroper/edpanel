@@ -89,8 +89,12 @@ public class UiEndpointsController extends BaseController {
                             withName("Section Goal").
                             withTeacher(t).
                             build();
+                    ServiceResponse<Long> createdGoalResp =
+                            pm.getGoalManager().createGoal(studentId, fullCumulativeGradeGoalByBuilder);
+                    if(null != createdGoalResp.getValue()) {
+                        fullCumulativeGradeGoalByBuilder.setId(createdGoalResp.getValue());
+                    }
                     sectionDashData.setGradeGoal(fullCumulativeGradeGoalByBuilder);
-                    pm.getGoalManager().createGoal(studentId, fullCumulativeGradeGoalByBuilder);
                 }
                 ServiceResponse<Collection<StudentAssignment>> studAssesResp = pm.getStudentAssignmentManager().
                         getOneSectionOneStudentsAssignments(studentId, schoolId, schoolYearId, termId, s.getId());

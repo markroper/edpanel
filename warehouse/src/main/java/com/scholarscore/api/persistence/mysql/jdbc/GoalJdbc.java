@@ -25,7 +25,11 @@ import java.util.Collection;
  */
 @Transactional
 public class GoalJdbc implements GoalPersistence {
-
+    private static final String GOAL_BASE_HQL =
+            "select g from goal g " +
+            "join fetch g.student st left join fetch st.homeAddress left join fetch st.mailingAddress " +
+            "left join fetch st.contactMethods " +
+            "left join fetch g.teacher t left join fetch t.homeAddress left join fetch t.contactMethods";
     @Autowired
     private HibernateTemplate hibernateTemplate;
 
@@ -87,13 +91,15 @@ public class GoalJdbc implements GoalPersistence {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Goal> selectAll(long studentId) {
-        return addCalculatedValue((Collection<Goal>) hibernateTemplate.findByNamedParam("from goal g where g.student.id = :studentId", "studentId", studentId));
+        return addCalculatedValue((Collection<Goal>) hibernateTemplate.findByNamedParam(
+                GOAL_BASE_HQL + " where g.student.id = :studentId", "studentId", studentId));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Goal> selectAllTeacher(long teacherId) {
-        return addCalculatedValue((Collection<Goal>)hibernateTemplate.findByNamedParam("from goal g where g.teacher.id = :teacherId", "teacherId", teacherId));
+        return addCalculatedValue((Collection<Goal>)hibernateTemplate.findByNamedParam(
+                GOAL_BASE_HQL + " where g.teacher.id = :teacherId", "teacherId", teacherId));
     }
 
     @Override
