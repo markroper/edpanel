@@ -43,7 +43,7 @@ public class ListNumericOperand implements Serializable, IOperand {
             return false;
         }
         final ListNumericOperand other = (ListNumericOperand) obj;
-        return Objects.equals(this.value, other.value);
+        return Objects.equals(this.value, other.value) && Objects.equals(this.type, other.type);
     }
 
     @Override

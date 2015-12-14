@@ -87,9 +87,11 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         enrolledStudents = sect.enrolledStudents;
         assignments = sect.assignments;
         gradeFormula = sect.gradeFormula;
+        this.gradeFormulaString = sect.gradeFormulaString;
         sourceSystemId = sect.sourceSystemId;
         numberOfTerms = sect.numberOfTerms;
         this.teachers = sect.teachers;
+        this.term = sect.term;
     }
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -309,11 +311,17 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         if(null == gradeFormula) {
             gradeFormula = mergeFrom.gradeFormula;
         }
+        if(null == gradeFormulaString) {
+            gradeFormulaString = mergeFrom.gradeFormulaString;
+        }
         if(null == sourceSystemId) {
             sourceSystemId = mergeFrom.sourceSystemId;
         }
         if(null == numberOfTerms) {
             numberOfTerms = mergeFrom.numberOfTerms;
+        }
+        if(null == term) {
+            term = mergeFrom.term;
         }
     }
 
@@ -331,13 +339,16 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 Objects.equals(this.assignments, other.assignments) &&
                 Objects.equals(this.sourceSystemId, other.sourceSystemId) &&
                 Objects.equals(this.numberOfTerms, other.numberOfTerms) &&
-                Objects.equals(this.gradeFormula, other.gradeFormula);
+                Objects.equals(this.gradeFormula, other.gradeFormula) && 
+                Objects.equals(this.gradeFormulaString, other.gradeFormulaString) &&
+                Objects.equals(this.term, other.term) &&
+                Objects.equals(this.teachers, other.teachers);
     }
 
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(course, startDate, endDate, sourceSystemId,
-                room, enrolledStudents, assignments, gradeFormula, numberOfTerms);
+                room, enrolledStudents, assignments, gradeFormula, numberOfTerms, gradeFormulaString, term, teachers);
     }
 
     @Override

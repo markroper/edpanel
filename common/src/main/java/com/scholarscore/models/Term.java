@@ -137,7 +137,7 @@ public class Term extends ApiModel implements Serializable, IApiModel<Term>{
      */
     @Override
     public int hashCode() {
-        return 31 * Objects.hash(startDate, endDate, sourceSystemId, schoolYear, portion);
+        return 31 * super.hashCode() + Objects.hash(startDate, endDate, sourceSystemId, schoolYear, portion);
     }
 
     @Override
