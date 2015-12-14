@@ -23,15 +23,36 @@ public class HomeworkCompletionSqlSerializer implements MeasureSqlSerializer {
                 HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_AVAILABLE_POINTS + " <= .35, 0, 1)), null))";
     }
 
+    /**
+     * For the feature: The purpose of this if statement is that if we wish to select homeworks
+     * based on section we need to join first on the assignment table, because section_fk lives
+     * on assignment not student assignment. There are no other things that live on this table
+     * we would join to, but there are things that lives further up tables (Terms, courses)
+     * @param dimToJoinUpon
+     * @return
+     */
     @Override
     public String toJoinClause(Dimension dimToJoinUpon) {
+
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
-        return LEFT_OUTER_JOIN + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + ON +
-                dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) + 
-                EQUALS + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + dimTableName + FK_COL_SUFFIX +
-                " " + LEFT_OUTER_JOIN + HibernateConsts.ASSIGNMENT_TABLE + ON + 
-                HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_FK + 
-                EQUALS + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_ID  + " ";
+        if (dimTableName.equals(HibernateConsts.SECTION_TABLE)) {
+            return LEFT_OUTER_JOIN + HibernateConsts.ASSIGNMENT_TABLE + ON +
+                    HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.SECTION_FK +
+                    EQUALS + HibernateConsts.SECTION_TABLE + DOT + HibernateConsts.SECTION_TABLE + ID_COL_SUFFIX +
+                    " " +
+                    LEFT_OUTER_JOIN + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + ON +
+                    HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_FK +
+                    EQUALS + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + ID_COL_SUFFIX +
+                    " ";
+        } else {
+            return LEFT_OUTER_JOIN + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + ON +
+                    dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) +
+                    EQUALS + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + dimTableName + FK_COL_SUFFIX +
+                    " " +
+                    LEFT_OUTER_JOIN + HibernateConsts.ASSIGNMENT_TABLE + ON +
+                    HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + FK_COL_SUFFIX +
+                    EQUALS + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + ID_COL_SUFFIX + " ";    }
+
     }
 
     @Override
