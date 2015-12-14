@@ -138,6 +138,9 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
         if (confirmed == null) {
             this.confirmed = mergeFrom.confirmed;
         }
+        if (user == null) {
+            this.user = mergeFrom.user;
+        }  
     }
 
     @Override
@@ -154,7 +157,8 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
                 && Objects.equals(this.contactValue, other.contactValue)
                 && Objects.equals(this.confirmCode, other.confirmCode)
                 && Objects.equals(this.confirmCodeCreated, other.confirmCodeCreated)
-                && Objects.equals(this.confirmed, other.confirmed);
+                && Objects.equals(this.confirmed, other.confirmed)
+                && Objects.equals(this.user, other.user);
     }
     @Override
     public int hashCode() {
@@ -162,7 +166,8 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
                 contactValue,
                 confirmCode,
                 confirmCodeCreated,
-                confirmed);
+                confirmed,
+                user);
     }
 
     @Override
@@ -174,6 +179,7 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
                 ", confirmCode='" + confirmCode + '\'' +
                 ", confirmCodeCreated=" + confirmCodeCreated +
                 ", confirmed=" + confirmed +
+                ", user=" + user +
                 '}';
     }
 

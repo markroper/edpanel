@@ -29,7 +29,12 @@ import com.scholarscore.models.query.expressions.operands.OperandType;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
 import com.scholarscore.models.ui.ScoreAsOfWeek;
+import com.scholarscore.models.ui.SectionGradeWithProgression;
+import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.ContactType;
+import com.scholarscore.models.user.Student;
+import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.User;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
@@ -81,12 +86,8 @@ public class ModelReflectionTests {
     private final Set<String> excludedClassNames = new HashSet<String>() {{
         // if you want to exclude a model class from this test, add it here (including packageToScan)...
         add(packageToScan + "." + testClassName);
-        // TO FIX: these following classes have issues with hashcode, equals, or copy constructo
-        add(packageToScan + "." + "StudentSectionGrade");
-        add(packageToScan + "." + "Section");
-        add(packageToScan + "." + "SchoolYear");
-        add(packageToScan + "." + "query.expressions.operands.ListNumericOperand");
-        add(packageToScan + "." + "user.ContactMethod");
+        // TO FIX: these following classes have issues with hashcode, equals, or copy constructor
+//       add(packageToScan + "." + "query.expressions.operands.ListNumericOperand");
     }};
     
     public String getPackageToScan() {
@@ -120,6 +121,7 @@ public class ModelReflectionTests {
         for (Class clazz : classes) {
             String className = clazz.getName();
             // for purposes of exclusion, identify inner classes as the same as their outer class file
+            // (so if the class e.g. ModelReflectionTests.java is excluded, so are the inner classes in this file) 
             className = className.split("\\$")[0];
             if (Modifier.isAbstract(clazz.getModifiers())) {
                 logDebug("Skipping Class " + clazz + " as it is abstract...");
@@ -245,7 +247,7 @@ public class ModelReflectionTests {
                 continue;
             }
             // logDebug("Checking equals() and hashcode() on " + clazz.getName() + " with field " + field.getName() + " modified...");
-            String both = "original: " + unmodifiedInstance + ", tweaked: " + instanceWithTweakedField;
+            String both = "\n**original**:\n" + unmodifiedInstance + ",\n\n**tweaked**:\n " + instanceWithTweakedField;
             String objMsg = "For class " + clazz + ", ";
             String equalsMsg = objMsg + "Equals() returned true even though objects have different values for field " + field.getName() + "\n" + both;
             String hashMsg = objMsg + "hashcode() returned identical values even though objects have different values for field " + field.getName() + "\n" + both;
@@ -253,7 +255,7 @@ public class ModelReflectionTests {
                 field.setAccessible(true);
                 Object unmodifiedValue = field.get(unmodifiedInstance);
                 Object modifiedValue = field.get(instanceWithTweakedField);
-                equalsMsg += "(Unmodified value: " + unmodifiedValue + ", Modified value: " + modifiedValue + ")";
+                equalsMsg += "\n(Unmodified value: " + unmodifiedValue + ", Modified value: " + modifiedValue + ")";
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -387,9 +389,8 @@ public class ModelReflectionTests {
                     }
                 }
                 return populatedCollection;
-        }  
-            // TODO Jordan: here, need to handle collection without any generic specification (just return new objects I guess)
-            
+            }  
+            // TODO Jordan: here, need to handle collection without any generic specification (populate with new objects?)
         }
         
         return getValueForType(type, alt);
@@ -475,15 +476,24 @@ public class ModelReflectionTests {
         if (type.isAssignableFrom(Score.class)) { return buildPopulatedObject(Score.class, "comment", alt); }
         if (type.isAssignableFrom(GoalComponent.class)) { return buildPopulatedObject(BehaviorComponent.class, "startDate", alt); }
         if (type.isAssignableFrom(Gpa.class)) { return alt ? new SimpleGpa() : new WeightedGpa();  }
+        
+        // can the value in type be cast to a 'user' variable?
+        if (type.isAssignableFrom(User.class)) { return alt ? new Administrator() : new Student(); }
+
+        if (type.isAssignableFrom(Teacher.class)) {
+            Teacher t = new Teacher();
+            t.setId(alt ? 2L : 3L);
+            t.setName(alt ? "teacherName2" : "teacherName1");
+            return t;
+        }
+
+        if (type.isAssignableFrom(SectionGradeWithProgression.class)) { return buildPopulatedObject(SectionGradeWithProgression.class, "currentOverallGrade", alt); } 
         if (type.isAssignableFrom(Record.class)) { 
             List list = new ArrayList<>();
             list.add(new Object());
             return new Record(list);
         }
 
-//        if (type.isAssignableFrom(Student.class)) { return buildPopulatedObject(Student.class, "password", alt); }
-
-        // System.out.println("Could not find sensible value for field type " + type);
         return null;
     }
     
@@ -518,7 +528,6 @@ public class ModelReflectionTests {
 
             for (Object object : arguments) {
                 if (object == null) {
-//                    System.out.println("Null field in object " + object + "- This should probably be an exception...");
                     throw new NoDefaultValueException("Arguments failed to validate on me: " + this.toString());
                 }
             }

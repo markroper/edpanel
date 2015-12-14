@@ -173,12 +173,13 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
                 Objects.equals(this.complete, other.complete) &&
                 Objects.equals(this.grade, other.grade) &&
                 Objects.equals(this.student, other.student) &&
-                Objects.equals(this.section, other.section);
+                Objects.equals(this.section, other.section) &&
+                Objects.equals(this.termGrades, other.termGrades);
     }
     
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(id, complete, grade, student, section);
+        return 31 * super.hashCode() + Objects.hash(id, complete, grade, student, section, termGrades);
     }
 
     @Override
