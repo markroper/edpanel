@@ -125,7 +125,21 @@ public class QuerySqlGeneratorUnitTest {
                 "LEFT OUTER JOIN school_year ON school_year.school_year_id = term.school_year_fk " +
                 "WHERE  ( ( ( term.term_id  =  1 )  AND  ( school_year.school_year_id  =  1 ) )  " +
                 "AND  ( section.section_id  !=  0 ) ) GROUP BY student.student_user_fk";
-        
+        Query homeworkSectionCompletionQuery  = new Query();
+        ArrayList<AggregateMeasure> homeworkSectionMeasures = new ArrayList<>();
+        homeworkSectionMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
+        homeworkSectionCompletionQuery.setAggregateMeasures(homeworkSectionMeasures);
+        homeworkSectionCompletionQuery.addField(new DimensionField(Dimension.SECTION, SectionDimension.ID));
+        homeworkSectionCompletionQuery.setFilter(comb2);
+        String homeworkSectionSql = "SELECT section.section_id, AVG( if(assignment.type_fk = 'HOMEWORK', " +
+                "if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) " +
+                "FROM section LEFT OUTER JOIN assignment ON assignment.section_fk = section.section_id " +
+                "LEFT OUTER JOIN student_assignment ON student_assignment.assignment_fk = assignment.assignment_id " +
+                "LEFT OUTER JOIN term ON term.term_id = section.term_fk " +
+                "LEFT OUTER JOIN school_year ON school_year.school_year_id = term.school_year_fk " +
+                "WHERE  ( ( ( term.term_id  =  1 )  AND  ( school_year.school_year_id  =  1 ) )  " +
+                "AND  ( section.section_id  !=  0 ) ) GROUP BY section.section_id";
+
         Query attendanceQuery  = new Query();
         ArrayList<AggregateMeasure> attendanceMeasures = new ArrayList<>();
         attendanceMeasures.add(new AggregateMeasure(Measure.ATTENDANCE, AggregateFunction.SUM));
@@ -182,7 +196,8 @@ public class QuerySqlGeneratorUnitTest {
                 { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql }, 
                 { "Homework query", homeworkCompletionQuery, homeworkSql },
                 { "Behavior query", behaviorQuery, behaviorSql},
-                {"Attendance query", attendanceQuery, attendanceSql }
+                {"Attendance query", attendanceQuery, attendanceSql },
+                {"Homework by Section query", homeworkSectionCompletionQuery, homeworkSectionSql}
         };
     }
     
