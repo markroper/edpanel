@@ -2,26 +2,23 @@ package com.scholarscore.api.controller.uiControllers;
 
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.controller.BaseController;
-import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Score;
-import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
-import com.scholarscore.models.assignment.StudentAssignment;
-import com.scholarscore.models.goal.CumulativeGradeGoal;
-import com.scholarscore.models.goal.Goal;
-import com.scholarscore.models.goal.GoalType;
-import com.scholarscore.models.ui.*;
-import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.ui.BreakdownCategories;
+import com.scholarscore.models.ui.GenderBreakdown;
+import com.scholarscore.models.ui.RaceBreakdown;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.*;
+import java.util.Collection;
 
 /**
  * This serves as a UI server for information needed for the School Data Dashboard,
@@ -33,7 +30,7 @@ import java.util.*;
 public class SchoolDashboardController extends BaseController {
 
     @ApiOperation(
-            value = "Get all the data needed to generate teh failing classes chart",
+            value = "Get all the data needed to generate the failing classes chart",
             notes = "Returns two arrays of arrays, see stackedbar directive for return object",
             response = School.class)
     @RequestMapping(
