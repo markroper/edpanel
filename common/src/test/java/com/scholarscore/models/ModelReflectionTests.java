@@ -79,15 +79,12 @@ public class ModelReflectionTests {
     private Set<String> fieldsThatNeedDefaults = new HashSet<>();
     
     private boolean loggingEnabled = false;
-//        private boolean loggingEnabled = true;
     
     private final String packageToScan = this.getClass().getPackage().getName();
     private final String testClassName = this.getClass().getSimpleName();   // class name without packagename
     private final Set<String> excludedClassNames = new HashSet<String>() {{
         // if you want to exclude a model class from this test, add it here (including packageToScan)...
         add(packageToScan + "." + testClassName);
-        // TO FIX: these following classes have issues with hashcode, equals, or copy constructor
-//       add(packageToScan + "." + "query.expressions.operands.ListNumericOperand");
     }};
     
     public String getPackageToScan() {
@@ -171,7 +168,7 @@ public class ModelReflectionTests {
                 IApiModel emptyObject = (IApiModel)clazz.newInstance();
   
                 if (emptyObject == null || populatedObject == null) {
-//                    System.out.println("Failed to construct " + clazz.getSimpleName() + ", aborting this test...");
+                    System.out.println("Failed to construct " + clazz.getSimpleName() + ", aborting this test...");
                     return;
                 }
                 // if any fields on emptyObject actually aren't null, we need to know that 
@@ -238,6 +235,7 @@ public class ModelReflectionTests {
         
         for (Field field : fields) {
             if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
+                // skip static and final fields. our concern is equals() and hashcode() which don't consider these
                 continue;
             }
             Object instanceWithTweakedField = buildPopulatedObject(clazz, field.getName());
@@ -247,7 +245,7 @@ public class ModelReflectionTests {
                 continue;
             }
             // logDebug("Checking equals() and hashcode() on " + clazz.getName() + " with field " + field.getName() + " modified...");
-            String both = "\n**original**:\n" + unmodifiedInstance + ",\n\n**tweaked**:\n " + instanceWithTweakedField;
+            String both = "original: " + unmodifiedInstance + ", tweaked: " + instanceWithTweakedField;
             String objMsg = "For class " + clazz + ", ";
             String equalsMsg = objMsg + "Equals() returned true even though objects have different values for field " + field.getName() + "\n" + both;
             String hashMsg = objMsg + "hashcode() returned identical values even though objects have different values for field " + field.getName() + "\n" + both;
@@ -278,13 +276,17 @@ public class ModelReflectionTests {
         return buildPopulatedObject(clazz, null);
     }
     
+    /* 
+     * Create a reasonable test object. 
+     * If fieldNameToModify is set, this field will be varied from the normal default value typical to this field type.
+     */
     private Object buildPopulatedObject(Class clazz, String fieldNameToModify) {
         try {
             Object instance;
             try {
                 instance = clazz.newInstance();
             } catch (InstantiationException ie) {
-                // this is expected to happen if we can't build the object with a no-arg constructor, just move on.
+                // this is expected to happen if we can't build the object with a no-arg constructor. just move on and pretend nothing happened.
                 return null;
             }
                 
@@ -313,13 +315,13 @@ public class ModelReflectionTests {
                 field.set(instance, value);
                 fieldTweaked = true;
             }
+            // This method can be called without specifying a fieldNameToModify, but if it is specified and the field isn't found, warn the caller!
             if (!fieldTweaked && fieldNameToModify != null) {
-                System.out.println("WARNING - object " + instance + " being returned without tweaking field " + fieldNameToModify);
+                logDebug("WARNING - object " + instance + " being returned without tweaking field " + fieldNameToModify);
             }
             return instance;
         } catch (IllegalAccessException e) {
-            System.out.println("IllegalAccessException " + e);
-            e.printStackTrace();
+            logDebug("IllegalAccessException " + e);
             return null;
         }
     }
@@ -332,7 +334,9 @@ public class ModelReflectionTests {
         return getValueForField(field.getGenericType(), true);
     }
     
-    private Object getValueForField(Type genericType/*Field field*/, boolean alt) {
+    // This method is tasked with figuring out a "good default" value for the passed-in type. It does this by specifically handling collections and objects with generic types (and both), 
+    // then call
+    private Object getValueForField(Type genericType, boolean alt) {
 
         Class<?> genericClass = genericType.getClass();
         Class<?> type = null;
@@ -344,16 +348,21 @@ public class ModelReflectionTests {
             type = derivedObjectClass;
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            throw new RuntimeException("ERROR: this approach actually sucks and maybe you do too");
+            logDebug("Could not find class!");
         }
-        ////////////////
         
-        // TODO Jordan: must handle primitives somewhere too
+        // TODO: must handle primitive types separately (Type for a primitive will not be autoboxed and getTypeName() 
+        // will return "int", etc while for object-based classes this method return FQPNs) 
 
         // first let's figure out if it's a collection type, regardless of any generic stuff
-        // if it is, we'll set this to something other than null
+        // if it is, we'll set this to something other than null.
+        // (This isn't the collection itself, but a builder with
+        // a common interface)
         StructureToPopulate stp = null;
 
+        // If the type you want to add isn't here, 
+        // create a new instance of the <Structure>ToPopulate classes
+        // at the end of this file, following the example of the others
         if (type.isAssignableFrom(HashMap.class)) {
             stp = new HashMapToPopulate();
         } else if (type.isAssignableFrom(HashSet.class)) {
@@ -364,21 +373,23 @@ public class ModelReflectionTests {
             stp = new ArrayListToPopulate();
         }
 
-        // okay, we have a (known) collection/map, so handle it special by trying to figure out what to put into it
         if (stp != null) {
-//            System.out.println("Got a collection type: " + stp);
-            // if this is true, this object is parameterized AND a collection
+            // okay, we have a match on a type of collection defined above.
+            // see if there are any generic parameters to give clues about what kind of 
+            // objects are supposed to go in this collection
             if (genericClass != null && ParameterizedType.class.isAssignableFrom(genericClass)) {
                 ParameterizedType parameterizedInnerType = (ParameterizedType) genericType;
                 Type[] actualInnerTypeArgs = parameterizedInnerType.getActualTypeArguments();
                 Object[] typedValuesToPopulate = new Object[actualInnerTypeArgs.length];
                 int index = 0;
                 for (Type actualInnerTypeArg : actualInnerTypeArgs) {
-                    // diving deeper...
+                    // for each of the parameter types (e.g. ArrayList<Integer, String> -- first would be integer, then string)
+                    // dive deeper and create an instance of the expected type...
                     typedValuesToPopulate[index++] = getValueForField(actualInnerTypeArg, alt);
                 }
                 Object populatedCollection = null;
                 try {
+                    // okay, now build whatever kind of collection the object is expecting
                     populatedCollection = stp.validateAndPopulate(typedValuesToPopulate);
                 } catch (NoDefaultValueException re) {
                     for (int i = 0; i < actualInnerTypeArgs.length; i++) {
@@ -389,13 +400,15 @@ public class ModelReflectionTests {
                     }
                 }
                 return populatedCollection;
-            }  
-            // TODO Jordan: here, need to handle collection without any generic specification (populate with new objects?)
+            } else {
+                // TODO: at this point, we have a collection without any generic specification, 
+                // which we are not handling (we don't use this anywhere in the model classes, apparently?)
+            }
         }
         
         return getValueForType(type, alt);
     }
-
+    
     // the reflection tests above will test equality methods of the objects under test -- but this requires being able to get
     // two distinct values for each object type. The below method is responsible for generating two data values
     // (which of the two values is returned  depends on the 'alt' flag) for the type passed in.
@@ -412,7 +425,7 @@ public class ModelReflectionTests {
         if (type.isAssignableFrom(LocalDate.class)) { return LocalDateTime.ofEpochSecond((alt ? epochSecondsAltDate : epochSecondsFirstDate), 0, ZoneOffset.UTC).toLocalDate(); }
 
         if (type.isAssignableFrom(IOperand.class)) { return alt ? new DimensionOperand() : new Expression(); }
-        
+
         // this trick is to simplify definitions of stuff that extends APImodel
         // however it does not apply to abstract classes, as well as classes that don't have empty constructors
         if (ApiModel.class.isAssignableFrom(type) && !Modifier.isAbstract(type.getModifiers())) {
