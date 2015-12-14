@@ -71,6 +71,7 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
         section.getEnrolledStudents().add(student);
         section.setTeachers(new HashSet<Teacher>());
         section.getTeachers().add(teacher);
+        section.setTerm(term);
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
         
         sectionAssignment = new GradedAssignment();

@@ -51,6 +51,7 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
     public Object[][] createSectionProvider() {
         Section emptySection = new Section();
         emptySection.setCourse(course);
+        emptySection.setTerm(term);
         
         Section namedSection = new Section();
         namedSection.setName(localeServiceUtil.generateName());
@@ -59,6 +60,7 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
         namedSection.setStartDate(today);
         namedSection.setEndDate(nextYear);
         namedSection.setCourse(course);
+        namedSection.setTerm(term);
         
         
         Section fullSection = new Section(namedSection);
@@ -69,6 +71,7 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
         s.setName(localeServiceUtil.generateName());
         students.add(s);
         fullSection.setEnrolledStudents(students);
+        fullSection.setTerm(term);
         
         return new Object[][] {
                 { "Empty section", emptySection },
@@ -87,6 +90,7 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
     public void replaceSectionTest(String msg, Section section) {
         Section replaceSection = new Section();
         replaceSection.setCourse(section.getCourse());
+        replaceSection.setTerm(term);
         Section createdSection = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, msg);
         sectionValidatingExecutor.replace(school.getId(), schoolYear.getId(), term.getId(), createdSection.getId(), replaceSection, msg);
         numberOfItemsCreated++;
@@ -127,6 +131,7 @@ public class SectionControllerIntegrationTest extends IntegrationBase {
     public void replaceSectionNegativeTest(String msg, Section section, HttpStatus expectedStatus) {
         Section s = new Section();
         s.setCourse(course);
+        s.setTerm(term);
         Section created = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), s, msg);
         sectionValidatingExecutor.replaceNegative(school.getId(), schoolYear.getId(), term.getId(), created.getId(), section, expectedStatus, msg);
     }
