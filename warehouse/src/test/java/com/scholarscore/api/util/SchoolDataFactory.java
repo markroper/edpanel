@@ -265,6 +265,7 @@ public class SchoolDataFactory {
                         gradeFormulas.get(new Random().nextInt(gradeFormulas.size())),
                         0);
                 section.setCourse(c);
+                section.setTerm(t);
                 section.setEnrolledStudents(new ArrayList<Student>());
                 //Add an alternating half of students to each section
                 for(int i = studentListMidwayPoint * (sectionsCreated % 2); 
