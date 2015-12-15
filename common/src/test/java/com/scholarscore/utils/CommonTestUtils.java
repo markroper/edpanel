@@ -280,7 +280,6 @@ public class CommonTestUtils {
                 withEndDate(endDate).
                 withRoom(room).
                 withGradeFormula(gradeFormula).
-                withGradeFormulaString(gradeFormulaString).
                 withTerm(term).
                 withCourse(course).build();
 
