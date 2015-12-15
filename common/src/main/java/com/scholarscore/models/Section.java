@@ -74,7 +74,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.startDate = startDate;
         this.endDate = endDate;
         this.room = room;
-        this.gradeFormula = gradeFormula;
+        setGradeFormula(gradeFormula);
         this.numberOfTerms = numberOfTerms;
     }
 
@@ -380,7 +380,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         protected LocalDate endDate;
         protected String room;
         protected GradeFormula gradeFormula;
-        protected String gradeFormulaString;
         protected Term term;
         protected transient Course course;
         protected transient List<Student> enrolledStudents;
@@ -421,12 +420,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             this.gradeFormula = formula;
             return this;
         }
-
-        public SectionBuilder withGradeFormulaString(final String formula){
-            this.gradeFormulaString = formula;
-            return this;
-        }
-
+        
         public SectionBuilder withTerm(final Term term){
             this.term = term;
             return this;
@@ -488,7 +482,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             section.setEndDate(endDate);
             section.setRoom(room);
             section.setGradeFormula(gradeFormula);
-            section.setGradeFormulaString(gradeFormulaString);
             section.setNumberOfTerms(numberOfTerms);
             section.setTerm(term);
             section.setCourse(course);
