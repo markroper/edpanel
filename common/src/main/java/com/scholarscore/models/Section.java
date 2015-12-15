@@ -74,7 +74,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.startDate = startDate;
         this.endDate = endDate;
         this.room = room;
-        this.gradeFormula = gradeFormula;
+        setGradeFormula(gradeFormula);
         this.numberOfTerms = numberOfTerms;
     }
 
@@ -376,7 +376,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
+    @Deprecated
     public static class SectionBuilder extends ApiModelBuilder<SectionBuilder, Section> {
+
+        // Editor's note: DO NOT USE! Section has custom logic in getters/setters and this builder doesn't do the 
+        // required special handling in regards to gradeFormula and gradeFormulaString, which 
+        // (while actually implemented as such) should not be thought of as two separate variables that can be 
+        // independently set, but instead as the same variable which can polymorphically take either a string 
+        // or a GradeFormula in the setter.
 
         protected LocalDate startDate;
         protected LocalDate endDate;
