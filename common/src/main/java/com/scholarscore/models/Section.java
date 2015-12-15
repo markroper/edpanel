@@ -49,10 +49,8 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected LocalDate startDate;
     protected LocalDate endDate;
     protected String room;
-    //For jackson & for java 
+    //For jackson & for java (hibernate uses different getter to access the string value)
     protected GradeFormula gradeFormula;
-    //For hibernate
-    protected String gradeFormulaString;
     //The starting term
     protected Term term;
     protected Integer numberOfTerms;
@@ -87,7 +85,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         enrolledStudents = sect.enrolledStudents;
         assignments = sect.assignments;
         gradeFormula = sect.gradeFormula;
-        this.gradeFormulaString = sect.gradeFormulaString;
         sourceSystemId = sect.sourceSystemId;
         numberOfTerms = sect.numberOfTerms;
         this.teachers = sect.teachers;
@@ -177,21 +174,22 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     @JsonIgnore
     @Column(name = HibernateConsts.SECTION_GRADE_FORMULA)
     public String getGradeFormulaString() {
-        return this.gradeFormulaString;
+        try {
+            return EdPanelObjectMapper.MAPPER.writeValueAsString(gradeFormula);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
     }
 
     @JsonIgnore
     public void setGradeFormulaString(String string) {
         if(null == string) {
             this.gradeFormula = null;
-            this.gradeFormulaString = null;
         } else {
             try {
-                this.gradeFormulaString = string;
                 this.gradeFormula = EdPanelObjectMapper.MAPPER.readValue( string, new TypeReference<GradeFormula>(){});
             } catch (IOException e) {
                 this.gradeFormula =  null;
-                this.gradeFormulaString = null;
             }
         }
     }
@@ -272,18 +270,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     }
 
     public void setGradeFormula(GradeFormula gradeFormula) {
-        if(null == gradeFormula) {
-            this.gradeFormula = null;
-            this.gradeFormulaString = null;
-        } else {
-            try {
-                this.gradeFormula = gradeFormula;
-                this.gradeFormulaString = EdPanelObjectMapper.MAPPER.writeValueAsString(gradeFormula);
-            } catch (JsonProcessingException e) {
-                this.gradeFormulaString = null;
-                this.gradeFormula = null;
-            }
-        }
+        this.gradeFormula = gradeFormula;
     }
 
     @Override
@@ -308,12 +295,8 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         if(null == assignments) {
             assignments = mergeFrom.assignments;
         }
-        // gradeFormula and gradeFormulaString are two different representations of the same data
-        // with one serving to talk only to the database and with the other serving to talk only to the
-        // API layer. Since mergePropertiesIfNull is used by the API layer, we have to be careful to only
-        // take the value set via the API and not try to copy the value for gradeFormulaString, which will always be null
-        if(null == gradeFormula || null == gradeFormulaString) {    // should always be both or neither -- if only one is null, programmer error
-            setGradeFormula(gradeFormula);
+        if(null == gradeFormula) {
+            setGradeFormula(mergeFrom.gradeFormula);
         }
         if(null == sourceSystemId) {
             sourceSystemId = mergeFrom.sourceSystemId;
@@ -341,7 +324,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 Objects.equals(this.sourceSystemId, other.sourceSystemId) &&
                 Objects.equals(this.numberOfTerms, other.numberOfTerms) &&
                 Objects.equals(this.gradeFormula, other.gradeFormula) && 
-                Objects.equals(this.gradeFormulaString, other.gradeFormulaString) &&
                 Objects.equals(this.term, other.term) &&
                 Objects.equals(this.teachers, other.teachers);
     }
@@ -349,7 +331,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(course, startDate, endDate, sourceSystemId,
-                room, enrolledStudents, assignments, gradeFormula, numberOfTerms, gradeFormulaString, term, teachers);
+                room, enrolledStudents, assignments, gradeFormula, numberOfTerms, term, teachers);
     }
 
     @Override
@@ -359,7 +341,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 ", endDate=" + endDate +
                 ", room='" + room + '\'' +
                 ", gradeFormula=" + gradeFormula +
-                ", gradeFormulaString='" + gradeFormulaString + '\'' +
                 ", term=" + term +
                 ", course=" + course +
                 ", enrolledStudents=" + enrolledStudents +
