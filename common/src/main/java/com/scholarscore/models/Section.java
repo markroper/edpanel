@@ -296,7 +296,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             assignments = mergeFrom.assignments;
         }
         if(null == gradeFormula) {
-            setGradeFormula(mergeFrom.gradeFormula);
+            this.gradeFormula = mergeFrom.gradeFormula;
         }
         if(null == sourceSystemId) {
             sourceSystemId = mergeFrom.sourceSystemId;
