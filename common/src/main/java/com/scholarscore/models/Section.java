@@ -86,8 +86,8 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         room = sect.room;
         enrolledStudents = sect.enrolledStudents;
         assignments = sect.assignments;
-        // this setter has special behavior that actually sets two fields from this value, so can't just set this value normally
-        setGradeFormula(sect.gradeFormula);
+        gradeFormula = sect.gradeFormula;
+        this.gradeFormulaString = sect.gradeFormulaString;
         sourceSystemId = sect.sourceSystemId;
         numberOfTerms = sect.numberOfTerms;
         this.teachers = sect.teachers;
@@ -172,6 +172,28 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
 
     public void setRoom(String room) {
         this.room = room;
+    }
+
+    @JsonIgnore
+    @Column(name = HibernateConsts.SECTION_GRADE_FORMULA)
+    public String getGradeFormulaString() {
+        return this.gradeFormulaString;
+    }
+
+    @JsonIgnore
+    public void setGradeFormulaString(String string) {
+        if(null == string) {
+            this.gradeFormula = null;
+            this.gradeFormulaString = null;
+        } else {
+            try {
+                this.gradeFormulaString = string;
+                this.gradeFormula = EdPanelObjectMapper.MAPPER.readValue( string, new TypeReference<GradeFormula>(){});
+            } catch (IOException e) {
+                this.gradeFormula =  null;
+                this.gradeFormulaString = null;
+            }
+        }
     }
 
     @Transient
@@ -260,29 +282,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             } catch (JsonProcessingException e) {
                 this.gradeFormulaString = null;
                 this.gradeFormula = null;
-            }
-        }
-    }
-
-    @JsonIgnore
-    @Column(name = HibernateConsts.SECTION_GRADE_FORMULA)
-    public String getGradeFormulaString() {
-        return this.gradeFormulaString;
-    }
-
-    @JsonIgnore
-    public void setGradeFormulaString(String string) {
-        if(null == string) {
-            this.gradeFormula = null;
-            this.gradeFormulaString = null;
-        } else {
-            try {
-                this.gradeFormulaString = string;
-                this.gradeFormula = EdPanelObjectMapper.MAPPER.readValue(string, new TypeReference<GradeFormula>() {
-                });
-            } catch (IOException e) {
-                this.gradeFormula =  null;
-                this.gradeFormulaString = null;
             }
         }
     }
@@ -376,14 +375,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
      * chain setting attributes together.
      */
-    @Deprecated
     public static class SectionBuilder extends ApiModelBuilder<SectionBuilder, Section> {
-
-        // Editor's note: DO NOT USE! Section has custom logic in getters/setters and this builder doesn't do the 
-        // required special handling in regards to gradeFormula and gradeFormulaString, which 
-        // (while actually implemented as such) should not be thought of as two separate variables that can be 
-        // independently set, but instead as the same variable which can polymorphically take either a string 
-        // or a GradeFormula in the setter.
 
         protected LocalDate startDate;
         protected LocalDate endDate;
