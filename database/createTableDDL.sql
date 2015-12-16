@@ -476,7 +476,7 @@ CREATE TABLE `scholar_warehouse`.`survey_response` (
   FOREIGN KEY (`user_fk`)
     REFERENCES `scholar_warehouse`.`users`(`user_id`)
     ON DELETE CASCADE
-    ON UPDATE CASCADE),
+    ON UPDATE CASCADE,
   FOREIGN KEY (`survey_fk`)
     REFERENCES `scholar_warehouse`.`survey`(`survey_id`)
     ON DELETE CASCADE

@@ -231,7 +231,7 @@ public class HibernateConsts {
     public static final String SURVEY_CREATED_DATE = "survey_created_date";
     public static final String SURVEY_ADMINISTER_DATE = "survey_administer_date";
     public static final String SURVEY_SCHEMA = "survey_schema";
-    public static final String SURVEY_USER_FK = "survey_user_fk";
+    public static final String SURVEY_USER_FK = "user_fk";
     public static final String SURVEY_FK = "survey_fk";
 
     //Survey responses

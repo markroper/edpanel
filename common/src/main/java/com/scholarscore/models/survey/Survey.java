@@ -19,7 +19,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.beans.Transient;
+import javax.persistence.Transient;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -117,7 +117,7 @@ public class Survey extends ApiModel {
     }
 
     @JsonIgnore
-    @Column(name = HibernateConsts.SURVEY_SCHEMA)
+    @Column(name = HibernateConsts.SURVEY_SCHEMA, columnDefinition="blob")
     public String getQuestionsString() {
         try {
             return EdPanelObjectMapper.MAPPER.writeValueAsString(questions);
@@ -143,6 +143,7 @@ public class Survey extends ApiModel {
         return questions;
     }
 
+    @Transient
     public void setQuestions(SurveySchema questions) {
         this.questions = questions;
     }
