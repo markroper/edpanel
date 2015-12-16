@@ -1,7 +1,10 @@
 package com.scholarscore.models.survey;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.util.Objects;
 
 /**
@@ -22,11 +25,13 @@ public class SurveyBooleanQuestion extends SurveyQuestion<Boolean> {
     }
 
     @Override
-    public SurveyQuestionTypes getType() {
-        return SurveyQuestionTypes.TRUE_FALSE;
+    @Enumerated(EnumType.STRING)
+    public SurveyQuestionType getType() {
+        return SurveyQuestionType.TRUE_FALSE;
     }
 
     @Override
+    @JsonIgnore
     public Class<Boolean> getResponseClass() {
         return Boolean.class;
     }

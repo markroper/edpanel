@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -21,10 +23,14 @@ import java.util.Objects;
 public abstract class SurveyQuestion<T> implements Serializable {
     protected String question;
     protected Boolean responseRequired;
+    protected SurveyQuestionType type;
 
-    public abstract SurveyQuestionTypes getType();
+    @Enumerated(EnumType.STRING)
+    public abstract SurveyQuestionType getType();
 
-    public void setType() {}
+    public void setType(SurveyQuestionType type) {
+        this.type = type;
+    }
 
     public abstract Class<T> getResponseClass();
 

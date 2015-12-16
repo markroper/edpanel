@@ -110,10 +110,6 @@ public class SurveyController extends BaseController {
         return respond(pm.getSurveyManager().getSurveysBySchoolId(schoolId, startDate, endDate));
     }
 
-
-
-
-
     @ApiOperation(
             value = "Create a survey response",
             notes = "Creates, assigns an ID, persists and returns a survey resonse ID",

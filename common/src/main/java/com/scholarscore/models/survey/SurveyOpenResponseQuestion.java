@@ -1,7 +1,10 @@
 package com.scholarscore.models.survey;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.util.Objects;
 
 /**
@@ -21,11 +24,13 @@ public class SurveyOpenResponseQuestion extends SurveyQuestion<String> {
     }
 
     @Override
-    public SurveyQuestionTypes getType() {
-        return SurveyQuestionTypes.OPEN_RESPONSE;
+    @Enumerated(EnumType.STRING)
+    public SurveyQuestionType getType() {
+        return SurveyQuestionType.OPEN_RESPONSE;
     }
 
     @Override
+    @JsonIgnore
     public Class<String> getResponseClass() {
         return String.class;
     }
