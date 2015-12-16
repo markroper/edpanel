@@ -1,10 +1,12 @@
-package com.scholarscore.models.survey;
+package com.scholarscore.models.survey.question;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.survey.SurveyQuestionType;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -12,32 +14,32 @@ import java.util.Objects;
  */
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SurveyOpenResponseQuestion extends SurveyQuestion<String> {
-    protected Integer maxResponseLength;
+public class SurveyMultipleChoiceQuestion extends SurveyQuestion<Integer> {
+    protected List<String> choices;
 
-    public Integer getMaxResponseLength() {
-        return maxResponseLength;
+    public List<String> getChoices() {
+        return choices;
     }
 
-    public void setMaxResponseLength(Integer maxResponseLength) {
-        this.maxResponseLength = maxResponseLength;
+    public void setChoices(List<String> choices) {
+        this.choices = choices;
     }
 
     @Override
     @Enumerated(EnumType.STRING)
     public SurveyQuestionType getType() {
-        return SurveyQuestionType.OPEN_RESPONSE;
+        return SurveyQuestionType.MULTIPLE_CHOICE;
     }
 
     @Override
     @JsonIgnore
-    public Class<String> getResponseClass() {
-        return String.class;
+    public Class<Integer> getResponseClass() {
+        return Integer.class;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(maxResponseLength);
+        return Objects.hash(choices);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class SurveyOpenResponseQuestion extends SurveyQuestion<String> {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        final SurveyOpenResponseQuestion other = (SurveyOpenResponseQuestion) obj;
-        return Objects.equals(this.maxResponseLength, other.maxResponseLength);
+        final SurveyMultipleChoiceQuestion other = (SurveyMultipleChoiceQuestion) obj;
+        return Objects.equals(this.choices, other.choices);
     }
 }
