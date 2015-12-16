@@ -20,6 +20,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -40,6 +41,7 @@ public class Survey extends ApiModel {
     protected LocalDate createdDate;
     protected LocalDate administeredDate;
     //For jackson & for java (hibernate uses different getter to access the string value and store in a blob)
+    @Valid
     protected SurveySchema questions;
 
     @Override

@@ -1,7 +1,10 @@
 package com.scholarscore.models.survey;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,11 +25,13 @@ public class SurveyMultipleChoiceQuestion extends SurveyQuestion<Integer> {
     }
 
     @Override
-    public SurveyQuestionTypes getType() {
-        return SurveyQuestionTypes.MULTIPLE_CHOICE;
+    @Enumerated(EnumType.STRING)
+    public SurveyQuestionType getType() {
+        return SurveyQuestionType.MULTIPLE_CHOICE;
     }
 
     @Override
+    @JsonIgnore
     public Class<Integer> getResponseClass() {
         return Integer.class;
     }

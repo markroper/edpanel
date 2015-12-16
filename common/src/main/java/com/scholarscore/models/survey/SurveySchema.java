@@ -2,6 +2,8 @@ package com.scholarscore.models.survey;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +14,8 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SurveySchema  implements Serializable {
+    @NotNull
+    @Size(min = 1)
     protected List<SurveyQuestion> questions;
 
     public List<SurveyQuestion> getQuestions() {

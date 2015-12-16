@@ -24,6 +24,8 @@ import com.scholarscore.api.controller.service.SectionValidatingExecutor;
 import com.scholarscore.api.controller.service.StudentAssignmentValidatingExecutor;
 import com.scholarscore.api.controller.service.StudentSectionGradeValidatingExecutor;
 import com.scholarscore.api.controller.service.StudentValidatingExecutor;
+import com.scholarscore.api.controller.service.SurveyResponseValidatingExecutor;
+import com.scholarscore.api.controller.service.SurveyValidatingExecutor;
 import com.scholarscore.api.controller.service.TeacherValidatingExecutor;
 import com.scholarscore.api.controller.service.TermValidatingExecutor;
 import com.scholarscore.api.controller.service.UiAttributesValidatingExecutor;
@@ -95,6 +97,9 @@ public class IntegrationBase {
     private static final String ATTENDANCE_ENDPOINT = "/attendance";
     private static final String UI_ATTRIBUTES_ENDPOINT = "/uiattributes";
     private static final String GPA_ENDPOINT = "/gpas";
+    private static final String SURVEY_ENDPOINT = "/surveys";
+    private static final String SURVEY_RESPONSE_ENDPOINT = "/responses";
+    private static final String RESPONDENTS_ENDOINT = "/respondents";
 
     public LocaleServiceUtil localeServiceUtil;
     public CourseValidatingExecutor courseValidatingExecutor;
@@ -116,6 +121,8 @@ public class IntegrationBase {
     public AttendanceValidatingExecutor attendanceValidatingExecutor;
     public UiAttributesValidatingExecutor uiAttributesValidatingExecutor;
     public GpaValidatingExecutor gpaValidatingExecutor;
+    public SurveyValidatingExecutor surveyValidatingExecutor;
+    public SurveyResponseValidatingExecutor surveyResponseValidatingExecutor;
 
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Student> studentsCreated = new CopyOnWriteArrayList<>();
@@ -177,6 +184,8 @@ public class IntegrationBase {
         schoolDayValidatingExecutor = new SchoolDayValidatingExecutor(this);
         uiAttributesValidatingExecutor = new UiAttributesValidatingExecutor(this);
         gpaValidatingExecutor = new GpaValidatingExecutor(this);
+        surveyValidatingExecutor = new SurveyValidatingExecutor(this);
+        surveyResponseValidatingExecutor = new SurveyResponseValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
         EdPanelObjectMapper.MAPPER.registerModule(new JavaTimeModule());
@@ -228,6 +237,8 @@ public class IntegrationBase {
         Assert.assertNotNull(schoolDayValidatingExecutor, "Unable to configure user service");
         Assert.assertNotNull(uiAttributesValidatingExecutor, "Unable to configure ui attrs service");
         Assert.assertNotNull(gpaValidatingExecutor, "Unable to configure GPA service");
+        Assert.assertNotNull(surveyValidatingExecutor, "Unable to configure survey service");
+        Assert.assertNotNull(surveyResponseValidatingExecutor, "Unable to configure survey response service");
     }
 
     /**
@@ -846,6 +857,34 @@ public class IntegrationBase {
 
     public String getUsersEndpoint(Long userId) {
         return BASE_API_ENDPOINT + USERS_ENDPOINT + pathify(userId);
+    }
+
+    public String getSurveyEndpoint() {
+        return BASE_API_ENDPOINT + SURVEY_ENDPOINT;
+    }
+
+    public String getSurveyEndpoint(Long surveyId) {
+        return getSurveyEndpoint() + pathify(surveyId);
+    }
+
+    public String getSurveyEndpointWithUserId(Long userId) {
+        return getSurveyEndpoint() + USERS_ENDPOINT + pathify(userId);
+    }
+
+    public String getSurveyEndpointWithSchoolId(Long schoolId) {
+        return getSurveyEndpoint() + SCHOOL_ENDPOINT + pathify(schoolId);
+    }
+
+    public String getSurveyResponseEndpoint(Long surveyId) {
+        return getSurveyEndpoint(surveyId) + SURVEY_RESPONSE_ENDPOINT;
+    }
+
+    public String getSurveyResponseEndpoint(Long surveyId, Long respId) {
+        return getSurveyResponseEndpoint(surveyId) + pathify(respId);
+    }
+
+    public String getSurveyResponseByRespondentEndpoint(Long surveyId, Long respondentId) {
+        return getSurveyEndpoint() + pathify(surveyId) + RESPONDENTS_ENDOINT + pathify(respondentId) + SURVEY_RESPONSE_ENDPOINT;
     }
 
     protected void invalidateCookie() { mockMvc.setjSessionId(null); }
