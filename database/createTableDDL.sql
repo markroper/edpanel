@@ -445,3 +445,41 @@ CREATE TABLE `scholar_warehouse`.`ui_attributes` (
         ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
+CREATE TABLE `scholar_warehouse`.`survey` (
+  `survey_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a survey',
+  `school_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key linking to the school this survey was created in, null for district wide',
+  `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the user table for the creating user',
+  `survey_name` VARCHAR(256) NULL COMMENT 'The human readable name of the survey',
+  `survey_created_date` DATE DEFAULT NULL COMMENT 'The date the survey was created',
+  `survey_administer_date` DATE DEFAULT NULL COMMENT 'The date of survey administration',
+  `survey_schema` BLOB DEFAULT NULL COMMENT 'Blob to store the JSON needed for formula goals',
+  PRIMARY KEY (`survey_id`),
+  FOREIGN KEY (`user_fk`)
+    REFERENCES `scholar_warehouse`.`users`(`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`school_fk`)
+    REFERENCES `scholar_warehouse`.`school`(`school_id`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+ALTER TABLE `scholar_warehouse`.`survey` ADD INDEX (`survey_created_date`);
+ALTER TABLE `scholar_warehouse`.`survey` ADD INDEX (`survey_administer_date`);
+
+CREATE TABLE `scholar_warehouse`.`survey_response` (
+  `survey_response_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a survey',
+  `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the user table for the responding user',
+  `survey_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The FK to the parent survey associated with the response',
+  `survey_response_date` DATE DEFAULT NULL COMMENT 'The date the survey was completed',
+  `survey_response` BLOB DEFAULT NULL COMMENT 'Blob to store the JSON formatted survey response',
+  PRIMARY KEY (`survey_response_id`),
+  FOREIGN KEY (`user_fk`)
+    REFERENCES `scholar_warehouse`.`users`(`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE),
+  FOREIGN KEY (`survey_fk`)
+    REFERENCES `scholar_warehouse`.`survey`(`survey_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+ALTER TABLE `scholar_warehouse`.`survey_response` ADD INDEX (`survey_response_date`);
