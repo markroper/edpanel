@@ -3,11 +3,16 @@ package com.scholarscore.api.controller;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.School;
 import com.scholarscore.models.survey.Survey;
-import com.scholarscore.models.survey.SurveyBooleanQuestion;
-import com.scholarscore.models.survey.SurveyMultipleChoiceQuestion;
-import com.scholarscore.models.survey.SurveyOpenResponseQuestion;
-import com.scholarscore.models.survey.SurveyQuestion;
+import com.scholarscore.models.survey.question.SurveyBooleanQuestion;
+import com.scholarscore.models.survey.question.SurveyMultipleChoiceQuestion;
+import com.scholarscore.models.survey.question.SurveyOpenResponseQuestion;
+import com.scholarscore.models.survey.question.SurveyQuestion;
+import com.scholarscore.models.survey.SurveyResponse;
 import com.scholarscore.models.survey.SurveySchema;
+import com.scholarscore.models.survey.answer.BooleanAnswer;
+import com.scholarscore.models.survey.answer.MultipleChoiceAnswer;
+import com.scholarscore.models.survey.answer.OpenAnswer;
+import com.scholarscore.models.survey.answer.QuestionAnswer;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import org.springframework.http.HttpStatus;
@@ -31,6 +36,9 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
     private Student student2;
     private Teacher teacher2;
     private SurveySchema simpleSchema;
+    SurveyBooleanQuestion boolQ;
+    SurveyOpenResponseQuestion openQ;
+    SurveyMultipleChoiceQuestion mcQ;
 
     @BeforeClass
     public void init() {
@@ -55,15 +63,15 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         teacher2.setName(localeServiceUtil.generateName());
         teacher2 = teacherValidatingExecutor.create(teacher2, "create base teacher");
 
-        SurveyBooleanQuestion boolQ = new SurveyBooleanQuestion();
+        boolQ = new SurveyBooleanQuestion();
         boolQ.setShowAsCheckbox(true);
         boolQ.setQuestion("Can I ask you a question?");
         boolQ.setResponseRequired(true);
-        SurveyOpenResponseQuestion openQ = new SurveyOpenResponseQuestion();
+        openQ = new SurveyOpenResponseQuestion();
         openQ.setMaxResponseLength(100);
         openQ.setQuestion("Can I ask you a question?");
         openQ.setResponseRequired(true);
-        SurveyMultipleChoiceQuestion mcQ = new SurveyMultipleChoiceQuestion();
+        mcQ = new SurveyMultipleChoiceQuestion();
         mcQ.setChoices(new ArrayList<String>(){{ add("one"); add("two"); }});
         mcQ.setQuestion("Can I ask you a question?");
         mcQ.setResponseRequired(false);
@@ -95,7 +103,7 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         schoolFk.setAdministeredDate(LocalDate.now().plusDays(10));
         schoolFk.setCreatedDate(LocalDate.now());
 
-        return new Object[][]{
+        return new Object[][] {
                 { "Empty behavior", simpleSurvey },
                 { "Named behavior", createdDate },
                 { "Fully populated behavior", administerDate },
@@ -180,5 +188,38 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createSurveysNegProvider")
     public void createSurveyNeg(String msg, Survey s, HttpStatus status) {
         this.surveyValidatingExecutor.createNegative(s, status, msg);
+    }
+
+    @Test
+    public void createSurveyResponseAndValidate() {
+        Survey simpleSurvey = new Survey();
+        simpleSurvey.setCreator(teacher1);
+        simpleSurvey.setQuestions(simpleSchema);
+        simpleSurvey = this.surveyValidatingExecutor.create(simpleSurvey, "Create to be deleted");
+
+        SurveyResponse resp = new SurveyResponse();
+        resp.setSurvey(simpleSurvey);
+        resp.setRespondent(student1);
+        List<QuestionAnswer> answers = new ArrayList<>();
+        BooleanAnswer ba = new BooleanAnswer();
+        ba.setAnswer(true);
+        ba.setQuestion(boolQ);
+        answers.add(ba);
+
+        MultipleChoiceAnswer ma = new MultipleChoiceAnswer();
+        ma.setAnswer(2);
+        ma.setQuestion(mcQ);
+        answers.add(ma);
+
+        OpenAnswer oa = new OpenAnswer();
+        oa.setAnswer("something something");
+        oa.setQuestion(openQ);
+        answers.add(oa);
+        resp.setAnswers(answers);
+        resp = this.surveyResponseValidatingExecutor.create(resp, "Create a survey response");
+
+
+        this.surveyResponseValidatingExecutor.delete(simpleSurvey.getId(), resp.getId(), "delete survey");
+        this.surveyValidatingExecutor.delete(simpleSurvey.getId(), "Delete that shit");
     }
 }

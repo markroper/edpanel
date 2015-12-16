@@ -1,7 +1,8 @@
-package com.scholarscore.models.survey;
+package com.scholarscore.models.survey.question;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.survey.SurveyQuestionType;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

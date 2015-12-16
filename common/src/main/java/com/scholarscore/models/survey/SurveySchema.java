@@ -1,6 +1,7 @@
 package com.scholarscore.models.survey;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.survey.question.SurveyQuestion;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

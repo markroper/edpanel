@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.survey.answer.QuestionAnswer;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.util.EdPanelObjectMapper;
 import org.hibernate.annotations.Fetch;
@@ -22,7 +23,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -38,7 +39,9 @@ public class SurveyResponse extends ApiModel {
     protected LocalDate responseDate;
     protected Survey survey;
     // hibernate uses different getter to access the string value and store in a blob
-    protected Map<SurveyQuestion<?>, ?> answers;
+    protected List<QuestionAnswer> answers;
+//    protected Map<SurveyMultipleChoiceQuestion, Integer> multipleChoicesAnswers;
+//    protected Map<SurveyOpenResponseQuestion, String> openAnswers;
 
     @Override
     public void mergePropertiesIfNull(ApiModel model) {
@@ -112,7 +115,7 @@ public class SurveyResponse extends ApiModel {
             this.answers = null;
         } else {
             try {
-                this.answers = EdPanelObjectMapper.MAPPER.readValue( string, new TypeReference<Map<SurveyQuestion<?>, ?>>(){});
+                this.answers = EdPanelObjectMapper.MAPPER.readValue( string, new TypeReference<List<QuestionAnswer>>(){});
             } catch (IOException e) {
                 this.answers =  null;
             }
@@ -120,12 +123,12 @@ public class SurveyResponse extends ApiModel {
     }
 
     @Transient
-    public Map<SurveyQuestion<?>, ?> getAnswers() {
+    public List<QuestionAnswer> getAnswers() {
         return answers;
     }
 
     @Transient
-    public void setAnswers(Map<SurveyQuestion<?>, ?> answers) {
+    public void setAnswers(List<QuestionAnswer> answers) {
         this.answers = answers;
     }
 
