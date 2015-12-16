@@ -11,12 +11,14 @@ import com.scholarscore.models.survey.SurveySchema;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import org.springframework.http.HttpStatus;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by markroper on 12/16/15.
@@ -28,6 +30,7 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
     private Teacher teacher1;
     private Student student2;
     private Teacher teacher2;
+    private SurveySchema simpleSchema;
 
     @BeforeClass
     public void init() {
@@ -51,10 +54,7 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         teacher2 = new Teacher();
         teacher2.setName(localeServiceUtil.generateName());
         teacher2 = teacherValidatingExecutor.create(teacher2, "create base teacher");
-    }
 
-    @DataProvider
-    public Object[][] createSurveysProvider() {
         SurveyBooleanQuestion boolQ = new SurveyBooleanQuestion();
         boolQ.setShowAsCheckbox(true);
         boolQ.setQuestion("Can I ask you a question?");
@@ -69,7 +69,10 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         mcQ.setResponseRequired(false);
         SurveySchema simpleSchema = new SurveySchema();
         simpleSchema.setQuestions(new ArrayList<SurveyQuestion>(){{ add(boolQ); add(openQ); add(mcQ); }});
+    }
 
+    @DataProvider
+    public Object[][] createSurveysProvider() {
         Survey simpleSurvey = new Survey();
         simpleSurvey.setCreator(teacher1);
         simpleSurvey.setQuestions(simpleSchema);
@@ -105,23 +108,56 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         this.surveyValidatingExecutor.create(s, msg);
     }
 
+    @Test
+    public void createDelete() {
+        Survey simpleSurvey = new Survey();
+        simpleSurvey.setCreator(teacher1);
+        simpleSurvey.setQuestions(simpleSchema);
+        simpleSurvey = this.surveyValidatingExecutor.create(simpleSurvey, "Create to be deleted");
+        this.surveyValidatingExecutor.delete(simpleSurvey.getId(), "Delete that shit");
+    }
+
+    @Test
+    public void createGetAll() {
+        Survey simpleSurvey = new Survey();
+        simpleSurvey.setCreator(teacher2);
+        simpleSurvey.setSchoolFk(school.getId());
+        simpleSurvey.setQuestions(simpleSchema);
+
+        Survey createdDate = new Survey();
+        createdDate.setCreator(teacher2);
+        createdDate.setQuestions(simpleSchema);
+        createdDate.setSchoolFk(school.getId());
+        createdDate.setCreatedDate(LocalDate.now());
+
+        Survey administerDate = new Survey();
+        administerDate.setCreator(teacher2);
+        administerDate.setQuestions(simpleSchema);
+        administerDate.setSchoolFk(school.getId());
+        administerDate.setAdministeredDate(LocalDate.now().plusDays(10));
+        administerDate.setCreatedDate(LocalDate.now());
+
+        Survey schoolFk = new Survey();
+        schoolFk.setCreator(teacher2);
+        schoolFk.setQuestions(simpleSchema);
+        schoolFk.setSchoolFk(school.getId());
+        schoolFk.setAdministeredDate(LocalDate.now().plusDays(10));
+        schoolFk.setCreatedDate(LocalDate.now());
+
+        this.surveyValidatingExecutor.create(simpleSurvey, "");
+        this.surveyValidatingExecutor.create(createdDate, "");
+        this.surveyValidatingExecutor.create(administerDate, "");
+        this.surveyValidatingExecutor.create(schoolFk, "");
+
+        List<Survey> surveyrs = this.surveyValidatingExecutor.getBySchoolAndDate(school.getId(), null, null, "");
+        Assert.assertEquals(surveyrs.size(), 4, "Unexpected number of survey's returned for school");
+
+        List<Survey> teachersSurveys = this.surveyValidatingExecutor.getByUserId(teacher2.getId(), "");
+        Assert.assertEquals(teachersSurveys.size(), 4, "Unexpected number of surveys returned for teacher");
+    }
+
     @DataProvider
     public Object[][] createSurveysNegProvider() {
-        SurveyBooleanQuestion boolQ = new SurveyBooleanQuestion();
-        boolQ.setShowAsCheckbox(true);
-        boolQ.setQuestion("Can I ask you a question?");
-        boolQ.setResponseRequired(true);
-        SurveyOpenResponseQuestion openQ = new SurveyOpenResponseQuestion();
-        openQ.setMaxResponseLength(100);
-        openQ.setQuestion("Can I ask you a question?");
-        openQ.setResponseRequired(true);
-        SurveyMultipleChoiceQuestion mcQ = new SurveyMultipleChoiceQuestion();
-        mcQ.setChoices(new ArrayList<String>(){{ add("one"); add("two"); }});
-        mcQ.setQuestion("Can I ask you a question?");
-        mcQ.setResponseRequired(false);
-        SurveySchema simpleSchema = new SurveySchema();
-        simpleSchema.setQuestions(new ArrayList<SurveyQuestion>(){{ add(boolQ); add(openQ); add(mcQ); }});
-
         Survey missingSchool = new Survey();
         missingSchool.setCreator(teacher2);
         missingSchool.setQuestions(simpleSchema);
