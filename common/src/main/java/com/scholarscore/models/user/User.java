@@ -240,6 +240,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	/**
 	 * Abstract to force subclasses to implement along with hibernate annotations
 	 */
+	@Transient
 	public abstract Address getHomeAddress();
 
 	public void setHomeAddress(Address homeAddress) {

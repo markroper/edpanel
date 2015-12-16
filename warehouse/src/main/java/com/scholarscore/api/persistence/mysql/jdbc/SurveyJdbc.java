@@ -121,12 +121,14 @@ public class SurveyJdbc implements SurveyPersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<SurveyResponse> selectSurveyResponses(long surveyId) {
         return (List<SurveyResponse>) hibernateTemplate.findByNamedParam(
                 SURVEY_RESP_BASE_HQL + " where s.survey.id = :surveyId", "surveyId", surveyId);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<SurveyResponse> selectSurveyResponsesByRespondent(long respondentId, LocalDate start, LocalDate end) {
         List<SurveyResponse> responses = null;
         if(null == start && null == end) {
