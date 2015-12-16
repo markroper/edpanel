@@ -18,6 +18,7 @@ import java.util.List;
  */
 public class SurveyManagerImpl implements SurveyManager {
     private static final String SURVEY = "survey";
+    private static final String SURVEY_RESP = "survey response";
 
     @Autowired
     private OrchestrationManager pm;
@@ -54,7 +55,11 @@ public class SurveyManagerImpl implements SurveyManager {
 
     @Override
     public ServiceResponse<Survey> getSurvey(long surveyId) {
-        return new ServiceResponse<Survey>(surveyPersistence.selectSurvey(surveyId));
+        Survey s = surveyPersistence.selectSurvey(surveyId);
+        if(null == s) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{SURVEY, surveyId}));
+        };
+        return new ServiceResponse<>(s);
     }
 
     @Override
@@ -109,8 +114,11 @@ public class SurveyManagerImpl implements SurveyManager {
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
         }
-        return new ServiceResponse<SurveyResponse>(
-                surveyPersistence.selectSurveyResponse(surveyId, responseId));
+        SurveyResponse s = surveyPersistence.selectSurveyResponse(surveyId, responseId);
+        if(null == s) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{SURVEY_RESP, surveyId}));
+        };
+        return new ServiceResponse<>(s);
     }
 
     @Override
