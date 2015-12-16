@@ -468,13 +468,13 @@ ALTER TABLE `scholar_warehouse`.`survey` ADD INDEX (`survey_administer_date`);
 
 CREATE TABLE `scholar_warehouse`.`survey_response` (
   `survey_response_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a survey',
-  `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the user table for the responding user',
+  `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the user table for the responding user',
   `survey_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The FK to the parent survey associated with the response',
   `survey_response_date` DATE DEFAULT NULL COMMENT 'The date the survey was completed',
   `survey_response` BLOB DEFAULT NULL COMMENT 'Blob to store the JSON formatted survey response',
   PRIMARY KEY (`survey_response_id`),
-  FOREIGN KEY (`user_fk`)
-    REFERENCES `scholar_warehouse`.`users`(`user_id`)
+  FOREIGN KEY (`student_fk`)
+    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   FOREIGN KEY (`survey_fk`)

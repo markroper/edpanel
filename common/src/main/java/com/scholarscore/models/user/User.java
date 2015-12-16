@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.scholarscore.models.Address;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
@@ -55,6 +56,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	private Boolean enabled;
 	private String oneTimePass;
 	private Date oneTimePassCreated;
+	protected Address homeAddress;
 
 	private Set<ContactMethod> contactMethods;
 	
@@ -68,6 +70,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	
 	public User(User value) {
 	    super(value);
+		this.homeAddress = value.homeAddress;
 		this.username = value.username;
 		this.password = value.password;
 		this.enabled = value.enabled;
@@ -234,6 +237,15 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		this.mustResetPassword = mustResetPassword;
 	}
 
+	/**
+	 * Abstract to force subclasses to implement along with hibernate annotations
+	 */
+	public abstract Address getHomeAddress();
+
+	public void setHomeAddress(Address homeAddress) {
+		this.homeAddress = homeAddress;
+	}
+
 	@Override
 	public void mergePropertiesIfNull(User mergeFrom) {
 		super.mergePropertiesIfNull(mergeFrom);
@@ -262,6 +274,9 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		if (null == mustResetPassword) {
 			this.mustResetPassword = mergeFrom.getMustResetPassword();
 		}
+		if(null == this.homeAddress) {
+			this.homeAddress = mergeFrom.homeAddress;
+		}
     }
 	
 	@Override
@@ -275,6 +290,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
         final User other = (User) obj;
 		return Objects.equals(this.enabled, other.enabled)
                 && Objects.equals(this.password, other.password)
+				&& Objects.equals(this.homeAddress, other.homeAddress)
                 && Objects.equals(this.username, other.username)
 				;
     }
@@ -282,7 +298,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	@Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(username, enabled, password);
+                + Objects.hash(username, enabled, password, homeAddress);
     }
 
 	@Override
@@ -291,6 +307,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 				"User{" +
 				", password='" + password + '\'' +
 				", username='" + username + '\'' +
+				", homeAddress='" + homeAddress + '\'' +
 				", enabled=" + enabled +
 				'}';
 	}
@@ -305,6 +322,12 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		private String username;
 		private String password;
 		private Boolean enabled;
+		private Address homeAddress;
+
+		public U withHomeAddress(final Address home){
+			this.homeAddress = home;
+			return me();
+		}
 
 		public U withUsername(final String username){
 			this.username = username;
@@ -326,6 +349,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 			user.setUsername(username);
 			user.setPassword(password);
 			user.setEnabled(enabled);
+			user.setHomeAddress(homeAddress);
 			return user;
 		}
 

@@ -202,7 +202,12 @@
           class="com.scholarscore.api.persistence.mysql.jdbc.StudentPrepScoreJdbc">
         <property name="dataSource" ref="dataSource"/>        
     </bean>
-    
+
+    <bean id="surveyPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.SurveyJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
     <bean id="authInfoPersistence"
             class="com.scholarscore.api.persistence.mysql.jdbc.user.AuthInfoJdbc">
         <property name="dataSource" ref="dataSource"/>
