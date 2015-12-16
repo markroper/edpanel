@@ -208,7 +208,7 @@ public class SurveyController extends BaseController {
     ResponseEntity getSurveyResponse(@ApiParam(name = "surveyId", required = true, value = "Survey ID")
                                     @PathVariable(value="surveyId") Long surveyId,
                                     @ApiParam(name = "responseId", required = true, value = "Response ID")
-                                    @PathVariable(value="responseId") Long responseId,) {
+                                    @PathVariable(value="responseId") Long responseId) {
         return respond(pm.getSurveyManager().getSurveyResponse(surveyId, responseId));
     }
 }

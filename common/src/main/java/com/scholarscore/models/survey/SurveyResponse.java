@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.HibernateConsts;
-import com.scholarscore.models.user.User;
+import com.scholarscore.models.user.Student;
 import com.scholarscore.util.EdPanelObjectMapper;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -34,7 +34,7 @@ import java.util.Objects;
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SurveyResponse extends ApiModel {
-    protected User respondent;
+    protected Student respondent;
     protected LocalDate responseDate;
     protected Survey survey;
     // hibernate uses different getter to access the string value and store in a blob
@@ -67,13 +67,13 @@ public class SurveyResponse extends ApiModel {
     }
 
     @ManyToOne(optional = true, fetch= FetchType.EAGER)
-    @JoinColumn(name = HibernateConsts.SURVEY_USER_FK)
+    @JoinColumn(name = HibernateConsts.STUDENT_FK)
     @Fetch(FetchMode.JOIN)
-    public User getRespondent() {
+    public Student getRespondent() {
         return respondent;
     }
 
-    public void setRespondent(User respondent) {
+    public void setRespondent(Student respondent) {
         this.respondent = respondent;
     }
 
