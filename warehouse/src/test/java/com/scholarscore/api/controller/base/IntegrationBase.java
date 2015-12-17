@@ -883,8 +883,8 @@ public class IntegrationBase {
         return getSurveyResponseEndpoint(surveyId) + pathify(respId);
     }
 
-    public String getSurveyResponseByRespondentEndpoint(Long surveyId, Long respondentId) {
-        return getSurveyEndpoint() + pathify(surveyId) + RESPONDENTS_ENDOINT + pathify(respondentId) + SURVEY_RESPONSE_ENDPOINT;
+    public String getSurveyResponseByRespondentEndpoint(Long respondentId) {
+        return getSurveyEndpoint() + RESPONDENTS_ENDOINT + pathify(respondentId) + SURVEY_RESPONSE_ENDPOINT;
     }
 
     protected void invalidateCookie() { mockMvc.setjSessionId(null); }
