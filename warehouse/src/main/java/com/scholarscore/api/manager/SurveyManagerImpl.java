@@ -81,7 +81,7 @@ public class SurveyManagerImpl implements SurveyManager {
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
         }
-        return new ServiceResponse<List<Survey>>(surveyPersistence.selectSurveyByUserId(userId));
+        return new ServiceResponse<>(surveyPersistence.selectSurveyByUserId(userId));
     }
 
     @Override
@@ -93,7 +93,24 @@ public class SurveyManagerImpl implements SurveyManager {
         if(null != startDate && null != endDate && startDate.isAfter(endDate)) {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.ENTITY_INVALID_IN_CONTEXT));
         }
-        return new ServiceResponse<List<Survey>>(surveyPersistence.selectSurveyBySchoolId(schoolId, startDate, endDate));
+        return new ServiceResponse<>(surveyPersistence.selectSurveyBySchoolId(schoolId, startDate, endDate));
+    }
+
+    @Override
+    public ServiceResponse<List<Survey>> getSurveysBySectionId(
+            long schoolId, long sectionId, LocalDate startDate, LocalDate endDate) {
+        StatusCode code = pm.getSchoolManager().schoolExists(schoolId);
+        if(!code.isOK()) {
+            return new ServiceResponse<>(code);
+        }
+        code = pm.getSectionManager().sectionExists(schoolId, 0L, 0L, sectionId);
+        if(!code.isOK()) {
+            return new ServiceResponse<>(code);
+        }
+        if(null != startDate && null != endDate && startDate.isAfter(endDate)) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.ENTITY_INVALID_IN_CONTEXT));
+        }
+        return new ServiceResponse<>(surveyPersistence.selectSurveyBySectionId(schoolId, startDate, endDate));
     }
 
     @Override

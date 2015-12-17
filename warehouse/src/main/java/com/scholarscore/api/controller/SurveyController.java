@@ -111,6 +111,25 @@ public class SurveyController extends BaseController {
     }
 
     @ApiOperation(
+            value = "Get surveys by section ID with optional date ranges",
+            notes = "Retrieve surveys by the parent school ID",
+            response = List.class)
+    @RequestMapping(
+            value = "/schools/{schoolId}/sections/{sectionId}",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getSurveysBySectionlId(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "sectionId", required = true, value = "Section ID")
+            @PathVariable(value="sectionId") Long sectionId,
+            @RequestParam(value="startDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) LocalDate startDate,
+            @RequestParam(value="endDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) LocalDate endDate) {
+        return respond(pm.getSurveyManager().getSurveysBySectionId(schoolId, sectionId, startDate, endDate));
+    }
+
+    @ApiOperation(
             value = "Create a survey response",
             notes = "Creates, assigns an ID, persists and returns a survey resonse ID",
             response = EntityId.class)

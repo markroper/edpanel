@@ -97,6 +97,40 @@ public class SurveyJdbc implements SurveyPersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public List<Survey> selectSurveyBySectionId(long sectionId, LocalDate start, LocalDate end) {
+        List<Survey> surveys = null;
+        if(null == start && null == end) {
+            surveys = (List<Survey>)hibernateTemplate.findByNamedParam(
+                    SURVEY_BASE_HQL + " where s.sectionFk = :sectionId", "sectionId", sectionId);
+        } else {
+            String[] params;
+            Object[] paramValues;
+            String hqlString = SURVEY_BASE_HQL + " where s.sectionFk = :sectionId";
+            String endLimit = " and s.createdDate <= :end";
+            String startLimit = " and s.createdDate >= :start";
+            if(null == end) {
+                params = new String[]{"sectionId", "start"};
+                paramValues = new Object[]{ new Long(sectionId), start };
+                hqlString += startLimit;
+            } else if(null == start) {
+                params = new String[]{"sectionId", "end"};
+                paramValues = new Object[]{ new Long(sectionId), end };
+                hqlString += endLimit;
+            } else {
+                params = new String[]{"sectionId", "start", "end"};
+                paramValues = new Object[]{ new Long(sectionId), start, end };
+                hqlString += startLimit + endLimit;
+            }
+            surveys = (List<Survey>)hibernateTemplate.findByNamedParam(
+                    hqlString,
+                    params,
+                    paramValues);
+        }
+        return surveys;
+    }
+
+    @Override
     public long insertSurveyResponse(SurveyResponse resp) {
         SurveyResponse s = this.hibernateTemplate.merge(resp);
         return s.getId();
