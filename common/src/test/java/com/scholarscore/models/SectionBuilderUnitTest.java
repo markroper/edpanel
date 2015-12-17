@@ -81,7 +81,6 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
                 .withEndDate(endDate)
                 .withRoom(room)
                 .withGradeFormula(gradeFormula)
-                .withGradeFormulaString(gradeFormulaString)
                 .withTerm(term)
                 .withCourse(course)
                 .withTeachers(teachers)
@@ -98,7 +97,6 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
                 .withEndDate(endDate)
                 .withRoom(room)
                 .withGradeFormula(gradeFormula)
-                .withGradeFormulaString(gradeFormulaString)
                 .withTerm(term)
                 .withCourse(course)
                 .withSourceSystemId(sourceSystemId);

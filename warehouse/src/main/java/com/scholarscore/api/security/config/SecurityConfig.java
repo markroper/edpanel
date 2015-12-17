@@ -69,6 +69,9 @@ import java.io.PrintWriter;
 @EnableWebMvcSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String OPTIONS_VERB = "OPTIONS";
+
+    private static final String SURVEY_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/surveys";
+    private static final String SURVEY_RESPONSES = ApiConsts.API_V1_ENDPOINT + "/surveys/**/responses";
     private static final String LOGIN_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/login";
     private static final String QUERY_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/schools/*/queries/results";
     private static final String LOGOUT_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/logout";
@@ -228,6 +231,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             and().
             authorizeRequests().
             antMatchers(HttpMethod.POST, LOGIN_ENDPOINT).permitAll().
+            antMatchers(HttpMethod.POST, SURVEY_ENDPOINT).hasAnyRole(AUTHENTICATED).
+            antMatchers(HttpMethod.POST, SURVEY_RESPONSES).hasAnyRole(AUTHENTICATED).
+            antMatchers(HttpMethod.PUT, SURVEY_RESPONSES).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.OPTIONS, LOGIN_ENDPOINT).permitAll().
             antMatchers(HttpMethod.OPTIONS, "/**").permitAll().
             antMatchers(HttpMethod.GET, CONFIRM_EMAIL_ENDPOINT).permitAll().

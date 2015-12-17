@@ -39,6 +39,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import static org.testng.Assert.fail;
+
 /**
  * Created by cwallace on 9/21/2015.
  */
@@ -59,7 +61,8 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
     private static final Float EXPECTED_SECTION_GRADE = 5.3f;
 
     private int itemsCreated = 0;
-
+    private boolean initialized = false;
+    
     @BeforeClass
     public void init() {
         authenticate();
@@ -96,6 +99,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         section.getEnrolledStudents().add(student);
         section.setTeachers(new HashSet<Teacher>());
         section.getTeachers().add(teacher);
+        section.setTerm(term);
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
 
         sectionAssignment = new GradedAssignment();
@@ -110,6 +114,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         sectionAssignment.setDueDate(nextYear.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         sectionAssignment = (GradedAssignment) sectionAssignmentValidatingExecutor.create(school.getId(), schoolYear.getId(),
                 term.getId(), section.getId(), sectionAssignment, "create test base term");
+        
 
         studentAssignment = new StudentAssignment();
         studentAssignment.setAssignment(sectionAssignment);
@@ -123,10 +128,12 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         studentSectionGrade.setComplete(false);
         studentSectionGrade = studentSectionGradeValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), section.getId(),
                 student.getId(), studentSectionGrade, "update student section grade w/ value " + EXPECTED_SECTION_GRADE);
+        initialized = true;
     }
 
     @DataProvider(name = "createGoalDataProvider")
     public Object[][] createGoalDataMethod() {
+        if (!initialized) { fail("Failed to initialize"); }
         LocalDate today = LocalDate.now();
         LocalDate nextYear = today.plusYears(1l);
 

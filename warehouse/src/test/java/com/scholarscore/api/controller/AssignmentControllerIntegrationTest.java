@@ -54,6 +54,7 @@ public class AssignmentControllerIntegrationTest extends IntegrationBase {
         section = new Section();
         section.setCourse(course);
         section.setName(localeServiceUtil.generateName());
+        section.setTerm(term);
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
     }
     

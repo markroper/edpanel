@@ -1,14 +1,12 @@
 package com.scholarscore.models.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.Address;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings("serial")
 public abstract class Person extends User {
     protected String sourceSystemId;
     protected String sourceSystemUserId;
-    protected Address homeAddress;
     protected String homePhone;
     protected Long currentSchoolId;
     
@@ -19,7 +17,6 @@ public abstract class Person extends User {
     public Person(Person s) {
         super(s);
         this.sourceSystemId = s.sourceSystemId;
-        this.homeAddress = s.homeAddress;
         this.homePhone = s.homePhone;
         this.currentSchoolId = s.currentSchoolId;
         this.sourceSystemUserId = s.sourceSystemUserId;
@@ -35,9 +32,6 @@ public abstract class Person extends User {
             }
             if(null == this.sourceSystemUserId) {
                 this.sourceSystemUserId = staff.sourceSystemUserId;
-            }
-            if(null == this.homeAddress) {
-                this.homeAddress = staff.homeAddress;
             }
             if(null == this.homePhone) {
                 this.homePhone = staff.homePhone;
@@ -55,15 +49,6 @@ public abstract class Person extends User {
     
     public void setSourceSystemId(String sourceSystemId) {
         this.sourceSystemId = sourceSystemId;
-    }
-    
-    /**
-     * Abstract to force subclasses to implement along with hibernate annotations
-     */
-    public abstract Address getHomeAddress();
-    
-    public void setHomeAddress(Address homeAddress) {
-        this.homeAddress = homeAddress;
     }
     
     /**
@@ -114,7 +99,6 @@ public abstract class Person extends User {
 
         if (homePhone != null ? !homePhone.equals(staff.homePhone) : staff.homePhone != null) { return false; }
         if (sourceSystemUserId != null ? !sourceSystemUserId.equals(staff.sourceSystemUserId) : staff.sourceSystemUserId != null) { return false; }
-        if (homeAddress != null ? !homeAddress.equals(staff.homeAddress) : staff.homeAddress != null) { return false; }
         if (sourceSystemId != null ? !sourceSystemId.equals(staff.sourceSystemId) : staff.sourceSystemId != null) {
             return false;
         }
@@ -127,7 +111,6 @@ public abstract class Person extends User {
         int result = super.hashCode();
         result = 31 * result + (homePhone != null ? homePhone.hashCode() : 0);
         result = 31 * result + (sourceSystemId != null ? sourceSystemId.hashCode() : 0);
-        result = 31 * result + (homeAddress != null ? homeAddress.hashCode() : 0);
         result = 31 * result + (sourceSystemUserId != null ? sourceSystemUserId.hashCode() : 0);
         return result;
     }
@@ -140,7 +123,6 @@ public abstract class Person extends User {
     public static abstract class PersonBuilder<U extends PersonBuilder<U, T>,T extends Person> extends UserBuilder<U,T>{
         private String sourceSystemId;
         private String sourceSystemUserId;
-        private Address homeAddress;
         private String homePhone;
 
         public U withSourceSystemid(final String sourceSystemId){
@@ -153,11 +135,6 @@ public abstract class Person extends User {
             return me();
         }
 
-        public U withHomeAddress(final Address homeAddress){
-            this.homeAddress = homeAddress;
-            return me();
-        }
-
         public U withHomePhone(final String homePhone){
             this.homePhone = homePhone;
             return me();
@@ -166,7 +143,6 @@ public abstract class Person extends User {
         public T build(){
             T staff = super.build();
             staff.setSourceSystemId(sourceSystemId);
-            staff.setHomeAddress(homeAddress);
             staff.setHomePhone(homePhone);
             staff.setSourceSystemUserId(sourceSystemUserId);
             return staff;
