@@ -1,17 +1,6 @@
 package com.scholarscore.models.query;
 
-import com.scholarscore.models.query.dimension.AdministratorDimension;
-import com.scholarscore.models.query.dimension.AssignmentDimension;
-import com.scholarscore.models.query.dimension.CourseDimension;
-import com.scholarscore.models.query.dimension.GradeLevelDimension;
-import com.scholarscore.models.query.dimension.IDimension;
-import com.scholarscore.models.query.dimension.SchoolDimension;
-import com.scholarscore.models.query.dimension.SchoolYearDimension;
-import com.scholarscore.models.query.dimension.SectionDimension;
-import com.scholarscore.models.query.dimension.StudentDimension;
-import com.scholarscore.models.query.dimension.SubjectAreaDimension;
-import com.scholarscore.models.query.dimension.TeacherDimension;
-import com.scholarscore.models.query.dimension.TermDimension;
+import com.scholarscore.models.query.dimension.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +28,8 @@ public enum Dimension {
     SCHOOL,
     TEACHER,
     STUDENT,
-    ADMINISTRATOR;
+    ADMINISTRATOR,
+    USER;
     
     /**
      * Factory method for constructing an IDimension of time Dimension.
@@ -70,6 +60,8 @@ public enum Dimension {
                 return new AdministratorDimension();
             case ASSIGNMENT:
                 return new AssignmentDimension();
+            case USER:
+                return new UserDimension();
             default:
                 return null;
             
@@ -107,5 +99,6 @@ public enum Dimension {
         add(Dimension.GRADE_LEVEL);
         add(Dimension.SCHOOL);
         add(Dimension.ADMINISTRATOR);
+        add(Dimension.USER);
     }};
 }
