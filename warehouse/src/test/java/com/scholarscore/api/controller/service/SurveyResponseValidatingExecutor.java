@@ -83,11 +83,10 @@ public class SurveyResponseValidatingExecutor {
         return survey;
     }
 
-    public List<SurveyResponse> getByRespondentAndDate(
-            long surveyId, long respondentId, LocalDate start, LocalDate end, String msg) {
+    public List<SurveyResponse> getByRespondentAndDate(long respondentId, LocalDate start, LocalDate end, String msg) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.GET,
-                serviceBase.getSurveyResponseByRespondentEndpoint(surveyId, respondentId),
+                serviceBase.getSurveyResponseByRespondentEndpoint(respondentId),
                 null);
         List<SurveyResponse> survey = serviceBase.validateResponse(response, new TypeReference<List<SurveyResponse>>(){});
         Assert.assertNotNull(survey, "Unexpected null day for case: " + msg);

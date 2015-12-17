@@ -40,8 +40,6 @@ public class SurveyResponse extends ApiModel {
     protected Survey survey;
     // hibernate uses different getter to access the string value and store in a blob
     protected List<QuestionAnswer> answers;
-//    protected Map<SurveyMultipleChoiceQuestion, Integer> multipleChoicesAnswers;
-//    protected Map<SurveyOpenResponseQuestion, String> openAnswers;
 
     @Override
     public void mergePropertiesIfNull(ApiModel model) {

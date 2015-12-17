@@ -158,10 +158,10 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         this.surveyValidatingExecutor.create(schoolFk, "");
 
         List<Survey> surveyrs = this.surveyValidatingExecutor.getBySchoolAndDate(school.getId(), null, null, "");
-        Assert.assertEquals(surveyrs.size(), 4, "Unexpected number of survey's returned for school");
+        Assert.assertTrue(surveyrs.size() >= 4, "Unexpected number of survey's returned for school");
 
         List<Survey> teachersSurveys = this.surveyValidatingExecutor.getByUserId(teacher2.getId(), "");
-        Assert.assertEquals(teachersSurveys.size(), 4, "Unexpected number of surveys returned for teacher");
+        Assert.assertTrue(teachersSurveys.size() >= 4, "Unexpected number of surveys returned for teacher");
     }
 
     @DataProvider
@@ -205,12 +205,10 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         ba.setAnswer(true);
         ba.setQuestion(boolQ);
         answers.add(ba);
-
         MultipleChoiceAnswer ma = new MultipleChoiceAnswer();
         ma.setAnswer(2);
         ma.setQuestion(mcQ);
         answers.add(ma);
-
         OpenAnswer oa = new OpenAnswer();
         oa.setAnswer("something something");
         oa.setQuestion(openQ);
@@ -218,8 +216,22 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         resp.setAnswers(answers);
         resp = this.surveyResponseValidatingExecutor.create(resp, "Create a survey response");
 
+        SurveyResponse resp2 = new SurveyResponse();
+        resp2.setSurvey(simpleSurvey);
+        resp2.setRespondent(student2);
+        resp2.setAnswers(answers);
+        resp2 = this.surveyResponseValidatingExecutor.create(resp2, "Create a survey response");
+
+        List<SurveyResponse> responses =
+                this.surveyResponseValidatingExecutor.getBySurveyId(simpleSurvey.getId(), "get two surveys");
+        Assert.assertEquals(responses.size(), 2, "Unexpected number of responses returned");
+
+        List<SurveyResponse> student2Responses =
+                this.surveyResponseValidatingExecutor.getByRespondentAndDate(student2.getUserId(), null, null, "get student2's surveys");
+        Assert.assertEquals(student2Responses.size(), 1, "Unexpected number of responses returned");
 
         this.surveyResponseValidatingExecutor.delete(simpleSurvey.getId(), resp.getId(), "delete survey");
+        this.surveyResponseValidatingExecutor.delete(simpleSurvey.getId(), resp2.getId(), "delete survey");
         this.surveyValidatingExecutor.delete(simpleSurvey.getId(), "Delete that shit");
     }
 }

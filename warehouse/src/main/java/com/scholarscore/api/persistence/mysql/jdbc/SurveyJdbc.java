@@ -19,7 +19,7 @@ public class SurveyJdbc implements SurveyPersistence {
             "join fetch s.creator c left join fetch c.contactMethods left join fetch c.homeAddress";
     private static final String SURVEY_BASE_HQL = "select s from survey s " + USER_JOIN_FETCH;
     private static final String SURVEY_RESP_BASE_HQL =
-            "select s from survey_response sr" +
+            "select sr from survey_response sr" +
             " join fetch sr.survey s " + USER_JOIN_FETCH +
             " join fetch sr.respondent r" +
                     " left join fetch r.contactMethods" +
@@ -124,7 +124,7 @@ public class SurveyJdbc implements SurveyPersistence {
     @SuppressWarnings("unchecked")
     public List<SurveyResponse> selectSurveyResponses(long surveyId) {
         return (List<SurveyResponse>) hibernateTemplate.findByNamedParam(
-                SURVEY_RESP_BASE_HQL + " where s.survey.id = :surveyId", "surveyId", surveyId);
+                SURVEY_RESP_BASE_HQL + " where s.id = :surveyId", "surveyId", surveyId);
     }
 
     @Override
@@ -133,13 +133,13 @@ public class SurveyJdbc implements SurveyPersistence {
         List<SurveyResponse> responses = null;
         if(null == start && null == end) {
             responses = (List<SurveyResponse>)hibernateTemplate.findByNamedParam(
-                    SURVEY_RESP_BASE_HQL + " where sr.respondent.id = :respondentId", "respondentId", respondentId);
+                    SURVEY_RESP_BASE_HQL + " where r.id = :respondentId", "respondentId", respondentId);
         } else {
             String[] params;
             Object[] paramValues;
-            String hqlString = SURVEY_RESP_BASE_HQL + " where sr.respondent.id = :respondentId";
-            String endLimit = " and s.survey.createdDate <= :end";
-            String startLimit = " and s.survey.createdDate >= :start";
+            String hqlString = SURVEY_RESP_BASE_HQL + " where r.id = :respondentId";
+            String endLimit = " and s.createdDate <= :end";
+            String startLimit = " and s.createdDate >= :start";
             if(null == end) {
                 params = new String[]{"respondentId", "start"};
                 paramValues = new Object[]{ new Long(respondentId), start };
