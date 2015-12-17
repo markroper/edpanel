@@ -15,6 +15,7 @@ public interface SurveyPersistence {
     void deleteSurvey(long surveyId);
     List<Survey> selectSurveyByUserId(long userId);
     List<Survey> selectSurveyBySchoolId(long schoolId, LocalDate start, LocalDate end);
+    List<Survey> selectSurveyBySectionId(long sectionId, LocalDate start, LocalDate end);
 
     long insertSurveyResponse(SurveyResponse resp);
     void deleteSurveyResponse(long surveyId, long respId);
