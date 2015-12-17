@@ -44,13 +44,13 @@ public class SurveyManagerImpl implements SurveyManager {
     }
     @Override
     public ServiceResponse<EntityId> createSurvey(Survey survey) {
-        return new ServiceResponse<EntityId>(new EntityId(surveyPersistence.insertSurvey(survey)));
+        return new ServiceResponse<>(new EntityId(surveyPersistence.insertSurvey(survey)));
     }
 
     @Override
     public ServiceResponse<Void> deleteSurvey(long surveyId) {
         surveyPersistence.deleteSurvey(surveyId);
-        return new ServiceResponse<Void>((Void)null);
+        return new ServiceResponse<>((Void)null);
     }
 
     @Override
@@ -84,12 +84,21 @@ public class SurveyManagerImpl implements SurveyManager {
     }
 
     @Override
-    public ServiceResponse<EntityId> createSurveyResponse(SurveyResponse survey) {
-        StatusCode code = surveyExists(survey.getSurvey().getId());
-        if(!code.isOK()) {
+    public ServiceResponse<EntityId> createSurveyResponse(SurveyResponse response) {
+        long surveyId = response.getSurvey().getId();
+        Survey s = surveyPersistence.selectSurvey(surveyId);
+        if(null == s) {
+            return new ServiceResponse<>(
+                    StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{SURVEY, surveyId}));
+        }
+        response.setSurvey(s);
+        if(!response.isvalid()) {
+            StatusCode code = StatusCodes.getStatusCode(
+                    StatusCodeType.ENTITY_INVALID_IN_CONTEXT,
+                    new Object[]{ SURVEY_RESP, "null", SURVEY, surveyId });
             return new ServiceResponse<>(code);
         }
-        return new ServiceResponse<EntityId>(new EntityId(surveyPersistence.insertSurveyResponse(survey)));
+        return new ServiceResponse<>(new EntityId(surveyPersistence.insertSurveyResponse(response)));
     }
 
     @Override
@@ -100,12 +109,19 @@ public class SurveyManagerImpl implements SurveyManager {
 
     @Override
     public ServiceResponse<Void> updateSurveyResponse(long surveyId, long surveyResponseId, SurveyResponse response) {
-        StatusCode code = surveyExists(surveyId);
-        if(!code.isOK()) {
+        Survey s = surveyPersistence.selectSurvey(surveyId);
+        if(null == s) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{SURVEY, surveyId}));
+        }
+        response.setSurvey(s);
+        if(!response.isvalid()) {
+            StatusCode code = StatusCodes.getStatusCode(
+                    StatusCodeType.ENTITY_INVALID_IN_CONTEXT,
+                    new Object[]{ SURVEY_RESP, surveyResponseId, SURVEY, surveyId });
             return new ServiceResponse<>(code);
         }
         surveyPersistence.updateSurveyResponse(surveyId, surveyResponseId, response);
-        return new ServiceResponse<Void>((Void) null);
+        return new ServiceResponse<>((Void) null);
     }
 
     @Override

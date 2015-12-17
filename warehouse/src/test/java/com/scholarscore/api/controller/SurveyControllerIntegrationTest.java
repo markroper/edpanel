@@ -75,7 +75,7 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         mcQ.setChoices(new ArrayList<String>(){{ add("one"); add("two"); }});
         mcQ.setQuestion("Can I ask you a question?");
         mcQ.setResponseRequired(false);
-        SurveySchema simpleSchema = new SurveySchema();
+        simpleSchema = new SurveySchema();
         simpleSchema.setQuestions(new ArrayList<SurveyQuestion>(){{ add(boolQ); add(openQ); add(mcQ); }});
     }
 
@@ -206,7 +206,7 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         ba.setQuestion(boolQ);
         answers.add(ba);
         MultipleChoiceAnswer ma = new MultipleChoiceAnswer();
-        ma.setAnswer(2);
+        ma.setAnswer(1);
         ma.setQuestion(mcQ);
         answers.add(ma);
         OpenAnswer oa = new OpenAnswer();

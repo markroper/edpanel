@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.survey.answer.QuestionAnswer;
+import com.scholarscore.models.survey.question.SurveyQuestion;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.util.EdPanelObjectMapper;
 import org.hibernate.annotations.Fetch;
@@ -21,10 +22,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Expresses a single user's response to a single survey.
@@ -39,7 +44,48 @@ public class SurveyResponse extends ApiModel {
     protected LocalDate responseDate;
     protected Survey survey;
     // hibernate uses different getter to access the string value and store in a blob
+    @NotNull
+    @Size(min = 1)
     protected List<QuestionAnswer> answers;
+
+    /**
+     * Given a survey response with a fully populated Survey object set upon it, returns true if the response
+     * answers are compatible with the survey schema. This means that all required survey questions have answers
+     * and that there are no answers to questions not on the survery.  Returns false in other cases, meaning the
+     * survey response is invalid and should not be stored.
+     * 
+     * @return
+     */
+    @JsonIgnore
+    @Transient
+    public boolean isvalid() {
+        //If the survey is null, or the answers are null, return false, the response is not valid
+        if(null == survey || null == survey.getQuestions() || null == answers) {
+            return false;
+        }
+        //Make a set of all Survey questions for 0(1) lookup
+        Set<SurveyQuestion> questionsSet = new HashSet<>();
+        for(SurveyQuestion q : survey.getQuestions().getQuestions()) {
+            questionsSet.add(q);
+        }
+        //For every question on the survey for which we have an answer, remove the question from the
+        //question set.  If there are answers to questions that are not on the survey, return false, the
+        //response is not valid.
+        for(QuestionAnswer qa : answers) {
+            if(questionsSet.contains(qa.getQuestion())) {
+                questionsSet.remove(qa.getQuestion());
+            } else {
+                return false;
+            }
+        }
+        //If the survey has a required unanswered question, return false, the response is not valid
+        for(SurveyQuestion q : questionsSet) {
+            if(null != q.getResponseRequired() && q.getResponseRequired().equals(true)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     @Override
     public void mergePropertiesIfNull(ApiModel model) {
