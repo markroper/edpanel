@@ -47,31 +47,4 @@
             </bean>
         </mvc:message-converters>
     </mvc:annotation-driven>
-
-
-    <bean id="PM"
-          class="com.scholarscore.api.manager.OrchestrationManager">
-        <property name="schoolManager" ref="schoolManager"/>
-        <property name="schoolYearManager" ref="schoolYearManager"/>
-        <property name="termManager" ref="termManager"/>
-        <property name="studentManager" ref="studentManager"/>
-        <property name="sectionManager" ref="sectionManager"/>
-        <property name="courseManager" ref="courseManager"/>
-        <property name="assignmentManager" ref="assignmentManager"/>
-        <property name="studentAssignmentManager" ref="studentAssignmentManager"/>
-        <property name="studentSectionGradeManager" ref="studentSectionGradeManager"/>
-        <property name="teacherManager" ref="teacherManager"/>
-        <property name="userManager" ref="userManager"/>
-        <property name="queryManager" ref="queryManager"/>
-        <property name="behaviorManager" ref="behaviorManager"/>
-        <property name="goalManager" ref="goalManager"/>
-        <property name="schoolDayManager" ref="schoolDayManager"/>
-        <property name="attendanceManager" ref="attendanceManager"/>
-        <property name="uiAttributesManager" ref="uiAttributesManager"/>
-        <property name="adminManager" ref="adminManager"/>
-        <property name="gpaManager" ref="gpaManager"/>
-    </bean>
-
-
-
 </beans>

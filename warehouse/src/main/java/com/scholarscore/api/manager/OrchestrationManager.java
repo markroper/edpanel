@@ -31,6 +31,15 @@ public class OrchestrationManager {
     private AttendanceManager attendanceManager;
     private UiAttributesManager uiAttributesManager;
     private GpaManager gpaManager;
+    private SurveyManager surveyManager;
+
+    public SurveyManager getSurveyManager() {
+        return surveyManager;
+    }
+
+    public void setSurveyManager(SurveyManager surveyManager) {
+        this.surveyManager = surveyManager;
+    }
 
     public GpaManager getGpaManager() {
         return gpaManager;

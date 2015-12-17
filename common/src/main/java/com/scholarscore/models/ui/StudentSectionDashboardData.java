@@ -54,7 +54,7 @@ public class StudentSectionDashboardData implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(section, studentAssignments, gradeProgression);
+        return Objects.hash(section, studentAssignments, gradeProgression, gradeGoal);
     }
 
     @Override
@@ -68,6 +68,7 @@ public class StudentSectionDashboardData implements Serializable {
         final StudentSectionDashboardData other = (StudentSectionDashboardData) obj;
         return Objects.equals(this.section, other.section)
                 && Objects.equals(this.studentAssignments, other.studentAssignments)
-                && Objects.equals(this.gradeProgression, other.gradeProgression);
+                && Objects.equals(this.gradeProgression, other.gradeProgression)
+                && Objects.equals(this.gradeGoal, other.gradeGoal);
     }
 }
