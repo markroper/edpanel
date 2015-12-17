@@ -57,7 +57,7 @@ public class HibernateConsts {
     public static final String BEHAVIOR_CATEGORY = "category";
     public static final String BEHAVIOR_POINT_VALUE = "point_value";
     public static final String BEHAVIOR_ROSTER = "roster";
-    public static final String BEHAVIOR_ASSIGNER_FK = "assigner_fk";
+    public static final String USER_FK = "user_fk";
     
     // the following column names are used in multiple places in different tables
     public static final String STUDENT_FK = "student_fk";
@@ -152,7 +152,7 @@ public class HibernateConsts {
     public static final String TERM_SOURCE_SYSTEM_ID = "term_source_system_id";
     
     //Users constants
-    public static final String USERS_TABLE = "users";
+    public static final String USERS_TABLE = "user";
     public static final String USER_ID = "user_id";
     public static final String USER_NAME = "username";
     public static final String USER_PASSWORD = "password";
