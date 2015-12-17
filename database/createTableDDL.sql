@@ -456,7 +456,7 @@ CREATE TABLE `scholar_warehouse`.`survey` (
   `survey_schema` BLOB DEFAULT NULL COMMENT 'Blob to store the JSON needed for formula goals',
   PRIMARY KEY (`survey_id`),
   FOREIGN KEY (`user_fk`)
-    REFERENCES `scholar_warehouse`.`users`(`user_id`)
+    REFERENCES `scholar_warehouse`.`user`(`user_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   FOREIGN KEY (`school_fk`)

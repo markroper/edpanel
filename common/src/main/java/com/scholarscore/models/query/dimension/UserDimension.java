@@ -7,6 +7,10 @@ import com.scholarscore.models.user.User;
 import java.util.Set;
 
 /**
+ * This dimension should be used if you are trying to get
+ * information about the user_id field on and object that can belong to
+ * either a teacher, admin or student, at time of writing this is only
+ * done on behavior events in the query generator
  * Created by cwallace on 12/17/15.
  */
 public class UserDimension implements IDimension {
