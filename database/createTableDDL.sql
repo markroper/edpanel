@@ -448,6 +448,7 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`survey` (
   `survey_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a survey',
   `school_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key linking to the school this survey was created in, null for district wide',
+  `section_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key linking to the section this survey was created in, null for a school wide survey',
   `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the user table for the creating user',
   `survey_name` VARCHAR(256) NULL COMMENT 'The human readable name of the survey',
   `survey_created_date` DATE DEFAULT NULL COMMENT 'The date the survey was created',
@@ -460,7 +461,11 @@ CREATE TABLE `scholar_warehouse`.`survey` (
     ON UPDATE CASCADE,
   FOREIGN KEY (`school_fk`)
     REFERENCES `scholar_warehouse`.`school`(`school_id`)
-    ON DELETE SET NULL
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`section_fk`)
+    REFERENCES `scholar_warehouse`.`section`(`section_id`)
+    ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 ALTER TABLE `scholar_warehouse`.`survey` ADD INDEX (`survey_created_date`);

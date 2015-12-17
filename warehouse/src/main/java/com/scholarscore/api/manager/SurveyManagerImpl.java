@@ -44,6 +44,19 @@ public class SurveyManagerImpl implements SurveyManager {
     }
     @Override
     public ServiceResponse<EntityId> createSurvey(Survey survey) {
+        StatusCode code;
+        if(null != survey.getSchoolFk()) {
+            code = pm.getSchoolManager().schoolExists(survey.getSchoolFk());
+            if(!code.isOK()) {
+                return new ServiceResponse<>(code);
+            }
+        }
+        if(null != survey.getSectionFk()) {
+            code = pm.getSectionManager().sectionExists(0L, 0L, 0L, survey.getSectionFk());
+            if(!code.isOK()) {
+                return new ServiceResponse<>(code);
+            }
+        }
         return new ServiceResponse<>(new EntityId(surveyPersistence.insertSurvey(survey)));
     }
 

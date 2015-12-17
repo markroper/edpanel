@@ -179,7 +179,7 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         noCreator.setQuestions(simpleSchema);
 
         return new Object[][]{
-                { "No school", missingSchool, HttpStatus.BAD_REQUEST },
+                { "No school", missingSchool, HttpStatus.NOT_FOUND },
                 { "No questions", noQuestions, HttpStatus.BAD_REQUEST },
                 { "No creator", noCreator, HttpStatus.BAD_REQUEST }
         };
