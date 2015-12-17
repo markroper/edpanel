@@ -37,6 +37,7 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Survey extends ApiModel {
     protected Long schoolFk;
+    protected Long sectionFk;
     protected User creator;
     protected LocalDate createdDate;
     protected LocalDate administeredDate;
@@ -51,6 +52,9 @@ public class Survey extends ApiModel {
             Survey input = (Survey) model;
             if(null == this.schoolFk) {
                 this.schoolFk = input.schoolFk;
+            }
+            if(null == this.sectionFk) {
+                this.sectionFk = input.sectionFk;
             }
             if(null == this.creator) {
                 this.creator = input.creator;
@@ -87,6 +91,15 @@ public class Survey extends ApiModel {
 
     public void setSchoolFk(Long schoolFk) {
         this.schoolFk = schoolFk;
+    }
+
+    @Column(name = HibernateConsts.SECTION_FK)
+    public Long getSectionFk() {
+        return sectionFk;
+    }
+
+    public void setSectionFk(Long sectionFk) {
+        this.sectionFk = sectionFk;
     }
 
     @ManyToOne(optional = true, fetch= FetchType.EAGER)
@@ -152,7 +165,7 @@ public class Survey extends ApiModel {
 
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(schoolFk, creator, createdDate, administeredDate, questions);
+        return 31 * super.hashCode() + Objects.hash(schoolFk, creator, createdDate, administeredDate, questions, sectionFk);
     }
 
     @Override
@@ -168,6 +181,7 @@ public class Survey extends ApiModel {
         }
         final Survey other = (Survey) obj;
         return Objects.equals(this.schoolFk, other.schoolFk)
+                && Objects.equals(this.sectionFk, other.sectionFk)
                 && Objects.equals(this.creator, other.creator)
                 && Objects.equals(this.createdDate, other.createdDate)
                 && Objects.equals(this.administeredDate, other.administeredDate)
