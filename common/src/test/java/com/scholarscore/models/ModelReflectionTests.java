@@ -347,8 +347,8 @@ public class ModelReflectionTests {
             Class<?> derivedObjectClass = Class.forName(splitClassName);
             type = derivedObjectClass;
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
             logDebug("Could not find class!");
+            return null;
         }
         
         // TODO: must handle primitive types separately (Type for a primitive will not be autoboxed and getTypeName() 

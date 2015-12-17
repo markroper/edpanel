@@ -223,5 +223,20 @@ public class HibernateConsts {
     public static final String UI_ATTRIBUTES_TABLE = "ui_attributes";
     public static final String UI_ATTRIBUTES = "attributes";
     public static final String UI_ATTRIBUTES_ID = "ui_attributes_id";
-    
+
+    //Survey attributes
+    public static final String SURVEY_TABLE = "survey";
+    public static final String SURVEY_ID = "survey_id";
+    public static final String SURVEY_NAME = "survey_name";
+    public static final String SURVEY_CREATED_DATE = "survey_created_date";
+    public static final String SURVEY_ADMINISTER_DATE = "survey_administer_date";
+    public static final String SURVEY_SCHEMA = "survey_schema";
+    public static final String SURVEY_USER_FK = "user_fk";
+    public static final String SURVEY_FK = "survey_fk";
+
+    //Survey responses
+    public static final String SURVEY_RESPONSES_TABLE = "survey_response";
+    public static final String SURVEY_RESPONSE_ID = "survey_response_id";
+    public static final String SURVEY_RESPONSE_DATE = "survey_response_date";
+    public static final String SURVEY_RESPONSE = "survey_response";
 }
