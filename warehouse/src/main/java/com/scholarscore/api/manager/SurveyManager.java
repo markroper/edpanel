@@ -52,6 +52,18 @@ public interface SurveyManager {
      */
     ServiceResponse<List<Survey>> getSurveysBySchoolId(long schoolId, LocalDate startDate, LocalDate endDate);
     /**
+     * Get and return a list of surveys within a section.  If startDate and endDate are provided,
+     * limit the returned set to those surveys created during the range provided.  If the date params
+     * are not set, include all surveys within the school regardless of time.
+     * @param schoolId
+     * @param sectionId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    ServiceResponse<List<Survey>> getSurveysBySectionId(
+            long schoolId, long sectionId, LocalDate startDate, LocalDate endDate);
+    /**
      * Create a survey response and return the generated ID
      * @param survey
      * @return
