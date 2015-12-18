@@ -65,7 +65,7 @@ public class SurveyResponse extends ApiModel {
         }
         //Make a set of all Survey questions for 0(1) lookup
         Set<SurveyQuestion> questionsSet = new HashSet<>();
-        for(SurveyQuestion q : survey.getQuestions().getQuestions()) {
+        for(SurveyQuestion q : survey.getQuestions()) {
             questionsSet.add(q);
         }
         //For every question on the survey for which we have an answer, remove the question from the
