@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.survey.question.SurveyQuestion;
 import com.scholarscore.models.user.User;
 import com.scholarscore.util.EdPanelObjectMapper;
 import org.hibernate.annotations.Fetch;
@@ -20,9 +21,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
-import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -42,8 +45,9 @@ public class Survey extends ApiModel {
     protected LocalDate createdDate;
     protected LocalDate administeredDate;
     //For jackson & for java (hibernate uses different getter to access the string value and store in a blob)
-    @Valid
-    protected SurveySchema questions;
+    @NotNull
+    @Size(min = 1)
+    protected List<SurveyQuestion> questions;
 
     @Override
     public void mergePropertiesIfNull(ApiModel model) {
@@ -146,7 +150,7 @@ public class Survey extends ApiModel {
             this.questions = null;
         } else {
             try {
-                this.questions = EdPanelObjectMapper.MAPPER.readValue( string, new TypeReference<SurveySchema>(){});
+                this.questions = EdPanelObjectMapper.MAPPER.readValue( string, new TypeReference<List<SurveyQuestion>>(){});
             } catch (IOException e) {
                 this.questions =  null;
             }
@@ -154,12 +158,12 @@ public class Survey extends ApiModel {
     }
 
     @Transient
-    public SurveySchema getQuestions() {
+    public List<SurveyQuestion> getQuestions() {
         return questions;
     }
 
     @Transient
-    public void setQuestions(SurveySchema questions) {
+    public void setQuestions(List<SurveyQuestion> questions) {
         this.questions = questions;
     }
 
