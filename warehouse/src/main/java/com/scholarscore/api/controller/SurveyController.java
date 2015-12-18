@@ -1,7 +1,9 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.EntityId;
+import com.scholarscore.models.Section;
 import com.scholarscore.models.survey.Survey;
 import com.scholarscore.models.survey.SurveyResponse;
 import com.scholarscore.util.EdPanelDateUtil;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -91,6 +95,46 @@ public class SurveyController extends BaseController {
             @ApiParam(name = "userId", required = true, value = "User ID")
             @PathVariable(value="userId") Long userId) {
         return respond(pm.getSurveyManager().getSurveysByUserId(userId));
+    }
+
+    @ApiOperation(
+            value = "Get surveys that the student with  respondent ID can respond to",
+            notes = "Retrieve surveys by the respondent, school, & section",
+            response = List.class)
+    @RequestMapping(
+            value = "/schools/{schoolId}/years/{yearId}/terms/{termId}/respondents/{respondentId}",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getSurveysForRespondentId(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "yearId", required = true, value = "Year ID")
+            @PathVariable(value="yearId") Long yearId,
+            @ApiParam(name = "termId", required = true, value = "Term ID")
+            @PathVariable(value="termId") Long termId,
+            @ApiParam(name = "respondentId", required = true, value = "Respondent ID")
+            @PathVariable(value="respondentId") Long respondentId) {
+        List<Survey> surveys = new ArrayList<>();
+        //Resolve all the surveys in the school the student is enrolled in
+        ServiceResponse<List<Survey>> schoolSurveysResp =
+                pm.getSurveyManager().getSurveysBySchoolId(schoolId, LocalDate.now().minusYears(1), null);
+        if(null != schoolSurveysResp.getValue()) {
+            surveys.addAll(schoolSurveysResp.getValue());
+        }
+        //Resolve all the surveys in the sections the student is enrolled in
+        ServiceResponse<Collection<Section>> sectionsResp =
+                pm.getSectionManager().getAllSections(respondentId, schoolId, yearId, termId);
+        if(null != sectionsResp.getValue()){
+            for(Section s: sectionsResp.getValue()) {
+                ServiceResponse<List<Survey>> sectSurveyResp =
+                        pm.getSurveyManager().getSurveysBySectionId(schoolId, s.getId(), LocalDate.now().minusYears(1), null);
+                if(null != sectSurveyResp.getValue()) {
+                    surveys.addAll(sectSurveyResp.getValue());
+                }
+            }
+        }
+        return respond(surveys);
     }
 
     @ApiOperation(
