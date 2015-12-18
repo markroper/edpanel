@@ -3,16 +3,15 @@ package com.scholarscore.api.controller;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.School;
 import com.scholarscore.models.survey.Survey;
-import com.scholarscore.models.survey.question.SurveyBooleanQuestion;
-import com.scholarscore.models.survey.question.SurveyMultipleChoiceQuestion;
-import com.scholarscore.models.survey.question.SurveyOpenResponseQuestion;
-import com.scholarscore.models.survey.question.SurveyQuestion;
 import com.scholarscore.models.survey.SurveyResponse;
-import com.scholarscore.models.survey.SurveySchema;
 import com.scholarscore.models.survey.answer.BooleanAnswer;
 import com.scholarscore.models.survey.answer.MultipleChoiceAnswer;
 import com.scholarscore.models.survey.answer.OpenAnswer;
 import com.scholarscore.models.survey.answer.QuestionAnswer;
+import com.scholarscore.models.survey.question.SurveyBooleanQuestion;
+import com.scholarscore.models.survey.question.SurveyMultipleChoiceQuestion;
+import com.scholarscore.models.survey.question.SurveyOpenResponseQuestion;
+import com.scholarscore.models.survey.question.SurveyQuestion;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import org.springframework.http.HttpStatus;
@@ -35,7 +34,7 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
     private Teacher teacher1;
     private Student student2;
     private Teacher teacher2;
-    private SurveySchema simpleSchema;
+    private List<SurveyQuestion> simpleSchema;
     SurveyBooleanQuestion boolQ;
     SurveyOpenResponseQuestion openQ;
     SurveyMultipleChoiceQuestion mcQ;
@@ -75,8 +74,7 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         mcQ.setChoices(new ArrayList<String>(){{ add("one"); add("two"); }});
         mcQ.setQuestion("Can I ask you a question?");
         mcQ.setResponseRequired(false);
-        simpleSchema = new SurveySchema();
-        simpleSchema.setQuestions(new ArrayList<SurveyQuestion>(){{ add(boolQ); add(openQ); add(mcQ); }});
+        simpleSchema = new ArrayList<SurveyQuestion>(){{ add(boolQ); add(openQ); add(mcQ); }};
     }
 
     @DataProvider
@@ -172,7 +170,7 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         missingSchool.setSchoolFk(1234567L);
 
         Survey noQuestions = new Survey();
-        noQuestions.setQuestions(new SurveySchema());
+        noQuestions.setQuestions(new ArrayList<>());
         noQuestions.setCreator(teacher2);
 
         Survey noCreator = new Survey();
