@@ -198,7 +198,7 @@ public class GradeFormula implements Serializable {
                     //Assignments that are not exempted, are included in the section grade calculation,
                     //but have a null awarded points should have full points. So as not to penalize the student?
                     if(null == awardedPoints) {
-                        awardedPoints = 0D;
+                        continue;
                     }
                     if(!typeToAwardedAndAvailPoints.containsKey(type)) {
                         typeToAwardedAndAvailPoints.put(type, new MutablePair<Double, Double>(0D, 0D));
