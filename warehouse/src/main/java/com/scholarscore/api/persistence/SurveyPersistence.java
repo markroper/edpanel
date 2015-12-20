@@ -13,7 +13,8 @@ public interface SurveyPersistence {
     Long insertSurvey(Survey survey);
     Survey selectSurvey(long surveyId);
     void deleteSurvey(long surveyId);
-    List<Survey> selectSurveyByUserId(long userId);
+    List<Survey> selectSurveyByCreatingUserId(long userId);
+    List<Survey> selectDistrictSurveys(LocalDate start, LocalDate end);
     List<Survey> selectSurveyBySchoolId(long schoolId, LocalDate start, LocalDate end);
     List<Survey> selectSurveyBySectionId(long sectionId, LocalDate start, LocalDate end);
 

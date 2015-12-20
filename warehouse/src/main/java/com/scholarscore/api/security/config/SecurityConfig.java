@@ -232,6 +232,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             authorizeRequests().
             antMatchers(HttpMethod.POST, LOGIN_ENDPOINT).permitAll().
             antMatchers(HttpMethod.POST, SURVEY_ENDPOINT).hasAnyRole(AUTHENTICATED).
+            antMatchers(HttpMethod.PUT, SURVEY_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.POST, SURVEY_RESPONSES).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.PUT, SURVEY_RESPONSES).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.OPTIONS, LOGIN_ENDPOINT).permitAll().

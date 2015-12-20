@@ -122,6 +122,11 @@ public class SurveyController extends BaseController {
         if(null != schoolSurveysResp.getValue()) {
             surveys.addAll(schoolSurveysResp.getValue());
         }
+        ServiceResponse<List<Survey>> districtSurveys =
+                pm.getSurveyManager().getSurveysByDistrict(LocalDate.now().minusYears(1), null);
+        if(null != districtSurveys.getValue()) {
+            surveys.addAll(districtSurveys.getValue());
+        }
         //Resolve all the surveys in the sections the student is enrolled in
         ServiceResponse<Collection<Section>> sectionsResp =
                 pm.getSectionManager().getAllSections(respondentId, schoolId, yearId, termId);
