@@ -41,6 +41,14 @@ public interface SurveyManager {
      * @return
      */
     ServiceResponse<List<Survey>> getSurveysByUserId(long surveyId);
+
+    /**
+     * Get and return the list of surveys within a district with optional date range
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    ServiceResponse<List<Survey>> getSurveysByDistrict(LocalDate startDate, LocalDate endDate);
     /**
      * Get and return a list of surveys within a school.  If startDate and endDate are provided,
      * limit the returned set to those surveys created during the range provided.  If the date params

@@ -57,9 +57,43 @@ public class SurveyJdbc implements SurveyPersistence {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Survey> selectSurveyByUserId(long userId) {
+    public List<Survey> selectSurveyByCreatingUserId(long userId) {
         return (List<Survey>) hibernateTemplate.findByNamedParam(
                 SURVEY_BASE_HQL + " where s.creator.id = :userId", "userId", userId);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Survey> selectDistrictSurveys(LocalDate start, LocalDate end) {
+        List<Survey> surveys = null;
+        if(null == start && null == end) {
+            surveys = (List<Survey>)hibernateTemplate.find(
+                    SURVEY_BASE_HQL + " where s.schoolFk is null");
+        } else {
+            String[] params;
+            Object[] paramValues;
+            String hqlString = SURVEY_BASE_HQL + " where s.schoolFk is null ";
+            String endLimit = " and s.createdDate <= :end";
+            String startLimit = " and s.createdDate >= :start";
+            if(null == end) {
+                params = new String[]{"start"};
+                paramValues = new Object[]{ start };
+                hqlString += startLimit;
+            } else if(null == start) {
+                params = new String[]{ "end"};
+                paramValues = new Object[]{ end };
+                hqlString += endLimit;
+            } else {
+                params = new String[]{"start", "end"};
+                paramValues = new Object[]{ start, end };
+                hqlString += startLimit + endLimit;
+            }
+            surveys = (List<Survey>)hibernateTemplate.findByNamedParam(
+                    hqlString,
+                    params,
+                    paramValues);
+        }
+        return surveys;
     }
 
     @Override

@@ -81,7 +81,15 @@ public class SurveyManagerImpl implements SurveyManager {
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
         }
-        return new ServiceResponse<>(surveyPersistence.selectSurveyByUserId(userId));
+        return new ServiceResponse<>(surveyPersistence.selectSurveyByCreatingUserId(userId));
+    }
+
+    @Override
+    public ServiceResponse<List<Survey>> getSurveysByDistrict(LocalDate startDate, LocalDate endDate) {
+        if(null != startDate && null != endDate && startDate.isAfter(endDate)) {
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.ENTITY_INVALID_IN_CONTEXT));
+        }
+        return new ServiceResponse<>(surveyPersistence.selectDistrictSurveys(startDate, endDate));
     }
 
     @Override
