@@ -275,4 +275,19 @@ public class SurveyController extends BaseController {
                                     @PathVariable(value="responseId") Long responseId) {
         return respond(pm.getSurveyManager().getSurveyResponse(surveyId, responseId));
     }
+
+    @ApiOperation(
+            value = "Get aggregate results of survey by survey ID",
+            notes = "Returns a single survey's aggregated results for those question types that are aggregate-able",
+            response = SurveyResponse.class)
+    @RequestMapping(
+            value = "/{surveyId}/responses/aggregates",
+            method = RequestMethod.GET,
+            produces = {JSON_ACCEPT_HEADER})
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody
+    ResponseEntity getSurveyAggregateResults(@ApiParam(name = "surveyId", required = true, value = "Survey ID")
+                                     @PathVariable(value="surveyId") Long surveyId) {
+        return respond(pm.getSurveyManager().getSurveyAggregateResults(surveyId));
+    }
 }
