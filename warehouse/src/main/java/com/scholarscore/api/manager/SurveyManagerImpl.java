@@ -7,11 +7,20 @@ import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.survey.Survey;
+import com.scholarscore.models.survey.SurveyAggregate;
+import com.scholarscore.models.survey.SurveyQuestionAggregate;
+import com.scholarscore.models.survey.SurveyQuestionType;
 import com.scholarscore.models.survey.SurveyResponse;
+import com.scholarscore.models.survey.answer.QuestionAnswer;
+import com.scholarscore.models.survey.question.SurveyMultipleChoiceQuestion;
+import com.scholarscore.models.survey.question.SurveyQuestion;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by markroper on 12/16/15.
@@ -173,6 +182,73 @@ public class SurveyManagerImpl implements SurveyManager {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{SURVEY_RESP, surveyId}));
         };
         return new ServiceResponse<>(s);
+    }
+
+    @Override
+    public ServiceResponse<SurveyAggregate> getSurveyAggregateResults(long surveyId) {
+        //Fetch the survey & responses from the DB
+        ServiceResponse<List<SurveyResponse>> responsesResp = getSurveyResponses(surveyId);
+        Survey s = surveyPersistence.selectSurvey(surveyId);
+        if(null == s) {
+            return new ServiceResponse<>(
+                    StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{SURVEY, surveyId}));
+        }
+        if(null == responsesResp.getValue()) {
+            return new ServiceResponse<SurveyAggregate>(responsesResp.getCode());
+        }
+        SurveyAggregate aggregate = new SurveyAggregate();
+        aggregate.setSurveyId(surveyId);
+        aggregate.setRespondents(responsesResp.getValue().size());
+        aggregate.setQuestions(new ArrayList<>());
+        //Set up question and response counts collections
+        if(null != s.getQuestions()) {
+            for (SurveyQuestion question: s.getQuestions()) {
+                List<Integer> counter = new ArrayList<>();
+                if(SurveyQuestionType.MULTIPLE_CHOICE.equals(question.getType())) {
+                    Integer size = ((SurveyMultipleChoiceQuestion) question).getChoices().size();
+                    for(int i = 0; i < size; i++) {
+                        counter.add(0);
+                    }
+                } else if(SurveyQuestionType.TRUE_FALSE.equals(question.getType())) {
+                    counter.add(0);
+                    counter.add(0);
+                }
+                aggregate.getQuestions().add(new SurveyQuestionAggregate(0, question, counter));
+            }
+        }
+        //Generate a map for O(1) lookup
+        Map<SurveyQuestion, SurveyQuestionAggregate> qMap = new HashMap<>();
+        for(SurveyQuestionAggregate agg: aggregate.getQuestions()) {
+            qMap.put(agg.getQuestion(), agg);
+        }
+        //For each survey response, for each question, increment counts on the SurveyAggregate instance
+        //WARNING: runtime scales linearly with number of responses
+        for(SurveyResponse resp : responsesResp.getValue()) {
+            for(QuestionAnswer qa : resp.getAnswers()){
+                if(qMap.containsKey(qa.getQuestion())) {
+                    SurveyQuestionAggregate agg = qMap.get(qa.getQuestion());
+                    agg.setRespondents(agg.getRespondents() + 1);
+                    if(SurveyQuestionType.MULTIPLE_CHOICE.equals(qa.getQuestion().getType())) {
+                        Integer answerIndex = (Integer)qa.getAnswer();
+                        Integer previousValue = agg.getResults().get(answerIndex);
+                        if(null == previousValue) {
+                            previousValue = 0;
+                        }
+                        agg.getResults().set(answerIndex, previousValue + 1);
+                    } else if(SurveyQuestionType.TRUE_FALSE.equals(qa.getQuestion().getType())) {
+                        if(null != (Boolean)qa.getAnswer()) {
+                            if((Boolean)qa.getAnswer()) {
+                                agg.getResults().set(0, agg.getResults().get(0) + 1);
+                            } else {
+                                agg.getResults().set(1, agg.getResults().get(1) + 1);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        return new ServiceResponse<>(aggregate);
     }
 
     @Override
