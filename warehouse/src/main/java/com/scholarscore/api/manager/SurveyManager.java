@@ -4,6 +4,7 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.survey.Survey;
+import com.scholarscore.models.survey.SurveyAggregate;
 import com.scholarscore.models.survey.SurveyResponse;
 
 import java.time.LocalDate;
@@ -99,6 +100,14 @@ public interface SurveyManager {
      * @return
      */
     ServiceResponse<SurveyResponse> getSurveyResponse(long surveyId, long responseId);
+
+    /**
+     * Given a survey ID, retrieve all responses to the survey and aggregate results for those
+     * question types that are aggregable
+     * @param surveyId
+     * @return
+     */
+    ServiceResponse<SurveyAggregate> getSurveyAggregateResults(long surveyId);
     /**
      * Get and return a collection of survey responses associates with a single survey
      * @param surveyId
