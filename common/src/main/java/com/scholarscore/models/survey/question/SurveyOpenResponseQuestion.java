@@ -43,6 +43,9 @@ public class SurveyOpenResponseQuestion extends SurveyQuestion<String> {
 
     @Override
     public boolean equals(Object obj) {
+        if(!super.equals(obj)) {
+            return false;
+        }
         if (this == obj) {
             return true;
         }
