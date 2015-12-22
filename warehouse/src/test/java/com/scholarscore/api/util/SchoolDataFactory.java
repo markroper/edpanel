@@ -19,9 +19,20 @@ import com.scholarscore.models.goal.BehaviorGoal;
 import com.scholarscore.models.goal.CumulativeGradeGoal;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.gradeformula.GradeFormula;
+import com.scholarscore.models.survey.Survey;
+import com.scholarscore.models.survey.SurveyResponse;
+import com.scholarscore.models.survey.answer.BooleanAnswer;
+import com.scholarscore.models.survey.answer.MultipleChoiceAnswer;
+import com.scholarscore.models.survey.answer.OpenAnswer;
+import com.scholarscore.models.survey.answer.QuestionAnswer;
+import com.scholarscore.models.survey.question.SurveyBooleanQuestion;
+import com.scholarscore.models.survey.question.SurveyMultipleChoiceQuestion;
+import com.scholarscore.models.survey.question.SurveyOpenResponseQuestion;
+import com.scholarscore.models.survey.question.SurveyQuestion;
 import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 
 import java.time.LocalDate;
@@ -61,6 +72,85 @@ public class SchoolDataFactory {
         School school = new School();
         school.setName("Xavier Academy");
         return school;
+    }
+
+    public static Map<Survey, List<SurveyResponse>> generateSurveysAndResponses(
+                                        List<Student> generatedStudents,
+                                        List<Teacher> createdTeachers,
+                                        List<Section> sections,
+                                        School school) {
+        Map<Survey, List<SurveyResponse>> respMap = new HashMap<>();
+        for(int i = 0; i < 6; i++) {
+            Survey s = new Survey();
+            s.setCreator(createdTeachers.get(RandomUtils.nextInt(0, createdTeachers.size())));
+            s.setCreatedDate(LocalDate.now());
+            s.setAdministeredDate(LocalDate.now().plusDays(RandomUtils.nextInt(1, 30)));
+            s.setName("Survey " + RandomUtils.nextInt(0, 2000000));
+            if(i % 3 == 0) {
+                s.setSchoolFk(school.getId());
+            } else if(i % 2 == 0) {
+                s.setSchoolFk(school.getId());
+                s.setSectionFk(sections.get(RandomUtils.nextInt(0, sections.size())).getId());
+            }
+            List<SurveyQuestion> questions = new ArrayList<>();
+            s.setQuestions(questions);
+            for(int j = 0; j < RandomUtils.nextInt(2, 10); j++) {
+                if(j % 3 == 0) {
+                    SurveyBooleanQuestion bq = new SurveyBooleanQuestion();
+                    bq.setQuestion("Do you like the number " + RandomUtils.nextInt(0, 15000) + "?");
+                    questions.add(bq);
+                } else if(j % 2 == 0) {
+                    SurveyMultipleChoiceQuestion mc = new SurveyMultipleChoiceQuestion();
+                    mc.setQuestion(RandomStringUtils.randomAscii(10) + "?");
+                    mc.setResponseRequired(true);
+                    mc.setChoices(new ArrayList<String>(){{
+                        add(RandomStringUtils.randomAscii(10));
+                        add(RandomStringUtils.randomAscii(6));
+                        add(RandomStringUtils.randomAscii(8));
+                    }});
+                    questions.add(mc);
+                } else {
+                    SurveyOpenResponseQuestion oq = new SurveyOpenResponseQuestion();
+                    oq.setQuestion(RandomStringUtils.randomAlphabetic(10) + "?");
+                    oq.setMaxResponseLength(200);
+                    oq.setResponseRequired(false);
+                    questions.add(oq);
+                }
+            }
+            List<SurveyResponse> responses = new ArrayList<>();
+            for(Student student: generatedStudents) {
+                if(new Random().nextBoolean()) {
+                    SurveyResponse resp = new SurveyResponse();
+                    resp.setSurvey(s);
+                    resp.setRespondent(student);
+                    resp.setResponseDate(LocalDate.now().plusDays(RandomUtils.nextInt(2, 30)));
+                    List<QuestionAnswer> qas = new ArrayList<>();
+                    resp.setAnswers(qas);
+                    for(SurveyQuestion q : questions) {
+                        if(q instanceof SurveyBooleanQuestion) {
+                            BooleanAnswer a = new BooleanAnswer();
+                            a.setAnswer(new Random().nextBoolean());
+                            a.setQuestion((SurveyBooleanQuestion)q);
+                            qas.add(a);
+                        } else if(q instanceof SurveyOpenResponseQuestion) {
+                            OpenAnswer a = new OpenAnswer();
+                            a.setAnswer(RandomStringUtils.randomAscii(75));
+                            a.setQuestion((SurveyOpenResponseQuestion)q);
+                            qas.add(a);
+                        } else if(q instanceof SurveyMultipleChoiceQuestion) {
+                            SurveyMultipleChoiceQuestion mcq = (SurveyMultipleChoiceQuestion)q;
+                            MultipleChoiceAnswer a = new MultipleChoiceAnswer();
+                            a.setAnswer(RandomUtils.nextInt(0, mcq.getChoices().size()));
+                            a.setQuestion(mcq);
+                            qas.add(a);
+                        }
+                    }
+                    responses.add(resp);
+                }
+            }
+            respMap.put(s, responses);
+        }
+        return respMap;
     }
 
     public static List<Administrator> generateAdmins(Long currentSchoolId) {

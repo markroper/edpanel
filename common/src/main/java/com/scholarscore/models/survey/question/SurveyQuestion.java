@@ -24,13 +24,11 @@ import java.util.Objects;
 public abstract class SurveyQuestion<T> implements Serializable {
     protected String question;
     protected Boolean responseRequired;
-    protected SurveyQuestionType type;
 
     @Enumerated(EnumType.STRING)
     public abstract SurveyQuestionType getType();
 
     public void setType(SurveyQuestionType type) {
-        this.type = type;
     }
 
     public abstract Class<T> getResponseClass();
