@@ -22,7 +22,7 @@ public class DemeritSqlSerializer implements MeasureSqlSerializer {
         String fkFieldString = dimTableName + FK_COL_SUFFIX;
         if(dimTableName.equals(HibernateConsts.TEACHER_TABLE) ||
                 dimTableName.equals(HibernateConsts.ADMIN_TABLE)) {
-            fkFieldString = HibernateConsts.BEHAVIOR_ASSIGNER_FK;
+            fkFieldString = HibernateConsts.USER_FK;
         }
         return LEFT_OUTER_JOIN + HibernateConsts.BEHAVIOR_TABLE + ON +
                 dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) +
