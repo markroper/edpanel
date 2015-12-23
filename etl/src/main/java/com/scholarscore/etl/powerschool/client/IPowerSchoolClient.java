@@ -11,6 +11,7 @@ import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCa
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsCalendarDayWrapper;
+import com.scholarscore.etl.powerschool.api.model.cycles.PsCycleWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsGradeFormulaWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeightingWrapper;
@@ -54,7 +55,7 @@ public interface IPowerSchoolClient {
 
     PsCourses getCoursesBySchool(Long schoolId) throws HttpClientException;
 
-    PsCycles getCyclesBySchool(Long schoolId) throws HttpClientException;
+    PsResponse<PsCycleWrapper> getCyclesBySchool(Long schoolId) throws HttpClientException;
 
     Object getAsMap(String path) throws HttpClientException;
 

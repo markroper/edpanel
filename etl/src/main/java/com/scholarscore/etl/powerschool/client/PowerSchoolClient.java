@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
-import com.scholarscore.etl.powerschool.api.model.PsCycles;
 import com.scholarscore.etl.powerschool.api.model.PsPeriodWrapper;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentWrapper;
@@ -16,6 +15,7 @@ import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCa
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsCalendarDayWrapper;
+import com.scholarscore.etl.powerschool.api.model.cycles.PsCycleWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsGradeFormulaWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeightingWrapper;
@@ -44,6 +44,7 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.time.LocalDate;
 
@@ -160,8 +161,9 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
 
     @Override
-    public PsCycles getCyclesBySchool(Long schoolId) throws HttpClientException {
-        return getJackson(PsCycles.class, paths.getCyclePath(), schoolId.toString());
+    public PsResponse<PsCycleWrapper> getCyclesBySchool(Long schoolId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsCycleWrapper>>() {},
+        paths.getCyclePath(), PAGE_SIZE, schoolId.toString());
     }
 
     @Override
