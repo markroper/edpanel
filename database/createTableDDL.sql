@@ -22,7 +22,7 @@ CREATE TABLE `scholar_warehouse`.`school` (
   PRIMARY KEY (`school_id`))
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`users` (
+CREATE TABLE `scholar_warehouse`.`user` (
     `user_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
     `username` varchar(50) NOT NULL COMMENT 'the username used to login',
     `password` CHAR(60) CHARACTER SET UTF8 COLLATE UTF8_BIN NULL COMMENT 'the password',
@@ -37,14 +37,14 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`contact_method` (
   `contact_method_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
   `contact_type` varchar(32) NOT NULL COMMENT 'the contact medium (e.g. phone, email)',
-  `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'the fk to the users table',
+  `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'the fk to the user table',
   `contact_value` varchar(256) NOT NULL COMMENT 'the actual contact info - the email address, phone number, etc',
   `confirm_code` varchar(64) NULL COMMENT 'the confirmation code sent to the user via the specified medium',
   `confirm_code_created` DATETIME NULL COMMENT 'the time this confirmation code was generated and sent',
   `confirmed` BOOLEAN NOT NULL COMMENT 'if this email has been confirmed as belonging to the user',
     PRIMARY KEY (`contact_method_id`),
   CONSTRAINT `user_fk$contact_method`
-  FOREIGN KEY (`user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
+  FOREIGN KEY (`user_fk`) REFERENCES `scholar_warehouse`.`user` (`user_id`)
   ON DELETE CASCADE
   ON UPDATE CASCADE,
   CONSTRAINT `uniq_contact_type$user`
@@ -81,7 +81,7 @@ CREATE TABLE `scholar_warehouse`.`student` (
     ON DELETE SET NULL
     ON UPDATE CASCADE,
   CONSTRAINT `student_user_fk$student`
-  FOREIGN KEY (`student_user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
+  FOREIGN KEY (`student_user_fk`) REFERENCES `scholar_warehouse`.`user` (`user_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE
     )
@@ -103,7 +103,7 @@ CREATE TABLE `scholar_warehouse`.`teacher` (
   FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
-  FOREIGN KEY (`teacher_user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
+  FOREIGN KEY (`teacher_user_fk`) REFERENCES `scholar_warehouse`.`user` (`user_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE
   )
@@ -126,7 +126,7 @@ CREATE TABLE `scholar_warehouse`.`administrator` (
   FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
-  FOREIGN KEY (`administrator_user_fk`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
+  FOREIGN KEY (`administrator_user_fk`) REFERENCES `scholar_warehouse`.`user` (`user_id`)
   ON DELETE SET NULL
   ON UPDATE CASCADE
   )
@@ -337,7 +337,7 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`behavior` (
   `behavior_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key identity column',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
-  `assigner_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the user table',
+  `user_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the user table',
   `name` VARCHAR(256) NULL COMMENT 'Human readable name of behavior event',
   `date` DATE NOT NULL COMMENT 'Date the behavior event occurred',
   `remote_system` VARCHAR(64) NULL COMMENT 'The name of the remote system that the remote_id columns refer to',
@@ -353,8 +353,8 @@ CREATE TABLE `scholar_warehouse`.`behavior` (
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_teacher$behavior`
-    FOREIGN KEY (`assigner_fk`)
-    REFERENCES `scholar_warehouse`.`users`(`user_id`)
+    FOREIGN KEY (`user_fk`)
+    REFERENCES `scholar_warehouse`.`user`(`user_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
   UNIQUE KEY `remote_system_composite` (`remote_system`, `remote_behavior_id`)
@@ -364,10 +364,10 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`authorities` (
     `authority_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key',
     `user_id` BIGINT UNSIGNED NOT NULL COMMENT 'The user id of user associated with this record',
-    `authority` VARCHAR(50) NOT NULL COMMENT 'The Users Role',
+    `authority` VARCHAR(50) NOT NULL COMMENT 'The User Role',
     PRIMARY KEY (`authority_id`),
     CONSTRAINT `user_id$authorities`
-    FOREIGN KEY (`user_id`) REFERENCES `scholar_warehouse`.`users` (`user_id`)
+    FOREIGN KEY (`user_id`) REFERENCES `scholar_warehouse`.`user` (`user_id`)
       ON DELETE CASCADE
       ON UPDATE CASCADE
 )
@@ -456,7 +456,7 @@ CREATE TABLE `scholar_warehouse`.`survey` (
   `survey_schema` BLOB DEFAULT NULL COMMENT 'Blob to store the JSON needed for formula goals',
   PRIMARY KEY (`survey_id`),
   FOREIGN KEY (`user_fk`)
-    REFERENCES `scholar_warehouse`.`users`(`user_id`)
+    REFERENCES `scholar_warehouse`.`user`(`user_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   FOREIGN KEY (`school_fk`)

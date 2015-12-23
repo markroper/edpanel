@@ -2,7 +2,6 @@ package com.scholarscore.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 
 import javax.persistence.Column;
@@ -186,7 +185,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     }
 
     @OneToOne(optional = true)
-    @JoinColumn(name=HibernateConsts.BEHAVIOR_ASSIGNER_FK, nullable = true)
+    @JoinColumn(name=HibernateConsts.USER_FK, nullable = true)
     public User getAssigner() {
         return assigner;
     }

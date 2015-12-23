@@ -5,14 +5,7 @@ import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
 import com.scholarscore.models.query.MeasureField;
-import com.scholarscore.models.query.dimension.AssignmentDimension;
-import com.scholarscore.models.query.dimension.CourseDimension;
-import com.scholarscore.models.query.dimension.SchoolDimension;
-import com.scholarscore.models.query.dimension.SchoolYearDimension;
-import com.scholarscore.models.query.dimension.SectionDimension;
-import com.scholarscore.models.query.dimension.StudentDimension;
-import com.scholarscore.models.query.dimension.TeacherDimension;
-import com.scholarscore.models.query.dimension.TermDimension;
+import com.scholarscore.models.query.dimension.*;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
 import com.scholarscore.models.query.measure.BehaviorMeasure;
 import com.scholarscore.models.query.measure.GpaMeasure;
@@ -111,6 +104,7 @@ public class DbMappings {
                put(Dimension.ADMINISTRATOR, HibernateConsts.ADMIN_TABLE);
                put(Dimension.YEAR, HibernateConsts.SCHOOL_YEAR_TABLE);
                 put(Dimension.ASSIGNMENT, HibernateConsts.ASSIGNMENT_TABLE);
+                put(Dimension.USER, HibernateConsts.USERS_TABLE);
             }};
 
     public static final Map<DimensionField, String> DIMENSION_TO_COL_NAME = 
@@ -132,6 +126,7 @@ public class DbMappings {
         put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.NAME), HibernateConsts.ADMIN_NAME);
         put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.ID), HibernateConsts.ADMIN_USER_FK);
         put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.SCHOOL), HibernateConsts.SCHOOL_FK);
+        put(new DimensionField(Dimension.USER, UserDimension.ID), HibernateConsts.USER_ID);
 
         //School dimension field to DB column name lookup
         put(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME), HibernateConsts.SCHOOL_NAME);
