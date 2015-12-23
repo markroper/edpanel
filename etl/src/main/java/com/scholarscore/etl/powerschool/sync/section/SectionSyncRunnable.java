@@ -163,26 +163,26 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     results.sectionUpdated(entry.getKey(), sourceSection.getId());
                 }
             }
-            StudentSectionGradeSync ssgSync = new StudentSectionGradeSync(
-                    powerSchool,
-                    edPanel,
-                    school,
-                    studentAssociator,
-                    ptSectionIdToPsSectionId,
-                    ptStudentIdToPsStudentId,
-                    sourceSection);
-            ssgSync.syncCreateUpdateDelete(results);
-
-            SectionAssignmentSync assignmentSync = new SectionAssignmentSync(
-                    powerSchool,
-                    edPanel,
-                    school,
-                    studentAssociator,
-                    sourceSection
-            );
-            LOGGER.debug("Section, including assignments and student section grades created/updated. Section ID: " +
-                    sourceSection.getId() + ", school ID: " + school.getId());
-            assignmentSync.syncCreateUpdateDelete(results);
+//            StudentSectionGradeSync ssgSync = new StudentSectionGradeSync(
+//                    powerSchool,
+//                    edPanel,
+//                    school,
+//                    studentAssociator,
+//                    ptSectionIdToPsSectionId,
+//                    ptStudentIdToPsStudentId,
+//                    sourceSection);
+//            ssgSync.syncCreateUpdateDelete(results);
+//
+//            SectionAssignmentSync assignmentSync = new SectionAssignmentSync(
+//                    powerSchool,
+//                    edPanel,
+//                    school,
+//                    studentAssociator,
+//                    sourceSection
+//            );
+//            LOGGER.debug("Section, including assignments and student section grades created/updated. Section ID: " +
+//                    sourceSection.getId() + ", school ID: " + school.getId());
+//            assignmentSync.syncCreateUpdateDelete(results);
         }
         LOGGER.info("All sections created and updated in EdPanel for school " + school.getName() +
                 " with ID " + school.getId());

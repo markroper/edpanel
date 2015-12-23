@@ -1,9 +1,7 @@
 package com.scholarscore.etl.powerschool.client;
 
 import com.scholarscore.client.HttpClientException;
-import com.scholarscore.etl.powerschool.api.model.PsCourses;
-import com.scholarscore.etl.powerschool.api.model.PsPeriodWrapper;
-import com.scholarscore.etl.powerschool.api.model.PsStaffs;
+import com.scholarscore.etl.powerschool.api.model.*;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScoreWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreIdWrapper;
@@ -55,6 +53,8 @@ public interface IPowerSchoolClient {
     StudentResponse getStudentById(Long studentId) throws HttpClientException;
 
     PsCourses getCoursesBySchool(Long schoolId) throws HttpClientException;
+
+    PsCycles getCyclesBySchool(Long schoolId) throws HttpClientException;
 
     Object getAsMap(String path) throws HttpClientException;
 
