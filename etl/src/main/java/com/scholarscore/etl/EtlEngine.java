@@ -153,7 +153,7 @@ public class EtlEngine implements IEtlEngine {
         endTime = System.currentTimeMillis();
         LOGGER.info("School day & Attendance sync complete");
 
-        createCourses();
+        //createCourses();
         long courseCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
         LOGGER.info("Course sync complete");

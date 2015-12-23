@@ -80,9 +80,9 @@ public class PowerSchoolPaths {
 
     public String getCyclePath() {
         return SCHEMA_BASE +
-                "cycle_day?" +
+                "/cycle_day?" +
                 "projection=Abbreviation,Day_Name,Day_Number,ID,DCID,Letter,SchoolId,Year_Id" +
-                "&q=schoolId=={0}";
+                "&q=schoolId=={1}";
     }
 
     public String getTermPath() {

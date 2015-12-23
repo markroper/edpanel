@@ -5,7 +5,9 @@ import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
-import com.scholarscore.etl.powerschool.api.model.PsCycles;
+import com.scholarscore.etl.powerschool.api.model.cycles.PsCycleWrapper;
+import com.scholarscore.etl.powerschool.api.response.PsResponse;
+import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.Cycle;
@@ -53,10 +55,9 @@ public class CycleSync implements ISync<Cycle> {
 
     protected ConcurrentHashMap<Long, Cycle> resolveAllFromSourceSystem() throws HttpClientException {
         ConcurrentHashMap<Long, Cycle> result = new ConcurrentHashMap<>();
-        PsCycles response = powerSchool.getCyclesBySchool(Long.valueOf(school.getSourceSystemId()));
-        Collection<Cycle> apiListOfCourses = response.toInternalModel();
-        for(Cycle c: apiListOfCourses) {
-            //result.put(Long.valueOf(c.getSourceSystemId()), c);
+        PsResponse<PsCycleWrapper> response = powerSchool.getCyclesBySchool(school.getNumber());
+        for (PsResponseInner<PsCycleWrapper> cycle : response.record) {
+            result.put(cycle.id , cycle.tables.cycle_day.toApiModel())
         }
         return result;
     }
