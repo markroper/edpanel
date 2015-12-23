@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.auth.OAuthResponse;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
+import com.scholarscore.etl.powerschool.api.model.PsCycles;
 import com.scholarscore.etl.powerschool.api.model.PsPeriodWrapper;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentWrapper;
@@ -156,6 +157,11 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     @Override
     public PsCourses getCoursesBySchool(Long schoolId) throws HttpClientException {
         return getJackson(PsCourses.class, paths.getCoursePath(), schoolId.toString());
+    }
+
+    @Override
+    public PsCycles getCyclesBySchool(Long schoolId) throws HttpClientException {
+        return getJackson(PsCycles.class, paths.getCyclePath(), schoolId.toString());
     }
 
     @Override

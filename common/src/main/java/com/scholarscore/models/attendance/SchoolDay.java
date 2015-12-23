@@ -36,6 +36,7 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
     private Long sourceSystemOtherId;
     private School school;
     private LocalDate date;
+    private Long cycleId;
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -82,6 +83,15 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
         this.sourceSystemOtherId = sourceSystemOtherId;
     }
 
+    @Column(name = HibernateConsts.SCHOOL_DAY_CYCLE_ID)
+    public Long getCycleId() {
+        return cycleId;
+    }
+
+    public void setCycleId(Long cycleId) {
+        this.cycleId = cycleId;
+    }
+
     public SchoolDay() { }
     
     public SchoolDay(SchoolDay schoolDay) { 
@@ -90,11 +100,12 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
         this.date = schoolDay.date;
         this.sourceSystemId = schoolDay.sourceSystemId;
         this.sourceSystemOtherId = schoolDay.sourceSystemOtherId;
+        this.cycleId = schoolDay.cycleId;
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(id, school, date, sourceSystemId, sourceSystemOtherId);
+        return Objects.hash(id, school, date, sourceSystemId, sourceSystemOtherId, cycleId);
     }
 
     @Override
@@ -110,6 +121,7 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
                 && Objects.equals(this.school, other.school)
                 && Objects.equals(this.sourceSystemId, other.sourceSystemId)
                 && Objects.equals(this.sourceSystemOtherId, other.sourceSystemOtherId)
+                && Objects.equals(this.cycleId, other.cycleId)
                 && Objects.equals(this.date, other.date);
     }
 
@@ -121,6 +133,7 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
                 ", sourceSystemId=" + sourceSystemId +
                 ", sourceSystemOtherId=" + sourceSystemOtherId +
                 ", date=" + date +
+                ", cycleId=" + cycleId +
                 '}';
     }
 
@@ -142,6 +155,9 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
         if (null == sourceSystemOtherId) {
             this.sourceSystemOtherId = mergeFrom.sourceSystemOtherId;
         }
+        if (null == cycleId) {
+            this.cycleId = mergeFrom.cycleId;
+        }
     }
 
 
@@ -156,6 +172,7 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
         private LocalDate date;
         private String sourceSystemId;
         private Long sourceSystemOtherId;
+        private Long cycleId;
 
         protected SchoolDayBuilder me(){
             return this;
@@ -186,6 +203,10 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
             this.date = date;
             return this;
         }
+        public SchoolDayBuilder withycleId(final Long cycleId){
+            this.cycleId =cycleId;
+            return this;
+        }
 
         public SchoolDay build(){
             SchoolDay schoolDay = new SchoolDay();
@@ -194,6 +215,7 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
             schoolDay.setDate(date);
             schoolDay.setSourceSystemId(sourceSystemId);
             schoolDay.setSourceSystemOtherId(sourceSystemOtherId);
+            schoolDay.setCycleId(cycleId);
             return schoolDay;
         }
     }

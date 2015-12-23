@@ -47,7 +47,7 @@ public class PowerSchoolPaths {
             "/calendar_day?" +
             getPageSizeParam() +
             "&" + PAGE_NUM_PARAM +
-            "&projection=dcid,date_value,insession,note,membershipvalue,scheduleid,schoolid,type,id" +
+            "&projection=dcid,date_value,insession,note,membershipvalue,scheduleid,schoolid,type,id,cycle_day_id" +
             "&q=schoolid=={1};date_value=gt=" + cutoffDate + ";insession==1";
     }
 
@@ -76,6 +76,13 @@ public class PowerSchoolPaths {
 
     public String getCoursePath() {
         return BASE + "/school/{0}/course?" + getPageSizeParam();
+    }
+
+    public String getCyclePath() {
+        return SCHEMA_BASE +
+                "cycle_day?" +
+                "projection=Abbreviation,Day_Name,Day_Number,ID,DCID,Letter,SchoolId,Year_Id" +
+                "&q=schoolId=={0}";
     }
 
     public String getTermPath() {

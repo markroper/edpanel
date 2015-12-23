@@ -20,6 +20,7 @@ public class PsCalendarDay implements IToApiModel<SchoolDay> {
     public Long schoolid;
     public String type;
     public String scheduleid;
+    public Long cycle_day_id;
 
     @Override
     public SchoolDay toApiModel() {
@@ -30,6 +31,7 @@ public class PsCalendarDay implements IToApiModel<SchoolDay> {
         s.setNumber(schoolid);
         day.setSchool(s);
         day.setDate(date_value);
+        day.setCycleId(cycle_day_id);
         return day;
     }
 }
