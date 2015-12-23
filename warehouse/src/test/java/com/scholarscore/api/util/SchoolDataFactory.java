@@ -57,13 +57,13 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class SchoolDataFactory {
     private final static long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
-    private static final String WHITE = "White";
-    private static final String BLACK = "Black";
-    private static final String AMERICAN_INDIAN = "American Indian";
-    private static final String ASIAN = "Asian";
-    private static final String PACIFIC_ISLANDER = "Pacific Islander";
-    private static final String HISPANIC_LATINO = "Hispanic or Latino";
-    private static final String NON_HISPANIC_LATINO = "Non-Hispanic or Latino";
+    private static final String WHITE = "W";
+    private static final String BLACK = "B";
+    private static final String AMERICAN_INDIAN = "I";
+    private static final String ASIAN = "A";
+    private static final String PACIFIC_ISLANDER = "P";
+    private static final String HISPANIC_LATINO = "YES";
+    private static final String NON_HISPANIC_LATINO = "NO";
     private static final String OTHER = "Other";
     
     private static Random random = new Random();
@@ -209,14 +209,14 @@ public class SchoolDataFactory {
         List<Student> students = new ArrayList<>();
         students.add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Carlos Vasquez", 2017L));
         students.add(new Student(BLACK, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Tanya Segel", 2018L));
-        students.add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Ashley Brown", 2017L));
+        students.add(new Student(ASIAN, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Ashley Brown", 2017L));
         students.add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Bernard Slim", 2018L));
         students.add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Bernadette Slim", 2018L));
         students.add(new Student(BLACK, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Jason Carter", 2018L));
         students.add(new Student(WHITE, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Yasmine Fort", 2018L));
         students.add(new Student(WHITE, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Alexander Panagopalous", 2017L));
-        students.add(new Student(BLACK, HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Claire Martinez", 2016L));
-        students.add(new Student(BLACK, PACIFIC_ISLANDER, currentSchoolId, Gender.MALE, "Otto Porter", 2016L));
+        students.add(new Student(ASIAN, NON_HISPANIC_LATINO, currentSchoolId, Gender.FEMALE, "Claire Martinez", 2016L));
+        students.add(new Student(PACIFIC_ISLANDER, NON_HISPANIC_LATINO, currentSchoolId, Gender.MALE, "Otto Porter", 2016L));
         int i = 0;
         for(Student s : students) {
             s.setCurrentSchoolId(currentSchoolId);
