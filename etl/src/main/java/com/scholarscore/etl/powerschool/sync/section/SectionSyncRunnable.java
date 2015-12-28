@@ -32,11 +32,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -62,6 +58,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
     private BiMap<Long, Long> ptSectionIdToPsSectionId;
     private Map<Long, Long> ptStudentIdToPsStudentId;
     private PowerSchoolSyncResult results;
+    private Map<Long, Set<Long>> studentClasses;
 
     public SectionSyncRunnable(IPowerSchoolClient powerSchool,
                                IAPIClient edPanel,
@@ -75,7 +72,8 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                                Map<Long, String> powerTeacherCategoryToEdPanelType,
                                BiMap<Long, Long> ptSectionIdToPsSectionId,
                                Map<Long, Long> ptStudentIdToPsStudentId,
-                               PowerSchoolSyncResult results) {
+                               PowerSchoolSyncResult results,
+                               Map<Long, Set<Long>> studentClasses) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
         this.school = school;
@@ -89,6 +87,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
         this.ptSectionIdToPsSectionId = ptSectionIdToPsSectionId;
         this.ptStudentIdToPsStudentId = ptStudentIdToPsStudentId;
         this.results = results;
+        this.studentClasses = studentClasses;
     }
 
     @Override
@@ -163,26 +162,27 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     results.sectionUpdated(entry.getKey(), sourceSection.getId());
                 }
             }
-//            StudentSectionGradeSync ssgSync = new StudentSectionGradeSync(
-//                    powerSchool,
-//                    edPanel,
-//                    school,
-//                    studentAssociator,
-//                    ptSectionIdToPsSectionId,
-//                    ptStudentIdToPsStudentId,
-//                    sourceSection);
-//            ssgSync.syncCreateUpdateDelete(results);
-//
-//            SectionAssignmentSync assignmentSync = new SectionAssignmentSync(
-//                    powerSchool,
-//                    edPanel,
-//                    school,
-//                    studentAssociator,
-//                    sourceSection
-//            );
-//            LOGGER.debug("Section, including assignments and student section grades created/updated. Section ID: " +
-//                    sourceSection.getId() + ", school ID: " + school.getId());
-//            assignmentSync.syncCreateUpdateDelete(results);
+            StudentSectionGradeSync ssgSync = new StudentSectionGradeSync(
+                    powerSchool,
+                    edPanel,
+                    school,
+                    studentAssociator,
+                    ptSectionIdToPsSectionId,
+                    ptStudentIdToPsStudentId,
+                    sourceSection,
+                    studentClasses);
+            ssgSync.syncCreateUpdateDelete(results);
+
+            SectionAssignmentSync assignmentSync = new SectionAssignmentSync(
+                    powerSchool,
+                    edPanel,
+                    school,
+                    studentAssociator,
+                    sourceSection
+            );
+            LOGGER.debug("Section, including assignments and student section grades created/updated. Section ID: " +
+                    sourceSection.getId() + ", school ID: " + school.getId());
+            assignmentSync.syncCreateUpdateDelete(results);
         }
         LOGGER.info("All sections created and updated in EdPanel for school " + school.getName() +
                 " with ID " + school.getId());
