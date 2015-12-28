@@ -1,6 +1,7 @@
 package com.scholarscore.etl.powerschool.sync.section;
 
 import com.google.common.collect.BiMap;
+import com.google.common.collect.Sets;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
@@ -23,12 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -43,6 +39,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
     private BiMap<Long, Long> ptSectionIdToPsSectionId;
     private Map<Long, Long> ptStudentIdToPsStudentId;
     private Section createdSection;
+    private Map<Long, Set<Long>> studentClasses;
 
     public StudentSectionGradeSync(IPowerSchoolClient powerSchool,
                                    IAPIClient edPanel,
@@ -50,7 +47,8 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                                    StudentAssociator studentAssociator,
                                    BiMap<Long, Long> ptSectionIdToPsSectionId,
                                    Map<Long, Long> ptStudentIdToPsStudentId,
-                                   Section createdSection) {
+                                   Section createdSection,
+                                   Map<Long, Set<Long>> studentClasses) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
         this.school = school;
@@ -58,6 +56,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
         this.ptSectionIdToPsSectionId = ptSectionIdToPsSectionId;
         this.ptStudentIdToPsStudentId = ptStudentIdToPsStudentId;
         this.createdSection = createdSection;
+        this.studentClasses = studentClasses;
     }
 
     @Override
@@ -112,6 +111,12 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             StudentSectionGrade sourceSsg = entry.getValue();
             StudentSectionGrade edPanelSsg = edpanelSsgMap.get(entry.getKey());
             ssgs.add(sourceSsg);
+            //Generate map of studentId to sections they are enrolled in to be used later for attendance
+            if (studentClasses.get(sourceSsg.getStudent().getId()) == null) {
+                studentClasses.put(sourceSsg.getStudent().getId(), Sets.newConcurrentHashSet());
+            }
+            studentClasses.get(sourceSsg.getStudent().getId()).add(sourceSsg.getSection().getId());
+
             if(null == edPanelSsg){
                 ssgsToCreate.add(sourceSsg);
                 results.studentSectionGradeCreated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), -1L);

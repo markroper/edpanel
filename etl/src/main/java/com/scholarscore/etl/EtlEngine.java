@@ -45,6 +45,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -81,6 +82,7 @@ public class EtlEngine implements IEtlEngine {
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Section>> sections;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Course>> courses = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Cycle>> cycles = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Long, Set<Long>> studentClasses = new ConcurrentHashMap<>();
     //Student and staff maps map local ID to User|Student. Elsewhere, we need
     //to map source system id (SSID) to the local IDs. For this purpose we also maintain
     //a mapping of SSID to localId, all of which is encapsulated in the associator below
@@ -153,7 +155,7 @@ public class EtlEngine implements IEtlEngine {
         endTime = System.currentTimeMillis();
         LOGGER.info("School day & Attendance sync complete");
 
-        //createCourses();
+        createCourses();
         long courseCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
         LOGGER.info("Course sync complete");
@@ -275,7 +277,8 @@ public class EtlEngine implements IEtlEngine {
                     powerTeacherCategoryToEdPanelType,
                     ptSectionIdToPsSectionId,
                     ptStudentIdToPStudentId,
-                    results);
+                    results,
+                    studentClasses);
             executor.execute(sectionRunnable);
         }
         executor.shutdown();
