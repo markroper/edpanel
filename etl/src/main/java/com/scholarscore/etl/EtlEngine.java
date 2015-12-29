@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.powerschool.CycleSync;
+import com.scholarscore.etl.powerschool.api.model.PsPeriod;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCategory;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCategoryWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetup;
@@ -24,6 +25,7 @@ import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.CourseSync;
+import com.scholarscore.etl.powerschool.sync.PeriodSync;
 import com.scholarscore.etl.powerschool.sync.SchoolSync;
 import com.scholarscore.etl.powerschool.sync.TermSync;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
@@ -82,7 +84,9 @@ public class EtlEngine implements IEtlEngine {
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Section>> sections;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Course>> courses = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Cycle>> cycles = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Long, Set<Long>> studentClasses = new ConcurrentHashMap<>();
+    //TODO Make this a first calss model in EdPanel
+    private ConcurrentHashMap<Long, ConcurrentHashMap<Long, PsPeriod>> periods = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Long, Set<Section>> studentClasses = new ConcurrentHashMap<>();
     //Student and staff maps map local ID to User|Student. Elsewhere, we need
     //to map source system id (SSID) to the local IDs. For this purpose we also maintain
     //a mapping of SSID to localId, all of which is encapsulated in the associator below
@@ -134,7 +138,12 @@ public class EtlEngine implements IEtlEngine {
         endTime = System.currentTimeMillis();
         LOGGER.info("Cycle sync complete. " + cycles.size() + " school(s) synchronized.");
 
-        createStaff();
+        createPeriods();
+        long periodCreationTime = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+        LOGGER.info("Period sync complete. " + periods.size() + " school(s) synchronized.");
+
+//        createStaff();
         long staffCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
         LOGGER.info("Staff sync complete");
@@ -144,16 +153,12 @@ public class EtlEngine implements IEtlEngine {
         endTime = System.currentTimeMillis();
         LOGGER.info("Student sync complete");
 
-        List<File> gpaFiles = settings.getGpaImportFiles();
-        syncGpa(gpaFiles);
+//        List<File> gpaFiles = settings.getGpaImportFiles();
+//        syncGpa(gpaFiles);
         long gpaFileComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
         LOGGER.info("GPA sync complete");
 
-        syncSchoolDaysAndAttendance();
-        long schoolDayCreationComplete = (System.currentTimeMillis() - endTime)/1000;
-        endTime = System.currentTimeMillis();
-        LOGGER.info("School day & Attendance sync complete");
 
         createCourses();
         long courseCreationComplete = (System.currentTimeMillis() - endTime)/1000;
@@ -164,6 +169,11 @@ public class EtlEngine implements IEtlEngine {
         long sectionCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
         LOGGER.info("Section sync complete");
+
+        syncSchoolDaysAndAttendance();
+        long schoolDayCreationComplete = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+        LOGGER.info("School day & Attendance sync complete");
 
         LOGGER.info("Total runtime: " + (endTime - startTime) / 1000 +
                 " seconds, \nschools: " + schoolCreationTime +
@@ -205,7 +215,10 @@ public class EtlEngine implements IEtlEngine {
                     studentAssociator,
                     this.schoolDays.get(schoolSsid),
                     syncCutoff,
-                    dailyAbsenceTrigger);
+                    dailyAbsenceTrigger,
+                    this.cycles.get(school.getValue().getSourceSystemId()),
+                    studentClasses,
+                    this.periods.get(school.getValue().getSourceSystemId()));
             a.syncCreateUpdateDelete(results);
         }
     }
@@ -339,7 +352,17 @@ public class EtlEngine implements IEtlEngine {
     public void createCycles() {
         for (Map.Entry<Long, School> school : this.schools.entrySet()) {
             CycleSync sync = new CycleSync(edPanel, powerSchool, school.getValue());
-            Map<Long, Cycle> result = sync.syncCreateUpdateDelete(results);
+            this.cycles.put(Long.valueOf(school.getValue().getSourceSystemId()),
+                    sync.syncCreateUpdateDelete(results));
+
+        }
+    }
+
+    public void createPeriods() {
+        for (Map.Entry<Long, School> school : this.schools.entrySet()) {
+            PeriodSync sync = new PeriodSync(edPanel, powerSchool, school.getValue());
+            this.periods.put(Long.valueOf(school.getValue().getSourceSystemId()),
+                    sync.syncCreateUpdateDelete(results));
 
         }
     }

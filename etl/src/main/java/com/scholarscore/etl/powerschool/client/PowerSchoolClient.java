@@ -110,11 +110,11 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
 
     @Override
-    public PsResponse<PsPeriodWrapper> getPeriods() throws HttpClientException {
+    public PsResponse<PsPeriodWrapper> getPeriodsBySchool(Long schoolId) throws HttpClientException {
         return get(new TypeReference<PsResponse<PsPeriodWrapper>>(){},
                 paths.getPeriodPath(),
                 PAGE_SIZE,
-                (String[])null);
+                schoolId.toString());
     }
 
     @Override

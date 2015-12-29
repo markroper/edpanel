@@ -4,9 +4,12 @@ import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.EtlEngine;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
+import com.scholarscore.etl.powerschool.api.model.PsPeriod;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
+import com.scholarscore.models.Cycle;
 import com.scholarscore.models.School;
+import com.scholarscore.models.Section;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.user.Student;
@@ -16,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,13 +37,19 @@ public class AttendanceSync implements ISync<Attendance> {
     protected ConcurrentHashMap<LocalDate, SchoolDay> schoolDays;
     protected LocalDate syncCutoff;
     protected Long dailyAbsenseTrigger;
+    protected ConcurrentHashMap<Long, Cycle> schoolCycles;
+    protected ConcurrentHashMap<Long, Set<Section>> studentClasses;
+    ConcurrentHashMap<Long, PsPeriod> periods;
     public AttendanceSync(IAPIClient edPanel,
                           IPowerSchoolClient powerSchool,
                           School s,
                           StudentAssociator studentAssociator,
                           ConcurrentHashMap<LocalDate, SchoolDay> schoolDays,
                           LocalDate syncCutoff,
-                          Long dailyAbsenseTrigger) {
+                          Long dailyAbsenseTrigger,
+                          ConcurrentHashMap<Long,Cycle> schoolCycles,
+                          ConcurrentHashMap<Long, Set<Section>> studentClasses,
+                          ConcurrentHashMap<Long, PsPeriod> periods) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
@@ -47,6 +57,9 @@ public class AttendanceSync implements ISync<Attendance> {
         this.schoolDays = schoolDays;
         this.syncCutoff = syncCutoff;
         this.dailyAbsenseTrigger = dailyAbsenseTrigger;
+        this.schoolCycles = schoolCycles;
+        this.studentClasses = studentClasses;
+        this.periods = periods;
     }
 
     @Override
@@ -58,7 +71,8 @@ public class AttendanceSync implements ISync<Attendance> {
             Student s = studentIterator.next().getValue();
             if(s.getCurrentSchoolId().equals(school.getId())) {
                 AttendanceRunnable runnable = new AttendanceRunnable(
-                        edPanel, powerSchool, school, s, schoolDays, results, syncCutoff, dailyAbsenseTrigger);
+                        edPanel, powerSchool, school, s, schoolDays, results, syncCutoff,
+                        dailyAbsenseTrigger, schoolCycles, studentClasses, periods);
                 executor.execute(runnable);
             }
         }

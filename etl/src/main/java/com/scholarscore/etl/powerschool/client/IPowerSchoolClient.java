@@ -43,7 +43,7 @@ public interface IPowerSchoolClient {
 
     SchoolsResponse getSchools() throws HttpClientException;
 
-    PsResponse<PsPeriodWrapper> getPeriods() throws HttpClientException;
+    PsResponse<PsPeriodWrapper> getPeriodsBySchool(Long schoolId) throws HttpClientException;
 
     DistrictResponse getDistrict() throws HttpClientException;
 

@@ -2,11 +2,6 @@ package com.scholarscore.etl.powerschool.api.model.cycles;
 
 import com.scholarscore.etl.IToApiModel;
 import com.scholarscore.models.Cycle;
-import com.scholarscore.models.attendance.Attendance;
-import com.scholarscore.models.attendance.AttendanceTypes;
-import com.scholarscore.models.attendance.SchoolDay;
-import com.scholarscore.models.user.Student;
-
 /**
  * Created by cwallace on 12/23/15.
  */

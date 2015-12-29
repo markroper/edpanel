@@ -29,9 +29,7 @@ import javax.persistence.Transient;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A Section is a temporal instance of a Course.  Where a course defines that which is to be taught, a Section has
@@ -49,6 +47,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected LocalDate startDate;
     protected LocalDate endDate;
     protected String room;
+    protected Map<String,ArrayList<Long>> expression;
     //For jackson & for java (hibernate uses different getter to access the string value)
     protected GradeFormula gradeFormula;
     //The starting term
@@ -67,13 +66,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         teachers = Sets.newHashSet();
     }
 
-    public Section(LocalDate startDate, LocalDate endDate, String room, GradeFormula gradeFormula, Integer numberOfTerms) {
+    public Section(LocalDate startDate, LocalDate endDate, String room, GradeFormula gradeFormula, Integer numberOfTerms, Map<String,ArrayList<Long>> expression) {
         this();
         this.startDate = startDate;
         this.endDate = endDate;
         this.room = room;
         setGradeFormula(gradeFormula);
         this.numberOfTerms = numberOfTerms;
+        this.expression = expression;
     }
 
     public Section(Section sect) {
@@ -87,6 +87,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         gradeFormula = sect.gradeFormula;
         sourceSystemId = sect.sourceSystemId;
         numberOfTerms = sect.numberOfTerms;
+        this.expression = sect.expression;
         this.teachers = sect.teachers;
         this.term = sect.term;
     }
@@ -273,6 +274,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.gradeFormula = gradeFormula;
     }
 
+    public Map<String, ArrayList<Long>> getExpression() {
+        return expression;
+    }
+
+    public void setExpression(Map<String, ArrayList<Long>> expression) {
+        this.expression = expression;
+    }
+
     @Override
     public void mergePropertiesIfNull(Section mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
@@ -307,6 +316,9 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         if(null == term) {
             term = mergeFrom.term;
         }
+        if (null == term) {
+            expression = mergeFrom.expression;
+        }
     }
 
     @Override
@@ -325,13 +337,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 Objects.equals(this.numberOfTerms, other.numberOfTerms) &&
                 Objects.equals(this.gradeFormula, other.gradeFormula) && 
                 Objects.equals(this.term, other.term) &&
-                Objects.equals(this.teachers, other.teachers);
+                Objects.equals(this.teachers, other.teachers) &&
+                Objects.equals(this.expression, other.expression);
     }
 
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(course, startDate, endDate, sourceSystemId,
-                room, enrolledStudents, assignments, gradeFormula, numberOfTerms, term, teachers);
+                room, enrolledStudents, assignments, gradeFormula, numberOfTerms, term, teachers, expression);
     }
 
     @Override
@@ -347,7 +360,8 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 ", assignments=" + assignments +
                 ", teachers=" + teachers +
                 ", numberOfTerms=" + numberOfTerms +
-                ", sourceSystemId='" + sourceSystemId + '\'' +
+                ", sourceSystemId='" + sourceSystemId  +
+                ", expression='" + expression + '\'' +
                 '}';
     }
 
@@ -370,6 +384,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         protected Set<Teacher> teachers;
         protected String sourceSystemId;
         protected Integer numberOfTerms;
+        protected Map<String, ArrayList<Long>> expression;
 
         public SectionBuilder(){
             enrolledStudents = Lists.newArrayList();
@@ -458,6 +473,11 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             return this;
         }
 
+        public SectionBuilder withExpression(final Map<String, ArrayList<Long>> expression) {
+            this.expression = expression;
+            return this;
+        }
+
         public Section build(){
             Section section = super.build();
             section.setStartDate(startDate);
@@ -471,6 +491,8 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             section.setAssignments(assignments);
             section.setTeachers(teachers);
             section.setSourceSystemId(sourceSystemId);
+            section.setExpression(expression);
+
             return section;
         }
 
