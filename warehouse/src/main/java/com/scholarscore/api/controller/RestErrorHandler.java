@@ -45,7 +45,7 @@ public class RestErrorHandler extends BaseController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ResponseEntity<StatusCode> processDataIntegrationViolationException(DataIntegrityViolationException dive) {
-        StatusCode error = new StatusCode(StatusCodes.DATA_INTEGRITY_VIOLATION_CODE, dive.getMessage());
+        StatusCode error = new StatusCode(StatusCodes.DATA_INTEGRITY_VIOLATION_CODE, dive.getRootCause().getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
     
