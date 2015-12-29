@@ -144,7 +144,8 @@ public class PowerSchoolPaths {
             "/period?" +
             getPageSizeParam() +
             "&" + PAGE_NUM_PARAM +
-            "&projection=*";
+            "&projection=*" +
+            "&q=schoolId=={1}";
     }
 
     public String getSectionGradesSetupPath() {

@@ -17,6 +17,7 @@ public class PowerSchoolSyncResult extends BaseSyncResult implements SyncResult 
     protected EntitySyncResult schoolDays = new EntitySyncResult();
     protected EntitySyncResult attendance = new EntitySyncResult();
     protected EntitySyncResult cycles = new EntitySyncResult();
+    protected EntitySyncResult periods = new EntitySyncResult();
     protected ConcurrentHashMap<Long, EntitySyncResult> sectionAssignments =
             new ConcurrentHashMap<>();
     protected ConcurrentHashMap<Long, ConcurrentHashMap<Long, EntitySyncResult>> studentAssignments =
@@ -54,6 +55,7 @@ public class PowerSchoolSyncResult extends BaseSyncResult implements SyncResult 
         sections.failedCreate(ssid);
     }
     public void cycleCreateFailed(long ssid) { cycles.failedCreate(ssid);}
+    public void periodCreateFailed(long ssid) { periods.failedCreate(ssid);}
     public void sectionAssignmentCreateFailed(long sectionssid, long ssid) {
         EntitySyncResult result = sectionAssignments.get(sectionssid);
         if(null == result) {
@@ -112,6 +114,7 @@ public class PowerSchoolSyncResult extends BaseSyncResult implements SyncResult 
         sections.created(ssid, edPanelId);
     }
     public void cycleCreated(long ssid, long edPanelId) { cycles.created(ssid, edPanelId);}
+    public void periodCreated(long ssid, long edPanelId) { periods.created(ssid, edPanelId);}
     public void sectionAssignmentCreated(long sectionssid, long ssid, long edPanelId) {
         EntitySyncResult result = sectionAssignments.get(sectionssid);
         if(null == result) {
@@ -170,6 +173,7 @@ public class PowerSchoolSyncResult extends BaseSyncResult implements SyncResult 
         sections.failedUpdate(ssid, edPanelId);
     }
     public void cycleUpdateFailed(long ssid, long edPanelId) {cycles.failedUpdate(ssid, edPanelId);}
+    public void periodUpdateFailed(long ssid, long edPanelId) {periods.failedUpdate(ssid, edPanelId);}
     public void sectionAssignmentUpdateFailed(long sectionssid, long assignmentssid, long ssid, long edPanelId) {
         EntitySyncResult result = sectionAssignments.get(sectionssid);
         if(null == result) {
@@ -228,6 +232,7 @@ public class PowerSchoolSyncResult extends BaseSyncResult implements SyncResult 
         sections.updated(ssid, edPanelId);
     }
     public void cycleUpdated(long ssid, long edPanelId) {sections.updated(ssid, edPanelId);}
+    public void periodUpdated(long ssid, long edPanelId) {periods.updated(ssid, edPanelId);}
     public void sectionAssignmentUpdated(long sectionssid, long ssid, long edPanelId) {
         EntitySyncResult result = sectionAssignments.get(sectionssid);
         if(null == result) {
@@ -286,6 +291,7 @@ public class PowerSchoolSyncResult extends BaseSyncResult implements SyncResult 
         sections.failedDelete(ssid, edPanelId);
     }
     public void cycleDeleteFailed(long ssid, long edPanelId) { cycles.failedDelete(ssid, edPanelId);}
+    public void periodDeleteFailed(long ssid, long edPanelId) { periods.failedDelete(ssid, edPanelId);}
     public void sectionAssignmentDeleteFailed(long sectionssid, long ssid, long edPanelId) {
         EntitySyncResult result = sectionAssignments.get(sectionssid);
         if(null == result) {
@@ -344,6 +350,7 @@ public class PowerSchoolSyncResult extends BaseSyncResult implements SyncResult 
         sections.deleted(ssid, edPanelId);
     }
     public void cycleDeleted(long ssid, long edPanelId) {cycles.deleted(ssid, edPanelId);}
+    public void periodDeleted(long ssid, long edPanelId) {periods.deleted(ssid, edPanelId);}
     public void sectionAssignmentDeleted(long sectionssid, long ssid, long edPanelId) {
         EntitySyncResult result = sectionAssignments.get(sectionssid);
         if(null == result) {
@@ -404,6 +411,9 @@ public class PowerSchoolSyncResult extends BaseSyncResult implements SyncResult 
     }
     public void cycleSourceGetFailed(long parentSsid, long parentEdPanelId) {
         cycles.getSourceGetFailed().put(parentSsid, parentEdPanelId);
+    }
+    public void periodSourceGetFailed(long parentSsid, long parentEdPanelId) {
+        periods.getSourceGetFailed().put(parentSsid, parentEdPanelId);
     }
     public void sectionAssignmentSourceGetFailed(long sectionssid, long parentSsid, long parentEdPanelId) {
         EntitySyncResult result = sectionAssignments.get(sectionssid);

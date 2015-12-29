@@ -39,7 +39,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
     private BiMap<Long, Long> ptSectionIdToPsSectionId;
     private Map<Long, Long> ptStudentIdToPsStudentId;
     private Section createdSection;
-    private Map<Long, Set<Long>> studentClasses;
+    private Map<Long, Set<Section>> studentClasses;
 
     public StudentSectionGradeSync(IPowerSchoolClient powerSchool,
                                    IAPIClient edPanel,
@@ -48,7 +48,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                                    BiMap<Long, Long> ptSectionIdToPsSectionId,
                                    Map<Long, Long> ptStudentIdToPsStudentId,
                                    Section createdSection,
-                                   Map<Long, Set<Long>> studentClasses) {
+                                   Map<Long, Set<Section>> studentClasses) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
         this.school = school;
@@ -115,7 +115,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             if (studentClasses.get(sourceSsg.getStudent().getId()) == null) {
                 studentClasses.put(sourceSsg.getStudent().getId(), Sets.newConcurrentHashSet());
             }
-            studentClasses.get(sourceSsg.getStudent().getId()).add(sourceSsg.getSection().getId());
+            studentClasses.get(sourceSsg.getStudent().getId()).add(sourceSsg.getSection());
 
             if(null == edPanelSsg){
                 ssgsToCreate.add(sourceSsg);

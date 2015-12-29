@@ -58,7 +58,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
     private BiMap<Long, Long> ptSectionIdToPsSectionId;
     private Map<Long, Long> ptStudentIdToPsStudentId;
     private PowerSchoolSyncResult results;
-    private Map<Long, Set<Long>> studentClasses;
+    private Map<Long, Set<Section>> studentClasses;
 
     public SectionSyncRunnable(IPowerSchoolClient powerSchool,
                                IAPIClient edPanel,
@@ -73,7 +73,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                                BiMap<Long, Long> ptSectionIdToPsSectionId,
                                Map<Long, Long> ptStudentIdToPsStudentId,
                                PowerSchoolSyncResult results,
-                               Map<Long, Set<Long>> studentClasses) {
+                               Map<Long, Set<Section>> studentClasses) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
         this.school = school;
@@ -215,6 +215,8 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     = sr.sections.section;
             for (PsSection powerSection : powerSchoolSections) {
                 Section edpanelSection = new Section();
+
+                edpanelSection.setExpression(PsSection.evaluateExpression(powerSection.getExpression()));
                 edpanelSection.setSourceSystemId(powerSection.getId().toString());
                 //Resolve the EdPanel Course and set it on the EdPanel section
                 Course c = this.courses.get(Long.valueOf(powerSection.getCourse_id()));

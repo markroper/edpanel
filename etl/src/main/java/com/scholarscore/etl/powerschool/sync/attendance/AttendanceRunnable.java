@@ -4,6 +4,7 @@ import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
+import com.scholarscore.etl.powerschool.api.model.PsPeriod;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendance;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCode;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
@@ -11,7 +12,9 @@ import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
+import com.scholarscore.models.Cycle;
 import com.scholarscore.models.School;
+import com.scholarscore.models.Section;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.AttendanceTypes;
@@ -22,11 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -42,15 +41,21 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
     protected PowerSchoolSyncResult results;
     protected LocalDate syncCutoff;
     protected Long dailyAbsenseTrigger;
+    protected Map<Long, Cycle> schoolCycles;
+    protected ConcurrentHashMap<Long, Set<Section>> studentClasses;
+    protected ConcurrentHashMap<Long, PsPeriod> periods;
 
     public AttendanceRunnable(IAPIClient edPanel,
-                          IPowerSchoolClient powerSchool,
-                          School s,
-                          Student student,
-                          ConcurrentHashMap<LocalDate, SchoolDay> schoolDays,
-                          PowerSchoolSyncResult results,
-                          LocalDate syncCutoff,
-                          Long dailyAbsenseTrigger) {
+                              IPowerSchoolClient powerSchool,
+                              School s,
+                              Student student,
+                              ConcurrentHashMap<LocalDate, SchoolDay> schoolDays,
+                              PowerSchoolSyncResult results,
+                              LocalDate syncCutoff,
+                              Long dailyAbsenseTrigger,
+                              ConcurrentHashMap<Long, Cycle> schoolCycles,
+                              ConcurrentHashMap<Long, Set<Section>> studentClasses,
+                              ConcurrentHashMap<Long, PsPeriod> periods) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
@@ -59,6 +64,9 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         this.results = results;
         this.syncCutoff = syncCutoff;
         this.dailyAbsenseTrigger = dailyAbsenseTrigger;
+        this.schoolCycles = schoolCycles;
+        this.studentClasses = studentClasses;
+        this.periods = periods;
     }
     @Override
     public void run() {
@@ -165,7 +173,26 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         for(PsResponseInner<PsAttendanceWrapper> wrap : response.record) {
             PsAttendance psAttendance = wrap.tables.attendance;
             Attendance a = psAttendance.toApiModel();
+            SchoolDay schoolDay = schoolDays.get(psAttendance.att_date);
+            //Pass in the map of Ids to this class so we can get teh cycle object
+            Cycle cycleDay = schoolCycles.get(schoolDay.getCycleId());
+            Long periodNumber = periods.get(psAttendance.periodid).period_number;
+            String letter = cycleDay.getLetter();
+            Set<Section> sections =  studentClasses.get(student.getSourceSystemId());
+            for (Section section : sections) {
+                Map<String, ArrayList<Long>> expression = section.getExpression();
+                for (Long sectionPeriod : expression.get(letter)) {
+                    if (sectionPeriod.equals(periodNumber)) {
+                        //THIS IS THE SECTION RESOLVE SECTION_FK TO BE THIS SECTION_ID
+                    }
+                }
+            }
+            //Resolve the period_id in attendance to period_number in PsPeriod
+            //Now we need to search in classes the student has for one where its expression.get(cycle)
+            //contains the period_number we have
+            //Now pass in the classes a student has and well search that for one where the period_id
             a.setSchoolDay(schoolDays.get(psAttendance.att_date));
+            //Get teh cycle now!
             a.setStudent(student);
             a.setStatus(codeMap.get(psAttendance.attendance_codeid));
             if(!schoolDayToAttendances.containsKey(a.getSchoolDay())) {
