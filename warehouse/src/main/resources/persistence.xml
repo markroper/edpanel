@@ -120,6 +120,7 @@
 
     <bean id="behaviorPersistence" class="com.scholarscore.api.persistence.mysql.jdbc.BehaviorJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
+        <property name="studentPersistence" ref="studentPersistence" />
     </bean>
 
     <bean id="schoolYearPersistence"
