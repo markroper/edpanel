@@ -18,6 +18,8 @@ import com.scholarscore.models.attendance.AttendanceTypes;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.gpa.AddedValueGpa;
+import com.scholarscore.models.survey.Survey;
+import com.scholarscore.models.survey.SurveyResponse;
 import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
@@ -148,6 +150,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
         }
         
         //Create terms
+        Map<Long, List<Section>> sections = null;
         Map<Long, List<Term>> terms = SchoolDataFactory.generateTerms(generatedSchoolYears);
         Map<Long, List<Long>> studentToSectionId = new HashMap<Long, List<Long>>();
         Map<Long, List<Long>> studentToAssignmentId = new HashMap<Long, List<Long>>();
@@ -163,7 +166,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
             }
             
             //Create the sections for courses in the school and the terms in the current schoolYear
-            Map<Long, List<Section>> sections = 
+            sections =
                     SchoolDataFactory.generateSections(createdTerms, generatedCourses, generatedStudents, createdTeachers);
 
             for(Map.Entry<Long, List<Section>> sectionEntry : sections.entrySet()) {
@@ -295,6 +298,20 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                         "Creating randomly generated goal"
                 );
             }
+        }
+
+        List<Section> surveySections = sections.entrySet().iterator().next().getValue();
+        Map<Survey, List<SurveyResponse>> surveysAndResponsesToCreate =
+                SchoolDataFactory.generateSurveysAndResponses(generatedStudents, createdTeachers, surveySections, school);
+        for(Map.Entry<Survey, List<SurveyResponse>> surveyListEntry: surveysAndResponsesToCreate.entrySet()) {
+            Survey s = surveyValidatingExecutor.create(surveyListEntry.getKey(), "Creating synthetic survey");
+            for(SurveyResponse sr: surveyListEntry.getValue()) {
+                sr.setSurvey(s);
+                if(sr.isvalid()) {
+                    surveyResponseValidatingExecutor.create(sr, "Create synthetic service response");
+                }
+            }
+
         }
     }
     
