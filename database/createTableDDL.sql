@@ -187,7 +187,7 @@ CREATE TABLE `scholar_warehouse`.`section` (
   `term_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the term table',
   `number_of_terms` INTEGER UNSIGNED NULL COMMENT 'The number of terms that the section spans',
   `section_source_system_id` VARCHAR(256) NULL UNIQUE COMMENT 'The source system from which the entity was imported - the id from that system',
-  `section_expression` BLOB COMMENT 'The section expression showing what period the section is taught'
+  `section_expression` BLOB COMMENT 'The section expression showing what period the section is taught',
   PRIMARY KEY (`section_id`),
   CONSTRAINT `fk_course$section`
     FOREIGN KEY (`course_fk`)
