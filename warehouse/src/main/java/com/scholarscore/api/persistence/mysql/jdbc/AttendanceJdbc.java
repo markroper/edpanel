@@ -94,6 +94,19 @@ public class AttendanceJdbc implements AttendancePersistence {
 
     @SuppressWarnings("unchecked")
     @Override
+    public Collection<Attendance> selectAttendanceForSection(Long schoolId,
+                                                             Long studentId, Long sectionId) {
+        String[] paramNames = new String[] { "schoolId", "studentId", "sectionId"};
+        Object[] paramValues = new Object[]{ schoolId, studentId, sectionId};
+        return (Collection<Attendance>)hibernateTemplate.findByNamedParam(
+                "from attendance a where a.schoolDay.school.id = :schoolId and a.student.id = :studentId" +
+                        "and a.section_id = : sectionId",
+                paramNames,
+                paramValues);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public Collection<Attendance> selectAllAttendanceForTerm(Long schoolId,
             Long studentId, Long yearId, Long termId) {
         String[] paramNames = new String[] { "schoolId", "studentId", "startDate", "endDate" };

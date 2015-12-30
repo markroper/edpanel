@@ -174,36 +174,8 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
             PsAttendance psAttendance = wrap.tables.attendance;
             Attendance a = psAttendance.toApiModel();
             SchoolDay schoolDay = schoolDays.get(psAttendance.att_date);
-            //Pass in the map of Ids to this class so we can get teh cycle object
-            Cycle cycleDay = schoolCycles.get(schoolDay.getCycleId());
-            Long periodNumber = periods.get(psAttendance.periodid).period_number;
-            String letter = cycleDay.getLetter();
-            //Maybe missing some students here?
-            Set<Section> sections =  studentClasses.get(Long.valueOf(student.getSourceSystemId()));
-            //Need to also make sure teh SchoolDay date are within the term dates
-            if (null != sections) {
-                for (Section section : sections) {
-                    Map<String, ArrayList<Long>> expression = section.getExpression();
-                    if (null != expression) {
-                        if (null != expression.get(letter)) {
-                            for (Long sectionPeriod : expression.get(letter)) {
-                                if (sectionPeriod.equals(periodNumber)) {
-                                    //THIS IS THE SECTION RESOLVE SECTION_FK TO BE THIS SECTION_ID
-                                    a.setSectionFk(section.getId());
-                                }
-                            }
-                        }
-
-                    }
-                }
-            }
-
-            //Resolve the period_id in attendance to period_number in PsPeriod
-            //Now we need to search in classes the student has for one where its expression.get(cycle)
-            //contains the period_number we have
-            //Now pass in the classes a student has and well search that for one where the period_id
-            a.setSchoolDay(schoolDays.get(psAttendance.att_date));
-            //Get teh cycle now!
+            a = resolveSectionFk(a, schoolDay, psAttendance);
+            a.setSchoolDay(schoolDay);
             a.setStudent(student);
             a.setStatus(codeMap.get(psAttendance.attendance_codeid));
             if(!schoolDayToAttendances.containsKey(a.getSchoolDay())) {
@@ -277,5 +249,46 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
             }
         }
         return attendanceMap;
+    }
+
+    /**
+     * Using the period_id, cycle_day, school_day and classes the student is enrolled in we generate
+     * the section_fk that the attendance should be associated with.
+     * @param a Attendance object
+     * @param schoolDay The schoolDay the attendance event occurred on
+     * @param psAttendance THe psAttendance Object
+     * @return the attendance object with the section_fk set
+     */
+    protected Attendance resolveSectionFk(Attendance a, SchoolDay schoolDay, PsAttendance psAttendance) {
+        if (null != schoolDay) {
+            Cycle cycleDay = schoolCycles.get(schoolDay.getCycleId());
+            if (null != periods.get(psAttendance.periodid)) {
+                Long periodNumber = periods.get(psAttendance.periodid).period_number;
+                String letter = cycleDay.getLetter();
+                //Maybe missing some students here?
+                Set<Section> sections =  studentClasses.get(Long.valueOf(student.getSourceSystemId()));
+                //Need to also make sure teh SchoolDay date are within the term dates
+                if (null != sections) {
+                    for (Section section : sections) {
+                        Map<String, ArrayList<Long>> expression = section.getExpression();
+                        if (null != expression) {
+                            if (null != expression.get(letter)) {
+                                for (Long sectionPeriod : expression.get(letter)) {
+                                    if (sectionPeriod.equals(periodNumber) &&
+                                            schoolDay.getDate().isAfter(section.getStartDate())
+                                            && schoolDay.getDate().isBefore(section.getEndDate())) {
+                                        //THIS IS THE SECTION RESOLVE SECTION_FK TO BE THIS SECTION_ID
+                                        a.setSectionFk(section.getId());
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+
+        }
+        return a;
     }
 }

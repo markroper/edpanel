@@ -376,6 +376,7 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`school_day` (
     `school_day_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'System generated ID',
     `school_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The school foreign key',
+    `cycle_id` BIGINT UNSIGNED  COMMENT 'The cycle_id that does not exist in Edpanel yet',
     `school_day_date` DATE NULL COMMENT 'The date of the school day',
     `school_day_source_system_id` VARCHAR(256) NULL UNIQUE,
     `school_day_source_system_other_id` BIGINT UNSIGNED NULL,
@@ -390,6 +391,7 @@ CREATE TABLE `scholar_warehouse`.`attendance` (
     `attendance_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'System generated ID',
     `school_day_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the school days table',
     `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the student table',
+    `section_id` BIGINT UNSIGNED NOT NULL COMMENT 'The EdPanel Id of the Section this attendance is associated with',
     `attendance_type` VARCHAR(64) NOT NULL COMMENT 'DAILY, SECTION, other',
     `attendance_status` VARCHAR(64) NOT NULL COMMENT 'Maps to POJO enum values PRESENT, EXCUSED_ABSENT, ABSENT, TARDY',
     `attendance_description` VARCHAR(256) NULL COMMENT 'Description of the attendance status, if any',

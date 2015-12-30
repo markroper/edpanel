@@ -25,6 +25,16 @@ public interface AttendanceManager {
      */
     public ServiceResponse<Collection<Attendance>> getAllStudentAttendanceInTerm(
             long schoolId, long studentId, long schoolYearId, long termId);
+
+    /**
+     * Returns all the attendance entries for a student at a school in a particular section
+     * @param schoolId
+     * @param studentId
+     * @param sectionId
+     * @return
+     */
+    public ServiceResponse<Collection<Attendance>> getAllStudentSectionAttendance(
+            long schoolId, long studentId, long sectionId);
     
     /**
      * Returns a single attendance entry for a student at a school by the attendance ID
