@@ -123,6 +123,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 return new ConcurrentHashMap<>();
             }
         }
+        System.out.println(source.get(128L).toString());
         LOGGER.debug("Resolved sections for school " + school.getName() +
                 " with ID " + school.getId() + " will now CRUD in EdPanel");
         Iterator<Map.Entry<Long, Section>> sourceIterator = source.entrySet().iterator();
@@ -173,16 +174,16 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     studentClasses);
             ssgSync.syncCreateUpdateDelete(results);
 
-//            SectionAssignmentSync assignmentSync = new SectionAssignmentSync(
-//                    powerSchool,
-//                    edPanel,
-//                    school,
-//                    studentAssociator,
-//                    sourceSection
-//            );
-//            LOGGER.debug("Section, including assignments and student section grades created/updated. Section ID: " +
-//                    sourceSection.getId() + ", school ID: " + school.getId());
-//            assignmentSync.syncCreateUpdateDelete(results);
+            SectionAssignmentSync assignmentSync = new SectionAssignmentSync(
+                    powerSchool,
+                    edPanel,
+                    school,
+                    studentAssociator,
+                    sourceSection
+            );
+            LOGGER.debug("Section, including assignments and student section grades created/updated. Section ID: " +
+                    sourceSection.getId() + ", school ID: " + school.getId());
+            assignmentSync.syncCreateUpdateDelete(results);
         }
         LOGGER.info("All sections created and updated in EdPanel for school " + school.getName() +
                 " with ID " + school.getId());

@@ -42,7 +42,7 @@ public class Attendance implements Serializable {
     private Long sourceSystemPeriodId;
     //If an attendance entry is section-level, this value will be non null
     private AttendanceTypes type;
-    private Long sectionFk;
+    private Long sectionId;
     
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name=HibernateConsts.SCHOOL_DAY_FK)
@@ -128,12 +128,12 @@ public class Attendance implements Serializable {
     }
 
     @Column(name = HibernateConsts.SECTION_ID)
-    public Long getSectionFk() {
-        return sectionFk;
+    public Long getSectionId() {
+        return sectionId;
     }
 
-    public void setSectionFk(Long sectionFk) {
-        this.sectionFk = sectionFk;
+    public void setSectionId(Long sectionId) {
+        this.sectionId = sectionId;
     }
 
     @Override
@@ -153,14 +153,14 @@ public class Attendance implements Serializable {
                 && Objects.equals(this.attendanceCode, other.attendanceCode)
                 && Objects.equals(this.sourceSystemPeriodId, other.sourceSystemPeriodId)
                 && Objects.equals(this.type, other.type)
-                && Objects.equals(this.sectionFk, other.sectionFk)
+                && Objects.equals(this.sectionId, other.sectionId)
                 && Objects.equals(this.description, other.description);
     }
     
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(schoolDay, id, sourceSystemId, student,
-                status, description, attendanceCode, sourceSystemPeriodId, type, sectionFk);
+                status, description, attendanceCode, sourceSystemPeriodId, type, sectionId);
     }
     
     @Override
@@ -174,7 +174,7 @@ public class Attendance implements Serializable {
                 ", description='" + description + '\'' +
                 ", sourceSystemPeriodId='" + sourceSystemPeriodId + '\'' +
                 ", type='" + type + '\'' +
-                ", sectionFk='" + sectionFk +'\'' +
+                ", sectionId='" + sectionId +'\'' +
                 ", attendanceCode='" + attendanceCode + '\'' +
                 '}';
     }

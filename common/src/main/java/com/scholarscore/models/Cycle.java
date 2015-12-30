@@ -3,6 +3,8 @@ package com.scholarscore.models;
 import java.io.Serializable;
 
 /**
+ * A Cycle is a day in a rotating schedule for a school, this model is not used in EdPanel yet,
+ * it is only used for the resolution of section_id on attendance
  * Created by cwallace on 12/23/15.
  */
 public class Cycle extends ApiModel implements Serializable, IApiModel<Cycle> {

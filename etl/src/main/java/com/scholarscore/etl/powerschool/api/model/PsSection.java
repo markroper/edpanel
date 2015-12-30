@@ -62,6 +62,12 @@ public class PsSection {
         this.staff_id = staff_id;
     }
 
+    /**
+     * Static factory method for converting powerschool schedule expression into
+     * a map that is workable in EdPanel
+     * @param expression
+     * @return
+     */
     public static Map<String,ArrayList<Long>> evaluateExpression(String expression) {
         //Example expression is this: 2(A-D) 3-4(E) 6(C-D) 7(B)
         //We want to convert that to a map like {A:[2], B:[2,7], C:[2,6], D:[2,6], E:[3,4] }'

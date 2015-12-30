@@ -140,7 +140,7 @@ public class EtlEngine implements IEtlEngine {
         endTime = System.currentTimeMillis();
         LOGGER.info("Period sync complete. " + periods.size() + " school(s) synchronized.");
 
-//        createStaff();
+        createStaff();
         long staffCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
         LOGGER.info("Staff sync complete");
@@ -150,8 +150,8 @@ public class EtlEngine implements IEtlEngine {
         endTime = System.currentTimeMillis();
         LOGGER.info("Student sync complete");
 
-//        List<File> gpaFiles = settings.getGpaImportFiles();
-//        syncGpa(gpaFiles);
+        List<File> gpaFiles = settings.getGpaImportFiles();
+        syncGpa(gpaFiles);
         long gpaFileComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
         LOGGER.info("GPA sync complete");
