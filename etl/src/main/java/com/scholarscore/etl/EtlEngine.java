@@ -44,10 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -208,6 +205,10 @@ public class EtlEngine implements IEtlEngine {
             this.schoolDays.put(
                     schoolSsid,
                     s.syncCreateUpdateDelete(results));
+            Iterator iterator = this.cycles.keySet().iterator();
+            while (iterator.hasNext()) {
+                System.out.println(iterator.next().toString());
+            }
             AttendanceSync a = new AttendanceSync(
                     edPanel,
                     powerSchool,
@@ -216,9 +217,9 @@ public class EtlEngine implements IEtlEngine {
                     this.schoolDays.get(schoolSsid),
                     syncCutoff,
                     dailyAbsenceTrigger,
-                    this.cycles.get(school.getValue().getSourceSystemId()),
+                    this.cycles.get(Long.valueOf(school.getValue().getSourceSystemId())),
                     studentClasses,
-                    this.periods.get(school.getValue().getSourceSystemId()));
+                    this.periods.get(Long.valueOf(school.getValue().getSourceSystemId())));
             a.syncCreateUpdateDelete(results);
         }
     }

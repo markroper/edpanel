@@ -14,18 +14,7 @@ import com.scholarscore.util.EdPanelObjectMapper;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -47,6 +36,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected LocalDate startDate;
     protected LocalDate endDate;
     protected String room;
+
     protected Map<String,ArrayList<Long>> expression;
     //For jackson & for java (hibernate uses different getter to access the string value)
     protected GradeFormula gradeFormula;
@@ -274,6 +264,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.gradeFormula = gradeFormula;
     }
 
+    @Transient
     public Map<String, ArrayList<Long>> getExpression() {
         return expression;
     }
@@ -316,7 +307,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         if(null == term) {
             term = mergeFrom.term;
         }
-        if (null == term) {
+        if (null == expression) {
             expression = mergeFrom.expression;
         }
     }

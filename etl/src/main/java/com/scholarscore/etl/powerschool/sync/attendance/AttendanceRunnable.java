@@ -178,15 +178,26 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
             Cycle cycleDay = schoolCycles.get(schoolDay.getCycleId());
             Long periodNumber = periods.get(psAttendance.periodid).period_number;
             String letter = cycleDay.getLetter();
-            Set<Section> sections =  studentClasses.get(student.getSourceSystemId());
-            for (Section section : sections) {
-                Map<String, ArrayList<Long>> expression = section.getExpression();
-                for (Long sectionPeriod : expression.get(letter)) {
-                    if (sectionPeriod.equals(periodNumber)) {
-                        //THIS IS THE SECTION RESOLVE SECTION_FK TO BE THIS SECTION_ID
+            //Maybe missing some students here?
+            Set<Section> sections =  studentClasses.get(Long.valueOf(student.getSourceSystemId()));
+            //Need to also make sure teh SchoolDay date are within the term dates
+            if (null != sections) {
+                for (Section section : sections) {
+                    Map<String, ArrayList<Long>> expression = section.getExpression();
+                    if (null != expression) {
+                        if (null != expression.get(letter)) {
+                            for (Long sectionPeriod : expression.get(letter)) {
+                                if (sectionPeriod.equals(periodNumber)) {
+                                    //THIS IS THE SECTION RESOLVE SECTION_FK TO BE THIS SECTION_ID
+                                    a.setSectionFk(section.getId());
+                                }
+                            }
+                        }
+
                     }
                 }
             }
+
             //Resolve the period_id in attendance to period_number in PsPeriod
             //Now we need to search in classes the student has for one where its expression.get(cycle)
             //contains the period_number we have
