@@ -13,7 +13,6 @@ public class Cycle extends ApiModel implements Serializable, IApiModel<Cycle> {
     private Long schoolNumber;
     private Long dayNumber;
     private Long yearId;
-    private Long id;
     private String abbreviation;
 
     public String getDayName() {

@@ -109,6 +109,7 @@ public class HibernateConsts {
     public static final String TERM_FK = "term_fk";
     public static final String SECTION_SOURCE_SYSTEM_ID = "section_source_system_id";
     public static final String SECTION_NUMBER_OF_TERMS = "number_of_terms";
+    public static final String SECTION_EXPRESION = "section_expression";
     
     //Student constants
     public static final String STUDENT_TABLE = "student";

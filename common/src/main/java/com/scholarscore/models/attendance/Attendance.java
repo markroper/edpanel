@@ -42,6 +42,7 @@ public class Attendance implements Serializable {
     private Long sourceSystemPeriodId;
     //If an attendance entry is section-level, this value will be non null
     private AttendanceTypes type;
+    private Long sectionFk;
     
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name=HibernateConsts.SCHOOL_DAY_FK)
@@ -126,6 +127,15 @@ public class Attendance implements Serializable {
         this.type = type;
     }
 
+    @Column(name = HibernateConsts.SECTION_FK)
+    public Long getSectionFk() {
+        return sectionFk;
+    }
+
+    public void setSectionFk(Long sectionFk) {
+        this.sectionFk = sectionFk;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -143,13 +153,14 @@ public class Attendance implements Serializable {
                 && Objects.equals(this.attendanceCode, other.attendanceCode)
                 && Objects.equals(this.sourceSystemPeriodId, other.sourceSystemPeriodId)
                 && Objects.equals(this.type, other.type)
+                && Objects.equals(this.sectionFk, other.sectionFk)
                 && Objects.equals(this.description, other.description);
     }
     
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(schoolDay, id, sourceSystemId, student,
-                status, description, attendanceCode, sourceSystemPeriodId, type);
+                status, description, attendanceCode, sourceSystemPeriodId, type, sectionFk);
     }
     
     @Override
@@ -163,6 +174,7 @@ public class Attendance implements Serializable {
                 ", description='" + description + '\'' +
                 ", sourceSystemPeriodId='" + sourceSystemPeriodId + '\'' +
                 ", type='" + type + '\'' +
+                ", sectionFk='" + sectionFk +'\'' +
                 ", attendanceCode='" + attendanceCode + '\'' +
                 '}';
     }
