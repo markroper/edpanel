@@ -361,7 +361,8 @@ public class SchoolDataFactory {
                         t.getEndDate(), 
                         rooms.get(new Random().nextInt(numRooms)),
                         gradeFormulas.get(new Random().nextInt(gradeFormulas.size())),
-                        0);
+                        0,
+                        new HashMap<String, ArrayList<Long>>());
                 section.setCourse(c);
                 section.setTerm(t);
                 section.setName(getRandomSectionName());
