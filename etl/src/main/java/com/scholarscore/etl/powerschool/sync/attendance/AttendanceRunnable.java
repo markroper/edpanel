@@ -278,7 +278,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                                             schoolDay.getDate().isAfter(section.getStartDate())
                                             && schoolDay.getDate().isBefore(section.getEndDate())) {
                                         //THIS IS THE SECTION RESOLVE SECTION_FK TO BE THIS SECTION_ID
-                                        a.setSectionFk(section.getId());
+                                        a.setSectionId(section.getId());
                                     }
                                 }
                             }

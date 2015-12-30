@@ -187,6 +187,7 @@ CREATE TABLE `scholar_warehouse`.`section` (
   `term_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the term table',
   `number_of_terms` INTEGER UNSIGNED NULL COMMENT 'The number of terms that the section spans',
   `section_source_system_id` VARCHAR(256) NULL UNIQUE COMMENT 'The source system from which the entity was imported - the id from that system',
+  `section_expression` BLOB COMMENT 'The section expression showing what period the section is taught'
   PRIMARY KEY (`section_id`),
   CONSTRAINT `fk_course$section`
     FOREIGN KEY (`course_fk`)
@@ -391,7 +392,7 @@ CREATE TABLE `scholar_warehouse`.`attendance` (
     `attendance_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'System generated ID',
     `school_day_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the school days table',
     `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the student table',
-    `section_id` BIGINT UNSIGNED NOT NULL COMMENT 'The EdPanel Id of the Section this attendance is associated with',
+    `section_id` BIGINT UNSIGNED COMMENT 'The EdPanel Id of the Section this attendance is associated with',
     `attendance_type` VARCHAR(64) NOT NULL COMMENT 'DAILY, SECTION, other',
     `attendance_status` VARCHAR(64) NOT NULL COMMENT 'Maps to POJO enum values PRESENT, EXCUSED_ABSENT, ABSENT, TARDY',
     `attendance_description` VARCHAR(256) NULL COMMENT 'Description of the attendance status, if any',
