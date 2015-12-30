@@ -123,7 +123,6 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 return new ConcurrentHashMap<>();
             }
         }
-        System.out.println(source.get(128L).toString());
         LOGGER.debug("Resolved sections for school " + school.getName() +
                 " with ID " + school.getId() + " will now CRUD in EdPanel");
         Iterator<Map.Entry<Long, Section>> sourceIterator = source.entrySet().iterator();
