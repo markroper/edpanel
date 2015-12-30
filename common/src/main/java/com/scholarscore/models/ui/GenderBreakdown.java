@@ -34,8 +34,8 @@ public class GenderBreakdown extends Breakdown{
 
     public void addFailingGrade(Student student) {
         String studentGender = student.getGender().toString();
-        countFailing(student,studentGender, Gender.MALE.toString(), maleStudentsFailing, null);
-        countFailing(student,studentGender, Gender.FEMALE.toString(), femaleStudentsFailing, null);
+        countFailing(student,studentGender, Gender.MALE.toString(), maleStudentsFailing);
+        countFailing(student,studentGender, Gender.FEMALE.toString(), femaleStudentsFailing);
 
     }
 
