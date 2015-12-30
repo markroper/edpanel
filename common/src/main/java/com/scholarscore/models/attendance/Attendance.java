@@ -127,7 +127,7 @@ public class Attendance implements Serializable {
         this.type = type;
     }
 
-    @Column(name = HibernateConsts.SECTION_FK)
+    @Column(name = HibernateConsts.SECTION_ID)
     public Long getSectionFk() {
         return sectionFk;
     }

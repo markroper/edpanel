@@ -36,6 +36,21 @@ public class AttendanceManagerImpl implements AttendanceManager {
     }
 
     @Override
+    public ServiceResponse<Collection<Attendance>> getAllStudentSectionAttendance(
+            long schoolId, long studentId, long sectionId) {
+        StatusCode code = pm.getSchoolManager().schoolExists(schoolId);
+        if (!code.isOK()) {
+            return new ServiceResponse<Collection<Attendance>>(code);
+        }
+        code = pm.getStudentManager().studentExists(studentId);
+        if (!code.isOK()) {
+            return new ServiceResponse<Collection<Attendance>>(code);
+        }
+        Collection<Attendance> attendance = attendancePersistence.selectAttendanceForSection(schoolId, studentId, sectionId);
+        return new ServiceResponse<Collection<Attendance>>(attendance);
+    }
+
+    @Override
     public ServiceResponse<Collection<Attendance>> getAllStudentAttendanceInTerm(
             long schoolId, long studentId, long schoolYearId, long termId) {
         StatusCode code = pm.getSchoolManager().schoolExists(schoolId);
