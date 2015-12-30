@@ -264,6 +264,26 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         this.gradeFormula = gradeFormula;
     }
 
+
+    @JsonIgnore
+    @Column(name = HibernateConsts.SECTION_EXPRESION, columnDefinition="blob")
+    public String getExpressionString() {
+        try {
+            return EdPanelObjectMapper.MAPPER.writeValueAsString(expression);
+        } catch (JsonProcessingException | NullPointerException e) {
+            return null;
+        }
+    }
+    @JsonIgnore
+    public void setExpressionString(String gradesString) {
+        try {
+            this.expression = EdPanelObjectMapper.MAPPER.readValue(
+                    gradesString, new TypeReference<HashMap<String, ArrayList<Long>>>(){});
+        } catch (IOException | NullPointerException e) {
+            this.expression = null;
+        }
+    }
+
     @Transient
     public Map<String, ArrayList<Long>> getExpression() {
         return expression;
@@ -271,6 +291,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
 
     public void setExpression(Map<String, ArrayList<Long>> expression) {
         this.expression = expression;
+
     }
 
     @Override
