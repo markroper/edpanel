@@ -37,6 +37,11 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected LocalDate endDate;
     protected String room;
 
+    /**
+     * This is a schedule expression. It represents what period(s) this Section is taught on on a particular
+     * cycle letter. The key is the Cycle Letter and the value is an Array List of Longs for each period_number
+     * that the section is taught on that particular day.
+     */
     protected Map<String,ArrayList<Long>> expression;
     //For jackson & for java (hibernate uses different getter to access the string value)
     protected GradeFormula gradeFormula;
