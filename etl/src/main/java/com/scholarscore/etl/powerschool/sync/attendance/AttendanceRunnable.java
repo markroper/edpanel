@@ -9,10 +9,10 @@ import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendance;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCode;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper;
+import com.scholarscore.etl.powerschool.api.model.cycles.PsCycle;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.models.Cycle;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.attendance.Attendance;
@@ -41,7 +41,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
     protected PowerSchoolSyncResult results;
     protected LocalDate syncCutoff;
     protected Long dailyAbsenseTrigger;
-    protected Map<Long, Cycle> schoolCycles;
+    protected Map<Long, PsCycle> schoolCycles;
     protected ConcurrentHashMap<Long, Set<Section>> studentClasses;
     protected ConcurrentHashMap<Long, PsPeriod> periods;
 
@@ -53,7 +53,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                               PowerSchoolSyncResult results,
                               LocalDate syncCutoff,
                               Long dailyAbsenseTrigger,
-                              ConcurrentHashMap<Long, Cycle> schoolCycles,
+                              ConcurrentHashMap<Long, PsCycle> schoolCycles,
                               ConcurrentHashMap<Long, Set<Section>> studentClasses,
                               ConcurrentHashMap<Long, PsPeriod> periods) {
         this.edPanel = edPanel;
@@ -261,10 +261,10 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
      */
     protected Attendance resolveSectionFk(Attendance a, SchoolDay schoolDay, PsAttendance psAttendance) {
         if (null != schoolDay) {
-            Cycle cycleDay = schoolCycles.get(schoolDay.getCycleId());
+            PsCycle cycleDay = schoolCycles.get(schoolDay.getCycleId());
             if (null != periods.get(psAttendance.periodid)) {
                 Long periodNumber = periods.get(psAttendance.periodid).period_number;
-                String letter = cycleDay.getLetter();
+                String letter = cycleDay.letter;
                 //Maybe missing some students here?
                 Set<Section> sections =  studentClasses.get(student.getId());
                 //Need to also make sure teh SchoolDay date are within the term dates
