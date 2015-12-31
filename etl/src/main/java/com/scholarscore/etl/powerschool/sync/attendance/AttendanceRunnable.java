@@ -266,7 +266,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                 Long periodNumber = periods.get(psAttendance.periodid).period_number;
                 String letter = cycleDay.getLetter();
                 //Maybe missing some students here?
-                Set<Section> sections =  studentClasses.get(Long.valueOf(student.getSourceSystemId()));
+                Set<Section> sections =  studentClasses.get(student.getId());
                 //Need to also make sure teh SchoolDay date are within the term dates
                 if (null != sections) {
                     for (Section section : sections) {

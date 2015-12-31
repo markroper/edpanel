@@ -100,7 +100,7 @@ public class AttendanceJdbc implements AttendancePersistence {
         Object[] paramValues = new Object[]{ schoolId, studentId, sectionId};
         return (Collection<Attendance>)hibernateTemplate.findByNamedParam(
                 "from attendance a where a.schoolDay.school.id = :schoolId and a.student.id = :studentId" +
-                        "and a.section_id = : sectionId",
+                        "and a.section.id = : sectionId",
                 paramNames,
                 paramValues);
     }
