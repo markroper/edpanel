@@ -205,10 +205,6 @@ public class EtlEngine implements IEtlEngine {
             this.schoolDays.put(
                     schoolSsid,
                     s.syncCreateUpdateDelete(results));
-            Iterator iterator = this.cycles.keySet().iterator();
-            while (iterator.hasNext()) {
-                System.out.println(iterator.next().toString());
-            }
             AttendanceSync a = new AttendanceSync(
                     edPanel,
                     powerSchool,
