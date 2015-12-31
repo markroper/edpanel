@@ -8,6 +8,7 @@ import com.scholarscore.etl.powerschool.CycleSync;
 import com.scholarscore.etl.powerschool.api.model.PsPeriod;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCategory;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCategoryWrapper;
+import com.scholarscore.etl.powerschool.api.model.cycles.PsCycle;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetup;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMap;
@@ -80,7 +81,7 @@ public class EtlEngine implements IEtlEngine {
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Term>> terms;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Section>> sections;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Course>> courses = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Long, ConcurrentHashMap<Long, Cycle>> cycles = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Long, ConcurrentHashMap<Long, PsCycle>> cycles = new ConcurrentHashMap<>();
     //TODO Make this a first calss model in EdPanel
     private ConcurrentHashMap<Long, ConcurrentHashMap<Long, PsPeriod>> periods = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Long, Set<Section>> studentClasses = new ConcurrentHashMap<>();
@@ -130,11 +131,13 @@ public class EtlEngine implements IEtlEngine {
         endTime = System.currentTimeMillis();
         LOGGER.info("Term and year sync complete");
 
+        //Not used in EdPanel, but needed to resolve section_fk on attendance
         createCycles();
         long cycleCreationTime = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
         LOGGER.info("Cycle sync complete. " + cycles.size() + " school(s) synchronized.");
 
+        //Not used in EdPanel, but needed to resolve section_fk on attendance
         createPeriods();
         long periodCreationTime = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();

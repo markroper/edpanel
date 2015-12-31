@@ -5,9 +5,9 @@ import com.scholarscore.etl.EtlEngine;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsPeriod;
+import com.scholarscore.etl.powerschool.api.model.cycles.PsCycle;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
-import com.scholarscore.models.Cycle;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.attendance.Attendance;
@@ -37,7 +37,7 @@ public class AttendanceSync implements ISync<Attendance> {
     protected ConcurrentHashMap<LocalDate, SchoolDay> schoolDays;
     protected LocalDate syncCutoff;
     protected Long dailyAbsenseTrigger;
-    protected ConcurrentHashMap<Long, Cycle> schoolCycles;
+    protected ConcurrentHashMap<Long, PsCycle> schoolCycles;
     protected ConcurrentHashMap<Long, Set<Section>> studentClasses;
     ConcurrentHashMap<Long, PsPeriod> periods;
     public AttendanceSync(IAPIClient edPanel,
@@ -47,7 +47,7 @@ public class AttendanceSync implements ISync<Attendance> {
                           ConcurrentHashMap<LocalDate, SchoolDay> schoolDays,
                           LocalDate syncCutoff,
                           Long dailyAbsenseTrigger,
-                          ConcurrentHashMap<Long,Cycle> schoolCycles,
+                          ConcurrentHashMap<Long,PsCycle> schoolCycles,
                           ConcurrentHashMap<Long, Set<Section>> studentClasses,
                           ConcurrentHashMap<Long, PsPeriod> periods) {
         this.edPanel = edPanel;
