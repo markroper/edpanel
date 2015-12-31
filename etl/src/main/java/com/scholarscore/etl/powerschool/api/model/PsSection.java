@@ -72,7 +72,8 @@ public class PsSection {
         //Example expression is this: 2(A-D) 3-4(E) 6(C-D) 7(B)
         //We want to convert that to a map like {A:[2], B:[2,7], C:[2,6], D:[2,6], E:[3,4] }'
         Map<String, ArrayList<Long>> cyclePeriods = new HashMap<>();
-        for (String periodExpression : expression.split(" ")) {
+        for (String periodExpression : expression.split("\\)")) {
+            periodExpression = periodExpression.replace(" ", "");
             String period = periodExpression.split("\\(")[0];
             ArrayList<Long> periodIds = new ArrayList<>();
             String cycleDays = periodExpression.split("\\(")[1];
@@ -104,8 +105,6 @@ public class PsSection {
                 //Our period is finished (muy bueno), we just need that value
                 periodIds.add(Long.valueOf(period));
             }
-            //For cleanliness remove the otehr expression
-            cycleDays = cycleDays.replace(")", "");
 
             if (cycleDays.indexOf(',') >= 0) {
                 //Add both of these to the map, or if they exist add the periods to the array
