@@ -38,6 +38,12 @@ public class EtlExecutable {
         loadSpringConfigAndLaunchETL(settings);
     }
 
+    /**
+     *
+     * @param args
+     * @return
+     * @throws ParseException
+     */
     private static EtlSettings parseSettings(String[] args) throws ParseException {
 
         Options options = new Options();
