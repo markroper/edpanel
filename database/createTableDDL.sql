@@ -407,7 +407,7 @@ CREATE TABLE `scholar_warehouse`.`attendance` (
         ON DELETE CASCADE
         ON UPDATE CASCADE,
     FOREIGN KEY (`section_fk`) REFERENCES `scholar_warehouse`.`section`(`section_id`)
-      ON DELETE CASCADEE
+      ON DELETE CASCADE
       ON UPDATE CASCADE
 )
 ENGINE = InnoDB;
