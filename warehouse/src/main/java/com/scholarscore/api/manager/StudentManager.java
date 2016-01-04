@@ -42,5 +42,5 @@ public interface StudentManager {
 
     public ServiceResponse<List<ScoreAsOfWeek>> getStudentHomeworkRates(Long studentId, LocalDate startDate, LocalDate endDate);
 
-    public ServiceResponse<List<ScoreAsOfWeek>> getStudentHomeworkRatesPerSection(Long studentId, Long schoolId, Long yearId, Long termId, Long sectionId);
+    public ServiceResponse<List<ScoreAsOfWeek>> getStudentHomeworkRatesPerSection(Long studentId,  Long sectionId);
 }

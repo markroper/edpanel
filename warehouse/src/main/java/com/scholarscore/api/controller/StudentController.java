@@ -222,17 +222,11 @@ public class StudentController extends BaseController {
     public @ResponseBody ResponseEntity getStudentHwCompletionRatesBySection(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
-            @ApiParam(name = "schoolId", required = true, value = "School ID")
-            @PathVariable(value="schoolId") Long schoolId,
-            @ApiParam(name = "yearId", required = true, value = "Year ID")
-            @PathVariable(value="yearId") Long yearId,
-            @ApiParam(name = "termId", required = true, value = "Term ID")
-            @PathVariable(value="termId") Long termId,
             @ApiParam(name = "sectionId", required = true, value = "Section ID")
             @PathVariable(value="sectionId") Long sectionId
     ) {
         return respond(pm.getStudentManager().getStudentHomeworkRatesPerSection(
-                studentId, schoolId, yearId, termId, sectionId));
+                studentId,sectionId));
     }
 
     private String testThis() { return "this"; }
