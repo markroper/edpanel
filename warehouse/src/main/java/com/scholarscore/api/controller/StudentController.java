@@ -210,6 +210,31 @@ public class StudentController extends BaseController {
         return respond(pm.getStudentManager().getStudentHomeworkRates(studentId, startDate, endDate));
     }
 
+    @ApiOperation(
+            value = "Get one student's weekly HW completion percentage for a particular section",
+            notes = "Bucketed by week, Sunday - Saturday",
+            response = List.class)
+    @RequestMapping(
+            value = "/{studentId}/homeworkrates/school/{schoolId}/year/{yearId}/term/{termId}/section/{sectionId}",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getStudentHwCompletionRatesBySection(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "yearId", required = true, value = "Year ID")
+            @PathVariable(value="yearId") Long yearId,
+            @ApiParam(name = "termId", required = true, value = "Term ID")
+            @PathVariable(value="termId") Long termId,
+            @ApiParam(name = "sectionId", required = true, value = "Section ID")
+            @PathVariable(value="sectionId") Long sectionId
+    ) {
+        return respond(pm.getStudentManager().getStudentHomeworkRatesPerSection(
+                studentId, schoolId, yearId, termId, sectionId));
+    }
+
     private String testThis() { return "this"; }
     
     @ApiOperation(

@@ -275,9 +275,12 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                             if (null != expression.get(letter)) {
                                 for (Long sectionPeriod : expression.get(letter)) {
                                     if (sectionPeriod.equals(periodNumber) &&
-                                            schoolDay.getDate().isAfter(section.getStartDate())
-                                            && schoolDay.getDate().isBefore(section.getEndDate())) {
+                                            (schoolDay.getDate().isAfter(section.getStartDate())
+                                                    || schoolDay.getDate().equals(section.getStartDate()))
+                                            && (schoolDay.getDate().isBefore(section.getEndDate()))
+                                                    || schoolDay.getDate().equals(section.getEndDate())){
                                         a.setSection(section);
+
                                     }
                                 }
                             }
