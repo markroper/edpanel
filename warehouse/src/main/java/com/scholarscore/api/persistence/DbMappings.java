@@ -46,6 +46,7 @@ public class DbMappings {
                put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.STATUS_DESCRIPTION), HibernateConsts.ATTENDANCE_DESCRIPTION);
                put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
                put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.TYPE), HibernateConsts.ATTENDANCE_TYPE);
+               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.SECTION_FK), HibernateConsts.SECTION_FK);
                put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.ID), HibernateConsts.ATTENDANCE_ID);
                put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.DATE), HibernateConsts.SCHOOL_DAY_DATE);
                put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.SCHOOL_FK), HibernateConsts.SCHOOL_FK);
@@ -53,6 +54,7 @@ public class DbMappings {
                put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.STATUS_DESCRIPTION), HibernateConsts.ATTENDANCE_DESCRIPTION);
                put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
                put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.TYPE), HibernateConsts.ATTENDANCE_TYPE);
+               put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.SECTION_FK), HibernateConsts.SECTION_FK);
                put(new MeasureField(Measure.TARDY, AttendanceMeasure.ID), HibernateConsts.ATTENDANCE_ID);
                put(new MeasureField(Measure.TARDY, AttendanceMeasure.DATE), HibernateConsts.SCHOOL_DAY_DATE);
                put(new MeasureField(Measure.TARDY, AttendanceMeasure.SCHOOL_FK), HibernateConsts.SCHOOL_FK);
@@ -60,6 +62,7 @@ public class DbMappings {
                put(new MeasureField(Measure.TARDY, AttendanceMeasure.STATUS_DESCRIPTION), HibernateConsts.ATTENDANCE_DESCRIPTION);
                put(new MeasureField(Measure.TARDY, AttendanceMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
                put(new MeasureField(Measure.TARDY, AttendanceMeasure.TYPE), HibernateConsts.ATTENDANCE_TYPE);
+               put(new MeasureField(Measure.TARDY, AttendanceMeasure.SECTION_FK), HibernateConsts.SECTION_FK);
                put(new MeasureField(Measure.GPA, GpaMeasure.DATE), HibernateConsts.GPA_CALCULATION_DATE);
                put(new MeasureField(Measure.GPA, GpaMeasure.STUDENT), HibernateConsts.STUDENT_FK);
                put(new MeasureField(Measure.GPA, GpaMeasure.TYPE), HibernateConsts.GPA_TYPE);
