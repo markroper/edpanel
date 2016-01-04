@@ -34,14 +34,11 @@ public interface StudentAssignmentManager {
     /**
      * Return all student assignments for a single student in a single section
      * @param studentId
-     * @param schoolId
-     * @param yearId
-     * @param termId
      * @param sectionId
      * @return
      */
     public ServiceResponse<Collection<StudentAssignment>> getOneSectionOneStudentsAssignments(
-            long studentId, long schoolId, long yearId, long termId, long sectionId);
+            long studentId,  long sectionId);
     
     /**
      * Returns ErrorCodes.OK if a student assignment exists and otherwise returns a descriptive error code

@@ -131,10 +131,10 @@ public class StudentManagerImpl implements StudentManager {
         return new ServiceResponse<>(studentPrepScorePersistence.selectStudentPrepScore(studentIds, startDate, endDate));
     }
 
-    public ServiceResponse<List<ScoreAsOfWeek>> getStudentHomeworkRatesPerSection(Long studentId, Long schoolId, Long yearId, Long termId, Long sectionId) {
+    public ServiceResponse<List<ScoreAsOfWeek>> getStudentHomeworkRatesPerSection(Long studentId,  Long sectionId) {
         ServiceResponse<Collection<StudentAssignment>> studAssResp =
                 pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(
-                studentId, schoolId, yearId, termId, sectionId);
+                studentId, sectionId);
         return determineWeeklyScore(studAssResp);
 
     }
