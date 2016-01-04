@@ -14,11 +14,13 @@ public class AttendanceMeasure implements IMeasure {
         add(Measure.TARDY);
         add(Measure.ABSENCE);
     }});
-    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SCHOOL);
+    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SCHOOL,
+            Dimension.SECTION);
     
     public static final String ID = "ID";
     public static final String STUDENT_FK = "Student";
     public static final String SCHOOL_FK = "School";
+    public static final String SECTION_FK = "Section";
     public static final String DATE = "Date";
     public static final String STATUS = "Status";
     public static final String TYPE = "Type";

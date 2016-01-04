@@ -14,7 +14,8 @@ import java.util.Set;
 public class DailyAbsenceMeasure implements IMeasure {
     final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(
             new HashSet<Measure>(){{ add(Measure.ATTENDANCE); add(Measure.TARDY); }});
-    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SCHOOL);
+    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SCHOOL,
+            Dimension.SECTION);
     public static final String DATE = "Date";
     public static final String TYPE = "Type";
     private static final Set<String> fields =
