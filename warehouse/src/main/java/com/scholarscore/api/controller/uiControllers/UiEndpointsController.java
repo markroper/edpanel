@@ -97,7 +97,7 @@ public class UiEndpointsController extends BaseController {
                     sectionDashData.setGradeGoal(fullCumulativeGradeGoalByBuilder);
                 }
                 ServiceResponse<Collection<StudentAssignment>> studAssesResp = pm.getStudentAssignmentManager().
-                        getOneSectionOneStudentsAssignments(studentId, schoolId, schoolYearId, termId, s.getId());
+                        getOneSectionOneStudentsAssignments(studentId,  s.getId());
                 if(null == studAssesResp.getCode()) {
                     sectionDashData.setStudentAssignments(new ArrayList<>(studAssesResp.getValue()));
                 }

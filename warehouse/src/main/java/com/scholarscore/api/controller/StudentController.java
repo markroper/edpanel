@@ -167,7 +167,7 @@ public class StudentController extends BaseController {
             @PathVariable(value="tId") Long tId,
             @ApiParam(name = "sId", required = true, value = "Section ID")
             @PathVariable(value="sId") Long sId) {
-        return respond(pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, schoolId, yrId, tId, sId));
+        return respond(pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, sId));
     }
 
     @ApiOperation(
@@ -215,7 +215,7 @@ public class StudentController extends BaseController {
             notes = "Bucketed by week, Sunday - Saturday",
             response = List.class)
     @RequestMapping(
-            value = "/{studentId}/homeworkrates/school/{schoolId}/year/{yearId}/term/{termId}/section/{sectionId}",
+            value = "/{studentId}/homeworkrates/sections/{sectionId}",
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
