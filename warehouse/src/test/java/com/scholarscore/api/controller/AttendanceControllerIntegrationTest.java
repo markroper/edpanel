@@ -1,9 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.School;
-import com.scholarscore.models.SchoolYear;
-import com.scholarscore.models.Term;
+import com.scholarscore.models.*;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.AttendanceTypes;
@@ -29,6 +27,8 @@ public class AttendanceControllerIntegrationTest extends IntegrationBase {
     private Term term;
     private Student student;
     private List<SchoolDay> days;
+    private Course course;
+    private Section section;
     private int numAttendanceCreated = 0;
     
     @SuppressWarnings("deprecation")
@@ -56,7 +56,16 @@ public class AttendanceControllerIntegrationTest extends IntegrationBase {
         term.setStartDate(schoolYear.getStartDate());
         term.setEndDate(schoolYear.getEndDate());
         term = termValidatingExecutor.create(school.getId(), schoolYear.getId(), term, "Creating a term...");
-        
+
+        course = new Course();
+        course.setName(localeServiceUtil.generateName());
+        course = courseValidatingExecutor.create(school.getId(), course, "create base course");
+
+        section = new Section();
+        section.setTerm(term);
+        section.setCourse(course);
+        section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create base section");
+
         school = schoolValidatingExecutor.get(school.getId(), "caching school");
         
         //Make some school days
@@ -75,17 +84,31 @@ public class AttendanceControllerIntegrationTest extends IntegrationBase {
     public Object[][] createAttendanceProvider() {
         List<AttendanceStatus> statusValues =
                 Collections.unmodifiableList(Arrays.asList(AttendanceStatus.values()));
-        Object[][] cases = new Object[days.size()][2];
-        for(int i = 0; i < days.size(); i++) {
-            cases[i][0] = "case " + i;
-            Attendance a = new Attendance();
-            a.setDescription("some desc");
-            a.setSchoolDay(days.get(i));
-            a.setStudent(student);
-            a.setType(AttendanceTypes.DAILY);
-            a.setStatus(statusValues.get(new Random().nextInt(statusValues.size())));
-            cases[i][1] = a;
+        Object[][] cases = new Object[days.size()*2][2];
+        for(int i = 0; i < days.size() * 2; i++) {
+            if (i < days.size()) {
+                cases[i][0] = "case " + i;
+                Attendance a = new Attendance();
+                a.setDescription("some desc");
+                a.setSchoolDay(days.get(i));
+                a.setStudent(student);
+                a.setType(AttendanceTypes.DAILY);
+                a.setStatus(statusValues.get(new Random().nextInt(statusValues.size())));
+                cases[i][1] = a;
+            } else {
+                cases[i][0] = " section case " + i;
+                Attendance a = new Attendance();
+                a.setDescription("some section desc");
+                a.setSchoolDay(days.get(i - days.size()));
+                a.setStudent(student);
+                a.setType(AttendanceTypes.SECTION);
+                a.setSection(section);
+                a.setStatus(statusValues.get(new Random().nextInt(statusValues.size())));
+                cases[i][1] = a;
+            }
+
         }
+
         return cases;
     }
     
@@ -103,6 +126,11 @@ public class AttendanceControllerIntegrationTest extends IntegrationBase {
     @Test(dependsOnMethods = { "createAttendance" })
     public void getAllForStudentAllTime() {
         attendanceValidatingExecutor.getAll(school.getId(), student.getId(), numAttendanceCreated, "Get all in year");
+    }
+
+    @Test(dependsOnMethods = { "createAttendance" })
+    public void getAllForStudentSection() {
+        attendanceValidatingExecutor.getAllInSection(school.getId(), student.getId(), section.getId(), numAttendanceCreated/2, "Get all in section");
     }
     
     @Test(dataProvider = "createAttendanceProvider")
