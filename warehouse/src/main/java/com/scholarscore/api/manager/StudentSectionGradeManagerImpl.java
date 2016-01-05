@@ -104,7 +104,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         if((null == complete || complete.equals(Boolean.FALSE)) && null == grade.getGrade()) {
             Section sect = grade.getSection();
             ServiceResponse<Collection<StudentAssignment>> assignmentResp =
-                    pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, schoolId, yearId, termId, sectionId);
+                    pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, sectionId);
             Term term = sect.getTerm();
             if(null == assignmentResp.getCode() || assignmentResp.getCode().isOK()) {
                 //TODO: this applies a single formula to all assignments, instead we need to break it up by term
@@ -151,7 +151,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
 
         List<ScoreAsOfWeek> grades = new ArrayList<>();
         ServiceResponse<Collection<StudentAssignment>> assignmentResp =
-                pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, schoolId, yearId, termId, sectionId);
+                pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, sectionId);
         Term term = section.getTerm();
         if(null == assignmentResp.getCode() || assignmentResp.getCode().isOK()) {
             GradeFormula formula = section.getGradeFormula();
