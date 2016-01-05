@@ -9,12 +9,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by markroper on 11/29/15.
+ * Created by cwallace on 1/5/16.
  */
-public class DailyAbsenceMeasure implements IMeasure {
+public class SectionTardyMeasure implements IMeasure {
     final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(
-            new HashSet<Measure>(){{ add(Measure.ATTENDANCE); add(Measure.TARDY); }});
-    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SCHOOL);
+            new HashSet<Measure>(){{ add(Measure.ATTENDANCE); add(Measure.SECTION_ABSENCE); }});
+    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SCHOOL,
+            Dimension.SECTION);
     public static final String DATE = "Date";
     public static final String TYPE = "Type";
     private static final Set<String> fields =
@@ -33,12 +34,12 @@ public class DailyAbsenceMeasure implements IMeasure {
 
     @Override
     public Measure getMeasure() {
-        return Measure.ABSENCE;
+        return Measure.SECTION_TARDY;
     }
 
     @Override
     public String getName() {
-        return "Absense Count";
+        return "Section Tardy Count";
     }
 
     @Override
