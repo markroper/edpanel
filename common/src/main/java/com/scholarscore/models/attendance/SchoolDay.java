@@ -7,15 +7,7 @@ import com.scholarscore.models.School;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -83,7 +75,9 @@ public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
         this.sourceSystemOtherId = sourceSystemOtherId;
     }
 
-    @Column(name = HibernateConsts.SCHOOL_DAY_CYCLE_ID)
+    //We need this to associate schoolIds with the Cycle day they occured on, but we dont have the notion of
+    //This in EdPanel so we don't need to persist it yet
+    @Transient
     public Long getCycleId() {
         return cycleId;
     }
