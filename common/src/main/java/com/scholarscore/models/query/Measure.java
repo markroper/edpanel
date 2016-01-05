@@ -1,17 +1,6 @@
 package com.scholarscore.models.query;
 
-import com.scholarscore.models.query.measure.AssignmentGradeMeasure;
-import com.scholarscore.models.query.measure.AttendanceMeasure;
-import com.scholarscore.models.query.measure.CourseGradeMeasure;
-import com.scholarscore.models.query.measure.DailyAbsenceMeasure;
-import com.scholarscore.models.query.measure.DailyTardyMeasure;
-import com.scholarscore.models.query.measure.DemeritMeasure;
-import com.scholarscore.models.query.measure.DetentionMeasure;
-import com.scholarscore.models.query.measure.GpaMeasure;
-import com.scholarscore.models.query.measure.HomeworkCompletionMeasure;
-import com.scholarscore.models.query.measure.IMeasure;
-import com.scholarscore.models.query.measure.MeritMeasure;
-import com.scholarscore.models.query.measure.SuspensionMeasure;
+import com.scholarscore.models.query.measure.*;
 
 /**
  * Enumerates the supported measures, or scalar values, supported within the 
@@ -32,6 +21,10 @@ import com.scholarscore.models.query.measure.SuspensionMeasure;
  *
  */
 public enum Measure {
+    //Section Attendance
+    SECTION_ABSENCE,
+    SECTION_TARDY,
+    //Daily Attendance
     ATTENDANCE,
     ABSENCE,
     TARDY,
@@ -76,6 +69,8 @@ public enum Measure {
                 return new DailyAbsenceMeasure();
             case TARDY:
                 return new DailyTardyMeasure();
+            case SECTION_ABSENCE:
+                return new SectionAbsenceMeasure();
             default:
                 return null;   
         }
