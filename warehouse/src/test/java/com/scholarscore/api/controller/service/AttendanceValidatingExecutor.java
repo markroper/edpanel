@@ -29,6 +29,17 @@ public class AttendanceValidatingExecutor {
         Assert.assertEquals(days.size(), numItems, "Unexpected number of results returned for case: " + msg);
         return days;
     }
+
+    public List<Attendance> getAllInSection(Long schoolId, Long studentId, Long sectionId, int numItems, String msg) {
+        ResultActions response = serviceBase.makeRequest(
+                HttpMethod.GET,
+                serviceBase.getAttendanceEndpoint(schoolId, studentId) + "/sections/" + sectionId,
+                null);
+        AttendanceList days = serviceBase.validateResponse(response, new TypeReference<AttendanceList>(){});
+        Assert.assertNotNull(days, "Unexpected null list of days returned for case: " + msg);
+        Assert.assertEquals(days.size(), numItems, "Unexpected number of results returned for case: " + msg);
+        return days;
+    }
     
     public List<Attendance> getAll(Long schoolId, Long studentId, int numItems, String msg) {
         ResultActions response = serviceBase.makeRequest(
