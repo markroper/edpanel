@@ -71,6 +71,8 @@ public enum Measure {
                 return new DailyTardyMeasure();
             case SECTION_ABSENCE:
                 return new SectionAbsenceMeasure();
+            case SECTION_TARDY:
+                return new SectionTardyMeasure();
             default:
                 return null;   
         }

@@ -13,6 +13,8 @@ public class MeasureSqlSerializerFactory {
                 return new HomeworkCompletionSqlSerializer();
             case SECTION_ABSENCE:
                 return new SectionAbsenceSqlSerializer();
+            case SECTION_TARDY:
+                return new SectionTardySqlSerializer();
             case ATTENDANCE:
                 return new AttendanceSqlSerializer();
             case ABSENCE:
