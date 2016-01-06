@@ -14,7 +14,6 @@ import java.util.Map;
 public class RaceBreakdown extends Breakdown {
     private static final String WHITE = "W";
     private static final String BLACK = "B";
-    private static final String HISPANIC = "I";
     private static final String INDIAN = "I";
     private static final String PACIFIC = "P";
     private static final String ASIAN = "A";
@@ -23,14 +22,12 @@ public class RaceBreakdown extends Breakdown {
     private HashSet<Student> totalBlack = new HashSet<>();
     private HashSet<Student> totalAsian = new HashSet<>();
     private HashSet<Student> totalIndian = new HashSet<>();
-    private HashSet<Student> totalHispanic = new HashSet<>();
     private HashSet<Student> totalPacific = new HashSet<>();
 
     Map<Student, Integer> whiteStudentsFailing = new HashMap<>();
     Map<Student, Integer> blackStudentsFailing = new HashMap<>();
     Map<Student, Integer> asianStudentsFailing = new HashMap<>();
     Map<Student, Integer> indianStudentsFailing = new HashMap<>();
-    Map<Student, Integer> hispanicStudentsFailing = new HashMap<>();
     Map<Student, Integer> pacificStudentsFailing = new HashMap<>();
 
     public void addToTotal(Student student) {
@@ -48,12 +45,7 @@ public class RaceBreakdown extends Breakdown {
                     totalAsian.add(student);
                     break;
                 case INDIAN:
-                    if (student.getFederalEthnicity().equals("YES")) {
-                        totalHispanic.add(student);
-                    } else {
                         totalIndian.add(student);
-                    }
-
                     break;
                 case PACIFIC:
                     totalPacific.add(student);
@@ -65,12 +57,11 @@ public class RaceBreakdown extends Breakdown {
 
     public void addFailingGrade(Student student) {
         String studentRace = student.getFederalRace();
-        countFailing(student,studentRace, WHITE, whiteStudentsFailing, null);
-        countFailing(student,studentRace, BLACK, blackStudentsFailing, null);
-        countFailing(student,studentRace, ASIAN, asianStudentsFailing, null);
-        countFailing(student,studentRace, INDIAN, indianStudentsFailing, false);
-        countFailing(student,studentRace, PACIFIC, pacificStudentsFailing, null);
-        countFailing(student,studentRace, HISPANIC, hispanicStudentsFailing, true);
+        countFailing(student,studentRace, WHITE, whiteStudentsFailing);
+        countFailing(student,studentRace, BLACK, blackStudentsFailing);
+        countFailing(student,studentRace, ASIAN, asianStudentsFailing);
+        countFailing(student,studentRace, INDIAN, indianStudentsFailing);
+        countFailing(student,studentRace, PACIFIC, pacificStudentsFailing);
 
     }
 
@@ -80,7 +71,6 @@ public class RaceBreakdown extends Breakdown {
         addStudentDatapoints("Asian", totalAsian, asianStudentsFailing);
         addStudentDatapoints("American Indian", totalIndian, indianStudentsFailing);
         addStudentDatapoints("Pacific Islander", totalPacific, pacificStudentsFailing);
-        addStudentDatapoints("Hispanic or Latino", totalHispanic, hispanicStudentsFailing);
 
         return super.buildReturnObject();
     }

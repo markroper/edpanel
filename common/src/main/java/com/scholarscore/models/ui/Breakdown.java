@@ -14,24 +14,12 @@ public abstract class Breakdown {
     protected Integer maxClassesFailed = 0;
     protected ArrayList<ArrayList<Object>> chartingArray = new ArrayList<>();
 
-    protected void countFailing(Student student, String studentValue, String comparitor, Map<Student,Integer> studentsFailing, Boolean isHispanic) {
-        if (comparitor.equals(studentValue)) {
-            if (null == isHispanic) {
-                incrementMaxClasses(student, studentsFailing);
-            } else {
-                if (isHispanic) {
-                    if (("YES").equals(student.getFederalEthnicity())) {
-                        incrementMaxClasses(student, studentsFailing);
-                    }
-                } else {
-                    if (("NO").equals(student.getFederalEthnicity())) {
-                        incrementMaxClasses(student, studentsFailing);
-                    }
-                }
-            }
+    protected void countFailing(Student student, String studentValue, String comparitor, Map<Student,Integer> studentsFailing) {
 
+        if (comparitor.equals(studentValue)) {
+                incrementMaxClasses(student, studentsFailing);
+            }
         }
-    }
 
     private void incrementMaxClasses(Student student, Map<Student, Integer> studentsFailing) {
         Integer sectionsFailed = studentsFailing.get(student);
