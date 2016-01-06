@@ -2,6 +2,7 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 
 import com.scholarscore.api.persistence.BehaviorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
+import com.scholarscore.api.persistence.UserPersistence;
 import com.scholarscore.models.Behavior;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -19,7 +20,9 @@ public class BehaviorJdbc implements BehaviorPersistence {
 
     @Autowired
     private HibernateTemplate hibernateTemplate;
+    
     private StudentPersistence studentPersistence;
+    private UserPersistence userPersistence;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -36,8 +39,19 @@ public class BehaviorJdbc implements BehaviorPersistence {
     @Override
     public Long createBehavior(long studentId, Behavior behavior) {
         injectStudent(studentId, behavior);
+        injectAssignerIfPresent(behavior);
         Behavior result = hibernateTemplate.merge(behavior);
         return result.getId();
+    }
+
+    // adding or updating a behavior with an assigner is supported
+    // as long as the assigner has (at least) an ID and user type
+    private void injectAssignerIfPresent(Behavior behavior) {
+        if (behavior != null 
+                && behavior.getAssigner() != null 
+                && behavior.getAssigner().getId() != null) {
+            behavior.setAssigner(userPersistence.selectUser(behavior.getAssigner().getId()));
+        }
     }
 
     private void injectStudent(long studentId, Behavior behavior) {
@@ -49,6 +63,7 @@ public class BehaviorJdbc implements BehaviorPersistence {
     @Override
     public Long replaceBehavior(long studentId, long behaviorId, Behavior behavior) {
         injectStudent(studentId, behavior);
+        injectAssignerIfPresent(behavior);
         behavior.setId(behaviorId);
         hibernateTemplate.merge(behavior);
         return behaviorId;
@@ -73,5 +88,9 @@ public class BehaviorJdbc implements BehaviorPersistence {
 
     public void setStudentPersistence(StudentPersistence studentPersistence) {
         this.studentPersistence = studentPersistence;
+    }
+
+    public void setUserPersistence(UserPersistence userPersistence) {
+        this.userPersistence = userPersistence;
     }
 }
