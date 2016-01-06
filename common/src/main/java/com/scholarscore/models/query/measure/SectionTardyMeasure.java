@@ -14,8 +14,7 @@ import java.util.Set;
 public class SectionTardyMeasure implements IMeasure {
     final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(
             new HashSet<Measure>(){{ add(Measure.ATTENDANCE); add(Measure.SECTION_ABSENCE); }});
-    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SCHOOL,
-            Dimension.SECTION);
+    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SECTION);
     public static final String DATE = "Date";
     public static final String TYPE = "Type";
     private static final Set<String> fields =
