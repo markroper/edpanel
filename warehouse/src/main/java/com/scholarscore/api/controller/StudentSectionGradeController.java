@@ -2,7 +2,11 @@ package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.models.EntityId;
+import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.*;
 
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/years/{yearId}/terms/{termId}/sections/{sectId}/grades")
@@ -206,4 +212,6 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="studId") Long studId) {
         return respond(pm.getStudentSectionGradeManager().deleteStudentSectionGrade(schoolId, yearId, termId, sectId, studId));
     }
+
+
 }
