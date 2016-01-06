@@ -428,7 +428,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
 
     @Override
     public Attendance updateAttendance(Long schoolId, Long studentId, Attendance attend) throws IOException {
-        patch(convertObjectToJsonBytes(attend), BASE_API_ENDPOINT +
+        put(convertObjectToJsonBytes(attend), BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
                 STUDENT_ENDPOINT + "/" + studentId +
                 ATTENDANCE_ENDPOINT + "/" + attend.getId());

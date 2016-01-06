@@ -4,14 +4,17 @@ import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
+import com.scholarscore.etl.powerschool.api.model.PsPeriod;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendance;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCode;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper;
+import com.scholarscore.etl.powerschool.api.model.cycles.PsCycle;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.School;
+import com.scholarscore.models.Section;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.AttendanceTypes;
@@ -22,11 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -42,15 +41,21 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
     protected PowerSchoolSyncResult results;
     protected LocalDate syncCutoff;
     protected Long dailyAbsenseTrigger;
+    protected Map<Long, PsCycle> schoolCycles;
+    protected ConcurrentHashMap<Long, Set<Section>> studentClasses;
+    protected ConcurrentHashMap<Long, PsPeriod> periods;
 
     public AttendanceRunnable(IAPIClient edPanel,
-                          IPowerSchoolClient powerSchool,
-                          School s,
-                          Student student,
-                          ConcurrentHashMap<LocalDate, SchoolDay> schoolDays,
-                          PowerSchoolSyncResult results,
-                          LocalDate syncCutoff,
-                          Long dailyAbsenseTrigger) {
+                              IPowerSchoolClient powerSchool,
+                              School s,
+                              Student student,
+                              ConcurrentHashMap<LocalDate, SchoolDay> schoolDays,
+                              PowerSchoolSyncResult results,
+                              LocalDate syncCutoff,
+                              Long dailyAbsenseTrigger,
+                              ConcurrentHashMap<Long, PsCycle> schoolCycles,
+                              ConcurrentHashMap<Long, Set<Section>> studentClasses,
+                              ConcurrentHashMap<Long, PsPeriod> periods) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
@@ -59,6 +64,9 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         this.results = results;
         this.syncCutoff = syncCutoff;
         this.dailyAbsenseTrigger = dailyAbsenseTrigger;
+        this.schoolCycles = schoolCycles;
+        this.studentClasses = studentClasses;
+        this.periods = periods;
     }
     @Override
     public void run() {
@@ -165,7 +173,9 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         for(PsResponseInner<PsAttendanceWrapper> wrap : response.record) {
             PsAttendance psAttendance = wrap.tables.attendance;
             Attendance a = psAttendance.toApiModel();
-            a.setSchoolDay(schoolDays.get(psAttendance.att_date));
+            SchoolDay schoolDay = schoolDays.get(psAttendance.att_date);
+            a = resolveSectionFk(a, schoolDay, psAttendance);
+            a.setSchoolDay(schoolDay);
             a.setStudent(student);
             a.setStatus(codeMap.get(psAttendance.attendance_codeid));
             if(!schoolDayToAttendances.containsKey(a.getSchoolDay())) {
@@ -239,5 +249,48 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
             }
         }
         return attendanceMap;
+    }
+
+    /**
+     * Using the period_id, cycle_day, school_day and classes the student is enrolled in we generate
+     * the section_fk that the attendance should be associated with.
+     * @param a Attendance object
+     * @param schoolDay The schoolDay the attendance event occurred on
+     * @param psAttendance THe psAttendance Object
+     * @return the attendance object with the section_fk set
+     */
+    protected Attendance resolveSectionFk(Attendance a, SchoolDay schoolDay, PsAttendance psAttendance) {
+        if (null != schoolDay) {
+            PsCycle cycleDay = schoolCycles.get(schoolDay.getCycleId());
+            if (null != periods.get(psAttendance.periodid)) {
+                Long periodNumber = periods.get(psAttendance.periodid).period_number;
+                String letter = cycleDay.letter;
+                //Maybe missing some students here?
+                Set<Section> sections =  studentClasses.get(student.getId());
+                //Need to also make sure teh SchoolDay date are within the term dates
+                if (null != sections) {
+                    for (Section section : sections) {
+                        Map<String, ArrayList<Long>> expression = section.getExpression();
+                        if (null != expression) {
+                            if (null != expression.get(letter)) {
+                                for (Long sectionPeriod : expression.get(letter)) {
+                                    if (sectionPeriod.equals(periodNumber) &&
+                                            (schoolDay.getDate().isAfter(section.getStartDate())
+                                                || schoolDay.getDate().equals(section.getStartDate()))
+                                            && (schoolDay.getDate().isBefore(section.getEndDate())
+                                                || schoolDay.getDate().equals(section.getEndDate()))
+                                            ){
+                                        a.setSection(section);
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+
+        }
+        return a;
     }
 }

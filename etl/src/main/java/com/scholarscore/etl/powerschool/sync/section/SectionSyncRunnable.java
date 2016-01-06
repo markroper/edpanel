@@ -32,11 +32,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -62,6 +58,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
     private BiMap<Long, Long> ptSectionIdToPsSectionId;
     private Map<Long, Long> ptStudentIdToPsStudentId;
     private PowerSchoolSyncResult results;
+    private Map<Long, Set<Section>> studentClasses;
 
     public SectionSyncRunnable(IPowerSchoolClient powerSchool,
                                IAPIClient edPanel,
@@ -75,7 +72,8 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                                Map<Long, String> powerTeacherCategoryToEdPanelType,
                                BiMap<Long, Long> ptSectionIdToPsSectionId,
                                Map<Long, Long> ptStudentIdToPsStudentId,
-                               PowerSchoolSyncResult results) {
+                               PowerSchoolSyncResult results,
+                               Map<Long, Set<Section>> studentClasses) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
         this.school = school;
@@ -89,6 +87,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
         this.ptSectionIdToPsSectionId = ptSectionIdToPsSectionId;
         this.ptStudentIdToPsStudentId = ptStudentIdToPsStudentId;
         this.results = results;
+        this.studentClasses = studentClasses;
     }
 
     @Override
@@ -170,7 +169,8 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     studentAssociator,
                     ptSectionIdToPsSectionId,
                     ptStudentIdToPsStudentId,
-                    sourceSection);
+                    sourceSection,
+                    studentClasses);
             ssgSync.syncCreateUpdateDelete(results);
 
             SectionAssignmentSync assignmentSync = new SectionAssignmentSync(
@@ -215,6 +215,8 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     = sr.sections.section;
             for (PsSection powerSection : powerSchoolSections) {
                 Section edpanelSection = new Section();
+
+                edpanelSection.setExpression(PsSection.evaluateExpression(powerSection.getExpression()));
                 edpanelSection.setSourceSystemId(powerSection.getId().toString());
                 //Resolve the EdPanel Course and set it on the EdPanel section
                 Course c = this.courses.get(Long.valueOf(powerSection.getCourse_id()));

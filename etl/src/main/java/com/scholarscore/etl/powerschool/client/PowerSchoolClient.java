@@ -15,6 +15,7 @@ import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCa
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsCalendarDayWrapper;
+import com.scholarscore.etl.powerschool.api.model.cycles.PsCycleWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsGradeFormulaWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeightingWrapper;
@@ -43,6 +44,7 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.time.LocalDate;
 
@@ -108,11 +110,11 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
 
     @Override
-    public PsResponse<PsPeriodWrapper> getPeriods() throws HttpClientException {
+    public PsResponse<PsPeriodWrapper> getPeriodsBySchool(Long schoolId) throws HttpClientException {
         return get(new TypeReference<PsResponse<PsPeriodWrapper>>(){},
                 paths.getPeriodPath(),
                 PAGE_SIZE,
-                (String[])null);
+                schoolId.toString());
     }
 
     @Override
@@ -156,6 +158,12 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     @Override
     public PsCourses getCoursesBySchool(Long schoolId) throws HttpClientException {
         return getJackson(PsCourses.class, paths.getCoursePath(), schoolId.toString());
+    }
+
+    @Override
+    public PsResponse<PsCycleWrapper> getCyclesBySchool(Long schoolId) throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsCycleWrapper>>() {},
+        paths.getCyclePath(), PAGE_SIZE, schoolId.toString());
     }
 
     @Override
