@@ -1,9 +1,7 @@
 package com.scholarscore.etl.powerschool.client;
 
 import com.scholarscore.client.HttpClientException;
-import com.scholarscore.etl.powerschool.api.model.PsCourses;
-import com.scholarscore.etl.powerschool.api.model.PsPeriodWrapper;
-import com.scholarscore.etl.powerschool.api.model.PsStaffs;
+import com.scholarscore.etl.powerschool.api.model.*;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsAssignmentScoreWrapper;
 import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionScoreIdWrapper;
@@ -13,6 +11,7 @@ import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCa
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceCodeWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsAttendanceWrapper;
 import com.scholarscore.etl.powerschool.api.model.attendance.PsCalendarDayWrapper;
+import com.scholarscore.etl.powerschool.api.model.cycles.PsCycleWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsGradeFormulaWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeFormulaWeightingWrapper;
@@ -44,7 +43,7 @@ public interface IPowerSchoolClient {
 
     SchoolsResponse getSchools() throws HttpClientException;
 
-    PsResponse<PsPeriodWrapper> getPeriods() throws HttpClientException;
+    PsResponse<PsPeriodWrapper> getPeriodsBySchool(Long schoolId) throws HttpClientException;
 
     DistrictResponse getDistrict() throws HttpClientException;
 
@@ -55,6 +54,8 @@ public interface IPowerSchoolClient {
     StudentResponse getStudentById(Long studentId) throws HttpClientException;
 
     PsCourses getCoursesBySchool(Long schoolId) throws HttpClientException;
+
+    PsResponse<PsCycleWrapper> getCyclesBySchool(Long schoolId) throws HttpClientException;
 
     Object getAsMap(String path) throws HttpClientException;
 

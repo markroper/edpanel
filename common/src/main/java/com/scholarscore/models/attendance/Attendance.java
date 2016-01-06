@@ -2,6 +2,7 @@ package com.scholarscore.models.attendance;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.Section;
 import com.scholarscore.models.user.Student;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -42,6 +43,7 @@ public class Attendance implements Serializable {
     private Long sourceSystemPeriodId;
     //If an attendance entry is section-level, this value will be non null
     private AttendanceTypes type;
+    private Section section;
     
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name=HibernateConsts.SCHOOL_DAY_FK)
@@ -126,6 +128,17 @@ public class Attendance implements Serializable {
         this.type = type;
     }
 
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name=HibernateConsts.SECTION_FK)
+    @Fetch(FetchMode.JOIN)
+    public Section getSection() {
+        return section;
+    }
+
+    public void setSection(Section section) {
+        this.section = section;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -143,13 +156,14 @@ public class Attendance implements Serializable {
                 && Objects.equals(this.attendanceCode, other.attendanceCode)
                 && Objects.equals(this.sourceSystemPeriodId, other.sourceSystemPeriodId)
                 && Objects.equals(this.type, other.type)
+                && Objects.equals(this.section, other.section)
                 && Objects.equals(this.description, other.description);
     }
     
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(schoolDay, id, sourceSystemId, student,
-                status, description, attendanceCode, sourceSystemPeriodId, type);
+                status, description, attendanceCode, sourceSystemPeriodId, type, section);
     }
     
     @Override
@@ -163,6 +177,7 @@ public class Attendance implements Serializable {
                 ", description='" + description + '\'' +
                 ", sourceSystemPeriodId='" + sourceSystemPeriodId + '\'' +
                 ", type='" + type + '\'' +
+                ", section='" + section +'\'' +
                 ", attendanceCode='" + attendanceCode + '\'' +
                 '}';
     }

@@ -55,6 +55,25 @@ public class AttendanceController extends BaseController {
             @PathVariable(value="termId") Long termId) {
         return respond(pm.getAttendanceManager().getAllStudentAttendanceInTerm(schoolId, studentId, schoolYearId, termId));
     }
+
+    @ApiOperation(
+            value = "Get all student attendance entries in a given section",
+            notes = "Retrieve all student attendance entries within a section",
+            response = List.class)
+    @RequestMapping(
+            value = "/sections/{sectionId}",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getAll(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "sectionId", required = true, value = "Section ID")
+            @PathVariable(value="sectionId") Long sectionId) {
+        return respond(pm.getAttendanceManager().getAllStudentSectionAttendance(schoolId, studentId, sectionId));
+    }
     
     @ApiOperation(
             value = "Get a student attendance object by ID", 
