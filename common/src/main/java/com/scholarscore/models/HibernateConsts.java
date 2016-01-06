@@ -195,7 +195,6 @@ public class HibernateConsts {
     public static final String SCHOOL_DAY_DATE = "school_day_date";
     public static final String SCHOOL_DAY_SOURCE_SYSTEM_ID = "school_day_source_system_id";
     public static final String SCHOOL_DAY_SOURCE_SYSTEM_OTHER_ID = "school_day_source_system_other_id";
-    public static final String SCHOOL_DAY_CYCLE_ID = "cycle_id";
     
     //Attendance
     public static final String ATTENDANCE_TABLE = "attendance";
