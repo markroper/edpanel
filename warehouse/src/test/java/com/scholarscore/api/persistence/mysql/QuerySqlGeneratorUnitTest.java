@@ -14,10 +14,7 @@ import com.scholarscore.models.query.dimension.SchoolDimension;
 import com.scholarscore.models.query.dimension.SectionDimension;
 import com.scholarscore.models.query.dimension.StudentDimension;
 import com.scholarscore.models.query.expressions.Expression;
-import com.scholarscore.models.query.expressions.operands.DateOperand;
-import com.scholarscore.models.query.expressions.operands.DimensionOperand;
-import com.scholarscore.models.query.expressions.operands.MeasureOperand;
-import com.scholarscore.models.query.expressions.operands.NumericOperand;
+import com.scholarscore.models.query.expressions.operands.*;
 import com.scholarscore.models.query.expressions.operators.BinaryOperator;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
@@ -164,6 +161,50 @@ public class QuerySqlGeneratorUnitTest {
                 "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  " +
                 "( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) " +
                 "GROUP BY student.student_user_fk";
+
+        Query sectionAbsenseQuery  = new Query();
+        ArrayList<AggregateMeasure> sectionAbsenseMeasures = new ArrayList<>();
+        sectionAbsenseMeasures.add(new AggregateMeasure(Measure.SECTION_ABSENCE, AggregateFunction.COUNT));
+        sectionAbsenseQuery.setAggregateMeasures(sectionAbsenseMeasures);
+        sectionAbsenseQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
+        sectionAbsenseQuery.addField(new DimensionField(Dimension.SECTION, SectionDimension.ID));
+
+
+        ListNumericOperand sectionList = new ListNumericOperand();
+        ArrayList<Number> sections = new ArrayList<>();
+        sections.add(2);
+        sections.add(3);
+        sectionList.setValue(sections);
+        Expression sectionAbsenseClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)),
+                ComparisonOperator.IN,
+                sectionList);
+        sectionAbsenseQuery.setFilter(sectionAbsenseClause);
+        String sectionAbsenceSql = "SELECT student.student_user_fk, section.section_id, " +
+                "COUNT( if(attendance.attendance_status in ('ABSENT') AND attendance.attendance_type = 'SECTION', 1, 0)) " +
+                "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " +
+                "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk " +
+                "LEFT OUTER JOIN section ON section.section_id = attendance.section_fk " +
+                "WHERE  ( section.section_id  IN  (2,3) ) GROUP BY student.student_user_fk, section.section_id";
+
+        Query sectionTardyQuery  = new Query();
+        ArrayList<AggregateMeasure> sectionTardyMeasures = new ArrayList<>();
+        sectionTardyMeasures.add(new AggregateMeasure(Measure.SECTION_TARDY, AggregateFunction.COUNT));
+        sectionTardyQuery.setAggregateMeasures(sectionTardyMeasures);
+        sectionTardyQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
+        sectionTardyQuery.addField(new DimensionField(Dimension.SECTION, SectionDimension.ID));
+
+        Expression sectionTardyClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)),
+                ComparisonOperator.IN,
+                sectionList);
+        sectionTardyQuery.setFilter(sectionTardyClause);
+        String sectionTardySql = "SELECT student.student_user_fk, section.section_id, " +
+                "COUNT( if(attendance.attendance_status in ('TARDY') AND attendance.attendance_type = 'SECTION', 1, 0)) " +
+                "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " +
+                "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk " +
+                "LEFT OUTER JOIN section ON section.section_id = attendance.section_fk " +
+                "WHERE  ( section.section_id  IN  (2,3) ) GROUP BY student.student_user_fk, section.section_id";
         
         Query behaviorQuery = new Query();
         ArrayList<AggregateMeasure> behaviorMeasures = new ArrayList<>();
@@ -197,7 +238,9 @@ public class QuerySqlGeneratorUnitTest {
                 { "Homework query", homeworkCompletionQuery, homeworkSql },
                 { "Behavior query", behaviorQuery, behaviorSql},
                 {"Attendance query", attendanceQuery, attendanceSql },
-                {"Homework by Section query", homeworkSectionCompletionQuery, homeworkSectionSql}
+                {"Homework by Section query", homeworkSectionCompletionQuery, homeworkSectionSql},
+                {"Absence by Section query", sectionAbsenseQuery, sectionAbsenceSql},
+                {"Tardy be Section query", sectionTardyQuery, sectionTardySql}
         };
     }
     
