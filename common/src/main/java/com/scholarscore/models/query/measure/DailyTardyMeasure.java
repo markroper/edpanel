@@ -17,7 +17,7 @@ public class DailyTardyMeasure implements IMeasure {
                 add(Measure.ATTENDANCE);
                 add(Measure.ABSENCE);
             }});
-    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SCHOOL);
+    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT);
     public static final String DATE = "Date";
     public static final String TYPE = "Type";
     private static final Set<String> fields =
