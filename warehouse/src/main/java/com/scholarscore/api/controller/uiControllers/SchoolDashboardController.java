@@ -63,7 +63,6 @@ public class SchoolDashboardController extends BaseController {
                         Double termGrade = termScore.getScore();
                         if (termGrade != null && termGrade < 70) {
                             raceBreakdown.addFailingGrade(grade.getStudent());
-
                         }
                     }
 
