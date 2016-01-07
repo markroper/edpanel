@@ -83,8 +83,7 @@ public class StudentAssignmentManagerImpl implements  StudentAssignmentManager {
 
     @Override
     public ServiceResponse<Collection<StudentAssignment>> getOneSectionOneStudentsAssignments(
-            long studentId, long schoolId, long yearId, long termId,
-            long sectionId) {
+            long studentId, long sectionId) {
         Collection<StudentAssignment> sas =
                 studentAssignmentPersistence.selectAllAssignmentsOneSectionOneStudent(sectionId, studentId);
         return new ServiceResponse<Collection<StudentAssignment>>(sas);

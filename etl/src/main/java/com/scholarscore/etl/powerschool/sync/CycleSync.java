@@ -1,4 +1,4 @@
-package com.scholarscore.etl.powerschool;
+package com.scholarscore.etl.powerschool.sync;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;

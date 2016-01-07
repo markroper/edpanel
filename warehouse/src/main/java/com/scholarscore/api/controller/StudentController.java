@@ -167,7 +167,7 @@ public class StudentController extends BaseController {
             @PathVariable(value="tId") Long tId,
             @ApiParam(name = "sId", required = true, value = "Section ID")
             @PathVariable(value="sId") Long sId) {
-        return respond(pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, schoolId, yrId, tId, sId));
+        return respond(pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, sId));
     }
 
     @ApiOperation(
@@ -208,6 +208,25 @@ public class StudentController extends BaseController {
             @RequestParam(value="endDate", required = false) @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) LocalDate endDate
     ) {
         return respond(pm.getStudentManager().getStudentHomeworkRates(studentId, startDate, endDate));
+    }
+
+    @ApiOperation(
+            value = "Get one student's weekly HW completion percentage for a particular section",
+            notes = "Bucketed by week, Sunday - Saturday",
+            response = List.class)
+    @RequestMapping(
+            value = "/{studentId}/homeworkrates/sections/{sectionId}",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getStudentHwCompletionRatesBySection(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "sectionId", required = true, value = "Section ID")
+            @PathVariable(value="sectionId") Long sectionId
+    ) {
+        return respond(pm.getStudentManager().getStudentHomeworkRatesPerSection(
+                studentId,sectionId));
     }
 
     private String testThis() { return "this"; }

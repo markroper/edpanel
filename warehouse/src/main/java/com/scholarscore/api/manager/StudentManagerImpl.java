@@ -131,10 +131,34 @@ public class StudentManagerImpl implements StudentManager {
         return new ServiceResponse<>(studentPrepScorePersistence.selectStudentPrepScore(studentIds, startDate, endDate));
     }
 
+    public ServiceResponse<List<ScoreAsOfWeek>> getStudentHomeworkRatesPerSection(Long studentId,  Long sectionId) {
+        ServiceResponse<Collection<StudentAssignment>> studAssResp =
+                pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(
+                studentId, sectionId);
+        return determineWeeklyScore(studAssResp);
+
+    }
+
     @Override
     public ServiceResponse<List<ScoreAsOfWeek>> getStudentHomeworkRates(Long studentId, LocalDate startDate, LocalDate endDate) {
         ServiceResponse<Collection<StudentAssignment>> studAssResp =
                 pm.getStudentAssignmentManager().getAllStudentAssignmentsBetweenDates(studentId, startDate, endDate);
+        return determineWeeklyScore(studAssResp);
+    }
+    private static Double calculateHwCompletionRate(List<StudentAssignment> studentAssignments) {
+        Integer numerator = studentAssignments.size();
+        for(StudentAssignment a: studentAssignments) {
+            //TODO: at excel 35% is give for incomplete, need to generify this for other schools.
+            if(null == a.getAwardedPoints() ||
+                    a.getAwardedPoints().equals(0l) ||
+                    a.getAwardedPoints() / a.getAssignment().getAvailablePoints() <= 0.35D) {
+                numerator--;
+            }
+        }
+        return numerator / (double) studentAssignments.size() * 100D;
+    }
+
+    private ServiceResponse<List<ScoreAsOfWeek>> determineWeeklyScore(ServiceResponse<Collection<StudentAssignment>> studAssResp) {
         List<ScoreAsOfWeek> weekEndToCompletion = new ArrayList<>();
         if(null == studAssResp.getCode()) {
             List<StudentAssignment> studentAssignments = new ArrayList<>(studAssResp.getValue());
@@ -166,17 +190,5 @@ public class StudentManagerImpl implements StudentManager {
             }
         }
         return new ServiceResponse<>(weekEndToCompletion);
-    }
-    private static Double calculateHwCompletionRate(List<StudentAssignment> studentAssignments) {
-        Integer numerator = studentAssignments.size();
-        for(StudentAssignment a: studentAssignments) {
-            //TODO: at excel 35% is give for incomplete, need to generify this for other schools.
-            if(null == a.getAwardedPoints() ||
-                    a.getAwardedPoints().equals(0l) ||
-                    a.getAwardedPoints() / a.getAssignment().getAvailablePoints() <= 0.35D) {
-                numerator--;
-            }
-        }
-        return numerator / (double) studentAssignments.size() * 100D;
     }
 }

@@ -3,6 +3,8 @@ package com.scholarscore.api.controller.uiControllers;
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.controller.BaseController;
 import com.scholarscore.api.util.ServiceResponse;
+import com.scholarscore.models.Behavior;
+import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.assignment.StudentAssignment;
@@ -97,7 +99,7 @@ public class UiEndpointsController extends BaseController {
                     sectionDashData.setGradeGoal(fullCumulativeGradeGoalByBuilder);
                 }
                 ServiceResponse<Collection<StudentAssignment>> studAssesResp = pm.getStudentAssignmentManager().
-                        getOneSectionOneStudentsAssignments(studentId, schoolId, schoolYearId, termId, s.getId());
+                        getOneSectionOneStudentsAssignments(studentId,  s.getId());
                 if(null == studAssesResp.getCode()) {
                     sectionDashData.setStudentAssignments(new ArrayList<>(studAssesResp.getValue()));
                 }
@@ -121,5 +123,40 @@ public class UiEndpointsController extends BaseController {
             }
         }
         return respond(new ServiceResponse<>(response));
+    }
+
+    @ApiOperation(
+            value = "Get all the data for a single student needed for the student dashboard",
+            notes = "Returns the current sections, section grades, section assignments, and grade progressions for a student",
+            response = School.class)
+    @RequestMapping(
+            value = "/schools/{schoolId}/years/{schoolYearId}/terms/{termId}/teacher/{teacherId}",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity
+    getStudentDemerits(@ApiParam(name = "studentId", required = true, value = "Student ID")
+              @PathVariable(value="studentId") Long studentId,
+              @ApiParam(name = "schoolId", required = true, value = "School ID")
+              @PathVariable(value="schoolId") Long schoolId,
+              @ApiParam(name = "schoolYearId", required = true, value = "School year long ID")
+              @PathVariable(value="schoolYearId") Long schoolYearId,
+              @ApiParam(name = "termId", required = true, value = "Term ID")
+              @PathVariable(value="termId") Long termId,
+               @ApiParam(name = "teacherId", required = true, value = "Teacher ID")
+               @PathVariable(value="teacherId") Long teacherId) {
+        //TODO THIS SHOULD ALL BE DONE BY QUERY GENERATOR
+        Collection<Behavior> teacherAssignedDemerits = new ArrayList<>();
+        Collection<Behavior> behaviors = pm.getBehaviorManager().getAllBehaviors(studentId).getValue();
+        for (Behavior b : behaviors) {
+            if (b.getAssigner().getId().equals(teacherId)) {
+                //Teacher matches
+                if (b.getBehaviorCategory() == BehaviorCategory.DEMERIT) {
+                    //It is a demerit
+                    teacherAssignedDemerits.add(b);
+                }
+            }
+        }
+        return respond(new ServiceResponse<>(teacherAssignedDemerits));
     }
 }

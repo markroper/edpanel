@@ -71,47 +71,73 @@ public class PsAssignmentFactory {
         } else {
             a = new GradedAssignment();
         }
-        a.setType(resolveAssignmentType(powerType.getAbbreviation(), powerType.getName()));
+        a.setType(resolveAssignmentType(powerType.getAbbreviation(), powerType.getName(), powerAss.getName()));
         populateInstance(a, powerAss);
         return a;
     }
 
-    public static AssignmentType resolveAssignmentType(String abb, String name) {
-        abb = abb.toUpperCase();
-        name = name.toUpperCase();
-        if(HW_STRINGS.contains(abb) || HW_STRINGS.contains(name)) {
+    private static AssignmentType checkAssigmentType(String toCheck) {
+        if(HW_STRINGS.contains(toCheck)) {
             return AssignmentType.HOMEWORK;
-        } else if(TEST_STRINGS.contains(abb) || TEST_STRINGS.contains(name)) {
+        } else if(TEST_STRINGS.contains(toCheck)) {
             return AssignmentType.TEST;
-        } else if(QUIZ_STRINGS.contains(abb) || QUIZ_STRINGS.contains(name)) {
+        } else if(QUIZ_STRINGS.contains(toCheck)) {
             return AssignmentType.QUIZ;
-        } else if(CLASSWORK_STRINGS.contains(abb) || CLASSWORK_STRINGS.contains(name)) {
+        } else if(CLASSWORK_STRINGS.contains(toCheck)) {
             return AssignmentType.CLASSWORK;
-        } else if(SUMMATIVE_ASSESSMENT_STRINGS.contains(abb) || SUMMATIVE_ASSESSMENT_STRINGS.contains(name)) {
+        } else if(SUMMATIVE_ASSESSMENT_STRINGS.contains(toCheck)) {
             return AssignmentType.SUMMATIVE_ASSESSMENT;
-        } else if(INTERIM_ASSESSMENT_STRINGS.contains(abb) || INTERIM_ASSESSMENT_STRINGS.contains(name)) {
+        } else if(INTERIM_ASSESSMENT_STRINGS.contains(toCheck)) {
             return AssignmentType.INTERIM_ASSESSMENT;
-        } else if(PARTICIPATION_STRINGS.contains(abb) || PARTICIPATION_STRINGS.contains(name)) {
+        } else if(PARTICIPATION_STRINGS.contains(toCheck)) {
             return AssignmentType.PARTICIPATION;
-        } else if(WRITTEN_WORK_STRINGS.contains(abb) || WRITTEN_WORK_STRINGS.contains(name)) {
+        } else if(WRITTEN_WORK_STRINGS.contains(toCheck)) {
             return AssignmentType.WRITTEN_WORK;
-        } else if(PREP_WORK_STRINGS.contains(abb) || PREP_WORK_STRINGS.contains(name)) {
-            return AssignmentType.USER_DEFINED;
-        } else if(ATTENDANCE_STRINGS.contains(abb) || ATTENDANCE_STRINGS.contains(name)) {
+        } else if(ATTENDANCE_STRINGS.contains(toCheck)) {
             return AssignmentType.ATTENDANCE;
-        } else if(LAB_STRINGS.contains(abb) || LAB_STRINGS.contains(name)) {
+        } else if(LAB_STRINGS.contains(toCheck)) {
             return AssignmentType.LAB;
-        } else if(MIDTERM_STRINGS.contains(abb) || MIDTERM_STRINGS.contains(name)) {
+        } else if(MIDTERM_STRINGS.contains(toCheck)) {
             return AssignmentType.MIDTERM;
-        } else if(FINAL_STRINGS.contains(abb) || FINAL_STRINGS  .contains(name)) {
+        } else if(FINAL_STRINGS.contains(toCheck)) {
             return AssignmentType.FINAL;
-        } else if(EXAM_STRINGS.contains(abb) || EXAM_STRINGS.contains(name)) {
+        } else if(EXAM_STRINGS.contains(toCheck)) {
             return AssignmentType.EXAM;
-        } else if(PROJ_STRINGS.contains(abb) || PROJ_STRINGS.contains(name)){
+        } else if(PROJ_STRINGS.contains(toCheck)){
             return AssignmentType.PROJECT;
         } else {
-            return AssignmentType.USER_DEFINED;
+            return null;
         }
+    }
+
+    public static AssignmentType resolveAssignmentType(String abbreviation, String nameOriginal, String assignmentName) {
+        abbreviation = abbreviation.toUpperCase();
+        nameOriginal = nameOriginal.toUpperCase();
+        String[] nameArray = assignmentName.split(" ");
+
+        AssignmentType type = PsAssignmentFactory.checkAssigmentType(abbreviation);
+        if (null != type) {
+            return type;
+        }
+
+
+        type = PsAssignmentFactory.checkAssigmentType(nameOriginal);
+        if (null != type) {
+            return type;
+        }
+
+        for (String name: nameArray) {
+            name = name.replaceAll("[^a-zA-Z0-9]+","");
+            name = name.toUpperCase();
+            type = PsAssignmentFactory.checkAssigmentType(name);
+            if (null != type) {
+                return type;
+            }
+        }
+
+
+        return AssignmentType.USER_DEFINED;
+
     }
 
     private static void populateInstance(Assignment a, PsAssignment p) {
