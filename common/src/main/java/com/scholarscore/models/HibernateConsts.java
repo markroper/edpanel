@@ -62,6 +62,7 @@ public class HibernateConsts {
     // the following column names are used in multiple places in different tables
     public static final String STUDENT_FK = "student_fk";
     public static final String TEACHER_FK = "teacher_fk";
+    public static final String ADMINISTRATOR_FK = "administrator_fk";
     
     // these aren't defined columns in the DB, but are used by the SQL statements
     // as labels for addressing the calculated columns used by prepScore
@@ -240,4 +241,22 @@ public class HibernateConsts {
     public static final String SURVEY_RESPONSE_ID = "survey_response_id";
     public static final String SURVEY_RESPONSE_DATE = "survey_response_date";
     public static final String SURVEY_RESPONSE = "survey_response";
+
+    //Notifications
+    public static final String NOTIFICATION_TABLE = "notification";
+    public static final String NOTIFICATION_ID = "notification_id";
+    public static final String NOTIFICATION_NAME = "notification_name";
+    public static final String NOTIFICATION_OWNERS_FK = "owning_group_fk";
+    public static final String NOTIFICATION_SUBJECTS_FK = "subject_group_fk";
+    public static final String NOTIFICATION_TRIGGER = "notification_trigger";
+    public static final String NOTIFICATION_AGG_FUNCTION = "notification_aggregate_function";
+    public static final String NOTIFICATION_WINDOW = "notification_window";
+    public static final String NOTIFICATION_MEASURE = "notification_measure";
+    public static final String NOTIFICATION_CREATED_DATE = "notification_created_date";
+    public static final String NOTIFICATION_EXPIRY_DATE = "notification_expiry_date";
+
+    public static final String NOTIFICATION_GROUP = "notification_group";
+    public static final String NOTIFICATION_GROUP_ID = "notification_group_id";
+    public static final String NOTIFICATION_GROUP_TYPE = "notification_group_type";
+    public static final String NOTIFICATION_GROUP_FILTER = "notification_group_student_filter";
 }

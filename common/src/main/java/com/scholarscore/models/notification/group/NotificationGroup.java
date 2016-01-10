@@ -4,10 +4,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.user.Person;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,6 +32,11 @@ import java.util.Objects;
  *
  * Created by markroper on 1/9/16.
  */
+@Entity(name = HibernateConsts.NOTIFICATION_GROUP)
+@Table(name = HibernateConsts.NOTIFICATION_GROUP)
+@DiscriminatorColumn(name= HibernateConsts.NOTIFICATION_GROUP_TYPE, discriminatorType = DiscriminatorType.STRING)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
 @JsonSubTypes({
@@ -33,10 +49,22 @@ import java.util.Objects;
         @JsonSubTypes.Type(value = SectionStudents.class, name = "SECTION_STUDENTS")
 })
 public abstract class NotificationGroup<T extends Person> {
+    private Long id;
     private Long schoolId;
-    private NotificationGroupType type;
     private transient List<T> groupMembers;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = HibernateConsts.NOTIFICATION_GROUP_ID)
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Column(name = HibernateConsts.SCHOOL_FK)
     public Long getSchoolId() {
         return schoolId;
     }
@@ -45,13 +73,12 @@ public abstract class NotificationGroup<T extends Person> {
         this.schoolId = schoolId;
     }
 
+    @Column(name = HibernateConsts.NOTIFICATION_GROUP_TYPE)
     @Enumerated(EnumType.STRING)
-    public NotificationGroupType getType() {
-        return type;
-    }
+    public abstract NotificationGroupType getType();
 
     public void setType(NotificationGroupType type) {
-        this.type = type;
+        //NO OP
     }
 
     @JsonIgnore
