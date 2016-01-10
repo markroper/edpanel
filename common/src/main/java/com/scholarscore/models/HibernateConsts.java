@@ -246,7 +246,7 @@ public class HibernateConsts {
     public static final String NOTIFICATION_TABLE = "notification";
     public static final String NOTIFICATION_ID = "notification_id";
     public static final String NOTIFICATION_NAME = "notification_name";
-    public static final String NOTIFICATION_OWNERS_FK = "owning_group_fk";
+    public static final String NOTIFICATION_SUBSCRIBERS_FK = "owning_group_fk";
     public static final String NOTIFICATION_SUBJECTS_FK = "subject_group_fk";
     public static final String NOTIFICATION_TRIGGER = "notification_trigger";
     public static final String NOTIFICATION_AGG_FUNCTION = "notification_aggregate_function";

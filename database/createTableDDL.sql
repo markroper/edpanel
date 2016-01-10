@@ -525,6 +525,7 @@ CREATE TABLE `scholar_warehouse`.`notification` (
   `notification_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a survey',
   `notification_name` VARCHAR(256) NULL COMMENT 'Human readable display name for the notification',
   `school_fk` BIGINT UNSIGNED NULL COMMENT 'Foriegn key to the school table, if any',
+  `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foriegn key to the users table. Indicates creator and owner of the notification',
   `owning_group_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the student table for owning student, if any',
   `subject_group_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the student table for subject student, if any',
   `notification_trigger` DOUBLE NOT NULL COMMENT 'The value at which the notification is triggered',
@@ -536,6 +537,10 @@ CREATE TABLE `scholar_warehouse`.`notification` (
   PRIMARY KEY (`notification_id`),
   FOREIGN KEY (`school_fk`)
     REFERENCES `scholar_warehouse`.`school`(`school_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`user_fk`)
+    REFERENCES `scholar_warehouse`.`user`(`user_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   FOREIGN KEY (`owning_group_fk`)

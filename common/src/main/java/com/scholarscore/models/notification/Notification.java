@@ -5,6 +5,7 @@ import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.notification.group.NotificationGroup;
 import com.scholarscore.models.notification.window.NotificationWindow;
 import com.scholarscore.models.query.AggregateFunction;
+import com.scholarscore.models.user.User;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -12,10 +13,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDate;
@@ -36,8 +39,10 @@ public class Notification {
     private Long id;
     private String name;
     private Long schoolId;
+    //The creating user of the notification
+    private User owner;
     //The group of people who will be notified if the notification is triggered
-    private NotificationGroup owners;
+    private NotificationGroup subscribers;
     //The group of people we're calculating something about to potentially trigger a notification
     private NotificationGroup subjects;
     //The value that causes the notification to be triggered. For example a notification for a class average of 80%
@@ -57,7 +62,6 @@ public class Notification {
     private NotificationMeasure measure;
     private LocalDate createdDate;
     private LocalDate expiryDate;
-
 
     @Column(name = HibernateConsts.SCHOOL_FK)
     public Long getSchoolId() {
@@ -88,15 +92,26 @@ public class Notification {
         this.name = name;
     }
 
-    @OneToOne
-    @JoinColumn(name=HibernateConsts.NOTIFICATION_OWNERS_FK)
+    @ManyToOne(optional = true, fetch= FetchType.EAGER)
+    @JoinColumn(name = HibernateConsts.USER_FK)
     @Fetch(FetchMode.JOIN)
-    public NotificationGroup getOwners() {
-        return owners;
+    public User getOwner() {
+        return owner;
     }
 
-    public void setOwners(NotificationGroup owners) {
-        this.owners = owners;
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    @OneToOne
+    @JoinColumn(name=HibernateConsts.NOTIFICATION_SUBSCRIBERS_FK)
+    @Fetch(FetchMode.JOIN)
+    public NotificationGroup getSubscribers() {
+        return subscribers;
+    }
+
+    public void setSubscribers(NotificationGroup subscribers) {
+        this.subscribers = subscribers;
     }
 
     @OneToOne
@@ -168,7 +183,8 @@ public class Notification {
 
     @Override
     public int hashCode() {
-        return Objects.hash(owners, subjects, triggerValue, aggregateFunction, window, measure, createdDate, expiryDate, schoolId);
+        return Objects.hash(subscribers, subjects, owner, triggerValue, aggregateFunction,
+                window, measure, createdDate, expiryDate, schoolId);
     }
 
     @Override
@@ -180,8 +196,9 @@ public class Notification {
             return false;
         }
         final Notification other = (Notification) obj;
-        return Objects.equals(this.owners, other.owners)
+        return Objects.equals(this.subscribers, other.subscribers)
                 && Objects.equals(this.id, other.id)
+                && Objects.equals(this.owner, other.owner)
                 && Objects.equals(this.schoolId, other.schoolId)
                 && Objects.equals(this.subjects, other.subjects)
                 && Objects.equals(this.triggerValue, other.triggerValue)
