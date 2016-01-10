@@ -1,14 +1,28 @@
 package com.scholarscore.models.notification.group;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scholarscore.models.Gender;
+import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.user.Student;
+import com.scholarscore.util.EdPanelObjectMapper;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Transient;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
 /**
  * Created by markroper on 1/9/16.
  */
+@Entity
+@DiscriminatorValue(value = "FILTERED_STUDENTS")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class FilteredStudents extends NotificationGroup<Student> {
     private Gender gender;
     private List<String> federalRaces;
@@ -19,6 +33,35 @@ public class FilteredStudents extends NotificationGroup<Student> {
     private List<Long> districtEntryYears;
     private List<Long> birthYears;
 
+    @JsonIgnore
+    @Column(name = HibernateConsts.NOTIFICATION_GROUP_FILTER, columnDefinition="blob")
+    public String getFilterJson() {
+        try {
+            return EdPanelObjectMapper.MAPPER.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+    }
+
+    @JsonIgnore
+    public void setFilterJson(String json) {
+        try {
+            FilteredStudents fs = EdPanelObjectMapper.MAPPER.readValue(json, FilteredStudents.class);
+            this.gender = fs.gender;
+            this.federalRaces = fs.federalRaces;
+            this.federalEthnicities = fs.federalEthnicities;
+            this.projectedGraduationYears = fs.projectedGraduationYears;
+            this.englishLanguageLearner = fs.englishLanguageLearner;
+            this.specialEducationStudent = fs.specialEducationStudent;
+            this.districtEntryYears = fs.districtEntryYears;
+            this.birthYears = fs.birthYears;
+        } catch (IOException e) {
+            //no op
+        }
+    }
+
+
+    @Transient
     public Gender getGender() {
         return gender;
     }
@@ -27,6 +70,7 @@ public class FilteredStudents extends NotificationGroup<Student> {
         this.gender = gender;
     }
 
+    @Transient
     public List<String> getFederalRaces() {
         return federalRaces;
     }
@@ -35,6 +79,7 @@ public class FilteredStudents extends NotificationGroup<Student> {
         this.federalRaces = federalRaces;
     }
 
+    @Transient
     public List<String> getFederalEthnicities() {
         return federalEthnicities;
     }
@@ -43,6 +88,7 @@ public class FilteredStudents extends NotificationGroup<Student> {
         this.federalEthnicities = federalEthnicities;
     }
 
+    @Transient
     public List<Long> getProjectedGraduationYears() {
         return projectedGraduationYears;
     }
@@ -51,6 +97,7 @@ public class FilteredStudents extends NotificationGroup<Student> {
         this.projectedGraduationYears = projectedGraduationYears;
     }
 
+    @Transient
     public Boolean getEnglishLanguageLearner() {
         return englishLanguageLearner;
     }
@@ -59,6 +106,7 @@ public class FilteredStudents extends NotificationGroup<Student> {
         this.englishLanguageLearner = englishLanguageLearner;
     }
 
+    @Transient
     public Boolean getSpecialEducationStudent() {
         return specialEducationStudent;
     }
@@ -67,6 +115,7 @@ public class FilteredStudents extends NotificationGroup<Student> {
         this.specialEducationStudent = specialEducationStudent;
     }
 
+    @Transient
     public List<Long> getDistrictEntryYears() {
         return districtEntryYears;
     }
@@ -75,12 +124,18 @@ public class FilteredStudents extends NotificationGroup<Student> {
         this.districtEntryYears = districtEntryYears;
     }
 
+    @Transient
     public List<Long> getBirthYears() {
         return birthYears;
     }
 
     public void setBirthYears(List<Long> birthYears) {
         this.birthYears = birthYears;
+    }
+
+    @Override
+    public NotificationGroupType getType() {
+        return NotificationGroupType.FILTERED_STUDENTS;
     }
 
     @Override

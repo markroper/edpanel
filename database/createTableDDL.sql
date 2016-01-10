@@ -493,3 +493,57 @@ CREATE TABLE `scholar_warehouse`.`survey_response` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 ALTER TABLE `scholar_warehouse`.`survey_response` ADD INDEX (`survey_response_date`);
+
+CREATE TABLE `scholar_warehouse`.`notification_group` (
+  `notification_group_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a notification group',
+  `notification_group_type` VARCHAR(64) NOT NULL COMMENT 'Serialized NotificationGroupType, Hibernate discriminator column',
+  `student_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key linking to the student table for owning student, if any',
+  `teacher_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key linking to the teacher table for owning teacher, if any',
+  `administrator_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key linking to the administrator table for owning administrator, if any',
+  `section_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key linking to the section table for subject section, if any',
+  `notification_group_student_filter` BLOB COMMENT 'JSON formatter FilteredStudents values.',
+  PRIMARY KEY (`notification_group_id`),
+  FOREIGN KEY (`student_fk`)
+    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`teacher_fk`)
+    REFERENCES `scholar_warehouse`.`teacher`(`teacher_user_fk`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`administrator_fk`)
+    REFERENCES `scholar_warehouse`.`administrator`(`administrator_user_fk`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`section_fk`)
+    REFERENCES `scholar_warehouse`.`section`(`section_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+CREATE TABLE `scholar_warehouse`.`notification` (
+  `notification_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a survey',
+  `notification_name` VARCHAR(256) NULL COMMENT 'Human readable display name for the notification',
+  `school_fk` BIGINT UNSIGNED NULL COMMENT 'Foriegn key to the school table, if any',
+  `owning_group_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the student table for owning student, if any',
+  `subject_group_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the student table for subject student, if any',
+  `notification_trigger` DOUBLE NOT NULL COMMENT 'The value at which the notification is triggered',
+  `notification_aggregate_function` VARCHAR(256) NULL COMMENT 'SUM, AVG, STD_DEV, & so on',
+  `notification_window` VARCHAR(256) NULL COMMENT 'Day, week, month combined with flag for percent change vs. value trigger',
+  `notification_measure` VARCHAR(64) NULL COMMENT 'GPA, SECTION_GRADE, SUSPENSION, etc.',
+  `notification_created_date` DATE DEFAULT NULL COMMENT 'The date the notification was created',
+  `notification_expiry_date` DATE DEFAULT NULL COMMENT 'The date the notification expires',
+  PRIMARY KEY (`notification_id`),
+  FOREIGN KEY (`school_fk`)
+    REFERENCES `scholar_warehouse`.`school`(`school_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`owning_group_fk`)
+    REFERENCES `scholar_warehouse`.`notification_group`(`notification_group_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`subject_group_fk`)
+    REFERENCES `scholar_warehouse`.`notification_group`(`notification_group_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;

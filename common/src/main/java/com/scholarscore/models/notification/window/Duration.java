@@ -1,4 +1,4 @@
-package com.scholarscore.models.notification;
+package com.scholarscore.models.notification.window;
 
 /**
  * Created by markroper on 1/9/16.

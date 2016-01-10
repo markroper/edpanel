@@ -1,4 +1,4 @@
-package com.scholarscore.models.notification;
+package com.scholarscore.models.notification.window;
 
 import java.util.Objects;
 
