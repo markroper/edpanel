@@ -11,14 +11,13 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,7 +49,6 @@ import java.util.Objects;
 })
 public abstract class NotificationGroup<T extends Person> {
     private Long id;
-    private Long schoolId;
     private transient List<T> groupMembers;
 
     @Id
@@ -63,37 +61,28 @@ public abstract class NotificationGroup<T extends Person> {
     public void setId(Long id) {
         this.id = id;
     }
-
-    @Column(name = HibernateConsts.SCHOOL_FK)
-    public Long getSchoolId() {
-        return schoolId;
-    }
-
-    public void setSchoolId(Long schoolId) {
-        this.schoolId = schoolId;
-    }
-
-    @Column(name = HibernateConsts.NOTIFICATION_GROUP_TYPE)
-    @Enumerated(EnumType.STRING)
+    
+    @Transient
     public abstract NotificationGroupType getType();
 
     public void setType(NotificationGroupType type) {
-        //NO OP
     }
 
     @JsonIgnore
+    @Transient
     public List<T> getGroupMembers() {
         return groupMembers;
     }
 
     @JsonIgnore
+    @Transient
     public void setGroupMembers(List<T> groupMembers) {
         this.groupMembers = groupMembers;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(schoolId, groupMembers);
+        return Objects.hash(groupMembers);
     }
 
     @Override
@@ -105,7 +94,6 @@ public abstract class NotificationGroup<T extends Person> {
             return false;
         }
         final NotificationGroup other = (NotificationGroup) obj;
-        return Objects.equals(this.schoolId, other.schoolId)
-                && Objects.equals(this.groupMembers, other.groupMembers);
+        return Objects.equals(this.groupMembers, other.groupMembers);
     }
 }

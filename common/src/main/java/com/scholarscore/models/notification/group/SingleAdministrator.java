@@ -8,6 +8,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.Transient;
 import java.util.Objects;
 
 /**
@@ -29,6 +30,7 @@ public class SingleAdministrator extends NotificationGroup<Administrator> {
     }
 
     @Override
+    @Transient
     public NotificationGroupType getType() {
         return NotificationGroupType.SINGLE_ADMINISTRATOR;
     }

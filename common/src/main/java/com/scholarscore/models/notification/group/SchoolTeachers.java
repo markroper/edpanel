@@ -6,6 +6,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.Transient;
 
 /**
  * Created by markroper on 1/9/16.
@@ -15,6 +16,7 @@ import javax.persistence.InheritanceType;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class SchoolTeachers extends NotificationGroup<Teacher> {
     @Override
+    @Transient
     public NotificationGroupType getType() {
         return NotificationGroupType.SCHOOL_TEACHERS;
     }
