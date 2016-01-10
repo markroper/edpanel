@@ -32,6 +32,15 @@ public class OrchestrationManager {
     private UiAttributesManager uiAttributesManager;
     private GpaManager gpaManager;
     private SurveyManager surveyManager;
+    private NotificationManager notificationManager;
+
+    public NotificationManager getNotificationManager() {
+        return notificationManager;
+    }
+
+    public void setNotificationManager(NotificationManager notificationManager) {
+        this.notificationManager = notificationManager;
+    }
 
     public SurveyManager getSurveyManager() {
         return surveyManager;
