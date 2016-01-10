@@ -61,7 +61,7 @@ public abstract class NotificationGroup<T extends Person> {
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     @Transient
     public abstract NotificationGroupType getType();
 

@@ -547,3 +547,22 @@ CREATE TABLE `scholar_warehouse`.`notification` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
+
+CREATE TABLE `scholar_warehouse`.`triggered_notification` (
+  `triggered_notification_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a triggered notification',
+  `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The user to be alerted about the notification being triggered',
+  `notification_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foriegn key to the notification table, required',
+  `triggered_notification_date` DATE NOT NULL COMMENT 'The date the notification was triggered',
+  `triggered_notification_active` BIT(1) COMMENT 'True if the triggered notification is active, otherwise false',
+  `triggered_notification_positive` BIT(1) COMMENT 'True if the triggered notification indicates a positive trend, otherwise false',
+  `triggered_notification_value_when_triggered` DOUBLE NOT NULL COMMENT 'The value that triggered the notification',
+  PRIMARY KEY (`triggered_notification_id`),
+  FOREIGN KEY (`notification_fk`)
+    REFERENCES `scholar_warehouse`.`notification`(`notification_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`user_fk`)
+    REFERENCES `scholar_warehouse`.`user` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
