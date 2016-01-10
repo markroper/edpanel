@@ -1,11 +1,12 @@
 package com.scholarscore.models.notification.window;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Created by markroper on 1/9/16.
  */
-public class NotificationWindow {
+public class NotificationWindow implements Serializable {
     private Duration window;
     //If true, the notification trigger value represents percent change from beggining of window to end.
     //If false or null, the notification trigger value is a magnitude of the change in absolute terms.

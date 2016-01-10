@@ -134,6 +134,7 @@ public class FilteredStudents extends NotificationGroup<Student> {
     }
 
     @Override
+    @Transient
     public NotificationGroupType getType() {
         return NotificationGroupType.FILTERED_STUDENTS;
     }

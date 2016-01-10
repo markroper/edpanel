@@ -529,7 +529,7 @@ CREATE TABLE `scholar_warehouse`.`notification` (
   `subject_group_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the student table for subject student, if any',
   `notification_trigger` DOUBLE NOT NULL COMMENT 'The value at which the notification is triggered',
   `notification_aggregate_function` VARCHAR(256) NULL COMMENT 'SUM, AVG, STD_DEV, & so on',
-  `notification_window` VARCHAR(256) NULL COMMENT 'Day, week, month combined with flag for percent change vs. value trigger',
+  `notification_window` BLOB NULL COMMENT 'Day, week, month combined with flag for percent change vs. value trigger',
   `notification_measure` VARCHAR(64) NULL COMMENT 'GPA, SECTION_GRADE, SUSPENSION, etc.',
   `notification_created_date` DATE DEFAULT NULL COMMENT 'The date the notification was created',
   `notification_expiry_date` DATE DEFAULT NULL COMMENT 'The date the notification expires',
