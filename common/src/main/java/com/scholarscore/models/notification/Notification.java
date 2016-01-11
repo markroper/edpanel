@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 /**
- * This class expresses the various forms that notifications can take within EdPanel extend.  A notification defines
+ * This class expresses the various forms that notifications can take within EdPanel.  A notification defines
  * the circumstances when a user or set of users should be notified about a change in data within EdPanel.
  * Examples of notifications include behaviors like 'notify me when any student's GPA changes by more than 5% over a
  * one month period' or 'notify me if the average grade in the geometry class I teach drops below a B-'.
