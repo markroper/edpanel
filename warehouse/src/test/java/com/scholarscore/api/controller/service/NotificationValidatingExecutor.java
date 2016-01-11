@@ -138,6 +138,8 @@ public class NotificationValidatingExecutor {
     public Notification retrieveAndValidateCreatedNotification(Notification submitted, EntityId id, String msg) {
         submitted.setId(id.getId());
         Notification created = this.get(id.getId(), msg);
+        submitted.getSubjects().setId(created.getSubjects().getId());
+        submitted.getSubscribers().setId(created.getSubscribers().getId());
         Assert.assertEquals(created, submitted, msg + " - these should be equal but they are not:\nCREATED:\n"
                 + created + "\n" + "SUBMITTED:\n" + submitted);
         return created;

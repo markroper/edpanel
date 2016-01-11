@@ -7,11 +7,13 @@ import com.scholarscore.models.notification.TriggeredNotification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
  * Created by markroper on 1/10/16.
  */
+@Transactional
 public class NotificationJdbc implements NotificationPersistence {
     private static final String NOTIFICATION_BASE_HQL = "select n from " + HibernateConsts.NOTIFICATION_TABLE +
             " join fetch owner o left join fetch o.contactMethods left join fetch o.homeAddress" +

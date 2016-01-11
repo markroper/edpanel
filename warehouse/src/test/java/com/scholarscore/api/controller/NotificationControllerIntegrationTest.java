@@ -13,11 +13,11 @@ import com.scholarscore.models.notification.group.SectionStudents;
 import com.scholarscore.models.notification.group.SingleStudent;
 import com.scholarscore.models.notification.group.SingleTeacher;
 import com.scholarscore.models.query.AggregateFunction;
-import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,6 +26,7 @@ import java.util.HashSet;
 /**
  * Created by markroper on 1/11/16.
  */
+@Test(groups = {"integration"})
 public class NotificationControllerIntegrationTest extends IntegrationBase {
     private School school;
     private SchoolYear schoolYear;
@@ -37,7 +38,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
     private Student student3;
     private Student student4;
     private Teacher teacher;
-    private Administrator administrator;
+//    private Administrator administrator;
 
     @BeforeClass
     public void init() {
@@ -51,42 +52,42 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         teacher.setCurrentSchoolId(school.getId());
         teacher = teacherValidatingExecutor.create(teacher, "Create a base teacher");
 
-        administrator = new Administrator();
-        administrator.setName("Ms. Admin");
-        administrator.setCurrentSchoolId(school.getId());
-        administrator = userValidatingExecutor.createAdmin(administrator, "Create a base teacher");
+//        administrator = new Administrator();
+//        administrator.setName("Ms. Admin");
+//        administrator.setCurrentSchoolId(school.getId());
+//        administrator = userValidatingExecutor.createAdmin(administrator, "Create a base teacher");
 
         student1 = new Student();
         student1.setName(localeServiceUtil.generateName());
         student1.setCurrentSchoolId(school.getId());
-        student1 = studentValidatingExecutor.create(student1, "create base student");
         student1.setFederalEthnicity("true");
         student1.setGender(Gender.MALE);
         student1.setFederalRace("W");
+        student1 = studentValidatingExecutor.create(student1, "create base student");
 
         student2 = new Student();
         student2.setName(localeServiceUtil.generateName());
         student2.setCurrentSchoolId(school.getId());
-        student2 = studentValidatingExecutor.create(student2, "create base student");
         student2.setFederalEthnicity("false");
         student2.setGender(Gender.FEMALE);
         student2.setFederalRace("A");
+        student2 = studentValidatingExecutor.create(student2, "create base student");
 
         student3 = new Student();
         student3.setName(localeServiceUtil.generateName());
         student3.setCurrentSchoolId(school.getId());
-        student3 = studentValidatingExecutor.create(student3, "create base student");
         student3.setFederalEthnicity("true");
         student3.setGender(Gender.MALE);
         student3.setFederalRace("B");
+        student3 = studentValidatingExecutor.create(student3, "create base student");
 
         student4 = new Student();
         student4.setName(localeServiceUtil.generateName());
         student4.setCurrentSchoolId(school.getId());
-        student4 = studentValidatingExecutor.create(student4, "create base student");
         student4.setFederalEthnicity("false");
         student4.setGender(Gender.FEMALE);
         student4.setFederalRace("I");
+        student4 = studentValidatingExecutor.create(student4, "create base student");
 
         schoolYear = new SchoolYear();
         schoolYear.setName(localeServiceUtil.generateName());
@@ -147,7 +148,9 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         SingleStudent singleStudent = new SingleStudent();
         singleStudent.setStudentId(student2.getId());
         studentSectionGrade.setSubscribers(singleStudent);
-        studentSectionGrade.setSubjects(singleStudent);
+        SingleStudent singleStudentSubject = new SingleStudent();
+        singleStudentSubject.setStudentId(student2.getId());
+        studentSectionGrade.setSubjects(singleStudentSubject);
 
         return new Object[][] {
                 { "Notify on the GPA of students within a section", teacherStudentGpa },
@@ -156,6 +159,11 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
 //                { "Fully populated behavior", schoolNotificationSchoolAbsenses },
 //                { "Fully populated behavior", studentFilterNotificationHwCompletion },
         };
+    }
+
+    @Test(dataProvider = "createNotificationsProvider")
+    public void createNotifications(String msg, Notification notification) {
+        notificationValidatingExecutor.create(notification, msg);
     }
 
 }
