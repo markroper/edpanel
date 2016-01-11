@@ -84,6 +84,11 @@ public class NotificationJdbc implements NotificationPersistence {
     }
 
     @Override
+    public TriggeredNotification selectTriggered(long triggeredId) {
+        return hibernateTemplate.get(TriggeredNotification.class, triggeredId);
+    }
+
+    @Override
     public Long insertTriggeredNotification(long notificationId, long userId, TriggeredNotification triggered) {
         TriggeredNotification n = this.hibernateTemplate.merge(triggered);
         return n.getId();

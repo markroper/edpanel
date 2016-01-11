@@ -27,6 +27,8 @@ public interface NotificationPersistence {
      */
     List<TriggeredNotification> selectTriggeredForUser(long userId, boolean includeInactive);
 
+    TriggeredNotification selectTriggered(long triggeredId);
+
     Long insertTriggeredNotification(long notificationId, long userId, TriggeredNotification triggered);
 
     void updateTriggeredNotification(long triggeredNotificationId, TriggeredNotification updated);
