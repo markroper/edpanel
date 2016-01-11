@@ -65,7 +65,7 @@ public class NotificationManagerImpl implements NotificationManager {
 
     @Override
     public ServiceResponse<EntityId> createNotification(Notification notification) {
-        return new ServiceResponse(notificationPersistence.insertNotification(notification));
+        return new ServiceResponse<>(new EntityId(notificationPersistence.insertNotification(notification)));
     }
 
     @Override
@@ -75,6 +75,7 @@ public class NotificationManagerImpl implements NotificationManager {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public ServiceResponse<Void> deleteNotification(Long notificationId) {
         notificationPersistence.deleteNotification(notificationId);
         return new ServiceResponse<>((Void) null);
