@@ -6,6 +6,8 @@ import com.scholarscore.models.notification.group.NotificationGroup;
 import com.scholarscore.models.notification.window.NotificationWindow;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.user.User;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -39,6 +41,8 @@ public class Notification {
     private Long id;
     private String name;
     private Long schoolId;
+    //Can be null if the notification is unrelated to a single section
+    private Long sectionId;
     //The creating user of the notification
     private User owner;
     //The group of people who will be notified if the notification is triggered
@@ -70,6 +74,15 @@ public class Notification {
 
     public void setSchoolId(Long schoolId) {
         this.schoolId = schoolId;
+    }
+
+    @Column(name = HibernateConsts.SECTION_FK)
+    public Long getSectionId() {
+        return sectionId;
+    }
+
+    public void setSectionId(Long sectionId) {
+        this.sectionId = sectionId;
     }
 
     @Id
@@ -106,6 +119,7 @@ public class Notification {
     @OneToOne
     @JoinColumn(name=HibernateConsts.NOTIFICATION_SUBSCRIBERS_FK)
     @Fetch(FetchMode.JOIN)
+    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     public NotificationGroup getSubscribers() {
         return subscribers;
     }
@@ -117,6 +131,7 @@ public class Notification {
     @OneToOne
     @JoinColumn(name=HibernateConsts.NOTIFICATION_SUBJECTS_FK)
     @Fetch(FetchMode.JOIN)
+    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     public NotificationGroup getSubjects() {
         return subjects;
     }
@@ -184,7 +199,7 @@ public class Notification {
     @Override
     public int hashCode() {
         return Objects.hash(subscribers, subjects, owner, triggerValue, aggregateFunction,
-                window, measure, createdDate, expiryDate, schoolId);
+                window, measure, createdDate, expiryDate, schoolId, sectionId);
     }
 
     @Override
@@ -200,6 +215,7 @@ public class Notification {
                 && Objects.equals(this.id, other.id)
                 && Objects.equals(this.owner, other.owner)
                 && Objects.equals(this.schoolId, other.schoolId)
+                && Objects.equals(this.sectionId, other.sectionId)
                 && Objects.equals(this.subjects, other.subjects)
                 && Objects.equals(this.triggerValue, other.triggerValue)
                 && Objects.equals(this.aggregateFunction, other.aggregateFunction)
