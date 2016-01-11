@@ -82,7 +82,7 @@ public abstract class NotificationGroup<T extends Person> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupMembers);
+        return Objects.hash(groupMembers, id);
     }
 
     @Override
@@ -94,6 +94,7 @@ public abstract class NotificationGroup<T extends Person> {
             return false;
         }
         final NotificationGroup other = (NotificationGroup) obj;
-        return Objects.equals(this.groupMembers, other.groupMembers);
+        return Objects.equals(this.groupMembers, other.groupMembers)
+                && Objects.equals(this.id, other.id);
     }
 }

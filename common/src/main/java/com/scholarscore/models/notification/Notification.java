@@ -119,7 +119,7 @@ public class Notification {
     @OneToOne
     @JoinColumn(name=HibernateConsts.NOTIFICATION_SUBSCRIBERS_FK)
     @Fetch(FetchMode.JOIN)
-    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.DELETE })
+    @Cascade({ CascadeType.ALL })
     public NotificationGroup getSubscribers() {
         return subscribers;
     }
@@ -131,7 +131,7 @@ public class Notification {
     @OneToOne
     @JoinColumn(name=HibernateConsts.NOTIFICATION_SUBJECTS_FK)
     @Fetch(FetchMode.JOIN)
-    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.DELETE })
+    @Cascade({ CascadeType.ALL })
     public NotificationGroup getSubjects() {
         return subjects;
     }
