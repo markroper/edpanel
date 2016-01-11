@@ -33,7 +33,8 @@ public class NotificationController extends BaseController {
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity evaluateNotifications(
-            @RequestBody Long schoolId) {
+            @ApiParam(name = "schoolId", required = true, value = "The school ID")
+            @PathVariable(value="schoolId") Long schoolId) {
         return respond(pm.getNotificationManager().evaluateNotifications(schoolId));
     }
 
@@ -135,7 +136,7 @@ public class NotificationController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody
-    ResponseEntity getAllUserNotifications(
+    ResponseEntity getAllUserTriggeredNotifications(
             @ApiParam(name = "userId", required = true, value = "The user ID")
             @PathVariable(value="userId") Long userId,
             @RequestParam(value="includeInactive", required = false) Boolean includeInactive) {
@@ -151,7 +152,7 @@ public class NotificationController extends BaseController {
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody
-    ResponseEntity getAllUserNotifications(
+    ResponseEntity disableTriggeredNotification(
             @ApiParam(name = "notificationId", required = true, value = "The notification ID")
             @PathVariable(value="notificationId") Long notificationId,
             @ApiParam(name = "triggeredId", required = true, value = "The triggered notification ID")

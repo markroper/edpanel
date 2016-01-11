@@ -16,6 +16,7 @@ import com.scholarscore.api.controller.service.CourseValidatingExecutor;
 import com.scholarscore.api.controller.service.GoalValidatingExecutor;
 import com.scholarscore.api.controller.service.GpaValidatingExecutor;
 import com.scholarscore.api.controller.service.LocaleServiceUtil;
+import com.scholarscore.api.controller.service.NotificationValidatingExecutor;
 import com.scholarscore.api.controller.service.QueryValidatingExecutor;
 import com.scholarscore.api.controller.service.SchoolDayValidatingExecutor;
 import com.scholarscore.api.controller.service.SchoolValidatingExecutor;
@@ -100,6 +101,7 @@ public class IntegrationBase {
     private static final String SURVEY_ENDPOINT = "/surveys";
     private static final String SURVEY_RESPONSE_ENDPOINT = "/responses";
     private static final String RESPONDENTS_ENDOINT = "/respondents";
+    private static final String NOTIFICATIONS_ENDPOINT = "/notifications";
 
     public LocaleServiceUtil localeServiceUtil;
     public CourseValidatingExecutor courseValidatingExecutor;
@@ -123,6 +125,7 @@ public class IntegrationBase {
     public GpaValidatingExecutor gpaValidatingExecutor;
     public SurveyValidatingExecutor surveyValidatingExecutor;
     public SurveyResponseValidatingExecutor surveyResponseValidatingExecutor;
+    public NotificationValidatingExecutor notificationValidatingExecutor;
 
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Student> studentsCreated = new CopyOnWriteArrayList<>();
@@ -186,6 +189,7 @@ public class IntegrationBase {
         gpaValidatingExecutor = new GpaValidatingExecutor(this);
         surveyValidatingExecutor = new SurveyValidatingExecutor(this);
         surveyResponseValidatingExecutor = new SurveyResponseValidatingExecutor(this);
+        notificationValidatingExecutor = new NotificationValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
         EdPanelObjectMapper.MAPPER.registerModule(new JavaTimeModule());
@@ -239,6 +243,7 @@ public class IntegrationBase {
         Assert.assertNotNull(gpaValidatingExecutor, "Unable to configure GPA service");
         Assert.assertNotNull(surveyValidatingExecutor, "Unable to configure survey service");
         Assert.assertNotNull(surveyResponseValidatingExecutor, "Unable to configure survey response service");
+        Assert.assertNotNull(notificationValidatingExecutor, "Unable to configure survey response service");
     }
 
     /**
@@ -885,6 +890,14 @@ public class IntegrationBase {
 
     public String getSurveyResponseByRespondentEndpoint(Long respondentId) {
         return getSurveyEndpoint() + RESPONDENTS_ENDOINT + pathify(respondentId) + SURVEY_RESPONSE_ENDPOINT;
+    }
+
+    public String getNotificationEndpoint() {
+        return BASE_API_ENDPOINT + NOTIFICATIONS_ENDPOINT;
+    }
+
+    public String getNotificationEndpoint(Long notificationId) {
+        return getNotificationEndpoint() + pathify(notificationId);
     }
 
     protected void invalidateCookie() { mockMvc.setjSessionId(null); }

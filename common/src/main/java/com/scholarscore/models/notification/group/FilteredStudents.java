@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * A notification can be created that monitors a group of students by demographic filters. For example
+ * 'alert me if my female white students with special needs who are juniors drop below an average GPA of 2.5'
+ *
  * Created by markroper on 1/9/16.
  */
 @Entity
