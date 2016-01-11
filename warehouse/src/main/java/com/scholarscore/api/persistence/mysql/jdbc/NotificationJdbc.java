@@ -15,13 +15,13 @@ import java.util.List;
  */
 @Transactional
 public class NotificationJdbc implements NotificationPersistence {
-    private static final String NOTIFICATION_BASE_HQL = "select n from " + HibernateConsts.NOTIFICATION_TABLE +
-            " join fetch owner o left join fetch o.contactMethods left join fetch o.homeAddress" +
-            " join fetch subscribers s" +
-            " join fetch subjects su ";
+    private static final String NOTIFICATION_BASE_HQL = "select n from " + HibernateConsts.NOTIFICATION_TABLE + " n" +
+            " left join fetch n.owner o left join fetch o.contactMethods left join fetch o.homeAddress" +
+            " left join fetch n.subscribers s" +
+            " left join fetch n.subjects su";
     private static final String TRIGGERED_NOTIFICATION_BASE_HQL = "select t from " +
-            HibernateConsts.TRIGGERED_NOTIFICATION_TABLE +
-            " join fetch notification n" +
+            HibernateConsts.TRIGGERED_NOTIFICATION_TABLE + " t" +
+            " join fetch t.notification n" +
             " join fetch n.owner o left join fetch o.contactMethods left join fetch o.homeAddress" +
             " join fetch n.subscribers s" +
             " join fetch n.subjects su";
@@ -45,7 +45,7 @@ public class NotificationJdbc implements NotificationPersistence {
     @SuppressWarnings("unchecked")
     public List<Notification> selectAllForUser(long userId) {
         return (List<Notification>)hibernateTemplate.findByNamedParam(
-                NOTIFICATION_BASE_HQL + " where o.id = :userId", "userId", userId);
+                NOTIFICATION_BASE_HQL + " where n.owner.id = :userId", "userId", userId);
     }
 
     @Override
