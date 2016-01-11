@@ -26,6 +26,7 @@
         <property name="adminManager" ref="adminManager"/>
         <property name="gpaManager" ref="gpaManager"/>
         <property name="surveyManager" ref="surveyManager"/>
+        <property name="notificationManager" ref="notificationManager"/>
     </bean>
 
     <bean id="adminManager"
@@ -51,6 +52,12 @@
     <bean id="surveyManager"
           class="com.scholarscore.api.manager.SurveyManagerImpl">
         <property name="surveyPersistence" ref="surveyPersistence"/>
+        <property name="pm" ref="PM"/>
+    </bean>
+
+    <bean id="notificationManager"
+          class="com.scholarscore.api.manager.NotificationManagerImpl">
+        <property name="notificationPersistence" ref="notificationPersistence"/>
         <property name="pm" ref="PM"/>
     </bean>
 
