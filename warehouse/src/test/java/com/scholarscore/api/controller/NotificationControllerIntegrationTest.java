@@ -9,12 +9,18 @@ import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.notification.Notification;
 import com.scholarscore.models.notification.NotificationMeasure;
+import com.scholarscore.models.notification.group.FilteredStudents;
+import com.scholarscore.models.notification.group.SchoolAdministrators;
 import com.scholarscore.models.notification.group.SectionStudents;
 import com.scholarscore.models.notification.group.SingleStudent;
 import com.scholarscore.models.notification.group.SingleTeacher;
+import com.scholarscore.models.notification.window.Duration;
+import com.scholarscore.models.notification.window.NotificationWindow;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
+import org.apache.commons.lang.RandomStringUtils;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -22,6 +28,7 @@ import org.testng.annotations.Test;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Created by markroper on 1/11/16.
@@ -38,7 +45,6 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
     private Student student3;
     private Student student4;
     private Teacher teacher;
-//    private Administrator administrator;
 
     @BeforeClass
     public void init() {
@@ -51,11 +57,6 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         teacher.setName("Mr. Jones");
         teacher.setCurrentSchoolId(school.getId());
         teacher = teacherValidatingExecutor.create(teacher, "Create a base teacher");
-
-//        administrator = new Administrator();
-//        administrator.setName("Ms. Admin");
-//        administrator.setCurrentSchoolId(school.getId());
-//        administrator = userValidatingExecutor.createAdmin(administrator, "Create a base teacher");
 
         student1 = new Student();
         student1.setName(localeServiceUtil.generateName());
@@ -134,7 +135,6 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         singleTeacher.setTeacherId(teacher.getId());
         teacherStudentGpa.setSubscribers(singleTeacher);
 
-
         Notification studentSectionGrade = new Notification();
         studentSectionGrade.setCreatedDate(LocalDate.now());
         studentSectionGrade.setExpiryDate(LocalDate.now().plusMonths(3));
@@ -152,18 +152,76 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         singleStudentSubject.setStudentId(student2.getId());
         studentSectionGrade.setSubjects(singleStudentSubject);
 
+        Notification behaviorScoreNotification = new Notification();
+        behaviorScoreNotification.setCreatedDate(LocalDate.now());
+        behaviorScoreNotification.setExpiryDate(LocalDate.now().plusMonths(3));
+        behaviorScoreNotification.setMeasure(NotificationMeasure.BEHAVIOR_SCORE);
+        behaviorScoreNotification.setName("School wide boys behavior score grade goal");
+        behaviorScoreNotification.setOwner(teacher);
+        behaviorScoreNotification.setSchoolId(school.getId());
+        behaviorScoreNotification.setAggregateFunction(AggregateFunction.AVG);
+        behaviorScoreNotification.setTriggerValue(80D);
+        //subscribers & subjects group are the same in this case
+        SchoolAdministrators schoolAdmins = new SchoolAdministrators();
+        behaviorScoreNotification.setSubscribers(schoolAdmins);
+        FilteredStudents filteredStudents = new FilteredStudents();
+        filteredStudents.setGender(Gender.MALE);
+        behaviorScoreNotification.setSubjects(filteredStudents);
+
+        Notification hwCompletion = new Notification();
+        hwCompletion.setCreatedDate(LocalDate.now());
+        hwCompletion.setExpiryDate(LocalDate.now().plusMonths(3));
+        hwCompletion.setMeasure(NotificationMeasure.HOMEWORK_COMPLETION);
+        hwCompletion.setName("Section homework completion rate change of 5% in a week");
+        hwCompletion.setOwner(teacher);
+        hwCompletion.setSchoolId(school.getId());
+        hwCompletion.setSectionId(section.getId());
+        hwCompletion.setTriggerValue(0.05);
+        NotificationWindow w = new NotificationWindow();
+        w.setTriggerIsPercent(true);
+        w.setWindow(Duration.WEEK);
+        hwCompletion.setWindow(w);
+        //subscribers & subjects group are the same in this case
+        SectionStudents sectionStudents = new SectionStudents();
+        sectionStudents.setSectionId(section.getId());
+        hwCompletion.setSubjects(sectionStudents);
+        SingleTeacher teach = new SingleTeacher();
+        teach.setTeacherId(teacher.getId());
+        hwCompletion.setSubscribers(teach);
+
         return new Object[][] {
                 { "Notify on the GPA of students within a section", teacherStudentGpa },
                 { "Notify on a single section grade for a single student", studentSectionGrade },
-//                { "Fully populated behavior", adminNotificationBehaviorScore },
-//                { "Fully populated behavior", schoolNotificationSchoolAbsenses },
-//                { "Fully populated behavior", studentFilterNotificationHwCompletion },
+                { "Notify on boys behavior score", behaviorScoreNotification },
+                { "Notify on section homework completion rate change of 5% in a week", hwCompletion }
         };
     }
 
     @Test(dataProvider = "createNotificationsProvider")
     public void createNotifications(String msg, Notification notification) {
-        notificationValidatingExecutor.create(notification, msg);
+        Notification n = notificationValidatingExecutor.create(notification, msg);
+        notificationValidatingExecutor.delete(n.getId(), msg);
     }
 
+    @Test(dataProvider = "createNotificationsProvider")
+    public void createAndThenUpdateNotifications(String msg, Notification notification) {
+        Notification n = notificationValidatingExecutor.create(notification, msg);
+        n.setName(RandomStringUtils.randomAlphabetic(10));
+        notificationValidatingExecutor.update(n, msg);
+        notificationValidatingExecutor.delete(n.getId(), msg);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void createTestGetByOwner() {
+        Object[][] inputs = createNotificationsProvider();
+        for(int i = 0; i < inputs.length; i++) {
+            notificationValidatingExecutor.create((Notification)inputs[i][1], (String)inputs[i][0]);
+        }
+        List<Notification> notifications = notificationValidatingExecutor.getByUserId(
+                teacher.getId(), "Get all notifications owned by a teacher");
+        Assert.assertEquals(notifications.size(), 3, "Unexpected number of notifications for a user");
+        List<Notification> allNotifications = notificationValidatingExecutor.getAll("all notifications");
+        Assert.assertEquals(allNotifications.size(), 4, "Unexpected number of notifications returned by getAll()");
+    }
 }

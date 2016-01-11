@@ -37,7 +37,7 @@ public class NotificationValidatingExecutor {
                 serviceBase.getNotificationEndpoint(),
                 null,
                 s);
-        EntityId surveyId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
+            EntityId surveyId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
         Assert.assertNotNull(surveyId, "unexpected null day ID returned from create call for case: " + msg);
         return retrieveAndValidateCreatedNotification(s, surveyId, msg);
     }
@@ -106,9 +106,8 @@ public class NotificationValidatingExecutor {
                 serviceBase.getNotificationEndpoint(n.getId()),
                 null,
                 n);
-        EntityId nid = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
-        Assert.assertNotNull(nid, "unexpected null app returned from create call for case: " + msg);
-        retrieveAndValidateCreatedNotification(n, nid, msg);
+        Void nid = serviceBase.validateResponse(response, new TypeReference<Void>(){});
+        retrieveAndValidateCreatedNotification(n, new EntityId(n.getId()), msg);
     }
 
     /*
