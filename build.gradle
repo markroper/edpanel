@@ -1,3 +1,7 @@
+plugins {
+  id 'org.liquibase.gradle' version '1.2.1'
+}
+
 allprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'
@@ -34,7 +38,6 @@ allprojects {
         hibernateValidator = "5.2.2.Final"
     }
 }
-
 
 
 idea {
@@ -119,3 +122,31 @@ integrationCodeCoverageReport.dependsOn {
       project(':warehouse').integrationLocalWithContainer
 }
 
+dependencies {
+    // used for database schema version control management 
+    compile "org.liquibase:liquibase-core:3.4.2"
+}
+
+liquibase {
+  activities {
+    main {
+
+      def dbPropsFilePath = "/warehouse/src/main/resources/database.properties"
+    
+      changeLogFile 'database/liquibase/db.changelog-master.xml'
+      url "jdbc:mysql://localhost:3306/scholar_warehouse"
+//      username project.ext.mainUsername
+//      password project.ext.mainPassword
+        username 'warehouse'
+        password 't3achTh3Childr3n'
+    }/*
+    security {
+      changeLogFile 'src/main/db/security.groovy'
+      url project.ext.securityUrl
+      username project.ext.securityUsername
+      password project.ext.securityPassword
+     }
+    */
+  }
+  //runList = project.ext.runList
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    
+    <changeSet author="jordan" id="changelog-1.0">
+        <comment>XML comments won't be persisted, include any relevant comments in comment tags like this</comment>
+        <createTable tableName="ExampleTable">
+            <column name="EXAMPLE_TABLE_PRIMARY_KEY" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" unique="false" />
+            </column>
+            <column name="COLUMN1" type="TEXT">
+                <constraints nullable="true" primaryKey="false" unique="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+</databaseChangeLog>
