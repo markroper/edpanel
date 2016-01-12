@@ -3,19 +3,14 @@ package com.scholarscore.api.manager.notification;
 import com.scholarscore.api.manager.OrchestrationManager;
 import com.scholarscore.api.manager.notification.calc.AssignmentGradeCalc;
 import com.scholarscore.api.manager.notification.calc.BehaviorScoreCalc;
-import com.scholarscore.api.manager.notification.calc.DemeritCalc;
-import com.scholarscore.api.manager.notification.calc.DetentionCalc;
 import com.scholarscore.api.manager.notification.calc.GpaCalc;
 import com.scholarscore.api.manager.notification.calc.HwCompletionCalc;
-import com.scholarscore.api.manager.notification.calc.MeritCalc;
 import com.scholarscore.api.manager.notification.calc.NotificationCalculator;
-import com.scholarscore.api.manager.notification.calc.OutOfClassReferralCalc;
-import com.scholarscore.api.manager.notification.calc.SchoolAbsenseCalc;
+import com.scholarscore.api.manager.notification.calc.SchoolAbsenceCalc;
 import com.scholarscore.api.manager.notification.calc.SchoolTardyCalc;
 import com.scholarscore.api.manager.notification.calc.SectionAbsenceCalc;
 import com.scholarscore.api.manager.notification.calc.SectionGradeCalc;
 import com.scholarscore.api.manager.notification.calc.SectionTardyCalc;
-import com.scholarscore.api.manager.notification.calc.SuspensionCalc;
 import com.scholarscore.models.notification.Notification;
 import com.scholarscore.models.notification.TriggeredNotification;
 import com.scholarscore.models.user.Person;
@@ -61,26 +56,11 @@ public class NotificationTriggerEvaluator {
             case BEHAVIOR_SCORE:
                 calculator = new BehaviorScoreCalc();
                 break;
-            case DETENTION:
-                calculator = new DetentionCalc();
-                break;
-            case SUSPENSION:
-                calculator = new SuspensionCalc();
-                break;
-            case MERIT:
-                calculator = new MeritCalc();
-                break;
-            case DEMERIT:
-                calculator = new DemeritCalc();
-                break;
-            case OUT_OF_CLASS_REFERRAL:
-                calculator = new OutOfClassReferralCalc();
-                break;
             case HOMEWORK_COMPLETION:
                 calculator = new HwCompletionCalc();
                 break;
             case SCHOOL_ABSENCE:
-                calculator = new SchoolAbsenseCalc();
+                calculator = new SchoolAbsenceCalc();
                 break;
             case SCHOOL_TARDY:
                 calculator = new SchoolTardyCalc();

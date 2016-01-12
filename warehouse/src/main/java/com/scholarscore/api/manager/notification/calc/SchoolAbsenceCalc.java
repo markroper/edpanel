@@ -12,11 +12,11 @@ import java.util.List;
 /**
  * Created by markroper on 1/12/16.
  */
-public class SectionAbsenceCalc extends AttendanceCalcBase implements NotificationCalculator {
+public class SchoolAbsenceCalc extends AttendanceCalcBase implements NotificationCalculator {
     @Override
     public List<TriggeredNotification> calculate(
             List<? extends Person> subjects, Notification notification, OrchestrationManager manager) {
-        return calculate(subjects, notification, manager, AttendanceStatus.ABSENT, AttendanceTypes.SECTION);
+        return calculate(subjects, notification, manager, AttendanceStatus.ABSENT, AttendanceTypes.DAILY);
     }
 
     public List<TriggeredNotification> calculateTimeWindowTriggerdNotifications(
