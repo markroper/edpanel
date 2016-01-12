@@ -21,8 +21,7 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
             "FROM student s " +
             "left join fetch s.homeAddress " +
             "left join fetch s.mailingAddress " +
-            "left join fetch s.contactMethods " +
-            "WHERE s.currentSchoolId = :schoolId";
+            "left join fetch s.contactMethods";
 
     @Autowired
     private HibernateTemplate hibernateTemplate;
@@ -43,7 +42,7 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
     @SuppressWarnings("unchecked")
     public Collection<Student> selectAll(Long schoolId) {
         if(null != schoolId) {
-            String sql = STUDENT_HQL;
+            String sql = STUDENT_HQL + " WHERE s.currentSchoolId = :schoolId";
             return (List<Student>) hibernateTemplate.findByNamedParam(sql, "schoolId", schoolId);
         } else {
             return hibernateTemplate.loadAll(Student.class);
@@ -66,7 +65,7 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
         if(null != students) {
             if(null != students.getGender()) {
                 paramsList.add("gender");
-                paramValuesList.add(students.getGender().name());
+                paramValuesList.add(students.getGender());
                 studentWhereClause += " and s.gender = :gender";
             }
             if(null != students.getFederalRaces() && !students.getFederalRaces().isEmpty()) {

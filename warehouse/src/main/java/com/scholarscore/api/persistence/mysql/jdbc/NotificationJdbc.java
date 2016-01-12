@@ -76,8 +76,8 @@ public class NotificationJdbc implements NotificationPersistence {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<TriggeredNotification> selectTriggeredForUser(long userId, boolean includeInactive) {
-        if(includeInactive) {
+    public List<TriggeredNotification> selectTriggeredForUser(long userId, Boolean includeInactive) {
+        if(null != includeInactive && includeInactive) {
             return (List<TriggeredNotification>) hibernateTemplate.findByNamedParam(
                     TRIGGERED_NOTIFICATION_BASE_HQL + " where t.userIdToNotify = :userId", "userId", userId);
         } else {

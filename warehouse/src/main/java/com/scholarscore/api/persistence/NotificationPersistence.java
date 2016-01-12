@@ -25,7 +25,7 @@ public interface NotificationPersistence {
     /*
         TRIGGERED NOTIFICATION RELATED
      */
-    List<TriggeredNotification> selectTriggeredForUser(long userId, boolean includeInactive);
+    List<TriggeredNotification> selectTriggeredForUser(long userId, Boolean includeInactive);
 
     TriggeredNotification selectTriggered(long triggeredId);
 

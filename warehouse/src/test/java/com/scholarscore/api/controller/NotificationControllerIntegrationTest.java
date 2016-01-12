@@ -6,9 +6,12 @@ import com.scholarscore.models.Gender;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
+import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.gpa.AddedValueGpa;
 import com.scholarscore.models.notification.Notification;
 import com.scholarscore.models.notification.NotificationMeasure;
+import com.scholarscore.models.notification.TriggeredNotification;
 import com.scholarscore.models.notification.group.FilteredStudents;
 import com.scholarscore.models.notification.group.SchoolAdministrators;
 import com.scholarscore.models.notification.group.SectionStudents;
@@ -19,7 +22,7 @@ import com.scholarscore.models.notification.window.NotificationWindow;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -65,6 +68,11 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         student1.setGender(Gender.MALE);
         student1.setFederalRace("W");
         student1 = studentValidatingExecutor.create(student1, "create base student");
+        AddedValueGpa gpa1 = new AddedValueGpa();
+        gpa1.setCalculationDate(LocalDate.now());
+        gpa1.setStudentId(student1.getId());
+        gpa1.setScore(3.3);
+        gpaValidatingExecutor.create(student1.getUserId(), gpa1, "GPA for student1");
 
         student2 = new Student();
         student2.setName(localeServiceUtil.generateName());
@@ -73,6 +81,11 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         student2.setGender(Gender.FEMALE);
         student2.setFederalRace("A");
         student2 = studentValidatingExecutor.create(student2, "create base student");
+        AddedValueGpa gpa2 = new AddedValueGpa();
+        gpa2.setCalculationDate(LocalDate.now());
+        gpa2.setStudentId(student2.getId());
+        gpa2.setScore(2.8);
+        gpaValidatingExecutor.create(student2.getUserId(), gpa2, "GPA for student1");
 
         student3 = new Student();
         student3.setName(localeServiceUtil.generateName());
@@ -81,6 +94,11 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         student3.setGender(Gender.MALE);
         student3.setFederalRace("B");
         student3 = studentValidatingExecutor.create(student3, "create base student");
+        AddedValueGpa gpa3 = new AddedValueGpa();
+        gpa3.setCalculationDate(LocalDate.now());
+        gpa3.setStudentId(student3.getId());
+        gpa3.setScore(2.9);
+        gpaValidatingExecutor.create(student3.getUserId(), gpa3, "GPA for student1");
 
         student4 = new Student();
         student4.setName(localeServiceUtil.generateName());
@@ -89,6 +107,11 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         student4.setGender(Gender.FEMALE);
         student4.setFederalRace("I");
         student4 = studentValidatingExecutor.create(student4, "create base student");
+        AddedValueGpa gpa4 = new AddedValueGpa();
+        gpa4.setCalculationDate(LocalDate.now());
+        gpa4.setStudentId(student4.getId());
+        gpa4.setScore(3.8);
+        gpaValidatingExecutor.create(student4.getUserId(), gpa4, "GPA for student1");
 
         schoolYear = new SchoolYear();
         schoolYear.setName(localeServiceUtil.generateName());
@@ -113,6 +136,21 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         section.getTeachers().add(teacher);
         section.setTerm(term);
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
+
+        StudentSectionGrade g1 = new StudentSectionGrade();
+        g1.setGrade(0.85);
+        g1.setStudent(student1);
+        g1.setComplete(true);
+        g1.setSection(section);
+
+        StudentSectionGrade g2 = new StudentSectionGrade();
+        g2.setGrade(0.75);
+        g2.setStudent(student2);
+        g2.setComplete(true);
+        g2.setSection(section);
+
+        studentSectionGradeValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student1.getId(), g1, "Student 1 grade");
+        studentSectionGradeValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student2.getId(), g2, "Student 1 grade");
     }
 
     @DataProvider
@@ -125,7 +163,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         teacherStudentGpa.setName("Average student GPA in section");
         teacherStudentGpa.setOwner(teacher);
         teacherStudentGpa.setSchoolId(school.getId());
-        teacherStudentGpa.setTriggerValue(3.0);
+        teacherStudentGpa.setTriggerValue(3.2);
         //Subject group
         SectionStudents sectionGroup = new SectionStudents();
         sectionGroup.setSectionId(section.getId());
@@ -160,6 +198,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         behaviorScoreNotification.setOwner(teacher);
         behaviorScoreNotification.setSchoolId(school.getId());
         behaviorScoreNotification.setAggregateFunction(AggregateFunction.AVG);
+        behaviorScoreNotification.setTriggeWhenGreaterThan(true);
         behaviorScoreNotification.setTriggerValue(80D);
         //subscribers & subjects group are the same in this case
         SchoolAdministrators schoolAdmins = new SchoolAdministrators();
@@ -223,5 +262,14 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         Assert.assertEquals(notifications.size(), 3, "Unexpected number of notifications for a user");
         List<Notification> allNotifications = notificationValidatingExecutor.getAll("all notifications");
         Assert.assertEquals(allNotifications.size(), 4, "Unexpected number of notifications returned by getAll()");
+
+        notificationValidatingExecutor.evaluateNotifications(school.getId());
+
+        List<TriggeredNotification> teacherTriggeredNotifications =
+                notificationValidatingExecutor.getTriggeredNotificationsForUser(teacher.getId(), "Teacher triggered notifications");
+        Assert.assertEquals(teacherTriggeredNotifications.size(), 1, "Unexpected number of teacher triggered notifications returned");
+        List<TriggeredNotification> student2TriggeredNotifications =
+                notificationValidatingExecutor.getTriggeredNotificationsForUser(student2.getId(), "Student 2 triggered notifications");
+        Assert.assertEquals(student2TriggeredNotifications.size(), 1, "Unexpected number of teacher triggered notifications returned");
     }
 }
