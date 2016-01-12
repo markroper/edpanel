@@ -60,6 +60,13 @@ public class NotificationManagerImpl implements NotificationManager {
     @Override
     public ServiceResponse<Void> evaluateNotifications(Long schoolId) {
         //TODO: implement the notification evaluation
+        ServiceResponse<List<Notification>> notificationResponse = getAllNotifications();
+        if(null != notificationResponse.getValue()) {
+            List<Notification> notifications = notificationResponse.getValue();
+
+        } else {
+            return new ServiceResponse<>(notificationResponse.getCode());
+        }
         return null;
     }
 

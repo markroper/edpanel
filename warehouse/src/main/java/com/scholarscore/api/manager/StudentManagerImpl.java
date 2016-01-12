@@ -9,6 +9,7 @@ import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.PrepScore;
 import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.models.notification.group.FilteredStudents;
 import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.user.Student;
 
@@ -24,6 +25,7 @@ import java.util.List;
  */
 public class StudentManagerImpl implements StudentManager {
     private static final int CREATE_RETRY_MAX = 10;
+    private static final String STUDENT_HQL = "";
     StudentPersistence studentPersistence;
     StudentPrepScorePersistence studentPrepScorePersistence;
 
@@ -88,6 +90,11 @@ public class StudentManagerImpl implements StudentManager {
     public ServiceResponse<Collection<Student>> getAllStudents(Long schoolId) {
         return new ServiceResponse<>(
                 studentPersistence.selectAll(schoolId));
+    }
+
+    @Override
+    public ServiceResponse<Collection<Student>> getStudents(Long schoolId, FilteredStudents students) {
+        return new ServiceResponse<>(studentPersistence.selectAll(schoolId, students));
     }
 
     @Override
