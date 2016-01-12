@@ -3,6 +3,7 @@ package com.scholarscore.api.manager;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.attendance.Attendance;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -14,7 +15,9 @@ public interface AttendanceManager {
      * @return
      */
     public ServiceResponse<Collection<Attendance>> getAllStudentAttendance(long schoolId, long studentId);
-    
+
+    public ServiceResponse<Collection<Attendance>> getAllStudentAttendanceInRange(
+            long schoolId, List<Long> studentIds, LocalDate start, LocalDate end);
     /**
      * Returns all attendance entries for a student at a school in a single term
      * @param schoolId

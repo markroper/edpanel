@@ -17,6 +17,8 @@ import java.util.List;
 
 @Transactional
 public class AttendanceJdbc implements AttendancePersistence {
+    private static final String ATTENDANCE_HQL = "from attendance a " +
+            "join fetch a.schoolDay d join fetch d.school s join fetch s.address add ";
     @Autowired
     private HibernateTemplate hibernateTemplate;
     private EntityPersistence<Term> termPersistence;
@@ -89,6 +91,18 @@ public class AttendanceJdbc implements AttendancePersistence {
         return (Collection<Attendance>)hibernateTemplate.findByNamedParam(
                 "from attendance a where a.schoolDay.school.id = :schoolId and a.student.id = :studentId", 
                 paramNames, 
+                paramValues);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection<Attendance> selectAllAttendance(Long schoolId, List<Long> studentIds, LocalDate start, LocalDate end) {
+        String[] paramNames = new String[] { "schoolId", "studentIds", "startDate", "endDate" };
+        Object[] paramValues = new Object[]{ schoolId, studentIds, start, end };
+        return (Collection<Attendance>)hibernateTemplate.findByNamedParam(
+                ATTENDANCE_HQL + "where a.schoolDay.school.id = :schoolId and a.student.id in (:studentIds) and " +
+                    "a.schoolDay.date >= :startDate and a.schoolDay.date <= :endDate",
+                paramNames,
                 paramValues);
     }
 
