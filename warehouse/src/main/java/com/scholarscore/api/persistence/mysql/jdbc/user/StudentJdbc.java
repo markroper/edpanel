@@ -5,6 +5,7 @@ import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.util.RoleConstants;
 import com.scholarscore.models.Authority;
 import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.notification.group.FilteredStudents;
 import com.scholarscore.models.user.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -16,6 +17,12 @@ import java.util.List;
 
 @Transactional
 public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
+    private static final String STUDENT_HQL =
+            "FROM student s " +
+            "left join fetch s.homeAddress " +
+            "left join fetch s.mailingAddress " +
+            "left join fetch s.contactMethods " +
+            "WHERE s.currentSchoolId = :schoolId";
 
     @Autowired
     private HibernateTemplate hibernateTemplate;
@@ -36,15 +43,70 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
     @SuppressWarnings("unchecked")
     public Collection<Student> selectAll(Long schoolId) {
         if(null != schoolId) {
-            String sql = "FROM student s " +
-                    "left join fetch s.homeAddress " +
-                    "left join fetch s.mailingAddress " +
-                    "left join fetch s.contactMethods " +
-                    "WHERE s.currentSchoolId = :schoolId";
+            String sql = STUDENT_HQL;
             return (List<Student>) hibernateTemplate.findByNamedParam(sql, "schoolId", schoolId);
         } else {
             return hibernateTemplate.loadAll(Student.class);
         }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection<Student> selectAll(Long schoolId, FilteredStudents students) {
+        String[] params;
+        Object[] paramValues;
+        List<String> paramsList = new ArrayList<>();
+        List<Object> paramValuesList = new ArrayList<>();
+        String studentWhereClause = "";
+        if(null != schoolId) {
+            paramsList.add("schoolId");
+            paramValuesList.add(schoolId);
+            studentWhereClause += " and s.currentSchoolId = :schoolId";
+        }
+        if(null != students) {
+            if(null != students.getGender()) {
+                paramsList.add("gender");
+                paramValuesList.add(students.getGender().name());
+                studentWhereClause += " and s.gender = :gender";
+            }
+            if(null != students.getFederalRaces() && !students.getFederalRaces().isEmpty()) {
+                paramsList.add("federalRaces");
+                paramValuesList.add(students.getFederalRaces());
+                studentWhereClause += " and s.federalRace in (:federalRaces)";
+            }
+            if(null != students.getFederalEthnicities() && !students.getFederalEthnicities().isEmpty()) {
+                paramsList.add("federalEthnicities");
+                paramValuesList.add(students.getFederalEthnicities());
+                studentWhereClause += " and s.federalEthnicity in (:federalEthnicities)";
+            }
+            if(null != students.getProjectedGraduationYears() && !students.getProjectedGraduationYears().isEmpty()) {
+                paramsList.add("projectedGraduationYears");
+                paramValuesList.add(students.getProjectedGraduationYears());
+                studentWhereClause += " and s.projectedGraduationYear in (:projectedGraduationYears)";
+            }
+            if(null != students.getDistrictEntryYears() && !students.getDistrictEntryYears().isEmpty()) {
+                paramsList.add("districtEntryYears");
+                paramValuesList.add(students.getDistrictEntryYears());
+                studentWhereClause += " and s.districtEntryYear in (:districtEntryYears)";
+            }
+            if(null != students.getBirthYears() && !students.getBirthYears().isEmpty()) {
+                paramsList.add("birthYears");
+                paramValuesList.add(students.getBirthYears());
+                studentWhereClause += " and s.birthYear in (:birthYears)";
+            }
+            //TODO: ELL & Sped flags, when they're in...
+        }
+        params = new String[paramsList.size()];
+        paramsList.toArray(params);
+        paramValues = new Object[paramValuesList.size()];
+        paramValuesList.toArray(paramValues);
+        studentWhereClause = " where " + studentWhereClause.substring(5);
+
+        List<Student> studs = (List<Student>)hibernateTemplate.findByNamedParam(
+                STUDENT_HQL + studentWhereClause,
+                params,
+                paramValues);
+        return studs;
     }
 
     @Override
