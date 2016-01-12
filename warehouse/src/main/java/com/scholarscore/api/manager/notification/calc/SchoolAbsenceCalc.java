@@ -18,9 +18,4 @@ public class SchoolAbsenceCalc extends AttendanceCalcBase implements Notificatio
             List<? extends Person> subjects, Notification notification, OrchestrationManager manager) {
         return calculate(subjects, notification, manager, AttendanceStatus.ABSENT, AttendanceTypes.DAILY);
     }
-
-    public List<TriggeredNotification> calculateTimeWindowTriggerdNotifications(
-            Notification notification, OrchestrationManager manager, List<Long> studentIds) {
-        return null;
-    }
 }
