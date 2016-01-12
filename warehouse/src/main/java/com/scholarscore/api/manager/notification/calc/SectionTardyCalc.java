@@ -18,9 +18,4 @@ public class SectionTardyCalc extends AttendanceCalcBase implements Notification
             List<? extends Person> subjects, Notification notification, OrchestrationManager manager) {
         return calculate(subjects, notification, manager, AttendanceStatus.TARDY, AttendanceTypes.SECTION);
     }
-
-    public List<TriggeredNotification> calculateTimeWindowTriggerdNotifications(
-            Notification notification, OrchestrationManager manager, List<Long> studentIds) {
-        return null;
-    }
 }
