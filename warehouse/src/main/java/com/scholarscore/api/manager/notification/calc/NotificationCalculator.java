@@ -2,7 +2,9 @@ package com.scholarscore.api.manager.notification.calc;
 
 import com.scholarscore.api.manager.OrchestrationManager;
 import com.scholarscore.api.util.ServiceResponse;
+import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
+import com.scholarscore.models.Term;
 import com.scholarscore.models.notification.Notification;
 import com.scholarscore.models.notification.TriggeredNotification;
 import com.scholarscore.models.notification.group.FilteredStudents;
@@ -13,6 +15,7 @@ import com.scholarscore.models.notification.group.SectionStudents;
 import com.scholarscore.models.notification.group.SingleAdministrator;
 import com.scholarscore.models.notification.group.SingleStudent;
 import com.scholarscore.models.notification.group.SingleTeacher;
+import com.scholarscore.models.notification.window.Duration;
 import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Person;
 import com.scholarscore.models.user.Student;
@@ -126,5 +129,53 @@ public interface NotificationCalculator {
             }
         }
         return null;
+    }
+
+    static LocalDate resolveStartDate(
+            Duration dur, OrchestrationManager manager, Notification notification) {
+        LocalDate start = LocalDate.now();
+        switch(dur) {
+            case DAY:
+                break;
+            case WEEK:
+                start = LocalDate.now().minusDays(7);
+                break;
+            case MONTH:
+                start = LocalDate.now().minusMonths(1);
+                break;
+            case TERM:
+            case YEAR:
+                ServiceResponse<Collection<SchoolYear>> yearsResp =
+                        manager.getSchoolYearManager().getAllSchoolYears(notification.getSchoolId());
+                if(null != yearsResp.getValue()) {
+                    for(SchoolYear year : yearsResp.getValue()) {
+                        if(year.getStartDate().isBefore(start) && year.getEndDate().isAfter(start)) {
+                            if(dur.equals(Duration.YEAR)) {
+                                //We're in the current year, so use this start date as the start date
+                                start = year.getStartDate();
+                            } else {
+                                //We're in the right year, now find the inner most term
+                                Term curr = null;
+                                for (Term t : year.getTerms()) {
+                                    if (t.getStartDate().isBefore(start) && t.getEndDate().isAfter(start)) {
+                                        //Resolve the inner-most term for the purpose of this calculation
+                                        if (null == curr ||
+                                                java.time.Duration.between(
+                                                        curr.getStartDate(), curr.getEndDate()).getSeconds() >
+                                                        java.time.Duration.between(
+                                                                t.getStartDate(), t.getEndDate()).getSeconds()) {
+                                            curr = t;
+                                        }
+                                    }
+                                }
+                                start = curr.getStartDate();
+                            }
+                            break;
+                        }
+                    }
+                }
+                break;
+        }
+        return start;
     }
 }

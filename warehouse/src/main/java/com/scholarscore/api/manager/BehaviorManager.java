@@ -15,6 +15,7 @@ public interface BehaviorManager {
     public ServiceResponse<Collection<Behavior>> getAllBehaviors(long studentId);
     
     public StatusCode behaviorExists(long studentId, long behaviorId);
+
     public ServiceResponse<Behavior> getBehavior(long studentId, long behaviorId);
     
     public ServiceResponse<Long> createBehavior(long studentId, Behavior behavior);

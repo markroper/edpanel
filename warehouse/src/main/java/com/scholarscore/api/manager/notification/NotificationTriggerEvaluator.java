@@ -25,11 +25,11 @@ import java.util.List;
 /**
  * Created by markroper on 1/11/16.
  */
-public class NotificationEvaluationFactory {
+public class NotificationTriggerEvaluator {
 
     OrchestrationManager manager;
 
-    public NotificationEvaluationFactory(OrchestrationManager manager) {
+    public NotificationTriggerEvaluator(OrchestrationManager manager) {
         this.manager = manager;
     }
 

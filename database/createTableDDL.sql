@@ -526,9 +526,11 @@ CREATE TABLE `scholar_warehouse`.`notification` (
   `notification_name` VARCHAR(256) NULL COMMENT 'Human readable display name for the notification',
   `school_fk` BIGINT UNSIGNED NULL COMMENT 'Foriegn key to the school table, if any',
   `section_fk` BIGINT UNSIGNED NULL COMMENT 'Foriegn key to the section table, if any',
+  `assignment_fk` BIGINT UNSIGNED NULL COMMENT 'Foriegn key to the assignment table, if any',
   `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foriegn key to the users table. Indicates creator and owner of the notification',
   `owning_group_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the student table for owning student, if any',
   `subject_group_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the student table for subject student, if any',
+  `notification_trigger_greater_than` BOOLEAN NULL COMMENT 'Trigger greater than flag',
   `notification_trigger` DOUBLE NOT NULL COMMENT 'The value at which the notification is triggered',
   `notification_aggregate_function` VARCHAR(256) NULL COMMENT 'SUM, AVG, STD_DEV, & so on',
   `notification_window` BLOB NULL COMMENT 'Day, week, month combined with flag for percent change vs. value trigger',
@@ -542,6 +544,10 @@ CREATE TABLE `scholar_warehouse`.`notification` (
     ON UPDATE CASCADE,
   FOREIGN KEY (`section_fk`)
     REFERENCES `scholar_warehouse`.`section`(`section_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`assignment_fk`)
+    REFERENCES `scholar_warehouse`.`assignment`(`assignment_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   FOREIGN KEY (`user_fk`)

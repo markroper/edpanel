@@ -43,6 +43,8 @@ public class Notification {
     private Long schoolId;
     //Can be null if the notification is unrelated to a single section
     private Long sectionId;
+    //Can be null if the notification is not assignment related
+    private Long assignmentId;
     //The creating user of the notification
     private User owner;
     //The group of people who will be notified if the notification is triggered
@@ -53,6 +55,9 @@ public class Notification {
     //would have a trigger value of 0.8. A notification for a student getting 10 demerits in a period of time would
     //have a trigger value of 10.
     private Double triggerValue;
+    //If true, we trigger when the calculated value is greater than or equal to the trigger value
+    //Otherwise, we trigger when the calculated value is less than or equal to the trigger value
+    private Boolean triggeWhenGreaterThan = false;
     //For notifications based on groups of data, which aggregate function to use (e.g. average GPA, or sum of demerits)
     //If this aggregate function is null, the notification is not aggregate based, but rather, value based. For example
     //Notify me if a student's grade falls below 73%.  No aggregate function is required for this notification.
@@ -74,6 +79,24 @@ public class Notification {
 
     public void setSchoolId(Long schoolId) {
         this.schoolId = schoolId;
+    }
+
+    @Column(name = HibernateConsts.ASSIGNMENT_FK)
+    public Long getAssignmentId() {
+        return assignmentId;
+    }
+
+    @Column(name = HibernateConsts.NOTIFICATION_TRIGGER_GREATER_THAN)
+    public Boolean getTriggeWhenGreaterThan() {
+        return triggeWhenGreaterThan;
+    }
+
+    public void setTriggeWhenGreaterThan(Boolean triggeWhenGreaterThan) {
+        this.triggeWhenGreaterThan = triggeWhenGreaterThan;
+    }
+
+    public void setAssignmentId(Long assignmentId) {
+        this.assignmentId = assignmentId;
     }
 
     @Column(name = HibernateConsts.SECTION_FK)
@@ -199,7 +222,7 @@ public class Notification {
     @Override
     public int hashCode() {
         return Objects.hash(subscribers, subjects, owner, triggerValue, aggregateFunction,
-                window, measure, createdDate, expiryDate, schoolId, sectionId);
+                window, measure, createdDate, expiryDate, schoolId, sectionId, assignmentId, triggeWhenGreaterThan);
     }
 
     @Override
@@ -215,6 +238,7 @@ public class Notification {
                 && Objects.equals(this.id, other.id)
                 && Objects.equals(this.owner, other.owner)
                 && Objects.equals(this.schoolId, other.schoolId)
+                && Objects.equals(this.assignmentId, other.assignmentId)
                 && Objects.equals(this.sectionId, other.sectionId)
                 && Objects.equals(this.subjects, other.subjects)
                 && Objects.equals(this.triggerValue, other.triggerValue)
@@ -222,6 +246,7 @@ public class Notification {
                 && Objects.equals(this.measure, other.measure)
                 && Objects.equals(this.createdDate, other.createdDate)
                 && Objects.equals(this.expiryDate, other.expiryDate)
+                && Objects.equals(this.triggeWhenGreaterThan, other.triggeWhenGreaterThan)
                 && Objects.equals(this.window, other.window);
     }
 }

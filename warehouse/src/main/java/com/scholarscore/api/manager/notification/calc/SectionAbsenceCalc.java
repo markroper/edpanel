@@ -13,6 +13,7 @@ import java.util.List;
 public class SectionAbsenceCalc implements NotificationCalculator {
     @Override
     public List<TriggeredNotification> calculate(List<? extends Person> subjects, Notification notification, OrchestrationManager manager) {
+        //TODO: implement me
         return null;
     }
 }
