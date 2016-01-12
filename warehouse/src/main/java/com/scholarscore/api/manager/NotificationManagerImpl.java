@@ -76,7 +76,7 @@ public class NotificationManagerImpl implements NotificationManager {
         } else {
             return new ServiceResponse<>(notificationResponse.getCode());
         }
-        return new ServiceResponse<Void>((Void) null);
+        return new ServiceResponse<>((Void) null);
     }
 
     @Override

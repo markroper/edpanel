@@ -37,7 +37,7 @@ public class GpaCalc implements NotificationCalculator {
             studentIds.add(p.getId());
         }
         //If the Notification uses a time window, calculate appropriately
-        if(null == window) {
+        if(null != window) {
             return calculateTimeWindowTriggerdNotifications(notification, manager, studentIds);
         } else {
             //There is no time window, so we're getting the latest values and comparing against the trigger value
@@ -118,8 +118,8 @@ public class GpaCalc implements NotificationCalculator {
             } else {
                 //abs value of difference between
                 if(triggerValue <= Math.abs(endValue - startValue)) {
-                    return NotificationCalculator.createTriggeredNotifications(
-                            notification, endValue - startValue, manager);
+                    return NotificationCalculator.
+                            createTriggeredNotifications(notification, endValue - startValue, manager);
                 }
             }
         } else {

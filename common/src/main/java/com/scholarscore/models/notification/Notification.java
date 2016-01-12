@@ -23,6 +23,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -40,21 +41,27 @@ import java.util.Objects;
 public class Notification {
     private Long id;
     private String name;
+    @NotNull
     private Long schoolId;
     //Can be null if the notification is unrelated to a single section
     private Long sectionId;
     //Can be null if the notification is not assignment related
     private Long assignmentId;
+    @NotNull
     //The creating user of the notification
     private User owner;
+    @NotNull
     //The group of people who will be notified if the notification is triggered
     private NotificationGroup subscribers;
+    @NotNull
     //The group of people we're calculating something about to potentially trigger a notification
     private NotificationGroup subjects;
+    @NotNull
     //The value that causes the notification to be triggered. For example a notification for a class average of 80%
     //would have a trigger value of 0.8. A notification for a student getting 10 demerits in a period of time would
     //have a trigger value of 10.
     private Double triggerValue;
+    @NotNull
     //If true, we trigger when the calculated value is greater than or equal to the trigger value
     //Otherwise, we trigger when the calculated value is less than or equal to the trigger value
     private Boolean triggeWhenGreaterThan = false;
@@ -67,9 +74,12 @@ public class Notification {
     //the trigger value should be treated as a percent change value, or the actual magnitude of the change in the value
     //from the beginning of the trigger period to the end.
     private NotificationWindow window;
+    @NotNull
     //The entity that is being measured or triggered upon, e.g. GPA, grades, and so on
     private NotificationMeasure measure;
+    @NotNull
     private LocalDate createdDate;
+    @NotNull
     private LocalDate expiryDate;
 
     @Column(name = HibernateConsts.SCHOOL_FK)
