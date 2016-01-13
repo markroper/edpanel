@@ -126,7 +126,7 @@ public class NotificationValidatingExecutor {
 
     public void disableTriggeredNotification(Long notificationId, Long triggeredId, Long userId, String msg) {
         ResultActions response = serviceBase.makeRequest(
-                HttpMethod.GET,
+                HttpMethod.PUT,
                 serviceBase.getNotificationEndpoint(notificationId) +
                         "/triggerednotifications/" + triggeredId + "/users/" + userId,
                 null);
