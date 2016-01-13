@@ -265,7 +265,6 @@ public class HibernateConsts {
     public static final String TRIGGERED_NOTIFICATION_ID = "triggered_notification_id";
     public static final String TRIGGERED_NOTIFICATION_DATE = "triggered_notification_date";
     public static final String TRIGGERED_NOTIFICATION_ACTIVE = "triggered_notification_active";
-    public static final String TRIGGERED_NOTIFICATION_POSITIVE = "triggered_notification_positive";
     public static final String TRIGGERED_NOTIFICATION_VALUE_WHEN_TRIGGERED = "triggered_notification_value_when_triggered";
     public static final String NOTIFICATION_FK = "notification_fk";
 }

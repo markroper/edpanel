@@ -19,6 +19,15 @@ import com.scholarscore.models.goal.BehaviorGoal;
 import com.scholarscore.models.goal.CumulativeGradeGoal;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.gradeformula.GradeFormula;
+import com.scholarscore.models.notification.Notification;
+import com.scholarscore.models.notification.NotificationMeasure;
+import com.scholarscore.models.notification.group.FilteredStudents;
+import com.scholarscore.models.notification.group.SchoolAdministrators;
+import com.scholarscore.models.notification.group.SchoolTeachers;
+import com.scholarscore.models.notification.group.SectionStudents;
+import com.scholarscore.models.notification.window.Duration;
+import com.scholarscore.models.notification.window.NotificationWindow;
+import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.survey.Survey;
 import com.scholarscore.models.survey.SurveyResponse;
 import com.scholarscore.models.survey.answer.BooleanAnswer;
@@ -826,6 +835,106 @@ public class SchoolDataFactory {
             }
         }
         return studentBehaviors;
+    }
+
+    public static List<Notification> generateNotifications(
+            School school, List<Student> students, List<Teacher> teachers, List<Section> sections) {
+        List<Notification> notifications = new ArrayList<>();
+
+        Notification teacherStudentGpa = new Notification();
+        teacherStudentGpa.setAggregateFunction(AggregateFunction.AVG);
+        teacherStudentGpa.setCreatedDate(LocalDate.now());
+        teacherStudentGpa.setExpiryDate(LocalDate.now().plusMonths(3));
+        teacherStudentGpa.setMeasure(NotificationMeasure.GPA);
+        teacherStudentGpa.setName("Average student GPA in section");
+        teacherStudentGpa.setOwner(teachers.get(RandomUtils.nextInt(0, teachers.size())));
+        teacherStudentGpa.setSchoolId(school.getId());
+        teacherStudentGpa.setTriggerValue(3.2);
+        //Subject group
+        SectionStudents sectionGroup = new SectionStudents();
+        sectionGroup.setSectionId(sections.get(RandomUtils.nextInt(0, sections.size())).getId());
+        teacherStudentGpa.setSubjects(sectionGroup);
+        //subscribers group
+        SchoolTeachers schoolTeachers = new SchoolTeachers();
+        teacherStudentGpa.setSubscribers(schoolTeachers);
+        notifications.add(teacherStudentGpa);
+
+        //TODO: what if we have section grade and ALL STUDENTS as subjects? do we handle that case?
+        Section sect = sections.get(RandomUtils.nextInt(0, sections.size()));
+        Notification studentSectionGrade = new Notification();
+        studentSectionGrade.setCreatedDate(LocalDate.now());
+        studentSectionGrade.setExpiryDate(LocalDate.now().plusMonths(3));
+        studentSectionGrade.setMeasure(NotificationMeasure.SECTION_GRADE);
+        studentSectionGrade.setName("Single Student grade goal");
+        studentSectionGrade.setOwner(teachers.get(RandomUtils.nextInt(0, teachers.size())));
+        studentSectionGrade.setSchoolId(school.getId());
+        studentSectionGrade.setSectionId(sect.getId());
+        studentSectionGrade.setTriggerValue(0.85);
+        //subscribers & subjects group are the same in this case
+        SchoolAdministrators schoolAdmins = new SchoolAdministrators();
+        studentSectionGrade.setSubscribers(schoolAdmins);
+        SectionStudents sectStudents = new SectionStudents();
+        sectStudents.setSectionId(sect.getId());
+        studentSectionGrade.setSubjects(sectStudents);
+        notifications.add(studentSectionGrade);
+
+        Notification behaviorScoreNotification = new Notification();
+        behaviorScoreNotification.setCreatedDate(LocalDate.now());
+        behaviorScoreNotification.setExpiryDate(LocalDate.now().plusMonths(3));
+        behaviorScoreNotification.setMeasure(NotificationMeasure.BEHAVIOR_SCORE);
+        behaviorScoreNotification.setName("School wide boys behavior score grade goal");
+        behaviorScoreNotification.setOwner(teachers.get(RandomUtils.nextInt(0, teachers.size())));
+        behaviorScoreNotification.setSchoolId(school.getId());
+        behaviorScoreNotification.setAggregateFunction(AggregateFunction.AVG);
+        behaviorScoreNotification.setTriggeWhenGreaterThan(true);
+        behaviorScoreNotification.setTriggerValue(80D);
+        //subscribers & subjects group are the same in this case
+        SchoolTeachers teachers2 = new SchoolTeachers();
+        behaviorScoreNotification.setSubscribers(teachers2);
+        FilteredStudents filteredStudents = new FilteredStudents();
+        filteredStudents.setGender(Gender.MALE);
+        behaviorScoreNotification.setSubjects(filteredStudents);
+        notifications.add(behaviorScoreNotification);
+
+        Section sect2 = sections.get(RandomUtils.nextInt(0, sections.size()));
+        Notification hwCompletion = new Notification();
+        hwCompletion.setCreatedDate(LocalDate.now());
+        hwCompletion.setExpiryDate(LocalDate.now().plusMonths(3));
+        hwCompletion.setMeasure(NotificationMeasure.HOMEWORK_COMPLETION);
+        hwCompletion.setName("Section homework completion rate change of 5% in a week");
+        hwCompletion.setOwner(teachers.get(RandomUtils.nextInt(0, teachers.size())));
+        hwCompletion.setSchoolId(school.getId());
+        hwCompletion.setSectionId(sect2.getId());
+        hwCompletion.setTriggerValue(0.05);
+        NotificationWindow w = new NotificationWindow();
+        w.setTriggerIsPercent(true);
+        w.setWindow(Duration.WEEK);
+        hwCompletion.setWindow(w);
+        //subscribers & subjects group are the same in this case
+        SectionStudents sectionStudents = new SectionStudents();
+        sectionStudents.setSectionId(sect2.getId());
+        hwCompletion.setSubjects(sectionStudents);
+        SchoolTeachers teach = new SchoolTeachers();
+        hwCompletion.setSubscribers(teach);
+        notifications.add(hwCompletion);
+
+        Notification dailyAbsence = new Notification();
+        dailyAbsence.setCreatedDate(LocalDate.now());
+        dailyAbsence.setTriggeWhenGreaterThan(true);
+        dailyAbsence.setExpiryDate(LocalDate.now().plusMonths(3));
+        dailyAbsence.setMeasure(NotificationMeasure.SCHOOL_ABSENCE);
+        dailyAbsence.setName("Section tardy");
+        dailyAbsence.setOwner(teachers.get(RandomUtils.nextInt(0, teachers.size())));
+        dailyAbsence.setSchoolId(school.getId());
+        dailyAbsence.setTriggerValue(4D);
+        //subscribers & subjects group are the same in this case
+        FilteredStudents stud3 = new FilteredStudents();
+        dailyAbsence.setSubjects(stud3);
+        SchoolTeachers s3 = new SchoolTeachers();
+        dailyAbsence.setSubscribers(s3);
+        notifications.add(dailyAbsence);
+
+        return notifications;
     }
 
     public static Map<Long, ArrayList<Goal>> generateGoalEvents(

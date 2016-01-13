@@ -68,7 +68,6 @@ public interface NotificationCalculator {
             tr.setTriggeredDate(LocalDate.now());
             tr.setUserIdToNotify(p.getId());
             tr.setValueWhenTriggered(triggeringValue);
-            tr.setIsPositive(n.getTriggerValue() < triggeringValue);
             notifications.add(tr);
         }
         return notifications;

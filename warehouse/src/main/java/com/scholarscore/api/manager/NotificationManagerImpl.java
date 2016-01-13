@@ -9,6 +9,8 @@ import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.notification.Notification;
 import com.scholarscore.models.notification.TriggeredNotification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -17,6 +19,8 @@ import java.util.List;
  * Created by markroper on 1/10/16.
  */
 public class NotificationManagerImpl implements NotificationManager {
+    private final static Logger LOGGER = LoggerFactory.getLogger(NotificationManagerImpl.class);
+
     @Autowired
     private NotificationPersistence notificationPersistence;
 
@@ -69,7 +73,11 @@ public class NotificationManagerImpl implements NotificationManager {
                 List<TriggeredNotification> triggeredNotifications = factory.evaluate(n);
                 if(null != triggeredNotifications) {
                     for(TriggeredNotification tr : triggeredNotifications) {
-                        notificationPersistence.insertTriggeredNotification(n.getId(), n.getOwner().getId(), tr);
+                        try {
+                            notificationPersistence.insertTriggeredNotification(n.getId(), n.getOwner().getId(), tr);
+                        } catch(Exception e) {
+                            LOGGER.info("Triggered notification not inserted due to: " + e.getMessage());
+                        }
                     }
                 }
             }

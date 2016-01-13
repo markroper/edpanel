@@ -40,7 +40,6 @@ public class TriggeredNotification {
     private LocalDate triggeredDate;
     private Long userIdToNotify;
     private Boolean isActive;
-    private Boolean isPositive;
     private Double valueWhenTriggered;
 
     @Id
@@ -92,15 +91,6 @@ public class TriggeredNotification {
         this.isActive = isActive;
     }
 
-    @Column(name = HibernateConsts.TRIGGERED_NOTIFICATION_POSITIVE)
-    public Boolean getIsPositive() {
-        return isPositive;
-    }
-
-    public void setIsPositive(Boolean isPositive) {
-        this.isPositive = isPositive;
-    }
-
     @Column(name = HibernateConsts.TRIGGERED_NOTIFICATION_VALUE_WHEN_TRIGGERED)
     public Double getValueWhenTriggered() {
         return valueWhenTriggered;
@@ -112,7 +102,7 @@ public class TriggeredNotification {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, notification, triggeredDate, userIdToNotify, isActive, isPositive, valueWhenTriggered);
+        return Objects.hash(id, notification, triggeredDate, userIdToNotify, isActive, valueWhenTriggered);
     }
 
     @Override
@@ -129,7 +119,6 @@ public class TriggeredNotification {
                 && Objects.equals(this.triggeredDate, other.triggeredDate)
                 && Objects.equals(this.userIdToNotify, other.userIdToNotify)
                 && Objects.equals(this.isActive, other.isActive)
-                && Objects.equals(this.isPositive, other.isPositive)
                 && Objects.equals(this.valueWhenTriggered, other.valueWhenTriggered);
     }
 }
