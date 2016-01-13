@@ -55,9 +55,9 @@ public abstract class AttendanceCalcBase {
                         && status.equals(a.getStatus())) {
                     // Don't count this entry if we're dealing with section type and the notification
                     // section id doesn't equal the attendance section id
-                    if(null != notification.getSectionId()
+                    if(null != notification.getSection()
                             && null != a.getSection()
-                            && !notification.getSectionId().equals(a.getSection().getId())) {
+                            && !notification.getSection().getId().equals(a.getSection().getId())) {
                         continue;
                     }
                     sumAttendance++;

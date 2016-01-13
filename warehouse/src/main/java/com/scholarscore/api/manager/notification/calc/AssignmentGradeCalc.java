@@ -23,8 +23,8 @@ public class AssignmentGradeCalc implements NotificationCalculator {
     public List<TriggeredNotification> calculate(
             List<? extends Person> subjects, Notification notification, OrchestrationManager manager) {
         if(null == notification.getSchoolId() ||
-                null == notification.getSectionId() ||
-                null == notification.getAssignmentId()) {
+                null == notification.getSection() ||
+                null == notification.getAssignment()) {
             LOGGER.error("An assignment notification with ID: " + notification.getId()
                     + " lacks schoolId, notificationId, or assignmentId");
             return null;
@@ -41,7 +41,7 @@ public class AssignmentGradeCalc implements NotificationCalculator {
         }
         ServiceResponse<Collection<StudentAssignment>> assResp =
                 manager.getStudentAssignmentManager().getAllStudentAssignments(
-                notification.getSchoolId(), -1L, -1L, notification.getSectionId(), notification.getAssignmentId());
+                notification.getSchoolId(), -1L, -1L, notification.getSection().getId(), notification.getAssignment().getId());
         if(null != assResp.getValue()) {
             Double triggeredValue = 0D;
             int numAssignments = 0;

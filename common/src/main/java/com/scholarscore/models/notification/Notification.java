@@ -2,6 +2,8 @@ package com.scholarscore.models.notification;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.notification.group.NotificationGroup;
 import com.scholarscore.models.notification.window.NotificationWindow;
 import com.scholarscore.models.query.AggregateFunction;
@@ -44,9 +46,9 @@ public class Notification {
     @NotNull
     private Long schoolId;
     //Can be null if the notification is unrelated to a single section
-    private Long sectionId;
+    private Section section;
     //Can be null if the notification is not assignment related
-    private Long assignmentId;
+    private Assignment assignment;
     @NotNull
     //The creating user of the notification
     private User owner;
@@ -91,9 +93,11 @@ public class Notification {
         this.schoolId = schoolId;
     }
 
-    @Column(name = HibernateConsts.ASSIGNMENT_FK)
-    public Long getAssignmentId() {
-        return assignmentId;
+    @ManyToOne(optional = true, fetch= FetchType.EAGER)
+    @JoinColumn(name = HibernateConsts.ASSIGNMENT_FK)
+    @Fetch(FetchMode.JOIN)
+    public Assignment getAssignment() {
+        return assignment;
     }
 
     @Column(name = HibernateConsts.NOTIFICATION_TRIGGER_GREATER_THAN)
@@ -105,17 +109,19 @@ public class Notification {
         this.triggeWhenGreaterThan = triggeWhenGreaterThan;
     }
 
-    public void setAssignmentId(Long assignmentId) {
-        this.assignmentId = assignmentId;
+    public void setAssignment(Assignment assignment) {
+        this.assignment = assignment;
     }
 
-    @Column(name = HibernateConsts.SECTION_FK)
-    public Long getSectionId() {
-        return sectionId;
+    @ManyToOne(optional = true, fetch= FetchType.EAGER)
+    @JoinColumn(name = HibernateConsts.SECTION_FK)
+    @Fetch(FetchMode.JOIN)
+    public Section getSection() {
+        return section;
     }
 
-    public void setSectionId(Long sectionId) {
-        this.sectionId = sectionId;
+    public void setSection(Section section) {
+        this.section = section;
     }
 
     @Id
@@ -232,7 +238,7 @@ public class Notification {
     @Override
     public int hashCode() {
         return Objects.hash(subscribers, subjects, owner, triggerValue, aggregateFunction,
-                window, measure, createdDate, expiryDate, schoolId, sectionId, assignmentId, triggeWhenGreaterThan);
+                window, measure, createdDate, expiryDate, schoolId, section, assignment, triggeWhenGreaterThan);
     }
 
     @Override
@@ -248,8 +254,8 @@ public class Notification {
                 && Objects.equals(this.id, other.id)
                 && Objects.equals(this.owner, other.owner)
                 && Objects.equals(this.schoolId, other.schoolId)
-                && Objects.equals(this.assignmentId, other.assignmentId)
-                && Objects.equals(this.sectionId, other.sectionId)
+                && Objects.equals(this.assignment, other.assignment)
+                && Objects.equals(this.section, other.section)
                 && Objects.equals(this.subjects, other.subjects)
                 && Objects.equals(this.triggerValue, other.triggerValue)
                 && Objects.equals(this.aggregateFunction, other.aggregateFunction)

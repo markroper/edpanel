@@ -218,7 +218,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         studentSectionGrade.setName("Single Student grade goal");
         studentSectionGrade.setOwner(student2);
         studentSectionGrade.setSchoolId(school.getId());
-        studentSectionGrade.setSectionId(section.getId());
+        studentSectionGrade.setSection(section);
         studentSectionGrade.setTriggerValue(0.85);
         //subscribers & subjects group are the same in this case
         SingleStudent singleStudent = new SingleStudent();
@@ -252,7 +252,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         hwCompletion.setName("Section homework completion rate change of 5% in a week");
         hwCompletion.setOwner(teacher);
         hwCompletion.setSchoolId(school.getId());
-        hwCompletion.setSectionId(section.getId());
+        hwCompletion.setSection(section);
         hwCompletion.setTriggerValue(0.05);
         NotificationWindow w = new NotificationWindow();
         w.setTriggerIsPercent(true);
@@ -274,7 +274,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         sectionTardy.setName("Section tardy");
         sectionTardy.setOwner(teacher);
         sectionTardy.setSchoolId(school.getId());
-        sectionTardy.setSectionId(section.getId());
+        sectionTardy.setSection(section);
         sectionTardy.setTriggerValue(5D);
         NotificationWindow win = new NotificationWindow();
         win.setTriggerIsPercent(false);
@@ -340,7 +340,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
                 teacher.getId(), "Get all notifications owned by a teacher");
         Assert.assertEquals(notifications.size(), 4, "Unexpected number of notifications for a user");
         List<Notification> allNotifications = notificationValidatingExecutor.getAll("all notifications");
-        Assert.assertEquals(allNotifications.size(), 6, "Unexpected number of notifications returned by getAll()");
+        Assert.assertTrue(allNotifications.size() >= 6, "Unexpected number of notifications returned by getAll()");
 
         notificationValidatingExecutor.evaluateNotifications(school.getId());
 
