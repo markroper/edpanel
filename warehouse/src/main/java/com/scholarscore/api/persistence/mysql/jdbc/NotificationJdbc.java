@@ -15,16 +15,21 @@ import java.util.List;
  */
 @Transactional
 public class NotificationJdbc implements NotificationPersistence {
-    private static final String NOTIFICATION_BASE_HQL = "select n from " + HibernateConsts.NOTIFICATION_TABLE + " n" +
+    private static final String NOTIFICATION_JOIN_FETCH_FRAGMENT =
             " left join fetch n.owner o left join fetch o.contactMethods left join fetch o.homeAddress" +
-            " left join fetch n.subscribers s" +
-            " left join fetch n.subjects su";
+                    " left join fetch n.subscribers s" +
+                    " left join fetch n.subjects su " +
+                    " left join fetch n.section sect left join fetch sect.term term left join fetch term.schoolYear y left join fetch y.school sch left join fetch sch.address " +
+                    " left join fetch sect.course course left join fetch course.school cSch left join fetch cSch.address " +
+                    " left join fetch sect.teachers teachers left join fetch teachers.contactMethods left join fetch teachers.homeAddress" +
+                    " left join fetch n.assignment ass";
+
+    private static final String NOTIFICATION_BASE_HQL = "select n from " + HibernateConsts.NOTIFICATION_TABLE + " n" +
+            NOTIFICATION_JOIN_FETCH_FRAGMENT;
     private static final String TRIGGERED_NOTIFICATION_BASE_HQL = "select t from " +
             HibernateConsts.TRIGGERED_NOTIFICATION_TABLE + " t" +
             " join fetch t.notification n" +
-            " join fetch n.owner o left join fetch o.contactMethods left join fetch o.homeAddress" +
-            " join fetch n.subscribers s" +
-            " join fetch n.subjects su";
+            NOTIFICATION_JOIN_FETCH_FRAGMENT;
 
     @Autowired
     private HibernateTemplate hibernateTemplate;

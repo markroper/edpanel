@@ -868,7 +868,7 @@ public class SchoolDataFactory {
         studentSectionGrade.setName("Single Student grade goal");
         studentSectionGrade.setOwner(teachers.get(RandomUtils.nextInt(0, teachers.size())));
         studentSectionGrade.setSchoolId(school.getId());
-        studentSectionGrade.setSectionId(sect.getId());
+        studentSectionGrade.setSection(sect);
         studentSectionGrade.setTriggerValue(0.85);
         //subscribers & subjects group are the same in this case
         SchoolAdministrators schoolAdmins = new SchoolAdministrators();
@@ -904,7 +904,7 @@ public class SchoolDataFactory {
         hwCompletion.setName("Section homework completion rate change of 5% in a week");
         hwCompletion.setOwner(teachers.get(RandomUtils.nextInt(0, teachers.size())));
         hwCompletion.setSchoolId(school.getId());
-        hwCompletion.setSectionId(sect2.getId());
+        hwCompletion.setSection(sect);
         hwCompletion.setTriggerValue(0.05);
         NotificationWindow w = new NotificationWindow();
         w.setTriggerIsPercent(true);

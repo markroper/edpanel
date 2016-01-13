@@ -8,6 +8,8 @@ import com.scholarscore.models.notification.TriggeredNotification;
 import com.scholarscore.models.notification.window.NotificationWindow;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.user.Person;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +18,14 @@ import java.util.List;
  * Created by markroper on 1/12/16.
  */
 public class SectionGradeCalc implements NotificationCalculator {
+    private final static Logger LOGGER = LoggerFactory.getLogger(SectionGradeCalc.class);
+
     @Override
     public List<TriggeredNotification> calculate(List<? extends Person> subjects, Notification notification, OrchestrationManager manager) {
+        if(null == notification.getSection()) {
+            LOGGER.warn("Section grade notification with no section encountered and unable to be evaluated for this reason.");
+            return null;
+        }
         AggregateFunction agg = notification.getAggregateFunction();
         Double triggerValue = notification.getTriggerValue();
         NotificationWindow window = notification.getWindow();
@@ -33,7 +41,7 @@ public class SectionGradeCalc implements NotificationCalculator {
             for(Long sid: studentIds) {
                 ServiceResponse<StudentSectionGrade> ssgResp =
                         manager.getStudentSectionGradeManager().getStudentSectionGrade(
-                                notification.getSchoolId(), -1L, -1L, notification.getSectionId(), sid);
+                                notification.getSchoolId(), -1L, -1L, notification.getSection().getId(), sid);
                 if(null != ssgResp.getValue()) {
                     num++;
                     gradeSum += ssgResp.getValue().getGrade();
