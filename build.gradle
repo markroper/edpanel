@@ -57,6 +57,7 @@ allprojects {
 }
 
 
+
 idea {
     project {
         jdkName = '1.8'
@@ -140,30 +141,33 @@ integrationCodeCoverageReport.dependsOn {
 }
 
 dependencies {
-    // used for database schema version control management
-//    compile "org.liquibase:liquibase-core:3.4.2"
-      compile "org.liquibase:liquibase-core:3.4.0"
-//      runtime "org.liquibase:liquibase-core:3.4.0"
+    // TODO: I suspect this can now be removed entirely because of the buildscript dep
+    compile "org.liquibase:liquibase-core:3.4.0"
 }
 
 liquibase {
   activities {
     main {
-
-      def dbPropsFilePath = "/warehouse/src/main/resources/database.properties"
+        // TODO: liquibase offers support for using this defined DB connection to run arbitrary SQL
+        //       This means refillDatabase task could use it without defining this stuff itself
+        
+        def dbPropsFilePath = "/warehouse/src/main/resources/database.properties"
+        def database_user = loadProperty(dbPropsFilePath, "database.user");
+        def database_pass = loadProperty(dbPropsFilePath, "database.pass");
+        def database_host = loadProperty(dbPropsFilePath, "database.host");
+        def database_port = loadProperty(dbPropsFilePath, "database.port");
+        def database_name = loadProperty(dbPropsFilePath, "database.name");
+        def database_ssl  = loadProperty(dbPropsFilePath, "database.ssl");
    
-        driver 'com.mysql.jdbc.Driver' 
+        def jdbcUrl = (database_ssl == null ?
+                "jdbc:mysql://${database_host}:${database_port}/${database_name}" :
+                "jdbc:mysql://${database_host}:${database_port}/${database_name}?useSSL=true&amp;requireSSL=true&amp;verifyServerCertificate=false");
+        
+      driver 'com.mysql.jdbc.Driver' 
       changeLogFile 'database/liquibase/db.changelog-master.xml' 
-      url "jdbc:mysql://localhost:3306/scholar_warehouse"
-//      username project.ext.mainUsername
-//      password project.ext.mainPassword
-        username 'warehouse'
-        password 't3achTh3Childr3n'
+      url jdbcUrl
+      username database_user
+      password database_pass
     }
   }
-  //runList = project.ext.runList
-}
-
-task printBuildScriptClasspath << {
-    println project.buildscript.configurations.classpath.asPath
 }
