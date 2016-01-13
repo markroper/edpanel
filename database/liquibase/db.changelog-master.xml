@@ -5,7 +5,8 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <include file="com/example/db/changelog/db.changelog-1.0.xml"/>
+    <!-- must be off project root (as far as I can tell?) -->
+    <include file="database/liquibase/db.changelog-1.0.xml"/>
     
     <!-- future versions can be defined here, like this:
     <include file="com/example/db/changelog/db.changelog-1.1.xml"/>
