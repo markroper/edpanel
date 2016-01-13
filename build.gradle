@@ -19,20 +19,6 @@ buildscript {
 
 apply plugin: 'org.liquibase.gradle'
 
-//plugins {
-//  id 'org.liquibase.gradle' version '1.1.1'
-//}
-
-configurations.all {
-    resolutionStrategy {
-        // fail eagerly on version conflict (includes transitive dependencies)
-        // e.g. multiple different versions of the same dependency (group and name are equal)
-        failOnVersionConflict()
-
-//        exclude group: 'org.liquibase', module: 'liquibase-core'
-    }
-}
-
 allprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'
