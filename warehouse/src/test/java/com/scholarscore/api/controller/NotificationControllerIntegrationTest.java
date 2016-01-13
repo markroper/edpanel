@@ -8,6 +8,10 @@ import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
+import com.scholarscore.models.attendance.Attendance;
+import com.scholarscore.models.attendance.AttendanceStatus;
+import com.scholarscore.models.attendance.AttendanceTypes;
+import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.gpa.AddedValueGpa;
 import com.scholarscore.models.notification.Notification;
 import com.scholarscore.models.notification.NotificationMeasure;
@@ -48,6 +52,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
     private Student student3;
     private Student student4;
     private Teacher teacher;
+    private List<SchoolDay> days;
 
     @BeforeClass
     public void init() {
@@ -116,10 +121,14 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         schoolYear = new SchoolYear();
         schoolYear.setName(localeServiceUtil.generateName());
         schoolYear.setSchool(school);
+        schoolYear.setStartDate(LocalDate.of(2015, 8, 25));
+        schoolYear.setEndDate(LocalDate.of(2016, 6, 20));
         schoolYear = schoolYearValidatingExecutor.create(school.getId(), schoolYear, "create base schoolYear");
 
         term = new Term();
         term.setName(localeServiceUtil.generateName());
+        term.setStartDate(LocalDate.of(2015, 8, 25));
+        term.setEndDate(LocalDate.of(2016, 6, 20));
         term = termValidatingExecutor.create(school.getId(), schoolYear.getId(), term, "create test base term");
 
         course = new Course();
@@ -151,6 +160,35 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
 
         studentSectionGradeValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student1.getId(), g1, "Student 1 grade");
         studentSectionGradeValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), section.getId(), student2.getId(), g2, "Student 1 grade");
+
+        //Make some school days
+        days = new ArrayList<>();
+        for(int i = 0; i < AttendanceStatus.values().length; i++) {
+            LocalDate date = term.getStartDate().plusDays(i);
+            SchoolDay day = new SchoolDay();
+            day.setSchool(school);
+            day.setDate(date);
+            day.setSchool(school);
+            days.add(schoolDayValidatingExecutor.create(school.getId(), day, "creating a school"));
+        }
+        //Make some absensces
+        section.setEnrolledStudents(new ArrayList<>());
+        for(SchoolDay day: days) {
+            Attendance a = new Attendance();
+            a.setSection(section);
+            a.setType(AttendanceTypes.SECTION);
+            a.setStatus(AttendanceStatus.TARDY);
+            a.setStudent(student1);
+            a.setSchoolDay(day);
+            attendanceValidatingExecutor.create(school.getId(), student1.getId(), a, "Section absence for studenta");
+
+            Attendance a2 = new Attendance();
+            a2.setType(AttendanceTypes.DAILY);
+            a2.setStatus(AttendanceStatus.ABSENT);
+            a2.setStudent(student3);
+            a2.setSchoolDay(day);
+            attendanceValidatingExecutor.create(school.getId(), student3.getId(), a2, "Daily absence for student3");
+        }
     }
 
     @DataProvider
@@ -228,11 +266,52 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         teach.setTeacherId(teacher.getId());
         hwCompletion.setSubscribers(teach);
 
+        Notification sectionTardy = new Notification();
+        sectionTardy.setCreatedDate(LocalDate.now());
+        sectionTardy.setTriggeWhenGreaterThan(true);
+        sectionTardy.setExpiryDate(LocalDate.now().plusMonths(3));
+        sectionTardy.setMeasure(NotificationMeasure.SECTION_TARDY);
+        sectionTardy.setName("Section tardy");
+        sectionTardy.setOwner(teacher);
+        sectionTardy.setSchoolId(school.getId());
+        sectionTardy.setSectionId(section.getId());
+        sectionTardy.setTriggerValue(5D);
+        NotificationWindow win = new NotificationWindow();
+        win.setTriggerIsPercent(false);
+        win.setWindow(Duration.YEAR);
+        sectionTardy.setWindow(win);
+        //subscribers & subjects group are the same in this case
+        SectionStudents sStudents = new SectionStudents();
+        sStudents.setSectionId(section.getId());
+        sectionTardy.setSubjects(sStudents);
+        SingleTeacher teach1 = new SingleTeacher();
+        teach1.setTeacherId(teacher.getId());
+        sectionTardy.setSubscribers(teach1);
+
+        Notification dailyAbsence = new Notification();
+        dailyAbsence.setCreatedDate(LocalDate.now());
+        dailyAbsence.setTriggeWhenGreaterThan(true);
+        dailyAbsence.setExpiryDate(LocalDate.now().plusMonths(3));
+        dailyAbsence.setMeasure(NotificationMeasure.SCHOOL_ABSENCE);
+        dailyAbsence.setName("Section tardy");
+        dailyAbsence.setOwner(student3);
+        dailyAbsence.setSchoolId(school.getId());
+        dailyAbsence.setTriggerValue(4D);
+        //subscribers & subjects group are the same in this case
+        SingleStudent stud3 = new SingleStudent();
+        stud3.setStudentId(student3.getId());
+        dailyAbsence.setSubjects(stud3);
+        SingleStudent s3 = new SingleStudent();
+        s3.setStudentId(student3.getId());
+        dailyAbsence.setSubscribers(s3);
+
         return new Object[][] {
                 { "Notify on the GPA of students within a section", teacherStudentGpa },
                 { "Notify on a single section grade for a single student", studentSectionGrade },
                 { "Notify on boys behavior score", behaviorScoreNotification },
-                { "Notify on section homework completion rate change of 5% in a week", hwCompletion }
+                { "Notify on section homework completion rate change of 5% in a week", hwCompletion },
+                { "Notify 5 tardies for a single section within a year", sectionTardy },
+                { "Notify 4 school absences for a single student within a year", dailyAbsence }
         };
     }
 
@@ -250,26 +329,29 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         notificationValidatingExecutor.delete(n.getId(), msg);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void createTestGetByOwner() {
+    @SuppressWarnings("unchecked")
+    public void createAndEvaluateAll() {
         Object[][] inputs = createNotificationsProvider();
         for(int i = 0; i < inputs.length; i++) {
             notificationValidatingExecutor.create((Notification)inputs[i][1], (String)inputs[i][0]);
         }
         List<Notification> notifications = notificationValidatingExecutor.getByUserId(
                 teacher.getId(), "Get all notifications owned by a teacher");
-        Assert.assertEquals(notifications.size(), 3, "Unexpected number of notifications for a user");
+        Assert.assertEquals(notifications.size(), 4, "Unexpected number of notifications for a user");
         List<Notification> allNotifications = notificationValidatingExecutor.getAll("all notifications");
-        Assert.assertEquals(allNotifications.size(), 4, "Unexpected number of notifications returned by getAll()");
+        Assert.assertEquals(allNotifications.size(), 6, "Unexpected number of notifications returned by getAll()");
 
         notificationValidatingExecutor.evaluateNotifications(school.getId());
 
         List<TriggeredNotification> teacherTriggeredNotifications =
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(teacher.getId(), "Teacher triggered notifications");
-        Assert.assertEquals(teacherTriggeredNotifications.size(), 1, "Unexpected number of teacher triggered notifications returned");
+        Assert.assertEquals(teacherTriggeredNotifications.size(), 2, "Unexpected number of teacher triggered notifications returned");
         List<TriggeredNotification> student2TriggeredNotifications =
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(student2.getId(), "Student 2 triggered notifications");
         Assert.assertEquals(student2TriggeredNotifications.size(), 1, "Unexpected number of teacher triggered notifications returned");
+        List<TriggeredNotification> student3TriggeredNotifications =
+                notificationValidatingExecutor.getTriggeredNotificationsForUser(student3.getId(), "Student 3 triggered notifications");
+        Assert.assertEquals(student3TriggeredNotifications.size(), 1, "Unexpected number of teacher triggered notifications returned");
     }
 }
