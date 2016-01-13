@@ -8,6 +8,7 @@ public enum NotificationMeasure {
     SECTION_GRADE,
     ASSIGNMENT_GRADE,
     BEHAVIOR_SCORE,
+    //TODO: implement evaluators for these measures and then uncomment them!
 //    DETENTION,
 //    SUSPENSION,
 //    MERIT,

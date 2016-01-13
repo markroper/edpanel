@@ -570,7 +570,6 @@ CREATE TABLE `scholar_warehouse`.`triggered_notification` (
   `notification_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foriegn key to the notification table, required',
   `triggered_notification_date` DATE NOT NULL COMMENT 'The date the notification was triggered',
   `triggered_notification_active` BOOLEAN COMMENT 'True if the triggered notification is active, otherwise false',
-  `triggered_notification_positive` BOOLEAN COMMENT 'True if the triggered notification indicates a positive trend, otherwise false',
   `triggered_notification_value_when_triggered` DOUBLE NOT NULL COMMENT 'The value that triggered the notification',
   PRIMARY KEY (`triggered_notification_id`),
   FOREIGN KEY (`notification_fk`)
