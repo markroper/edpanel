@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
 import org.testng.Assert;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -136,6 +137,9 @@ public class NotificationValidatingExecutor {
 
     public Notification retrieveAndValidateCreatedNotification(Notification submitted, EntityId id, String msg) {
         submitted.setId(id.getId());
+        if(null != submitted.getSection()) {
+            submitted.getSection().setEnrolledStudents(new ArrayList<>());
+        }
         Notification created = this.get(id.getId(), msg);
         submitted.getSubjects().setId(created.getSubjects().getId());
         submitted.getSubscribers().setId(created.getSubscribers().getId());
