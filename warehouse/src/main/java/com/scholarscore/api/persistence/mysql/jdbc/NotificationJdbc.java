@@ -100,7 +100,7 @@ public class NotificationJdbc implements NotificationPersistence {
     @Override
     public void updateTriggeredNotification(long triggeredNotificationId, TriggeredNotification updated) {
         updated.setId(triggeredNotificationId);
-        hibernateTemplate.merge(updated);
+        hibernateTemplate.update(updated);
     }
 
     @Override

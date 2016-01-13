@@ -121,7 +121,7 @@ public class NotificationManagerImpl implements NotificationManager {
             return new ServiceResponse<>(code);
         }
         tn.setIsActive(false);
-        notificationPersistence.updateTriggeredNotification(notificationId, tn);
+        notificationPersistence.updateTriggeredNotification(triggeredId, tn);
         return new ServiceResponse<>((Void) null);
     }
 }
