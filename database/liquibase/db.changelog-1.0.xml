@@ -5,16 +5,144 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
     
+    <!-- liquibase not added until after version 1.0, so this file is basically meaningless.
+         Leaving it in as a dummy file to avoid confusion, as there is a 1.0 version tagged in git
+
+        TODO Jordan: remove this end-comment! uncommenting this changelist so I can test liquibase locally -->
+
     <changeSet author="jordan" id="changelog-1.0">
+        
         <comment>XML comments won't be persisted, include any relevant comments in comment tags like this</comment>
-        <createTable tableName="ExampleTable">
-            <column name="EXAMPLE_TABLE_PRIMARY_KEY" type="int" autoIncrement="true">
+        
+        <!-- this is how the users table would be created via liquibase - this changelist shouldn't be run, it's just an example -->
+        
+        <!-- 
+        (users table SQL)
+        CREATE TABLE `scholar_warehouse`.`user` (
+        `user_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
+        `username` varchar(50) NOT NULL COMMENT 'the username used to login',
+        `password` CHAR(60) CHARACTER SET UTF8 COLLATE UTF8_BIN NULL COMMENT 'the password',
+        `enabled` BOOLEAN NOT NULL COMMENT 'if the user has ever logged in and created a password',
+        `onetime_pass` varchar(50) CHARACTER SET UTF8 NULL COMMENT 'one-time access token used for initial user setup and forgot password', 
+        `onetime_pass_created` DATETIME NULL COMMENT 'when the one time pass was last generated', 
+        PRIMARY KEY (`user_id`),
+        UNIQUE(`username`)
+        ) ENGINE = InnoDB;
+        -->
+        
+        <createTable tableName="user">
+            <column name="user_id"
+                    type="bigint unsigned"
+                    remarks="The auto-incrementing primary key column"
+                    autoIncrement="true"
+                    >
                 <constraints nullable="false" primaryKey="true" unique="false" />
             </column>
-            <column name="COLUMN1" type="TEXT">
-                <constraints nullable="true" primaryKey="false" unique="false"/>
+
+            <column name="username"
+                    type="varchar(50)"
+                    remarks="the username used to login">
+                <constraints nullable="false" unique="true"/>
             </column>
+
+            <column name="password"
+                    type="char(60)"
+                    remarks="the password">
+            </column>
+
+            <!-- boolean vs tinyint?? -->
+            <column name="enabled"
+                    type="tinyint(1)"
+                    remarks="if the user has ever logged in and created a password">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="onetime_pass"
+                    type="varchar(50)"
+                    remarks="one-time access token used for initial user setup and forgot password">
+            </column>
+
+            <column name="onetime_pass_created"
+                    type="datetime"
+                    remarks="when the one time pass was last generated">
+            </column>
+
         </createTable>
+
+        <createTable tableName="contact_method">
+            <column name="contact_method_id"
+                    type="bigint unsigned"
+                    remarks="The auto-incrementing primary key column"
+                    autoIncrement="true"
+                    >
+                <constraints nullable="false" primaryKey="true" unique="false" />
+            </column>
+
+            <column name="contact_type"
+                    type="varchar(32)"
+                    remarks="the contact medium (e.g. phone, email)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="user_fk"
+                    type="bigint unsigned"
+                    remarks="the fk to the user table">
+                <!--
+                <constraints nullable="false"
+                             foreignKeyName="user_fk$contact_method-test"
+                             references="user(user_id)"
+                             deleteCascade="true"
+                        />
+                        -->
+            </column>
+
+            <column name="contact_value"
+                    type="varchar(256)"
+                    remarks="the actual contact info - the email address, phone number, etc">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="confirm_code"
+                    type="varchar(64)"
+                    remarks="the confirmation code sent to the user via the specified medium">
+            </column>
+
+            <column name="confirm_code_created"
+                    type="datetime"
+                    remarks="the time this confirmation code was generated and sent">
+            </column>
+
+            <column name="confirmed"
+                    type="boolean"
+                    remarks="if this email has been confirmed as belonging to the user">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <!-- unfortunately, it appears that liquibase does not support some functionality
+            within the create table statement. Instead, we must execute another operation 
+            within the same changeset
+        -->
+
+        <addUniqueConstraint
+                tableName="contact_method"
+                columnNames="contact_type, user_fk"
+                constraintName="uniq_contact_type$user" />
+
+        <!-- another liquibase limitation - "ON UPDATE CASCADE" is not supported within a create table statement,
+            do it by adding a foreign key constraint within the same changeset -->
+        <addForeignKeyConstraint baseColumnNames="user_fk"
+                                 constraintName="user_fk$contact_method-test"
+                                 baseTableName="contact_method"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="user"/>
+
+
+
+
     </changeSet>
     
 </databaseChangeLog>
