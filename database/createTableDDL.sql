@@ -22,36 +22,7 @@ CREATE TABLE `scholar_warehouse`.`school` (
   PRIMARY KEY (`school_id`))
 ENGINE = InnoDB;
 
--- START LIQUIBASE
-
-CREATE TABLE scholar_warehouse.user (
-        user_id BIGINT unsigned AUTO_INCREMENT NOT NULL, 
-        username VARCHAR(50) NOT NULL COMMENT 'the username used to login', 
-        password CHAR(60) NULL COMMENT 'the password', 
-        enabled tinyint(1) NOT NULL COMMENT 'if the user has ever logged in and created a password', 
-        onetime_pass VARCHAR(50) NULL COMMENT 'one-time access token used for initial user setup and forgot password', 
-        onetime_pass_created datetime NULL COMMENT 'when the one time pass was last generated', 
-        CONSTRAINT PK_USER PRIMARY KEY (user_id), UNIQUE (username))
-      ENGINE = InnoDB;
-
-CREATE TABLE scholar_warehouse.contact_method (
-      contact_method_id BIGINT unsigned AUTO_INCREMENT NOT NULL, 
-      contact_type VARCHAR(32) NOT NULL COMMENT 'the contact medium (e.g. phone, email)', 
-      user_fk BIGINT unsigned NULL COMMENT 'the fk to the user table', 
-      contact_value VARCHAR(256) NOT NULL COMMENT 'the actual contact info - the email address, phone number, etc', 
-      confirm_code VARCHAR(64) NULL COMMENT 'the confirmation code sent to the user via the specified medium', 
-      confirm_code_created datetime NULL COMMENT 'the time this confirmation code was generated and sent', 
-      confirmed boolean NOT NULL COMMENT 'if this email has been confirmed as belonging to the user', 
-      CONSTRAINT PK_CONTACT_METHOD PRIMARY KEY (contact_method_id))
-      ENGINE = InnoDB;
-
-ALTER TABLE scholar_warehouse.contact_method ADD CONSTRAINT `uniq_contact_type$user` UNIQUE (contact_type, user_fk);
-
-ALTER TABLE scholar_warehouse.contact_method ADD CONSTRAINT `user_fk$contact_method-test` FOREIGN KEY (user_fk) REFERENCES scholar_warehouse.user (user_id) ON UPDATE CASCADE ON DELETE CASCADE;
-
--- END LIQUIBASE
-
- CREATE TABLE `scholar_warehouse`.`old_user` (
+CREATE TABLE `scholar_warehouse`.`user` (
     `user_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
     `username` varchar(50) NOT NULL COMMENT 'the username used to login',
     `password` CHAR(60) CHARACTER SET UTF8 COLLATE UTF8_BIN NULL COMMENT 'the password',
@@ -60,10 +31,10 @@ ALTER TABLE scholar_warehouse.contact_method ADD CONSTRAINT `user_fk$contact_met
     `onetime_pass_created` DATETIME NULL COMMENT 'when the one time pass was last generated', 
     PRIMARY KEY (`user_id`),
     UNIQUE(`username`)
- )
- ENGINE = InnoDB;
+)
+ENGINE = InnoDB;
 
- CREATE TABLE `scholar_warehouse`.`old_contact_method` (
+CREATE TABLE `scholar_warehouse`.`contact_method` (
   `contact_method_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
   `contact_type` varchar(32) NOT NULL COMMENT 'the contact medium (e.g. phone, email)',
   `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'the fk to the user table',
@@ -78,8 +49,9 @@ ALTER TABLE scholar_warehouse.contact_method ADD CONSTRAINT `user_fk$contact_met
   ON UPDATE CASCADE,
   CONSTRAINT `uniq_contact_type$user`
   UNIQUE (`contact_type`,`user_fk`)
- )
- ENGINE = InnoDB;
+
+)
+ENGINE = InnoDB;
   
 CREATE TABLE `scholar_warehouse`.`student` (
   `student_name` VARCHAR(255) NULL COMMENT 'User defined human-readable name',
