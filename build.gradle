@@ -3,6 +3,10 @@ buildscript {
         mavenCentral()
     }
     dependencies {
+        // all recent versions of liquibase gradle plugin specify a dependency on liquibase 3.4.2, which contains a
+        // mySQL-specific bug that breaks hibernate validation (https://liquibase.jira.com/browse/CORE-2637)
+        // To work around this, disable dependency management for selected liquibase dependencies with @jar notation 
+        // and manually load in the proper runtime dependency (i.e. swap in liquibase 3.4.0 which works correctly)
         classpath "org.liquibase:liquibase-core:3.4.0"
         classpath "org.liquibase:liquibase-gradle-plugin:1.2.1@jar"
         classpath "org.liquibase:liquibase-groovy-dsl:1.2.1@jar"
