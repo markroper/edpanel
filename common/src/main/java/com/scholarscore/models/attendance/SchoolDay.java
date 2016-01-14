@@ -19,7 +19,6 @@ import java.util.Objects;
  *
  */
 @Entity(name = HibernateConsts.SCHOOL_DAY_TABLE)
-@Table(name = HibernateConsts.SCHOOL_DAY_TABLE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings("serial")
 public class SchoolDay implements Serializable, IApiModel<SchoolDay> {
