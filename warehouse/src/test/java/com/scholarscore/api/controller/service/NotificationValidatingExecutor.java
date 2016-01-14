@@ -5,6 +5,7 @@ import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.notification.Notification;
 import com.scholarscore.models.notification.TriggeredNotification;
+import com.scholarscore.models.notification.group.SectionStudents;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
@@ -139,6 +140,12 @@ public class NotificationValidatingExecutor {
         submitted.setId(id.getId());
         if(null != submitted.getSection()) {
             submitted.getSection().setEnrolledStudents(new ArrayList<>());
+        }
+        if(submitted.getSubjects() instanceof SectionStudents) {
+            ((SectionStudents) submitted.getSubjects()).getSection().setEnrolledStudents(new ArrayList<>());
+        }
+        if(submitted.getSubscribers() instanceof SectionStudents) {
+            ((SectionStudents) submitted.getSubscribers()).getSection().setEnrolledStudents(new ArrayList<>());
         }
         Notification created = this.get(id.getId(), msg);
         submitted.getSubjects().setId(created.getSubjects().getId());
