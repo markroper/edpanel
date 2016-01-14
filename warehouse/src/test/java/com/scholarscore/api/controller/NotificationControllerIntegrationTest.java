@@ -204,7 +204,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         teacherStudentGpa.setTriggerValue(3.2);
         //Subject group
         SectionStudents sectionGroup = new SectionStudents();
-        sectionGroup.setSectionId(section.getId());
+        sectionGroup.setSection(section);
         teacherStudentGpa.setSubjects(sectionGroup);
         //subscribers group
         SingleTeacher singleTeacher = new SingleTeacher();
@@ -222,10 +222,10 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         studentSectionGrade.setTriggerValue(0.85);
         //subscribers & subjects group are the same in this case
         SingleStudent singleStudent = new SingleStudent();
-        singleStudent.setStudentId(student2.getId());
+        singleStudent.setStudent(student2);
         studentSectionGrade.setSubscribers(singleStudent);
         SingleStudent singleStudentSubject = new SingleStudent();
-        singleStudentSubject.setStudentId(student2.getId());
+        singleStudentSubject.setStudent(student2);
         studentSectionGrade.setSubjects(singleStudentSubject);
 
         Notification behaviorScoreNotification = new Notification();
@@ -260,7 +260,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         hwCompletion.setWindow(w);
         //subscribers & subjects group are the same in this case
         SectionStudents sectionStudents = new SectionStudents();
-        sectionStudents.setSectionId(section.getId());
+        sectionStudents.setSection(section);
         hwCompletion.setSubjects(sectionStudents);
         SingleTeacher teach = new SingleTeacher();
         teach.setTeacherId(teacher.getId());
@@ -282,7 +282,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         sectionTardy.setWindow(win);
         //subscribers & subjects group are the same in this case
         SectionStudents sStudents = new SectionStudents();
-        sStudents.setSectionId(section.getId());
+        sStudents.setSection(section);
         sectionTardy.setSubjects(sStudents);
         SingleTeacher teach1 = new SingleTeacher();
         teach1.setTeacherId(teacher.getId());
@@ -299,10 +299,10 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         dailyAbsence.setTriggerValue(4D);
         //subscribers & subjects group are the same in this case
         SingleStudent stud3 = new SingleStudent();
-        stud3.setStudentId(student3.getId());
+        stud3.setStudent(student3);
         dailyAbsence.setSubjects(stud3);
         SingleStudent s3 = new SingleStudent();
-        s3.setStudentId(student3.getId());
+        s3.setStudent(student3);
         dailyAbsence.setSubscribers(s3);
 
         return new Object[][] {
