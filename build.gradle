@@ -1,3 +1,24 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        // all recent versions of liquibase gradle plugin specify a dependency on liquibase 3.4.2, which contains a
+        // mySQL-specific bug that breaks hibernate validation (https://liquibase.jira.com/browse/CORE-2637)
+        // To work around this, disable dependency management for selected liquibase dependencies with @jar notation 
+        // and manually load in the proper runtime dependency (i.e. swap in liquibase 3.4.0 which works correctly)
+        classpath "org.liquibase:liquibase-core:3.4.0"
+        classpath "org.liquibase:liquibase-gradle-plugin:1.2.1@jar"
+        classpath "org.liquibase:liquibase-groovy-dsl:1.2.1@jar"
+        classpath "org.codehaus.groovy:groovy:2.4.1"
+        classpath "org.codehaus.groovy:groovy-sql:2.4.1"
+        classpath 'mysql:mysql-connector-java:5.1.36'
+    }
+
+}
+
+apply plugin: 'org.liquibase.gradle'
+
 allprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'
@@ -119,3 +140,26 @@ integrationCodeCoverageReport.dependsOn {
       project(':warehouse').integrationLocalWithContainer
 }
 
+liquibase {
+  activities {
+    main {
+        def dbPropsFilePath = "/warehouse/src/main/resources/database.properties"
+        def database_user = project.loadProperty(dbPropsFilePath, "database.user");
+        def database_pass = project.loadProperty(dbPropsFilePath, "database.pass");
+        def database_host = project.loadProperty(dbPropsFilePath, "database.host");
+        def database_port = project.loadProperty(dbPropsFilePath, "database.port");
+        def database_name = project.loadProperty(dbPropsFilePath, "database.name");
+        def database_ssl  = project.loadProperty(dbPropsFilePath, "database.ssl");
+   
+        def jdbcUrl = (database_ssl == null ?
+                "jdbc:mysql://${database_host}:${database_port}/${database_name}" :
+                "jdbc:mysql://${database_host}:${database_port}/${database_name}?useSSL=true&amp;requireSSL=true&amp;verifyServerCertificate=false");
+        
+      driver 'com.mysql.jdbc.Driver' 
+      changeLogFile 'database/liquibase/db.changelog-master.xml' 
+      url jdbcUrl
+      username database_user
+      password database_pass
+    }
+  }
+}
