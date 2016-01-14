@@ -852,7 +852,7 @@ public class SchoolDataFactory {
         teacherStudentGpa.setTriggerValue(3.2);
         //Subject group
         SectionStudents sectionGroup = new SectionStudents();
-        sectionGroup.setSectionId(sections.get(RandomUtils.nextInt(0, sections.size())).getId());
+        sectionGroup.setSection(sections.get(RandomUtils.nextInt(0, sections.size())));
         teacherStudentGpa.setSubjects(sectionGroup);
         //subscribers group
         SchoolTeachers schoolTeachers = new SchoolTeachers();
@@ -874,7 +874,7 @@ public class SchoolDataFactory {
         SchoolAdministrators schoolAdmins = new SchoolAdministrators();
         studentSectionGrade.setSubscribers(schoolAdmins);
         SectionStudents sectStudents = new SectionStudents();
-        sectStudents.setSectionId(sect.getId());
+        sectStudents.setSection(sect);
         studentSectionGrade.setSubjects(sectStudents);
         notifications.add(studentSectionGrade);
 
@@ -912,7 +912,7 @@ public class SchoolDataFactory {
         hwCompletion.setWindow(w);
         //subscribers & subjects group are the same in this case
         SectionStudents sectionStudents = new SectionStudents();
-        sectionStudents.setSectionId(sect2.getId());
+        sectionStudents.setSection(sect2);
         hwCompletion.setSubjects(sectionStudents);
         SchoolTeachers teach = new SchoolTeachers();
         hwCompletion.setSubscribers(teach);

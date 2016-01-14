@@ -1,13 +1,18 @@
 package com.scholarscore.models.notification.group;
 
 import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.Section;
 import com.scholarscore.models.user.Student;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 import java.util.Objects;
 
@@ -18,15 +23,17 @@ import java.util.Objects;
 @DiscriminatorValue(value = "SECTION_STUDENTS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class SectionStudents extends NotificationGroup<Student> {
-    private Long sectionId;
+    private Section section;
 
-    @Column(name = HibernateConsts.SECTION_FK)
-    public Long getSectionId() {
-        return sectionId;
+    @ManyToOne(optional = true, fetch= FetchType.EAGER)
+    @JoinColumn(name = HibernateConsts.SECTION_FK)
+    @Fetch(FetchMode.JOIN)
+    public Section getSection() {
+        return section;
     }
 
-    public void setSectionId(Long sectionId) {
-        this.sectionId = sectionId;
+    public void setSection(Section section) {
+        this.section = section;
     }
 
     @Override
@@ -37,7 +44,7 @@ public class SectionStudents extends NotificationGroup<Student> {
 
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(sectionId);
+        return 31 * super.hashCode() + Objects.hash(section);
     }
 
     @Override
@@ -52,6 +59,6 @@ public class SectionStudents extends NotificationGroup<Student> {
             return false;
         }
         final SectionStudents other = (SectionStudents) obj;
-        return Objects.equals(this.sectionId, other.sectionId);
+        return Objects.equals(this.section, other.section);
     }
 }

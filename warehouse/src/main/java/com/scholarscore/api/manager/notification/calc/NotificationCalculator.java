@@ -100,7 +100,7 @@ public interface NotificationCalculator {
             }
         } else if(group instanceof SectionStudents) {
             ServiceResponse<Section> sectResp =
-                    manager.getSectionManager().getSection(schoolId, -1L, -1L, ((SectionStudents) group).getSectionId());
+                    manager.getSectionManager().getSection(schoolId, -1L, -1L, ((SectionStudents) group).getSection().getId());
             if(null != sectResp.getValue()) {
                 Section s = sectResp.getValue();
                 return s.getEnrolledStudents();
@@ -114,7 +114,7 @@ public interface NotificationCalculator {
             }
         } else if(group instanceof SingleStudent) {
             ServiceResponse<Student> studResp =
-                    manager.getStudentManager().getStudent(((SingleStudent) group).getStudentId());
+                    manager.getStudentManager().getStudent(((SingleStudent) group).getStudent().getId());
             if(null != studResp.getValue()) {
                 Student s = studResp.getValue();
                 return Arrays.asList(s);
