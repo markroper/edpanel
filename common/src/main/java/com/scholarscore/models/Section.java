@@ -29,7 +29,6 @@ import java.util.*;
  *
  */
 @Entity(name = HibernateConsts.SECTION_TABLE)
-@Table(name = HibernateConsts.SECTION_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Section extends ApiModel implements Serializable, IApiModel<Section> {
