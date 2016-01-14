@@ -140,17 +140,9 @@ integrationCodeCoverageReport.dependsOn {
       project(':warehouse').integrationLocalWithContainer
 }
 
-dependencies {
-    // TODO: I suspect this can now be removed entirely because of the buildscript dep
-    compile "org.liquibase:liquibase-core:3.4.0"
-}
-
 liquibase {
   activities {
     main {
-        // TODO: liquibase offers support for using this defined DB connection to run arbitrary SQL
-        //       This means refillDatabase task could use it without defining this stuff itself
-        
         def dbPropsFilePath = "/warehouse/src/main/resources/database.properties"
         def database_user = project.loadProperty(dbPropsFilePath, "database.user");
         def database_pass = project.loadProperty(dbPropsFilePath, "database.pass");
