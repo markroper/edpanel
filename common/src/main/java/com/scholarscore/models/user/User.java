@@ -38,8 +38,7 @@ import java.util.Set;
  * 
  * @author mattg
  */
-@Entity(name = "user")
-@Table(name = HibernateConsts.USERS_TABLE)
+@Entity(name = HibernateConsts.USERS_TABLE)
 @Inheritance(strategy=InheritanceType.JOINED)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties( { "contactMethods" })

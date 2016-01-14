@@ -27,7 +27,6 @@ import java.util.Objects;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity(name = HibernateConsts.CURRENT_GPA_TABLE)
-@Table(name = HibernateConsts.CURRENT_GPA_TABLE)
 public class CurrentGpa {
     protected Gpa gpa;
     protected Student student;
