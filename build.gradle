@@ -152,12 +152,12 @@ liquibase {
         //       This means refillDatabase task could use it without defining this stuff itself
         
         def dbPropsFilePath = "/warehouse/src/main/resources/database.properties"
-        def database_user = loadProperty(dbPropsFilePath, "database.user");
-        def database_pass = loadProperty(dbPropsFilePath, "database.pass");
-        def database_host = loadProperty(dbPropsFilePath, "database.host");
-        def database_port = loadProperty(dbPropsFilePath, "database.port");
-        def database_name = loadProperty(dbPropsFilePath, "database.name");
-        def database_ssl  = loadProperty(dbPropsFilePath, "database.ssl");
+        def database_user = project.loadProperty(dbPropsFilePath, "database.user");
+        def database_pass = project.loadProperty(dbPropsFilePath, "database.pass");
+        def database_host = project.loadProperty(dbPropsFilePath, "database.host");
+        def database_port = project.loadProperty(dbPropsFilePath, "database.port");
+        def database_name = project.loadProperty(dbPropsFilePath, "database.name");
+        def database_ssl  = project.loadProperty(dbPropsFilePath, "database.ssl");
    
         def jdbcUrl = (database_ssl == null ?
                 "jdbc:mysql://${database_host}:${database_port}/${database_name}" :
