@@ -27,8 +27,7 @@ import java.util.Objects;
  * @author markroper
  *
  */
-@Entity
-@Table(name = HibernateConsts.SCHOOL_YEAR_TABLE)
+@Entity(name = HibernateConsts.SCHOOL_YEAR_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SchoolYear extends ApiModel implements Serializable, IApiModel<SchoolYear>{

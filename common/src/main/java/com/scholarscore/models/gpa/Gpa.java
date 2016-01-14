@@ -25,7 +25,6 @@ import java.util.Objects;
  * @author by markroper on 11/23/15.
  */
 @Entity(name = HibernateConsts.GPA_TABLE)
-@Table(name = HibernateConsts.GPA_TABLE)
 @DiscriminatorColumn(name=HibernateConsts.GPA_TYPE, discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @JsonInclude(JsonInclude.Include.NON_NULL)

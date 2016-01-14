@@ -26,7 +26,6 @@ import java.util.Objects;
  * Time: 3:21 PM
  */
 @Entity(name = HibernateConsts.BEHAVIOR_TABLE)
-@Table(name = HibernateConsts.BEHAVIOR_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Behavior extends ApiModel implements IApiModel<Behavior> {

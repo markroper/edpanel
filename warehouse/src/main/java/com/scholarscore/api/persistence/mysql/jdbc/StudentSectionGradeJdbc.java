@@ -3,22 +3,21 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 import com.scholarscore.api.persistence.EntityPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.StudentSectionGradePersistence;
+import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.StudentSectionGrade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
-import scala.unchecked;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
 @Transactional
 public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
 
-    public static final String SSG_HQL_BASE =  "select ssg from studentSectionGrade ssg " +
+    public static final String SSG_HQL_BASE =  "select ssg from " + HibernateConsts.STUDENT_SECTION_GRADE_TABLE + " ssg " +
             "join fetch ssg.student st left join fetch st.homeAddress left join fetch st.mailingAddress " +
             "left join fetch st.contactMethods " +
             "join fetch ssg.section s join fetch s.course c join fetch c.school " +
@@ -33,7 +32,7 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<StudentSectionGrade> selectAll(long sectionId) {
-        return (Collection<StudentSectionGrade>)hibernateTemplate.findByNamedParam("from studentSectionGrade ssg where ssg.section.id = :id", "id", sectionId);
+        return (Collection<StudentSectionGrade>)hibernateTemplate.findByNamedParam("from " + HibernateConsts.STUDENT_SECTION_GRADE_TABLE + " ssg where ssg.section.id = :id", "id", sectionId);
     }
 
     @Override

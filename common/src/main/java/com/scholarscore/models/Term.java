@@ -27,7 +27,6 @@ import java.util.Objects;
  *
  */
 @Entity(name = HibernateConsts.TERM_TABLE)
-@Table(name = HibernateConsts.TERM_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Term extends ApiModel implements Serializable, IApiModel<Term>{
