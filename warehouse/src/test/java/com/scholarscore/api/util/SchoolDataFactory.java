@@ -886,7 +886,7 @@ public class SchoolDataFactory {
         behaviorScoreNotification.setOwner(teachers.get(RandomUtils.nextInt(0, teachers.size())));
         behaviorScoreNotification.setSchoolId(school.getId());
         behaviorScoreNotification.setAggregateFunction(AggregateFunction.AVG);
-        behaviorScoreNotification.setTriggeWhenGreaterThan(true);
+        behaviorScoreNotification.setTriggerWhenGreaterThan(true);
         behaviorScoreNotification.setTriggerValue(80D);
         //subscribers & subjects group are the same in this case
         SchoolTeachers teachers2 = new SchoolTeachers();
@@ -920,7 +920,7 @@ public class SchoolDataFactory {
 
         Notification dailyAbsence = new Notification();
         dailyAbsence.setCreatedDate(LocalDate.now());
-        dailyAbsence.setTriggeWhenGreaterThan(true);
+        dailyAbsence.setTriggerWhenGreaterThan(true);
         dailyAbsence.setExpiryDate(LocalDate.now().plusMonths(3));
         dailyAbsence.setMeasure(NotificationMeasure.SCHOOL_ABSENCE);
         dailyAbsence.setName("Section tardy");

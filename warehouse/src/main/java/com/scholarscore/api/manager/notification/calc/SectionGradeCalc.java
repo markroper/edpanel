@@ -51,8 +51,8 @@ public class SectionGradeCalc implements NotificationCalculator {
             if(AggregateFunction.AVG.equals(agg) && num > 0) {
                 gradeSum = gradeSum / num;
             }
-            if((triggerValue >= gradeSum && !notification.getTriggeWhenGreaterThan()) ||
-                    (triggerValue <= gradeSum && notification.getTriggeWhenGreaterThan())) {
+            if((triggerValue >= gradeSum && !notification.getTriggerWhenGreaterThan()) ||
+                    (triggerValue <= gradeSum && notification.getTriggerWhenGreaterThan())) {
                 return NotificationCalculator.createTriggeredNotifications(notification, gradeSum, manager);
             }
         }

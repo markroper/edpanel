@@ -56,8 +56,8 @@ public class HwCompletionCalc implements NotificationCalculator {
                 sumOfScores = sumOfScores / numScores;
             }
             //Only trigger if the GPA calc is less than or equal to the trigger value
-            if((triggerValue >= sumOfScores && !notification.getTriggeWhenGreaterThan()) ||
-                    (triggerValue <= sumOfScores && notification.getTriggeWhenGreaterThan())) {
+            if((triggerValue >= sumOfScores && !notification.getTriggerWhenGreaterThan()) ||
+                    (triggerValue <= sumOfScores && notification.getTriggerWhenGreaterThan())) {
                 return NotificationCalculator.createTriggeredNotifications(notification, sumOfScores, manager);
             }
         }

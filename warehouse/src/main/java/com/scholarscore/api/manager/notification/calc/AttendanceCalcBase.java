@@ -68,8 +68,8 @@ public abstract class AttendanceCalcBase {
                 sumAttendance = sumAttendance / studentIds.size();
             }
             //Only trigger if the GPA calc is less than or equal to the trigger value
-            if((triggerValue >= sumAttendance && !notification.getTriggeWhenGreaterThan()) ||
-                    (triggerValue <= sumAttendance && notification.getTriggeWhenGreaterThan())) {
+            if((triggerValue >= sumAttendance && !notification.getTriggerWhenGreaterThan()) ||
+                    (triggerValue <= sumAttendance && notification.getTriggerWhenGreaterThan())) {
                 return NotificationCalculator.createTriggeredNotifications(notification, sumAttendance, manager);
             }
         }
