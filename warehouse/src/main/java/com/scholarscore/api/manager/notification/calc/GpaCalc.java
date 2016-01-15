@@ -54,8 +54,8 @@ public class GpaCalc implements NotificationCalculator {
                 }
             }
             //Only trigger if the GPA calc is less than or equal to the trigger value
-            if((triggerValue >= gpaSum && !notification.getTriggeWhenGreaterThan()) ||
-                    (triggerValue <= gpaSum && notification.getTriggeWhenGreaterThan())) {
+            if((triggerValue >= gpaSum && !notification.getTriggerWhenGreaterThan()) ||
+                    (triggerValue <= gpaSum && notification.getTriggerWhenGreaterThan())) {
                 return NotificationCalculator.createTriggeredNotifications(notification, gpaSum, manager);
             }
         }

@@ -66,7 +66,7 @@ public class Notification {
     @NotNull
     //If true, we trigger when the calculated value is greater than or equal to the trigger value
     //Otherwise, we trigger when the calculated value is less than or equal to the trigger value
-    private Boolean triggeWhenGreaterThan = false;
+    private Boolean triggerWhenGreaterThan = false;
     //For notifications based on groups of data, which aggregate function to use (e.g. average GPA, or sum of demerits)
     //If this aggregate function is null, the notification is not aggregate based, but rather, value based. For example
     //Notify me if a student's grade falls below 73%.  No aggregate function is required for this notification.
@@ -101,12 +101,12 @@ public class Notification {
     }
 
     @Column(name = HibernateConsts.NOTIFICATION_TRIGGER_GREATER_THAN)
-    public Boolean getTriggeWhenGreaterThan() {
-        return triggeWhenGreaterThan;
+    public Boolean getTriggerWhenGreaterThan() {
+        return triggerWhenGreaterThan;
     }
 
-    public void setTriggeWhenGreaterThan(Boolean triggeWhenGreaterThan) {
-        this.triggeWhenGreaterThan = triggeWhenGreaterThan;
+    public void setTriggerWhenGreaterThan(Boolean triggeWhenGreaterThan) {
+        this.triggerWhenGreaterThan = triggeWhenGreaterThan;
     }
 
     public void setAssignment(Assignment assignment) {
@@ -238,7 +238,7 @@ public class Notification {
     @Override
     public int hashCode() {
         return Objects.hash(subscribers, subjects, owner, triggerValue, aggregateFunction,
-                window, measure, createdDate, expiryDate, schoolId, section, assignment, triggeWhenGreaterThan);
+                window, measure, createdDate, expiryDate, schoolId, section, assignment, triggerWhenGreaterThan);
     }
 
     @Override
@@ -262,7 +262,7 @@ public class Notification {
                 && Objects.equals(this.measure, other.measure)
                 && Objects.equals(this.createdDate, other.createdDate)
                 && Objects.equals(this.expiryDate, other.expiryDate)
-                && Objects.equals(this.triggeWhenGreaterThan, other.triggeWhenGreaterThan)
+                && Objects.equals(this.triggerWhenGreaterThan, other.triggerWhenGreaterThan)
                 && Objects.equals(this.window, other.window);
     }
 }

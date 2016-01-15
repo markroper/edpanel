@@ -236,7 +236,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         behaviorScoreNotification.setOwner(teacher);
         behaviorScoreNotification.setSchoolId(school.getId());
         behaviorScoreNotification.setAggregateFunction(AggregateFunction.AVG);
-        behaviorScoreNotification.setTriggeWhenGreaterThan(true);
+        behaviorScoreNotification.setTriggerWhenGreaterThan(true);
         behaviorScoreNotification.setTriggerValue(80D);
         //subscribers & subjects group are the same in this case
         SchoolAdministrators schoolAdmins = new SchoolAdministrators();
@@ -268,7 +268,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
 
         Notification sectionTardy = new Notification();
         sectionTardy.setCreatedDate(LocalDate.now());
-        sectionTardy.setTriggeWhenGreaterThan(true);
+        sectionTardy.setTriggerWhenGreaterThan(true);
         sectionTardy.setExpiryDate(LocalDate.now().plusMonths(3));
         sectionTardy.setMeasure(NotificationMeasure.SECTION_TARDY);
         sectionTardy.setName("Section tardy");
@@ -290,7 +290,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
 
         Notification dailyAbsence = new Notification();
         dailyAbsence.setCreatedDate(LocalDate.now());
-        dailyAbsence.setTriggeWhenGreaterThan(true);
+        dailyAbsence.setTriggerWhenGreaterThan(true);
         dailyAbsence.setExpiryDate(LocalDate.now().plusMonths(3));
         dailyAbsence.setMeasure(NotificationMeasure.SCHOOL_ABSENCE);
         dailyAbsence.setName("Section tardy");

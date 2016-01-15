@@ -51,8 +51,8 @@ public class BehaviorScoreCalc implements NotificationCalculator {
                 triggeredValue = triggeredValue / resp.getValue().size();
             }
             //Only trigger if the GPA calc is less than or equal to the trigger value
-            if((notification.getTriggerValue() >= triggeredValue && !notification.getTriggeWhenGreaterThan()) ||
-                    (notification.getTriggerValue() <= triggeredValue && notification.getTriggeWhenGreaterThan())) {
+            if((notification.getTriggerValue() >= triggeredValue && !notification.getTriggerWhenGreaterThan()) ||
+                    (notification.getTriggerValue() <= triggeredValue && notification.getTriggerWhenGreaterThan())) {
                 return NotificationCalculator.createTriggeredNotifications(notification, triggeredValue, manager);
             }
         }

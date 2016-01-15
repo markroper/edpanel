@@ -58,8 +58,8 @@ public class AssignmentGradeCalc implements NotificationCalculator {
                 triggeredValue = triggerValue / numAssignments;
             }
             //If the calculated value is less than the trigger value, send alert
-            if((triggeredValue <= notification.getTriggerValue() && !notification.getTriggeWhenGreaterThan()) ||
-                    (triggeredValue >= notification.getTriggerValue() && notification.getTriggeWhenGreaterThan())) {
+            if((triggeredValue <= notification.getTriggerValue() && !notification.getTriggerWhenGreaterThan()) ||
+                    (triggeredValue >= notification.getTriggerValue() && notification.getTriggerWhenGreaterThan())) {
                 return NotificationCalculator.createTriggeredNotifications(notification, triggeredValue, manager);
             }
 
