@@ -33,6 +33,15 @@ public class OrchestrationManager {
     private GpaManager gpaManager;
     private SurveyManager surveyManager;
     private NotificationManager notificationManager;
+    private MessageManager messageManager;
+
+    public MessageManager getMessageManager() {
+        return messageManager;
+    }
+
+    public void setMessageManager(MessageManager messageManager) {
+        this.messageManager = messageManager;
+    }
 
     public NotificationManager getNotificationManager() {
         return notificationManager;

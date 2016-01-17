@@ -1,6 +1,8 @@
 package com.scholarscore.models.message;
 
 import com.scholarscore.models.HibernateConsts;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -36,6 +38,7 @@ public class MessageThread {
     @OneToMany
     @JoinColumn(name=HibernateConsts.MESSAGE_THREAD_FK, referencedColumnName=HibernateConsts.MESSAGE_THREAD_ID)
     @Fetch(FetchMode.JOIN)
+    @Cascade(CascadeType.ALL)
     public List<MessageThreadParticipant> getParticipants() {
         return participants;
     }
