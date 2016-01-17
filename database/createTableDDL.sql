@@ -583,3 +583,55 @@ CREATE TABLE `scholar_warehouse`.`triggered_notification` (
 ENGINE = InnoDB;
 ALTER TABLE `scholar_warehouse`.`triggered_notification` ADD UNIQUE `uniq_user$notification$triggerdate`(`user_fk`, `notification_fk`, `triggered_notification_date`);
 ALTER TABLE `scholar_warehouse`.`triggered_notification` ADD INDEX (`triggered_notification_active`);
+
+CREATE TABLE `scholar_warehouse`.`message_thread` (
+  `message_thread_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a message thread',
+  PRIMARY KEY (`message_thread_id`))
+ENGINE = InnoDB;
+
+CREATE TABLE `scholar_warehouse`.`message_thread_participant` (
+--   `message_thread_participant_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a message thread participant',
+  `message_thread_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the message thread table',
+  `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the message thread table',
+  PRIMARY KEY (`message_thread_fk`, `user_fk`),
+  FOREIGN KEY (`message_thread_fk`)
+    REFERENCES `scholar_warehouse`.`message_thread`(`message_thread_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`user_fk`)
+    REFERENCES `scholar_warehouse`.`user`(`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+CREATE TABLE `scholar_warehouse`.`message` (
+  `message_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a message',
+  `message_thread_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The thread that the message is a part of',
+  `message_sent` DATETIME NOT NULL COMMENT 'The date time that the message was sent',
+  `message_body` BLOB NOT NULL COMMENT 'The human readable body of the message',
+  `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The user who sent the message (may no longer be a participant in the thread)',
+  PRIMARY KEY (`message_id`),
+  FOREIGN KEY (`message_thread_fk`)
+    REFERENCES `scholar_warehouse`.`message_thread`(`message_thread_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`user_fk`)
+    REFERENCES `scholar_warehouse`.`user` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+CREATE TABLE `scholar_warehouse`.`message_read_state` (
+  `message_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the message table',
+  `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the user table',
+  `message_read_state_on` DATETIME NOT NULL COMMENT 'The date time the message was read on by the user',
+  PRIMARY KEY (`message_fk`, `user_fk`),
+  FOREIGN KEY (`message_fk`)
+    REFERENCES `scholar_warehouse`.`message`(`message_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`user_fk`)
+    REFERENCES `scholar_warehouse`.`user`(`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;

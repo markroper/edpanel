@@ -267,4 +267,20 @@ public class HibernateConsts {
     public static final String TRIGGERED_NOTIFICATION_ACTIVE = "triggered_notification_active";
     public static final String TRIGGERED_NOTIFICATION_VALUE_WHEN_TRIGGERED = "triggered_notification_value_when_triggered";
     public static final String NOTIFICATION_FK = "notification_fk";
+
+    //Messages
+    public static final String MESSAGE_TABLE = "message";
+    public static final String MESSAGE_ID = "message_id";
+    public static final String MESSAGE_FK = "message_fk";
+    public static final String MESSAGE_SENT = "message_sent";
+    public static final String MESSAGE_BODY = "message_body";
+
+    public static final String MESSAGE_THREAD_TABLE = "message_thread";
+    public static final String MESSAGE_THREAD_FK = "message_thread_fk";
+    public static final String MESSAGE_THREAD_ID = "message_thread_id";
+
+    public static final String MESSAGE_THREAD_PARTICIPANT_TABLE = "message_thread_participant";
+
+    public static final String MESSAGE_READ_STATE_TABLE = "message_read_state";
+    public static final String MESSAGE_READ_STATE_ON = "message_read_state_on";
 }
