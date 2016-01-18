@@ -42,10 +42,24 @@ public class MessageController extends BaseController {
     }
 
     @ApiOperation(
+            value = "Get a message thread",
+            response = MessageThread.class)
+    @RequestMapping(
+            value = "/{threadId}",
+            method = RequestMethod.GET,
+            produces = {JSON_ACCEPT_HEADER})
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity createMessageThread(
+            @ApiParam(name = "threadId", required = true, value = "The thread long ID")
+            @PathVariable(value="threadId") Long threadId) {
+        return respond(pm.getMessageManager().getMessageThread(threadId));
+    }
+
+    @ApiOperation(
             value = "Delete a message thread",
             response = Void.class)
     @RequestMapping(
-            value = "{threadId}",
+            value = "/{threadId}",
             method = RequestMethod.DELETE,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -58,9 +72,9 @@ public class MessageController extends BaseController {
     @ApiOperation(
             value = "Update an existing thread",
             notes = "Can be used to update participants",
-            response = EntityId.class)
+            response = Void.class)
     @RequestMapping(
-            value = "{threadId}",
+            value = "/{threadId}",
             method = RequestMethod.PUT,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -77,7 +91,7 @@ public class MessageController extends BaseController {
             notes = "Given a message ID, the endpoint returns the message",
             response = Message.class)
     @RequestMapping(
-            value = "{threadId}/messages/{messageId}",
+            value = "/{threadId}/messages/{messageId}",
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -94,7 +108,7 @@ public class MessageController extends BaseController {
             value = "Get all messages on thread",
             response = List.class)
     @RequestMapping(
-            value = "{threadId}/messages}",
+            value = "/{threadId}/messages",
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -110,7 +124,7 @@ public class MessageController extends BaseController {
             notes = "Creates, assigns an ID to, persists and returns a message",
             response = EntityId.class)
     @RequestMapping(
-            value = "{threadId}/messages",
+            value = "/{threadId}/messages",
             method = RequestMethod.POST,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
@@ -124,9 +138,9 @@ public class MessageController extends BaseController {
     @ApiOperation(
             value = "Overwrite an existing message",
             notes = "Overwrites an existing message on a thread",
-            response = EntityId.class)
+            response = Void.class)
     @RequestMapping(
-            value = "{threadId}/messages/{messageId}",
+            value = "/{threadId}/messages/{messageId}",
             method = RequestMethod.PUT,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -143,7 +157,7 @@ public class MessageController extends BaseController {
             value = "Delete a message by ID",
             response = Void.class)
     @RequestMapping(
-            value = "{threadId}/messages/{messageId}",
+            value = "/{threadId}/messages/{messageId}",
             method = RequestMethod.DELETE,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -159,12 +173,12 @@ public class MessageController extends BaseController {
             value = "Get all unread messages on thread for user",
             response = List.class)
     @RequestMapping(
-            value = "{threadId}/participants/{userId}/messages",
+            value = "/{threadId}/participants/{userId}/messages",
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody
-    ResponseEntity getUnreadNotifications(
+    ResponseEntity getUnreadMessages(
             @ApiParam(name = "threadId", required = true, value = "The thread long ID")
             @PathVariable(value="threadId") Long threadId,
             @ApiParam(name = "userId", required = true, value = "The user's ID")
@@ -206,7 +220,7 @@ public class MessageController extends BaseController {
             value = "Mark message as read for user",
             response = List.class)
     @RequestMapping(
-            value = "{threadId}/messages/{messageId}/participants/{userId}/readreciepts",
+            value = "/{threadId}/messages/{messageId}/participants/{userId}/readreciepts",
             method = RequestMethod.POST,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")

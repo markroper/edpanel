@@ -13,8 +13,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Created by markroper on 1/17/16.
@@ -22,7 +22,7 @@ import java.util.Objects;
 @Entity(name = HibernateConsts.MESSAGE_THREAD_TABLE)
 public class MessageThread {
     private Long id;
-    private List<MessageThreadParticipant> participants;
+    private Set<MessageThreadParticipant> participants;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,11 +39,11 @@ public class MessageThread {
     @JoinColumn(name=HibernateConsts.MESSAGE_THREAD_FK, referencedColumnName=HibernateConsts.MESSAGE_THREAD_ID)
     @Fetch(FetchMode.JOIN)
     @Cascade(CascadeType.ALL)
-    public List<MessageThreadParticipant> getParticipants() {
+    public Set<MessageThreadParticipant> getParticipants() {
         return participants;
     }
 
-    public void setParticipants(List<MessageThreadParticipant> participants) {
+    public void setParticipants(Set<MessageThreadParticipant> participants) {
         this.participants = participants;
     }
 

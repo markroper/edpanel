@@ -13,6 +13,7 @@ import java.util.List;
 public interface MessageManager {
     //OPERATIONS ON THREADS
     ServiceResponse<EntityId> createMessageThread(MessageThread t);
+    ServiceResponse<MessageThread> getMessageThread(Long threadId);
     ServiceResponse<Void> replaceMessageThread(Long threadId, MessageThread t);
     ServiceResponse<Void> deleteMessageThread(Long threadId);
     ServiceResponse<List<MessageThread>> getAllParticipatingThreads(Long userId);

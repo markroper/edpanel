@@ -11,6 +11,7 @@ import java.util.List;
 public interface MessagePersistence {
     //THREAD RELATED
     Long insertMessageThread(MessageThread t);
+    MessageThread selectMessageThread(long threadId);
     void updateMessageThread(MessageThread t);
     void deleteMessageThread(long threadId);
     List<MessageThread> selectAllThreadsWithParticipatingUser(long userId);

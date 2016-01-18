@@ -253,7 +253,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             antMatchers(HttpMethod.GET, UNVERIFIED_USER_GET).hasAnyRole(RoleConstants.ADMINISTRATOR, RoleConstants.SUPER_ADMINISTRATOR).
             antMatchers(HttpMethod.GET, "/**").hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.POST, QUERY_ENDPOINT).hasAnyRole(AUTHENTICATED).
-                antMatchers(HttpMethod.POST, CREATE_BEHAVIOR_ENDPOINT).hasAnyRole(RoleConstants.TEACHER, RoleConstants.ADMINISTRATOR, RoleConstants.SUPER_ADMINISTRATOR).
+            antMatchers(HttpMethod.POST, CREATE_BEHAVIOR_ENDPOINT).hasAnyRole(RoleConstants.TEACHER, RoleConstants.ADMINISTRATOR, RoleConstants.SUPER_ADMINISTRATOR).
             antMatchers(HttpMethod.POST, "/**").hasRole(RoleConstants.ADMINISTRATOR).
             antMatchers(HttpMethod.DELETE, "/**").hasRole(RoleConstants.ADMINISTRATOR).
             antMatchers(HttpMethod.PUT, "/**").hasRole(RoleConstants.ADMINISTRATOR).
