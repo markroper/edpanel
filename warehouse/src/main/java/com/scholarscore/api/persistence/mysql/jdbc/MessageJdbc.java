@@ -52,6 +52,7 @@ public class MessageJdbc implements MessagePersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<MessageThread> selectAllThreadsWithParticipatingUser(long userId) {
         return (List<MessageThread>)
                 hibernateTemplate.findByNamedParam(
@@ -92,6 +93,7 @@ public class MessageJdbc implements MessagePersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<Message> selectMessages(long threadId) {
         return(List<Message>)
                 hibernateTemplate.findByNamedParam(
@@ -99,6 +101,7 @@ public class MessageJdbc implements MessagePersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<Message> selectUnreadMessages(long threadId, long userId) {
         String[] params = new String[]{"threadId", "userId"};
         Object[] paramValues = new Object[]{ threadId, userId };
@@ -109,6 +112,7 @@ public class MessageJdbc implements MessagePersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<Message> selectUnreadMessages(long userId) {
         return (List<Message>)
                 hibernateTemplate.findByNamedParam(

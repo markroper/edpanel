@@ -210,6 +210,11 @@
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
     </bean>
 
+    <bean id="messagePersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.MessageJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
     <bean id="notificationPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.NotificationJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
