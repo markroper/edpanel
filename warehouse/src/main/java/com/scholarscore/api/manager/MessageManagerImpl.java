@@ -2,13 +2,17 @@ package com.scholarscore.api.manager;
 
 import com.scholarscore.api.persistence.MessagePersistence;
 import com.scholarscore.api.util.ServiceResponse;
+import com.scholarscore.api.util.StatusCodeType;
+import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.message.Message;
 import com.scholarscore.models.message.MessageThread;
+import com.scholarscore.models.message.MessageThreadParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -77,7 +81,8 @@ public class MessageManagerImpl implements MessageManager {
     public ServiceResponse<Message> getMessage(Long threadId, Long messageId) {
         Message m = messagePersistence.selectMessage(threadId, messageId);
         if(null == m) {
-
+            return new ServiceResponse<>(
+                    StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{MESSAGE, messageId}));
         }
         return new ServiceResponse<>(m);
     }
@@ -94,16 +99,26 @@ public class MessageManagerImpl implements MessageManager {
 
     @Override
     public ServiceResponse<List<Message>> getAllUnreadMessagesAllThreads(Long userId) {
-        return new ServiceResponse<>(messagePersistence.selectAllThreadsWithParticipatingUser(userId);
+        return new ServiceResponse<>(messagePersistence.selectUnreadMessages(userId));
     }
 
     @Override
     public ServiceResponse<Void> markMessageReadByUser(Long threadId, Long messageId, Long userId) {
         Message m = messagePersistence.selectMessage(threadId, messageId);
         if(null == m) {
-
+            return new ServiceResponse<>(
+                    StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{ MESSAGE, messageId}));
         }
-        m.getThread().
-        return null;
+        MessageThread thread = m.getThread();
+        if(null == thread.getParticipants()) {
+            thread.setParticipants(new ArrayList<>());
+        }
+        MessageThreadParticipant p = new MessageThreadParticipant();
+        p.setParticipantId(userId);
+        p.setThreadId(thread.getId());
+        if(!thread.getParticipants().contains(p)) {
+            thread.getParticipants().add(p);
+        }
+        return new ServiceResponse<>((Void) null);
     }
 }
