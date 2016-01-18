@@ -2,6 +2,8 @@ package com.scholarscore.models.message;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -15,8 +17,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  *
@@ -30,7 +32,7 @@ public class Message {
     private LocalDateTime sent;
     private String body;
     private Long sentBy;
-    private transient List<MessageReadState> readStateList;
+    private Set<MessageReadState> readStateList;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -84,11 +86,12 @@ public class Message {
     @OneToMany
     @JoinColumn(name=HibernateConsts.MESSAGE_FK, referencedColumnName=HibernateConsts.MESSAGE_ID)
     @Fetch(FetchMode.JOIN)
-    public List<MessageReadState> getReadStateList() {
+    @Cascade(CascadeType.ALL)
+    public Set<MessageReadState> getReadStateList() {
         return readStateList;
     }
 
-    public void setReadStateList(List<MessageReadState> readStateList) {
+    public void setReadStateList(Set<MessageReadState> readStateList) {
         this.readStateList = readStateList;
     }
 

@@ -3,15 +3,22 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 import com.scholarscore.api.persistence.MessagePersistence;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.message.Message;
+import com.scholarscore.models.message.MessageReadState;
 import com.scholarscore.models.message.MessageThread;
+import com.scholarscore.models.message.MessageThreadParticipant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by markroper on 1/17/16.
  */
+@Transactional
 public class MessageJdbc implements MessagePersistence {
     private static final String MESSAGE_HQL = "select m from " + HibernateConsts.MESSAGE_TABLE + " m " +
             " left join fetch m.thread t left join fetch t.participants p left join fetch m.readStateList l";
@@ -34,12 +41,31 @@ public class MessageJdbc implements MessagePersistence {
 
     @Override
     public Long insertMessageThread(MessageThread t) {
+        Set<MessageThreadParticipant> ps = t.getParticipants();
+        t.setParticipants(null);
         MessageThread thread = this.hibernateTemplate.merge(t);
+        if(null != ps) {
+            for(MessageThreadParticipant p : ps) {
+                p.setThreadId(thread.getId());
+            }
+            thread.setParticipants(ps);
+            this.hibernateTemplate.merge(thread);
+        }
         return thread.getId();
     }
 
     @Override
+    public MessageThread selectMessageThread(long threadId) {
+        return hibernateTemplate.get(MessageThread.class, threadId);
+    }
+
+    @Override
     public void updateMessageThread(MessageThread t) {
+        if(null != t.getParticipants()) {
+            for(MessageThreadParticipant p: t.getParticipants()) {
+                p.setThreadId(t.getId());
+            }
+        }
         hibernateTemplate.merge(t);
     }
 
@@ -84,7 +110,7 @@ public class MessageJdbc implements MessagePersistence {
         }
         m.getThread().setId(threadId);
         m.setId(messageId);
-        this.hibernateTemplate.update(m);
+        this.hibernateTemplate.merge(m);
     }
 
     @Override
@@ -95,29 +121,73 @@ public class MessageJdbc implements MessagePersistence {
     @Override
     @SuppressWarnings("unchecked")
     public List<Message> selectMessages(long threadId) {
-        return(List<Message>)
+        Set<Message> messageSet = new HashSet<>();
+        List<Message> messageList = (List<Message>)
                 hibernateTemplate.findByNamedParam(
-                        MESSAGE_HQL + " where :threadId = t.is", "threadId", threadId);
+                        MESSAGE_HQL + " where :threadId = t.id", "threadId", threadId);
+        for(Message m: messageList) {
+            if(!messageSet.contains(m)) {
+                messageSet.add(m);
+            }
+        }
+        return new ArrayList<>(messageSet);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<Message> selectUnreadMessages(long threadId, long userId) {
-        String[] params = new String[]{"threadId", "userId"};
+        String[] params = new String[]{ "threadId", "userId" };
         Object[] paramValues = new Object[]{ threadId, userId };
-        return (List<Message>)
-        hibernateTemplate.findByNamedParam(
-                MESSAGE_HQL + " where :threadId = t.is and p.participantId = :userId and l.participantId is null"
-                , params, paramValues);
+        Set<Message> messageSet = new HashSet<>();
+        List<Message> messageList = (List<Message>) hibernateTemplate.findByNamedParam(
+                MESSAGE_HQL + " where :threadId = t.id and p.participantId = :userId",
+                params, paramValues);
+        for(Message m: messageList) {
+            if(!messageSet.contains(m)) {
+                if(null != m.getReadStateList()) {
+                    boolean hasSeen = false;
+                    for(MessageReadState s: m.getReadStateList()) {
+                        if(s.getParticipantId().equals(userId)) {
+                            hasSeen = true;
+                            break;
+                        }
+                    }
+                    if(!hasSeen) {
+                        messageSet.add(m);
+                    }
+                } else {
+                    messageSet.add(m);
+                }
+            }
+        }
+        return new ArrayList<>(messageSet);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<Message> selectUnreadMessages(long userId) {
-        return (List<Message>)
-                hibernateTemplate.findByNamedParam(
-                        MESSAGE_HQL + " where p.participantId = :userId and l.participantId is null"
-                        , "userIf", userId);
+        Set<Message> messageSet = new HashSet<>();
+        List<Message> messageList = (List<Message>) hibernateTemplate.findByNamedParam(
+                MESSAGE_HQL + " where p.participantId = :userId", "userId", userId);
+        for(Message m: messageList) {
+            if(!messageSet.contains(m)) {
+                if(null != m.getReadStateList()) {
+                    boolean hasSeen = false;
+                    for(MessageReadState s: m.getReadStateList()) {
+                        if(s.getParticipantId().equals(userId)) {
+                            hasSeen = true;
+                            break;
+                        }
+                    }
+                    if(!hasSeen) {
+                        messageSet.add(m);
+                    }
+                } else {
+                    messageSet.add(m);
+                }
+            }
+        }
+        return new ArrayList<>(messageSet);
     }
 
     public void setHibernateTemplate(HibernateTemplate template) {

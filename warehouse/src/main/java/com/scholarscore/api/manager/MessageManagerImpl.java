@@ -6,13 +6,14 @@ import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.message.Message;
+import com.scholarscore.models.message.MessageReadState;
 import com.scholarscore.models.message.MessageThread;
-import com.scholarscore.models.message.MessageThreadParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -44,6 +45,11 @@ public class MessageManagerImpl implements MessageManager {
     }
 
     @Override
+    public ServiceResponse<MessageThread> getMessageThread(Long threadId) {
+        return new ServiceResponse<>(messagePersistence.selectMessageThread(threadId));
+    }
+
+    @Override
     public ServiceResponse<Void> replaceMessageThread(Long threadId, MessageThread t) {
         messagePersistence.updateMessageThread(t);
         return new ServiceResponse<>((Void) null);
@@ -62,6 +68,7 @@ public class MessageManagerImpl implements MessageManager {
 
     @Override
     public ServiceResponse<EntityId> createMessage(Long threadId, Message m) {
+        m.setSent(LocalDateTime.now());
         return new ServiceResponse<>(new EntityId(messagePersistence.insertMessage(threadId, m)));
     }
 
@@ -111,14 +118,19 @@ public class MessageManagerImpl implements MessageManager {
         }
         MessageThread thread = m.getThread();
         if(null == thread.getParticipants()) {
-            thread.setParticipants(new ArrayList<>());
+            thread.setParticipants(new HashSet<>());
         }
-        MessageThreadParticipant p = new MessageThreadParticipant();
-        p.setParticipantId(userId);
-        p.setThreadId(thread.getId());
-        if(!thread.getParticipants().contains(p)) {
-            thread.getParticipants().add(p);
+        MessageReadState rs = new MessageReadState();
+        rs.setMessageId(m.getId());
+        rs.setParticipantId(userId);
+        rs.setReadOn(LocalDateTime.now());
+        if(null == m.getReadStateList()) {
+            m.setReadStateList(new HashSet<>());
         }
+        if(!m.getReadStateList().contains(rs)) {
+            m.getReadStateList().add(rs);
+        }
+        messagePersistence.updateMessage(threadId, messageId, m);
         return new ServiceResponse<>((Void) null);
     }
 }
