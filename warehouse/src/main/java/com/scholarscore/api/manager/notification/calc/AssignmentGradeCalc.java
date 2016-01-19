@@ -43,26 +43,46 @@ public class AssignmentGradeCalc implements NotificationCalculator {
                 manager.getStudentAssignmentManager().getAllStudentAssignments(
                 notification.getSchoolId(), -1L, -1L, notification.getSection().getId(), notification.getAssignment().getId());
         if(null != assResp.getValue()) {
-            Double triggeredValue = 0D;
-            int numAssignments = 0;
-            for(StudentAssignment sa: assResp.getValue()) {
-                if(null != sa.getExempt() || sa.getExempt() ||
-                        null == sa.getAwardedPoints() || null == sa.getAvailablePoints()) {
-                    continue;
+            if(null == agg) {
+                List<TriggeredNotification> triggered = new ArrayList<>();
+                //If there is no aggregate function, evaluate each subject separately
+                for(StudentAssignment sa: assResp.getValue()) {
+                    if((null != sa.getExempt() && sa.getExempt()) ||
+                            null == sa.getAwardedPoints() || null == sa.getAvailablePoints()) {
+                        continue;
+                    }
+                    Double triggeredValue = sa.getAwardedPoints() / sa.getAvailablePoints();
+                    //If the calculated value is less than the trigger value, send alert
+                    if((triggeredValue <= notification.getTriggerValue() && !notification.getTriggerWhenGreaterThan()) ||
+                            (triggeredValue >= notification.getTriggerValue() && notification.getTriggerWhenGreaterThan())) {
+                        triggered.addAll(NotificationCalculator.createTriggeredNotifications(
+                                notification, triggeredValue, manager, sa.getStudent().getId()));
+                    }
                 }
-                numAssignments++;
-                triggeredValue += sa.getAwardedPoints() / sa.getAvailablePoints();
+                if(!triggered.isEmpty()) {
+                    return triggered;
+                }
+            } else {
+                Double triggeredValue = 0D;
+                int numAssignments = 0;
+                for(StudentAssignment sa: assResp.getValue()) {
+                    if((null != sa.getExempt() && sa.getExempt()) ||
+                            null == sa.getAwardedPoints() || null == sa.getAvailablePoints()) {
+                        continue;
+                    }
+                    numAssignments++;
+                    triggeredValue += sa.getAwardedPoints() / sa.getAvailablePoints();
+                }
+                //If we're dealing with an average, calculate it, otherwise assume sum
+                if(AggregateFunction.AVG.equals(agg) && numAssignments > 0) {
+                    triggeredValue = triggerValue / numAssignments;
+                }
+                //If the calculated value is less than the trigger value, send alert
+                if((triggeredValue <= notification.getTriggerValue() && !notification.getTriggerWhenGreaterThan()) ||
+                        (triggeredValue >= notification.getTriggerValue() && notification.getTriggerWhenGreaterThan())) {
+                    return NotificationCalculator.createTriggeredNotifications(notification, triggeredValue, manager);
+                }
             }
-            //If we're dealing with an average, calculate it, otherwise assume sum
-            if(AggregateFunction.AVG.equals(agg) && numAssignments > 0) {
-                triggeredValue = triggerValue / numAssignments;
-            }
-            //If the calculated value is less than the trigger value, send alert
-            if((triggeredValue <= notification.getTriggerValue() && !notification.getTriggerWhenGreaterThan()) ||
-                    (triggeredValue >= notification.getTriggerValue() && notification.getTriggerWhenGreaterThan())) {
-                return NotificationCalculator.createTriggeredNotifications(notification, triggeredValue, manager);
-            }
-
         }
         return null;
     }

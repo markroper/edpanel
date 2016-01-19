@@ -13,7 +13,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -32,13 +31,13 @@ import java.util.Objects;
  * Created by markroper on 1/10/16.
  */
 @Entity(name = HibernateConsts.TRIGGERED_NOTIFICATION_TABLE)
-@Table(name = HibernateConsts.TRIGGERED_NOTIFICATION_TABLE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TriggeredNotification {
     private Long id;
     private Notification notification;
     private LocalDate triggeredDate;
     private Long userIdToNotify;
+    private Long subjectUserId;
     private Boolean isActive;
     private Double valueWhenTriggered;
 
@@ -100,9 +99,18 @@ public class TriggeredNotification {
         this.valueWhenTriggered = valueWhenTriggered;
     }
 
+    @Column(name = HibernateConsts.SUBJECT_USER_FK)
+    public Long getSubjectUserId() {
+        return subjectUserId;
+    }
+
+    public void setSubjectUserId(Long subjectUserId) {
+        this.subjectUserId = subjectUserId;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, notification, triggeredDate, userIdToNotify, isActive, valueWhenTriggered);
+        return Objects.hash(id, notification, triggeredDate, userIdToNotify, isActive, valueWhenTriggered, subjectUserId);
     }
 
     @Override
@@ -119,6 +127,7 @@ public class TriggeredNotification {
                 && Objects.equals(this.triggeredDate, other.triggeredDate)
                 && Objects.equals(this.userIdToNotify, other.userIdToNotify)
                 && Objects.equals(this.isActive, other.isActive)
-                && Objects.equals(this.valueWhenTriggered, other.valueWhenTriggered);
+                && Objects.equals(this.valueWhenTriggered, other.valueWhenTriggered)
+                && Objects.equals(this.subjectUserId, other.subjectUserId);
     }
 }

@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
+ *  Expresses a single message posted by a user to a message thread.
  *
  * Created by markroper on 1/17/16.
  */

@@ -56,6 +56,11 @@ public interface NotificationCalculator {
      */
     static List<TriggeredNotification> createTriggeredNotifications(
             Notification n, Double triggeringValue, OrchestrationManager manager) {
+        return createTriggeredNotifications(n, triggeringValue, manager, null);
+    }
+
+    static List<TriggeredNotification> createTriggeredNotifications(
+            Notification n, Double triggeringValue, OrchestrationManager manager, Long subjectId) {
         List<? extends Person> recipients = resolveGroupMembers(n.getSubscribers(), n.getSchoolId(), manager);
         if(null == recipients) {
             return null;
@@ -68,6 +73,7 @@ public interface NotificationCalculator {
             tr.setTriggeredDate(LocalDate.now());
             tr.setUserIdToNotify(p.getId());
             tr.setValueWhenTriggered(triggeringValue);
+            tr.setSubjectUserId(subjectId);
             notifications.add(tr);
         }
         return notifications;

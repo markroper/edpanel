@@ -45,19 +45,39 @@ public class GpaCalc implements NotificationCalculator {
                     manager.getGpaManager().getAllGpasForStudents(studentIds, null, null);
             Double gpaSum = 0D;
             if(null != gpaResp.getValue() && !gpaResp.getValue().isEmpty()) {
-                for(Gpa gpa : gpaResp.getValue()) {
-                    gpaSum += gpa.getScore();
-                }
-                //If the aggregate function is average, adjust the triggered value, otherwise, assume SUM
-                if(AggregateFunction.AVG.equals(agg)) {
-                    gpaSum = gpaSum / gpaResp.getValue().size();
+                if(null == agg) {
+                    //If there is no aggregate function, calculate per student
+                    List<TriggeredNotification> triggered = new ArrayList<>();
+                    for(Gpa gpa: gpaResp.getValue()) {
+                        if ((triggerValue >= gpa.getScore() && !notification.getTriggerWhenGreaterThan()) ||
+                                (triggerValue <= gpa.getScore() && notification.getTriggerWhenGreaterThan())) {
+                            List<TriggeredNotification> t =
+                                    NotificationCalculator.createTriggeredNotifications(
+                                            notification, gpa.getScore(), manager, gpa.getStudentId());
+                            if(null != t) {
+                                triggered.addAll(t);
+                            }
+                        }
+                    }
+                    if(!triggered.isEmpty()) {
+                        return triggered;
+                    }
+                } else {
+                    for (Gpa gpa : gpaResp.getValue()) {
+                        gpaSum += gpa.getScore();
+                    }
+                    //If the aggregate function is average, adjust the triggered value, otherwise, assume SUM
+                    if (AggregateFunction.AVG.equals(agg)) {
+                        gpaSum = gpaSum / gpaResp.getValue().size();
+                    }
+                    //Only trigger if the GPA calc is less than or equal to the trigger value
+                    if ((triggerValue >= gpaSum && !notification.getTriggerWhenGreaterThan()) ||
+                            (triggerValue <= gpaSum && notification.getTriggerWhenGreaterThan())) {
+                        return NotificationCalculator.createTriggeredNotifications(notification, gpaSum, manager);
+                    }
                 }
             }
-            //Only trigger if the GPA calc is less than or equal to the trigger value
-            if((triggerValue >= gpaSum && !notification.getTriggerWhenGreaterThan()) ||
-                    (triggerValue <= gpaSum && notification.getTriggerWhenGreaterThan())) {
-                return NotificationCalculator.createTriggeredNotifications(notification, gpaSum, manager);
-            }
+
         }
         return null;
     }
@@ -92,39 +112,63 @@ public class GpaCalc implements NotificationCalculator {
                     startAndEnd.setRight(gpa);
                 }
             }
-            Double startValue = 0D;
-            Double endValue = 0D;
-            //Now that we have the oldest and newest GPA for each student within out time window,
-            //sum the start and end values for each student.
-            for(Map.Entry<Long, MutablePair<Gpa, Gpa>> entry : gpasByStudent.entrySet()) {
-                startValue += entry.getValue().getLeft().getScore();
-                endValue += entry.getValue().getRight().getScore();
-            }
-            //If the aggregate function is average, divide by size to get the average GPA for students
-            //Otherwise assume we're dealing with a SUM.
-            if(AggregateFunction.AVG.equals(agg)) {
-                startValue = startValue / gpasByStudent.size();
-                endValue = endValue / gpasByStudent.size();
-            }
-            //If the Notification is triggered on percent change, we need to calculate the
-            //percent difference between the start and end values and compare that pct to the trigger value.
-            //Otherwise we compare the absolute value of endValue - startValue to the trigger value.
-            if(null != isPercent && isPercent) {
-                //Calculate pct different between start and end date
-                if(triggerValue <= Math.abs(1D - (endValue / startValue))) {
-                    return NotificationCalculator.createTriggeredNotifications(
-                            notification, 1D - (endValue / startValue), manager);
+            if(null == agg) {
+                List<TriggeredNotification> triggered = new ArrayList<>();
+                //Now that we have the oldest and newest GPA for each student within out time window,
+                //sum the start and end values for each student.
+                for(Map.Entry<Long, MutablePair<Gpa, Gpa>> entry : gpasByStudent.entrySet()) {
+                    Double startValue = entry.getValue().getLeft().getScore();
+                    Double endValue = entry.getValue().getRight().getScore();
+                    List<TriggeredNotification> t = genTriggeredNotifications(
+                            isPercent, notification, endValue, startValue, manager, entry.getKey());
+                    if(null != t) {
+                        triggered.addAll(t);
+                    }
+                }
+                if(!triggered.isEmpty()) {
+                    return triggered;
                 }
             } else {
-                //abs value of difference between
-                if(triggerValue <= Math.abs(endValue - startValue)) {
-                    return NotificationCalculator.
-                            createTriggeredNotifications(notification, endValue - startValue, manager);
+                Double startValue = 0D;
+                Double endValue = 0D;
+                //Now that we have the oldest and newest GPA for each student within out time window,
+                //sum the start and end values for each student.
+                for(Map.Entry<Long, MutablePair<Gpa, Gpa>> entry : gpasByStudent.entrySet()) {
+                    startValue += entry.getValue().getLeft().getScore();
+                    endValue += entry.getValue().getRight().getScore();
                 }
+                //If the aggregate function is average, divide by size to get the average GPA for students
+                //Otherwise assume we're dealing with a SUM.
+                if(AggregateFunction.AVG.equals(agg)) {
+                    startValue = startValue / gpasByStudent.size();
+                    endValue = endValue / gpasByStudent.size();
+                }
+                return genTriggeredNotifications(isPercent, notification, endValue, startValue, manager, null);
             }
         } else {
             LOGGER.warn("Unexpectedly null GPA response for student list query");
             return null;
+        }
+        return null;
+    }
+
+    private static List<TriggeredNotification> genTriggeredNotifications(
+            Boolean isPercent, Notification notification, Double endValue, Double startValue, OrchestrationManager manager, Long subjectFk) {
+        //If the Notification is triggered on percent change, we need to calculate the
+        //percent difference between the start and end values and compare that pct to the trigger value.
+        //Otherwise we compare the absolute value of endValue - startValue to the trigger value.
+        if(null != isPercent && isPercent) {
+            //Calculate pct different between start and end date
+            if(notification.getTriggerValue() <= Math.abs(1D - (endValue / startValue))) {
+                return NotificationCalculator.createTriggeredNotifications(
+                        notification, 1D - (endValue / startValue), manager);
+            }
+        } else {
+            //abs value of difference between
+            if(notification.getTriggerValue() <= Math.abs(endValue - startValue)) {
+                return NotificationCalculator.
+                        createTriggeredNotifications(notification, endValue - startValue, manager);
+            }
         }
         return null;
     }

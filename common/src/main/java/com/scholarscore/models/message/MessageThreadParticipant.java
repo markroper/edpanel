@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
+ * Represents a user who is party to a given message thread.
+ *
  * Created by markroper on 1/17/16.
  */
 @Entity(name = HibernateConsts.MESSAGE_THREAD_PARTICIPANT_TABLE)

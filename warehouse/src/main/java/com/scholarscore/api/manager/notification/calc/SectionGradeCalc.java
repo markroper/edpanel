@@ -34,32 +34,52 @@ public class SectionGradeCalc implements NotificationCalculator {
             studentIds.add(p.getId());
         }
         if (null != window) {
-            return calculateTimeWindowTriggerdNotifications(notification, manager, studentIds);
+            return calculateTimeWindowTriggered(notification, manager, studentIds);
         } else {
-            Double gradeSum = 0D;
-            Long num = 0L;
-            for(Long sid: studentIds) {
-                ServiceResponse<StudentSectionGrade> ssgResp =
-                        manager.getStudentSectionGradeManager().getStudentSectionGrade(
-                                notification.getSchoolId(), -1L, -1L, notification.getSection().getId(), sid);
-                if(null != ssgResp.getValue()) {
-                    num++;
-                    gradeSum += ssgResp.getValue().getGrade();
+            if(null == agg) {
+                List<TriggeredNotification> triggered = new ArrayList<>();
+                for(Long sid: studentIds) {
+                    ServiceResponse<StudentSectionGrade> ssgResp =
+                            manager.getStudentSectionGradeManager().getStudentSectionGrade(
+                                    notification.getSchoolId(), -1L, -1L, notification.getSection().getId(), sid);
+                    if(null != ssgResp.getValue()) {
+                        Double grade = ssgResp.getValue().getGrade();
+                        if ((triggerValue >= grade && !notification.getTriggerWhenGreaterThan()) ||
+                                (triggerValue <= grade && notification.getTriggerWhenGreaterThan())) {
+                            triggered.addAll(NotificationCalculator.createTriggeredNotifications(
+                                    notification, grade, manager, sid));
+                        }
+                    }
                 }
-            }
-            //If the aggregate function is average, adjust the triggered value, otherwise, assume SUM
-            if(AggregateFunction.AVG.equals(agg) && num > 0) {
-                gradeSum = gradeSum / num;
-            }
-            if((triggerValue >= gradeSum && !notification.getTriggerWhenGreaterThan()) ||
-                    (triggerValue <= gradeSum && notification.getTriggerWhenGreaterThan())) {
-                return NotificationCalculator.createTriggeredNotifications(notification, gradeSum, manager);
+                if(!triggered.isEmpty()) {
+                    return triggered;
+                }
+            } else {
+                Double gradeSum = 0D;
+                Long num = 0L;
+                for(Long sid: studentIds) {
+                    ServiceResponse<StudentSectionGrade> ssgResp =
+                            manager.getStudentSectionGradeManager().getStudentSectionGrade(
+                                    notification.getSchoolId(), -1L, -1L, notification.getSection().getId(), sid);
+                    if(null != ssgResp.getValue()) {
+                        num++;
+                        gradeSum += ssgResp.getValue().getGrade();
+                    }
+                }
+                //If the aggregate function is average, adjust the triggered value, otherwise, assume SUM
+                if(AggregateFunction.AVG.equals(agg) && num > 0) {
+                    gradeSum = gradeSum / num;
+                }
+                if((triggerValue >= gradeSum && !notification.getTriggerWhenGreaterThan()) ||
+                        (triggerValue <= gradeSum && notification.getTriggerWhenGreaterThan())) {
+                    return NotificationCalculator.createTriggeredNotifications(notification, gradeSum, manager);
+                }
             }
         }
         return null;
     }
 
-    private List<TriggeredNotification> calculateTimeWindowTriggerdNotifications(
+    private List<TriggeredNotification> calculateTimeWindowTriggered(
             Notification notification, OrchestrationManager manager, List<Long> studentIds) {
         //TODO: we need to make student section grades like GPA, one per day synced from PS
         return null;

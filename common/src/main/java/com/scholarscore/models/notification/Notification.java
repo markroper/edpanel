@@ -24,7 +24,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -38,7 +37,6 @@ import java.util.Objects;
  * Created by markroper on 1/9/16.
  */
 @Entity(name = HibernateConsts.NOTIFICATION_TABLE)
-@Table(name = HibernateConsts.NOTIFICATION_TABLE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Notification {
     private Long id;
@@ -70,6 +68,8 @@ public class Notification {
     //For notifications based on groups of data, which aggregate function to use (e.g. average GPA, or sum of demerits)
     //If this aggregate function is null, the notification is not aggregate based, but rather, value based. For example
     //Notify me if a student's grade falls below 73%.  No aggregate function is required for this notification.
+    //If a group is defined but there is no aggregate function, each student in the group will be evaluated separately
+    //against the triggere value defined and separate TriggeredNotifications will be generated for each triggering student
     private AggregateFunction aggregateFunction;
     //Can be null.  If not null, the notification is not triggering on a static value, but rather on a
     //value that changes over time.  This object contains a Duration and a boolean indicating whether or not

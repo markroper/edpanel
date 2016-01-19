@@ -25,7 +25,6 @@ import java.util.List;
  */
 public class StudentManagerImpl implements StudentManager {
     private static final int CREATE_RETRY_MAX = 10;
-    private static final String STUDENT_HQL = "";
     StudentPersistence studentPersistence;
     StudentPrepScorePersistence studentPrepScorePersistence;
 
