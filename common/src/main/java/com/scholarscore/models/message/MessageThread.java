@@ -1,6 +1,7 @@
 package com.scholarscore.models.message;
 
 import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.message.topic.MessageTopic;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
@@ -13,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import java.util.Objects;
 import java.util.Set;
 
@@ -23,6 +25,7 @@ import java.util.Set;
 public class MessageThread {
     private Long id;
     private Set<MessageThreadParticipant> participants;
+    private MessageTopic topic;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +39,7 @@ public class MessageThread {
     }
 
     @OneToMany
-    @JoinColumn(name=HibernateConsts.MESSAGE_THREAD_FK, referencedColumnName=HibernateConsts.MESSAGE_THREAD_ID)
+    @JoinColumn(name=HibernateConsts.MESSAGE_THREAD_FK, referencedColumnName=HibernateConsts.MESSAGE_THREAD_ID,  nullable = true)
     @Fetch(FetchMode.JOIN)
     @Cascade(CascadeType.ALL)
     public Set<MessageThreadParticipant> getParticipants() {
@@ -47,9 +50,20 @@ public class MessageThread {
         this.participants = participants;
     }
 
+    @OneToOne
+    @JoinColumn(name=HibernateConsts.MESSAGE_TOPIC_FK, nullable = true)
+    @Cascade(CascadeType.ALL)
+    public MessageTopic getTopic() {
+        return topic;
+    }
+
+    public void setTopic(MessageTopic topic) {
+        this.topic = topic;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, participants);
+        return Objects.hash(id, participants, topic);
     }
 
     @Override
@@ -61,6 +75,8 @@ public class MessageThread {
             return false;
         }
         final MessageThread other = (MessageThread) obj;
-        return Objects.equals(this.id, other.id) && Objects.equals(this.participants, other.participants);
+        return Objects.equals(this.id, other.id) &&
+                Objects.equals(this.participants, other.participants) &&
+                Objects.equals(this.topic, other.topic);
     }
 }

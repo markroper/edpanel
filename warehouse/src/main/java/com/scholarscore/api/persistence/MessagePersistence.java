@@ -2,6 +2,7 @@ package com.scholarscore.api.persistence;
 
 import com.scholarscore.models.message.Message;
 import com.scholarscore.models.message.MessageThread;
+import com.scholarscore.models.message.MessageThreadParticipant;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public interface MessagePersistence {
     void updateMessageThread(MessageThread t);
     void deleteMessageThread(long threadId);
     List<MessageThread> selectAllThreadsWithParticipatingUser(long userId);
+    void deleteThreadParticipant(long threadId, MessageThreadParticipant p);
     //MESSAGE RELATED
     Long insertMessage(long threadId, Message m);
     void deleteMessage(long threadId, long messageId);

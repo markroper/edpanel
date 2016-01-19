@@ -8,6 +8,7 @@ import com.scholarscore.models.EntityId;
 import com.scholarscore.models.message.Message;
 import com.scholarscore.models.message.MessageReadState;
 import com.scholarscore.models.message.MessageThread;
+import com.scholarscore.models.message.MessageThreadParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,12 @@ public class MessageManagerImpl implements MessageManager {
 
     @Override
     public ServiceResponse<Void> deleteMessageThread(Long threadId) {
+        MessageThread t = messagePersistence.selectMessageThread(threadId);
+        if(null != t.getParticipants()) {
+            for(MessageThreadParticipant p: t.getParticipants()) {
+                messagePersistence.deleteThreadParticipant(threadId, p);
+            }
+        }
         messagePersistence.deleteMessageThread(threadId);
         return new ServiceResponse<>((Void) null);
     }

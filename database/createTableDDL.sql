@@ -584,13 +584,53 @@ ENGINE = InnoDB;
 ALTER TABLE `scholar_warehouse`.`triggered_notification` ADD UNIQUE `uniq_user$notification$triggerdate`(`user_fk`, `notification_fk`, `triggered_notification_date`);
 ALTER TABLE `scholar_warehouse`.`triggered_notification` ADD INDEX (`triggered_notification_active`);
 
+CREATE TABLE `scholar_warehouse`.`message_topic` (
+  `message_topic_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Foreign key to the message table',
+  `school_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the school table',
+  `message_topic_type` VARCHAR(256) NULL COMMENT 'Hibernate column used to discriminate between subclasses',
+  `student_assignment_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key to the student assignment table',
+  `behavior_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key to the behavior table',
+  `gpa_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key to the GPA table',
+  `notification_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key to the notification table',
+  `student_section_grade_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key to the section grade table',
+  PRIMARY KEY (`message_topic_id`),
+  FOREIGN KEY (`school_fk`)
+    REFERENCES `scholar_warehouse`.`school`(`school_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`student_assignment_fk`)
+    REFERENCES `scholar_warehouse`.`student_assignment`(`student_assignment_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`behavior_fk`)
+    REFERENCES `scholar_warehouse`.`behavior`(`behavior_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`gpa_fk`)
+    REFERENCES `scholar_warehouse`.`gpa`(`gpa_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`notification_fk`)
+    REFERENCES `scholar_warehouse`.`notification`(`notification_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`student_section_grade_fk`)
+    REFERENCES `scholar_warehouse`.`student_section_grade`(`student_section_grade_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
 CREATE TABLE `scholar_warehouse`.`message_thread` (
   `message_thread_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a message thread',
-  PRIMARY KEY (`message_thread_id`))
+  `message_topic_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key to the message topic table',
+  PRIMARY KEY (`message_thread_id`),
+  FOREIGN KEY (`message_topic_fk`)
+    REFERENCES `scholar_warehouse`.`message_topic`(`message_topic_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`message_thread_participant` (
---   `message_thread_participant_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a message thread participant',
   `message_thread_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the message thread table',
   `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the message thread table',
   PRIMARY KEY (`message_thread_fk`, `user_fk`),
@@ -606,7 +646,7 @@ ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`message` (
   `message_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a message',
-  `message_thread_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The thread that the message is a part of',
+  `message_thread_fk` BIGINT UNSIGNED NULL COMMENT 'The thread that the message is a part of',
   `message_sent` DATETIME NOT NULL COMMENT 'The date time that the message was sent',
   `message_body` BLOB NOT NULL COMMENT 'The human readable body of the message',
   `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The user who sent the message (may no longer be a participant in the thread)',

@@ -45,6 +45,7 @@ public class HibernateConsts {
     public static final String STUDENT_ASSIGNMENT_EXEMPT = "student_assignment_exempt";
     public static final String STUDENT_SOURCE_SYSTEM_USER_ID = "student_source_system_user_id";
     public static final String ASSIGNMENT_FK = "assignment_fk";
+    public static final String STUDENT_ASSIGNMENT_FK = "student_assignment_fk";
     
     //Behavior constants
     public static final String BEHAVIOR_TABLE = "behavior";
@@ -58,6 +59,7 @@ public class HibernateConsts {
     public static final String BEHAVIOR_POINT_VALUE = "point_value";
     public static final String BEHAVIOR_ROSTER = "roster";
     public static final String USER_FK = "user_fk";
+    public static final String BEHAVIOR_FK = "behavior_fk";
     
     // the following column names are used in multiple places in different tables
     public static final String STUDENT_FK = "student_fk";
@@ -133,6 +135,7 @@ public class HibernateConsts {
     public static final String STUDENT_SECTION_GRADE_COMPLETE = "complete";
     public static final String STUDENT_SECTION_GRADE_GRADE = "grade";
     public static final String STUDENT_SECTION_GRADE_TERM_GRADES = "term_grades";
+    public static final String STUDENT_SECTION_GRADE_FK = "student_section_grade_fk";
     
     //Teacher constants
     public static final String TEACHER_TABLE = "teacher";
@@ -283,4 +286,9 @@ public class HibernateConsts {
 
     public static final String MESSAGE_READ_STATE_TABLE = "message_read_state";
     public static final String MESSAGE_READ_STATE_ON = "message_read_state_on";
+
+    public static final String MESSAGE_TOPIC_TABLE = "message_topic";
+    public static final String MESSAGE_TOPIC_ID = "message_topic_id";
+    public static final String MESSAGE_TOPIC_TYPE = "message_topic_type";
+    public static final String MESSAGE_TOPIC_FK = "message_topic_fk";
 }
