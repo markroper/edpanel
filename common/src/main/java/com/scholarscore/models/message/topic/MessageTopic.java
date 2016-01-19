@@ -18,6 +18,8 @@ import javax.persistence.Transient;
 import java.util.Objects;
 
 /**
+ * Expresses an entity within EdPanel that a conversation thread can be about.
+ *
  * Created by markroper on 1/18/16.
  */
 @Entity(name = HibernateConsts.MESSAGE_TOPIC_TABLE)

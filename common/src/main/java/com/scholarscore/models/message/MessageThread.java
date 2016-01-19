@@ -19,6 +19,12 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
+ * Expresses a message thread or 'conversation'.  A thread can have one or many participants
+ * participants can be added or removed without performance penalty.  Participants are able
+ * to read any message on a thread.  Subthreads are not supported at this time.  Threads may have a topic
+ * which is translated into a FK reference to an entity within EdPanel (e.g. a student's assignment, a notification,
+ * and so on).
+ *
  * Created by markroper on 1/17/16.
  */
 @Entity(name = HibernateConsts.MESSAGE_THREAD_TABLE)

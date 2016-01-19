@@ -567,6 +567,7 @@ ENGINE = InnoDB;
 CREATE TABLE `scholar_warehouse`.`triggered_notification` (
   `triggered_notification_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a triggered notification',
   `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The user to be alerted about the notification being triggered',
+  `subject_user_fk` BIGINT UNSIGNED NULL COMMENT 'The FK to the specific subject userid, if any',
   `notification_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foriegn key to the notification table, required',
   `triggered_notification_date` DATE NOT NULL COMMENT 'The date the notification was triggered',
   `triggered_notification_active` BOOLEAN COMMENT 'True if the triggered notification is active, otherwise false',
@@ -579,9 +580,13 @@ CREATE TABLE `scholar_warehouse`.`triggered_notification` (
   FOREIGN KEY (`user_fk`)
     REFERENCES `scholar_warehouse`.`user` (`user_id`)
     ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`subject_user_fk`)
+    REFERENCES `scholar_warehouse`.`user` (`user_id`)
+    ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
-ALTER TABLE `scholar_warehouse`.`triggered_notification` ADD UNIQUE `uniq_user$notification$triggerdate`(`user_fk`, `notification_fk`, `triggered_notification_date`);
+ALTER TABLE `scholar_warehouse`.`triggered_notification` ADD UNIQUE `uniq_user$notification$triggerdate`(`user_fk`, `subject_user_fk`, `notification_fk`, `triggered_notification_date`);
 ALTER TABLE `scholar_warehouse`.`triggered_notification` ADD INDEX (`triggered_notification_active`);
 
 CREATE TABLE `scholar_warehouse`.`message_topic` (
