@@ -64,6 +64,7 @@ public class NotificationManagerImpl implements NotificationManager {
 
     @Override
     public ServiceResponse<Void> evaluateNotifications(Long schoolId) {
+        //TODO: this is not thread safe, in fact, its thread cluster-fucked. We need a way to globally lock this call.
         ServiceResponse<List<Notification>> notificationResponse = getAllNotifications();
         if(null != notificationResponse.getValue()) {
             NotificationTriggerEvaluator factory = new NotificationTriggerEvaluator(pm);
