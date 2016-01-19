@@ -195,6 +195,9 @@ public class MessageValidatingExecutor {
         } else {
             submitted.setParticipants(new HashSet<>());
         }
+        if(null != submitted.getTopic()) {
+            submitted.getTopic().setId(created.getTopic().getId());
+        }
         Assert.assertEquals(created, submitted, msg + " - these should be equal but they are not:\nCREATED:\n"
                 + created + "\n" + "SUBMITTED:\n" + submitted);
         return created;

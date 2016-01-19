@@ -4,9 +4,12 @@ import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.Gender;
 import com.scholarscore.models.School;
 import com.scholarscore.models.gpa.AddedValueGpa;
+import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.message.Message;
 import com.scholarscore.models.message.MessageThread;
 import com.scholarscore.models.message.MessageThreadParticipant;
+import com.scholarscore.models.message.topic.GpaTopic;
+import com.scholarscore.models.message.topic.MessageTopic;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import org.testng.Assert;
@@ -30,6 +33,8 @@ public class MessageControllerIntegrationTest extends IntegrationBase {
     private Student student4;
     private Teacher teacher;
 
+    private Gpa gpa1;
+
     @BeforeClass
     public void init() {
         authenticate();
@@ -49,7 +54,7 @@ public class MessageControllerIntegrationTest extends IntegrationBase {
         student1.setGender(Gender.MALE);
         student1.setFederalRace("W");
         student1 = studentValidatingExecutor.create(student1, "create base student");
-        AddedValueGpa gpa1 = new AddedValueGpa();
+        gpa1 = new AddedValueGpa();
         gpa1.setCalculationDate(LocalDate.now());
         gpa1.setStudentId(student1.getId());
         gpa1.setScore(3.3);
@@ -117,6 +122,7 @@ public class MessageControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "messageThreadProvider")
     public void createThread(String msg, MessageThread t) {
         MessageThread created = messageValidatingExecutor.createThread(t, msg);
+        messageValidatingExecutor.deleteThread(created.getId(), "deleting the thread");
     }
 
     @DataProvider
@@ -156,6 +162,13 @@ public class MessageControllerIntegrationTest extends IntegrationBase {
         };
     }
 
+    @Test(dataProvider = "messageProvider")
+    public void createUpdateDeleteMessageTest(String msg, Message m) {
+        Message created = messageValidatingExecutor.createMessage(
+                m.getThread().getId(), m, "creating message to then update and delete it");
+        messageValidatingExecutor.delete(m.getThread().getId(), m.getId(), "Deleting message");
+    }
+
     @Test
     @SuppressWarnings("unchecked")
     public void createAndRetrieveAndMarkAsRead() {
@@ -180,5 +193,24 @@ public class MessageControllerIntegrationTest extends IntegrationBase {
         List<Message> teacherMessages = messageValidatingExecutor.getUnreadMessagesForUserOnThread(
                 t.getId(), teacher.getId(), "unread msgs for teacher");
         Assert.assertTrue(teacherMessages.size() == 3, "Unexpected unread messages returned for teacher");
+    }
+
+    @Test
+    public void createGpaMessage() {
+        MessageTopic top = new GpaTopic();
+        top.setSchoolId(school.getId());
+        top.setFk(gpa1.getId());
+
+        MessageThreadParticipant p1 = new MessageThreadParticipant();
+        p1.setParticipantId(student1.getId());
+        MessageThreadParticipant p2 = new MessageThreadParticipant();
+        p2.setParticipantId(teacher.getId());
+        MessageThread threadWithParticipants = new MessageThread();
+        threadWithParticipants.setParticipants(new HashSet<>());
+        threadWithParticipants.getParticipants().add(p1);
+        threadWithParticipants.getParticipants().add(p2);
+        threadWithParticipants.setTopic(top);
+        MessageThread t = messageValidatingExecutor.createThread(threadWithParticipants, "Data provider");
+
     }
 }

@@ -69,6 +69,10 @@ public class MessageJdbc implements MessagePersistence {
         hibernateTemplate.merge(t);
     }
 
+    public void deleteThreadParticipant(long threadId, MessageThreadParticipant p) {
+        hibernateTemplate.delete(p);
+    }
+
     @Override
     public void deleteMessageThread(long threadId) {
         MessageThread t = hibernateTemplate.get(MessageThread.class, threadId);
