@@ -2,6 +2,7 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 
 import com.scholarscore.api.persistence.EntityPersistence;
 import com.scholarscore.api.persistence.SchoolPersistence;
+import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.SchoolYear;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -30,7 +31,7 @@ public class SchoolYearJdbc implements EntityPersistence<SchoolYear> {
     @SuppressWarnings("unchecked")
     public Collection<SchoolYear> selectAll(long schoolId) {
         return (Collection<SchoolYear>)hibernateTemplate
-                .findByNamedParam("from SchoolYear sy where sy.school.id = :id", "id", schoolId);
+                .findByNamedParam("from " + HibernateConsts.SCHOOL_YEAR_TABLE + " sy where sy.school.id = :id", "id", schoolId);
     }
 
     @Override

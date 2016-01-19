@@ -31,8 +31,7 @@ import java.util.Objects;
  * @author markroper
  *
  */
-@Entity(name="studentSectionGrade")
-@Table(name = HibernateConsts.STUDENT_SECTION_GRADE_TABLE)
+@Entity(name = HibernateConsts.STUDENT_SECTION_GRADE_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentSectionGrade extends ApiModel implements Serializable, WeightedGradable, IApiModel<StudentSectionGrade> {
