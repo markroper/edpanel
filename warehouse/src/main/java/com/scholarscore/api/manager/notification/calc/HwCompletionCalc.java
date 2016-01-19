@@ -144,7 +144,7 @@ public class HwCompletionCalc implements NotificationCalculator {
                     startValue = startValue / hwByStudent.size();
                     endValue = endValue / hwByStudent.size();
                 }
-                genTriggeredNotifications(isPercent, notification, endValue, startValue, manager, null);
+                return genTriggeredNotifications(isPercent, notification, endValue, startValue, manager, null);
             }
         }
         return null;
@@ -159,13 +159,13 @@ public class HwCompletionCalc implements NotificationCalculator {
             //Calculate pct different between start and end date
             if(notification.getTriggerValue() <= Math.abs(1D - (endValue / startValue))) {
                 return NotificationCalculator.createTriggeredNotifications(
-                        notification, 1D - (endValue / startValue), manager);
+                        notification, 1D - (endValue / startValue), manager, subjectId);
             }
         } else {
             //abs value of difference between
             if(notification.getTriggerValue() <= Math.abs(endValue - startValue)) {
                 return NotificationCalculator.
-                        createTriggeredNotifications(notification, endValue - startValue, manager);
+                        createTriggeredNotifications(notification, endValue - startValue, manager, subjectId);
             }
         }
         return null;

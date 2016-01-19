@@ -161,13 +161,13 @@ public class GpaCalc implements NotificationCalculator {
             //Calculate pct different between start and end date
             if(notification.getTriggerValue() <= Math.abs(1D - (endValue / startValue))) {
                 return NotificationCalculator.createTriggeredNotifications(
-                        notification, 1D - (endValue / startValue), manager);
+                        notification, 1D - (endValue / startValue), manager, subjectFk);
             }
         } else {
             //abs value of difference between
             if(notification.getTriggerValue() <= Math.abs(endValue - startValue)) {
                 return NotificationCalculator.
-                        createTriggeredNotifications(notification, endValue - startValue, manager);
+                        createTriggeredNotifications(notification, endValue - startValue, manager, subjectFk);
             }
         }
         return null;

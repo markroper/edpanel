@@ -84,6 +84,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String DISMISS_NOTIFICATIONS_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/notifications/*/triggerednotifications/*/users/*";
     private static final String NOTIFICATIONS_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/notifications/*";
     private static final String EVALUATE_NOTIFICATIONS_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/notifications/schools/*/evaluations";
+    private static final String MESSAGE_THREADS_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/messagethreads";
+    private static final String MESSAGES_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/messagethreads/*/messages";
     private static final String NOTIFICATION_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/notifications";
     private static final String ACCESS_DENIED_JSON = "{\"message\":\"You are not privileged to request this resource.\","
             + " \"access-denied\":true,\"cause\":\"AUTHORIZATION_FAILURE\"}";
@@ -240,6 +242,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             antMatchers(HttpMethod.PUT, SURVEY_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.POST, SURVEY_RESPONSES).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.PUT, SURVEY_RESPONSES).hasAnyRole(AUTHENTICATED).
+            antMatchers(HttpMethod.POST, MESSAGE_THREADS_ENDPOINT).hasAnyRole(AUTHENTICATED).
+            antMatchers(HttpMethod.DELETE, MESSAGE_THREADS_ENDPOINT + "/*").hasAnyRole(AUTHENTICATED).
+            antMatchers(HttpMethod.POST, MESSAGES_ENDPOINT).hasAnyRole(AUTHENTICATED).
+            antMatchers(HttpMethod.DELETE, MESSAGES_ENDPOINT + "/*").hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.DELETE, NOTIFICATIONS_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.POST, NOTIFICATION_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.PUT, NOTIFICATIONS_ENDPOINT).hasAnyRole(AUTHENTICATED).
