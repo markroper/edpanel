@@ -28,7 +28,6 @@ import java.util.Objects;
  *
  */
 @Entity(name = HibernateConsts.ATTENDANCE_TABLE)
-@Table(name = HibernateConsts.ATTENDANCE_TABLE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings("serial")
 public class Attendance implements Serializable {
