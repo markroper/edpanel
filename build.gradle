@@ -17,7 +17,6 @@ buildscript {
 
 }
 
-apply plugin: 'org.liquibase.gradle'
 
 allprojects {
     apply plugin: 'java'
@@ -53,10 +52,12 @@ allprojects {
         apacheHttpVersion = "4.3.3"
         hibernateVersion = "5.0.4.Final"
         hibernateValidator = "5.2.2.Final"
+        liquibaseTaskPrefix = 'liquibase'
     }
 }
 
-
+// this plugin must be applied after liquibaseTaskPrefix is defined or the custom prefix will be ignored
+apply plugin: 'org.liquibase.gradle'
 
 idea {
     project {
