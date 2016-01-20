@@ -44,6 +44,7 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
 
     private User user;
     
+    
     private Boolean confirmed = true;
     
     public ContactMethod() { 
@@ -98,7 +99,7 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
         this.confirmCodeCreated = confirmCodeCreated;
     }
 
-    @Column(name = HibernateConsts.CONTACT_METHOD_CONFIRMED)
+    @Column(name = HibernateConsts.CONTACT_METHOD_CONFIRMED, columnDefinition = "TINYINT(1)")
     public Boolean getConfirmed() {
         return confirmed;
     }
