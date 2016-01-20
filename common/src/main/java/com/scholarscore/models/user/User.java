@@ -46,8 +46,8 @@ import java.util.Set;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = Student.class, name="STUDENT"),
-	@JsonSubTypes.Type(value = Administrator.class, name = "ADMINISTRATOR"),
-	@JsonSubTypes.Type(value = Teacher.class, name = "TEACHER")
+	@JsonSubTypes.Type(value = Staff.class, name = "ADMINISTRATOR"),
+	@JsonSubTypes.Type(value = Staff.class, name = "TEACHER")
 })
 public abstract class User extends ApiModel implements Serializable, IApiModel<User> {
 	public static final DimensionField ID = new DimensionField(Dimension.USER, "ID");
