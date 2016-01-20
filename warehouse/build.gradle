@@ -142,7 +142,8 @@ dependencies {
             "commons-codec:commons-codec:1.10",
 
             //MySQL dependencies
-            'mysql:mysql-connector-java:5.1.6',
+//            'mysql:mysql-connector-java:5.1.6',
+            "org.mariadb.jdbc:mariadb-java-client:1.3.4",
             //Spring dependencies
             "org.springframework:spring-aop:$springVersion",
             "org.springframework:spring-aspects:$springVersion",
