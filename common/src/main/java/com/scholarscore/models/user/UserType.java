@@ -10,11 +10,11 @@ public enum UserType {
     public static User clone(User input) {
         switch(input.getType()) {
             case TEACHER:
-                return new Teacher((Teacher) input);
+                return new Staff((Staff) input);
             case STUDENT:
                 return new Student((Student) input);
             case ADMINISTRATOR:
-                return new Administrator((Administrator) input);
+                return new Staff((Staff) input);
             case GUARDIAN:
             case SUPER_ADMIN:
                 throw new RuntimeException(
