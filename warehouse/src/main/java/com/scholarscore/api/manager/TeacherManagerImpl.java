@@ -5,7 +5,7 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.Staff;
 
 import java.util.Collection;
 
@@ -29,7 +29,7 @@ public class TeacherManagerImpl implements TeacherManager {
     }
 
     @Override
-    public ServiceResponse<Long> createTeacher(Teacher teacher) {
+    public ServiceResponse<Long> createTeacher(Staff teacher) {
         String initUsername = teacher.getUsername();
         boolean retry = true;
         int suffix = 0;
@@ -51,7 +51,7 @@ public class TeacherManagerImpl implements TeacherManager {
 
     @Override
     public StatusCode teacherExists(long teacherId) {
-        Teacher stud = teacherPersistence.select(teacherId);
+        Staff stud = teacherPersistence.select(teacherId);
         if(null == stud) {
             return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{TEACHER, teacherId});
         }
@@ -70,22 +70,22 @@ public class TeacherManagerImpl implements TeacherManager {
     }
 
     @Override
-    public ServiceResponse<Collection<Teacher>> getAllTeachers() {
-        return new ServiceResponse<Collection<Teacher>>(
+    public ServiceResponse<Collection<Staff>> getAllTeachers() {
+        return new ServiceResponse<Collection<Staff>>(
                 teacherPersistence.selectAll());
     }
 
     @Override
-    public ServiceResponse<Teacher> getTeacher(long teacherId) {
+    public ServiceResponse<Staff> getTeacher(long teacherId) {
         StatusCode code = teacherExists(teacherId);
         if(!code.isOK()) {
-            return new ServiceResponse<Teacher>(code);
+            return new ServiceResponse<Staff>(code);
         }
-        return new ServiceResponse<Teacher>(teacherPersistence.select(teacherId));
+        return new ServiceResponse<Staff>(teacherPersistence.select(teacherId));
     }
 
     @Override
-    public ServiceResponse<Long> replaceTeacher(long teacherId, Teacher teacher) {
+    public ServiceResponse<Long> replaceTeacher(long teacherId, Staff teacher) {
         StatusCode code = teacherExists(teacherId);
         if(!code.isOK()) {
             return new ServiceResponse<Long>(code);
@@ -95,7 +95,7 @@ public class TeacherManagerImpl implements TeacherManager {
     }
 
     @Override
-    public ServiceResponse<Long> updateTeacher(long teacherId, Teacher teacher) {
+    public ServiceResponse<Long> updateTeacher(long teacherId, Staff teacher) {
         StatusCode code = teacherExists(teacherId);
         if(!code.isOK()) {
             return new ServiceResponse<Long>(code);
