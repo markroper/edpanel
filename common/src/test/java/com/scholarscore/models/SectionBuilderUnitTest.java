@@ -4,8 +4,8 @@ import com.beust.jcommander.internal.Lists;
 import com.beust.jcommander.internal.Sets;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.gradeformula.GradeFormula;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.utils.CommonTestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -41,9 +41,9 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
         Course course = CommonTestUtils.generateCourse();
         String sourceSystemId = RandomStringUtils.randomNumeric(10);
 
-        Set<Teacher> teachers = Sets.newHashSet();
+        Set<Staff> persons = Sets.newHashSet();
         for(int i = 0; i < RandomUtils.nextInt(1, 5); i++) {
-            teachers.add(CommonTestUtils.generateTeacher());
+            persons.add(CommonTestUtils.generateTeacher());
         }
 
         List<Student> enrolledStudents = Lists.newArrayList();
@@ -69,7 +69,7 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
         fullSection.setGradeFormulaString(gradeFormulaString);
         fullSection.setTerm(term);
         fullSection.setCourse(course);
-        fullSection.setTeachers(teachers);
+        fullSection.setStaffs(persons);
         fullSection.setEnrolledStudents(enrolledStudents);
         fullSection.setAssignments(assignments);
         fullSection.setSourceSystemId(sourceSystemId);
@@ -83,7 +83,7 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
                 .withGradeFormula(gradeFormula)
                 .withTerm(term)
                 .withCourse(course)
-                .withTeachers(teachers)
+                .withPersons(persons)
                 .withEnrolledStudents(enrolledStudents)
                 .withAssignments(assignments)
                 .withStudentSectionGrades(grades)
@@ -101,8 +101,8 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
                 .withCourse(course)
                 .withSourceSystemId(sourceSystemId);
 
-        for(Teacher teacher : teachers){
-            sectionOneByOneBuilder.withTeacher(teacher);
+        for(Staff person : persons){
+            sectionOneByOneBuilder.withPerson(person);
 
         }
 

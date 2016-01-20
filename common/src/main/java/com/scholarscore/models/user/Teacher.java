@@ -1,75 +1,24 @@
 package com.scholarscore.models.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.Address;
-import com.scholarscore.models.HibernateConsts;
-import com.scholarscore.models.IStaff;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Transient;
 import java.io.Serializable;
 
-@Entity(name = HibernateConsts.TEACHER_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@PrimaryKeyJoinColumn(name=HibernateConsts.TEACHER_USER_FK, referencedColumnName = HibernateConsts.USER_ID)
-public class Teacher extends Person implements Serializable, IStaff<Teacher> {
+public class Teacher extends Staff implements Serializable{
     public Teacher() {
+        this.setStaffRole(StaffRole.TEACHER);
+        this.userType = UserType.TEACHER;
     }
     
-    public Teacher(Teacher t) {
+    public Teacher(Staff t) {
         super(t);
+        setStaffRole(StaffRole.TEACHER);
+        this.userType = UserType.TEACHER;
     }  
-    
-    @Column(name = HibernateConsts.TEACHER_NAME)
-    public String getName() {
-        return super.getName();
-    }
 
-    @OneToOne(optional = true)
-    @Cascade(CascadeType.ALL)
-    @JoinColumn(name=HibernateConsts.TEACHER_ADDRESS_FK)
-    public Address getHomeAddress() {
-        return homeAddress;
-    }
 
-    @Column(name = HibernateConsts.TEACHER_HOME_PHONE)
-    public String getHomePhone() {
-        return homePhone;
-    }
-
-    @Column(name = HibernateConsts.TEACHER_SOURCE_SYSTEM_ID)
-    public String getSourceSystemId() {
-        return sourceSystemId;
-    }
-    
-    @Column(name = HibernateConsts.TEACHER_USER_FK, insertable = false, updatable = false)
-    public Long getUserId() {
-        return getId();
-    }
-    
-    @Column(name = HibernateConsts.SCHOOL_FK, nullable = true)
-    public Long getCurrentSchoolId() {
-        return currentSchoolId;
-    }
-
-    @Override
-    @Column(name = HibernateConsts.TEACHER_SOURCE_SYSTEM_USER_ID)
-    public String getSourceSystemUserId() {
-        return sourceSystemUserId;
-    }
-
-    @Override
-    @Transient
-    public UserType getType() {
-        return UserType.TEACHER;
-    }
 
     /**
      * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using

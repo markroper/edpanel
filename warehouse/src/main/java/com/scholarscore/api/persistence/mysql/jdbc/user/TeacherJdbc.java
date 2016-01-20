@@ -4,6 +4,7 @@ import com.scholarscore.api.persistence.AuthorityPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.util.RoleConstants;
 import com.scholarscore.models.Authority;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -38,7 +39,14 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
 
     @Override
     public Teacher select(long id) {
-        return hibernateTemplate.get(Teacher.class, id);
+        Staff staff = hibernateTemplate.get(Staff.class, id);
+        if (null != staff) {
+            return new Teacher(staff);
+        }
+        else {
+            return null;
+        }
+
     }
 
     @SuppressWarnings("unchecked")
@@ -53,8 +61,10 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
 
     @Override
     public Long createTeacher(Teacher teacher) {
-        transformUserValues(teacher, null);
-        Teacher out = hibernateTemplate.merge(teacher);
+        Staff staff = teacher;
+        Staff staff1 = new Staff(teacher);
+        transformUserValues(staff1, null);
+        Staff out = hibernateTemplate.merge(staff1);
         Authority auth = new Authority();
         auth.setAuthority(RoleConstants.TEACHER);
         auth.setUserId(out.getId());
@@ -65,13 +75,13 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
     @Override
     public void replaceTeacher(long id, Teacher teacher) {
         transformUserValues(teacher, select(id));
-        hibernateTemplate.merge(teacher);
+        hibernateTemplate.merge(new Staff(teacher));
     }
 
     @Override
     public Long delete(long id) {
-        Teacher teacher = hibernateTemplate.get(Teacher.class, id);
-        hibernateTemplate.delete(teacher);
+        Staff staff = hibernateTemplate.get(Staff.class, id);
+        hibernateTemplate.delete(staff);
         return id;
     }
     

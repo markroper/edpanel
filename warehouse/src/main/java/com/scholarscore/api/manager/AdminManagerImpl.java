@@ -6,6 +6,8 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Staff;
+import com.scholarscore.models.user.StaffRole;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
@@ -39,8 +41,8 @@ public class AdminManagerImpl implements  AdminManager {
 
     @Override
     public StatusCode administratorExists(long administratorId) {
-        Administrator stud = administratorPersistence.select(administratorId);
-        if(null == stud) {
+        Staff staff = administratorPersistence.select(administratorId);
+        if(null == staff || staff.getStaffRole() != StaffRole.ADMIN) {
             return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
                     new Object[]{ADMINISTRATOR, administratorId});
         }

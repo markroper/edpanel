@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.collect.ImmutableMap;
+import com.scholarscore.api.controller.service.AdministratorValidatingExecutor;
 import com.scholarscore.api.controller.service.AssignmentValidatingExecutor;
 import com.scholarscore.api.controller.service.AttendanceValidatingExecutor;
 import com.scholarscore.api.controller.service.AuthValidatingExecutor;
@@ -32,6 +33,7 @@ import com.scholarscore.api.controller.service.UiAttributesValidatingExecutor;
 import com.scholarscore.api.controller.service.UserValidatingExecutor;
 import com.scholarscore.models.LoginRequest;
 import com.scholarscore.models.School;
+import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
@@ -112,6 +114,7 @@ public class IntegrationBase {
     public StudentAssignmentValidatingExecutor studentAssignmentValidatingExecutor;
     public StudentSectionGradeValidatingExecutor studentSectionGradeValidatingExecutor;
     public TeacherValidatingExecutor teacherValidatingExecutor;
+    public AdministratorValidatingExecutor administratorValidatingExecutor;
     public QueryValidatingExecutor queryValidatingExecutor;
     public BehaviorValidatingExecutor behaviorValidatingExecutor;
     public AuthValidatingExecutor authValidatingExecutor;
@@ -127,6 +130,7 @@ public class IntegrationBase {
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Student> studentsCreated = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Teacher> teachersCreated = new CopyOnWriteArrayList<>();
+    public CopyOnWriteArrayList<Administrator> adminsCreated = new CopyOnWriteArrayList<>();
 
     // Locale used in testing. Supplied as command-line arguments to JVM: -Dlocale=de_DE
     // Valid values include the following:
@@ -174,6 +178,7 @@ public class IntegrationBase {
         studentValidatingExecutor = new StudentValidatingExecutor(this);
         studentAssignmentValidatingExecutor = new StudentAssignmentValidatingExecutor(this);
         studentSectionGradeValidatingExecutor = new StudentSectionGradeValidatingExecutor(this);
+        administratorValidatingExecutor = new AdministratorValidatingExecutor(this);
         teacherValidatingExecutor = new TeacherValidatingExecutor(this);
         queryValidatingExecutor = new QueryValidatingExecutor(this);
         behaviorValidatingExecutor = new BehaviorValidatingExecutor(this);
@@ -572,6 +577,15 @@ public class IntegrationBase {
     public String getTeacherEndpoint(Long teacherId) {
         return getTeacherEndpoint() + pathify(teacherId);
     }
+
+    public String getAdministratorEndpoint() {
+        return BASE_API_ENDPOINT + ADMINISTRATORS_ENDPOINT;
+    }
+
+    public String getAdministratorEndpoint(Long adminId) {
+        return getAdministratorEndpoint() + pathify(adminId);
+    }
+
     public String getStudentEndpoint() {
         return BASE_API_ENDPOINT + STUDENT_ENDPOINT;
     }

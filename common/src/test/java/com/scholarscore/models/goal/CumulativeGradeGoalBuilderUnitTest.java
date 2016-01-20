@@ -39,7 +39,7 @@ public class CumulativeGradeGoalBuilderUnitTest extends AbstractBuilderUnitTest<
         fullCumulativeGradeGoal.setDesiredValue(desiredValue);
         fullCumulativeGradeGoal.setGoalType(goalType);
         fullCumulativeGradeGoal.setName(name);
-        fullCumulativeGradeGoal.setTeacher(teacher);
+        fullCumulativeGradeGoal.setStaff(teacher);
 
         CumulativeGradeGoal fullCumulativeGradeGoalByBuilder = new CumulativeGradeGoal.CumulativeGradeGoalBuilder().
                 withId(id).
@@ -50,7 +50,7 @@ public class CumulativeGradeGoalBuilderUnitTest extends AbstractBuilderUnitTest<
                 withDesiredValue(desiredValue).
                 withGoalType(goalType).
                 withName(name).
-                withTeacher(teacher).
+                withPerson(teacher).
                 build();
 
         return new Object[][]{

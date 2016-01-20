@@ -284,7 +284,7 @@ public class CommonTestUtils {
                 withCourse(course).build();
 
         for(int i = 0; i < RandomUtils.nextInt(1, 5); i++){
-            section.addTeacher(generateTeacher());
+            section.addPerson(generateTeacher());
         }
 
         for(int i = 0; i< RandomUtils.nextInt(10, 20); i++) {

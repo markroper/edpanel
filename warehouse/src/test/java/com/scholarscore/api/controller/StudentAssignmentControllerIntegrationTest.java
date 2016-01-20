@@ -69,8 +69,8 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
         section.setName(localeServiceUtil.generateName());
         section.setEnrolledStudents(new ArrayList<Student>());
         section.getEnrolledStudents().add(student);
-        section.setTeachers(new HashSet<Teacher>());
-        section.getTeachers().add(teacher);
+        section.setStaffs(new HashSet<>());
+        section.getStaffs().add(teacher);
         section.setTerm(term);
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
         
