@@ -20,7 +20,7 @@
     <bean id="dataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="org.mariadb.jdbc.Driver" />
-        <property name="jdbcUrl" value="#{'jdbc:mysql://${database.host}:${database.port}/${database.name}' + (${database.ssl} ? '?useSSL=true&amp;requireSSL=true&amp;verifyServerCertificate=false' : '')}" />
+        <property name="jdbcUrl" value="#{'jdbc:mysql://${database.host}:${database.port}/${database.name}' + (${database.ssl} ? '?useSSL=true&amp;requireSSL=true&amp;serverSslCert=classpath:db-public-key.ca-bundle&amp;verifyServerCertificate=false' : '')}" />
         <property name="user" value="${database.user}" />
         <property name="password" value="${database.pass}" />
         
