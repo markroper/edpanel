@@ -5,11 +5,10 @@ import com.scholarscore.models.Address;
 import com.scholarscore.models.HibernateConsts;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -26,17 +25,34 @@ import java.util.Objects;
 @PrimaryKeyJoinColumn(name=HibernateConsts.STAFF_USER_FK, referencedColumnName = HibernateConsts.USER_ID)
 public class Staff extends Person {
 
-    private StaffRole staffRole;
-    protected UserType userType;
+    private boolean isAdmin;
+    private boolean isTeacher;
     public Staff() {
     }
 
     public Staff(Staff s) {
         super(s);
-        setStaffRole(s.getStaffRole());
-        userType = s.getType();
 
+    }
 
+    @Column(name = HibernateConsts.STAFF_IS_ADMIN)
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
+    @Column(name = HibernateConsts.STAFF_IS_TEACHER)
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    public boolean isTeacher() {
+        return isTeacher;
+    }
+
+    public void setTeacher(boolean teacher) {
+        isTeacher = teacher;
     }
 
     @Column(name = HibernateConsts.STAFF_NAME)
@@ -77,26 +93,19 @@ public class Staff extends Person {
         return sourceSystemUserId;
     }
 
-    @Column(name = HibernateConsts.STAFF_ROLE)
-    @Enumerated(EnumType.STRING)
-    public StaffRole getStaffRole() {
-        return staffRole;
-    }
-
-    public void setStaffRole(StaffRole staffRole) {
-        this.staffRole = staffRole;
-    }
 
     @Override
     @Transient
     public UserType getType() {
-        return this.userType;
+        if (isAdmin) {
+            return UserType.ADMINISTRATOR;
+        } else if (isTeacher){
+            return UserType.TEACHER;
+        } else {
+            return null;
+        }
     }
 
-    @Override
-    public void setType(UserType userType) {
-        this.userType = userType;
-    }
 
 
     @Override
@@ -104,20 +113,23 @@ public class Staff extends Person {
         if (!super.equals(obj)) {
             return false;
         }
+
         final Staff other = (Staff) obj;
-        return Objects.equals(this.staffRole, other.staffRole);
+        return Objects.equals(this.isAdmin, other.isAdmin) &&
+                Objects.equals(this.isTeacher, other.isTeacher);
     }
 
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(staffRole, currentSchoolId);
+                + Objects.hash(currentSchoolId, isAdmin, isTeacher);
     }
 
     @Override
     public String toString() {
         return "Staff{" + "(super: " + super.toString() + ")" +
-                ", staffRole='" + staffRole + '\'' +
+                ", isAdmin='" + isAdmin + '\'' +
+                ", isTeacher='" + isTeacher + '\'' +
                 '}';
     }
 

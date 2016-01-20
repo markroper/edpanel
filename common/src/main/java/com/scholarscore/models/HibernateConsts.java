@@ -152,7 +152,8 @@ public class HibernateConsts {
     public static final String STAFF_SOURCE_SYSTEM_ID = "staff_source_system_id";
     public static final String STAFF_SOURCE_SYSTEM_USER_ID = "staff_source_system_user_id";
     public static final String STAFF_USER_FK = "staff_user_fk";
-    public static final String STAFF_ROLE = "staff_role";
+    public static final String STAFF_IS_ADMIN = "admin";
+    public static final String STAFF_IS_TEACHER = "teacher";
     
     //Term constants
     public static final String TERM_TABLE = "term";

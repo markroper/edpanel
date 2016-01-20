@@ -4,8 +4,12 @@ import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.persistence.UserPersistence;
+import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.ContactMethod;
 import com.scholarscore.models.user.Person;
+import com.scholarscore.models.user.Staff;
+import com.scholarscore.models.user.StaffRole;
+import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -67,7 +71,18 @@ public class UserJdbc extends UserBaseJdbc implements UserPersistence {
     public User selectUserByName(String username) {
         List<?> values = hibernateTemplate.findByNamedParam("from user u where u.username = :username", "username", username);
         if (values.size() == 1) {
-            return (User)values.get(0);
+            //Weird thing because hibernate can't amp subclass into super class
+            User user =  (User)values.get(0);
+            if (user instanceof Staff) {
+                //This means there won't be a type so we need to cast it into an admin or teacher
+                Staff staff = (Staff) user;
+                if (staff.getStaffRole() == StaffRole.ADMIN) {
+                    return new Administrator(staff);
+                } else if (staff.getStaffRole() == StaffRole.TEACHER){
+                    return new Teacher(staff);
+
+                }
+            }
         }
         return null;
     }

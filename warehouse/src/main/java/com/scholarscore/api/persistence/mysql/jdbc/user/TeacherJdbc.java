@@ -5,7 +5,6 @@ import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.util.RoleConstants;
 import com.scholarscore.models.Authority;
 import com.scholarscore.models.user.Staff;
-import com.scholarscore.models.user.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
@@ -33,26 +32,20 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
     }
 
     @Override
-    public Collection<Teacher> selectAll() {
-        return hibernateTemplate.loadAll(Teacher.class);
+    public Collection<Staff> selectAll() {
+        return hibernateTemplate.loadAll(Staff.class);
     }
 
     @Override
-    public Teacher select(long id) {
-        Staff staff = hibernateTemplate.get(Staff.class, id);
-        if (null != staff) {
-            return new Teacher(staff);
-        }
-        else {
-            return null;
-        }
+    public Staff select(long id) {
+        return hibernateTemplate.get(Staff.class, id);
 
     }
 
     @SuppressWarnings("unchecked")
-    public Teacher select(String username) {
-        String query = "select t from teacher t join t.user u where u.username = :username";
-        List<Teacher> teachers = (List<Teacher>) hibernateTemplate.findByNamedParam(query, "username", username);
+    public Staff select(String username) {
+        String query = "select t from teacher t join t.user u where u.username = :username and t.teacher = true";
+        List<Staff> teachers = (List<Staff>) hibernateTemplate.findByNamedParam(query, "username", username);
         if (teachers.size() == 1) {
             return teachers.get(0);
         }
@@ -60,11 +53,9 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
     }
 
     @Override
-    public Long createTeacher(Teacher teacher) {
-        Staff staff = teacher;
-        Staff staff1 = new Staff(teacher);
-        transformUserValues(staff1, null);
-        Staff out = hibernateTemplate.merge(staff1);
+    public Long createTeacher(Staff teacher) {
+        transformUserValues(teacher, null);
+        Staff out = hibernateTemplate.merge(teacher);
         Authority auth = new Authority();
         auth.setAuthority(RoleConstants.TEACHER);
         auth.setUserId(out.getId());
@@ -73,9 +64,9 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
     }
 
     @Override
-    public void replaceTeacher(long id, Teacher teacher) {
+    public void replaceTeacher(long id, Staff teacher) {
         transformUserValues(teacher, select(id));
-        hibernateTemplate.merge(new Staff(teacher));
+        hibernateTemplate.merge(teacher);
     }
 
     @Override
