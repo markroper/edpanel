@@ -109,6 +109,29 @@ CREATE TABLE `scholar_warehouse`.`teacher` (
   )
   ENGINE = InnoDB;
 
+  CREATE TABLE `scholar_warehouse`.`staff` (
+  `staff_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
+  `staff_source_system_id` VARCHAR(256) NULL UNIQUE,
+  `staff_source_system_user_id` VARCHAR(256) NULL COMMENT 'The identifier of the user from the source system, if any',
+  `staff_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user_fk of the staff_member',
+  `staff_home_phone` VARCHAR(256) NULL COMMENT 'Home phone number for staff',
+  `staff_role` VARCHAR(256) NULL COMMENT 'Role for teh staff member, admin or teacher',
+  `staff_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
+  `school_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the current primary school the staff works at',
+  CONSTRAINT `staff_homeAddress_fk$staff`
+  FOREIGN KEY (`staff_homeAddress_fk`) REFERENCES `scholar_warehouse`.`address`(`address_id`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+  CONSTRAINT `school_fk$staff`
+  FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`staff_user_fk`) REFERENCES `scholar_warehouse`.`user` (`user_id`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+  )
+  ENGINE = InnoDB;
+
 CREATE TABLE `scholar_warehouse`.`administrator` (
   `administrator_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `administrator_home_phone` VARCHAR(256) NULL,
@@ -203,13 +226,13 @@ ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`teacher_section` (
   `teacher_section_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
-  `teacher_fk` BIGINT UNSIGNED COMMENT 'The FK to the teacher table',
+  `staff_fk` BIGINT UNSIGNED COMMENT 'The FK to the teacher table',
   `section_fk` BIGINT UNSIGNED COMMENT 'The FK to the section table',
   `role` VARCHAR(256) NULL COMMENT 'Indicates the role the teacher has in the section',
   PRIMARY KEY (`teacher_section_id`),
-  CONSTRAINT `teacher_section_teacher_fk`
-    FOREIGN KEY(`teacher_fk`)
-    REFERENCES `scholar_warehouse`.`teacher`(`teacher_user_fk`)
+  CONSTRAINT `teacher_section_staff_fk`
+    FOREIGN KEY(`staff_fk`)
+    REFERENCES `scholar_warehouse`.`staff`(`staff_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `teacher_section_section_fk`

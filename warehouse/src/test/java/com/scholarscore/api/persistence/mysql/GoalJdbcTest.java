@@ -15,7 +15,7 @@ public class GoalJdbcTest extends BaseJdbcTest {
     public void testBehaviorGoalCrud() {
         BehaviorGoal goalToCreate = new BehaviorGoal(behaviorGoal);
         goalToCreate.setStudent(createStudent());
-        goalToCreate.setTeacher(createTeacher());
+        goalToCreate.setStaff(createTeacher());
         Long goalId = goalDao.createGoal(goalToCreate.getStudent().getId(), goalToCreate);
         assertNotNull(goalId, "Expected non-null sectionId from create of section");
 
@@ -26,7 +26,7 @@ public class GoalJdbcTest extends BaseJdbcTest {
     public void testAssignmentGoalCrud() {
         AssignmentGoal goalToCreate = new AssignmentGoal(assignmentGoal);
         goalToCreate.setStudent(createStudent());
-        goalToCreate.setTeacher(createTeacher());
+        goalToCreate.setStaff(createTeacher());
         Long goalId = goalDao.createGoal(goalToCreate.getStudent().getId(), goalToCreate);
         assertNotNull(goalId, "Expected non-null sectionId from create of section");
 

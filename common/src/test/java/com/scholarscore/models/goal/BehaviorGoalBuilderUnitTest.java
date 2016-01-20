@@ -46,7 +46,7 @@ public class BehaviorGoalBuilderUnitTest extends AbstractBuilderUnitTest<Behavio
         fullBehaviorGoal.setDesiredValue(desiredValue);
         fullBehaviorGoal.setGoalType(goalType);
         fullBehaviorGoal.setName(name);
-        fullBehaviorGoal.setTeacher(teacher);
+        fullBehaviorGoal.setStaff(teacher);
 
         BehaviorGoal fullBehaviorGoalByBuilder = new BehaviorGoal.BehaviorGoalBuilder().
                 withId(id).
@@ -59,7 +59,7 @@ public class BehaviorGoalBuilderUnitTest extends AbstractBuilderUnitTest<Behavio
                 withDesiredValue(desiredValue).
                 withGoalType(goalType).
                 withName(name).
-                withTeacher(teacher).
+                withPerson(teacher).
                 build();
 
         return new Object[][]{

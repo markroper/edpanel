@@ -30,6 +30,7 @@ import com.scholarscore.models.survey.question.SurveyMultipleChoiceQuestion;
 import com.scholarscore.models.survey.question.SurveyOpenResponseQuestion;
 import com.scholarscore.models.survey.question.SurveyQuestion;
 import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.Teacher;
 import org.apache.commons.lang.RandomStringUtils;
@@ -377,9 +378,9 @@ public class SchoolDataFactory {
                 int teacherIndex = new Random().nextInt(teachers.size() - 1);
                 for(int i = 0; i <= teacherIndex; i++) {
                     if(teacherIndex == i) {
-                        Set<Teacher> sectionTeacher = new HashSet<Teacher>(); 
+                        Set<Staff> sectionTeacher = new HashSet<>();
                         sectionTeacher.add(teachers.get(i));
-                        section.setTeachers(sectionTeacher);
+                        section.setStaffs(sectionTeacher);
                     }
                 }
                 
@@ -853,7 +854,7 @@ public class SchoolDataFactory {
             }
 
             sectionGradeGoal.setStudent(s);
-            sectionGradeGoal.setTeacher(teacher);
+            sectionGradeGoal.setStaff(teacher);
             sectionGradeGoal.setApproved(false);
             sectionGradeGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(75, 100)));
             sectionGradeGoal.setName("Section Grade Goal");
@@ -861,7 +862,7 @@ public class SchoolDataFactory {
 
             BehaviorGoal behaviorGoal = new BehaviorGoal();
             behaviorGoal.setStudent(s);
-            behaviorGoal.setTeacher(teacher);
+            behaviorGoal.setStaff(teacher);
             behaviorGoal.setApproved(false);
             behaviorGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(0, 60)));
             behaviorGoal.setName("Weekly Demerit Goal");
@@ -879,7 +880,7 @@ public class SchoolDataFactory {
 
 
             assignmentGoal.setStudent(s);
-            assignmentGoal.setTeacher(teacher);
+            assignmentGoal.setStaff(teacher);
             assignmentGoal.setApproved(false);
             assignmentGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(75, 100)));
             assignmentGoal.setName("Bio Final Goal");
@@ -895,7 +896,7 @@ public class SchoolDataFactory {
             }
 
             attendanceGoal.setStudent(s);
-            attendanceGoal.setTeacher(teacher);
+            attendanceGoal.setStaff(teacher);
             attendanceGoal.setApproved(false);
             attendanceGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(0, 4)));
             attendanceGoal.setName("Weekly Attendance Goal");

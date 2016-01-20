@@ -97,8 +97,8 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         section.setName(localeServiceUtil.generateName());
         section.setEnrolledStudents(new ArrayList<Student>());
         section.getEnrolledStudents().add(student);
-        section.setTeachers(new HashSet<Teacher>());
-        section.getTeachers().add(teacher);
+        section.setStaffs(new HashSet<>());
+        section.getStaffs().add(teacher);
         section.setTerm(term);
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
 
@@ -139,7 +139,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
 
         BehaviorGoal behaviorGoal = new BehaviorGoal();
         behaviorGoal.setStudent(student);
-        behaviorGoal.setTeacher(teacher);
+        behaviorGoal.setStaff(teacher);
         behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
         behaviorGoal.setStartDate(today);
         behaviorGoal.setEndDate(nextYear);
@@ -149,7 +149,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
 
         AssignmentGoal assGoal = new AssignmentGoal();
         assGoal.setStudent(student);
-        assGoal.setTeacher(teacher);
+        assGoal.setStaff(teacher);
         assGoal.setName("The final final");
         assGoal.setApproved(false);
         assGoal.setParentId(studentAssignment.getId());
@@ -157,7 +157,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
 
         CumulativeGradeGoal cumulativeGradeGoal = new CumulativeGradeGoal();
         cumulativeGradeGoal.setStudent(student);
-        cumulativeGradeGoal.setTeacher(teacher);
+        cumulativeGradeGoal.setStaff(teacher);
         cumulativeGradeGoal.setName("ALL OF THE As");
         cumulativeGradeGoal.setApproved(false);
         cumulativeGradeGoal.setParentId(section.getId());
@@ -165,7 +165,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
 
         AttendanceGoal attendanceGoal = new AttendanceGoal();
         attendanceGoal.setStudent(student);
-        attendanceGoal.setTeacher(teacher);
+        attendanceGoal.setStaff(teacher);
         attendanceGoal.setName("Weekly attendance goal");
         attendanceGoal.setApproved(false);
         attendanceGoal.setParentId(section.getId());
@@ -220,7 +220,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         //Generate complex goal
         ComplexGoal complexGoal = new ComplexGoal();
         complexGoal.setStudent(student);
-        complexGoal.setTeacher(teacher);
+        complexGoal.setStaff(teacher);
         complexGoal.setName("Formula Goal");
         complexGoal.setApproved(false);
         complexGoal.setDesiredValue(100D);
@@ -271,7 +271,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         //Generate behavior goal
         BehaviorGoal behaviorGoal = new BehaviorGoal();
         behaviorGoal.setStudent(student);
-        behaviorGoal.setTeacher(teacher);
+        behaviorGoal.setStaff(teacher);
         behaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
         behaviorGoal.setStartDate(lastYear);
         behaviorGoal.setEndDate(today);
@@ -295,7 +295,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         //Generate Complex Goal with expected value of twice the behavior goal
         ComplexGoal complexGoal = new ComplexGoal();
         complexGoal.setStudent(student);
-        complexGoal.setTeacher(teacher);
+        complexGoal.setStaff(teacher);
         complexGoal.setName("Formula Goal");
         complexGoal.setApproved(false);
         complexGoal.setDesiredValue(100D);

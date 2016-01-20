@@ -39,7 +39,7 @@ public class AssignmentGoalBuilderUnitTest extends AbstractBuilderUnitTest<Assig
         fullAssignmentGoal.setDesiredValue(desiredValue);
         fullAssignmentGoal.setGoalType(goalType);
         fullAssignmentGoal.setName(name);
-        fullAssignmentGoal.setTeacher(teacher);
+        fullAssignmentGoal.setStaff(teacher);
 
         AssignmentGoal fullAssignmentGoalByBuilder = new AssignmentGoal.AssignmentGoalBuilder().
                 withId(id).
@@ -50,7 +50,7 @@ public class AssignmentGoalBuilderUnitTest extends AbstractBuilderUnitTest<Assig
                 withDesiredValue(desiredValue).
                 withGoalType(goalType).
                 withName(name).
-                withTeacher(teacher).
+                withPerson(teacher).
                 build();
 
         return new Object[][]{

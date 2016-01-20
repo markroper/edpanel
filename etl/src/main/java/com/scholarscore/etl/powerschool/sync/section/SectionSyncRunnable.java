@@ -23,6 +23,7 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.gradeformula.GradeFormula;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 import org.slf4j.Logger;
@@ -32,7 +33,12 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -231,10 +237,10 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 edpanelSection.setEndDate(sectionTerm.getEndDate());
                 //Resolve the EdPanel Teacher(s) and set on the Section
                 User t = staffAssociator.findBySourceSystemId(powerSection.getStaff_id());
-                if(null != t && t instanceof Teacher) {
-                    HashSet<Teacher> teachers = new HashSet<>();
-                    teachers.add((Teacher) t);
-                    edpanelSection.setTeachers(teachers);
+                if(null != t) {
+                    HashSet<Staff> persons = new HashSet<>();
+                    persons.add((Teacher) t);
+                    edpanelSection.setStaffs(persons);
                 }
                 edpanelSection.setGradeFormula(resolveSectionGradeFormula(powerSection));
                 result.put(powerSection.getId(), edpanelSection);
