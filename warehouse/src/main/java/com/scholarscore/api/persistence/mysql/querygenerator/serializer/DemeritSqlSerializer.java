@@ -20,8 +20,7 @@ public class DemeritSqlSerializer implements MeasureSqlSerializer {
     public String toJoinClause(Dimension dimToJoinUpon) {
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         String fkFieldString = dimTableName + FK_COL_SUFFIX;
-        if(dimTableName.equals(HibernateConsts.TEACHER_TABLE) ||
-                dimTableName.equals(HibernateConsts.ADMIN_TABLE)) {
+        if(dimTableName.equals(HibernateConsts.STAFF_TABLE)) {
             fkFieldString = HibernateConsts.USER_FK;
         }
         return LEFT_OUTER_JOIN + HibernateConsts.BEHAVIOR_TABLE + ON +
