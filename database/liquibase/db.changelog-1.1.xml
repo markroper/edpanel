@@ -347,6 +347,7 @@
             <column name="user_fk"
                     type="bigint unsigned"
                     remarks="Foreign key to the user table, represents a participant in the thread">
+                <constraints nullable="false"/>
             </column>
         </createTable>
         <addForeignKeyConstraint baseTableName="message_thread_participant"
