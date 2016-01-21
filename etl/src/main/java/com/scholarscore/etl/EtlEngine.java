@@ -137,64 +137,64 @@ public class EtlEngine implements IEtlEngine {
         long schoolCreationTime = (endTime - startTime)/1000;
         LOGGER.info("School sync complete. " + schools.size() + " school(s) synchronized.");
 
-//        migrateSchoolYearsAndTerms();
-//        long yearsAndTermsComplete = (System.currentTimeMillis() - endTime)/1000;
-//        endTime = System.currentTimeMillis();
-//        LOGGER.info("Term and year sync complete");
-//
-//        //Not used in EdPanel, but needed to resolve section_fk on attendance
-//        createCycles();
-//        long cycleCreationTime = (System.currentTimeMillis() - endTime)/1000;
-//        endTime = System.currentTimeMillis();
-//        LOGGER.info("Cycle sync complete. " + cycles.size() + " school(s) synchronized.");
-//
-//        //Not used in EdPanel, but needed to resolve section_fk on attendance
-//        createPeriods();
-//        long periodCreationTime = (System.currentTimeMillis() - endTime)/1000;
-//        endTime = System.currentTimeMillis();
-//        LOGGER.info("Period sync complete. " + periods.size() + " school(s) synchronized.");
-//
-//        createStaff();
-//        long staffCreationComplete = (System.currentTimeMillis() - endTime)/1000;
-//        endTime = System.currentTimeMillis();
-//        LOGGER.info("Staff sync complete");
-//
-//        createStudents();
-//        long studentCreationComplete = (System.currentTimeMillis() - endTime)/1000;
-//        endTime = System.currentTimeMillis();
-//        LOGGER.info("Student sync complete");
-//
-//        List<File> gpaFiles = settings.getGpaImportFiles();
-//        syncGpa(gpaFiles);
-//        long gpaFileComplete = (System.currentTimeMillis() - endTime)/1000;
-//        endTime = System.currentTimeMillis();
-//        LOGGER.info("GPA sync complete");
-//
-//
-//        createCourses();
-//        long courseCreationComplete = (System.currentTimeMillis() - endTime)/1000;
-//        endTime = System.currentTimeMillis();
-//        LOGGER.info("Course sync complete");
-//
-//        migrateSections();
-//        long sectionCreationComplete = (System.currentTimeMillis() - endTime)/1000;
-//        endTime = System.currentTimeMillis();
-//        LOGGER.info("Section sync complete");
-//
-//        syncSchoolDaysAndAttendance();
-//        long schoolDayCreationComplete = (System.currentTimeMillis() - endTime)/1000;
-//        endTime = System.currentTimeMillis();
-//        LOGGER.info("School day & Attendance sync complete");
-//
-//        LOGGER.info("Total runtime: " + (endTime - startTime) / 1000 +
-//                " seconds, \nschools: " + schoolCreationTime +
-//                " seconds, \nYears + Terms: " + yearsAndTermsComplete +
-//                " seconds, \nstaff: " + staffCreationComplete +
-//                " seconds, \nstudents: " + studentCreationComplete +
-//                " seconds, \ndays & attendance: " + schoolDayCreationComplete +
-//                " seconds, \ncourses: " + courseCreationComplete +
-//                " seconds, \nsections: " + sectionCreationComplete +
-//                " seconds");
+        migrateSchoolYearsAndTerms();
+        long yearsAndTermsComplete = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+        LOGGER.info("Term and year sync complete");
+
+        //Not used in EdPanel, but needed to resolve section_fk on attendance
+        createCycles();
+        long cycleCreationTime = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+        LOGGER.info("Cycle sync complete. " + cycles.size() + " school(s) synchronized.");
+
+        //Not used in EdPanel, but needed to resolve section_fk on attendance
+        createPeriods();
+        long periodCreationTime = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+        LOGGER.info("Period sync complete. " + periods.size() + " school(s) synchronized.");
+
+        createStaff();
+        long staffCreationComplete = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+        LOGGER.info("Staff sync complete");
+
+        createStudents();
+        long studentCreationComplete = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+        LOGGER.info("Student sync complete");
+
+        List<File> gpaFiles = settings.getGpaImportFiles();
+        syncGpa(gpaFiles);
+        long gpaFileComplete = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+        LOGGER.info("GPA sync complete");
+
+
+        createCourses();
+        long courseCreationComplete = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+        LOGGER.info("Course sync complete");
+
+        migrateSections();
+        long sectionCreationComplete = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+        LOGGER.info("Section sync complete");
+
+        syncSchoolDaysAndAttendance();
+        long schoolDayCreationComplete = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+        LOGGER.info("School day & Attendance sync complete");
+
+        LOGGER.info("Total runtime: " + (endTime - startTime) / 1000 +
+                " seconds, \nschools: " + schoolCreationTime +
+                " seconds, \nYears + Terms: " + yearsAndTermsComplete +
+                " seconds, \nstaff: " + staffCreationComplete +
+                " seconds, \nstudents: " + studentCreationComplete +
+                " seconds, \ndays & attendance: " + schoolDayCreationComplete +
+                " seconds, \ncourses: " + courseCreationComplete +
+                " seconds, \nsections: " + sectionCreationComplete +
+                " seconds");
         return results;
     }
 
