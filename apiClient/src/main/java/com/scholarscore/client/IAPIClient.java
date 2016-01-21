@@ -27,6 +27,8 @@ import java.util.List;
  * Created by mattg on 7/3/15.
  */
 public interface IAPIClient {
+    void triggerNotificationEvaluation(Long schoolId) throws HttpClientException;
+
     School createSchool(School school) throws HttpClientException;
     School getSchool(Long id) throws HttpClientException;
     School[] getSchools() throws HttpClientException;
