@@ -55,7 +55,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     private static final String DAYS_ENDPOINT = "/days";
     private static final String ATTENDANCE_ENDPOINT = "/attendance";
     private static final String GPA_ENDPOINT = "/gpas";
-    private static final String NOTIFICATION_ENDPOINT = "/notifiations";
+    private static final String NOTIFICATION_ENDPOINT = "/notifications";
     private static final String EVALUATION_ENDPOINT = "/evaluations";
 
     // TODO: Create this end point

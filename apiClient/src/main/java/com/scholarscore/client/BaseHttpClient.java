@@ -103,12 +103,13 @@ public abstract class BaseHttpClient {
 
 
     protected String post(byte[] data, String path) throws IOException, HttpClientException {
-        String strData = new String(data);
         HttpPost post = new HttpPost();
         post.setURI(uri.resolve(path));
         setupCommonHeaders(post);
         post.setHeader(HEADER_CONTENT_TYPE_JSON);
-        post.setEntity(new ByteArrayEntity(data));
+        if(null != data) {
+            post.setEntity(new ByteArrayEntity(data));
+        }
         HttpResponse response = null;
         try {
             response = httpclient.execute(post);
