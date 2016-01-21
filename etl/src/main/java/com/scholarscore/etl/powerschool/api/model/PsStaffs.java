@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.scholarscore.etl.powerschool.api.deserializers.StaffsDeserializer;
 import com.scholarscore.etl.powerschool.api.response.ITranslateCollection;
 import com.scholarscore.models.Address;
-import com.scholarscore.models.user.Administrator;
-import com.scholarscore.models.user.Person;
-import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.User;
 
 import java.util.ArrayList;
@@ -24,11 +22,12 @@ public class PsStaffs extends ArrayList<PsStaff> implements ITranslateCollection
         for (PsStaff staff : this) {
 
             // MJG: Should we have a notion of an administrator?
-            Person entity;
+
+            Staff entity = new Staff();
             if (staff.isAdmin()) {
-                entity = new Administrator();
-            } else {
-                entity = new Teacher();
+                entity.setAdmin(true);
+            } else if (staff.isTeacher()){
+                entity.setTeacher(true);
             }
             
             if (null != staff.phones && null != staff.phones.home_phone) {

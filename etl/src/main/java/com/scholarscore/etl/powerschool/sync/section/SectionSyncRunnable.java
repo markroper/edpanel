@@ -24,7 +24,6 @@ import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.user.Staff;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -239,8 +238,8 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 User t = staffAssociator.findBySourceSystemId(powerSection.getStaff_id());
                 if(null != t) {
                     HashSet<Staff> persons = new HashSet<>();
-                    persons.add((Teacher) t);
-                    edpanelSection.setStaffs(persons);
+                    persons.add((Staff) t);
+                    edpanelSection.setTeachers(persons);
                 }
                 edpanelSection.setGradeFormula(resolveSectionGradeFormula(powerSection));
                 result.put(powerSection.getId(), edpanelSection);

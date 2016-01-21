@@ -12,9 +12,8 @@ import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.gpa.Gpa;
-import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 
 import java.io.IOException;
@@ -38,16 +37,16 @@ public interface IAPIClient {
     Collection<Student> getStudents(Long schoolId) throws HttpClientException;
     Student getStudent(Long ssid) throws HttpClientException;
     
-    Collection<Teacher> getTeachers() throws HttpClientException;
-    Collection<Administrator> getAdministrators() throws HttpClientException;
+    Collection<Staff> getTeachers() throws HttpClientException;
+    Collection<Staff> getAdministrators() throws HttpClientException;
     
     Collection<Behavior> getBehaviors(Long studentId) throws HttpClientException;
     Behavior createBehavior(Long studentId, Behavior behavior) throws HttpClientException;
     Behavior updateBehavior(Long studentId, Long behaviorId, Behavior behavior) throws HttpClientException;
 
     //USERS
-    Teacher createTeacher(Teacher teacher) throws HttpClientException;
-    Administrator createAdministrator(Administrator administrator) throws HttpClientException;
+    Staff createTeacher(Staff teacher) throws HttpClientException;
+    Staff createAdministrator(Staff administrator) throws HttpClientException;
     User[] getUsers(Long schoolId) throws HttpClientException;
     User updateUser(User user) throws IOException;
     User replaceUser(User user) throws IOException;
