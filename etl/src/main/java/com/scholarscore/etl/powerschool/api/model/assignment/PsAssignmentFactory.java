@@ -10,7 +10,13 @@ import java.util.HashSet;
 
 /**
  * Contains a static factory method for creating an EdPanel Assignment instance from a powerschool
- * assignment instance and a powerschool assignment category instance.
+ * assignment instance and a powerschool assignment category instance.  There are multiple test-like
+ * assignment types and subtypes defined by users.  We bucket subtypes into the following EdPanel AssignmentTypes:
+ *
+ *                    TEST             QUIZ     MIDTERM     FINAL   HOMEWORK         CLASSWORK
+ *          /       /     \      \                                  /    \               |
+ *  mastery  summative  interim  exam                             HW  prepwork       classwork
+ *
  *
  * Created by markroper on 10/22/15.
  */
@@ -19,31 +25,31 @@ public class PsAssignmentFactory {
         add("HW"); add("HOMEWORK"); add("HOME WORK");
     }};
     private static final HashSet<String> TEST_STRINGS = new HashSet<String>(){{
-        add("TST"); add("TEST"); add("TESTS"); add("CT");
+        add("TST"); add("TEST"); add("TESTS"); add("MASTERY ASSESSMENTS"); add("MQ"); add("ASSESSMENT");
     }};
     private static final HashSet<String> QUIZ_STRINGS = new HashSet<String>(){{
         add("QUIZ"); add("QUIZZES"); add("QZ");
     }};
     private static final HashSet<String> CLASSWORK_STRINGS = new HashSet<String>(){{
-        add("CLASSWORK"); add("CW"); add("CLASS WORK");
+        add("CLASSWORK"); add("CW"); add("CLASS WORK"); add("CLASS");
     }};
     private static final HashSet<String> SUMMATIVE_ASSESSMENT_STRINGS = new HashSet<String>(){{
-        add("SUMMATIVE ASSESSMENTS"); add("SA");
+        add("SUMMATIVE ASSESSMENTS");
     }};
     private static final HashSet<String> INTERIM_ASSESSMENT_STRINGS = new HashSet<String>(){{
-        add("INTERIM ASSESSMENTS"); add("IA");
+        add("INTERIM ASSESSMENTS"); add("INTERIM");
     }};
     private static final HashSet<String> PARTICIPATION_STRINGS = new HashSet<String>(){{
-        add("CLASS PARTICIPATION"); add("CP"); add("PARTICIPATION"); add("DISC");
+        add("CLASS PARTICIPATION"); add("PARTICIPATION"); add("DISC");
     }};
     private static final HashSet<String> WRITTEN_WORK_STRINGS = new HashSet<String>(){{
-        add("WRITTEN WORK"); add("WW");
+        add("WRITTEN WORK"); add("WRITING"); add("ESSAY"); add("PAPER");
     }};
     private static final HashSet<String> PREP_WORK_STRINGS = new HashSet<String>(){{
         add("PREP WORK"); add("PREPWORK"); add("PW");
     }};
     private static final HashSet<String> ATTENDANCE_STRINGS = new HashSet<String>(){{
-        add("ATTENDANCE"); add("AT");
+        add("ATTENDANCE");
     }};
     private static final HashSet<String> LAB_STRINGS = new HashSet<String>(){{
         add("LAB");
@@ -56,7 +62,7 @@ public class PsAssignmentFactory {
     }};
 
     private static final HashSet<String> EXAM_STRINGS = new HashSet<String>(){{
-        add("EXAM");
+        add("EXAM"); add("QUARTERLY EXAM");
     }};
     private static final HashSet<String> PROJ_STRINGS = new HashSet<String>(){{
         add("PROJECT"); add("PROJ");
@@ -86,15 +92,18 @@ public class PsAssignmentFactory {
         } else if(CLASSWORK_STRINGS.contains(toCheck)) {
             return AssignmentType.CLASSWORK;
         } else if(SUMMATIVE_ASSESSMENT_STRINGS.contains(toCheck)) {
-            return AssignmentType.SUMMATIVE_ASSESSMENT;
+            return AssignmentType.TEST;
         } else if(INTERIM_ASSESSMENT_STRINGS.contains(toCheck)) {
-            return AssignmentType.INTERIM_ASSESSMENT;
+            return AssignmentType.TEST;
         } else if(PARTICIPATION_STRINGS.contains(toCheck)) {
             return AssignmentType.PARTICIPATION;
         } else if(WRITTEN_WORK_STRINGS.contains(toCheck)) {
             return AssignmentType.WRITTEN_WORK;
         } else if(ATTENDANCE_STRINGS.contains(toCheck)) {
             return AssignmentType.ATTENDANCE;
+        } else if(PREP_WORK_STRINGS.contains(toCheck)) {
+            //Treat prepwork as homework within EdPanel
+            return AssignmentType.HOMEWORK;
         } else if(LAB_STRINGS.contains(toCheck)) {
             return AssignmentType.LAB;
         } else if(MIDTERM_STRINGS.contains(toCheck)) {
@@ -102,7 +111,7 @@ public class PsAssignmentFactory {
         } else if(FINAL_STRINGS.contains(toCheck)) {
             return AssignmentType.FINAL;
         } else if(EXAM_STRINGS.contains(toCheck)) {
-            return AssignmentType.EXAM;
+            return AssignmentType.TEST;
         } else if(PROJ_STRINGS.contains(toCheck)){
             return AssignmentType.PROJECT;
         } else {
@@ -124,7 +133,7 @@ public class PsAssignmentFactory {
             return type;
         }
 
-        type = resolveAssignmentTypeWildcard(abbreviation, nameOriginal);
+        type = resolveAssignmentTypeWildcard(abbreviation, nameOriginal, assignmentName);
         if(null != type) {
             return type;
         }
@@ -140,81 +149,96 @@ public class PsAssignmentFactory {
         }
 
 
-        return AssignmentType.USER_DEFINED;
+            return AssignmentType.USER_DEFINED;
 
     }
 
-    private static AssignmentType resolveAssignmentTypeWildcard(String abbreviation, String nameOriginal) {
+    private static AssignmentType resolveAssignmentTypeWildcard(String abbreviation, String nameOriginal, String assignmentName) {
+        if(null == abbreviation) {
+            abbreviation = "";
+        }
+        if(null == nameOriginal) {
+            nameOriginal = "";
+        }
+        if(null == assignmentName) {
+            assignmentName = "";
+        }
         String cAbbreviation = abbreviation.toUpperCase();
         String cNameOrig = nameOriginal.toUpperCase();
+        String cAssName = assignmentName.toUpperCase();
         for(String s: HW_STRINGS) {
-            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s) || cAssName.contains(s)) {
                 return AssignmentType.HOMEWORK;
             }
         }
-        for(String s: TEST_STRINGS) {
-            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
-                return AssignmentType.TEST;
-            }
-        }
-        for(String s: QUIZ_STRINGS) {
-            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
-                return AssignmentType.QUIZ;
-            }
-        }
-        for(String s: CLASSWORK_STRINGS) {
-            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
-                return AssignmentType.CLASSWORK;
-            }
-        }
-        for(String s: SUMMATIVE_ASSESSMENT_STRINGS) {
-            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
-                return AssignmentType.SUMMATIVE_ASSESSMENT;
-            }
-        }
-        for(String s: INTERIM_ASSESSMENT_STRINGS) {
-            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
-                return AssignmentType.INTERIM_ASSESSMENT;
-            }
-        }
-        for(String s: PARTICIPATION_STRINGS) {
-            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
-                return AssignmentType.PARTICIPATION;
-            }
-        }
         for(String s: WRITTEN_WORK_STRINGS) {
-            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s) || cAssName.contains(s)) {
                 return AssignmentType.WRITTEN_WORK;
             }
         }
-        for(String s: ATTENDANCE_STRINGS) {
-            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
-                return AssignmentType.ATTENDANCE;
-            }
-        }
         for(String s: LAB_STRINGS) {
-            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s) || cAssName.contains(s)) {
                 return AssignmentType.LAB;
             }
         }
+        for(String s: CLASSWORK_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s) || cAssName.contains(s)) {
+                return AssignmentType.CLASSWORK;
+            }
+        }
+        for(String s: PROJ_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s) || cAssName.contains(s)) {
+                return AssignmentType.PROJECT;
+            }
+        }
+        for(String s: SUMMATIVE_ASSESSMENT_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s) || cAssName.contains(s)) {
+                return AssignmentType.TEST;
+            }
+        }
+        for(String s: INTERIM_ASSESSMENT_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s) || cAssName.contains(s)) {
+                return AssignmentType.TEST;
+            }
+        }
+        for(String s: PARTICIPATION_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s) || cAssName.contains(s)) {
+                return AssignmentType.PARTICIPATION;
+            }
+        }
+        for(String s: ATTENDANCE_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s) || cAssName.contains(s)) {
+                return AssignmentType.ATTENDANCE;
+            }
+        }
         for(String s: MIDTERM_STRINGS) {
-            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s) || cAssName.contains(s)) {
                 return AssignmentType.MIDTERM;
             }
         }
         for(String s: FINAL_STRINGS) {
-            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s) || cAssName.contains(s)) {
                 return AssignmentType.FINAL;
             }
         }
         for(String s: EXAM_STRINGS) {
-            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
-                return AssignmentType.EXAM;
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s) || cAssName.contains(s)) {
+                return AssignmentType.TEST; //SHOULD 'QUARTERLY EXAM' BUCKET TO EXAM OR TEST?
             }
         }
-        for(String s: PROJ_STRINGS) {
-            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
-                return AssignmentType.PROJECT;
+        for(String s: PREP_WORK_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s) || cAssName.contains(s)) {
+                return AssignmentType.HOMEWORK;
+            }
+        }
+        for(String s: TEST_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s) || cAssName.contains(s)) {
+                return AssignmentType.TEST;
+            }
+        }
+        for(String s: QUIZ_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s) || cAssName.contains(s)) {
+                return AssignmentType.QUIZ;
             }
         }
         return null;
