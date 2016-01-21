@@ -67,14 +67,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected transient Course course;
     protected transient List<Student> enrolledStudents;
     protected transient List<Assignment> assignments;
-    protected Set<Staff> staffs;
+    protected Set<Staff> teachers;
     protected String sourceSystemId;
     
     public Section() {
         super();
         enrolledStudents = Lists.newArrayList();
         assignments = Lists.newArrayList();
-        staffs = Sets.newHashSet();
+        teachers = Sets.newHashSet();
     }
 
     public Section(LocalDate startDate, LocalDate endDate, String room, GradeFormula gradeFormula, Integer numberOfTerms, Map<String,ArrayList<Long>> expression) {
@@ -99,25 +99,25 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         sourceSystemId = sect.sourceSystemId;
         numberOfTerms = sect.numberOfTerms;
         this.expression = sect.expression;
-        this.staffs = sect.staffs;
+        this.teachers = sect.teachers;
         this.term = sect.term;
     }
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = HibernateConsts.TEACHER_SECTION_TABLE,
+    @JoinTable(name = HibernateConsts.STAFF_TABLE,
             joinColumns = { @JoinColumn(name = HibernateConsts.SECTION_FK, nullable = false, updatable = false) },
             inverseJoinColumns = { @JoinColumn(name = HibernateConsts.STAFF_FK, nullable = false, updatable = false) })
     @Fetch(FetchMode.JOIN)
-    public Set<Staff> getStaffs() {
-        return staffs;
+    public Set<Staff> getTeachers() {
+        return teachers;
     }
 
-    public void setStaffs(Set<Staff> staffs) {
-        this.staffs = staffs;
+    public void setTeachers(Set<Staff> staffs) {
+        this.teachers = staffs;
     }
 
     public void addPerson(Staff person) {
-        this.staffs.add(person);
+        this.teachers.add(person);
     }
 
     @Id
@@ -370,14 +370,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 Objects.equals(this.numberOfTerms, other.numberOfTerms) &&
                 Objects.equals(this.gradeFormula, other.gradeFormula) && 
                 Objects.equals(this.term, other.term) &&
-                Objects.equals(this.staffs, other.staffs) &&
+                Objects.equals(this.teachers, other.teachers) &&
                 Objects.equals(this.expression, other.expression);
     }
 
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(course, startDate, endDate, sourceSystemId,
-                room, enrolledStudents, assignments, gradeFormula, numberOfTerms, term, staffs, expression);
+                room, enrolledStudents, assignments, gradeFormula, numberOfTerms, term, teachers, expression);
     }
 
     @Override
@@ -391,7 +391,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 ", course=" + course +
                 ", enrolledStudents=" + enrolledStudents +
                 ", assignments=" + assignments +
-                ", staffs=" + staffs +
+                ", teachers=" + teachers +
                 ", numberOfTerms=" + numberOfTerms +
                 ", sourceSystemId='" + sourceSystemId  +
                 ", expression='" + expression + '\'' +
@@ -522,7 +522,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             section.setCourse(course);
             section.setEnrolledStudents(enrolledStudents);
             section.setAssignments(assignments);
-            section.setStaffs(persons);
+            section.setTeachers(persons);
             section.setSourceSystemId(sourceSystemId);
             section.setExpression(expression);
 

@@ -127,34 +127,13 @@ CREATE TABLE `scholar_warehouse`.`teacher` (
   FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
+  CONSTRAINT `school_user_fk$staff`
   FOREIGN KEY (`staff_user_fk`) REFERENCES `scholar_warehouse`.`user` (`user_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE
   )
   ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`administrator` (
-  `administrator_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
-  `administrator_home_phone` VARCHAR(256) NULL,
-  `administrator_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
-  `administrator_source_system_id` VARCHAR(256) NULL UNIQUE,
-  `administrator_source_system_user_id` VARCHAR(256) NULL COMMENT 'The identifier of the user from the source system, if any',
-  `administrator_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user_fk of the teacher',
-  `school_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the current school the administrator actively works for',
-  CONSTRAINT `administrator_homeAddress_fk$administrator`
-  FOREIGN KEY (`administrator_homeAddress_fk`)
-    REFERENCES `scholar_warehouse`.`address`(`address_id`)
-    ON DELETE SET NULL
-    ON UPDATE CASCADE,
-  CONSTRAINT `school_fk$administrator`
-  FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
-    ON DELETE SET NULL
-    ON UPDATE CASCADE,
-  FOREIGN KEY (`administrator_user_fk`) REFERENCES `scholar_warehouse`.`user` (`user_id`)
-  ON DELETE SET NULL
-  ON UPDATE CASCADE
-  )
-  ENGINE = InnoDB;
 
 CREATE TABLE `scholar_warehouse`.`school_year` (
   `school_year_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
@@ -444,7 +423,7 @@ CREATE TABLE `scholar_warehouse`.`goal` (
   `parent_fk` BIGINT(20) COMMENT 'Foreign key that could associate many different places depending on the goal. For assignment goals it points to student assignmnet id',
   `desired_value` DOUBLE NOT NULL COMMENT 'The value the student is attempting to reach with this goal',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the student this is assigned to',
-  `teacher_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key linking to the teacher who needs to approve this goal',
+  `staff_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key linking to the teacher who needs to approve this goal',
   `goal_type` varchar(45) NOT NULL COMMENT ' Corresponds to enum GoalType, defines what subclass of goal we are dealing with',
   `start_date` DATE DEFAULT NULL COMMENT ' Certain goals occur over a time range, this indicates that starting point',
   `end_date` DATE DEFAULT NULL COMMENT ' Certain goals occur over a time range, this indicates the end date',
@@ -457,9 +436,9 @@ PRIMARY KEY (`goal_id`),
     REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `fk_teacher_goal`
-    FOREIGN KEY (`teacher_fk`)
-    REFERENCES `scholar_warehouse`.`teacher`(`teacher_user_fk`)
+  CONSTRAINT `fk_staff_goal`
+    FOREIGN KEY (`staff_fk`)
+    REFERENCES `scholar_warehouse`.`staff`(`staff_user_fk`)
     ON DELETE SET NULL
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
