@@ -22,8 +22,8 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
     private static final String USER_PERMISSIONS_LOGIN = "student_user";
     private static final String USER_PERMISSIONS_PASS = "student_user";
 
-    private static final String ADMIN_PERMISSIONS_LOGIN = "mattg";
-    private static final String ADMIN_PERMISSIONS_PASS = "admin";
+    private final String ADMIN_PERMISSIONS_LOGIN = TEST_ADMIN_USERNAME;
+    private final String ADMIN_PERMISSIONS_PASS = TEST_ADMIN_PASSWORD;
     
     @BeforeMethod
     public void init() {
@@ -32,7 +32,7 @@ public class AuthenticationIntegrationTest extends IntegrationBase {
 
     @Test
     public void testUserControllerGetCurrentUser() {
-        this.authValidatingExecutor.getCurrentUser("mattg");
+        this.authValidatingExecutor.getCurrentUser(ADMIN_PERMISSIONS_LOGIN);
     }
 
     @Test
