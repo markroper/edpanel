@@ -12,7 +12,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -101,8 +100,7 @@ public class Notification {
         return assignment;
     }
 
-    @Column(name = HibernateConsts.NOTIFICATION_TRIGGER_GREATER_THAN, columnDefinition = "TINYINT")
-    @Type(type = "org.hibernate.type.NumericBooleanType")
+    @Column(name = HibernateConsts.NOTIFICATION_TRIGGER_GREATER_THAN)
     public Boolean getTriggerWhenGreaterThan() {
         return triggerWhenGreaterThan;
     }

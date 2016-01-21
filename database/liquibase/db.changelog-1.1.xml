@@ -107,7 +107,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="notification_trigger_greater_than"
-                    type="tinyint(1)"
+                    type="bit(1)"
                     remarks="Trigger greater than flag">
             </column>
             <column name="notification_trigger"
@@ -205,7 +205,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="triggered_notification_active"
-                    type="tinyint(1)"
+                    type="bit(1)"
                     remarks="True if the triggered notification is active, otherwise false">
             </column>
             <column name="triggered_notification_value_when_triggered"
@@ -220,7 +220,7 @@
         <createIndex indexName="triggered_notification$active"
                      tableName="triggered_notification"
                      unique="false">
-            <column name="triggered_notification_active" type="tinyint(1)"/>
+            <column name="triggered_notification_active" type="bit(1)"/>
         </createIndex>
         <addForeignKeyConstraint baseTableName="triggered_notification"
                                  baseColumnNames="notification_fk"

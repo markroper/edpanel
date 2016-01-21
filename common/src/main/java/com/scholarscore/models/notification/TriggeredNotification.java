@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -82,8 +81,7 @@ public class TriggeredNotification {
         this.userIdToNotify = userIdToNotify;
     }
 
-    @Column(name = HibernateConsts.TRIGGERED_NOTIFICATION_ACTIVE, columnDefinition = "TINYINT")
-    @Type(type = "org.hibernate.type.NumericBooleanType")
+    @Column(name = HibernateConsts.TRIGGERED_NOTIFICATION_ACTIVE)
     public Boolean getIsActive() {
         return isActive;
     }
