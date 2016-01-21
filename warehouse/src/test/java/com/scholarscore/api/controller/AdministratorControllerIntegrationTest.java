@@ -27,7 +27,7 @@ public class AdministratorControllerIntegrationTest extends IntegrationBase {
             namedTeacher.setName(localeServiceUtil.generateName());
 
             return new Object[][] {
-//                { "Empty teacher", emptyTeacher },
+                { "Empty teacher", emptyTeacher },
                     { "Named teacher", namedTeacher }
             };
         }

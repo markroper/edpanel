@@ -89,7 +89,7 @@ public class UiEndpointsController extends BaseController {
                             withApproved(Boolean.FALSE).
                             withDesiredValue(80D).
                             withName("Section Goal").
-                            withPerson(t).
+                            withStaff(t).
                             build();
                     ServiceResponse<Long> createdGoalResp =
                             pm.getGoalManager().createGoal(studentId, fullCumulativeGradeGoalByBuilder);

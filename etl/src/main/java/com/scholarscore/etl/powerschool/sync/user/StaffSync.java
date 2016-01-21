@@ -98,8 +98,6 @@ public class StaffSync implements ISync<Person> {
 
                     } else if (((Staff)sourceUser).isTeacher()) {
                         created = edPanel.createTeacher((Staff)sourceUser);
-                    } else {
-                        created = edPanel.createAdministrator((Staff) sourceUser);
                     }
                 } catch (HttpClientException e) {
                     results.staffCreateFailed(ssid);

@@ -22,7 +22,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Objects;
 
@@ -201,7 +200,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     public static abstract class GoalBuilder<U extends GoalBuilder<U, T>, T extends Goal> extends ApiModelBuilder<U,T>{
 
         private Student student;
-        private Staff person;
+        private Staff staff;
         private Double desiredValue;
         private Double calculatedValue;
         private Boolean approved;
@@ -212,8 +211,8 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
             return me();
         }
 
-        public U withPerson(final Staff person){
-            this.person = person;
+        public U withStaff(final Staff person){
+            this.staff = person;
             return me();
         }
 
@@ -240,7 +239,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         public T build(){
             T goal = super.build();
             goal.setStudent(student);
-            goal.setStaff(person);
+            goal.setStaff(staff);
             goal.setDesiredValue(desiredValue);
             goal.setCalculatedValue(calculatedValue);
             goal.setApproved(approved);

@@ -32,8 +32,13 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<Staff> selectAll() {
-        return hibernateTemplate.loadAll(Staff.class);
+        String query = "select a from staff a " +
+                "left join fetch a.homeAddress " +
+                "left join fetch a.contactMethods " +
+                "where a.teacher = true";
+        return (List<Staff>)hibernateTemplate.find(query);
     }
 
     @Override

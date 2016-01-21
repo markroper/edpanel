@@ -59,7 +59,7 @@ public class BehaviorGoalBuilderUnitTest extends AbstractBuilderUnitTest<Behavio
                 withDesiredValue(desiredValue).
                 withGoalType(goalType).
                 withName(name).
-                withPerson(teacher).
+                withStaff(teacher).
                 build();
 
         return new Object[][]{

@@ -5,7 +5,8 @@ public enum UserType {
     STUDENT,
     ADMINISTRATOR,
     GUARDIAN,
-    SUPER_ADMIN;
+    SUPER_ADMIN,
+    OTHER_STAFF;
     
     public static User clone(User input) {
         switch(input.getType()) {

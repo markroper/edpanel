@@ -50,7 +50,7 @@ public class AssignmentGoalBuilderUnitTest extends AbstractBuilderUnitTest<Assig
                 withDesiredValue(desiredValue).
                 withGoalType(goalType).
                 withName(name).
-                withPerson(teacher).
+                withStaff(teacher).
                 build();
 
         return new Object[][]{
