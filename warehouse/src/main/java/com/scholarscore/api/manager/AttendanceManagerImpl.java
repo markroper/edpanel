@@ -8,6 +8,7 @@ import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.attendance.Attendance;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,6 +34,16 @@ public class AttendanceManagerImpl implements AttendanceManager {
         }
         Collection<Attendance> attendance = attendancePersistence.selectAllAttendance(schoolId, studentId);
         return new ServiceResponse<Collection<Attendance>>(attendance);
+    }
+
+    @Override
+    public ServiceResponse<Collection<Attendance>> getAllStudentAttendanceInRange(long schoolId, List<Long> studentIds, LocalDate start, LocalDate end) {
+        StatusCode code = pm.getSchoolManager().schoolExists(schoolId);
+        if (!code.isOK()) {
+            return new ServiceResponse<>(code);
+        }
+        Collection<Attendance> attendance = attendancePersistence.selectAllAttendance(schoolId, studentIds, start, end);
+        return new ServiceResponse<>(attendance);
     }
 
     @Override
