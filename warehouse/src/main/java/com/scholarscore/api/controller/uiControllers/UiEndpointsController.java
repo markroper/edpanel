@@ -78,7 +78,7 @@ public class UiEndpointsController extends BaseController {
                 if ( null != sectionGoal) {
                     sectionDashData.setGradeGoal(sectionGoal);
                 } else {
-                    Set<Staff> persons = s.getStaffs();
+                    Set<Staff> persons = s.getTeachers();
                     Staff t = null;
                     if(null != persons && !persons.isEmpty()) {
                         t = persons.iterator().next();

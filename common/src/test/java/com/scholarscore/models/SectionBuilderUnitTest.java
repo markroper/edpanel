@@ -69,7 +69,7 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
         fullSection.setGradeFormulaString(gradeFormulaString);
         fullSection.setTerm(term);
         fullSection.setCourse(course);
-        fullSection.setStaffs(persons);
+        fullSection.setTeachers(persons);
         fullSection.setEnrolledStudents(enrolledStudents);
         fullSection.setAssignments(assignments);
         fullSection.setSourceSystemId(sourceSystemId);

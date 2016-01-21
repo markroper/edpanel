@@ -103,7 +103,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     }
 
     @OneToOne(optional = true)
-    @JoinColumn(name=HibernateConsts.TEACHER_FK, nullable = true)
+    @JoinColumn(name=HibernateConsts.STAFF_FK, nullable = true)
     public Staff getStaff() {
         return staff;
     }

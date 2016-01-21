@@ -382,7 +382,7 @@ public class SchoolDataFactory {
                     if(teacherIndex == i) {
                         Set<Staff> sectionTeacher = new HashSet<>();
                         sectionTeacher.add(teachers.get(i));
-                        section.setStaffs(sectionTeacher);
+                        section.setTeachers(sectionTeacher);
                     }
                 }
                 
