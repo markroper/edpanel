@@ -34,6 +34,8 @@ public class Staff extends Person {
 
     public Staff(Staff s) {
         super(s);
+        this.isAdmin = s.isAdmin;
+        this.isTeacher = s.isTeacher;
 
     }
 
