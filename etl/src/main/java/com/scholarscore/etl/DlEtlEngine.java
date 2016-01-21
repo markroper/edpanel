@@ -7,9 +7,8 @@ import com.scholarscore.etl.deanslist.client.IDeansListClient;
 import com.scholarscore.etl.runner.EtlSettings;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.Behavior;
-import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -40,8 +39,8 @@ public class DlEtlEngine implements IEtlEngine {
     
     // key: studentLastName, value: hashmap of students w/ that last name (key: student first name, value: student)
     private HashMap<String, HashMap<String, Student>> studentLastNameLookup;
-    private HashMap<String, HashMap<String, Teacher>> teacherLastNameLookup;
-    private HashMap<String, HashMap<String, Administrator>> adminLastNameLookup;
+    private HashMap<String, HashMap<String, Staff>> teacherLastNameLookup;
+    private HashMap<String, HashMap<String, Staff>> adminLastNameLookup;
      
     // key: scholarScoreStudentID, value: *(nested, next)*
     // key: deansListBehaviorId, value: behavior object
@@ -81,7 +80,7 @@ public class DlEtlEngine implements IEtlEngine {
         studentLastNameLookup = populateNestedNameLookup(existingStudents);
 
         // get teachers from scholarscore -- we need to match names to behavior events
-        Collection<Teacher> existingTeachers = null;
+        Collection<Staff> existingTeachers = null;
         try {
             existingTeachers = scholarScore.getTeachers();
         } catch (HttpClientException e) {
@@ -90,7 +89,7 @@ public class DlEtlEngine implements IEtlEngine {
         teacherLastNameLookup = populateNestedNameLookup(existingTeachers);
 
         // get administrators from scholarscore -- these users also assign behavioral events to students
-        Collection<Administrator> existingAdministrators = null;
+        Collection<Staff> existingAdministrators = null;
         try {
             existingAdministrators = scholarScore.getAdministrators();
         } catch (HttpClientException e) {
@@ -141,19 +140,25 @@ public class DlEtlEngine implements IEtlEngine {
                     String existingName = existingUserFirstName + " " + userToFindLastName;
                     if (existingUser instanceof Student) {
                         result.incrementBehaviorEventsMatchedStudentLastButNotFirst(deanslistName, existingName);
-                    } else if (existingUser instanceof Teacher) {
-                        result.incrementBehaviorEventsMatchedTeacherLastButNotFirst(deanslistName, existingName);
-                    } else if (existingUser instanceof Administrator) {
-                        result.incrementBehaviorEventsMatchedAdminLastButNotFirst(deanslistName, existingName);
+                    //TODO I'm not super sure what this is used for, will this get messed up? -Chris
+                    } else if (existingUser instanceof Staff) {
+                        if (((Staff) existingUser).isTeacher()) {
+                            result.incrementBehaviorEventsMatchedTeacherLastButNotFirst(deanslistName, existingName);
+                        } else if (((Staff) existingUser).isAdmin()) {
+                            result.incrementBehaviorEventsMatchedAdminLastButNotFirst(deanslistName, existingName);
+                        }
                     }
                 } else {
                     if (existingUser instanceof Student) {
                         result.incrementBehaviorEventsMatchedStudentLastAndFirst();
-                    } else if (existingUser instanceof Teacher) {
-                        result.incrementBehaviorEventsMatchedTeacherLastAndFirst();
-                    } else if (existingUser instanceof Administrator) {
+                    } else if (existingUser instanceof Staff) {
+                        if (((Staff) existingUser).isTeacher()) {
+                            result.incrementBehaviorEventsMatchedTeacherLastAndFirst();
+                    } else if (((Staff) existingUser).isTeacher()) {
                         result.incrementBehaviorEventsMatchedAdminLastAndFirst();
                     }
+                    }
+
                 }
             } else if (usersWithThisLastName.size() > 1) {
                 // more than one person with this last name -- match on first name too.
@@ -232,12 +237,12 @@ public class DlEtlEngine implements IEtlEngine {
 
                 // don't require teacher but populate it if present
                 if (assigner != null && assigner.getName() != null) {
-                    Teacher existingTeacher = findUserByName(assigner.getName(), teacherLastNameLookup, result);
+                    Staff existingTeacher = findUserByName(assigner.getName(), teacherLastNameLookup, result);
                     if (existingTeacher != null) {
                         behavior.setAssigner(existingTeacher);
                         result.incrementBehaviorMatchedTeacher();
                     } else {
-                        Administrator existingAdmin = findUserByName(assigner.getName(), adminLastNameLookup, result);
+                        Staff existingAdmin = findUserByName(assigner.getName(), adminLastNameLookup, result);
                         if (existingAdmin != null) {
                             behavior.setAssigner(existingAdmin);
                             result.incrementBehaviorMatchedAdmin();

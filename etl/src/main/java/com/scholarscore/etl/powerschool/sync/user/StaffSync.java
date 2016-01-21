@@ -2,16 +2,15 @@ package com.scholarscore.etl.powerschool.sync.user;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.School;
-import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Person;
-import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,13 +90,14 @@ public class StaffSync implements ISync<Person> {
                 edPanelUser = staffAssociator.findByOtherId(underlyingUserId);
             }
             if(null == edPanelUser){
-                ((Person) sourceUser).setCurrentSchoolId(school.getId());
+                ((Staff) sourceUser).setCurrentSchoolId(school.getId());
                 User created = null;
                 try {
-                    if(sourceUser instanceof Teacher) {
-                        created = edPanel.createTeacher((Teacher)sourceUser);
-                    } else if (sourceUser instanceof Administrator) {
-                        created = edPanel.createAdministrator((Administrator)sourceUser);
+                    if(((Staff) sourceUser).isAdmin()) {
+                        created = edPanel.createAdministrator((Staff)sourceUser);
+
+                    } else if (((Staff)sourceUser).isTeacher()) {
+                        created = edPanel.createTeacher((Staff)sourceUser);
                     }
                 } catch (HttpClientException e) {
                     results.staffCreateFailed(ssid);
@@ -143,8 +143,8 @@ public class StaffSync implements ISync<Person> {
     }
 
     protected ConcurrentHashMap<Long, Person> resolveFromEdPanel() throws HttpClientException {
-        Collection<Teacher> users = edPanel.getTeachers();
-        Collection<Administrator> admins = edPanel.getAdministrators();
+        Collection<Staff> users = edPanel.getTeachers();
+        Collection<Staff> admins = edPanel.getAdministrators();
 
         ConcurrentHashMap<Long, Person> userMap = new ConcurrentHashMap<>();
         for(Person u: users) {
