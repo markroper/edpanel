@@ -54,6 +54,7 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
 
     @Override
     public Long createTeacher(Staff teacher) {
+        teacher.setTeacher(true);
         transformUserValues(teacher, null);
         Staff out = hibernateTemplate.merge(teacher);
         Authority auth = new Authority();

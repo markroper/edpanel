@@ -1,7 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Staff;
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -22,8 +22,8 @@ public class AdministratorControllerIntegrationTest extends IntegrationBase {
         //Positive test cases
         @DataProvider
         public Object[][] createAdminProvider() {
-            Administrator emptyTeacher = new Administrator();
-            Administrator namedTeacher = new Administrator();
+            Staff emptyTeacher = new Staff();
+            Staff namedTeacher = new Staff();
             namedTeacher.setName(localeServiceUtil.generateName());
 
             return new Object[][] {
@@ -33,27 +33,27 @@ public class AdministratorControllerIntegrationTest extends IntegrationBase {
         }
 
         @Test(dataProvider = "createAdminProvider")
-        public void createAdminTest(String msg, Administrator admin) {
+        public void createAdminTest(String msg, Staff admin) {
             administratorValidatingExecutor.create(admin, msg);
         }
 
         @Test(dataProvider = "createAdminProvider")
-        public void deleteAdminTest(String msg, Administrator admin) {
-            Administrator createdAdmin = administratorValidatingExecutor.create(admin, msg);
+        public void deleteAdminTest(String msg, Staff admin) {
+            Staff createdAdmin = administratorValidatingExecutor.create(admin, msg);
             administratorValidatingExecutor.delete(createdAdmin.getId(), msg);
         }
 
         @Test(dataProvider = "createAdminProvider")
-        public void replaceAdminTest(String msg, Administrator admin) {
-            Administrator createdAdmin = administratorValidatingExecutor.create(admin, msg);
-            Administrator a = new Administrator(admin);
+        public void replaceAdminTest(String msg, Staff admin) {
+            Staff createdAdmin = administratorValidatingExecutor.create(admin, msg);
+            Staff a = new Staff(admin);
             administratorValidatingExecutor.replace(createdAdmin.getId(), a, msg);
         }
 
         @Test(dataProvider = "createAdminProvider")
-        public void updateAdminTest(String msg, Administrator admin) {
-            Administrator createdAdmin = administratorValidatingExecutor.create(admin, msg);
-            Administrator updatedAdmin = new Administrator();
+        public void updateAdminTest(String msg, Staff admin) {
+            Staff createdAdmin = administratorValidatingExecutor.create(admin, msg);
+            Staff updatedAdmin = new Staff();
             updatedAdmin.setName(localeServiceUtil.generateName());
             //PATCH the existing record with a new name.
             administratorValidatingExecutor.update(createdAdmin.getId(), updatedAdmin, msg);
@@ -67,7 +67,7 @@ public class AdministratorControllerIntegrationTest extends IntegrationBase {
         //Negative test cases
         @DataProvider
         public Object[][] createAdminNegativeProvider() {
-            Administrator gradedAdminNameTooLong = new Administrator();
+            Staff gradedAdminNameTooLong = new Staff();
             gradedAdminNameTooLong.setName(localeServiceUtil.generateName(257));
 
             return new Object[][] {
@@ -76,15 +76,15 @@ public class AdministratorControllerIntegrationTest extends IntegrationBase {
         }
 
         @Test(dataProvider = "createAdminNegativeProvider")
-        public void createAdminNegativeTest(String msg, Administrator administrator, HttpStatus expectedStatus) {
+        public void createAdminNegativeTest(String msg, Staff administrator, HttpStatus expectedStatus) {
             administratorValidatingExecutor.createNegative(administrator, expectedStatus, msg);
         }
 
         @Test(dataProvider = "createAdminNegativeProvider")
-        public void replaceAdminTest(String msg, Administrator administrator, HttpStatus expectedStatus) {
-            Administrator t = new Administrator();
+        public void replaceAdminTest(String msg, Staff administrator, HttpStatus expectedStatus) {
+            Staff t = new Staff();
             t.setName(UUID.randomUUID().toString());
-            Administrator created = administratorValidatingExecutor.create(t, msg);
+            Staff created = administratorValidatingExecutor.create(t, msg);
             administratorValidatingExecutor.replaceNegative(created.getId(), administrator, expectedStatus, msg);
         }
     }

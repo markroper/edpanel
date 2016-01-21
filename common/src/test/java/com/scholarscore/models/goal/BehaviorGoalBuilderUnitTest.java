@@ -2,8 +2,8 @@ package com.scholarscore.models.goal;
 
 import com.scholarscore.models.AbstractBuilderUnitTest;
 import com.scholarscore.models.BehaviorCategory;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.utils.CommonTestUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
@@ -33,7 +33,7 @@ public class BehaviorGoalBuilderUnitTest extends AbstractBuilderUnitTest<Behavio
         Double desiredValue = RandomUtils.nextDouble(0d, Double.MIN_VALUE);
         GoalType goalType = GoalType.BEHAVIOR;
         String name = CommonTestUtils.generateName();
-        Teacher teacher = CommonTestUtils.generateTeacher();
+        Staff teacher = CommonTestUtils.generateTeacher();
 
         BehaviorGoal fullBehaviorGoal = new BehaviorGoal();
         fullBehaviorGoal.setId(id);

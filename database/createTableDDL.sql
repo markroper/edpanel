@@ -115,7 +115,8 @@ CREATE TABLE `scholar_warehouse`.`teacher` (
   `staff_source_system_user_id` VARCHAR(256) NULL COMMENT 'The identifier of the user from the source system, if any',
   `staff_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user_fk of the staff_member',
   `staff_home_phone` VARCHAR(256) NULL COMMENT 'Home phone number for staff',
-  `staff_role` VARCHAR(256) NULL COMMENT 'Role for teh staff member, admin or teacher',
+  `admin` INT NOT NULL COMMENT 'Int that should be 0 or 1 indicating if a staff memebr is an admin',
+  `teacher` INT NOT NULL COMMENT 'Int that should be 0 or 1 indicating if a staff memebr is an teacher',
   `staff_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
   `school_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the current primary school the staff works at',
   CONSTRAINT `staff_homeAddress_fk$staff`

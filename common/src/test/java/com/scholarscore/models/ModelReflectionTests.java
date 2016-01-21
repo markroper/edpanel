@@ -30,10 +30,9 @@ import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
 import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.ui.SectionGradeWithProgression;
-import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.ContactType;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.reflections.Reflections;
@@ -491,10 +490,11 @@ public class ModelReflectionTests {
         if (type.isAssignableFrom(Gpa.class)) { return alt ? new SimpleGpa() : new WeightedGpa();  }
         
         // can the value in type be cast to a 'user' variable?
-        if (type.isAssignableFrom(User.class)) { return alt ? new Administrator() : new Student(); }
+        if (type.isAssignableFrom(User.class)) { return alt ? new Staff() : new Student(); }
 
-        if (type.isAssignableFrom(Teacher.class)) {
-            Teacher t = new Teacher();
+        if (type.isAssignableFrom(Staff.class)) {
+            Staff t = new Staff();
+            t.setTeacher(true);
             t.setId(alt ? 2L : 3L);
             t.setName(alt ? "teacherName2" : "teacherName1");
             return t;

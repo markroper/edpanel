@@ -15,8 +15,8 @@ import com.scholarscore.models.assignment.AttendanceAssignment;
 import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.goal.GoalType;
 import com.scholarscore.models.gradeformula.GradeFormula;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 
@@ -245,7 +245,7 @@ public class CommonTestUtils {
                 build();
     }
 
-    public static Teacher generateTeacher(){
+    public static Staff generateTeacher(){
         Long id = RandomUtils.nextLong(0L, Long.MAX_VALUE);
         Address address = CommonTestUtils.generateAddress();
         String sourceSystemId = RandomStringUtils.randomAlphanumeric(10);
@@ -253,7 +253,7 @@ public class CommonTestUtils {
         String username = RandomStringUtils.randomAlphanumeric(8);
         String password =  RandomStringUtils.randomAlphanumeric(14);
 
-        return new Teacher.TeacherBuilder().
+        return new Staff.StaffBuilder().
                 withId(id).
                 withHomeAddress(address).
                 withHomePhone(homePhone).
@@ -261,6 +261,8 @@ public class CommonTestUtils {
                 withUsername(username).
                 withPassword(password).
                 withEnabled(false).
+                withTeacher(true).
+                withAdmin(false).
                 build();
     }
 

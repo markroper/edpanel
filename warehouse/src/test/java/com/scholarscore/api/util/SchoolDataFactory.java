@@ -29,10 +29,8 @@ import com.scholarscore.models.survey.question.SurveyBooleanQuestion;
 import com.scholarscore.models.survey.question.SurveyMultipleChoiceQuestion;
 import com.scholarscore.models.survey.question.SurveyOpenResponseQuestion;
 import com.scholarscore.models.survey.question.SurveyQuestion;
-import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 
@@ -81,7 +79,7 @@ public class SchoolDataFactory {
 
     public static Map<Survey, List<SurveyResponse>> generateSurveysAndResponses(
                                         List<Student> generatedStudents,
-                                        List<Teacher> createdTeachers,
+                                        List<Staff> createdTeachers,
                                         List<Section> sections,
                                         School school) {
         Map<Survey, List<SurveyResponse>> respMap = new HashMap<>();
@@ -158,14 +156,15 @@ public class SchoolDataFactory {
         return respMap;
     }
 
-    public static List<Administrator> generateAdmins(Long currentSchoolId) {
-        List<Administrator> admins = new ArrayList<>();
-        Administrator admin1 = new Administrator();
-        admin1.setName("Mark Roper");
-        admin1.setUsername("mroper");
+    public static List<Staff> generateAdmins(Long currentSchoolId) {
+        List<Staff> admins = new ArrayList<>();
+        Staff admin1 = new Staff();
+        admin1.setName("Chris Wallace");
+        admin1.setUsername("cwallace");
         admin1.setPassword("admin");
         admin1.setEnabled(true);
         admin1.setCurrentSchoolId(currentSchoolId);
+        admin1.setAdmin(true);
         admins.add(admin1);
         return admins;
     }
@@ -175,21 +174,24 @@ public class SchoolDataFactory {
      * @param currentSchoolId
      * @return
      */
-    public static List<Teacher> generateTeachers(Long currentSchoolId) {
-        List<Teacher> teachers = new ArrayList<Teacher>();
-        Teacher teacher1 = new Teacher();
+    public static List<Staff> generateTeachers(Long currentSchoolId) {
+        List<Staff> teachers = new ArrayList<Staff>();
+        Staff teacher1 = new Staff();
         teacher1.setName("Ms. Doe");
         teacher1.setCurrentSchoolId(currentSchoolId);
-        Teacher teacher2 = new Teacher();
+        teacher1.setTeacher(true);
+        Staff teacher2 = new Staff();
         teacher2.setName("Mr. Smith");
         teacher2.setCurrentSchoolId(currentSchoolId);
-        Teacher teacher3 = new Teacher();
+        teacher2.setTeacher(true);
+        Staff teacher3 = new Staff();
         teacher3.setName("Mrs. Matthews");
         teacher3.setCurrentSchoolId(currentSchoolId);
+        teacher3.setTeacher(true);
         teachers.add(teacher1);
         teachers.add(teacher2);
         teachers.add(teacher3);
-        for(Teacher s : teachers) {
+        for(Staff s : teachers) {
             s.setUsername(s.getName().split("\\s+")[1]);    
             // password, onetime pass and enabled flag cannot be directly set on this object in this manner
 //            s.setOneTimePass("onetimepass");
@@ -322,7 +324,7 @@ public class SchoolDataFactory {
             Collection<Term> terms, 
             List<Course> courses, 
             List<Student> students, 
-            List<Teacher> teachers) {
+            List<Staff> teachers) {
         //Static set of grade formulas
         List<GradeFormula> gradeFormulas = new ArrayList<GradeFormula>();
         Map<String, Double> weight1 = new HashMap<String, Double>() {{
@@ -805,7 +807,7 @@ public class SchoolDataFactory {
      */
     public static Map<Long, ArrayList<Behavior>> generateBehaviorEvents(
             Collection<Student> students, 
-            List<Teacher> teachers,
+            List<Staff> teachers,
             LocalDate beginDate,
             LocalDate endDate) {
         int numDates = (int)Math.abs(ChronoUnit.DAYS.between(beginDate, endDate));
@@ -815,7 +817,7 @@ public class SchoolDataFactory {
             studentBehaviors.put(s.getId(), new ArrayList<Behavior>());
             for(int i = 0; i < numEventsToProduce; i++) {
                 int teacherIndex = new Random().nextInt(teachers.size() - 1);
-                Teacher t = teachers.get(teacherIndex);
+                Staff t = teachers.get(teacherIndex);
                 LocalDate local = beginDate.plusDays(RandomUtils.nextLong(0l, numDates));
                 Behavior b = new Behavior();
                 b.setBehaviorDate(local);
@@ -831,7 +833,7 @@ public class SchoolDataFactory {
 
     public static Map<Long, ArrayList<Goal>> generateGoalEvents(
             Collection<Student> students,
-            Teacher teacher,
+            Staff teacher,
             LocalDate beginDate,
             LocalDate endDate,
             Map<Long, List<Long>> studentToSSGId,

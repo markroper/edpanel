@@ -9,8 +9,8 @@ import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import org.springframework.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -32,7 +32,7 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
     private Section section;
     private GradedAssignment sectionAssignment;
     private Student student;
-    private Teacher teacher;
+    private Staff teacher;
     
     @BeforeClass
     public void init() {
@@ -42,7 +42,7 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
         school.setName(localeServiceUtil.generateName());
         school = schoolValidatingExecutor.create(school, "Create base school");
         
-        teacher = new Teacher();
+        teacher = new Staff();
         teacher.setName("Mr. Jones");
         teacher = teacherValidatingExecutor.create(teacher, "Create a base teacher");
         
