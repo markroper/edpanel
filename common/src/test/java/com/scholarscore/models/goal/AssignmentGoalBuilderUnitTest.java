@@ -1,8 +1,8 @@
 package com.scholarscore.models.goal;
 
 import com.scholarscore.models.AbstractBuilderUnitTest;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.utils.CommonTestUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
@@ -28,7 +28,7 @@ public class AssignmentGoalBuilderUnitTest extends AbstractBuilderUnitTest<Assig
         Double desiredValue = RandomUtils.nextDouble(0d, Double.MIN_VALUE);
         GoalType goalType = GoalType.ASSIGNMENT;
         String name = CommonTestUtils.generateName();
-        Teacher teacher = CommonTestUtils.generateTeacher();
+        Staff teacher = CommonTestUtils.generateTeacher();
 
         AssignmentGoal fullAssignmentGoal = new AssignmentGoal();
         fullAssignmentGoal.setId(id);

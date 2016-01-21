@@ -3,8 +3,8 @@ package com.scholarscore.api.controller;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.BehaviorCategory;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -21,7 +21,7 @@ import java.time.LocalDate;
 public class BehaviorControllerIntegrationTest extends IntegrationBase {
     private int numberOfItemsCreated = 0;
     private Student student;
-    private Teacher teacher;
+    private Staff teacher;
     
     @BeforeClass
     public void init() {
@@ -31,7 +31,7 @@ public class BehaviorControllerIntegrationTest extends IntegrationBase {
         student.setName(localeServiceUtil.generateName());
         student = studentValidatingExecutor.create(student, "create base student");
 
-        teacher = new Teacher();
+        teacher = new Staff();
         teacher.setName(localeServiceUtil.generateName());
         teacher = teacherValidatingExecutor.create(teacher, "create base teacher");
     }

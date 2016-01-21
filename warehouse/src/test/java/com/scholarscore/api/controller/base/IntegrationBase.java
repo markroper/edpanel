@@ -33,9 +33,8 @@ import com.scholarscore.api.controller.service.UiAttributesValidatingExecutor;
 import com.scholarscore.api.controller.service.UserValidatingExecutor;
 import com.scholarscore.models.LoginRequest;
 import com.scholarscore.models.School;
-import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 import com.scholarscore.util.EdPanelObjectMapper;
 import org.springframework.http.HttpMethod;
@@ -129,8 +128,8 @@ public class IntegrationBase {
 
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Student> studentsCreated = new CopyOnWriteArrayList<>();
-    public CopyOnWriteArrayList<Teacher> teachersCreated = new CopyOnWriteArrayList<>();
-    public CopyOnWriteArrayList<Administrator> adminsCreated = new CopyOnWriteArrayList<>();
+    public CopyOnWriteArrayList<Staff> teachersCreated = new CopyOnWriteArrayList<>();
+    public CopyOnWriteArrayList<Staff> adminsCreated = new CopyOnWriteArrayList<>();
 
     // Locale used in testing. Supplied as command-line arguments to JVM: -Dlocale=de_DE
     // Valid values include the following:
@@ -276,8 +275,11 @@ public class IntegrationBase {
         for(Student s : studentsCreated) {
             makeRequest(HttpMethod.DELETE, getStudentEndpoint(s.getId()));
         }
-        for(Teacher t : teachersCreated) {
+        for(Staff t : teachersCreated) {
             makeRequest(HttpMethod.DELETE, getTeacherEndpoint(t.getId()));
+        }
+        for (Staff a : adminsCreated) {
+            makeRequest(HttpMethod.DELETE, getAdministratorEndpoint(a.getId()));
         }
     }
     

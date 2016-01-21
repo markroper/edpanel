@@ -20,9 +20,8 @@ import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.gpa.AddedValueGpa;
 import com.scholarscore.models.survey.Survey;
 import com.scholarscore.models.survey.SurveyResponse;
-import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.Test;
 
@@ -57,13 +56,13 @@ public class UISyntheticDatagenerator extends IntegrationBase {
         attrs = uiAttributesValidatingExecutor.create(school.getId(), attrs, "attrs to create");
         
         //Create teachers
-        List<Teacher> createdTeachers = new ArrayList<Teacher>();
-        for(Teacher t : SchoolDataFactory.generateTeachers(school.getId())) {
+        List<Staff> createdTeachers = new ArrayList<Staff>();
+        for(Staff t : SchoolDataFactory.generateTeachers(school.getId())) {
             createdTeachers.add(teacherValidatingExecutor.create(t, t.getName()));
         }
 
-        List<Administrator> createdAdministrators = new ArrayList<>();
-        for(Administrator a: SchoolDataFactory.generateAdmins(school.getId())) {
+        List<Staff> createdAdministrators = new ArrayList<>();
+        for(Staff a: SchoolDataFactory.generateAdmins(school.getId())) {
             createdAdministrators.add(userValidatingExecutor.createAdmin(a, a.getName()));
         }
         

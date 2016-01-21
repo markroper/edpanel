@@ -58,6 +58,7 @@ public class AdministratorJdbc extends UserBaseJdbc implements AdministratorPers
 
     @Override
     public Long createAdministrator(Staff administrator) {
+        administrator.setAdmin(true);
         transformUserValues(administrator, null);
         Staff out = hibernateTemplate.merge(administrator);
         administrator.setId(out.getId());

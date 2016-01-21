@@ -12,8 +12,8 @@ import com.scholarscore.models.survey.question.SurveyBooleanQuestion;
 import com.scholarscore.models.survey.question.SurveyMultipleChoiceQuestion;
 import com.scholarscore.models.survey.question.SurveyOpenResponseQuestion;
 import com.scholarscore.models.survey.question.SurveyQuestion;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import org.springframework.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -31,9 +31,9 @@ import java.util.List;
 public class SurveyControllerIntegrationTest extends IntegrationBase {
     private School school;
     private Student student1;
-    private Teacher teacher1;
+    private Staff teacher1;
     private Student student2;
-    private Teacher teacher2;
+    private Staff teacher2;
     private List<SurveyQuestion> simpleSchema;
     SurveyBooleanQuestion boolQ;
     SurveyOpenResponseQuestion openQ;
@@ -50,7 +50,7 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         student1.setName(localeServiceUtil.generateName());
         student1 = studentValidatingExecutor.create(student1, "create base student");
 
-        teacher1 = new Teacher();
+        teacher1 = new Staff();
         teacher1.setName(localeServiceUtil.generateName());
         teacher1 = teacherValidatingExecutor.create(teacher1, "create base teacher");
 
@@ -58,7 +58,7 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         student2.setName(localeServiceUtil.generateName());
         student2 = studentValidatingExecutor.create(student2, "create base student");
 
-        teacher2 = new Teacher();
+        teacher2 = new Staff();
         teacher2.setName(localeServiceUtil.generateName());
         teacher2 = teacherValidatingExecutor.create(teacher2, "create base teacher");
 

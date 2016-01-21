@@ -28,6 +28,8 @@ public class Staff extends Person {
     private boolean isAdmin;
     private boolean isTeacher;
     public Staff() {
+        isAdmin = false;
+        isTeacher = false;
     }
 
     public Staff(Staff s) {
@@ -131,6 +133,62 @@ public class Staff extends Person {
                 ", isAdmin='" + isAdmin + '\'' +
                 ", isTeacher='" + isTeacher + '\'' +
                 '}';
+    }
+
+    public static class StaffBuilder extends PersonBuilder<StaffBuilder, Staff> {
+
+        //Source system identifier. E.g. powerschool ID
+        private String sourceSystemId;
+        private Address homeAddress;
+        //EthnicityRace
+        private Long currentSchoolId;
+        private boolean isAdmin;
+        private boolean isTeacher;
+
+        public StaffBuilder withSourceSystemId(final String sourceSystemId){
+            this.sourceSystemId = sourceSystemId;
+            return this;
+        }
+
+
+        public StaffBuilder withHomeAddress(final Address homeAddress){
+            this.homeAddress = homeAddress;
+            return this;
+        }
+
+        public StaffBuilder withCurrentSchoolId(final Long currentSchoolId){
+            this.currentSchoolId = currentSchoolId;
+            return this;
+        }
+
+        public StaffBuilder withAdmin(final boolean isAdmin) {
+            this.isAdmin = isAdmin;
+            return this;
+        }
+
+        public StaffBuilder withTeacher(final boolean isTeacher) {
+            this.isTeacher = isTeacher;
+            return this;
+        }
+
+        public Staff build(){
+            Staff staff = super.build();
+            staff.setSourceSystemId(sourceSystemId);
+            staff.setHomeAddress(homeAddress);
+            staff.setCurrentSchoolId(currentSchoolId);
+            staff.setAdmin(isAdmin);
+            staff.setTeacher(isTeacher);
+            return staff;
+        }
+
+        @Override
+        protected StaffBuilder me() {
+            return this;
+        }
+
+        public Staff getInstance(){
+            return new Staff();
+        }
     }
 
 }

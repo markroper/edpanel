@@ -25,8 +25,8 @@ import com.scholarscore.models.goal.CumulativeGradeGoal;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.goal.GoalAggregate;
 import com.scholarscore.models.goal.GoalComponent;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -48,7 +48,7 @@ import static org.testng.Assert.fail;
 public class GoalControllerIntegrationTest extends IntegrationBase {
 
     private Student student;
-    private Teacher teacher;
+    private Staff teacher;
     private School school;
     private SchoolYear schoolYear;
     private Term term;
@@ -71,7 +71,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         student.setName(localeServiceUtil.generateName());
         student = studentValidatingExecutor.create(student, "create base student");
 
-        teacher = new Teacher();
+        teacher = new Staff();
         teacher.setName(localeServiceUtil.generateName());
         teacher = teacherValidatingExecutor.create(teacher, "create base teacher");
 

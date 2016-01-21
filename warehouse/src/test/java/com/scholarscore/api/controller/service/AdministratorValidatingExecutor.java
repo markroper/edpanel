@@ -3,7 +3,7 @@ package com.scholarscore.api.controller.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Staff;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
@@ -21,12 +21,12 @@ public class AdministratorValidatingExecutor {
         this.serviceBase = sb;
     }
 
-    public Administrator get(Long adminId, String msg) {
+    public Staff get(Long adminId, String msg) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.GET,
                 serviceBase.getAdministratorEndpoint(adminId),
                 null);
-        Administrator admin = serviceBase.validateResponse(response, new TypeReference<Administrator>(){});
+        Staff admin = serviceBase.validateResponse(response, new TypeReference<Staff>(){});
         Assert.assertNotNull(admin, "Unexpected null teacher returned for case: " + msg);
 
         return admin;
@@ -37,7 +37,7 @@ public class AdministratorValidatingExecutor {
                 HttpMethod.GET,
                 serviceBase.getAdministratorEndpoint(),
                 null);
-        ArrayList<Administrator> admins = serviceBase.validateResponse(response, new TypeReference<ArrayList<Administrator>>(){});
+        ArrayList<Staff> admins = serviceBase.validateResponse(response, new TypeReference<ArrayList<Staff>>(){});
         Assert.assertNotNull(admins, "Unexpected null teacher returned for case: " + msg);
     }
 
@@ -51,7 +51,7 @@ public class AdministratorValidatingExecutor {
     }
 
 
-    public Administrator create(Administrator admin, String msg) {
+    public Staff create(Staff admin, String msg) {
         //Create the teacher
         ResultActions response = serviceBase.makeRequest(HttpMethod.POST, serviceBase.getAdministratorEndpoint(), null, admin);
         EntityId adminId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
@@ -59,7 +59,7 @@ public class AdministratorValidatingExecutor {
         return retrieveAndValidateCreatedAdmin(adminId.getId(), admin, HttpMethod.POST, msg);
     }
 
-    public void createNegative(Administrator admin, HttpStatus expectedCode, String msg) {
+    public void createNegative(Staff admin, HttpStatus expectedCode, String msg) {
         //Attempt to create the teacher
         ResultActions response = serviceBase.makeRequest(HttpMethod.POST, serviceBase.getAdministratorEndpoint(), null, admin);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(),
@@ -83,7 +83,7 @@ public class AdministratorValidatingExecutor {
                 "Unexpected Http status code returned for negative test case for DELETE: " + msg);
     }
 
-    public Administrator replace(Long adminId, Administrator admin, String msg) {
+    public Staff replace(Long adminId, Staff admin, String msg) {
         //Create the teacher
         ResultActions response = serviceBase.makeRequest(HttpMethod.PUT,
                 serviceBase.getAdministratorEndpoint(adminId),
@@ -94,7 +94,7 @@ public class AdministratorValidatingExecutor {
         return retrieveAndValidateCreatedAdmin(adminId, admin, HttpMethod.PUT, msg);
     }
 
-    public void replaceNegative(Long adminId, Administrator admin, HttpStatus expectedCode, String msg) {
+    public void replaceNegative(Long adminId, Staff admin, HttpStatus expectedCode, String msg) {
         //Create the teacher
         ResultActions response = serviceBase.makeRequest(HttpMethod.PUT,
                 serviceBase.getAdministratorEndpoint(adminId),
@@ -104,7 +104,7 @@ public class AdministratorValidatingExecutor {
                 "Unexpected Http status code returned for negative test case for PUT: " + msg);
     }
 
-    public Administrator update(Long adminId, Administrator admin, String msg) {
+    public Staff update(Long adminId, Staff admin, String msg) {
         //Create the teacher
         ResultActions response = serviceBase.makeRequest(HttpMethod.PATCH,
                 serviceBase.getAdministratorEndpoint(adminId),
@@ -115,7 +115,7 @@ public class AdministratorValidatingExecutor {
         return retrieveAndValidateCreatedAdmin(adminId, admin, HttpMethod.PATCH, msg);
     }
 
-    public void updateNegative(Long teacherId, Long courseId, Long id, Administrator admin, HttpStatus expectedCode, String msg) {
+    public void updateNegative(Long teacherId, Long courseId, Long id, Staff admin, HttpStatus expectedCode, String msg) {
         //Create the teacher
         ResultActions response = serviceBase.makeRequest(HttpMethod.PATCH,
                 serviceBase.getAdministratorEndpoint(teacherId),
@@ -136,12 +136,12 @@ public class AdministratorValidatingExecutor {
      * @param msg
      * @return
      */
-    protected Administrator retrieveAndValidateCreatedAdmin( Long adminId, Administrator submittedAdmin, HttpMethod method, String msg) {
+    protected Staff retrieveAndValidateCreatedAdmin( Long adminId, Staff submittedAdmin, HttpMethod method, String msg) {
         //Retrieve and validate the created assignment
-        Administrator createdAdmin = this.get(adminId, msg);
+        Staff createdAdmin = this.get(adminId, msg);
         //Keep a reference to the created assignment for later cleanup
         serviceBase.adminsCreated.add(createdAdmin);
-        Administrator expectedAdmin = generateExpectationAdmin(submittedAdmin, createdAdmin, method);
+        Staff expectedAdmin = generateExpectationAdmin(submittedAdmin, createdAdmin, method);
         Assert.assertEquals(createdAdmin, expectedAdmin, "Unexpected assignment created for case: " + msg);
 
         return createdAdmin;
@@ -157,8 +157,8 @@ public class AdministratorValidatingExecutor {
      * @param created
      * @return
      */
-    protected Administrator generateExpectationAdmin(Administrator submitted, Administrator created, HttpMethod method) {
-        Administrator returnAdmin = new Administrator(submitted);
+    protected Staff generateExpectationAdmin(Staff submitted, Staff created, HttpMethod method) {
+        Staff returnAdmin = new Staff(submitted);
         if(method == HttpMethod.PATCH) {
             returnAdmin.mergePropertiesIfNull(created);
         } else if(null != returnAdmin && null == returnAdmin.getId()) {
