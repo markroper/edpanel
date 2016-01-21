@@ -55,6 +55,8 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     private static final String DAYS_ENDPOINT = "/days";
     private static final String ATTENDANCE_ENDPOINT = "/attendance";
     private static final String GPA_ENDPOINT = "/gpas";
+    private static final String NOTIFICATION_ENDPOINT = "/notifications";
+    private static final String EVALUATION_ENDPOINT = "/evaluations";
 
     // TODO: Create this end point
     private static final String ADMINISTRATOR_ENDPOINT = "/administrators";
@@ -72,6 +74,15 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
             authenticate();
         } catch (HttpClientException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void triggerNotificationEvaluation(Long schoolId) throws HttpClientException {
+        try {
+            post(null, BASE_API_ENDPOINT + NOTIFICATION_ENDPOINT + SCHOOL_ENDPOINT + "/" + schoolId + EVALUATION_ENDPOINT);
+        } catch(IOException e) {
+            throw new HttpClientException(e);
         }
     }
 
