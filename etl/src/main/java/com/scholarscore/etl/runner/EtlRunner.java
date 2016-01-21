@@ -22,6 +22,8 @@ public class EtlRunner {
         System.out.println("Done! PS Migration result: " + psResult);
         SyncResult dlResult = dlEtlEngine.syncDistrict(settings);
         System.out.println("Done! Migration result: " + dlResult);
+        etlEngine.triggerNotificationEvaluation();
+        System.out.println("Notification evaluation complete!");
     }
 
     public EtlEngine getEtlEngine() {
