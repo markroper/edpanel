@@ -113,19 +113,23 @@ public class PsAssignmentFactory {
     public static AssignmentType resolveAssignmentType(String abbreviation, String nameOriginal, String assignmentName) {
         abbreviation = abbreviation.toUpperCase();
         nameOriginal = nameOriginal.toUpperCase();
-        String[] nameArray = assignmentName.split(" ");
 
         AssignmentType type = PsAssignmentFactory.checkAssigmentType(abbreviation);
         if (null != type) {
             return type;
         }
 
-
         type = PsAssignmentFactory.checkAssigmentType(nameOriginal);
         if (null != type) {
             return type;
         }
 
+        type = resolveAssignmentTypeWildcard(abbreviation, nameOriginal);
+        if(null != type) {
+            return type;
+        }
+
+        String[] nameArray = assignmentName.split(" ");
         for (String name: nameArray) {
             name = name.replaceAll("[^a-zA-Z0-9]+","");
             name = name.toUpperCase();
@@ -140,6 +144,81 @@ public class PsAssignmentFactory {
 
     }
 
+    private static AssignmentType resolveAssignmentTypeWildcard(String abbreviation, String nameOriginal) {
+        String cAbbreviation = abbreviation.toUpperCase();
+        String cNameOrig = nameOriginal.toUpperCase();
+        for(String s: HW_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+                return AssignmentType.HOMEWORK;
+            }
+        }
+        for(String s: TEST_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+                return AssignmentType.TEST;
+            }
+        }
+        for(String s: QUIZ_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+                return AssignmentType.QUIZ;
+            }
+        }
+        for(String s: CLASSWORK_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+                return AssignmentType.CLASSWORK;
+            }
+        }
+        for(String s: SUMMATIVE_ASSESSMENT_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+                return AssignmentType.SUMMATIVE_ASSESSMENT;
+            }
+        }
+        for(String s: INTERIM_ASSESSMENT_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+                return AssignmentType.INTERIM_ASSESSMENT;
+            }
+        }
+        for(String s: PARTICIPATION_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+                return AssignmentType.PARTICIPATION;
+            }
+        }
+        for(String s: WRITTEN_WORK_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+                return AssignmentType.WRITTEN_WORK;
+            }
+        }
+        for(String s: ATTENDANCE_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+                return AssignmentType.ATTENDANCE;
+            }
+        }
+        for(String s: LAB_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+                return AssignmentType.LAB;
+            }
+        }
+        for(String s: MIDTERM_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+                return AssignmentType.MIDTERM;
+            }
+        }
+        for(String s: FINAL_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+                return AssignmentType.FINAL;
+            }
+        }
+        for(String s: EXAM_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+                return AssignmentType.EXAM;
+            }
+        }
+        for(String s: PROJ_STRINGS) {
+            if(cAbbreviation.contains(s) || cNameOrig.contains(s)) {
+                return AssignmentType.PROJECT;
+            }
+        }
+        return null;
+    }
     private static void populateInstance(Assignment a, PsAssignment p) {
         a.setAvailablePoints(p.getPointspossible());
         a.setDueDate(p.getDatedue());
