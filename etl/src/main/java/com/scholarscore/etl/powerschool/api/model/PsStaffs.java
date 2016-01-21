@@ -26,7 +26,8 @@ public class PsStaffs extends ArrayList<PsStaff> implements ITranslateCollection
             Staff entity = new Staff();
             if (staff.isAdmin()) {
                 entity.setAdmin(true);
-            } else if (staff.isTeacher()){
+            } else {
+                //If you aren't an admin you are a teacher
                 entity.setTeacher(true);
             }
             
