@@ -184,7 +184,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		this.username = username;
 	}
 
-	@Column(name = HibernateConsts.USER_ENABLED)
+	@Column(name = HibernateConsts.USER_ENABLED, columnDefinition = "TINYINT(1)")
 	public Boolean getEnabled() {
 		return enabled;
 	}

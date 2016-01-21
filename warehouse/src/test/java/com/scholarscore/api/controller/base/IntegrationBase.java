@@ -200,14 +200,17 @@ public class IntegrationBase {
         EdPanelObjectMapper.MAPPER.registerModule(new JavaTimeModule());
         EdPanelObjectMapper.MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
+    
+    // TODO: make these into properties    
+    protected String TEST_ADMIN_USERNAME = "mattg";
+    protected String TEST_ADMIN_PASSWORD = "admin";
 
     /**
      * A method to authenticate a user and store the returned auth cookie for subsequent requests.
      * Called by all integration test classes that are testing protected endpoints.
      */
     protected void authenticate() {
-        //TODO: still a temporary solution for test user but no worse than before
-        authenticate("mattg", "admin");
+        authenticate(TEST_ADMIN_USERNAME, TEST_ADMIN_PASSWORD);
     }
     
     protected void authenticate(String username, String password) {
