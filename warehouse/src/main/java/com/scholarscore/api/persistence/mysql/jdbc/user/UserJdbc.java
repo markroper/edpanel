@@ -67,7 +67,7 @@ public class UserJdbc extends UserBaseJdbc implements UserPersistence {
     public User selectUserByName(String username) {
         List<?> values = hibernateTemplate.findByNamedParam("from user u where u.username = :username", "username", username);
         if (values.size() == 1) {
-            User user =  (User)values.get(0);
+            return (User)values.get(0);
         }
         return null;
     }
