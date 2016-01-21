@@ -32,7 +32,6 @@ import java.util.Objects;
  */
 @SuppressWarnings("serial")
 @Entity(name = HibernateConsts.GOAL_TABLE)
-@Table(name = HibernateConsts.GOAL_TABLE)
 @DiscriminatorColumn(name=HibernateConsts.GOAL_TYPE, discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "goalType")

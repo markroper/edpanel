@@ -38,8 +38,7 @@ import java.util.Set;
  * 
  * @author mattg
  */
-@Entity(name = "user")
-@Table(name = HibernateConsts.USERS_TABLE)
+@Entity(name = HibernateConsts.USERS_TABLE)
 @Inheritance(strategy=InheritanceType.JOINED)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties( { "contactMethods" })
@@ -185,7 +184,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		this.username = username;
 	}
 
-	@Column(name = HibernateConsts.USER_ENABLED)
+	@Column(name = HibernateConsts.USER_ENABLED, columnDefinition = "TINYINT(1)")
 	public Boolean getEnabled() {
 		return enabled;
 	}

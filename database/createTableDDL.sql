@@ -1,7 +1,8 @@
 DROP DATABASE IF EXISTS scholar_warehouse;
 CREATE DATABASE scholar_warehouse;
+USE scholar_warehouse;
 
-CREATE TABLE `scholar_warehouse`.`address` (
+CREATE TABLE `address` (
   `address_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The address ID',
   `address_street` VARCHAR(255) NULL COMMENT 'The street address',
   `address_city` VARCHAR(255) NULL COMMENT 'The street address',
@@ -10,7 +11,7 @@ CREATE TABLE `scholar_warehouse`.`address` (
   PRIMARY KEY (`address_id`))
   ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`school` (
+CREATE TABLE `school` (
   `school_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key column for the school table.',
   `school_name` VARCHAR(255) NULL COMMENT 'A human readable user-defined name',
   `school_number` BIGINT UNSIGNED NULL COMMENT 'The school number within the district',
@@ -22,7 +23,7 @@ CREATE TABLE `scholar_warehouse`.`school` (
   PRIMARY KEY (`school_id`))
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`user` (
+CREATE TABLE `user` (
     `user_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
     `username` varchar(50) NOT NULL COMMENT 'the username used to login',
     `password` CHAR(60) CHARACTER SET UTF8 COLLATE UTF8_BIN NULL COMMENT 'the password',
@@ -34,7 +35,7 @@ CREATE TABLE `scholar_warehouse`.`user` (
 )
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`contact_method` (
+CREATE TABLE `contact_method` (
   `contact_method_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
   `contact_type` varchar(32) NOT NULL COMMENT 'the contact medium (e.g. phone, email)',
   `user_fk` BIGINT UNSIGNED NOT NULL COMMENT 'the fk to the user table',
@@ -44,7 +45,7 @@ CREATE TABLE `scholar_warehouse`.`contact_method` (
   `confirmed` BOOLEAN NOT NULL COMMENT 'if this email has been confirmed as belonging to the user',
     PRIMARY KEY (`contact_method_id`),
   CONSTRAINT `user_fk$contact_method`
-  FOREIGN KEY (`user_fk`) REFERENCES `scholar_warehouse`.`user` (`user_id`)
+  FOREIGN KEY (`user_fk`) REFERENCES `user` (`user_id`)
   ON DELETE CASCADE
   ON UPDATE CASCADE,
   CONSTRAINT `uniq_contact_type$user`
@@ -53,7 +54,7 @@ CREATE TABLE `scholar_warehouse`.`contact_method` (
 )
 ENGINE = InnoDB;
   
-CREATE TABLE `scholar_warehouse`.`student` (
+CREATE TABLE `student` (
   `student_name` VARCHAR(255) NULL COMMENT 'User defined human-readable name',
   `source_system_id` VARCHAR(255) NULL UNIQUE COMMENT 'The identifier from the source system, if any',
   `student_source_system_user_id` VARCHAR(255) NULL COMMENT 'The identifier of the user from the source system, if any',
@@ -69,45 +70,23 @@ CREATE TABLE `scholar_warehouse`.`student` (
   `federal_ethnicity` VARCHAR(512) NULL COMMENT 'The student\'s ethnicity according to the federal gov\'t',
   `school_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the current school the student is enrolled in within the district',
   CONSTRAINT `school_fk$student`
-  FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
+  FOREIGN KEY (`school_fk`) REFERENCES `school` (`school_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
   CONSTRAINT `home_fk$student`
-  FOREIGN KEY (`home_fk`) REFERENCES `scholar_warehouse`.`address` (`address_id`)
+  FOREIGN KEY (`home_fk`) REFERENCES `address` (`address_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
   CONSTRAINT `mailing_fk$student`
-  FOREIGN KEY (`mailing_fk`) REFERENCES `scholar_warehouse`.`address` (`address_id`)
+  FOREIGN KEY (`mailing_fk`) REFERENCES `address` (`address_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
   CONSTRAINT `student_user_fk$student`
-  FOREIGN KEY (`student_user_fk`) REFERENCES `scholar_warehouse`.`user` (`user_id`)
+  FOREIGN KEY (`student_user_fk`) REFERENCES `user` (`user_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE
     )
 ENGINE = InnoDB;
-
-CREATE TABLE `scholar_warehouse`.`teacher` (
-  `teacher_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
-  `teacher_source_system_id` VARCHAR(256) NULL UNIQUE,
-  `teacher_source_system_user_id` VARCHAR(256) NULL COMMENT 'The identifier of the user from the source system, if any',
-  `teacher_user_fk` BIGINT UNSIGNED NULL UNIQUE COMMENT 'The user_fk of the teacher',
-  `teacher_home_phone` VARCHAR(256) NULL COMMENT 'Home phone number for teacher',
-  `teacher_homeAddress_fk` BIGINT UNSIGNED COMMENT 'The home address FK',
-  `school_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the current primary school the teacher teaches at',
-  CONSTRAINT `teacher_homeAddress_fk$teacher`
-  FOREIGN KEY (`teacher_homeAddress_fk`) REFERENCES `scholar_warehouse`.`address`(`address_id`)
-    ON DELETE SET NULL
-    ON UPDATE CASCADE,
-  CONSTRAINT `school_fk$teacher`
-  FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
-    ON DELETE SET NULL
-    ON UPDATE CASCADE,
-  FOREIGN KEY (`teacher_user_fk`) REFERENCES `scholar_warehouse`.`user` (`user_id`)
-    ON DELETE SET NULL
-    ON UPDATE CASCADE
-  )
-  ENGINE = InnoDB;
 
   CREATE TABLE `scholar_warehouse`.`staff` (
   `staff_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
@@ -135,7 +114,7 @@ CREATE TABLE `scholar_warehouse`.`teacher` (
   ENGINE = InnoDB;
 
 
-CREATE TABLE `scholar_warehouse`.`school_year` (
+CREATE TABLE `school_year` (
   `school_year_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `school_year_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `school_year_start_date` DATE NULL COMMENT 'The school year starting date',
@@ -144,12 +123,12 @@ CREATE TABLE `scholar_warehouse`.`school_year` (
   PRIMARY KEY (`school_year_id`),
   CONSTRAINT `school_fk$school_year`
     FOREIGN KEY (`school_fk`)
-    REFERENCES `scholar_warehouse`.`school`(`school_id`)
+    REFERENCES `school`(`school_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`term` (
+CREATE TABLE `term` (
   `term_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `term_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `term_start_date` DATE NULL COMMENT 'The school term start date',
@@ -160,12 +139,12 @@ CREATE TABLE `scholar_warehouse`.`term` (
   PRIMARY KEY (`term_id`),
   CONSTRAINT `fk_school_year$school_term`
     FOREIGN KEY (`school_year_fk`)
-    REFERENCES `scholar_warehouse`.`school_year`(`school_year_id`)
+    REFERENCES `school_year`(`school_year_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`course` (
+CREATE TABLE `course` (
   `course_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `course_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `course_number` VARCHAR(256) NULL COMMENT 'User defined human-readable number for the course',
@@ -174,12 +153,12 @@ CREATE TABLE `scholar_warehouse`.`course` (
   PRIMARY KEY (`course_id`),
   CONSTRAINT `fk_school$course`
     FOREIGN KEY (`school_fk`)
-    REFERENCES `scholar_warehouse`.`school`(`school_id`)
+    REFERENCES `school`(`school_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`section` (
+CREATE TABLE `section` (
   `section_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `section_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `section_start_date` DATE NULL COMMENT 'The section start date',
@@ -194,17 +173,17 @@ CREATE TABLE `scholar_warehouse`.`section` (
   PRIMARY KEY (`section_id`),
   CONSTRAINT `fk_course$section`
     FOREIGN KEY (`course_fk`)
-    REFERENCES `scholar_warehouse`.`course`(`course_id`)
+    REFERENCES `course`(`course_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_term$section`
     FOREIGN KEY (`term_fk`)
-    REFERENCES `scholar_warehouse`.`term`(`term_id`)
+    REFERENCES `term`(`term_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`teacher_section` (
+CREATE TABLE `teacher_section` (
   `teacher_section_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `staff_fk` BIGINT UNSIGNED COMMENT 'The FK to the teacher table',
   `section_fk` BIGINT UNSIGNED COMMENT 'The FK to the section table',
@@ -217,12 +196,12 @@ CREATE TABLE `scholar_warehouse`.`teacher_section` (
     ON UPDATE CASCADE,
   CONSTRAINT `teacher_section_section_fk`
     FOREIGN KEY(`section_fk`)
-    REFERENCES `scholar_warehouse`.`section`(`section_id`)
+    REFERENCES `section`(`section_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`assignment` (
+CREATE TABLE `assignment` (
   `assignment_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `assignment_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `type_fk` VARCHAR(255) NOT NULL COMMENT 'The assignment type string',
@@ -238,14 +217,14 @@ CREATE TABLE `scholar_warehouse`.`assignment` (
   PRIMARY KEY (`assignment_id`),
   CONSTRAINT `fk_section$assignment`
     FOREIGN KEY (`section_fk`)
-    REFERENCES `scholar_warehouse`.`section`(`section_id`)
+    REFERENCES `section`(`section_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-ALTER TABLE `scholar_warehouse`.`assignment` ADD INDEX (`user_defined_type`);
+ALTER TABLE `assignment` ADD INDEX (`user_defined_type`);
 
-CREATE TABLE `scholar_warehouse`.`student_assignment` (
+CREATE TABLE `student_assignment` (
   `student_assignment_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `student_assignment_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
   `comment` BLOB NULL COMMENT 'Teacher comment on student assignment',
@@ -257,18 +236,18 @@ CREATE TABLE `scholar_warehouse`.`student_assignment` (
   PRIMARY KEY (`student_assignment_id`),
   CONSTRAINT `fk_assignment$student_assignment`
     FOREIGN KEY (`assignment_fk`)
-    REFERENCES `scholar_warehouse`.`assignment`(`assignment_id`)
+    REFERENCES `assignment`(`assignment_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_student$student_assignment`
     FOREIGN KEY (`student_fk`)
-    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
+    REFERENCES `student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   UNIQUE KEY `assignment_fk$student_fk` (`assignment_fk`,`student_fk`))
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`student_section_grade` (
+CREATE TABLE `student_section_grade` (
   `student_section_grade_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
   `complete` BIT(1) COMMENT 'Indicates whether the course grade is final',
   `grade` DOUBLE COMMENT 'Represents a single student grade in a section',
@@ -280,17 +259,17 @@ CREATE TABLE `scholar_warehouse`.`student_section_grade` (
     UNIQUE (`section_fk`,`student_fk`),
   CONSTRAINT `fk_section$student_section_grade`
     FOREIGN KEY (`section_fk`)
-    REFERENCES `scholar_warehouse`.`section`(`section_id`)
+    REFERENCES `section`(`section_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_student$student_section_grade`
     FOREIGN KEY (`student_fk`)
-    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
+    REFERENCES `student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`gpa` (
+CREATE TABLE `gpa` (
   `gpa_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Auto incrementing primary key identity column',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the student table',
   `gpa_start_date` DATE NULL COMMENT 'The start date for the period for which the GPA is calculated',
@@ -303,42 +282,42 @@ CREATE TABLE `scholar_warehouse`.`gpa` (
     UNIQUE (`gpa_calc_date`,`student_fk`,`gpa_type`),
   CONSTRAINT `fk_student$gpa`
     FOREIGN KEY (`student_fk`)
-    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
+    REFERENCES `student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
  ENGINE = InnoDB;
- ALTER TABLE `scholar_warehouse`.`gpa` ADD INDEX (`gpa_type`);
+ ALTER TABLE `gpa` ADD INDEX (`gpa_type`);
 
- CREATE TABLE `scholar_warehouse`.`current_gpa` (
+ CREATE TABLE `current_gpa` (
   `current_gpa_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Auto incrementing primary key identity column',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the student table',
   `gpa_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the GPA table',
   PRIMARY KEY (`current_gpa_id`),
   CONSTRAINT `fk_student$current_gpa`
     FOREIGN KEY (`student_fk`)
-    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
+    REFERENCES `student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_gpa$current_gpa`
     FOREIGN KEY (`gpa_fk`)
-    REFERENCES `scholar_warehouse`.`gpa`(`gpa_id`)
+    REFERENCES `gpa`(`gpa_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
  ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`report` (
+CREATE TABLE `report` (
   `report_id`  INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key identity column',
   `school_fk` BIGINT UNSIGNED COMMENT 'The foreign key to the school table',
   `report` TEXT NOT NULL COMMENT 'The report meta-data in JSON string format',
   PRIMARY KEY (`report_id`),
   CONSTRAINT `fk_school$report`
     FOREIGN KEY (`school_fk`)
-    REFERENCES `scholar_warehouse`.`school`(`school_id`)
+    REFERENCES `school`(`school_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`behavior` (
+CREATE TABLE `behavior` (
   `behavior_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key identity column',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
   `user_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the user table',
@@ -353,44 +332,44 @@ CREATE TABLE `scholar_warehouse`.`behavior` (
   PRIMARY KEY (`behavior_id`),
   CONSTRAINT `fk_student$behavior`
     FOREIGN KEY (`student_fk`)
-    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
+    REFERENCES `student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_teacher$behavior`
     FOREIGN KEY (`user_fk`)
-    REFERENCES `scholar_warehouse`.`user`(`user_id`)
+    REFERENCES `user`(`user_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
   UNIQUE KEY `remote_system_composite` (`remote_system`, `remote_behavior_id`)
 )
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`authorities` (
+CREATE TABLE `authorities` (
     `authority_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key',
     `user_id` BIGINT UNSIGNED NOT NULL COMMENT 'The user id of user associated with this record',
     `authority` VARCHAR(50) NOT NULL COMMENT 'The User Role',
     PRIMARY KEY (`authority_id`),
     CONSTRAINT `user_id$authorities`
-    FOREIGN KEY (`user_id`) REFERENCES `scholar_warehouse`.`user` (`user_id`)
+    FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
       ON DELETE CASCADE
       ON UPDATE CASCADE
 )
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`school_day` (
+CREATE TABLE `school_day` (
     `school_day_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'System generated ID',
     `school_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The school foreign key',
     `school_day_date` DATE NULL COMMENT 'The date of the school day',
     `school_day_source_system_id` VARCHAR(256) NULL UNIQUE,
     `school_day_source_system_other_id` BIGINT UNSIGNED NULL,
     PRIMARY KEY (`school_day_id`),
-    FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
+    FOREIGN KEY (`school_fk`) REFERENCES `school` (`school_id`)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 )
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`attendance` (
+CREATE TABLE `attendance` (
     `attendance_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'System generated ID',
     `school_day_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the school days table',
     `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the student table',
@@ -402,22 +381,22 @@ CREATE TABLE `scholar_warehouse`.`attendance` (
     `attendance_source_system_id` VARCHAR(256) NULL,
     `attendance_code` VARCHAR(255) null COMMENT 'Depending on source system, can be used to indicate school vs. class attendance or other',
     PRIMARY KEY (`attendance_id`),
-    FOREIGN KEY (`school_day_fk`) REFERENCES `scholar_warehouse`.`school_day` (`school_day_id`)
+    FOREIGN KEY (`school_day_fk`) REFERENCES `school_day` (`school_day_id`)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    FOREIGN KEY (`student_fk`) REFERENCES `scholar_warehouse`.`student` (`student_user_fk`)
+    FOREIGN KEY (`student_fk`) REFERENCES `student` (`student_user_fk`)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    FOREIGN KEY (`section_fk`) REFERENCES `scholar_warehouse`.`section`(`section_id`)
+    FOREIGN KEY (`section_fk`) REFERENCES `section`(`section_id`)
       ON DELETE CASCADE
       ON UPDATE CASCADE
 )
 ENGINE = InnoDB;
 
-ALTER TABLE `scholar_warehouse`.`attendance` ADD INDEX (`attendance_type`);
-ALTER TABLE `scholar_warehouse`.`attendance` ADD INDEX (`attendance_status`);
+ALTER TABLE `attendance` ADD INDEX (`attendance_type`);
+ALTER TABLE `attendance` ADD INDEX (`attendance_status`);
 
-CREATE TABLE `scholar_warehouse`.`goal` (
+CREATE TABLE `goal` (
   `goal_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a goal',
   `approved` INT NOT NULL COMMENT 'Int that should be 0 or 1 indicating if a goal was approved by the assigned teacher',
   `parent_fk` BIGINT(20) COMMENT 'Foreign key that could associate many different places depending on the goal. For assignment goals it points to student assignmnet id',
@@ -433,27 +412,27 @@ CREATE TABLE `scholar_warehouse`.`goal` (
 PRIMARY KEY (`goal_id`),
   CONSTRAINT `fk_student_goal`
     FOREIGN KEY (`student_fk`)
-    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
+    REFERENCES `student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_staff_goal`
     FOREIGN KEY (`staff_fk`)
-    REFERENCES `scholar_warehouse`.`staff`(`staff_user_fk`)
+    REFERENCES `staff`(`staff_user_fk`)
     ON DELETE SET NULL
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`ui_attributes` (
+CREATE TABLE `ui_attributes` (
     `ui_attributes_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a UI Attributes bag',
     `school_fk` BIGINT UNSIGNED NOT NULL UNIQUE COMMENT 'Unique foreign key to the school table',
     `attributes` BLOB NULL COMMENT 'Client-side attributes as unmanaged JSON',
     PRIMARY KEY (`ui_attributes_id`),
-    FOREIGN KEY (`school_fk`) REFERENCES `scholar_warehouse`.`school` (`school_id`)
+    FOREIGN KEY (`school_fk`) REFERENCES `school` (`school_id`)
         ON DELETE CASCADE
         ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-CREATE TABLE `scholar_warehouse`.`survey` (
+CREATE TABLE `survey` (
   `survey_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a survey',
   `school_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key linking to the school this survey was created in, null for district wide',
   `section_fk` BIGINT UNSIGNED NULL COMMENT 'Foreign key linking to the section this survey was created in, null for a school wide survey',
@@ -464,22 +443,22 @@ CREATE TABLE `scholar_warehouse`.`survey` (
   `survey_schema` BLOB DEFAULT NULL COMMENT 'Blob to store the JSON needed for formula goals',
   PRIMARY KEY (`survey_id`),
   FOREIGN KEY (`user_fk`)
-    REFERENCES `scholar_warehouse`.`user`(`user_id`)
+    REFERENCES `user`(`user_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   FOREIGN KEY (`school_fk`)
-    REFERENCES `scholar_warehouse`.`school`(`school_id`)
+    REFERENCES `school`(`school_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   FOREIGN KEY (`section_fk`)
-    REFERENCES `scholar_warehouse`.`section`(`section_id`)
+    REFERENCES `section`(`section_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
-ALTER TABLE `scholar_warehouse`.`survey` ADD INDEX (`survey_created_date`);
-ALTER TABLE `scholar_warehouse`.`survey` ADD INDEX (`survey_administer_date`);
+ALTER TABLE `survey` ADD INDEX (`survey_created_date`);
+ALTER TABLE `survey` ADD INDEX (`survey_administer_date`);
 
-CREATE TABLE `scholar_warehouse`.`survey_response` (
+CREATE TABLE `survey_response` (
   `survey_response_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a survey',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key linking to the user table for the responding user',
   `survey_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The FK to the parent survey associated with the response',
@@ -487,12 +466,12 @@ CREATE TABLE `scholar_warehouse`.`survey_response` (
   `survey_response` BLOB DEFAULT NULL COMMENT 'Blob to store the JSON formatted survey response',
   PRIMARY KEY (`survey_response_id`),
   FOREIGN KEY (`student_fk`)
-    REFERENCES `scholar_warehouse`.`student`(`student_user_fk`)
+    REFERENCES `student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   FOREIGN KEY (`survey_fk`)
-    REFERENCES `scholar_warehouse`.`survey`(`survey_id`)
+    REFERENCES `survey`(`survey_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
-ALTER TABLE `scholar_warehouse`.`survey_response` ADD INDEX (`survey_response_date`);
+ALTER TABLE `survey_response` ADD INDEX (`survey_response_date`);

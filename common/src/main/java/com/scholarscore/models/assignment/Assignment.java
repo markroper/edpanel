@@ -34,7 +34,6 @@ import java.util.Objects;
  *
  */
 @Entity(name = HibernateConsts.ASSIGNMENT_TABLE)
-@Table(name = HibernateConsts.ASSIGNMENT_TABLE)
 @DiscriminatorColumn(name= HibernateConsts.ASSIGNMENT_CLASS, discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @SuppressWarnings("serial")
