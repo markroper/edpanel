@@ -83,7 +83,7 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
                 .withGradeFormula(gradeFormula)
                 .withTerm(term)
                 .withCourse(course)
-                .withPersons(persons)
+                .withTeachers(persons)
                 .withEnrolledStudents(enrolledStudents)
                 .withAssignments(assignments)
                 .withStudentSectionGrades(grades)
@@ -102,7 +102,7 @@ public class SectionBuilderUnitTest extends AbstractBuilderUnitTest<Section>{
                 .withSourceSystemId(sourceSystemId);
 
         for(Staff person : persons){
-            sectionOneByOneBuilder.withPerson(person);
+            sectionOneByOneBuilder.withTeacher(person);
 
         }
 

@@ -106,7 +106,7 @@ public class Staff extends Person {
         } else if (isTeacher){
             return UserType.TEACHER;
         } else {
-            return null;
+            return UserType.OTHER_STAFF;
         }
     }
 

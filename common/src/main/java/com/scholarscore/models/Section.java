@@ -24,7 +24,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.IOException;
 import java.io.Serializable;
@@ -413,7 +412,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         protected transient List<Student> enrolledStudents;
         protected transient List<Assignment> assignments;
         protected List<StudentSectionGrade> studentSectionGrades;
-        protected Set<Staff> persons;
+        protected Set<Staff> teachers;
         protected String sourceSystemId;
         protected Integer numberOfTerms;
         protected Map<String, ArrayList<Long>> expression;
@@ -422,7 +421,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             enrolledStudents = Lists.newArrayList();
             assignments = Lists.newArrayList();
             studentSectionGrades = Lists.newArrayList();
-            persons = Sets.newHashSet();
+            teachers = Sets.newHashSet();
         }
 
         public SectionBuilder withNumberOfTerms(final Integer numberOfTerms){
@@ -490,13 +489,13 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             return this;
         }
 
-        public SectionBuilder withPerson(final Staff person){
-            persons.add(person);
+        public SectionBuilder withTeacher(final Staff person){
+            teachers.add(person);
             return this;
         }
 
-        public SectionBuilder withPersons(final Set<Staff> persons){
-            this.persons.addAll(persons);
+        public SectionBuilder withTeachers(final Set<Staff> persons){
+            this.teachers.addAll(persons);
             return this;
         }
 
@@ -521,7 +520,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             section.setCourse(course);
             section.setEnrolledStudents(enrolledStudents);
             section.setAssignments(assignments);
-            section.setTeachers(persons);
+            section.setTeachers(teachers);
             section.setSourceSystemId(sourceSystemId);
             section.setExpression(expression);
 

@@ -35,7 +35,10 @@ public class AdministratorJdbc extends UserBaseJdbc implements AdministratorPers
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Staff> selectAll() {
-        String query = "select a from staff a where a.admin = true";
+        String query = "select a from staff a " +
+                "left join fetch a.homeAddress " +
+                "left join fetch a.contactMethods " +
+                "where a.admin = true";
         return (List<Staff>)hibernateTemplate.find(query);
     }
 
@@ -45,10 +48,18 @@ public class AdministratorJdbc extends UserBaseJdbc implements AdministratorPers
 
     }
 
+    /**
+     * This method is unused in this code as of right now
+     * @param username
+     * @return
+     */
     @Override
     @SuppressWarnings("unchecked")
     public Staff select(String username) {
-        String query = "select a from staff a join a.user u where u.username = :username and a.admin = true";
+        String query = "select a from staff " +
+                "left join fetch a.homeAddress " +
+                "left join fetch a.contactMethods " +
+                "join a.user u where u.username = :username and a.admin = true";
         List<Staff> users = (List<Staff>)hibernateTemplate.findByNamedParam(query, "username", username);
         if (users.size() == 1) {
             return users.get(0);

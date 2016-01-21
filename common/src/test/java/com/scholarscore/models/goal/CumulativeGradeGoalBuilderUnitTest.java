@@ -50,7 +50,7 @@ public class CumulativeGradeGoalBuilderUnitTest extends AbstractBuilderUnitTest<
                 withDesiredValue(desiredValue).
                 withGoalType(goalType).
                 withName(name).
-                withPerson(teacher).
+                withStaff(teacher).
                 build();
 
         return new Object[][]{
