@@ -157,7 +157,12 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         if (null == goalType) {
             this.goalType = mergeFrom.goalType;
         }
-
+        if (null == student) {
+            this.student = mergeFrom.student;
+        }
+        if (null == teacher) {
+            this.teacher = mergeFrom.teacher;
+        }
     }
 
     @Override
