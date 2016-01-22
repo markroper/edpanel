@@ -34,6 +34,9 @@ import com.scholarscore.models.query.expressions.operands.OperandType;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
 import com.scholarscore.models.survey.SurveyQuestionAggregate;
+import com.scholarscore.models.survey.question.SurveyBooleanQuestion;
+import com.scholarscore.models.survey.question.SurveyMultipleChoiceQuestion;
+import com.scholarscore.models.survey.question.SurveyQuestion;
 import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.ui.SectionGradeWithProgression;
 import com.scholarscore.models.user.Administrator;
@@ -479,24 +482,20 @@ public class ModelReflectionTests {
         if (type.isAssignableFrom(Address.class)) { return buildPopulatedObject(Address.class, "postalCode", alt); }
         if (type.isAssignableFrom(MeasureField.class)) { return buildPopulatedObject(MeasureField.class, "field", alt); }
         if (type.isAssignableFrom(DimensionField.class)) { return buildPopulatedObject(DimensionField.class, "field", alt); }
-        if (type.isAssignableFrom(AggregateFunction.class)) { return alt ? AggregateFunction.AVG : AggregateFunction.COUNT; }
         if (type.isAssignableFrom(AggregateMeasure.class)) { return buildPopulatedObject(AggregateMeasure.class, "measure", alt); } 
         if (type.isAssignableFrom(IOperator.class)) { return alt ? ComparisonOperator.EQUAL : ComparisonOperator.NOT_EQUAL; }
-        if (type.isAssignableFrom(BehaviorCategory.class)) { return alt ? BehaviorCategory.DEMERIT : BehaviorCategory.MERIT; }
         if (type.isAssignableFrom(OperandType.class)) { return alt ? OperandType.DIMENSION : OperandType.EXPRESSION; }
-        if (type.isAssignableFrom(Dimension.class)) { return alt ? Dimension.STUDENT : Dimension.TEACHER; }
-        if (type.isAssignableFrom(Gender.class)) { return alt ? Gender.FEMALE : Gender.MALE; }
-        if (type.isAssignableFrom(Measure.class)) { return alt ? Measure.DEMERIT : Measure.MERIT; }
-        if (type.isAssignableFrom(AttendanceStatus.class)) { return alt ? AttendanceStatus.PRESENT : AttendanceStatus.ABSENT; }
-        if (type.isAssignableFrom(ContactType.class)) { return alt ? ContactType.EMAIL : ContactType.PHONE; }
         if (type.isAssignableFrom(ScoreAsOfWeek.class)) { return buildPopulatedObject(ScoreAsOfWeek.class, "score", alt); }
-        if (type.isAssignableFrom(AttendanceTypes.class)) { return alt ? AttendanceTypes.DAILY : AttendanceTypes.SECTION; }
         if (type.isAssignableFrom(JsonAttributes.class)) { return buildPopulatedObject(JsonAttributes.class, "jsonString", alt); }
         if (type.isAssignableFrom(JsonNode.class)) { return new TextNode(alt ? "string1" : "string2"); }
         if (type.isAssignableFrom(Score.class)) { return buildPopulatedObject(Score.class, "comment", alt); }
         if (type.isAssignableFrom(GoalComponent.class)) { return buildPopulatedObject(BehaviorComponent.class, "startDate", alt); }
         if (type.isAssignableFrom(Gpa.class)) { return alt ? new SimpleGpa() : new WeightedGpa();  }
 
+        if (type.isAssignableFrom(SurveyQuestion.class)) { return alt ?
+                buildPopulatedObject(SurveyBooleanQuestion.class, "showAsCheckbox", alt) :
+                buildPopulatedObject(SurveyMultipleChoiceQuestion.class, "choices", alt);
+        }
         if (type.isAssignableFrom(SurveyQuestionAggregate.class)) { return buildPopulatedObject(SurveyQuestionAggregate.class, "respondents", alt); }
         if (type.isAssignableFrom(Notification.class)) { return buildPopulatedObject(Notification.class, "name", alt); }
         if (type.isAssignableFrom(TriggeredNotification.class)) { return buildPopulatedObject(TriggeredNotification.class, "id", alt); }
@@ -523,32 +522,26 @@ public class ModelReflectionTests {
             return new Record(list);
         }
 
-        // if it's one of our classes, just do our best effort to populate it
-        // TODO Jordan: can remove enum declarations above?
+        // if it's in our model package, do our best guess to automatically find a field that can be tweaked to test (in)equality 
         if (type.getPackage().toString().toLowerCase().contains(packageToScan.toLowerCase())) {
-
-            System.out.println("Got to 'best guess' step for type " + type.getSimpleName() + "...");
-            
             if (Modifier.isAbstract(type.getModifiers())) {
-//                System.out.println("Can't best guess on abstract class " + type.getSimpleName());
-                
+                // can't best-guess implementations for interfaces without more work, skip for now
             } else if (type.isEnum()) {
-                // if it's an enum, just take one of the first two enum values
-//                System.out.println("Need to 'best guess' enum type " + type.getSimpleName() + "...");
-                // for this, just grab first/second values from enum type
+                // if it's an enum type we're looking to populate, supply one of the first two enum values
                 boolean firstOne = true;
                 for (T enumConstant : type.getEnumConstants()) {
                     if (alt && firstOne) {  firstOne = false; }
                     else { return enumConstant; }
                 }
             } else {
-//                System.out.println("Here, can try 'best guess' to populate object of type " + type.getSimpleName());
+                // here we have a non-abstract, non-enum class, so try to look at its fields and pick one
+                // that we can fiddle with before testing the resulting object
                 Field field = getTweakableFieldForType(type);
-                String fieldName =  (field == null) ? null : field.getName();
-//                System.out.println("For class " + type.getSimpleName() + ", guessing field " + fieldName);
-//                System.out.println();
-                
-                return buildPopulatedObject(type, fieldName, alt);
+                if (field != null && field.getName() != null) {
+                    return buildPopulatedObject(type, field.getName(), alt);
+                } else {
+                    // failed to get tweakable field for whatever reason -- no fields on object, etc
+                }
             }
         }
         
