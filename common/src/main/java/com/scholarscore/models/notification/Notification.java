@@ -237,8 +237,7 @@ public class Notification {
 
     @Override
     public int hashCode() {
-        return Objects.hash(subscribers, subjects, owner, triggerValue, aggregateFunction,
-                window, measure, createdDate, expiryDate, schoolId, section, assignment, triggerWhenGreaterThan);
+        return Objects.hash(id, name, schoolId, section, assignment, owner, subscribers, subjects, triggerValue, triggerWhenGreaterThan, aggregateFunction, window, measure, createdDate, expiryDate);
     }
 
     @Override
@@ -250,19 +249,20 @@ public class Notification {
             return false;
         }
         final Notification other = (Notification) obj;
-        return Objects.equals(this.subscribers, other.subscribers)
-                && Objects.equals(this.id, other.id)
-                && Objects.equals(this.owner, other.owner)
+        return Objects.equals(this.id, other.id)
+                && Objects.equals(this.name, other.name)
                 && Objects.equals(this.schoolId, other.schoolId)
-                && Objects.equals(this.assignment, other.assignment)
                 && Objects.equals(this.section, other.section)
+                && Objects.equals(this.assignment, other.assignment)
+                && Objects.equals(this.owner, other.owner)
+                && Objects.equals(this.subscribers, other.subscribers)
                 && Objects.equals(this.subjects, other.subjects)
                 && Objects.equals(this.triggerValue, other.triggerValue)
+                && Objects.equals(this.triggerWhenGreaterThan, other.triggerWhenGreaterThan)
                 && Objects.equals(this.aggregateFunction, other.aggregateFunction)
+                && Objects.equals(this.window, other.window)
                 && Objects.equals(this.measure, other.measure)
                 && Objects.equals(this.createdDate, other.createdDate)
-                && Objects.equals(this.expiryDate, other.expiryDate)
-                && Objects.equals(this.triggerWhenGreaterThan, other.triggerWhenGreaterThan)
-                && Objects.equals(this.window, other.window);
+                && Objects.equals(this.expiryDate, other.expiryDate);
     }
 }
