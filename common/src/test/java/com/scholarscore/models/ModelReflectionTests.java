@@ -238,11 +238,26 @@ public class ModelReflectionTests {
     }
 
     private void checkEqualsAndHashCodeForClass(Class clazz) {
-        final Object unmodifiedInstance = buildPopulatedObject(clazz);
-        Field[] fields = clazz.getDeclaredFields();
+        checkEqualsAndHashCodeForClass(clazz, clazz);
+    }
+
+    private void checkEqualsAndHashCodeForClass(Class concreteClass, Class sourceOfFieldsClass) {
     
-        logDebug("*Checking equals and hashcode for " + clazz.getName() + "...");
+        // TODO Jordan: just temporary -- finish refactoring to use concreteClass and sourceOfFieldsClass below 
+        Class<?> clazz = concreteClass;
         
+        boolean sameClass = (concreteClass == sourceOfFieldsClass);
+        
+        final Object unmodifiedInstance = buildPopulatedObject(clazz);
+        Field[] fields = sourceOfFieldsClass.getDeclaredFields();
+        
+        String classDescString = sameClass ? "class " + concreteClass.getSimpleName() 
+                : "class (impl)" + concreteClass.getSimpleName() + " (fields)" + sourceOfFieldsClass.getSimpleName();
+    
+        logDebug("*Checking equals and hashcode for " + classDescString + "...");
+        
+        // for each field in the object under test, make a copy of the object with just that field tweaked.
+        // then check resulting equals/hashcode between them and see what we can discover
         for (Field field : fields) {
             if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
                 // skip static and final fields. our concern is equals() and hashcode() which don't consider these
@@ -298,9 +313,17 @@ public class ModelReflectionTests {
             } catch (InstantiationException ie) {
                 // this is expected to happen if we can't build the object with a no-arg constructor. just move on and pretend nothing happened.
                 return null;
-            }
-                
+            }             
             Field[] fields = clazz.getDeclaredFields();
+            return populateObjectFields(instance, fields, fieldNameToModify);
+        } catch (IllegalAccessException e) {
+            logDebug("IllegalAccessException " + e);
+            return null;
+        }
+    }
+    
+    private <T> T populateObjectFields(T instance, Field[] fields, String fieldNameToModify) {
+        try {
             boolean fieldTweaked = false;
             for (Field field : fields) {
                 if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
@@ -327,12 +350,15 @@ public class ModelReflectionTests {
             }
             // This method can be called without specifying a fieldNameToModify, but if it is specified and the field isn't found, warn the caller!
             if (!fieldTweaked && fieldNameToModify != null) {
-                logDebug("WARNING - object " + instance + " being returned without tweaking field " + fieldNameToModify);
+                // today, this only happens if trying to tweak a field that belongs to a superclass. should be supported.
+//                logDebug("WARNING - object " + instance + " being returned without tweaking field " + fieldNameToModify);
+                System.out.println("WARNING - object " + instance + " being returned without tweaking field " + fieldNameToModify);
+                // TODO Jordan: this could probably be an exception, but should wait until after superclass fields are checked
+                // to enforce this
             }
             return instance;
         } catch (IllegalAccessException e) {
-            logDebug("IllegalAccessException " + e);
-            return null;
+            throw new RuntimeException("IllegalAccessException failed trying to twiddle field " + fieldNameToModify + " -- Reflection tests cannot function");
         }
     }
 
