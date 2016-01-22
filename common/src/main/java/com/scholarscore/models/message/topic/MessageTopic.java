@@ -75,7 +75,7 @@ public abstract class MessageTopic {
     }
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, getFk(), schoolId, getType());
     }
 
     @Override
@@ -87,6 +87,9 @@ public abstract class MessageTopic {
             return false;
         }
         final MessageTopic other = (MessageTopic) obj;
-        return Objects.equals(this.id, other.id) && Objects.equals(this.fk, other.fk) && Objects.equals(this.schoolId, other.schoolId);
+        return Objects.equals(this.id, other.id) 
+                && Objects.equals(this.getFk(), other.getFk()) 
+                && Objects.equals(this.schoolId, other.schoolId)
+                && Objects.equals(this.getType(), other.getType());
     }
 }

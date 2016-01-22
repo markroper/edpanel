@@ -15,6 +15,9 @@ import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.gpa.SimpleGpa;
 import com.scholarscore.models.gpa.WeightedGpa;
 import com.scholarscore.models.gradeformula.GradeFormula;
+import com.scholarscore.models.message.topic.BehaviorTopic;
+import com.scholarscore.models.message.topic.GpaTopic;
+import com.scholarscore.models.message.topic.MessageTopic;
 import com.scholarscore.models.notification.Notification;
 import com.scholarscore.models.notification.TriggeredNotification;
 import com.scholarscore.models.notification.group.NotificationGroup;
@@ -34,6 +37,9 @@ import com.scholarscore.models.query.expressions.operands.OperandType;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
 import com.scholarscore.models.survey.SurveyQuestionAggregate;
+import com.scholarscore.models.survey.answer.BooleanAnswer;
+import com.scholarscore.models.survey.answer.MultipleChoiceAnswer;
+import com.scholarscore.models.survey.answer.QuestionAnswer;
 import com.scholarscore.models.survey.question.SurveyBooleanQuestion;
 import com.scholarscore.models.survey.question.SurveyMultipleChoiceQuestion;
 import com.scholarscore.models.survey.question.SurveyQuestion;
@@ -432,8 +438,13 @@ public class ModelReflectionTests {
         long epochSecondsFirstDate = 1322462400000L;
         long epochSecondsAltDate = 1442462400000L;
         if (type.isAssignableFrom(Date.class)) { return alt ? new Date(epochSecondsAltDate) : new Date(epochSecondsFirstDate); }
-        if (type.isAssignableFrom(LocalDate.class)) { return LocalDateTime.ofEpochSecond((alt ? epochSecondsAltDate : epochSecondsFirstDate), 0, ZoneOffset.UTC).toLocalDate(); }
-
+        
+        if (type.isAssignableFrom(LocalDate.class) || type.isAssignableFrom(LocalDateTime.class)) {
+            LocalDateTime ldt = LocalDateTime.ofEpochSecond((alt ? epochSecondsAltDate : epochSecondsFirstDate), 0, ZoneOffset.UTC);
+            if (type.isAssignableFrom(LocalDate.class)) { return ldt.toLocalDate(); }
+            if (type.isAssignableFrom(LocalDateTime.class)) { return ldt; }
+        }
+        
         if (type.isAssignableFrom(IOperand.class)) { return alt ? new DimensionOperand() : new Expression(); }
 
         // this trick is to simplify definitions of stuff that extends APImodel
@@ -495,6 +506,16 @@ public class ModelReflectionTests {
         if (type.isAssignableFrom(SurveyQuestion.class)) { return alt ?
                 buildPopulatedObject(SurveyBooleanQuestion.class, "showAsCheckbox", alt) :
                 buildPopulatedObject(SurveyMultipleChoiceQuestion.class, "choices", alt);
+        }
+        if (type.isAssignableFrom(QuestionAnswer.class)) {
+            return alt ?
+                    buildPopulatedObject(BooleanAnswer.class, "type", alt) : 
+                    buildPopulatedObject(MultipleChoiceAnswer.class, "type", alt);  
+        }
+        if (type.isAssignableFrom(MessageTopic.class)) {
+            return alt ?
+                    buildPopulatedObject(GpaTopic.class, "id", alt) :
+                    buildPopulatedObject(BehaviorTopic.class, "id", alt);
         }
         if (type.isAssignableFrom(SurveyQuestionAggregate.class)) { return buildPopulatedObject(SurveyQuestionAggregate.class, "respondents", alt); }
         if (type.isAssignableFrom(Notification.class)) { return buildPopulatedObject(Notification.class, "name", alt); }
