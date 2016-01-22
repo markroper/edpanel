@@ -290,18 +290,16 @@ public class ModelReflectionTests {
     
     // ad hoc (saves a bunch of lines in a method below)
     private Object buildPopulatedObject(Class clazz, String fieldNameToModify, boolean doModification) {
-        if (doModification) {
-            return buildPopulatedObject(clazz, fieldNameToModify);
-        } else {
-            return buildPopulatedObject(clazz);
-        }
+        return doModification ? 
+                buildPopulatedObject(clazz, fieldNameToModify) :
+                buildPopulatedObject(clazz);
     }
     
-    private Object buildPopulatedObject(Class clazz) {
+    private Object buildPopulatedObject(Class<?> clazz) {
         return buildPopulatedObject(clazz, null);
     }
     
-    private Object buildPopulatedObject(Class clazz, String fieldNameToModify) { 
+    private <S, T extends S> Object buildPopulatedObject(Class<T> clazz, String fieldNameToModify) { 
         return buildPopulatedObject(clazz, clazz, fieldNameToModify);
     }
 
@@ -321,30 +319,57 @@ public class ModelReflectionTests {
         return buildPopulatedObject(instance, sourceOfFieldsClass, fieldNameToModify);
     }
 
-    // using an already-created instance, provide best-guess values for a list of fields pulled from a specified class 
-    // (the specified class to pull fields from is either the class of the instance or a superclass)
     private <S,T extends S> T buildPopulatedObject(T instance, Class<S> sourceOfFieldsClass, String fieldNameToModify) {
+        return buildPopulatedObject(instance, sourceOfFieldsClass, fieldNameToModify, false);
+    }
+
+        // using an already-created instance, provide best-guess values for a list of fields pulled from a specified class 
+    // (the specified class to pull fields from is either the class of the instance or a superclass)
+    private <S,T extends S> T buildPopulatedObject(T instance, Class<S> sourceOfFieldsClass, String fieldNameToModify, boolean fieldTweaked) {
         
         Field[] fields = sourceOfFieldsClass.getDeclaredFields();
         // although the instance that is returned in successful cases is the same,
         // NULL is returned when a field can't be tweaked. So refactor this.
-        T returnedInstance = populateObjectFields(instance, fields, fieldNameToModify);
-        if (returnedInstance == null) {
+        T returnedInstance = null;
+//        boolean fieldTweaked = false;
+        try {
+            boolean fieldTweakedInFields = populateObjectFields(instance, fields, fieldNameToModify);
+            returnedInstance = instance;
+            fieldTweaked |= fieldTweakedInFields;
+        } catch (CannotSetDefaultException e) {
             // failure to populate field
-            return null;
-        } else {
-            // TODO Jordan: continue populating fields sourced from superclass?
-            Class<?> superclass = sourceOfFieldsClass.getSuperclass();
-            if (superclass.getPackage().toString().toLowerCase().contains(packageToScan.toLowerCase())) {
-                System.out.println("Hit in-package parent class of " + sourceOfFieldsClass + ", superclass " + superclass.getSimpleName());
-            }
-            buildPopulatedObject(concreteClass, superclass, fieldNameToModify);
-            
-            return returnedInstance;
+            returnedInstance = null;
         }
+        // if exception not thrown, we can safely assume defaults have been set for the fields specified
+        
+        // don't try to ascend the hierarchy unless it has gone well up to this point...
+        if (returnedInstance != null) {
+            // TODO Jordan: continue populating fields sourced from superclass?
+            Class<? super S> superclass = sourceOfFieldsClass.getSuperclass();
+            if (superclass.getPackage().toString().toLowerCase().contains(packageToScan.toLowerCase())) {
+//                System.out.println("Hit in-package parent class of " + sourceOfFieldsClass + ", superclass " + superclass.getSimpleName());
+                returnedInstance = buildPopulatedObject(returnedInstance, superclass, fieldNameToModify, fieldTweaked);
+
+                if (returnedInstance == null) {
+                    System.out.println("ERROR populating object when ascending hierarchy... abandoning attempt to populate "
+                            + instance.getClass().getSimpleName() + " fields from superclass " + superclass.getSimpleName() + " and returning instance as-is");
+                    return instance;
+                }
+            } else {
+                // okay, we've gotten as high as we're going to get in the hierarchy. confirm
+                // that the field that we're supposed to tweak has been tweaked, and noisily complain if it hasn't been.
+//                System.out.println("Parent of " + sourceOfFieldsClass + " (" + superclass.getSimpleName() + ") is not in package, done ascending hierarchy...");
+                if (fieldNameToModify != null && !fieldTweaked) {
+                    System.out.println("WARNING - object " + instance + " being returned without tweaking field " + fieldNameToModify);                    
+                }
+            }
+        }
+        return returnedInstance;
     }
     
-    private <T> T populateObjectFields(T instance, Field[] fields, String fieldNameToModify) {
+    private class CannotSetDefaultException extends Exception { }
+    
+    private <T> boolean populateObjectFields(T instance, Field[] fields, String fieldNameToModify) throws CannotSetDefaultException {
         try {
             boolean fieldTweaked = false;
             for (Field field : fields) {
@@ -356,7 +381,9 @@ public class ModelReflectionTests {
                 Object value;
                 if (field.getName().equals(fieldNameToModify)) {
                     value = getAnotherValueForField(field);
-                    fieldTweaked = true;
+                    if (value != null) {
+                        fieldTweaked = true;
+                    }
                 } else {
                     value = getSensibleValueForField(field);
                 }
@@ -365,7 +392,8 @@ public class ModelReflectionTests {
                     fieldsThatNeedDefaults.add(field.toString());
                     numberOfFailedDefaultFieldAttempts++;
                     // if can't get default for any fields, assume the test is screwed for this object (skip it, but keep testing others)
-                    return null;
+//                    return null;
+                    throw new CannotSetDefaultException();
                 }
                 field.setAccessible(true);
                 field.set(instance, value);
@@ -374,11 +402,12 @@ public class ModelReflectionTests {
             if (!fieldTweaked && fieldNameToModify != null) {
                 // today, this only happens if trying to tweak a field that belongs to a superclass. should be supported.
 //                logDebug("WARNING - object " + instance + " being returned without tweaking field " + fieldNameToModify);
-                System.out.println("WARNING - object " + instance + " being returned without tweaking field " + fieldNameToModify);
+//                System.out.println("OBSOLETE INNER WARNING - object " + instance + " being returned without tweaking field " + fieldNameToModify);
                 // TODO Jordan: this could probably be an exception, but should wait until after superclass fields are checked
                 // to enforce this
             }
-            return instance;
+            return fieldTweaked;
+//            return instance;
         } catch (IllegalAccessException e) {
             throw new RuntimeException("IllegalAccessException failed trying to twiddle field " + fieldNameToModify + " -- Reflection tests cannot function");
         }
