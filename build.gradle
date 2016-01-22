@@ -162,7 +162,7 @@ task refillDatabase(type: Exec) {
     commandLine args
 
     doLast {
-        project.liquibaseUpdateSQL.execute()
+        project.liquibaseUpdate.execute()
     }
 }
 
