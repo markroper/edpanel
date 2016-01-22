@@ -301,24 +301,46 @@ public class ModelReflectionTests {
         return buildPopulatedObject(clazz, null);
     }
     
+    private Object buildPopulatedObject(Class clazz, String fieldNameToModify) { 
+        return buildPopulatedObject(clazz, clazz, fieldNameToModify);
+    }
+
     /* 
      * Create a reasonable test object. 
      * If fieldNameToModify is set, this field will be varied from the normal default value typical to this field type.
      */
-    private Object buildPopulatedObject(Class clazz, String fieldNameToModify) {
+    private <S,T extends S> T buildPopulatedObject(Class<T> concreteClass, Class<S> sourceOfFieldsClass, String fieldNameToModify) {
+        T instance;
         try {
-            Object instance;
-            try {
-                instance = clazz.newInstance();
-            } catch (InstantiationException ie) {
-                // this is expected to happen if we can't build the object with a no-arg constructor. just move on and pretend nothing happened.
-                return null;
-            }             
-            Field[] fields = clazz.getDeclaredFields();
-            return populateObjectFields(instance, fields, fieldNameToModify);
-        } catch (IllegalAccessException e) {
-            logDebug("IllegalAccessException " + e);
+            instance = concreteClass.newInstance();
+        } catch (InstantiationException|IllegalAccessException ie) {
+            // this is expected to happen if we can't build the object with a no-arg constructor. just move on and pretend nothing happened.
+            logDebug("InstantiationException|IllegalAccessException " + ie);
             return null;
+        }             
+        return buildPopulatedObject(instance, sourceOfFieldsClass, fieldNameToModify);
+    }
+
+    // using an already-created instance, provide best-guess values for a list of fields pulled from a specified class 
+    // (the specified class to pull fields from is either the class of the instance or a superclass)
+    private <S,T extends S> T buildPopulatedObject(T instance, Class<S> sourceOfFieldsClass, String fieldNameToModify) {
+        
+        Field[] fields = sourceOfFieldsClass.getDeclaredFields();
+        // although the instance that is returned in successful cases is the same,
+        // NULL is returned when a field can't be tweaked. So refactor this.
+        T returnedInstance = populateObjectFields(instance, fields, fieldNameToModify);
+        if (returnedInstance == null) {
+            // failure to populate field
+            return null;
+        } else {
+            // TODO Jordan: continue populating fields sourced from superclass?
+            Class<?> superclass = sourceOfFieldsClass.getSuperclass();
+            if (superclass.getPackage().toString().toLowerCase().contains(packageToScan.toLowerCase())) {
+                System.out.println("Hit in-package parent class of " + sourceOfFieldsClass + ", superclass " + superclass.getSimpleName());
+            }
+            buildPopulatedObject(concreteClass, superclass, fieldNameToModify);
+            
+            return returnedInstance;
         }
     }
     
@@ -334,6 +356,7 @@ public class ModelReflectionTests {
                 Object value;
                 if (field.getName().equals(fieldNameToModify)) {
                     value = getAnotherValueForField(field);
+                    fieldTweaked = true;
                 } else {
                     value = getSensibleValueForField(field);
                 }
@@ -341,12 +364,11 @@ public class ModelReflectionTests {
                 if (value == null) {
                     fieldsThatNeedDefaults.add(field.toString());
                     numberOfFailedDefaultFieldAttempts++;
-                    // if can't get default for any fields, assume the test is screwed for this instance
+                    // if can't get default for any fields, assume the test is screwed for this object (skip it, but keep testing others)
                     return null;
                 }
                 field.setAccessible(true);
                 field.set(instance, value);
-                fieldTweaked = true;
             }
             // This method can be called without specifying a fieldNameToModify, but if it is specified and the field isn't found, warn the caller!
             if (!fieldTweaked && fieldNameToModify != null) {
