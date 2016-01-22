@@ -15,6 +15,11 @@ import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.gpa.SimpleGpa;
 import com.scholarscore.models.gpa.WeightedGpa;
 import com.scholarscore.models.gradeformula.GradeFormula;
+import com.scholarscore.models.notification.Notification;
+import com.scholarscore.models.notification.TriggeredNotification;
+import com.scholarscore.models.notification.group.NotificationGroup;
+import com.scholarscore.models.notification.group.SingleStudent;
+import com.scholarscore.models.notification.group.SingleTeacher;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.AggregateMeasure;
 import com.scholarscore.models.query.Dimension;
@@ -28,6 +33,7 @@ import com.scholarscore.models.query.expressions.operands.IOperand;
 import com.scholarscore.models.query.expressions.operands.OperandType;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
+import com.scholarscore.models.survey.SurveyQuestionAggregate;
 import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.ui.SectionGradeWithProgression;
 import com.scholarscore.models.user.Administrator;
@@ -54,6 +60,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -412,7 +419,7 @@ public class ModelReflectionTests {
     // the reflection tests above will test equality methods of the objects under test -- but this requires being able to get
     // two distinct values for each object type. The below method is responsible for generating two data values
     // (which of the two values is returned  depends on the 'alt' flag) for the type passed in.
-    private Object getValueForType(Class<?> type, boolean alt) {
+    private <T> Object getValueForType(Class<T> type, boolean alt) {
         if (type.isAssignableFrom(Double.class)) { return alt ? 777D : 76D; }
         if (type.isAssignableFrom(Long.class)) { return alt ? 22L : 2L; }
         if (type.isAssignableFrom(String.class)) { return alt ? "anotherStringValue" : "stringValue"; }
@@ -489,6 +496,15 @@ public class ModelReflectionTests {
         if (type.isAssignableFrom(Score.class)) { return buildPopulatedObject(Score.class, "comment", alt); }
         if (type.isAssignableFrom(GoalComponent.class)) { return buildPopulatedObject(BehaviorComponent.class, "startDate", alt); }
         if (type.isAssignableFrom(Gpa.class)) { return alt ? new SimpleGpa() : new WeightedGpa();  }
+
+        if (type.isAssignableFrom(SurveyQuestionAggregate.class)) { return buildPopulatedObject(SurveyQuestionAggregate.class, "respondents", alt); }
+        if (type.isAssignableFrom(Notification.class)) { return buildPopulatedObject(Notification.class, "name", alt); }
+        if (type.isAssignableFrom(TriggeredNotification.class)) { return buildPopulatedObject(TriggeredNotification.class, "id", alt); }
+        if (type.isAssignableFrom(NotificationGroup.class)) { 
+            return alt ? 
+                    buildPopulatedObject(SingleStudent.class, "student", alt) :
+                    buildPopulatedObject(SingleTeacher.class, "teacherId", alt);
+        }
         
         // can the value in type be cast to a 'user' variable?
         if (type.isAssignableFrom(User.class)) { return alt ? new Administrator() : new Student(); }
@@ -507,7 +523,63 @@ public class ModelReflectionTests {
             return new Record(list);
         }
 
+        // if it's one of our classes, just do our best effort to populate it
+        // TODO Jordan: can remove enum declarations above?
+        if (type.getPackage().toString().toLowerCase().contains(packageToScan.toLowerCase())) {
+
+            System.out.println("Got to 'best guess' step for type " + type.getSimpleName() + "...");
+            
+            if (Modifier.isAbstract(type.getModifiers())) {
+//                System.out.println("Can't best guess on abstract class " + type.getSimpleName());
+                
+            } else if (type.isEnum()) {
+                // if it's an enum, just take one of the first two enum values
+//                System.out.println("Need to 'best guess' enum type " + type.getSimpleName() + "...");
+                // for this, just grab first/second values from enum type
+                boolean firstOne = true;
+                for (T enumConstant : type.getEnumConstants()) {
+                    if (alt && firstOne) {  firstOne = false; }
+                    else { return enumConstant; }
+                }
+            } else {
+//                System.out.println("Here, can try 'best guess' to populate object of type " + type.getSimpleName());
+                Field field = getTweakableFieldForType(type);
+                String fieldName =  (field == null) ? null : field.getName();
+//                System.out.println("For class " + type.getSimpleName() + ", guessing field " + fieldName);
+//                System.out.println();
+                
+                return buildPopulatedObject(type, fieldName, alt);
+            }
+        }
+        
         return null;
+    }
+    
+    private Field getTweakableFieldForType(Class<?> type) { 
+//        System.out.println("trying to get tweakable field for type " + type.getSimpleName() + "...");
+        if (type.isEnum()) {
+            throw new RuntimeException("Enum type: should not be trying to tweak field!");
+        }
+        
+        for (Field field : type.getDeclaredFields()) {
+            Class<?> fieldClass = field.getType();
+            // try to return a primative or wrapper first, as it will be less complicated
+            if (fieldClass.isPrimitive() || isWrapperType(fieldClass)) {
+                return field;
+            }
+        }
+
+        for (Field field : type.getDeclaredFields()) {
+            // otherwise, just return the first until we have a better approach.
+            return field;
+        }
+        return null;
+    }
+
+    private static final Set<Class> WRAPPER_TYPES = new HashSet<>(Arrays.asList(
+            Boolean.class, Character.class, Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class, Void.class));
+    public static boolean isWrapperType(Class clazz) {
+        return WRAPPER_TYPES.contains(clazz);
     }
     
     private void logDebug(String msg) { 
