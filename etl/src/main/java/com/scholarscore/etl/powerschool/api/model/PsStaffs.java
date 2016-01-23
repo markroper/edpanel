@@ -25,10 +25,10 @@ public class PsStaffs extends ArrayList<PsStaff> implements ITranslateCollection
 
             Staff entity = new Staff();
             if (staff.isAdmin()) {
-                entity.setAdmin(true);
+                entity.setIsAdmin(true);
             }
             if (staff.isTeacher()){
-                entity.setTeacher(true);
+                entity.setIsTeacher(true);
             }
             
             if (null != staff.phones && null != staff.phones.home_phone) {

@@ -52,6 +52,7 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
 
         teacher1 = new Staff();
         teacher1.setName(localeServiceUtil.generateName());
+        teacher1.setIsTeacher(true);
         teacher1 = teacherValidatingExecutor.create(teacher1, "create base teacher");
 
         student2 = new Student();
@@ -59,6 +60,7 @@ public class SurveyControllerIntegrationTest extends IntegrationBase {
         student2 = studentValidatingExecutor.create(student2, "create base student");
 
         teacher2 = new Staff();
+        teacher2.setIsTeacher(true);
         teacher2.setName(localeServiceUtil.generateName());
         teacher2 = teacherValidatingExecutor.create(teacher2, "create base teacher");
 

@@ -173,7 +173,7 @@ public class SchoolDataFactory {
         admin1.setPassword("admin");
         admin1.setEnabled(true);
         admin1.setCurrentSchoolId(currentSchoolId);
-        admin1.setAdmin(true);
+        admin1.setIsAdmin(true);
         admins.add(admin1);
         return admins;
     }
@@ -188,15 +188,15 @@ public class SchoolDataFactory {
         Staff teacher1 = new Staff();
         teacher1.setName("Ms. Doe");
         teacher1.setCurrentSchoolId(currentSchoolId);
-        teacher1.setTeacher(true);
+        teacher1.setIsTeacher(true);
         Staff teacher2 = new Staff();
         teacher2.setName("Mr. Smith");
         teacher2.setCurrentSchoolId(currentSchoolId);
-        teacher2.setTeacher(true);
+        teacher2.setIsTeacher(true);
         Staff teacher3 = new Staff();
         teacher3.setName("Mrs. Matthews");
         teacher3.setCurrentSchoolId(currentSchoolId);
-        teacher3.setTeacher(true);
+        teacher3.setIsTeacher(true);
         teachers.add(teacher1);
         teachers.add(teacher2);
         teachers.add(teacher3);
@@ -841,7 +841,7 @@ public class SchoolDataFactory {
     }
 
     public static List<Notification> generateNotifications(
-            School school, List<Student> students, List<Teacher> teachers, List<Section> sections) {
+            School school, List<Student> students, List<Staff> teachers, List<Section> sections) {
         List<Notification> notifications = new ArrayList<>();
 
         Notification teacherStudentGpa = new Notification();

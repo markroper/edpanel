@@ -44,6 +44,7 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
         
         teacher = new Staff();
         teacher.setName("Mr. Jones");
+        teacher.setIsTeacher(true);
         teacher = teacherValidatingExecutor.create(teacher, "Create a base teacher");
         
         student = new Student();

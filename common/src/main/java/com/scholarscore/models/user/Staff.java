@@ -41,21 +41,21 @@ public class Staff extends Person {
 
     @Column(name = HibernateConsts.STAFF_IS_ADMIN)
     @Type(type = "org.hibernate.type.NumericBooleanType")
-    public boolean isAdmin() {
+    public boolean getIsAdmin() {
         return isAdmin;
     }
 
-    public void setAdmin(boolean admin) {
+    public void setIsAdmin(boolean admin) {
         isAdmin = admin;
     }
 
     @Column(name = HibernateConsts.STAFF_IS_TEACHER)
     @Type(type = "org.hibernate.type.NumericBooleanType")
-    public boolean isTeacher() {
+    public boolean getIsTeacher() {
         return isTeacher;
     }
 
-    public void setTeacher(boolean teacher) {
+    public void setIsTeacher(boolean teacher) {
         isTeacher = teacher;
     }
 
@@ -107,6 +107,20 @@ public class Staff extends Person {
             return UserType.TEACHER;
         } else {
             return UserType.OTHER_STAFF;
+        }
+    }
+
+    @Override
+    public void mergePropertiesIfNull(User mergeFrom) {
+        super.mergePropertiesIfNull(mergeFrom);
+        if (mergeFrom instanceof Staff) {
+            if(!isAdmin) {
+                this.isAdmin = ((Staff) mergeFrom).isAdmin;
+            }
+            if(!isTeacher) {
+                this.isAdmin = ((Staff) mergeFrom).isTeacher;
+            }
+
         }
     }
 
@@ -178,8 +192,8 @@ public class Staff extends Person {
             staff.setSourceSystemId(sourceSystemId);
             staff.setHomeAddress(homeAddress);
             staff.setCurrentSchoolId(currentSchoolId);
-            staff.setAdmin(isAdmin);
-            staff.setTeacher(isTeacher);
+            staff.setIsAdmin(isAdmin);
+            staff.setIsTeacher(isTeacher);
             return staff;
         }
 

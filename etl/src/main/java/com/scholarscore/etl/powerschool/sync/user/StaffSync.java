@@ -93,10 +93,10 @@ public class StaffSync implements ISync<Person> {
                 ((Staff) sourceUser).setCurrentSchoolId(school.getId());
                 User created = null;
                 try {
-                    if(((Staff) sourceUser).isAdmin()) {
+                    if(((Staff) sourceUser).getIsAdmin()) {
                         created = edPanel.createAdministrator((Staff)sourceUser);
 
-                    } else if (((Staff)sourceUser).isTeacher()) {
+                    } else if (((Staff)sourceUser).getIsTeacher()) {
                         created = edPanel.createTeacher((Staff)sourceUser);
                     }
                     else {

@@ -72,6 +72,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         student = studentValidatingExecutor.create(student, "create base student");
 
         teacher = new Staff();
+        teacher.setIsTeacher(true);
         teacher.setName(localeServiceUtil.generateName());
         teacher = teacherValidatingExecutor.create(teacher, "create base teacher");
 
