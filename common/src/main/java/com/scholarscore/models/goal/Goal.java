@@ -62,7 +62,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         this.desiredValue = goal.desiredValue;
         this.calculatedValue = goal.calculatedValue;
         this.approved = goal.approved;
-        this.goalType = goal.goalType;
+        this.setGoalType(goal.goalType);
     }
 
     @Id
@@ -155,7 +155,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
             this.approved = mergeFrom.approved;
         }
         if (null == goalType) {
-            this.goalType = mergeFrom.goalType;
+            setGoalType(mergeFrom.goalType);
         }
         if (null == student) {
             this.student = mergeFrom.student;

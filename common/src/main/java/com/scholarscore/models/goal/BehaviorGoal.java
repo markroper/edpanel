@@ -58,7 +58,12 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
-
+    
+    @Override
+    public void setGoalType(GoalType goalType) {
+        // don't allow the parent class goalType to be set to anything besides BEHAVIOR
+        super.setGoalType(GoalType.BEHAVIOR);
+    }
 
     @Column(name = HibernateConsts.BEHAVIOR_GOAL_CATEGORY)
     @Enumerated(EnumType.STRING)
