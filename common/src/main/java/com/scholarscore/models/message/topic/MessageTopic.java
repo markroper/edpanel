@@ -66,7 +66,7 @@ public abstract class MessageTopic {
     @Transient
     public abstract Long getFk();
 
-    public void setFk(Long fk) {}
+    public void setFk(Long fk) { this.fk = fk; }
 
     @Transient
     public abstract TopicType getType();
