@@ -240,13 +240,14 @@ public class ModelReflectionTests {
     }
 
     private void checkEqualsAndHashCodeForClass(Class clazz) {
-        checkEqualsAndHashCodeForClass(clazz, clazz);
-    }
-
-    private void checkEqualsAndHashCodeForClass(Class concreteClass, Class sourceOfFieldsClass) {
+//        checkEqualsAndHashCodeForClass(clazz, clazz);
+//    }
+//
+//    private void checkEqualsAndHashCodeForClass(Class concreteClass, Class sourceOfFieldsClass) {
     
         // TODO Jordan: just temporary -- finish refactoring to use concreteClass and sourceOfFieldsClass below 
-        Class<?> clazz = concreteClass;
+        Class<?> concreteClass = clazz;
+        Class<?> sourceOfFieldsClass = clazz;
         
         boolean sameClass = (concreteClass == sourceOfFieldsClass);
         
@@ -350,15 +351,14 @@ public class ModelReflectionTests {
         
         // don't try to ascend the hierarchy unless it has gone well up to this point...
         if (returnedInstance != null) {
-            // TODO Jordan: continue populating fields sourced from superclass?
             Class<? super S> superclass = sourceOfFieldsClass.getSuperclass();
             if (superclass.getPackage().toString().toLowerCase().contains(packageToScan.toLowerCase())) {
 //                System.out.println("Hit in-package parent class of " + sourceOfFieldsClass + ", superclass " + superclass.getSimpleName());
                 returnedInstance = buildPopulatedObject(returnedInstance, superclass, fieldNameToModify, fieldTweaked);
 
                 if (returnedInstance == null) {
-                    System.out.println("ERROR populating object when ascending hierarchy... abandoning attempt to populate "
-                            + instance.getClass().getSimpleName() + " fields from superclass " + superclass.getSimpleName() + " and returning instance as-is");
+//                    System.out.println("ERROR populating object when ascending hierarchy... abandoning attempt to populate "
+//                            + instance.getClass().getSimpleName() + " fields from superclass " + superclass.getSimpleName() + " and returning instance as-is");
                     return instance;
                 }
             } else {
@@ -399,6 +399,7 @@ public class ModelReflectionTests {
                 }
 
                 if (value == null) {
+                    System.out.println("Adding class... " + field.toString());
                     fieldsThatNeedDefaults.add(field.toString());
                     numberOfFailedDefaultFieldAttempts++;
                     // if can't get default for any fields, assume the test is screwed for this object (skip it, but keep testing others)
@@ -468,7 +469,11 @@ public class ModelReflectionTests {
     }
 
     private Object getSensibleValueForField(Field field) {
-        return getValueForField(field.getGenericType(), false);
+        Object obj = getValueForField(field.getGenericType(), false);
+        if (field.getName().equals("question") && field.getType().equals(SurveyQuestion.class)) {
+            System.out.println("Field class: " + field.getType() +  "(generic type:" + field.getGenericType() + ") returning " + obj);
+        }
+        return obj;
     }
 
     private Object getAnotherValueForField(Field field) {
@@ -512,7 +517,9 @@ public class ModelReflectionTests {
             stp = new MutablePairToPopulate();
         } else if (type.isAssignableFrom(ArrayList.class)) {
             stp = new ArrayListToPopulate();
-        }
+        } else if (type.isAssignableFrom(List.class)) {
+            stp = new ArrayListToPopulate();
+        }   
 
         if (stp != null) {
             // okay, we have a match on a type of collection defined above.
@@ -526,15 +533,24 @@ public class ModelReflectionTests {
                 for (Type actualInnerTypeArg : actualInnerTypeArgs) {
                     // for each of the parameter types (e.g. ArrayList<Integer, String> -- first would be integer, then string)
                     // dive deeper and create an instance of the expected type...
-                    typedValuesToPopulate[index++] = getValueForField(actualInnerTypeArg, alt);
+                    Object value = getValueForField(actualInnerTypeArg, alt);
+                    if (value == null) {
+//                        System.out.println("Got null value trying to get type "  + actualInnerTypeArg);
+//                        Class<?> genericClass2 = actualInnerTypeArg.getClass();
+//                        System.out.println("ActualInnerTypeArg.getClass(): " + genericClass2);
+                        value = new Object();
+                    }
+                    typedValuesToPopulate[index++] = value;
                 }
                 Object populatedCollection = null;
                 try {
                     // okay, now build whatever kind of collection the object is expecting
                     populatedCollection = stp.validateAndPopulate(typedValuesToPopulate);
                 } catch (NoDefaultValueException re) {
+                    System.out.println("NoDefaultValueException...");
                     for (int i = 0; i < actualInnerTypeArgs.length; i++) {
                         if (typedValuesToPopulate[i] == null) {
+//                            System.out.println("Adding class(2)... " + actualInnerTypeArgs[i].toString());
                             fieldsThatNeedDefaults.add(actualInnerTypeArgs[i].toString());
                             numberOfFailedDefaultFieldAttempts++;
                         }
@@ -544,8 +560,22 @@ public class ModelReflectionTests {
             } else {
                 // TODO: at this point, we have a collection without any generic specification, 
                 // which we are not handling (we don't use this anywhere in the model classes, apparently?)
+//                System.out.println("!! -- Here, we are apparently not handling generic collections.");
+//                System.out.println("!! -- Generic class: " + genericClass);
+//                System.out.println("!! -- STP: " + stp);
+//                System.out.println("!! -- Type: " + type);
+//                System.out.println("ParameterizedType.class.isAssignableFrom(genericClass): " + ParameterizedType.class.isAssignableFrom(genericClass));
+//                System.out.println();
+
+                Object[] typedValuesToPopulate = new Object[stp.numberOfArguments()];
+                for (int i = 0; i < stp.numberOfArguments(); i++) {
+                    typedValuesToPopulate[i] = new Object();
+                }
+                Object populatedCollection = stp.validateAndPopulate(typedValuesToPopulate);
+                return populatedCollection;
             }
         }
+        
         
         return getValueForType(type, alt);
     }
@@ -731,6 +761,7 @@ public class ModelReflectionTests {
 
     private interface StructureToPopulate {
         Object validateAndPopulate(Object[] arguments);
+        int numberOfArguments();
     }
 
     private static abstract class BaseStructureToPopulate implements StructureToPopulate {
