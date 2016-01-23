@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <changeSet author="mark" id="changelog-1.1-change1">
+        <comment>XML comments won't be persisted, include any relevant comments in comment tags like this</comment>
+        <!-- NOTIFICATION_GROUP-->
+        <createTable tableName="notification_group">
+            <column name="notification_group_id"
+                    type="bigint unsigned"
+                    remarks="'Primary key identity column for a notification group"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="notification_group_type"
+                    type="varchar(64)"
+                    remarks="Serialized NotificationGroupType, Hibernate discriminator column">
+                <constraints nullable="false"/>
+            </column>
+            <column name="student_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key linking to the student table for owning student, if any">
+            </column>
+            <column name="teacher_fk" type="bigint unsigned" remarks="Foreign key linking to the teacher table for owning teacher, if any">
+            </column>
+            <column name="administrator_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key linking to the administrator table for owning administrator, if any">
+            </column>
+            <column name="section_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key linking to the section table for subject section, if any">
+            </column>
+            <column name="notification_group_student_filter"
+                    type="blob"
+                    remarks="JSON formatter FilteredStudents values">
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="notification_group"
+                                 baseColumnNames="student_fk"
+                                 constraintName="notification_group$student_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="student_user_fk"
+                                 referencedTableName="student"/>
+        <addForeignKeyConstraint baseTableName="notification_group"
+                                 baseColumnNames="teacher_fk"
+                                 constraintName="notification_group$teacher_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="teacher_user_fk"
+                                 referencedTableName="teacher"/>
+        <addForeignKeyConstraint baseTableName="notification_group"
+                                 baseColumnNames="administrator_fk"
+                                 constraintName="notification_group$administrator_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="administrator_user_fk"
+                                 referencedTableName="administrator"/>
+        <addForeignKeyConstraint baseTableName="notification_group"
+                                 baseColumnNames="section_fk"
+                                 constraintName="notification_group$section_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="section_id"
+                                 referencedTableName="section"/>
+        <!-- NOTIFICATION -->
+        <createTable tableName="notification">
+            <column name="notification_id"
+                    type="bigint unsigned"
+                    remarks="'Primary key identity column for a notification"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="notification_name"
+                    type="varchar(256)"
+                    remarks="Human readable display name for the notification">
+                <constraints nullable="true"/>
+            </column>
+            <column name="school_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key to the school table">
+            </column>
+            <column name="section_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key to the section table, if any">
+            </column>
+            <column name="assignment_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key linking to the assignment table, if any">
+            </column>
+            <column name="user_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key users table indicating the creator of the notification">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owning_group_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key linking to the student table for owning student, if any">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subject_group_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key linking to the student table for subject student, if any">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_trigger_greater_than"
+                    type="bit(1)"
+                    remarks="Trigger greater than flag">
+            </column>
+            <column name="notification_trigger"
+                    type="double"
+                    remarks="The value at which the notification is triggered">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_aggregate_function"
+                    type="varchar(256)"
+                    remarks="SUM, AVG, STD_DEV, and so on">
+            </column>
+            <column name="notification_window"
+                    type="blob"
+                    remarks="Day, week, month combined with flag for percent change vs. value trigger">
+            </column>
+            <column name="notification_measure"
+                    type="varchar(64)"
+                    remarks="GPA, SECTION_GRADE, SUSPENSION, etc">
+            </column>
+            <column name="notification_created_date"
+                    type="date"
+                    remarks="The date the notification was created">
+            </column>
+            <column name="notification_expiry_date"
+                    type="date"
+                    remarks="The date the notification expires">
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="notification"
+                                 baseColumnNames="school_fk"
+                                 constraintName="notification$school_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="school_id"
+                                 referencedTableName="school"/>
+        <addForeignKeyConstraint baseTableName="notification"
+                                 baseColumnNames="section_fk"
+                                 constraintName="notificationp$section_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="section_id"
+                                 referencedTableName="section"/>
+        <addForeignKeyConstraint baseTableName="notification"
+                                 baseColumnNames="assignment_fk"
+                                 constraintName="notification$assignment_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="assignment_id"
+                                 referencedTableName="assignment"/>
+        <addForeignKeyConstraint baseTableName="notification"
+                                 baseColumnNames="user_fk"
+                                 constraintName="notification$user_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="user"/>
+        <addForeignKeyConstraint baseTableName="notification"
+                                 baseColumnNames="owning_group_fk"
+                                 constraintName="notificationp$owning_group_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="notification_group_id"
+                                 referencedTableName="notification_group"/>
+        <addForeignKeyConstraint baseTableName="notification"
+                                 baseColumnNames="subject_group_fk"
+                                 constraintName="notification$subject_group_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="notification_group_id"
+                                 referencedTableName="notification_group"/>
+        <!-- TRIGGERED_NOTIFICATION -->
+        <createTable tableName="triggered_notification">
+            <column name="triggered_notification_id"
+                    type="bigint unsigned"
+                    remarks="'Primary key identity column for a triggered notification"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="user_fk"
+                    type="bigint unsigned"
+                    remarks="The user to be alerted about the notification being triggered">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subject_user_fk"
+                    type="bigint unsigned"
+                    remarks="The FK to the specific subject userid, if any">
+            </column>
+            <column name="notification_fk"
+                    type="bigint unsigned"
+                    remarks="Foriegn key to the notification table, required">
+            </column>
+            <column name="triggered_notification_date"
+                    type="date"
+                    remarks="The date the notification was triggered">
+                <constraints nullable="false"/>
+            </column>
+            <column name="triggered_notification_active"
+                    type="bit(1)"
+                    remarks="True if the triggered notification is active, otherwise false">
+            </column>
+            <column name="triggered_notification_value_when_triggered"
+                    type="double"
+                    remarks="The value that triggered the notification">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint columnNames="user_fk, subject_user_fk, notification_fk"
+                             constraintName="quniq$user$subject$notification"
+                             tableName="triggered_notification"/>
+        <createIndex indexName="triggered_notification$active"
+                     tableName="triggered_notification"
+                     unique="false">
+            <column name="triggered_notification_active" type="bit(1)"/>
+        </createIndex>
+        <addForeignKeyConstraint baseTableName="triggered_notification"
+                                 baseColumnNames="notification_fk"
+                                 constraintName="triggered_notification$notification_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="notification_id"
+                                 referencedTableName="notification"/>
+        <addForeignKeyConstraint baseTableName="triggered_notification"
+                                 baseColumnNames="user_fk"
+                                 constraintName="triggered_notification$user_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="user"/>
+        <addForeignKeyConstraint baseTableName="triggered_notification"
+                                 baseColumnNames="subject_user_fk"
+                                 constraintName="triggered_notification$subject_user_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="user"/>
+        <!-- MESSAGE_TOPIC -->
+        <createTable tableName="message_topic">
+            <column name="message_topic_id"
+                    type="bigint unsigned"
+                    remarks="'Primary key identity column for a message topic"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="school_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key to the school table">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message_topic_type"
+                    type="varchar(256)"
+                    remarks="Hibernate column used to discriminate between subclasses">
+                <constraints nullable="false"/>
+            </column>
+            <column name="student_assignment_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key to the student assignment table, if any">
+            </column>
+            <column name="behavior_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key to the behavior table, if any">
+            </column>
+            <column name="gpa_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key to the GPA table, if any">
+            </column>
+            <column name="notification_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key to the notification table, if any">
+            </column>
+            <column name="student_section_grade_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key to the section grade table, if any">
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="message_topic"
+                                 baseColumnNames="school_fk"
+                                 constraintName="message_topic$school_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="school_id"
+                                 referencedTableName="school"/>
+        <addForeignKeyConstraint baseTableName="message_topic"
+                                 baseColumnNames="student_assignment_fk"
+                                 constraintName="message_topic$student_assignment_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="student_assignment_id"
+                                 referencedTableName="student_assignment"/>
+        <addForeignKeyConstraint baseTableName="message_topic"
+                                 baseColumnNames="behavior_fk"
+                                 constraintName="message_topic$behavior_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="behavior_id"
+                                 referencedTableName="behavior"/>
+        <addForeignKeyConstraint baseTableName="message_topic"
+                                 baseColumnNames="gpa_fk"
+                                 constraintName="message_topic$gpa_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="gpa_id"
+                                 referencedTableName="gpa"/>
+        <addForeignKeyConstraint baseTableName="message_topic"
+                                 baseColumnNames="notification_fk"
+                                 constraintName="message_topic$notification_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="notification_id"
+                                 referencedTableName="notification"/>
+        <addForeignKeyConstraint baseTableName="message_topic"
+                                 baseColumnNames="student_section_grade_fk"
+                                 constraintName="message_topic$student_section_grade_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="student_section_grade_id"
+                                 referencedTableName="student_section_grade"/>
+        <!-- MESSAGE_THREAD -->
+        <createTable tableName="message_thread">
+            <column name="message_thread_id"
+                    type="bigint unsigned"
+                    remarks="'Primary key identity column for a message thread"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="message_topic_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key to the message topic table, if any">
+            </column>
+        </createTable>
+        <!-- MESSAGE_THREAD_PARTICIPANT -->
+        <createTable tableName="message_thread_participant">
+            <column name="message_thread_fk"
+                    type="bigint unsigned"
+                    remarks="FK to the thread">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_fk"
+                    type="bigint unsigned"
+                    remarks="Foreign key to the user table, represents a participant in the thread">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="message_thread_participant"
+                                 baseColumnNames="message_thread_fk"
+                                 constraintName="message_thread_participant$message_thread_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="message_thread_id"
+                                 referencedTableName="message_thread"/>
+        <addForeignKeyConstraint baseTableName="message_thread_participant"
+                                 baseColumnNames="user_fk"
+                                 constraintName="message_thread_participant$user_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="user"/>
+        <addPrimaryKey columnNames="message_thread_fk, user_fk"
+                       constraintName="message_thread_participant_pk"
+                       tableName="message_thread_participant"/>
+        <!-- MESSAGE_THREAD_PARTICIPANT -->
+        <createTable tableName="message">
+            <column name="message_id"
+                    type="bigint unsigned"
+                    remarks="'Primary key identity column for a message"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="message_thread_fk"
+                    type="bigint unsigned"
+                    remarks="FK to the thread, required">
+            </column>
+            <column name="message_sent"
+                    type="datetime"
+                    remarks="The date time that the message was sent">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message_body"
+                    type="blob"
+                    remarks="The human readable body of the message">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_fk"
+                    type="bigint unsigned"
+                    remarks="The user who sent the message (may no longer be a participant in the thread)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="message"
+                                 baseColumnNames="message_thread_fk"
+                                 constraintName="message$message_thread_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="message_thread_id"
+                                 referencedTableName="message_thread"/>
+        <addForeignKeyConstraint baseTableName="message"
+                                 baseColumnNames="user_fk"
+                                 constraintName="message$user_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="user"/>
+        <!-- MESSAGE_READ_STATE -->
+        <createTable tableName="message_read_state">
+            <column name="message_fk"
+                    type="bigint unsigned"
+                    remarks="FK to the thread, required">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message_read_state_on"
+                    type="datetime"
+                    remarks="The date time that the message was sent">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_fk"
+                    type="bigint unsigned"
+                    remarks="The user who sent the message (may no longer be a participant in the thread)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="message_read_state"
+                                 baseColumnNames="message_fk"
+                                 constraintName="message_read_state$message_thread_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="message_id"
+                                 referencedTableName="message"/>
+        <addForeignKeyConstraint baseTableName="message_read_state"
+                                 baseColumnNames="user_fk"
+                                 constraintName="message_read_state$user_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="user"/>
+        <addPrimaryKey columnNames="message_fk, user_fk"
+                       constraintName="message_read_state_pk"
+                       tableName="message_read_state"/>
+    </changeSet>
+</databaseChangeLog>

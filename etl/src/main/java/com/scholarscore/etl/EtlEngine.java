@@ -115,6 +115,17 @@ public class EtlEngine implements IEtlEngine {
         this.dailyAbsenceTrigger = dailyAbsenceTrigger;
     }
 
+    public void triggerNotificationEvaluation() {
+        for(Map.Entry<Long, School> schoolEntry: schools.entrySet()) {
+            try {
+                edPanel.triggerNotificationEvaluation(schoolEntry.getValue().getId());
+            } catch(HttpClientException e) {
+                LOGGER.warn("failed to execute notification evaluation for school with ID: " +
+                        schoolEntry.getValue().getId() + e.getMessage());
+            }
+        }
+    }
+
     @Override
     public SyncResult syncDistrict(EtlSettings settings) {
         this.syncCutoff = LocalDate.now().minusYears(1l);

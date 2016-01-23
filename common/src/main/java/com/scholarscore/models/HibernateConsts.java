@@ -45,6 +45,7 @@ public class HibernateConsts {
     public static final String STUDENT_ASSIGNMENT_EXEMPT = "student_assignment_exempt";
     public static final String STUDENT_SOURCE_SYSTEM_USER_ID = "student_source_system_user_id";
     public static final String ASSIGNMENT_FK = "assignment_fk";
+    public static final String STUDENT_ASSIGNMENT_FK = "student_assignment_fk";
     
     //Behavior constants
     public static final String BEHAVIOR_TABLE = "behavior";
@@ -58,12 +59,13 @@ public class HibernateConsts {
     public static final String BEHAVIOR_POINT_VALUE = "point_value";
     public static final String BEHAVIOR_ROSTER = "roster";
     public static final String USER_FK = "user_fk";
+    public static final String BEHAVIOR_FK = "behavior_fk";
     
     // the following column names are used in multiple places in different tables
     public static final String STUDENT_FK = "student_fk";
     public static final String TEACHER_FK = "teacher_fk";
     public static final String STAFF_FK = "staff_fk";
-
+    public static final String ADMINISTRATOR_FK = "administrator_fk";
     
     // these aren't defined columns in the DB, but are used by the SQL statements
     // as labels for addressing the calculated columns used by prepScore
@@ -134,6 +136,7 @@ public class HibernateConsts {
     public static final String STUDENT_SECTION_GRADE_COMPLETE = "complete";
     public static final String STUDENT_SECTION_GRADE_GRADE = "grade";
     public static final String STUDENT_SECTION_GRADE_TERM_GRADES = "term_grades";
+    public static final String STUDENT_SECTION_GRADE_FK = "student_section_grade_fk";
     
     //Teacher constants
     public static final String TEACHER_TABLE = "teacher";
@@ -253,4 +256,52 @@ public class HibernateConsts {
     public static final String SURVEY_RESPONSE_ID = "survey_response_id";
     public static final String SURVEY_RESPONSE_DATE = "survey_response_date";
     public static final String SURVEY_RESPONSE = "survey_response";
+
+    //Notifications
+    public static final String NOTIFICATION_TABLE = "notification";
+    public static final String NOTIFICATION_ID = "notification_id";
+    public static final String NOTIFICATION_NAME = "notification_name";
+    public static final String NOTIFICATION_SUBSCRIBERS_FK = "owning_group_fk";
+    public static final String NOTIFICATION_SUBJECTS_FK = "subject_group_fk";
+    public static final String NOTIFICATION_TRIGGER = "notification_trigger";
+    public static final String NOTIFICATION_AGG_FUNCTION = "notification_aggregate_function";
+    public static final String NOTIFICATION_WINDOW = "notification_window";
+    public static final String NOTIFICATION_MEASURE = "notification_measure";
+    public static final String NOTIFICATION_CREATED_DATE = "notification_created_date";
+    public static final String NOTIFICATION_EXPIRY_DATE = "notification_expiry_date";
+    public static final String NOTIFICATION_TRIGGER_GREATER_THAN = "notification_trigger_greater_than";
+
+    public static final String NOTIFICATION_GROUP = "notification_group";
+    public static final String NOTIFICATION_GROUP_ID = "notification_group_id";
+    public static final String NOTIFICATION_GROUP_TYPE = "notification_group_type";
+    public static final String NOTIFICATION_GROUP_FILTER = "notification_group_student_filter";
+
+    public static final String TRIGGERED_NOTIFICATION_TABLE = "triggered_notification";
+    public static final String TRIGGERED_NOTIFICATION_ID = "triggered_notification_id";
+    public static final String TRIGGERED_NOTIFICATION_DATE = "triggered_notification_date";
+    public static final String TRIGGERED_NOTIFICATION_ACTIVE = "triggered_notification_active";
+    public static final String TRIGGERED_NOTIFICATION_VALUE_WHEN_TRIGGERED = "triggered_notification_value_when_triggered";
+    public static final String NOTIFICATION_FK = "notification_fk";
+    public static final String SUBJECT_USER_FK = "subject_user_fk";
+
+    //Messages
+    public static final String MESSAGE_TABLE = "message";
+    public static final String MESSAGE_ID = "message_id";
+    public static final String MESSAGE_FK = "message_fk";
+    public static final String MESSAGE_SENT = "message_sent";
+    public static final String MESSAGE_BODY = "message_body";
+
+    public static final String MESSAGE_THREAD_TABLE = "message_thread";
+    public static final String MESSAGE_THREAD_FK = "message_thread_fk";
+    public static final String MESSAGE_THREAD_ID = "message_thread_id";
+
+    public static final String MESSAGE_THREAD_PARTICIPANT_TABLE = "message_thread_participant";
+
+    public static final String MESSAGE_READ_STATE_TABLE = "message_read_state";
+    public static final String MESSAGE_READ_STATE_ON = "message_read_state_on";
+
+    public static final String MESSAGE_TOPIC_TABLE = "message_topic";
+    public static final String MESSAGE_TOPIC_ID = "message_topic_id";
+    public static final String MESSAGE_TOPIC_TYPE = "message_topic_type";
+    public static final String MESSAGE_TOPIC_FK = "message_topic_fk";
 }

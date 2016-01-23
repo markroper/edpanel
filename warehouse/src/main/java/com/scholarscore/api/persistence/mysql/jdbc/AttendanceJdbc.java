@@ -17,6 +17,14 @@ import java.util.List;
 
 @Transactional
 public class AttendanceJdbc implements AttendancePersistence {
+    //force the ugly joins all in one SQL statement via HQL's JOIN FETCH.  This prevents the M * N query problem :)
+    private static final String ATTENDANCE_HQL = "from attendance a " +
+        "join fetch a.schoolDay d join fetch d.school s left join fetch s.address add " +
+        "join fetch a.student st left join fetch st.homeAddress left join fetch st.mailingAddress left join fetch st.contactMethods " +
+        "left join fetch a.section sect left join fetch sect.term t left join fetch t.schoolYear y left join fetch y.school sch left join fetch sch.address " +
+        "left join fetch sect.course course left join fetch course.school cSch left join fetch cSch.address " +
+        "left join fetch sect.teachers teachers left join fetch teachers.contactMethods left join fetch teachers.homeAddress";
+
     @Autowired
     private HibernateTemplate hibernateTemplate;
     private EntityPersistence<Term> termPersistence;
@@ -87,8 +95,20 @@ public class AttendanceJdbc implements AttendancePersistence {
         String[] paramNames = new String[] { "schoolId", "studentId" }; 
         Object[] paramValues = new Object[]{ schoolId, studentId };
         return (Collection<Attendance>)hibernateTemplate.findByNamedParam(
-                "from attendance a where a.schoolDay.school.id = :schoolId and a.student.id = :studentId", 
+                ATTENDANCE_HQL + " where a.schoolDay.school.id = :schoolId and a.student.id = :studentId",
                 paramNames, 
+                paramValues);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection<Attendance> selectAllAttendance(Long schoolId, List<Long> studentIds, LocalDate start, LocalDate end) {
+        String[] paramNames = new String[] { "schoolId", "studentIds", "startDate", "endDate" };
+        Object[] paramValues = new Object[]{ schoolId, studentIds, start, end };
+        return (Collection<Attendance>)hibernateTemplate.findByNamedParam(
+                ATTENDANCE_HQL + " where a.schoolDay.school.id = :schoolId and a.student.id in (:studentIds) and " +
+                    "a.schoolDay.date >= :startDate and a.schoolDay.date <= :endDate",
+                paramNames,
                 paramValues);
     }
 
@@ -99,7 +119,7 @@ public class AttendanceJdbc implements AttendancePersistence {
         String[] paramNames = new String[] { "schoolId", "studentId", "sectionId"};
         Object[] paramValues = new Object[]{ schoolId, studentId, sectionId};
         return (Collection<Attendance>)hibernateTemplate.findByNamedParam(
-                "from attendance a where a.schoolDay.school.id = :schoolId and a.student.id = :studentId" +
+                ATTENDANCE_HQL + " where a.schoolDay.school.id = :schoolId and a.student.id = :studentId" +
                         " and a.section.id = :sectionId",
                 paramNames,
                 paramValues);
@@ -119,7 +139,7 @@ public class AttendanceJdbc implements AttendancePersistence {
         }
         Object[] paramValues = new Object[]{ schoolId, studentId, startDate, endDate };
         return (Collection<Attendance>) hibernateTemplate.findByNamedParam(
-                "from attendance a where a.schoolDay.school.id = :schoolId and a.student.id = :studentId "
+                ATTENDANCE_HQL + " where a.schoolDay.school.id = :schoolId and a.student.id = :studentId "
                 + "and a.schoolDay.date >= :startDate and a.schoolDay.date <= :endDate", 
                 paramNames, 
                 paramValues);
