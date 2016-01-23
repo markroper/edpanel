@@ -20,7 +20,9 @@ public class TeacherControllerIntegrationTest extends IntegrationBase {
     @DataProvider
     public Object[][] createTeacherProvider() {
         Staff emptyTeacher = new Staff();
+        emptyTeacher.setIsTeacher(true);
         Staff namedTeacher = new Staff();
+        namedTeacher.setIsTeacher(true);
         namedTeacher.setName(localeServiceUtil.generateName());
         
         return new Object[][] {
@@ -51,6 +53,7 @@ public class TeacherControllerIntegrationTest extends IntegrationBase {
     public void updateTeacherTest(String msg, Staff teacher) {
         Staff createdTeacher = teacherValidatingExecutor.create(teacher, msg);
         Staff updatedTeacher = new Staff();
+        updatedTeacher.setIsTeacher(true);
         updatedTeacher.setName(localeServiceUtil.generateName());
         //PATCH the existing record with a new name.
         teacherValidatingExecutor.update(createdTeacher.getId(), updatedTeacher, msg);
@@ -80,6 +83,7 @@ public class TeacherControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createTeacherNegativeProvider")
     public void replaceTeacherNegativeTest(String msg, Staff teacher, HttpStatus expectedStatus) {
         Staff t = new Staff();
+        t.setIsTeacher(true);
         t.setName(UUID.randomUUID().toString());
         Staff created = teacherValidatingExecutor.create(t, msg);
         teacherValidatingExecutor.replaceNegative(created.getId(), teacher, expectedStatus, msg);

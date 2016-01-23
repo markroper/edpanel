@@ -142,9 +142,9 @@ public class DlEtlEngine implements IEtlEngine {
                         result.incrementBehaviorEventsMatchedStudentLastButNotFirst(deanslistName, existingName);
                     //TODO I'm not super sure what this is used for, will this get messed up? -Chris
                     } else if (existingUser instanceof Staff) {
-                        if (((Staff) existingUser).isTeacher()) {
+                        if (((Staff) existingUser).getIsTeacher()) {
                             result.incrementBehaviorEventsMatchedTeacherLastButNotFirst(deanslistName, existingName);
-                        } else if (((Staff) existingUser).isAdmin()) {
+                        } else if (((Staff) existingUser).getIsAdmin()) {
                             result.incrementBehaviorEventsMatchedAdminLastButNotFirst(deanslistName, existingName);
                         }
                     }
@@ -152,9 +152,9 @@ public class DlEtlEngine implements IEtlEngine {
                     if (existingUser instanceof Student) {
                         result.incrementBehaviorEventsMatchedStudentLastAndFirst();
                     } else if (existingUser instanceof Staff) {
-                        if (((Staff) existingUser).isTeacher()) {
+                        if (((Staff) existingUser).getIsTeacher()) {
                             result.incrementBehaviorEventsMatchedTeacherLastAndFirst();
-                    } else if (((Staff) existingUser).isTeacher()) {
+                    } else if (((Staff) existingUser).getIsTeacher()) {
                         result.incrementBehaviorEventsMatchedAdminLastAndFirst();
                     }
                     }

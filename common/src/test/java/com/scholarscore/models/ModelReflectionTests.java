@@ -494,7 +494,7 @@ public class ModelReflectionTests {
 
         if (type.isAssignableFrom(Staff.class)) {
             Staff t = new Staff();
-            t.setTeacher(true);
+            t.setIsTeacher(true);
             t.setId(alt ? 2L : 3L);
             t.setName(alt ? "teacherName2" : "teacherName1");
             return t;

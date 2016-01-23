@@ -22,13 +22,15 @@ public class AdministratorControllerIntegrationTest extends IntegrationBase {
         //Positive test cases
         @DataProvider
         public Object[][] createAdminProvider() {
-            Staff emptyTeacher = new Staff();
-            Staff namedTeacher = new Staff();
-            namedTeacher.setName(localeServiceUtil.generateName());
+            Staff emptyAdmin = new Staff();
+            emptyAdmin.setIsAdmin(true);
+            Staff namedAdmin = new Staff();
+            namedAdmin.setIsAdmin(true);
+            namedAdmin.setName(localeServiceUtil.generateName());
 
             return new Object[][] {
-                { "Empty teacher", emptyTeacher },
-                    { "Named teacher", namedTeacher }
+                { "Empty teacher", emptyAdmin },
+                    { "Named teacher", namedAdmin }
             };
         }
 
@@ -68,6 +70,7 @@ public class AdministratorControllerIntegrationTest extends IntegrationBase {
         @DataProvider
         public Object[][] createAdminNegativeProvider() {
             Staff gradedAdminNameTooLong = new Staff();
+            gradedAdminNameTooLong.setIsAdmin(true);
             gradedAdminNameTooLong.setName(localeServiceUtil.generateName(257));
 
             return new Object[][] {
@@ -84,6 +87,7 @@ public class AdministratorControllerIntegrationTest extends IntegrationBase {
         public void replaceAdminTest(String msg, Staff administrator, HttpStatus expectedStatus) {
             Staff t = new Staff();
             t.setName(UUID.randomUUID().toString());
+            t.setIsAdmin(true);
             Staff created = administratorValidatingExecutor.create(t, msg);
             administratorValidatingExecutor.replaceNegative(created.getId(), administrator, expectedStatus, msg);
         }

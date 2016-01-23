@@ -37,13 +37,14 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
         String query = "select a from staff a " +
                 "left join fetch a.homeAddress " +
                 "left join fetch a.contactMethods " +
-                "where a.teacher = true";
+                "where a.isTeacher = true";
         return (List<Staff>)hibernateTemplate.find(query);
     }
 
     @Override
     public Staff select(long id) {
-        return hibernateTemplate.get(Staff.class, id);
+        Staff staff =  hibernateTemplate.get(Staff.class, id);
+        return staff;
 
     }
 
@@ -59,7 +60,7 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
 
     @Override
     public Long createTeacher(Staff teacher) {
-        teacher.setTeacher(true);
+        teacher.setIsTeacher(true);
         transformUserValues(teacher, null);
         Staff out = hibernateTemplate.merge(teacher);
         Authority auth = new Authority();

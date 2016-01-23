@@ -108,12 +108,12 @@ public class BaseJdbcTest {
 
         Staff adminUser = new Staff();
         adminUser.setUsername("mattg");
-        adminUser.setAdmin(true);
+        adminUser.setIsAdmin(true);
         admin.setHomePhone("555-1212");
         admin.setName("Matt Greenwood");
         admin.setSourceSystemId("1");
         admin.setHomeAddress(address);
-        admin.setAdmin(true);
+        admin.setIsAdmin(true);
 
         Student studentUser = new Student();
         studentUser.setUsername("mattg");

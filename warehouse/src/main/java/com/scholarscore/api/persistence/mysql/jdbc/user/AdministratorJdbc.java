@@ -38,7 +38,7 @@ public class AdministratorJdbc extends UserBaseJdbc implements AdministratorPers
         String query = "select a from staff a " +
                 "left join fetch a.homeAddress " +
                 "left join fetch a.contactMethods " +
-                "where a.admin = true";
+                "where a.isAdmin = true";
         return (List<Staff>)hibernateTemplate.find(query);
     }
 
@@ -69,7 +69,7 @@ public class AdministratorJdbc extends UserBaseJdbc implements AdministratorPers
 
     @Override
     public Long createAdministrator(Staff administrator) {
-        administrator.setAdmin(true);
+        administrator.setIsAdmin(true);
         transformUserValues(administrator, null);
         Staff out = hibernateTemplate.merge(administrator);
         administrator.setId(out.getId());
