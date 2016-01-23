@@ -241,6 +241,21 @@ public abstract class Assignment
         return 31 * super.hashCode() + Objects.hash(type, dueDate, sourceSystemId, userDefinedType, weight, includeInFinalGrades, availablePoints);
     }
 
+    @Override
+    public String toString() {
+        return "Assignment{super(" + super.toString() + ")" +
+                "type=" + type +
+                ", userDefinedType='" + userDefinedType + '\'' +
+                ", dueDate=" + dueDate +
+                ", availablePoints=" + availablePoints +
+                ", section=" + section +
+                ", sectionFK=" + sectionFK +
+                ", weight=" + weight +
+                ", includeInFinalGrades=" + includeInFinalGrades +
+                ", sourceSystemId='" + sourceSystemId + '\'' +
+                '}';
+    }
+
     /**
      * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
