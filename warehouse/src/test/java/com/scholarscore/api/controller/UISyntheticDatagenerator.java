@@ -18,6 +18,7 @@ import com.scholarscore.models.attendance.AttendanceTypes;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.gpa.AddedValueGpa;
+import com.scholarscore.models.notification.Notification;
 import com.scholarscore.models.survey.Survey;
 import com.scholarscore.models.survey.SurveyResponse;
 import com.scholarscore.models.user.Staff;
@@ -153,6 +154,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
         Map<Long, List<Term>> terms = SchoolDataFactory.generateTerms(generatedSchoolYears);
         Map<Long, List<Long>> studentToSectionId = new HashMap<Long, List<Long>>();
         Map<Long, List<Long>> studentToAssignmentId = new HashMap<Long, List<Long>>();
+        List<Section> allSections = new ArrayList<>();
         for(Map.Entry<Long, List<Term>> termEntry : terms.entrySet()) {
             List<Term> createdTerms = new ArrayList<Term>();
             for(Term currentTerm : termEntry.getValue()) {
@@ -167,7 +169,6 @@ public class UISyntheticDatagenerator extends IntegrationBase {
             //Create the sections for courses in the school and the terms in the current schoolYear
             sections =
                     SchoolDataFactory.generateSections(createdTerms, generatedCourses, generatedStudents, createdTeachers);
-
             for(Map.Entry<Long, List<Section>> sectionEntry : sections.entrySet()) {
                 List<Section> createdSections = new ArrayList<Section>();
 
@@ -178,7 +179,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                             sectionEntry.getKey(),
                             section,
                             section.getName());
-
+                    allSections.add(createdSection);
                     createdSections.add(createdSection);
                     for(Student s : section.getEnrolledStudents()) {
                         StudentSectionGrade ssg = new StudentSectionGrade();
@@ -312,6 +313,16 @@ public class UISyntheticDatagenerator extends IntegrationBase {
             }
 
         }
+
+        List<Notification> notificationsToCreate =
+                SchoolDataFactory.generateNotifications(school, generatedStudents, createdTeachers, allSections);
+        List<Notification> createdNotifications = new ArrayList<>();
+        for(Notification n : notificationsToCreate) {
+            Notification created = notificationValidatingExecutor.create(n, "Arbitrary notification");
+            createdNotifications.add(created);
+        }
+        notificationValidatingExecutor.evaluateNotifications(school.getId());
+
     }
     
     @Override

@@ -3,6 +3,7 @@ package com.scholarscore.api.manager;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.PrepScore;
+import com.scholarscore.models.notification.group.FilteredStudents;
 import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.user.Student;
 
@@ -21,6 +22,8 @@ import java.util.List;
 public interface StudentManager {
 
     public ServiceResponse<Collection<Student>> getAllStudents(Long schoolId);
+
+    public ServiceResponse<Collection<Student>> getStudents(Long schoolId, FilteredStudents students);
 
     public StatusCode studentExists(long studentId);
 

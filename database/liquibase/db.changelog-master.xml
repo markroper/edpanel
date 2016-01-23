@@ -8,6 +8,8 @@
     <!-- liquibase not added until after version 1.0, so this file is basically meaningless.
      Leaving it in as a dummy file to avoid confusion, as there is a 1.0 version tagged in git -->
     <include file="database/liquibase/db.changelog-1.0.xml"/>
+    <include file="database/liquibase/db.changelog-1.1.xml"/>
+    <include file="database/liquibase/db.changelog-1.2.xml"/>
 
     <!-- included files must be off project root -->
     <!-- future versions can be defined here, like this:
