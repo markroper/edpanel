@@ -115,6 +115,16 @@ public abstract class Person extends User {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "Person{" + "(super:" + super.toString() + ")" +
+                "sourceSystemId='" + sourceSystemId + '\'' +
+                ", sourceSystemUserId='" + sourceSystemUserId + '\'' +
+                ", homePhone='" + homePhone + '\'' +
+                ", currentSchoolId=" + currentSchoolId +
+                '}';
+    }
+
     /**
      * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily

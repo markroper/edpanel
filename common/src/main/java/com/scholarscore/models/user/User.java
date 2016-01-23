@@ -79,6 +79,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		this.oneTimePass = value.oneTimePass;
 		this.oneTimePassCreated = value.oneTimePassCreated;
 		this.contactMethods = value.contactMethods;
+		this.mustResetPassword = value.mustResetPassword;
 	}
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
@@ -281,37 +282,45 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 			this.homeAddress = mergeFrom.homeAddress;
 		}
     }
-	
-	@Override
-    public boolean equals(Object obj) {
-	    if (!super.equals(obj)) {
-            return false;
-        }
-		if (this == obj) return true;
-		if (getClass() != obj.getClass()) return false;
 
-        final User other = (User) obj;
-		return Objects.equals(this.enabled, other.enabled)
-                && Objects.equals(this.password, other.password)
+	@Override
+	public int hashCode() {
+		return 31 * super.hashCode() + Objects.hash(username, password, enabled, oneTimePass, oneTimePassCreated, homeAddress, contactMethods, mustResetPassword);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		final User other = (User) obj;
+		return Objects.equals(this.username, other.username)
+				&& Objects.equals(this.password, other.password)
+				&& Objects.equals(this.enabled, other.enabled)
+				&& Objects.equals(this.oneTimePass, other.oneTimePass)
+				&& Objects.equals(this.oneTimePassCreated, other.oneTimePassCreated)
 				&& Objects.equals(this.homeAddress, other.homeAddress)
-                && Objects.equals(this.username, other.username)
-				;
-    }
-
-	@Override
-    public int hashCode() {
-        return 31 * super.hashCode()
-                + Objects.hash(username, enabled, password, homeAddress);
-    }
+				&& Objects.equals(this.contactMethods, other.contactMethods)
+				&& Objects.equals(this.mustResetPassword, other.mustResetPassword);
+	}
 
 	@Override
 	public String toString() {
-		return super.toString() + "\n" +
-				"User{" +
+		return "User{" +
+				"username='" + username + '\'' +
 				", password='" + password + '\'' +
-				", username='" + username + '\'' +
-				", homeAddress='" + homeAddress + '\'' +
 				", enabled=" + enabled +
+				", oneTimePass='" + oneTimePass + '\'' +
+				", oneTimePassCreated=" + oneTimePassCreated +
+				", homeAddress=" + homeAddress +
+				", contactMethods=" + contactMethods +
+				", mustResetPassword=" + mustResetPassword +
 				'}';
 	}
 
