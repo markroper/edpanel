@@ -208,7 +208,7 @@ public class ModelReflectionTests {
                 }
 
                     emptyObject.mergePropertiesIfNull(populatedObject);
-                assertEquals(populatedObject, emptyObject, "A new object of class " + clazz 
+                assertEquals(emptyObject, populatedObject, "A new object of class " + clazz 
                         + " had mergePropertiesIfNull invoked with a populated instance of the object.\n" 
                         + "After merging, the new object was not equal to to the populated object.");
                 logDebug("*Successfully tested mergePropertiesIfNull(..)");
