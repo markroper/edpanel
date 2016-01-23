@@ -28,4 +28,6 @@ public class SectionGradeTopic extends MessageTopic {
     public TopicType getType() {
         return TopicType.SECTION_GRADE;
     }
+    
+    
 }

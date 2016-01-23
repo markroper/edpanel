@@ -259,9 +259,14 @@ public class ModelReflectionTests {
     
         logDebug("*Checking equals and hashcode for " + classDescString + "...");
         
+        // return all fields from sourceOfFieldsClass, as well as any and all superclasses within package being tested
+        Field[] allFields = getAllFieldNamesWithinEligibleSuperclasses(sourceOfFieldsClass);
+        
         // for each field in the object under test, make a copy of the object with just that field tweaked.
         // then check resulting equals/hashcode between them and see what we can discover
-        for (Field field : fields) {
+
+        for (Field field : allFields) {
+//        for (Field field : fields) {
             if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
                 // skip static and final fields. our concern is equals() and hashcode() which don't consider these
                 continue;
@@ -290,7 +295,18 @@ public class ModelReflectionTests {
         }
         logDebug("*Equals and HashCode are good (assuming no problems were just displayed)");
     }
-    
+
+    private Field[] getAllFieldNamesWithinEligibleSuperclasses(Class<?> clazz) {
+        ArrayList<Field> allFields = new ArrayList<>();
+        allFields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+        if (clazz.getSuperclass().getPackage().toString().toLowerCase().contains(packageToScan.toLowerCase())) {
+            // keep going!
+            Field[] superclassFields = getAllFieldNamesWithinEligibleSuperclasses(clazz.getSuperclass());
+            allFields.addAll(Arrays.asList(superclassFields));
+        }
+        return allFields.toArray(new Field[allFields.size()]);
+    }
+
     // ad hoc (saves a bunch of lines in a method below)
     private Object buildPopulatedObject(Class clazz, String fieldNameToModify, boolean doModification) {
         return doModification ? 
@@ -353,12 +369,12 @@ public class ModelReflectionTests {
         if (returnedInstance != null) {
             Class<? super S> superclass = sourceOfFieldsClass.getSuperclass();
             if (superclass.getPackage().toString().toLowerCase().contains(packageToScan.toLowerCase())) {
-//                System.out.println("Hit in-package parent class of " + sourceOfFieldsClass + ", superclass " + superclass.getSimpleName());
+                logDebug("Hit in-package parent class of " + sourceOfFieldsClass + ", superclass " + superclass.getSimpleName());
                 returnedInstance = buildPopulatedObject(returnedInstance, superclass, fieldNameToModify, fieldTweaked);
 
                 if (returnedInstance == null) {
-//                    System.out.println("ERROR populating object when ascending hierarchy... abandoning attempt to populate "
-//                            + instance.getClass().getSimpleName() + " fields from superclass " + superclass.getSimpleName() + " and returning instance as-is");
+                    logDebug("ERROR populating object when ascending hierarchy... abandoning attempt to populate "
+                            + instance.getClass().getSimpleName() + " fields from superclass " + superclass.getSimpleName() + " and returning instance as-is");
                     return instance;
                 }
             } else {
@@ -460,6 +476,7 @@ public class ModelReflectionTests {
 //                System.out.println("OBSOLETE INNER WARNING - object " + instance + " being returned without tweaking field " + fieldNameToModify);
                 // TODO Jordan: this could probably be an exception, but should wait until after superclass fields are checked
                 // to enforce this
+//                System.out.println("WARNING - this will soon be an exception!");
             }
             return fieldTweaked;
 //            return instance;
@@ -469,34 +486,51 @@ public class ModelReflectionTests {
     }
 
     private Object getSensibleValueForField(Field field) {
-        Object obj = getValueForField(field.getGenericType(), false);
-        if (field.getName().equals("question") && field.getType().equals(SurveyQuestion.class)) {
-            System.out.println("Field class: " + field.getType() +  "(generic type:" + field.getGenericType() + ") returning " + obj);
-        }
+        Object obj = getValueForField(field, false);
         return obj;
     }
 
     private Object getAnotherValueForField(Field field) {
-        return getValueForField(field.getGenericType(), true);
+        return getValueForField(field, true);
     }
     
     // This method is tasked with figuring out a "good default" value for the passed-in type. It does this by specifically handling collections and objects with generic types (and both), 
     // then call
-    private Object getValueForField(Type genericType, boolean alt) {
+    private Object getValueForField(Field field, boolean alt) {
+        Object returnedFromGenericType = getValueForGenericType(field.getGenericType(), alt);
+        
+        if (returnedFromGenericType == null) {
+            // try this backup approach
+            Object returnedFromType = getValueForType(field.getType(), alt);
+//            System.out.println("Fell back to non-generic getValueForType, and got back: " + returnedFromType);
+            return returnedFromType;
+        }
+        
+        return returnedFromGenericType;
+    }
+
+    // This method is tasked with figuring out a "good default" value for the passed-in type. It does this by specifically handling collections and objects with generic types (and both), 
+    // then call
+    private Object getValueForGenericType(Type genericType, boolean alt) {
 
         Class<?> genericClass = genericType.getClass();
         Class<?> type = null;
 
         ////////////////
         try {
-            String splitClassName = genericType.getTypeName().split("<")[0];
+            String[] splitClassNameFrags = genericType.getTypeName().split("<");
+//            if (splitClassNameFrags.length > 1) {
+//                System.out.println("Generic Type detected -- " + genericType);
+//            }
+            // only really need to do this next part if there's more than one frag...?
+            String splitClassName = splitClassNameFrags[0];
             Class<?> derivedObjectClass = Class.forName(splitClassName);
             type = derivedObjectClass;
         } catch (ClassNotFoundException e) {
             logDebug("Could not find class!");
             return null;
         }
-        
+
         // TODO: must handle primitive types separately (Type for a primitive will not be autoboxed and getTypeName() 
         // will return "int", etc while for object-based classes this method return FQPNs) 
 
@@ -519,7 +553,7 @@ public class ModelReflectionTests {
             stp = new ArrayListToPopulate();
         } else if (type.isAssignableFrom(List.class)) {
             stp = new ArrayListToPopulate();
-        }   
+        }
 
         if (stp != null) {
             // okay, we have a match on a type of collection defined above.
@@ -533,7 +567,7 @@ public class ModelReflectionTests {
                 for (Type actualInnerTypeArg : actualInnerTypeArgs) {
                     // for each of the parameter types (e.g. ArrayList<Integer, String> -- first would be integer, then string)
                     // dive deeper and create an instance of the expected type...
-                    Object value = getValueForField(actualInnerTypeArg, alt);
+                    Object value = getValueForGenericType(actualInnerTypeArg, alt);
                     if (value == null) {
 //                        System.out.println("Got null value trying to get type "  + actualInnerTypeArg);
 //                        Class<?> genericClass2 = actualInnerTypeArg.getClass();
@@ -575,8 +609,8 @@ public class ModelReflectionTests {
                 return populatedCollection;
             }
         }
-        
-        
+
+
         return getValueForType(type, alt);
     }
     
