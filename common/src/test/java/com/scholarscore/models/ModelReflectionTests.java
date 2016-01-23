@@ -56,6 +56,7 @@ import org.testng.annotations.Test;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -127,9 +128,10 @@ public class ModelReflectionTests {
 
         for (Class clazz : classes) {
             String className = clazz.getName();
-            // for purposes of exclusion, identify inner classes as the same as their outer class file
-            // (so if the class e.g. ModelReflectionTests.java is excluded, so are the inner classes in this file) 
-            className = className.split("\\$")[0];
+            if (className.contains("$")) {
+                logDebug("Skipping inner class " + className + "...");
+                continue;
+            }
             if (Modifier.isAbstract(clazz.getModifiers())) {
                 logDebug("Skipping Class " + clazz + " as it is abstract...");
                 logDebug("");
@@ -227,7 +229,7 @@ public class ModelReflectionTests {
 
             try {
                 Object secondInstance = constructor.newInstance(firstInstance);
-                assertEquals(secondInstance, firstInstance, "New Instance of " + clazz.getName() + " doesn't equal original it was copy constructed from!");
+                assertEquals(firstInstance, secondInstance, "New Instance of " + clazz.getName() + " doesn't equal original it was copy constructed from!");
                 logDebug("*Successfully copied object and confirmed field values match");
             } catch (InstantiationException|IllegalAccessException|InvocationTargetException e) {
                 logDebug("WARN: could not invoke copy constructor for " + clazz + ", moving on.");
@@ -295,14 +297,18 @@ public class ModelReflectionTests {
                 buildPopulatedObject(clazz);
     }
     
-    private Object buildPopulatedObject(Class<?> clazz) {
-        return buildPopulatedObject(clazz, null);
+    private <T> Object buildPopulatedObject(Class<T> clazz) {
+        return buildPopulatedObject(clazz, clazz, (String)null);
     }
     
     private <S, T extends S> Object buildPopulatedObject(Class<T> clazz, String fieldNameToModify) { 
         return buildPopulatedObject(clazz, clazz, fieldNameToModify);
     }
 
+    private <S,T extends S> T buildPopulatedObject(Class<T> concreteClass, Class<S> sourceOfFieldsClass) {
+        return buildPopulatedObject(concreteClass, sourceOfFieldsClass, null);
+    }
+        
     /* 
      * Create a reasonable test object. 
      * If fieldNameToModify is set, this field will be varied from the normal default value typical to this field type.
@@ -370,6 +376,10 @@ public class ModelReflectionTests {
     private class CannotSetDefaultException extends Exception { }
     
     private <T> boolean populateObjectFields(T instance, Field[] fields, String fieldNameToModify) throws CannotSetDefaultException {
+//        System.out.println("populateObjectFields called on instance: " + instance + " of class " + instance.getClass());
+        if (instance.getClass().getName().contains("$")) {
+            System.out.println("WARNING: Inner class! I think. " + instance);
+        }
         try {
             boolean fieldTweaked = false;
             for (Field field : fields) {
@@ -395,8 +405,52 @@ public class ModelReflectionTests {
 //                    return null;
                     throw new CannotSetDefaultException();
                 }
-                field.setAccessible(true);
-                field.set(instance, value);
+
+                // actually do the setting. prefer to use a setter method but directly twiddle the field if necessary.
+                ArrayList<Method> matchingSetters = new ArrayList<>();
+                Class<?> instanceClass = instance.getClass();
+                Method[] instanceMethods = instanceClass.getMethods();
+                for (Method method : instanceMethods) {
+                    // we want to set variable named <field.getName()> but would prefer to go through a setter, if existent
+                    if (method.getName().toLowerCase().equals("set" + field.getName().toLowerCase())) {
+                        if (method.getParameterCount() == 1) {
+                            matchingSetters.add(method);
+                            // all done, don't need to continue
+                            break;
+                        }
+                    }
+                }
+
+//                if (field.getName().equals("goalType")) {
+//                    System.out.println("Noticed goalType field handling. Found setter? " + (matchingSetters.size() > 0 ? "yes" : "no")); 
+//                    // " paying more attention now...");
+//                }
+
+                Method bestSetterMatch = null;
+                if (matchingSetters.size() == 1) {
+                    // use the matching setter
+                    bestSetterMatch = matchingSetters.get(0);
+                } else if (matchingSetters.size() > 1) {
+                    // more than one setter... hmmm. probably need to do more to figure out how to pick one here...
+                    System.out.println("OOPS! I see more than one potential setter for field " + field.getName() 
+                            + " on class " + instance.getClass().getSimpleName() + ". For now, just taking the first one I see...");
+                    bestSetterMatch = matchingSetters.get(0);
+                }
+                
+                if (bestSetterMatch != null) {
+                    // can use a setter, the preferred way
+                    try {
+                        bestSetterMatch.invoke(instance, value);
+                    } catch (InvocationTargetException e) {
+                        System.out.println("FAILED to invoke matching setter on " + instance.getClass().getSimpleName());
+//                        e.printStackTrace();
+                    }
+                } else {
+                    // no matching setters, use direct-twiddle approach
+                    field.setAccessible(true);
+                    field.set(instance, value);
+                }
+
             }
             // This method can be called without specifying a fieldNameToModify, but if it is specified and the field isn't found, warn the caller!
             if (!fieldTweaked && fieldNameToModify != null) {

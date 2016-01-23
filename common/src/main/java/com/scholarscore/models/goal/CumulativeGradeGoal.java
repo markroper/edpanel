@@ -74,7 +74,14 @@ public class CumulativeGradeGoal extends Goal implements CalculatableCumulative 
             }
         }
 
-    }    
+    }
+
+    @Override
+    public void setGoalType(GoalType goalType) {
+        // don't allow the parent class goalType to be set to anything besides BEHAVIOR
+        super.setGoalType(GoalType.CUMULATIVE_GRADE);
+    }
+    
     @Override
     public String toString() {
         return
