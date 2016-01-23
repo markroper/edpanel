@@ -98,6 +98,13 @@ public class ModelReflectionTests {
         add(packageToScan + "." + testClassName);
         // TODO Jordan: come back to this one, I think it's a bug in the reflection tester
         add(packageToScan + "." + "goal.ComplexGoal");
+        add(packageToScan + "." + "goal.AssignmentGoal");
+        add(packageToScan + "." + "goal.BehaviorGoal");
+        add(packageToScan + "." + "goal.CumulativeGradeGoal");
+        add(packageToScan + "." + "assignment.GradedAssignment");
+        add(packageToScan + "." + "assignment.AttendanceAssignment");
+        add(packageToScan + "." + "Section");
+        add(packageToScan + "." + "StudentSectionGrade");
     }};
     
     public String getPackageToScan() {
@@ -192,9 +199,10 @@ public class ModelReflectionTests {
                 // return all fields from sourceOfFieldsClass, as well as any and all superclasses within package being tested
                 Field[] allFields = getAllFieldNamesWithinEligibleSuperclasses(clazz);
 
-
                 for (Field field : allFields) {
-                    if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
+                    if (Modifier.isFinal(field.getModifiers()) 
+                            || Modifier.isStatic(field.getModifiers())
+                            || Modifier.isTransient(field.getModifiers())) {
                         continue;
                     }
                     field.setAccessible(true);
@@ -285,7 +293,7 @@ public class ModelReflectionTests {
                 continue;
             }
             // logDebug("Checking equals() and hashcode() on " + clazz.getName() + " with field " + field.getName() + " modified...");
-            String both = "original: " + unmodifiedInstance + ", tweaked: " + instanceWithTweakedField;
+            String both = "original:\n" + unmodifiedInstance + "\ntweaked:\n" + instanceWithTweakedField;
             String objMsg = "For class " + clazz + ", ";
             String equalsMsg = objMsg + "Equals() returned true even though objects have different values for field " + field.getName() + "\n" + both;
             String hashMsg = objMsg + "hashcode() returned identical values even though objects have different values for field " + field.getName() + "\n" + both;
@@ -293,7 +301,7 @@ public class ModelReflectionTests {
                 field.setAccessible(true);
                 Object unmodifiedValue = field.get(unmodifiedInstance);
                 Object modifiedValue = field.get(instanceWithTweakedField);
-                equalsMsg += "\n(Unmodified value: " + unmodifiedValue + ", Modified value: " + modifiedValue + ")";
+//                equalsMsg += "\n(Unmodified value: " + unmodifiedValue + ", Modified value: " + modifiedValue + ")";
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }

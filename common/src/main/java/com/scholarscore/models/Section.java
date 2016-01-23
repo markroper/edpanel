@@ -365,7 +365,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
 
     @Override
     public String toString() {
-        return "Section{" +
+        return "Section{super(" + super.toString() + ")" +
                 "startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", room='" + room + '\'' +
