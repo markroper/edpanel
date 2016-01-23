@@ -39,18 +39,18 @@ public class SurveyMultipleChoiceQuestion extends SurveyQuestion<Integer> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(choices);
+        return 31 * super.hashCode() + Objects.hash(choices);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(!super.equals(obj)) {
-            return false;
-        }
         if (this == obj) {
             return true;
         }
         if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
             return false;
         }
         final SurveyMultipleChoiceQuestion other = (SurveyMultipleChoiceQuestion) obj;
