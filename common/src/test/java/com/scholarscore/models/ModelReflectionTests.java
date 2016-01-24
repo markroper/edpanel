@@ -101,8 +101,6 @@ public class ModelReflectionTests {
         add(packageToScan + "." + "goal.AssignmentGoal");
         add(packageToScan + "." + "goal.BehaviorGoal");
         add(packageToScan + "." + "goal.CumulativeGradeGoal");
-        add(packageToScan + "." + "assignment.GradedAssignment");
-        add(packageToScan + "." + "assignment.AttendanceAssignment");
     }};
     
     public String getPackageToScan() {
@@ -279,11 +277,17 @@ public class ModelReflectionTests {
         // then check resulting equals/hashcode between them and see what we can discover
 
         for (Field field : allFields) {
-//        for (Field field : fields) {
-            if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
+            if (Modifier.isFinal(field.getModifiers()) 
+                    || Modifier.isStatic(field.getModifiers())) {
                 // skip static and final fields. our concern is equals() and hashcode() which don't consider these
                 continue;
             }
+//            if (Modifier.isTransient(field.getModifiers())) {
+                // TODO Jordan: should test to ensure transients are NOT considered in equals
+//                System.out.println("Transient field detected, should test that it doesn't affect equals");
+//                continue;
+//            }
+            
             Object instanceWithTweakedField = buildPopulatedObject(clazz, field.getName());
             if (instanceWithTweakedField == null) {
                 logDebug("Couldn't build object with tweaked field " + field.getName() + ", skipping this check.");
