@@ -187,7 +187,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     @Override
     public String toString() {
         return
-                "GOAL " + "\n"
+                "GOAL super(" + super.toString() +")" + "\n"
                         + "Id  : " + getId() + "\n"
                         + "Name: " + getName() + "\n"
                         + "DesiredValue: " + getDesiredValue() +"\n"

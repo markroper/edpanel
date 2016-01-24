@@ -100,7 +100,7 @@ public class ModelReflectionTests {
         add(packageToScan + "." + "goal.ComplexGoal");
         add(packageToScan + "." + "goal.AssignmentGoal");
         add(packageToScan + "." + "goal.BehaviorGoal");
-        add(packageToScan + "." + "goal.CumulativeGradeGoal");
+//        add(packageToScan + "." + "goal.CumulativeGradeGoal");
     }};
     
     public String getPackageToScan() {
@@ -455,11 +455,6 @@ public class ModelReflectionTests {
                     }
                 }
 
-//                if (field.getName().equals("goalType")) {
-//                    System.out.println("Noticed goalType field handling. Found setter? " + (matchingSetters.size() > 0 ? "yes" : "no")); 
-//                    // " paying more attention now...");
-//                }
-
                 Method bestSetterMatch = null;
                 if (matchingSetters.size() == 1) {
                     // use the matching setter
@@ -475,6 +470,12 @@ public class ModelReflectionTests {
                     // can use a setter, the preferred way
                     try {
                         bestSetterMatch.invoke(instance, value);
+                        field.setAccessible(true);
+                        Object setValue = field.get(instance);
+                        if (!setValue.equals(value)) {
+                            System.out.println("WARNING - used setter " + bestSetterMatch.getName() + " with value " + value 
+                                    + " but got back " + setValue + " from field.");
+                        }
                     } catch (InvocationTargetException e) {
                         System.out.println("FAILED to invoke matching setter on " + instance.getClass().getSimpleName());
 //                        e.printStackTrace();

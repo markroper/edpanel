@@ -85,7 +85,7 @@ public class CumulativeGradeGoal extends Goal implements CalculatableCumulative 
     @Override
     public String toString() {
         return
-                "GOAL " + "\n"
+                "GOAL (super:" + super.toString() + ")" + "\n"
                         + "Id  : " + getId() + "\n"
                         + "Name: " + getName() + "\n"
                         + "DesiredValue: " + getDesiredValue() +"\n"
