@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.School;
 import com.scholarscore.models.notification.Notification;
@@ -60,6 +61,7 @@ public class NotificationController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "userId")
     public @ResponseBody
     ResponseEntity getAllUserNotifications(
             @ApiParam(name = "userId", required = true, value = "The user ID")
@@ -76,6 +78,7 @@ public class NotificationController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity getNotification(
             @ApiParam(name = "notificationId", required = true, value = "The notification long ID")
             @PathVariable(value="notificationId") Long notificationId) {
@@ -90,6 +93,7 @@ public class NotificationController extends BaseController {
             method = RequestMethod.POST,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity createNotification(@RequestBody @Valid Notification notification) {
         return respond(pm.getNotificationManager().createNotification(notification));
     }
@@ -103,6 +107,7 @@ public class NotificationController extends BaseController {
             method = RequestMethod.PUT,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity replaceNotification(
             @ApiParam(name = "notificationId", required = true, value = "The notification ID")
             @PathVariable(value="notificationId") Long notificationId,
@@ -118,6 +123,7 @@ public class NotificationController extends BaseController {
             method = RequestMethod.DELETE,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity deleteNotification(
             @ApiParam(name = "notificationId", required = true, value = "The notification ID")
             @PathVariable(value="notificationId") Long notificationId) {
@@ -135,6 +141,7 @@ public class NotificationController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "userId")
     public @ResponseBody
     ResponseEntity getAllUserTriggeredNotifications(
             @ApiParam(name = "userId", required = true, value = "The user ID")
@@ -151,6 +158,7 @@ public class NotificationController extends BaseController {
             method = RequestMethod.PUT,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "userId")
     public @ResponseBody
     ResponseEntity disableTriggeredNotification(
             @ApiParam(name = "notificationId", required = true, value = "The notification ID")

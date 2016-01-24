@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.gpa.Gpa;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -49,6 +50,7 @@ public class GpaController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity getGpa(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value = "studentId") Long studentId) {
@@ -64,6 +66,7 @@ public class GpaController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity getGpasOverTime(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value = "studentId") Long studentId) {
