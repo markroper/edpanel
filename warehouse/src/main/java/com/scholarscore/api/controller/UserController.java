@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.ui.PasswordUpdate;
 import com.scholarscore.models.user.ContactType;
@@ -83,6 +84,7 @@ public class UserController extends BaseController {
 	        method = RequestMethod.GET, 
 	        produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
+	@StudentAccessible(paramName = "userId")
 	public @ResponseBody ResponseEntity get(
 	        @ApiParam(name = "userId", required = true, value = "User ID")
 	        @PathVariable(value="userId") Long userId) {
@@ -155,6 +157,7 @@ public class UserController extends BaseController {
 			method = RequestMethod.POST,
 			produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
+	@StudentAccessible(paramName = "userId")
 	public @ResponseBody ResponseEntity startContactValidation(
 			@ApiParam(name = "userId", required = true, value = "User ID")
 			@PathVariable(value="userId") Long userId,
@@ -174,6 +177,7 @@ public class UserController extends BaseController {
 			method = RequestMethod.GET,
 			produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
+	@StudentAccessible(paramName = "userId")
 	public @ResponseBody ResponseEntity confirmContactValidation(
 			@ApiParam(name = "userId", required = true, value = "User ID")
 			@PathVariable(value = "userId") Long userId,
@@ -195,6 +199,8 @@ public class UserController extends BaseController {
 			method = RequestMethod.GET,
 			produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
+	//TODO: make this so that you can only start the password reset if the requesting user is the user to reset for
+	@StudentAccessible
 	public @ResponseBody ResponseEntity startPasswordReset(
 			@ApiParam(name = "username", required = true, value = "username")
 			@PathVariable(value = "username") String username
@@ -210,6 +216,7 @@ public class UserController extends BaseController {
 			method = RequestMethod.PUT,
 			produces = { JSON_ACCEPT_HEADER })
 	@SuppressWarnings("rawtypes")
+	@StudentAccessible(paramName = "userId")
 	public @ResponseBody ResponseEntity submitPassword(
 			@ApiParam(name = "userId", required = true, value = "User ID")
 			@PathVariable(value = "userId") Long userId,
