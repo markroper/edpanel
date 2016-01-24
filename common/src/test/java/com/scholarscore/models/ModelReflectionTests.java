@@ -103,7 +103,6 @@ public class ModelReflectionTests {
         add(packageToScan + "." + "goal.CumulativeGradeGoal");
         add(packageToScan + "." + "assignment.GradedAssignment");
         add(packageToScan + "." + "assignment.AttendanceAssignment");
-        add(packageToScan + "." + "Section");
     }};
     
     public String getPackageToScan() {

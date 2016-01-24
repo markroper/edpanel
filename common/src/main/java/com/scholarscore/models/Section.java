@@ -55,9 +55,6 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     
     public Section() {
         super();
-        enrolledStudents = Lists.newArrayList();
-        assignments = Lists.newArrayList();
-        teachers = Sets.newHashSet();
     }
 
     public Section(LocalDate startDate, LocalDate endDate, String room, GradeFormula gradeFormula, Integer numberOfTerms, Map<String,ArrayList<Long>> expression) {
@@ -316,6 +313,9 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         }
         if(null == enrolledStudents) {
             enrolledStudents = mergeFrom.enrolledStudents;
+        }
+        if(null == teachers) {
+            teachers = mergeFrom.teachers;
         }
         if(null == assignments) {
             assignments = mergeFrom.assignments;
