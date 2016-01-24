@@ -104,7 +104,6 @@ public class ModelReflectionTests {
         add(packageToScan + "." + "assignment.GradedAssignment");
         add(packageToScan + "." + "assignment.AttendanceAssignment");
         add(packageToScan + "." + "Section");
-        add(packageToScan + "." + "StudentSectionGrade");
     }};
     
     public String getPackageToScan() {

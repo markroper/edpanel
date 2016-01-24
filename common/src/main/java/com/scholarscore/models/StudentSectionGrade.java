@@ -49,8 +49,8 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
         
     }
     
-    public StudentSectionGrade(StudentSectionGrade grade) {
-        this.id = grade.id;
+     public StudentSectionGrade(StudentSectionGrade grade) {
+        super(grade);
         this.complete = grade.complete;
         this.grade = grade.grade;
         this.student = grade.student;
@@ -60,9 +60,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
     
     @Override
     public void mergePropertiesIfNull(StudentSectionGrade mergeFrom) {
-        if(null == id) {
-            id = mergeFrom.id;
-        }
+        super.mergePropertiesIfNull(mergeFrom);
         if(null == complete) {
             complete = mergeFrom.complete;
         }
@@ -161,24 +159,29 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
     public void setGrade(Double grade) {
         this.grade = grade;
     }
-    
+
+    @Override
+    public int hashCode() {
+        return 31 * super.hashCode() + Objects.hash(complete, grade, termGrades, section, student);
+    }
+
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
+        if (!super.equals(obj)) {
+            return false;
+        }
         final StudentSectionGrade other = (StudentSectionGrade) obj;
-        return Objects.equals(this.id, other.id) && 
-                Objects.equals(this.complete, other.complete) &&
-                Objects.equals(this.grade, other.grade) &&
-                Objects.equals(this.student, other.student) &&
-                Objects.equals(this.section, other.section) &&
-                Objects.equals(this.termGrades, other.termGrades);
-    }
-    
-    @Override
-    public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(id, complete, grade, student, section, termGrades);
+        return Objects.equals(this.complete, other.complete)
+                && Objects.equals(this.grade, other.grade)
+                && Objects.equals(this.termGrades, other.termGrades)
+                && Objects.equals(this.section, other.section)
+                && Objects.equals(this.student, other.student);
     }
 
     @Override
@@ -205,7 +208,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
 
     @Override
     public String toString() {
-        return "StudentSectionGrade{" +
+        return "StudentSectionGrade{super(" + super.toString() + ")" +
                 "id=" + id +
                 ", complete=" + complete +
                 ", grade=" + grade +
