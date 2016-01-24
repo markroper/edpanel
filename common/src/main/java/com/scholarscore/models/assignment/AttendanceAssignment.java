@@ -31,6 +31,7 @@ public class AttendanceAssignment extends Assignment implements Serializable {
     
     public AttendanceAssignment(AttendanceAssignment assignment) {
         super(assignment);
+        
     }
 
     @Override
