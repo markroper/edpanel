@@ -144,7 +144,7 @@
             SELECT
             administrator_name, administrator_source_system_id, administrator_source_system_user_id,
             administrator_user_fk, administrator_home_phone, administrator_homeAddress_fk,
-            school_fk, '1', '0' FROM administrator;
+            school_fk, '1', '1' FROM administrator;
 
             INSERT INTO staff
             (staff_name, staff_source_system_id, staff_source_system_user_id, staff_user_fk,
