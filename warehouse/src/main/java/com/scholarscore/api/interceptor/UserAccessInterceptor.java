@@ -1,5 +1,6 @@
 package com.scholarscore.api.interceptor;
 
+import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.api.security.config.UserDetailsProxy;
 import com.scholarscore.api.util.RoleConstants;
@@ -41,6 +42,10 @@ public class UserAccessInterceptor extends HandlerInterceptorAdapter {
     @Override
     @SuppressWarnings("unchecked")
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        //Always allow OPTIONS requests from browsers
+        if(request.getMethod().equals(ApiConsts.HTTP_OPTIONS)) {
+            return true;
+        }
         UserDetailsProxy udp = getCurrentUserDetails();
         String highestAuthority = null;
         if(null != udp) {
