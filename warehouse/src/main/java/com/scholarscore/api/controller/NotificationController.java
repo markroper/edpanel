@@ -22,7 +22,6 @@ import java.util.List;
 /**
  * Created by markroper on 1/10/16.
  */
-//TODO: make sure users can only administer and see notificaitons they own.
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/notifications")
 public class NotificationController extends BaseController {
