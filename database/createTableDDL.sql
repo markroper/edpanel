@@ -21,19 +21,19 @@ CREATE TABLE `school` (
   `principal_email` VARCHAR(255) NULL COMMENT 'The principal\'s email address',
   `source_system_id` VARCHAR(255) NULL UNIQUE COMMENT 'The source system from which the entity was imported - the id from that system',
   PRIMARY KEY (`school_id`))
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 
 CREATE TABLE `user` (
-  `user_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
-  `username` varchar(50) NOT NULL COMMENT 'the username used to login',
-  `password` CHAR(60) CHARACTER SET UTF8 COLLATE UTF8_BIN NULL COMMENT 'the password',
-  `enabled` BOOLEAN NOT NULL COMMENT 'if the user has ever logged in and created a password',
-  `onetime_pass` varchar(50) CHARACTER SET UTF8 NULL COMMENT 'one-time access token used for initial user setup and forgot password',
-  `onetime_pass_created` DATETIME NULL COMMENT 'when the one time pass was last generated',
-  PRIMARY KEY (`user_id`),
-  UNIQUE(`username`)
+    `user_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
+    `username` varchar(50) NOT NULL COMMENT 'the username used to login',
+    `password` CHAR(60) CHARACTER SET UTF8 COLLATE UTF8_BIN NULL COMMENT 'the password',
+    `enabled` BOOLEAN NOT NULL COMMENT 'if the user has ever logged in and created a password',
+    `onetime_pass` varchar(50) CHARACTER SET UTF8 NULL COMMENT 'one-time access token used for initial user setup and forgot password', 
+    `onetime_pass_created` DATETIME NULL COMMENT 'when the one time pass was last generated', 
+    PRIMARY KEY (`user_id`),
+    UNIQUE(`username`)
 )
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 
 CREATE TABLE `contact_method` (
   `contact_method_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key column',
@@ -43,17 +43,17 @@ CREATE TABLE `contact_method` (
   `confirm_code` varchar(64) NULL COMMENT 'the confirmation code sent to the user via the specified medium',
   `confirm_code_created` DATETIME NULL COMMENT 'the time this confirmation code was generated and sent',
   `confirmed` BOOLEAN NOT NULL COMMENT 'if this email has been confirmed as belonging to the user',
-  PRIMARY KEY (`contact_method_id`),
+    PRIMARY KEY (`contact_method_id`),
   CONSTRAINT `user_fk$contact_method`
   FOREIGN KEY (`user_fk`) REFERENCES `user` (`user_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
   CONSTRAINT `uniq_contact_type$user`
   UNIQUE (`contact_type`,`user_fk`)
 
 )
-  ENGINE = InnoDB;
-
+ENGINE = InnoDB;
+  
 CREATE TABLE `student` (
   `student_name` VARCHAR(255) NULL COMMENT 'User defined human-readable name',
   `source_system_id` VARCHAR(255) NULL UNIQUE COMMENT 'The identifier from the source system, if any',
@@ -85,8 +85,8 @@ CREATE TABLE `student` (
   FOREIGN KEY (`student_user_fk`) REFERENCES `user` (`user_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE
-)
-  ENGINE = InnoDB;
+    )
+ENGINE = InnoDB;
 
 CREATE TABLE `teacher` (
   `teacher_name` VARCHAR(256) NULL COMMENT 'User defined human-readable name',
@@ -107,7 +107,7 @@ CREATE TABLE `teacher` (
   FOREIGN KEY (`teacher_user_fk`) REFERENCES `user` (`user_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE
-)
+  )
   ENGINE = InnoDB;
 
 CREATE TABLE `administrator` (
@@ -120,7 +120,7 @@ CREATE TABLE `administrator` (
   `school_fk` BIGINT UNSIGNED NULL COMMENT 'The foreign key to the current school the administrator actively works for',
   CONSTRAINT `administrator_homeAddress_fk$administrator`
   FOREIGN KEY (`administrator_homeAddress_fk`)
-  REFERENCES `address`(`address_id`)
+    REFERENCES `address`(`address_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
   CONSTRAINT `school_fk$administrator`
@@ -128,9 +128,9 @@ CREATE TABLE `administrator` (
     ON DELETE SET NULL
     ON UPDATE CASCADE,
   FOREIGN KEY (`administrator_user_fk`) REFERENCES `user` (`user_id`)
-    ON DELETE SET NULL
-    ON UPDATE CASCADE
-)
+  ON DELETE SET NULL
+  ON UPDATE CASCADE
+  )
   ENGINE = InnoDB;
 
 CREATE TABLE `school_year` (
@@ -141,11 +141,11 @@ CREATE TABLE `school_year` (
   `school_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the school table',
   PRIMARY KEY (`school_year_id`),
   CONSTRAINT `school_fk$school_year`
-  FOREIGN KEY (`school_fk`)
-  REFERENCES `school`(`school_id`)
+    FOREIGN KEY (`school_fk`)
+    REFERENCES `school`(`school_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 
 CREATE TABLE `term` (
   `term_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
@@ -157,11 +157,11 @@ CREATE TABLE `term` (
   `term_portion` BIGINT UNSIGNED NULL COMMENT 'The denominator of the fraction of the year this term represents (1=all year, 2=half, 3=a third, etc)',
   PRIMARY KEY (`term_id`),
   CONSTRAINT `fk_school_year$school_term`
-  FOREIGN KEY (`school_year_fk`)
-  REFERENCES `school_year`(`school_year_id`)
+    FOREIGN KEY (`school_year_fk`)
+    REFERENCES `school_year`(`school_year_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 
 CREATE TABLE `course` (
   `course_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
@@ -171,11 +171,11 @@ CREATE TABLE `course` (
   `school_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the school table',
   PRIMARY KEY (`course_id`),
   CONSTRAINT `fk_school$course`
-  FOREIGN KEY (`school_fk`)
-  REFERENCES `school`(`school_id`)
+    FOREIGN KEY (`school_fk`)
+    REFERENCES `school`(`school_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 
 CREATE TABLE `section` (
   `section_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
@@ -191,16 +191,16 @@ CREATE TABLE `section` (
   `section_expression` BLOB COMMENT 'The section expression showing what period the section is taught',
   PRIMARY KEY (`section_id`),
   CONSTRAINT `fk_course$section`
-  FOREIGN KEY (`course_fk`)
-  REFERENCES `course`(`course_id`)
+    FOREIGN KEY (`course_fk`)
+    REFERENCES `course`(`course_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_term$section`
-  FOREIGN KEY (`term_fk`)
-  REFERENCES `term`(`term_id`)
+    FOREIGN KEY (`term_fk`)
+    REFERENCES `term`(`term_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 
 CREATE TABLE `teacher_section` (
   `teacher_section_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
@@ -209,13 +209,13 @@ CREATE TABLE `teacher_section` (
   `role` VARCHAR(256) NULL COMMENT 'Indicates the role the teacher has in the section',
   PRIMARY KEY (`teacher_section_id`),
   CONSTRAINT `teacher_section_teacher_fk`
-  FOREIGN KEY(`teacher_fk`)
-  REFERENCES `teacher`(`teacher_user_fk`)
+    FOREIGN KEY(`teacher_fk`)
+    REFERENCES `teacher`(`teacher_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `teacher_section_section_fk`
-  FOREIGN KEY(`section_fk`)
-  REFERENCES `section`(`section_id`)
+    FOREIGN KEY(`section_fk`)
+    REFERENCES `section`(`section_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB;
@@ -235,11 +235,11 @@ CREATE TABLE `assignment` (
   `assignment_source_system_id` VARCHAR(256) NULL UNIQUE COMMENT 'The source system from which the entity was imported - the id from that system',
   PRIMARY KEY (`assignment_id`),
   CONSTRAINT `fk_section$assignment`
-  FOREIGN KEY (`section_fk`)
-  REFERENCES `section`(`section_id`)
+    FOREIGN KEY (`section_fk`)
+    REFERENCES `section`(`section_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 
 ALTER TABLE `assignment` ADD INDEX (`user_defined_type`);
 
@@ -254,17 +254,17 @@ CREATE TABLE `student_assignment` (
   `student_assignment_exempt` BIT(1) COMMENT 'Whether the student assignment is exempt from grade calculations',
   PRIMARY KEY (`student_assignment_id`),
   CONSTRAINT `fk_assignment$student_assignment`
-  FOREIGN KEY (`assignment_fk`)
-  REFERENCES `assignment`(`assignment_id`)
+    FOREIGN KEY (`assignment_fk`)
+    REFERENCES `assignment`(`assignment_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_student$student_assignment`
-  FOREIGN KEY (`student_fk`)
-  REFERENCES `student`(`student_user_fk`)
+    FOREIGN KEY (`student_fk`)
+    REFERENCES `student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   UNIQUE KEY `assignment_fk$student_fk` (`assignment_fk`,`student_fk`))
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 
 CREATE TABLE `student_section_grade` (
   `student_section_grade_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto incrementing primary key identity column',
@@ -274,19 +274,19 @@ CREATE TABLE `student_section_grade` (
   `section_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the section table',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The foreign key to the student table',
   PRIMARY KEY (`student_section_grade_id`),
-  CONSTRAINT `uniq_section$student`
-  UNIQUE (`section_fk`,`student_fk`),
+  CONSTRAINT `uniq_section$student` 
+    UNIQUE (`section_fk`,`student_fk`),
   CONSTRAINT `fk_section$student_section_grade`
-  FOREIGN KEY (`section_fk`)
-  REFERENCES `section`(`section_id`)
+    FOREIGN KEY (`section_fk`)
+    REFERENCES `section`(`section_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_student$student_section_grade`
-  FOREIGN KEY (`student_fk`)
-  REFERENCES `student`(`student_user_fk`)
+    FOREIGN KEY (`student_fk`)
+    REFERENCES `student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 
 CREATE TABLE `gpa` (
   `gpa_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Auto incrementing primary key identity column',
@@ -298,31 +298,31 @@ CREATE TABLE `gpa` (
   `gpa_score` DOUBLE NOT NULL COMMENT 'The GPA value',
   PRIMARY KEY (`gpa_id`),
   CONSTRAINT `uniq_calc_date$student`
-  UNIQUE (`gpa_calc_date`,`student_fk`,`gpa_type`),
+    UNIQUE (`gpa_calc_date`,`student_fk`,`gpa_type`),
   CONSTRAINT `fk_student$gpa`
-  FOREIGN KEY (`student_fk`)
-  REFERENCES `student`(`student_user_fk`)
+    FOREIGN KEY (`student_fk`)
+    REFERENCES `student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-  ENGINE = InnoDB;
-ALTER TABLE `gpa` ADD INDEX (`gpa_type`);
+ ENGINE = InnoDB;
+ ALTER TABLE `gpa` ADD INDEX (`gpa_type`);
 
-CREATE TABLE `current_gpa` (
+ CREATE TABLE `current_gpa` (
   `current_gpa_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Auto incrementing primary key identity column',
   `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the student table',
   `gpa_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the GPA table',
   PRIMARY KEY (`current_gpa_id`),
   CONSTRAINT `fk_student$current_gpa`
-  FOREIGN KEY (`student_fk`)
-  REFERENCES `student`(`student_user_fk`)
+    FOREIGN KEY (`student_fk`)
+    REFERENCES `student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_gpa$current_gpa`
-  FOREIGN KEY (`gpa_fk`)
-  REFERENCES `gpa`(`gpa_id`)
+    FOREIGN KEY (`gpa_fk`)
+    REFERENCES `gpa`(`gpa_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-  ENGINE = InnoDB;
+ ENGINE = InnoDB;
 
 CREATE TABLE `report` (
   `report_id`  INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key identity column',
@@ -330,11 +330,11 @@ CREATE TABLE `report` (
   `report` TEXT NOT NULL COMMENT 'The report meta-data in JSON string format',
   PRIMARY KEY (`report_id`),
   CONSTRAINT `fk_school$report`
-  FOREIGN KEY (`school_fk`)
-  REFERENCES `school`(`school_id`)
+    FOREIGN KEY (`school_fk`)
+    REFERENCES `school`(`school_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 
 CREATE TABLE `behavior` (
   `behavior_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key identity column',
@@ -350,67 +350,67 @@ CREATE TABLE `behavior` (
   `roster` VARCHAR(256) NULL COMMENT 'Class where the event occurred',
   PRIMARY KEY (`behavior_id`),
   CONSTRAINT `fk_student$behavior`
-  FOREIGN KEY (`student_fk`)
-  REFERENCES `student`(`student_user_fk`)
+    FOREIGN KEY (`student_fk`)
+    REFERENCES `student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_teacher$behavior`
-  FOREIGN KEY (`user_fk`)
-  REFERENCES `user`(`user_id`)
+    FOREIGN KEY (`user_fk`)
+    REFERENCES `user`(`user_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
   UNIQUE KEY `remote_system_composite` (`remote_system`, `remote_behavior_id`)
 )
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 
 CREATE TABLE `authorities` (
-  `authority_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key',
-  `user_id` BIGINT UNSIGNED NOT NULL COMMENT 'The user id of user associated with this record',
-  `authority` VARCHAR(50) NOT NULL COMMENT 'The User Role',
-  PRIMARY KEY (`authority_id`),
-  CONSTRAINT `user_id$authorities`
-  FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
+    `authority_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The auto-incrementing primary key',
+    `user_id` BIGINT UNSIGNED NOT NULL COMMENT 'The user id of user associated with this record',
+    `authority` VARCHAR(50) NOT NULL COMMENT 'The User Role',
+    PRIMARY KEY (`authority_id`),
+    CONSTRAINT `user_id$authorities`
+    FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
 )
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 
 CREATE TABLE `school_day` (
-  `school_day_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'System generated ID',
-  `school_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The school foreign key',
-  `school_day_date` DATE NULL COMMENT 'The date of the school day',
-  `school_day_source_system_id` VARCHAR(256) NULL UNIQUE,
-  `school_day_source_system_other_id` BIGINT UNSIGNED NULL,
-  PRIMARY KEY (`school_day_id`),
-  FOREIGN KEY (`school_fk`) REFERENCES `school` (`school_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
+    `school_day_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'System generated ID',
+    `school_fk` BIGINT UNSIGNED NOT NULL COMMENT 'The school foreign key',
+    `school_day_date` DATE NULL COMMENT 'The date of the school day',
+    `school_day_source_system_id` VARCHAR(256) NULL UNIQUE,
+    `school_day_source_system_other_id` BIGINT UNSIGNED NULL,
+    PRIMARY KEY (`school_day_id`),
+    FOREIGN KEY (`school_fk`) REFERENCES `school` (`school_id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 )
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 
 CREATE TABLE `attendance` (
-  `attendance_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'System generated ID',
-  `school_day_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the school days table',
-  `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the student table',
-  `section_fk` BIGINT UNSIGNED COMMENT 'Foreign key to the section table',
-  `attendance_type` VARCHAR(64) NOT NULL COMMENT 'DAILY, SECTION, other',
-  `attendance_status` VARCHAR(64) NOT NULL COMMENT 'Maps to POJO enum values PRESENT, EXCUSED_ABSENT, ABSENT, TARDY',
-  `attendance_description` VARCHAR(256) NULL COMMENT 'Description of the attendance status, if any',
-  `attendance_source_system_period_id` BIGINT UNSIGNED NULL,
-  `attendance_source_system_id` VARCHAR(256) NULL,
-  `attendance_code` VARCHAR(255) null COMMENT 'Depending on source system, can be used to indicate school vs. class attendance or other',
-  PRIMARY KEY (`attendance_id`),
-  FOREIGN KEY (`school_day_fk`) REFERENCES `school_day` (`school_day_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  FOREIGN KEY (`student_fk`) REFERENCES `student` (`student_user_fk`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  FOREIGN KEY (`section_fk`) REFERENCES `section`(`section_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
+    `attendance_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'System generated ID',
+    `school_day_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the school days table',
+    `student_fk` BIGINT UNSIGNED NOT NULL COMMENT 'Foreign key to the student table',
+    `section_fk` BIGINT UNSIGNED COMMENT 'Foreign key to the section table',
+    `attendance_type` VARCHAR(64) NOT NULL COMMENT 'DAILY, SECTION, other',
+    `attendance_status` VARCHAR(64) NOT NULL COMMENT 'Maps to POJO enum values PRESENT, EXCUSED_ABSENT, ABSENT, TARDY',
+    `attendance_description` VARCHAR(256) NULL COMMENT 'Description of the attendance status, if any',
+    `attendance_source_system_period_id` BIGINT UNSIGNED NULL,
+    `attendance_source_system_id` VARCHAR(256) NULL,
+    `attendance_code` VARCHAR(255) null COMMENT 'Depending on source system, can be used to indicate school vs. class attendance or other',
+    PRIMARY KEY (`attendance_id`),
+    FOREIGN KEY (`school_day_fk`) REFERENCES `school_day` (`school_day_id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (`student_fk`) REFERENCES `student` (`student_user_fk`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (`section_fk`) REFERENCES `section`(`section_id`)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
 )
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 
 ALTER TABLE `attendance` ADD INDEX (`attendance_type`);
 ALTER TABLE `attendance` ADD INDEX (`attendance_status`);
@@ -428,28 +428,28 @@ CREATE TABLE `goal` (
   `behavior_category` varchar(45) DEFAULT NULL COMMENT 'In behavior goals we need a more specific category. Corresponds to enum BehaviorType so show what type of behavior goal',
   `goal_aggregate`  BLOB DEFAULT NULL COMMENT 'Blob to store the JSON needed for formula goals',
   `name` varchar(45) NOT NULL COMMENT 'The name of the goal',
-  PRIMARY KEY (`goal_id`),
+PRIMARY KEY (`goal_id`),
   CONSTRAINT `fk_student_goal`
-  FOREIGN KEY (`student_fk`)
-  REFERENCES `student`(`student_user_fk`)
+    FOREIGN KEY (`student_fk`)
+    REFERENCES `student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_teacher_goal`
-  FOREIGN KEY (`teacher_fk`)
-  REFERENCES `teacher`(`teacher_user_fk`)
+    FOREIGN KEY (`teacher_fk`)
+    REFERENCES `teacher`(`teacher_user_fk`)
     ON DELETE SET NULL
     ON UPDATE CASCADE)
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 
 CREATE TABLE `ui_attributes` (
-  `ui_attributes_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a UI Attributes bag',
-  `school_fk` BIGINT UNSIGNED NOT NULL UNIQUE COMMENT 'Unique foreign key to the school table',
-  `attributes` BLOB NULL COMMENT 'Client-side attributes as unmanaged JSON',
-  PRIMARY KEY (`ui_attributes_id`),
-  FOREIGN KEY (`school_fk`) REFERENCES `school` (`school_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
-  ENGINE = InnoDB;
+    `ui_attributes_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a UI Attributes bag',
+    `school_fk` BIGINT UNSIGNED NOT NULL UNIQUE COMMENT 'Unique foreign key to the school table',
+    `attributes` BLOB NULL COMMENT 'Client-side attributes as unmanaged JSON',
+    PRIMARY KEY (`ui_attributes_id`),
+    FOREIGN KEY (`school_fk`) REFERENCES `school` (`school_id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE)
+ENGINE = InnoDB;
 
 CREATE TABLE `survey` (
   `survey_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key identity column for a survey',
@@ -462,18 +462,18 @@ CREATE TABLE `survey` (
   `survey_schema` BLOB DEFAULT NULL COMMENT 'Blob to store the JSON needed for formula goals',
   PRIMARY KEY (`survey_id`),
   FOREIGN KEY (`user_fk`)
-  REFERENCES `user`(`user_id`)
+    REFERENCES `user`(`user_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   FOREIGN KEY (`school_fk`)
-  REFERENCES `school`(`school_id`)
+    REFERENCES `school`(`school_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   FOREIGN KEY (`section_fk`)
-  REFERENCES `section`(`section_id`)
+    REFERENCES `section`(`section_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 ALTER TABLE `survey` ADD INDEX (`survey_created_date`);
 ALTER TABLE `survey` ADD INDEX (`survey_administer_date`);
 
@@ -485,12 +485,12 @@ CREATE TABLE `survey_response` (
   `survey_response` BLOB DEFAULT NULL COMMENT 'Blob to store the JSON formatted survey response',
   PRIMARY KEY (`survey_response_id`),
   FOREIGN KEY (`student_fk`)
-  REFERENCES `student`(`student_user_fk`)
+    REFERENCES `student`(`student_user_fk`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   FOREIGN KEY (`survey_fk`)
-  REFERENCES `survey`(`survey_id`)
+    REFERENCES `survey`(`survey_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-  ENGINE = InnoDB;
+ENGINE = InnoDB;
 ALTER TABLE `survey_response` ADD INDEX (`survey_response_date`);
