@@ -5,7 +5,7 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
-import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Staff;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
@@ -32,15 +32,15 @@ public class AdminManagerImpl implements  AdminManager {
     }
 
     @Override
-    public ServiceResponse<Collection<Administrator>> getAllAdministrators() {
+    public ServiceResponse<Collection<Staff>> getAllAdministrators() {
         return new ServiceResponse<>(
                 administratorPersistence.selectAll());
     }
 
     @Override
     public StatusCode administratorExists(long administratorId) {
-        Administrator stud = administratorPersistence.select(administratorId);
-        if(null == stud) {
+        Staff staff = administratorPersistence.select(administratorId);
+        if(null == staff) {
             return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
                     new Object[]{ADMINISTRATOR, administratorId});
         }
@@ -48,7 +48,7 @@ public class AdminManagerImpl implements  AdminManager {
     }
 
     @Override
-    public ServiceResponse<Administrator> getAdministrator(long administratorId) {
+    public ServiceResponse<Staff> getAdministrator(long administratorId) {
         StatusCode code = pm.getTeacherManager().teacherExists(administratorId);
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
@@ -57,7 +57,7 @@ public class AdminManagerImpl implements  AdminManager {
     }
 
     @Override
-    public ServiceResponse<Long> createAdministrator(Administrator admin) {
+    public ServiceResponse<Long> createAdministrator(Staff admin) {
         String initUsername = admin.getUsername();
         boolean retry = true;
         int suffix = 0;
@@ -78,7 +78,7 @@ public class AdminManagerImpl implements  AdminManager {
     }
 
     @Override
-    public ServiceResponse<Long> replaceAdministrator(long administratorId, Administrator administrator) {
+    public ServiceResponse<Long> replaceAdministrator(long administratorId, Staff administrator) {
         StatusCode code = pm.getAdminManager().administratorExists(administratorId);
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
@@ -89,7 +89,7 @@ public class AdminManagerImpl implements  AdminManager {
 
     @Override
     public ServiceResponse<Long> updateAdministrator(long administratorId,
-                                                     Administrator administrator) {
+                                                     Staff administrator) {
         StatusCode code = administratorExists(administratorId);
         if(!code.isOK()) {
             return new ServiceResponse<>(code);

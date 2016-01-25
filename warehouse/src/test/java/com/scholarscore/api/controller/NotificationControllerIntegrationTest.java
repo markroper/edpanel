@@ -24,8 +24,8 @@ import com.scholarscore.models.notification.group.SingleTeacher;
 import com.scholarscore.models.notification.window.Duration;
 import com.scholarscore.models.notification.window.NotificationWindow;
 import com.scholarscore.models.query.AggregateFunction;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -51,7 +51,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
     private Student student2;
     private Student student3;
     private Student student4;
-    private Teacher teacher;
+    private Staff teacher;
     private List<SchoolDay> days;
 
     @BeforeClass
@@ -61,8 +61,9 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         school.setName(localeServiceUtil.generateName());
         school = schoolValidatingExecutor.create(school, "Create base school");
 
-        teacher = new Teacher();
+        teacher = new Staff();
         teacher.setName("Mr. Jones");
+        teacher.setIsTeacher(true);
         teacher.setCurrentSchoolId(school.getId());
         teacher = teacherValidatingExecutor.create(teacher, "Create a base teacher");
 
@@ -141,7 +142,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         section.setEnrolledStudents(new ArrayList<Student>());
         section.getEnrolledStudents().add(student1);
         section.getEnrolledStudents().add(student2);
-        section.setTeachers(new HashSet<Teacher>());
+        section.setTeachers(new HashSet<Staff>());
         section.getTeachers().add(teacher);
         section.setTerm(term);
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");

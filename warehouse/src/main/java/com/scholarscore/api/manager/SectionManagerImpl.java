@@ -262,10 +262,6 @@ public class SectionManagerImpl implements SectionManager {
             if(null != students && !students.isEmpty()) {
                 s.setEnrolledStudents(new ArrayList<Student>(students));
             }
-            Collection<Assignment> assignments = assignmentPersistence.selectAll(s.getId());
-            if(null != assignments && !assignments.isEmpty()) {
-                s.setAssignments(new ArrayList<Assignment>(assignments));
-            }
         }
         return new ServiceResponse<Collection<Section>>(sections);
     }

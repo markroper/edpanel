@@ -4,6 +4,7 @@ import com.scholarscore.api.persistence.BehaviorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.UserPersistence;
 import com.scholarscore.models.Behavior;
+import com.scholarscore.models.user.Staff;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
@@ -51,6 +52,7 @@ public class BehaviorJdbc implements BehaviorPersistence {
                 && behavior.getAssigner() != null 
                 && behavior.getAssigner().getId() != null) {
             behavior.setAssigner(userPersistence.selectUser(behavior.getAssigner().getId()));
+
         }
     }
 

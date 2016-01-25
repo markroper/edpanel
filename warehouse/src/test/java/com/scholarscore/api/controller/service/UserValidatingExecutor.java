@@ -4,10 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.School;
-import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Person;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -34,11 +33,11 @@ public class UserValidatingExecutor {
         return retrieveAndValidateCreatedUser(userId, user, HttpMethod.POST, msg);
     }
 
-    public Administrator createAdmin(Administrator admin, String msg) {
+    public Staff createAdmin(Staff admin, String msg) {
         ResultActions response = serviceBase.makeRequest(HttpMethod.POST, serviceBase.getAdminsEndpoint(), null, admin);
         EntityId userId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
         Assert.assertNotNull(userId, "unexpected null app returned from create call for case: " + msg);
-        return (Administrator)retrieveAndValidateCreatedUser(userId, admin, HttpMethod.POST, msg);
+        return (Staff)retrieveAndValidateCreatedUser(userId, admin, HttpMethod.POST, msg);
     }
 
 
@@ -106,12 +105,10 @@ public class UserValidatingExecutor {
         if (submitted == null || created == null) { return null; }
 
         User returnUser = null;
-        if (submitted instanceof Administrator) {
-            returnUser = new Administrator((Administrator)submitted);
+        if (submitted instanceof Staff) {
+            returnUser = new Staff((Staff)submitted);
         } else if (submitted instanceof Student) {
             returnUser = new Student((Student)submitted);
-        } else if (submitted instanceof Teacher) {
-            returnUser = new Teacher((Teacher)submitted);
         } else {
             fail("Failure - unknown user type");
         }

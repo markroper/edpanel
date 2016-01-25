@@ -1,7 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.Staff;
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -19,38 +19,41 @@ public class TeacherControllerIntegrationTest extends IntegrationBase {
     //Positive test cases
     @DataProvider
     public Object[][] createTeacherProvider() {
-        Teacher emptyTeacher = new Teacher();
-        Teacher namedTeacher = new Teacher();
+        Staff emptyTeacher = new Staff();
+        emptyTeacher.setIsTeacher(true);
+        Staff namedTeacher = new Staff();
+        namedTeacher.setIsTeacher(true);
         namedTeacher.setName(localeServiceUtil.generateName());
         
         return new Object[][] {
-//                { "Empty teacher", emptyTeacher },
+                { "Empty teacher", emptyTeacher },
                 { "Named teacher", namedTeacher }
         };
     }
     
     @Test(dataProvider = "createTeacherProvider")
-    public void createTeacherTest(String msg, Teacher teacher) {
+    public void createTeacherTest(String msg, Staff teacher) {
         teacherValidatingExecutor.create(teacher, msg);
     }
     
     @Test(dataProvider = "createTeacherProvider")
-    public void deleteTeacherTest(String msg, Teacher teacher) {
-        Teacher createdTeacher = teacherValidatingExecutor.create(teacher, msg);
+    public void deleteTeacherTest(String msg, Staff teacher) {
+        Staff createdTeacher = teacherValidatingExecutor.create(teacher, msg);
         teacherValidatingExecutor.delete(createdTeacher.getId(), msg);
     }
     
     @Test(dataProvider = "createTeacherProvider")
-    public void replaceTeacherTest(String msg, Teacher teacher) {
-        Teacher createdTeacher = teacherValidatingExecutor.create(teacher, msg);
-        Teacher t = new Teacher(teacher);
+    public void replaceTeacherTest(String msg, Staff teacher) {
+        Staff createdTeacher = teacherValidatingExecutor.create(teacher, msg);
+        Staff t = new Staff(teacher);
         teacherValidatingExecutor.replace(createdTeacher.getId(), t, msg);
     }
     
     @Test(dataProvider = "createTeacherProvider")
-    public void updateTeacherTest(String msg, Teacher teacher) {
-        Teacher createdTeacher = teacherValidatingExecutor.create(teacher, msg);
-        Teacher updatedTeacher = new Teacher();
+    public void updateTeacherTest(String msg, Staff teacher) {
+        Staff createdTeacher = teacherValidatingExecutor.create(teacher, msg);
+        Staff updatedTeacher = new Staff();
+        updatedTeacher.setIsTeacher(true);
         updatedTeacher.setName(localeServiceUtil.generateName());
         //PATCH the existing record with a new name.
         teacherValidatingExecutor.update(createdTeacher.getId(), updatedTeacher, msg);
@@ -64,7 +67,7 @@ public class TeacherControllerIntegrationTest extends IntegrationBase {
     //Negative test cases
     @DataProvider
     public Object[][] createTeacherNegativeProvider() {
-        Teacher gradedTeacherNameTooLong = new Teacher();
+        Staff gradedTeacherNameTooLong = new Staff();
         gradedTeacherNameTooLong.setName(localeServiceUtil.generateName(257));
         
         return new Object[][] {
@@ -73,15 +76,16 @@ public class TeacherControllerIntegrationTest extends IntegrationBase {
     }
     
     @Test(dataProvider = "createTeacherNegativeProvider")
-    public void createTeacherNegativeTest(String msg, Teacher teacher, HttpStatus expectedStatus) {
+    public void createTeacherNegativeTest(String msg, Staff teacher, HttpStatus expectedStatus) {
         teacherValidatingExecutor.createNegative(teacher, expectedStatus, msg);
     }
     
     @Test(dataProvider = "createTeacherNegativeProvider")
-    public void replaceTeacherNegativeTest(String msg, Teacher teacher, HttpStatus expectedStatus) {
-        Teacher t = new Teacher();
+    public void replaceTeacherNegativeTest(String msg, Staff teacher, HttpStatus expectedStatus) {
+        Staff t = new Staff();
+        t.setIsTeacher(true);
         t.setName(UUID.randomUUID().toString());
-        Teacher created = teacherValidatingExecutor.create(t, msg);
+        Staff created = teacherValidatingExecutor.create(t, msg);
         teacherValidatingExecutor.replaceNegative(created.getId(), teacher, expectedStatus, msg);
     }
 }
