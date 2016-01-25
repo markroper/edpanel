@@ -26,8 +26,6 @@ import java.util.List;
  * Messages can be queries by thread and by status as being read or not by a given user. There is also a convenience
  * endpoint that returns all unread messages for a user across all message threads that the user is a participant in.
  */
-//TODO: make sure that any user can create a thread, but that only users who are on a thread can add
-//messages to that thread or see that threads messages, or otherwise administer that thread
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/messagethreads")
 public class MessageController extends BaseController {
