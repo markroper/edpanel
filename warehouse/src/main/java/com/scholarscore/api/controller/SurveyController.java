@@ -155,7 +155,6 @@ public class SurveyController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    //TODO: add filter by requesting student
     @StudentAccessible
     public @ResponseBody ResponseEntity getSurveysBySchoolId(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
@@ -174,7 +173,6 @@ public class SurveyController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    //TODO: add filter by requesting student
     @StudentAccessible
     public @ResponseBody ResponseEntity getSurveysBySectionlId(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
@@ -195,10 +193,9 @@ public class SurveyController extends BaseController {
             method = RequestMethod.POST,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
-    //TODO: make sure requesting user is a respondent
     @StudentAccessible
     public @ResponseBody
-    ResponseEntity createSurvey(@RequestBody @Valid SurveyResponse response) {
+    ResponseEntity createSurveyResp(@RequestBody @Valid SurveyResponse response) {
         return respond(pm.getSurveyManager().createSurveyResponse(response));
     }
 
@@ -211,7 +208,6 @@ public class SurveyController extends BaseController {
             method = RequestMethod.DELETE,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
-    //TODO: ensure users can only delete their own response
     @StudentAccessible
     public @ResponseBody
     ResponseEntity deleteSurveyResponse(@ApiParam(name = "surveyId", required = true, value = "Survey ID")
@@ -230,10 +226,9 @@ public class SurveyController extends BaseController {
             method = RequestMethod.PUT,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
-    //TODO: only permit update of survey response if requesting user owns the response
     @StudentAccessible
     public @ResponseBody
-    ResponseEntity deleteSurveyResponse(@ApiParam(name = "surveyId", required = true, value = "Survey ID")
+    ResponseEntity updateSurveyResponse(@ApiParam(name = "surveyId", required = true, value = "Survey ID")
                                         @PathVariable(value="surveyId") Long surveyId,
                                         @ApiParam(name = "responseId", required = true, value = "Response ID")
                                         @PathVariable(value="responseId") Long responseId,
@@ -283,7 +278,6 @@ public class SurveyController extends BaseController {
             method = RequestMethod.GET,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
-    //TODO once the response is retrieved, only return it if it is the requesting users.
     @StudentAccessible
     public @ResponseBody
     ResponseEntity getSurveyResponse(@ApiParam(name = "surveyId", required = true, value = "Survey ID")
