@@ -14,8 +14,8 @@ import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.goal.GoalType;
 import com.scholarscore.models.ui.SectionGradeWithProgression;
 import com.scholarscore.models.ui.StudentSectionDashboardData;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
@@ -80,10 +80,10 @@ public class UiEndpointsController extends BaseController {
                 if ( null != sectionGoal) {
                     sectionDashData.setGradeGoal(sectionGoal);
                 } else {
-                    Set<Teacher> teachers = s.getTeachers();
-                    Teacher t = null;
-                    if(null != teachers && !teachers.isEmpty()) {
-                        t = teachers.iterator().next();
+                    Set<Staff> persons = s.getTeachers();
+                    Staff t = null;
+                    if(null != persons && !persons.isEmpty()) {
+                        t = persons.iterator().next();
                     }
                     CumulativeGradeGoal fullCumulativeGradeGoalByBuilder = new CumulativeGradeGoal.CumulativeGradeGoalBuilder().
                             withParentId(s.getId()).
@@ -91,7 +91,7 @@ public class UiEndpointsController extends BaseController {
                             withApproved(Boolean.FALSE).
                             withDesiredValue(80D).
                             withName("Section Goal").
-                            withTeacher(t).
+                            withStaff(t).
                             build();
                     ServiceResponse<Long> createdGoalResp =
                             pm.getGoalManager().createGoal(studentId, fullCumulativeGradeGoalByBuilder);

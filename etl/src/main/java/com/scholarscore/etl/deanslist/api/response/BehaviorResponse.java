@@ -3,6 +3,7 @@ package com.scholarscore.etl.deanslist.api.response;
 import com.scholarscore.etl.deanslist.api.model.DlBehavior;
 import com.scholarscore.etl.powerschool.api.response.ITranslateCollection;
 import com.scholarscore.models.BehaviorCategory;
+import com.scholarscore.models.user.Staff;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,7 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
             student.setName(getStudentName(dlBehavior));
             out.setStudent(student);
             // mostly-empty teacher with just teacher name (it's all we have)
-            com.scholarscore.models.user.Teacher teacher = new com.scholarscore.models.user.Teacher();
+            Staff teacher = new Staff();
             teacher.setName(getStaffName(dlBehavior));
             out.setAssigner(teacher);
 

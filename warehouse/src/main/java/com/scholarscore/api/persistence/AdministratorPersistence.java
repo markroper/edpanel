@@ -1,6 +1,6 @@
 package com.scholarscore.api.persistence;
 
-import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Staff;
 
 import java.util.Collection;
 
@@ -13,7 +13,7 @@ public interface AdministratorPersistence {
      *
      * @return
      */
-    Collection<Administrator> selectAll();
+    Collection<Staff> selectAll();
 
     /**
      * Select a single administrator
@@ -21,7 +21,7 @@ public interface AdministratorPersistence {
      * @param administratorId
      * @return
      */
-    Administrator select(long administratorId);
+    Staff select(long administratorId);
 
     /**
      * Find the user by username
@@ -29,7 +29,7 @@ public interface AdministratorPersistence {
      * @param username
      * @return
      */
-    Administrator select(String username);
+    Staff select(String username);
 
     /**
      * Create an administrator
@@ -37,7 +37,7 @@ public interface AdministratorPersistence {
      * @param admin
      * @return
      */
-    Long createAdministrator(Administrator admin);
+    Long createAdministrator(Staff admin);
 
     /**
      * Update / replace an existing administrator - none of the attributes will remain
@@ -45,7 +45,7 @@ public interface AdministratorPersistence {
      * @param administratorId
      * @param administrator
      */
-    void replaceAdministrator(long administratorId, Administrator administrator);
+    void replaceAdministrator(long administratorId, Staff administrator);
 
     /**
      * Delete an existing administrator

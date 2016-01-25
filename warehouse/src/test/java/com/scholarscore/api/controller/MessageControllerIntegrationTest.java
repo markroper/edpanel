@@ -10,8 +10,8 @@ import com.scholarscore.models.message.MessageThread;
 import com.scholarscore.models.message.MessageThreadParticipant;
 import com.scholarscore.models.message.topic.GpaTopic;
 import com.scholarscore.models.message.topic.MessageTopic;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -31,7 +31,7 @@ public class MessageControllerIntegrationTest extends IntegrationBase {
     private Student student2;
     private Student student3;
     private Student student4;
-    private Teacher teacher;
+    private Staff teacher;
 
     private Gpa gpa1;
 
@@ -42,7 +42,8 @@ public class MessageControllerIntegrationTest extends IntegrationBase {
         school.setName(localeServiceUtil.generateName());
         school = schoolValidatingExecutor.create(school, "Create base school");
 
-        teacher = new Teacher();
+        teacher = new Staff();
+        teacher.setIsTeacher(true);
         teacher.setName("Mr. Jones");
         teacher.setCurrentSchoolId(school.getId());
         teacher = teacherValidatingExecutor.create(teacher, "Create a base teacher");

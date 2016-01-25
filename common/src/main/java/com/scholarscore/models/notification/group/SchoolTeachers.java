@@ -1,6 +1,6 @@
 package com.scholarscore.models.notification.group;
 
-import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.Staff;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -14,7 +14,7 @@ import javax.persistence.Transient;
 @Entity
 @DiscriminatorValue(value = "SCHOOL_TEACHERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class SchoolTeachers extends NotificationGroup<Teacher> {
+public class SchoolTeachers extends NotificationGroup<Staff> {
     @Override
     @Transient
     public NotificationGroupType getType() {

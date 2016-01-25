@@ -3,7 +3,7 @@ package com.scholarscore.api.controller;
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.Staff;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +38,7 @@ public class TeacherController extends BaseController {
     @ApiOperation(
             value = "Get a teacher by ID", 
             notes = "Given a teacher ID, the endpoint returns the teacher", 
-            response = Teacher.class)
+            response = Staff.class)
     @RequestMapping(
             value = "/{teacherId}", 
             method = RequestMethod.GET, 
@@ -59,7 +59,7 @@ public class TeacherController extends BaseController {
             method = RequestMethod.POST, 
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity create(@RequestBody @Valid Teacher teacher) {
+    public @ResponseBody ResponseEntity create(@RequestBody @Valid Staff teacher) {
         return respond(pm.getTeacherManager().createTeacher(teacher));
     }
 
@@ -75,7 +75,7 @@ public class TeacherController extends BaseController {
     public @ResponseBody ResponseEntity replace(
             @ApiParam(name = "teacherId", required = true, value = "Teacher ID")
             @PathVariable(value="teacherId") Long teacherId,
-            @RequestBody @Valid Teacher teacher) {
+            @RequestBody @Valid Staff teacher) {
         return respond(pm.getTeacherManager().replaceTeacher(teacherId, teacher));
     }
     
@@ -91,7 +91,7 @@ public class TeacherController extends BaseController {
     public @ResponseBody ResponseEntity update(
             @ApiParam(name = "teacherId", required = true, value = "Teacher ID")
             @PathVariable(value="teacherId") Long teacherId,
-            @RequestBody @Valid Teacher teacher) {
+            @RequestBody @Valid Staff teacher) {
         return respond(pm.getTeacherManager().updateTeacher(teacherId, teacher));
     }
 

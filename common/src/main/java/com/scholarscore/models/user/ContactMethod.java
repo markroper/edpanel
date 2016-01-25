@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -100,6 +101,7 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
     }
 
     @Column(name = HibernateConsts.CONTACT_METHOD_CONFIRMED, columnDefinition = "TINYINT(1)")
+    @Type(type = "org.hibernate.type.NumericBooleanType")
     public Boolean getConfirmed() {
         return confirmed;
     }

@@ -3,7 +3,7 @@ package com.scholarscore.models.query.dimension;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.query.Dimension;
-import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.Staff;
 
 import java.util.Set;
 
@@ -26,7 +26,7 @@ public class TeacherDimension implements IDimension {
     @Override
     @JsonIgnore
     public Class<?> getAssociatedClass() {
-        return Teacher.class;
+        return Staff.class;
     }
 
     @Override
