@@ -116,7 +116,7 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
                         + "Approved: " + getApproved() + "\n"
                         + "GoalType: " + getGoalType() + "\n"
                         + "Student: " + getStudent() + "\n"
-                        + "Teacher: " + getTeacher() + "\n"
+                        + "Teacher: " + getStaff() + "\n"
                         + "StartDate: " + getStartDate() + "\n"
                         + "EndDate: " + getEndDate();
     }

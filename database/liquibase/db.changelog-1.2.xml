@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <changeSet author="chris" id="changelog-1.2-change1">
+        <comment>XML comments won't be persisted, include any relevant comments in comment tags like this</comment>
+        <!-- STAFF TABLE-->
+        <createTable tableName="staff">
+            <column name="staff_name"
+                    type="varchar(256)"
+                    remarks="Name of the staff member">
+            </column>
+            <column name="staff_source_system_id"
+                    type="varchar(256)"
+                    remarks="Source ID of the staff member in SIS">
+                <constraints unique="true"/>
+            </column>
+            <column name="staff_source_system_user_id"
+                    type="varchar(256)"
+                    remarks="USer identifier from source system if any">
+                <constraints unique="true"/>
+            </column>
+            <column name="staff_user_fk"
+                    type="bigint unsigned"
+                    remarks="The user_fk of the staff_member">
+                <constraints unique="true"/>
+            </column>
+            <column name="staff_home_phone"
+                    type="varchar(256)"
+                    remarks="Home phone number for staff">
+            </column>
+            <column name="admin"
+                    type="int"
+                    remarks="Boolean indicating if the staff is an admin">
+                <constraints nullable="false"/>
+            </column>
+            <column name="teacher"
+                    type="int"
+                    remarks="Boolean indicating if the staff is a teacher">
+                <constraints nullable="false" />
+            </column>
+            <column name="staff_homeAddress_fk"
+                    type="BIGINT UNSIGNED"
+                    remarks="foreign key to homeAddress">
+            </column>
+            <column name="school_fk"
+                    type="BIGINT UNSIGNED"
+                    remarks="foreign key to school">
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="staff"
+                                 baseColumnNames="school_fk"
+                                 constraintName="staff$school_fk"
+                                 onDelete="SET NULL"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="school_id"
+                                 referencedTableName="school"/>
+        <addForeignKeyConstraint baseTableName="staff"
+                                 baseColumnNames="staff_homeAddress_fk"
+                                 constraintName="staff$staff_homeAddress_fk"
+                                 onDelete="SET NULL"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="address_id"
+                                 referencedTableName="address"/>
+        <addForeignKeyConstraint baseTableName="staff"
+                                 baseColumnNames="staff_user_fk"
+                                 constraintName="staff$staff_user_fk"
+                                 onDelete="SET NULL"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="user"/>
+
+        <!--Modify teacher section -->
+
+        <dropForeignKeyConstraint
+                baseTableName="teacher_section"
+                constraintName="teacher_section_teacher_fk"/>
+
+        <renameColumn
+                newColumnName="staff_fk"
+                columnDataType="BIGINT UNSIGNED"
+                oldColumnName="teacher_fk"
+                tableName="teacher_section"/>
+
+        <addForeignKeyConstraint baseTableName="teacher_section"
+                                 baseColumnNames="staff_fk"
+                                 constraintName="teacher_section$staff_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="staff_user_fk"
+                                 referencedTableName="staff"/>
+
+        <!-- modify goal table -->
+
+        <dropForeignKeyConstraint
+                baseTableName="goal"
+                constraintName="fk_teacher_goal"/>
+
+        <renameColumn
+                newColumnName="staff_fk"
+                columnDataType="BIGINT UNSIGNED"
+                oldColumnName="teacher_fk"
+                tableName="goal"/>
+
+        <addForeignKeyConstraint baseTableName="goal"
+                                 baseColumnNames="staff_fk"
+                                 constraintName="fk_staff_goal"
+                                 onDelete="SET NULL"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="staff_user_fk"
+                                 referencedTableName="staff"/>
+
+        <!-- MODIFY NOTICATION_GROUP FOREIGN KEYS -->
+         <dropForeignKeyConstraint
+                baseTableName="notification_group"
+                constraintName="notification_group$administrator_fk"/>
+
+        <addForeignKeyConstraint baseTableName="notification_group"
+                                 baseColumnNames="administrator_fk"
+                                 constraintName="notification_group$administrator_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="staff_user_fk"
+                                 referencedTableName="staff"/>
+
+        <dropForeignKeyConstraint
+                baseTableName="notification_group"
+                constraintName="notification_group$teacher_fk"/>
+
+        <addForeignKeyConstraint baseTableName="notification_group"
+                                 baseColumnNames="teacher_fk"
+                                 constraintName="notification_group$teacher_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="staff_user_fk"
+                                 referencedTableName="staff"/>
+
+        <sql>
+            INSERT INTO staff
+            (staff_name, staff_source_system_id, staff_source_system_user_id, staff_user_fk,
+            staff_home_phone, staff_homeAddress_fk, school_fk, admin, teacher)
+            SELECT
+            administrator_name, administrator_source_system_id, administrator_source_system_user_id,
+            administrator_user_fk, administrator_home_phone, administrator_homeAddress_fk,
+            school_fk, '1', '1' FROM administrator;
+
+            INSERT INTO staff
+            (staff_name, staff_source_system_id, staff_source_system_user_id, staff_user_fk,
+            staff_home_phone, staff_homeAddress_fk, school_fk, admin, teacher)
+            SELECT
+            teacher_name, teacher_source_system_id, teacher_source_system_user_id,
+            teacher_user_fk, teacher_home_phone, teacher_homeAddress_fk,
+            school_fk, '0', '1' FROM teacher;
+        </sql>
+
+
+        <!--Drop admin and teacher tables-->
+        <dropTable cascadeConstraints="true"
+                   tableName="administrator"/>
+        <dropTable cascadeConstraints="true"
+                   tableName="teacher"/>
+
+
+
+
+
+
+
+    </changeSet>
+</databaseChangeLog>

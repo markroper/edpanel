@@ -110,7 +110,7 @@ public class AttendanceGoal extends Goal implements CalculatableAttendance{
                         + "Approved: " + getApproved() + "\n"
                         + "GoalType: " + getGoalType() + "\n"
                         + "Student: " + getStudent() + "\n"
-                        + "Teacher: " + getTeacher() + "\n"
+                        + "Teacher: " + getStaff() + "\n"
                         + "ParentId: " + getParentId() + "\n"
                         + "StartDate: " + getStartDate() + "\n"
                         + "EndDate: " + getEndDate();
