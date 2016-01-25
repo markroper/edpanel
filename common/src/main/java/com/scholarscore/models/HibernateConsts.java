@@ -64,6 +64,7 @@ public class HibernateConsts {
     // the following column names are used in multiple places in different tables
     public static final String STUDENT_FK = "student_fk";
     public static final String TEACHER_FK = "teacher_fk";
+    public static final String STAFF_FK = "staff_fk";
     public static final String ADMINISTRATOR_FK = "administrator_fk";
     
     // these aren't defined columns in the DB, but are used by the SQL statements
@@ -145,6 +146,17 @@ public class HibernateConsts {
     public static final String TEACHER_SOURCE_SYSTEM_ID = "teacher_source_system_id";
     public static final String TEACHER_SOURCE_SYSTEM_USER_ID = "teacher_source_system_user_id";
     public static final String TEACHER_USER_FK = "teacher_user_fk";
+
+    //Teacher constants
+    public static final String STAFF_TABLE = "staff";
+    public static final String STAFF_NAME = "staff_name";
+    public static final String STAFF_ADDRESS_FK = "staff_homeAddress_fk";
+    public static final String STAFF_HOME_PHONE = "staff_home_phone";
+    public static final String STAFF_SOURCE_SYSTEM_ID = "staff_source_system_id";
+    public static final String STAFF_SOURCE_SYSTEM_USER_ID = "staff_source_system_user_id";
+    public static final String STAFF_USER_FK = "staff_user_fk";
+    public static final String STAFF_IS_ADMIN = "admin";
+    public static final String STAFF_IS_TEACHER = "teacher";
     
     //Term constants
     public static final String TERM_TABLE = "term";

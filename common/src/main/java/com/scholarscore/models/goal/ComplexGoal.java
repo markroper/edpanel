@@ -8,7 +8,6 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.Table;
 import java.util.Objects;
 
 /**
@@ -82,7 +81,7 @@ public class ComplexGoal extends Goal {
                         + "Approved: " + getApproved() + "\n"
                         + "GoalType: " + getGoalType() + "\n"
                         + "Student: " + getStudent() + "\n"
-                        + "Teacher: " + getTeacher() + "\n"
+                        + "Teacher: " + getStaff() + "\n"
                         + "GoalAggregate: " + getGoalAggregate();
     }
 }

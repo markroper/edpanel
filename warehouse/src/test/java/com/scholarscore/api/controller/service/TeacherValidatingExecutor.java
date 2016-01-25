@@ -3,7 +3,7 @@ package com.scholarscore.api.controller.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.Staff;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
@@ -18,12 +18,12 @@ public class TeacherValidatingExecutor {
         this.serviceBase = sb;
     }
     
-    public Teacher get(Long teacherId, String msg) {
+    public Staff get(Long teacherId, String msg) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.GET, 
                 serviceBase.getTeacherEndpoint(teacherId),
                 null);
-        Teacher teacher = serviceBase.validateResponse(response, new TypeReference<Teacher>(){});
+        Staff teacher = serviceBase.validateResponse(response, new TypeReference<Staff>(){});
         Assert.assertNotNull(teacher, "Unexpected null teacher returned for case: " + msg);
         
         return teacher;
@@ -34,7 +34,7 @@ public class TeacherValidatingExecutor {
                 HttpMethod.GET, 
                 serviceBase.getTeacherEndpoint(), 
                 null);
-        ArrayList<Teacher> teachers = serviceBase.validateResponse(response, new TypeReference<ArrayList<Teacher>>(){});
+        ArrayList<Staff> teachers = serviceBase.validateResponse(response, new TypeReference<ArrayList<Staff>>(){});
         Assert.assertNotNull(teachers, "Unexpected null teacher returned for case: " + msg);
     }
     
@@ -48,7 +48,7 @@ public class TeacherValidatingExecutor {
     }
     
     
-    public Teacher create(Teacher teacher, String msg) {
+    public Staff create(Staff teacher, String msg) {
         //Create the teacher
         ResultActions response = serviceBase.makeRequest(HttpMethod.POST, serviceBase.getTeacherEndpoint(), null, teacher);
         EntityId teacherId = serviceBase.validateResponse(response, new TypeReference<EntityId>(){});
@@ -56,7 +56,7 @@ public class TeacherValidatingExecutor {
         return retrieveAndValidateCreatedTeacher(teacherId.getId(), teacher, HttpMethod.POST, msg);
     }
     
-    public void createNegative(Teacher teacher, HttpStatus expectedCode, String msg) {
+    public void createNegative(Staff teacher, HttpStatus expectedCode, String msg) {
         //Attempt to create the teacher
         ResultActions response = serviceBase.makeRequest(HttpMethod.POST, serviceBase.getTeacherEndpoint(), null, teacher);
         Assert.assertEquals(response.andReturn().getResponse().getStatus(), expectedCode.value(), 
@@ -80,7 +80,7 @@ public class TeacherValidatingExecutor {
                 "Unexpected Http status code returned for negative test case for DELETE: " + msg);
     }
 
-    public Teacher replace(Long teacherId, Teacher teacher, String msg) {
+    public Staff replace(Long teacherId, Staff teacher, String msg) {
         //Create the teacher
         ResultActions response = serviceBase.makeRequest(HttpMethod.PUT, 
                 serviceBase.getTeacherEndpoint(teacherId), 
@@ -91,7 +91,7 @@ public class TeacherValidatingExecutor {
         return retrieveAndValidateCreatedTeacher(teacherId, teacher, HttpMethod.PUT, msg);
     }
 
-    public void replaceNegative(Long teacherId, Teacher teacher, HttpStatus expectedCode, String msg) {
+    public void replaceNegative(Long teacherId, Staff teacher, HttpStatus expectedCode, String msg) {
         //Create the teacher
         ResultActions response = serviceBase.makeRequest(HttpMethod.PUT, 
                 serviceBase.getTeacherEndpoint(teacherId), 
@@ -101,7 +101,7 @@ public class TeacherValidatingExecutor {
                 "Unexpected Http status code returned for negative test case for PUT: " + msg);
     }
 
-    public Teacher update(Long teacherId, Teacher teacher, String msg) {
+    public Staff update(Long teacherId, Staff teacher, String msg) {
       //Create the teacher
         ResultActions response = serviceBase.makeRequest(HttpMethod.PATCH, 
                 serviceBase.getTeacherEndpoint(teacherId), 
@@ -112,7 +112,7 @@ public class TeacherValidatingExecutor {
         return retrieveAndValidateCreatedTeacher(teacherId, teacher, HttpMethod.PATCH, msg);
     }
 
-    public void updateNegative(Long teacherId, Long courseId, Long id, Teacher teacher, HttpStatus expectedCode, String msg) {
+    public void updateNegative(Long teacherId, Long courseId, Long id, Staff teacher, HttpStatus expectedCode, String msg) {
       //Create the teacher
         ResultActions response = serviceBase.makeRequest(HttpMethod.PATCH, 
                 serviceBase.getTeacherEndpoint(teacherId), 
@@ -135,20 +135,20 @@ public class TeacherValidatingExecutor {
      * @param msg
      * @return
      */
-    protected Teacher retrieveAndValidateCreatedTeacher( Long teacherId, Teacher submittedTeacher, HttpMethod method, String msg) {
+    protected Staff retrieveAndValidateCreatedTeacher( Long teacherId, Staff submittedTeacher, HttpMethod method, String msg) {
         //Retrieve and validate the created assignment
-        Teacher createdTeacher = this.get(teacherId, msg);
+        Staff createdTeacher = this.get(teacherId, msg);
         //Keep a reference to the created assignment for later cleanup
         serviceBase.teachersCreated.add(createdTeacher);
-        Teacher expectedTeacher = generateExpectationTeacher(submittedTeacher, createdTeacher, method);
+        Staff expectedTeacher = generateExpectationTeacher(submittedTeacher, createdTeacher, method);
         Assert.assertEquals(createdTeacher, expectedTeacher, "Unexpected assignment created for case: " + msg);
         
         return createdTeacher;
     }
     /**
      * Given a submitted assignment object and an assignment instance returned by the API after creation,
-     * this method returns a new Teacher instance that represents the expected state of the submitted 
-     * Teacher after creation.  The reason that there are differences in the submitted and expected 
+     * this method returns a new Staff instance that represents the expected state of the submitted
+     * Staff after creation.  The reason that there are differences in the submitted and expected
      * instances is that there may be system assigned values not in the initially submitted object, for 
      * example, the id property.
      * 
@@ -156,8 +156,8 @@ public class TeacherValidatingExecutor {
      * @param created
      * @return
      */
-    protected Teacher generateExpectationTeacher(Teacher submitted, Teacher created, HttpMethod method) {
-        Teacher returnTeacher = new Teacher(submitted);
+    protected Staff generateExpectationTeacher(Staff submitted, Staff created, HttpMethod method) {
+        Staff returnTeacher = new Staff(submitted);
         if(method == HttpMethod.PATCH) {
             returnTeacher.mergePropertiesIfNull(created);
         } else if(null != returnTeacher && null == returnTeacher.getId()) {

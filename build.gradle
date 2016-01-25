@@ -126,8 +126,10 @@ liquibase {
         def database_ssl  = project.loadProperty(dbPropsFilePath, "database.ssl");
    
         def jdbcUrl = (database_ssl?.equalsIgnoreCase("true")) ?  
-                "jdbc:mysql://${database_host}:${database_port}/${database_name}?useSSL=true&amp;requireSSL=true&amp;verifyServerCertificate=false" :
+                "jdbc:mysql://${database_host}:${database_port}/${database_name}?useSSL=true&requireSSL=true&verifyServerCertificate=false&serverSslCert=${project.rootDir.absolutePath}/warehouse/src/main/resources/db-public-key.ca-bundle" :
                 "jdbc:mysql://${database_host}:${database_port}/${database_name}";
+
+        println "jdbcUrl: $jdbcUrl";
         
       driver 'org.mariadb.jdbc.Driver' 
       changeLogFile 'database/liquibase/db.changelog-master.xml' 

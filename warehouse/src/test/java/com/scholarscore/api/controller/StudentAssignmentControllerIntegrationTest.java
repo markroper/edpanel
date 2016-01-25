@@ -9,8 +9,8 @@ import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import org.springframework.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -32,7 +32,7 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
     private Section section;
     private GradedAssignment sectionAssignment;
     private Student student;
-    private Teacher teacher;
+    private Staff teacher;
     
     @BeforeClass
     public void init() {
@@ -42,8 +42,9 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
         school.setName(localeServiceUtil.generateName());
         school = schoolValidatingExecutor.create(school, "Create base school");
         
-        teacher = new Teacher();
+        teacher = new Staff();
         teacher.setName("Mr. Jones");
+        teacher.setIsTeacher(true);
         teacher = teacherValidatingExecutor.create(teacher, "Create a base teacher");
         
         student = new Student();
@@ -69,7 +70,7 @@ public class StudentAssignmentControllerIntegrationTest extends IntegrationBase 
         section.setName(localeServiceUtil.generateName());
         section.setEnrolledStudents(new ArrayList<Student>());
         section.getEnrolledStudents().add(student);
-        section.setTeachers(new HashSet<Teacher>());
+        section.setTeachers(new HashSet<>());
         section.getTeachers().add(teacher);
         section.setTerm(term);
         section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create test base term");
