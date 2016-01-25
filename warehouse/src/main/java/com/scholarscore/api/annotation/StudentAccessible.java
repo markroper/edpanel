@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  * @StudentAccessible(userIdParamMustEqualRequestingUserId = false)
  *
  * By default, the userId API param will be assumed to be called 'userId'.  The name of the param can
- * he overridden on any given method in the following manner:
+ * be overridden on any given method in the following manner:
  *
  * @StudentAccessible(paramName = "studentId")
  *
