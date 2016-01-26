@@ -140,6 +140,7 @@ liquibase {
   }
 }
 
+
 task refillDatabase(type: Exec) {
     group 'Database'
     description 'creates everything needed within the database'
@@ -165,6 +166,44 @@ task refillDatabase(type: Exec) {
         project.liquibaseUpdate.execute()
     }
 }
+
+def getDate()  {
+    def date = new Date()
+    def formattedDate = date.format("yyyy-MM-dd'T'HH:mm:ss")
+    return formattedDate
+}
+
+def liquibasePatchingTimeStarted = null
+
+liquibaseUpdate.doFirst { 
+    liquibasePatchingTimeStarted = getDate()
+}
+
+liquibaseUpdate.finalizedBy 'doLiquibaseRollback'
+
+task doLiquibaseRollback { 
+    onlyIf { 
+        project.liquibaseUpdate.state.failure != null
+    }
+    doLast {
+        // yup, this gets weird
+        project.ext.liquibaseCommandValue = liquibasePatchingTimeStarted
+        project.liquibaseRollbackToDate.execute()
+//        println("Liquibase - ERROR DETECTED DO ROLLBACK HERE USING ROLLBACK DATE ${liquibasePatchingTimeStarted}");
+    }
+}
+
+task liquibaseAutoRollback (type: org.liquibase.gradle.LiquibaseTask) { 
+    command 'rollback'
+    group 'Liquibase'
+    requiresValue = true
+
+    println("successfully configured new liquibase rollback task!")
+    doLast { 
+        println("executed liquibase rollback new task")
+    }
+}
+
 
 // run the integration tests before generating the report
 integrationCodeCoverageReport.dependsOn {
