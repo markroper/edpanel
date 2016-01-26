@@ -18,7 +18,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 /**
- * TODO: make the get student assignments endpoints filter by yser in the case where the requesting user is a student
+ * TODO: make the get student assignments endpoints filter by year in the case where the requesting user is a student
  */
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/years/{yrId}/terms/{tId}/sections/{sId}/assignments/{assignId}/studentassignments")
