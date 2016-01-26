@@ -148,7 +148,7 @@ public class UserManagerImpl implements UserManager {
                 "{\"error\": \"Not Authenticated\"}"));
     }
 
-    private UserDetailsProxy getCurrentUserDetails() {
+    public UserDetailsProxy getCurrentUserDetails() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         if (authentication != null) {

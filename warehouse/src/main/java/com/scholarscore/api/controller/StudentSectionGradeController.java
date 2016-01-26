@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.StudentSectionGrade;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -49,6 +50,7 @@ public class StudentSectionGradeController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studId")
     public @ResponseBody ResponseEntity getStudentSectionGrade(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
@@ -72,6 +74,7 @@ public class StudentSectionGradeController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studId")
     public @ResponseBody ResponseEntity getStudentSectionGradeByWeek(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,

@@ -6,8 +6,11 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.models.user.User;
+import com.scholarscore.models.user.UserType;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -49,6 +52,17 @@ public class StudentAssignmentManagerImpl implements  StudentAssignmentManager {
             return new ServiceResponse<Collection<StudentAssignment>>(code);
         }
         Collection<StudentAssignment> sas = studentAssignmentPersistence.selectAll(sectAssignmentId);
+        User curr = pm.getUserManager().getCurrentUserDetails().getUser();
+        if(UserType.STUDENT.equals(curr.getType())) {
+            List<StudentAssignment> filtered = new ArrayList<>();
+            if(null != sas) {
+                for(StudentAssignment sAss: sas) {
+                    if(curr.getId().equals(sAss.getStudent().getId())) {
+                        filtered.add(sAss);
+                    }
+                }
+            }
+        }
         return new ServiceResponse<Collection<StudentAssignment>>(sas);
     }
 
@@ -75,10 +89,16 @@ public class StudentAssignmentManagerImpl implements  StudentAssignmentManager {
         StatusCode code = studentAssignmentExists(schoolId, yearId, termId, sectionId,
                 sectionAssignmentId, studentAssignmentId);
         if(!code.isOK()) {
-            return new ServiceResponse<StudentAssignment>(code);
+            return new ServiceResponse<>(code);
         }
         StudentAssignment sa = studentAssignmentPersistence.select(sectionAssignmentId, studentAssignmentId);
-        return new ServiceResponse<StudentAssignment>(sa);
+        User curr = pm.getUserManager().getCurrentUserDetails().getUser();
+        if(null != sa && curr.getType().equals(UserType.STUDENT) && !curr.getId().equals(sa.getStudent().getId())) {
+            return new ServiceResponse<>(
+                    StatusCodes.getStatusCode(
+                            StatusCodeType.MODEL_NOT_FOUND, new Object[]{ STUDENT_ASSIGNMENT, studentAssignmentId }));
+        }
+        return new ServiceResponse<>(sa);
     }
 
     @Override
@@ -86,7 +106,7 @@ public class StudentAssignmentManagerImpl implements  StudentAssignmentManager {
             long studentId, long sectionId) {
         Collection<StudentAssignment> sas =
                 studentAssignmentPersistence.selectAllAssignmentsOneSectionOneStudent(sectionId, studentId);
-        return new ServiceResponse<Collection<StudentAssignment>>(sas);
+        return new ServiceResponse<>(sas);
     }
 
     @Override
@@ -95,9 +115,9 @@ public class StudentAssignmentManagerImpl implements  StudentAssignmentManager {
                                                          StudentAssignment studentAssignment) {
         StatusCode code = pm.getAssignmentManager().assignmentExists(schoolId, yearId, termId, sectionId, sectionAssignmentId);
         if(!code.isOK()) {
-            return new ServiceResponse<Long>(code);
+            return new ServiceResponse<>(code);
         }
-        return new ServiceResponse<Long>(
+        return new ServiceResponse<>(
                 studentAssignmentPersistence.insert(sectionAssignmentId, studentAssignment));
     }
 
@@ -105,9 +125,9 @@ public class StudentAssignmentManagerImpl implements  StudentAssignmentManager {
     public ServiceResponse<List<Long>> createBulkStudentAssignment(long schoolId, long yrId, long tId, long sId, long assignId, List<StudentAssignment> studentAssignments) {
         StatusCode code = pm.getAssignmentManager().assignmentExists(schoolId, yrId, tId, sId, assignId);
         if(!code.isOK()) {
-            return new ServiceResponse<List<Long>>(code);
+            return new ServiceResponse<>(code);
         }
-        return new ServiceResponse<List<Long>>(studentAssignmentPersistence.insertAll(assignId, studentAssignments));
+        return new ServiceResponse<>(studentAssignmentPersistence.insertAll(assignId, studentAssignments));
     }
 
     @Override
@@ -117,9 +137,9 @@ public class StudentAssignmentManagerImpl implements  StudentAssignmentManager {
         StatusCode code = studentAssignmentExists(schoolId, yearId, termId, sectionId,
                 sectionAssignmentId, studentAssignmentId);
         if(!code.isOK()) {
-            return new ServiceResponse<Long>(code);
+            return new ServiceResponse<>(code);
         }
-        return new ServiceResponse<Long>(studentAssignmentPersistence.update(
+        return new ServiceResponse<>(studentAssignmentPersistence.update(
                 sectionAssignmentId, studentAssignmentId, studentAssignment));
     }
 
@@ -130,12 +150,12 @@ public class StudentAssignmentManagerImpl implements  StudentAssignmentManager {
         StatusCode code = studentAssignmentExists(schoolId, yearId, termId, sectionId,
                 sectionAssignmentId, studentAssignmentId);
         if(!code.isOK()) {
-            return new ServiceResponse<Long>(code);
+            return new ServiceResponse<>(code);
         }
         studentAssignment.setId(studentAssignmentId);
         studentAssignment.mergePropertiesIfNull(
                 studentAssignmentPersistence.select(sectionAssignmentId, studentAssignmentId));
-        return new ServiceResponse<Long>(
+        return new ServiceResponse<>(
                 studentAssignmentPersistence.update(sectionAssignmentId, studentAssignmentId, studentAssignment));
     }
 

@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.util.EdPanelDateUtil;
@@ -47,6 +48,7 @@ public class StudentController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity get(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId) {
@@ -62,6 +64,8 @@ public class StudentController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    //TODO: filter me for student accessibility
+    @StudentAccessible
     public @ResponseBody ResponseEntity getBySsid(
             @ApiParam(name = "ssid", required = true, value = "Student SSID")
             @PathVariable(value="ssid") Long ssid) {
@@ -135,6 +139,7 @@ public class StudentController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity getAllSections(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
@@ -156,6 +161,7 @@ public class StudentController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity getAllSectionAssignments(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
@@ -179,6 +185,7 @@ public class StudentController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity getStudentPrepScore(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId, 
@@ -199,6 +206,7 @@ public class StudentController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity getStudentHwCompletionRates(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
@@ -219,6 +227,7 @@ public class StudentController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity getStudentHwCompletionRatesBySection(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
@@ -228,8 +237,6 @@ public class StudentController extends BaseController {
         return respond(pm.getStudentManager().getStudentHomeworkRatesPerSection(
                 studentId,sectionId));
     }
-
-    private String testThis() { return "this"; }
     
     @ApiOperation(
             value = "Get one or more of a student's prep scores",
@@ -240,6 +247,7 @@ public class StudentController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity getStudentPrepScores(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @RequestParam(value="studentId") Long[] studentIds,

@@ -1,5 +1,6 @@
 package com.scholarscore.api.manager;
 
+import com.scholarscore.api.security.config.UserDetailsProxy;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.user.ContactType;
@@ -40,4 +41,6 @@ public interface UserManager {
     ServiceResponse<String> startPasswordReset(String username);
 
     ServiceResponse<User> resetPassword(Long userId, String newPassword);
+
+    UserDetailsProxy getCurrentUserDetails();
 }
