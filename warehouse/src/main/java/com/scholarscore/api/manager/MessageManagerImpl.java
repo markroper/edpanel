@@ -1,6 +1,7 @@
 package com.scholarscore.api.manager;
 
 import com.scholarscore.api.persistence.MessagePersistence;
+import com.scholarscore.api.security.config.UserDetailsProxy;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
@@ -9,11 +10,13 @@ import com.scholarscore.models.message.Message;
 import com.scholarscore.models.message.MessageReadState;
 import com.scholarscore.models.message.MessageThread;
 import com.scholarscore.models.message.MessageThreadParticipant;
+import com.scholarscore.models.user.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -47,25 +50,54 @@ public class MessageManagerImpl implements MessageManager {
 
     @Override
     public ServiceResponse<MessageThread> getMessageThread(Long threadId) {
-        return new ServiceResponse<>(messagePersistence.selectMessageThread(threadId));
+        UserDetailsProxy udp = pm.getUserManager().getCurrentUserDetails();
+        MessageThread t = messagePersistence.selectMessageThread(threadId);
+        UserType typ = udp.getUser().getType();
+        if(typ.equals(UserType.ADMINISTRATOR) || typ.equals(UserType.SUPER_ADMIN)) {
+            return new ServiceResponse<>(t);
+        }
+        if(null != t && null != t.getParticipants()) {
+            boolean match = false;
+            MessageThreadParticipant mp = new MessageThreadParticipant();
+            mp.setParticipantId(udp.getUser().getId());
+            mp.setThreadId(threadId);
+            if(t.getParticipants().contains(mp)) {
+                match = true;
+            }
+            if(match) {
+                return new ServiceResponse<>(t);
+            }
+        }
+        return new ServiceResponse<>(
+                StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{MESSAGE_THREAD, threadId}));
     }
 
     @Override
     public ServiceResponse<Void> replaceMessageThread(Long threadId, MessageThread t) {
-        messagePersistence.updateMessageThread(t);
-        return new ServiceResponse<>((Void) null);
+        ServiceResponse<MessageThread> tResp = getMessageThread(threadId);
+        if(null == tResp.getCode() || tResp.getCode().isOK()) {
+            messagePersistence.updateMessageThread(t);
+            return new ServiceResponse<>((Void) null);
+        } else {
+            return new ServiceResponse<>(tResp.getCode());
+        }
     }
 
     @Override
     public ServiceResponse<Void> deleteMessageThread(Long threadId) {
-        MessageThread t = messagePersistence.selectMessageThread(threadId);
-        if(null != t.getParticipants()) {
-            for(MessageThreadParticipant p: t.getParticipants()) {
-                messagePersistence.deleteThreadParticipant(threadId, p);
+        ServiceResponse<MessageThread> tResp = getMessageThread(threadId);
+        if(null == tResp.getCode() || tResp.getCode().isOK()) {
+            MessageThread t = tResp.getValue();
+            if(null != t.getParticipants()) {
+                for(MessageThreadParticipant p: t.getParticipants()) {
+                    messagePersistence.deleteThreadParticipant(threadId, p);
+                }
             }
+            messagePersistence.deleteMessageThread(threadId);
+            return new ServiceResponse<>((Void) null);
+        } else {
+            return new ServiceResponse<>(tResp.getCode());
         }
-        messagePersistence.deleteMessageThread(threadId);
-        return new ServiceResponse<>((Void) null);
     }
 
     @Override
@@ -75,35 +107,78 @@ public class MessageManagerImpl implements MessageManager {
 
     @Override
     public ServiceResponse<EntityId> createMessage(Long threadId, Message m) {
-        m.setSent(LocalDateTime.now());
-        return new ServiceResponse<>(new EntityId(messagePersistence.insertMessage(threadId, m)));
+        ServiceResponse<MessageThread> tResp = getMessageThread(threadId);
+        if(null == tResp.getCode() || tResp.getCode().isOK()) {
+            m.setSent(LocalDateTime.now());
+            return new ServiceResponse<>(new EntityId(messagePersistence.insertMessage(threadId, m)));
+        } else {
+            return new ServiceResponse<>(tResp.getCode());
+        }
     }
 
     @Override
     public ServiceResponse<Void> deleteMessage(Long threadId, Long messageId) {
-        messagePersistence.deleteMessage(threadId, messageId);
-        return new ServiceResponse<>((Void) null);
+        ServiceResponse<MessageThread> tResp = getMessageThread(threadId);
+        if(null == tResp.getCode() || tResp.getCode().isOK()) {
+            messagePersistence.deleteMessage(threadId, messageId);
+            return new ServiceResponse<>((Void) null);
+        } else {
+            return new ServiceResponse<>(tResp.getCode());
+        }
     }
 
     @Override
     public ServiceResponse<Void> replaceMessage(Long threadId, Long messageId, Message m) {
-        messagePersistence.updateMessage(threadId, messageId, m);
-        return new ServiceResponse<>((Void) null);
+        ServiceResponse<Message> mResp = getMessage(threadId, messageId);
+        if(mResp.getCode().isOK()) {
+            Message msg = mResp.getValue();
+            if(msg.getSentBy().equals(pm.getUserManager().getCurrentUserDetails().getUser().getId())) {
+                messagePersistence.updateMessage(threadId, messageId, m);
+                return new ServiceResponse<>((Void) null);
+            } else {
+                return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.FORBIDDEN, null));
+            }
+        } else {
+            return new ServiceResponse<>(mResp.getCode());
+        }
     }
 
     @Override
     public ServiceResponse<Message> getMessage(Long threadId, Long messageId) {
-        Message m = messagePersistence.selectMessage(threadId, messageId);
-        if(null == m) {
-            return new ServiceResponse<>(
-                    StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{MESSAGE, messageId}));
+        ServiceResponse<MessageThread> tResp = getMessageThread(threadId);
+        if(null == tResp.getCode() || tResp.getCode().isOK()) {
+            Message m = messagePersistence.selectMessage(threadId, messageId);
+            if(null == m) {
+                return new ServiceResponse<>(
+                        StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{MESSAGE, messageId}));
+            }
+            return new ServiceResponse<>(m);
+        } else {
+            return new ServiceResponse<>(tResp.getCode());
         }
-        return new ServiceResponse<>(m);
     }
 
     @Override
     public ServiceResponse<List<Message>> getMessages(Long threadId) {
-        return new ServiceResponse<>(messagePersistence.selectMessages(threadId));
+        Long currUserId = pm.getUserManager().getCurrentUserDetails().getUser().getId();
+        List<Message> msgs = messagePersistence.selectMessages(threadId);
+        UserType t = pm.getUserManager().getCurrentUserDetails().getUser().getType();
+        if(t.equals(UserType.SUPER_ADMIN) || t.equals(UserType.ADMINISTRATOR)) {
+            return new ServiceResponse<>(msgs);
+        }
+        List<Message> filtered = new ArrayList<>();
+        if(null != msgs) {
+            for(Message m: msgs) {
+                MessageThreadParticipant p = new MessageThreadParticipant();
+                p.setThreadId(m.getThread().getId());
+                p.setParticipantId(currUserId);
+                if(m.getThread().getParticipants().contains(p)) {
+                    filtered = msgs;
+                }
+                break;
+            }
+        }
+        return new ServiceResponse<>(filtered);
     }
 
     @Override
@@ -118,11 +193,11 @@ public class MessageManagerImpl implements MessageManager {
 
     @Override
     public ServiceResponse<Void> markMessageReadByUser(Long threadId, Long messageId, Long userId) {
-        Message m = messagePersistence.selectMessage(threadId, messageId);
-        if(null == m) {
-            return new ServiceResponse<>(
-                    StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{ MESSAGE, messageId}));
+        ServiceResponse<Message> mResp = getMessage(threadId, messageId);
+        if(null != mResp.getCode() && !mResp.getCode().isOK()) {
+            return new ServiceResponse<>(mResp.getCode());
         }
+        Message m = mResp.getValue();
         MessageThread thread = m.getThread();
         if(null == thread.getParticipants()) {
             thread.setParticipants(new HashSet<>());
