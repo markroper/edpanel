@@ -142,7 +142,7 @@ liquibase {
 
 task populateDatabaseWithDummyData(type: Exec) {
     group 'Database'
-    description 'Populates the database with the contents of the dummy database file'
+    description 'Clears the database, then fill it with the contents of the dummy database file'
 
     def dbPropsFilePath = "/warehouse/src/main/resources/database.properties"
     
@@ -203,6 +203,8 @@ liquibaseUpdate.doFirst {
 liquibaseUpdate.finalizedBy 'doLiquibaseRollback'
 
 task doLiquibaseRollback { 
+    description 'If a liquibase update task runs AND FAILS, this task will automatically be run to execute a rollback'
+    group 'Liquibase'
     onlyIf { 
         project.liquibaseUpdate.state.failure != null
     }
@@ -213,18 +215,6 @@ task doLiquibaseRollback {
 //        println("Liquibase - ERROR DETECTED DO ROLLBACK HERE USING ROLLBACK DATE ${liquibasePatchingTimeStarted}");
     }
 }
-
-task liquibaseAutoRollback (type: org.liquibase.gradle.LiquibaseTask) { 
-    command 'rollback'
-    group 'Liquibase'
-    requiresValue = true
-
-    println("successfully configured new liquibase rollback task!")
-    doLast { 
-        println("executed liquibase rollback new task")
-    }
-}
-
 
 // run the integration tests before generating the report
 integrationCodeCoverageReport.dependsOn {
