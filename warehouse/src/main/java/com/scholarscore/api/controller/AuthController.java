@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.user.User;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -28,6 +29,7 @@ public class AuthController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     public @ResponseBody
+    @StudentAccessible
     ResponseEntity getCurrentIdentity() {
         ServiceResponse<User> identity = pm.getUserManager().getCurrentUser();
         return respond(identity);
