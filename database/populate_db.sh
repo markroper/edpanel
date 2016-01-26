@@ -5,7 +5,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DUMMY_DB_FILENAME=dev_scholar_warehouse.sql
 DATABASE_NAME=scholar_warehouse
 
-if [ ! -f "./$DUMMY_DB_FILENAME" ]; then
+if [ ! -f "$SCRIPT_DIR/$DUMMY_DB_FILENAME" ]; then
     printf "Dummy DB population FAILED - Dummy DB file does not exist at $SCRIPT_DIR/$DUMMY_DB_FILENAME..."
     exit 1
 fi
