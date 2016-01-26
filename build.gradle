@@ -209,7 +209,6 @@ task doLiquibaseRollback {
         project.liquibaseUpdate.state.failure != null
     }
     doLast {
-        // yup, this gets weird
         project.ext.liquibaseCommandValue = liquibasePatchingTimeStarted
         project.liquibaseRollbackToDate.execute()
 //        println("Liquibase - ERROR DETECTED DO ROLLBACK HERE USING ROLLBACK DATE ${liquibasePatchingTimeStarted}");
