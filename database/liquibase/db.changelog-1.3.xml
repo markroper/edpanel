@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <changeSet author="mark" id="changelog-1.3-change1">
+        <dropForeignKeyConstraint baseTableName="triggered_notification" constraintName="triggered_notification$notification_fk"/>
+        <dropForeignKeyConstraint baseTableName="triggered_notification" constraintName="triggered_notification$user_fk"/>
+        <dropForeignKeyConstraint baseTableName="triggered_notification" constraintName="triggered_notification$subject_user_fk"/>
+
+        <dropUniqueConstraint
+                constraintName="quniq$user$subject$notification"
+                tableName="triggered_notification"/>
+
+        <addForeignKeyConstraint baseTableName="triggered_notification"
+                                 baseColumnNames="notification_fk"
+                                 constraintName="triggered_notification$notification_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="notification_id"
+                                 referencedTableName="notification"/>
+        <addForeignKeyConstraint baseTableName="triggered_notification"
+                                 baseColumnNames="user_fk"
+                                 constraintName="triggered_notification$user_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="user"/>
+        <addForeignKeyConstraint baseTableName="triggered_notification"
+                                 baseColumnNames="subject_user_fk"
+                                 constraintName="triggered_notification$subject_user_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="user"/>
+    </changeSet>
+</databaseChangeLog>
