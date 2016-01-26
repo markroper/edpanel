@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.message.Message;
 import com.scholarscore.models.message.MessageThread;
@@ -36,6 +37,7 @@ public class MessageController extends BaseController {
             method = RequestMethod.POST,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity createMessageThread(
             @RequestBody @Valid MessageThread thread) {
         return respond(pm.getMessageManager().createMessageThread(thread));
@@ -49,6 +51,7 @@ public class MessageController extends BaseController {
             method = RequestMethod.GET,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity createMessageThread(
             @ApiParam(name = "threadId", required = true, value = "The thread long ID")
             @PathVariable(value="threadId") Long threadId) {
@@ -78,6 +81,7 @@ public class MessageController extends BaseController {
             method = RequestMethod.PUT,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity replaceNotification(
             @ApiParam(name = "threadId", required = true, value = "The thread long ID")
             @PathVariable(value="threadId") Long threadId,
@@ -95,6 +99,7 @@ public class MessageController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody
     ResponseEntity getNotification(
             @ApiParam(name = "threadId", required = true, value = "The thread long ID")
@@ -112,6 +117,7 @@ public class MessageController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody
     ResponseEntity getNotification(
             @ApiParam(name = "threadId", required = true, value = "The thread long ID")
@@ -128,6 +134,7 @@ public class MessageController extends BaseController {
             method = RequestMethod.POST,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity createMessage(
             @ApiParam(name = "threadId", required = true, value = "The thread long ID")
             @PathVariable(value="threadId") Long threadId,
@@ -144,6 +151,7 @@ public class MessageController extends BaseController {
             method = RequestMethod.PUT,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity replaceMessage(
             @ApiParam(name = "threadId", required = true, value = "The thread long ID")
             @PathVariable(value="threadId") Long threadId,
@@ -161,6 +169,7 @@ public class MessageController extends BaseController {
             method = RequestMethod.DELETE,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity deleteMessage(
             @ApiParam(name = "threadId", required = true, value = "The thread long ID")
             @PathVariable(value="threadId") Long threadId,
@@ -177,6 +186,7 @@ public class MessageController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "userId")
     public @ResponseBody
     ResponseEntity getUnreadMessages(
             @ApiParam(name = "threadId", required = true, value = "The thread long ID")
@@ -194,6 +204,7 @@ public class MessageController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "userId")
     public @ResponseBody
     ResponseEntity getParticipatingThreads(
             @ApiParam(name = "userId", required = true, value = "The user's ID")
@@ -209,6 +220,7 @@ public class MessageController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "userId")
     public @ResponseBody
     ResponseEntity getAllUnreadMessagesAllThreads(
             @ApiParam(name = "userId", required = true, value = "The user's ID")
@@ -224,6 +236,7 @@ public class MessageController extends BaseController {
             method = RequestMethod.POST,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "userId")
     public @ResponseBody
     ResponseEntity getAllUnreadMessagesAllThreads(
             @ApiParam(name = "threadId", required = true, value = "The thread long ID")

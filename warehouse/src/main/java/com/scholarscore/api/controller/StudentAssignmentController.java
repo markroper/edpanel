@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.assignment.StudentAssignment;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -16,6 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.validation.Valid;
 import java.util.List;
 
+/**
+ * TODO: make the get student assignments endpoints filter by year in the case where the requesting user is a student
+ */
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/schools/{schoolId}/years/{yrId}/terms/{tId}/sections/{sId}/assignments/{assignId}/studentassignments")
 public class StudentAssignmentController extends BaseController {
@@ -29,6 +33,7 @@ public class StudentAssignmentController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity getAllSectionAssignments(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
@@ -52,6 +57,7 @@ public class StudentAssignmentController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity getStudentAssignment(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,

@@ -8,6 +8,7 @@ public class ApiConsts {
     public static final String HTTP_PUT = "PUT";
     public static final String HTTP_PATCH = "PATCH";
     public static final String HTTP_DELETE = "DELETE";
+    public static final String HTTP_OPTIONS = "OPTIONS";
     //Content types:
     public static final String APPLICATION_JSON = "application/json";
 }

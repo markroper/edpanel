@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.models.UiAttributes;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -27,6 +28,7 @@ public class UiAttributesController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity getUiAttributes(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId) {

@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.user.Staff;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -29,6 +30,7 @@ public class TeacherController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity getAll() {
         return respond(pm.getTeacherManager().getAllTeachers());
     }
@@ -42,6 +44,7 @@ public class TeacherController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity get(
             @ApiParam(name = "teacherId", required = true, value = "Teacher ID")
             @PathVariable(value="teacherId") Long teacherId) {
