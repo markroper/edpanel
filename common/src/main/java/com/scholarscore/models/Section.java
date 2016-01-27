@@ -8,17 +8,32 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.gradeformula.GradeFormula;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.util.EdPanelObjectMapper;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A Section is a temporal instance of a Course.  Where a course defines that which is to be taught, a Section has
@@ -50,7 +65,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     protected transient Course course;
     protected transient List<Student> enrolledStudents;
     protected transient List<Assignment> assignments;
-    protected Set<Teacher> teachers;
+    protected Set<Staff> teachers;
     protected String sourceSystemId;
     
     public Section() {
@@ -86,18 +101,18 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = HibernateConsts.TEACHER_SECTION_TABLE,
             joinColumns = { @JoinColumn(name = HibernateConsts.SECTION_FK, nullable = false, updatable = false) },
-            inverseJoinColumns = { @JoinColumn(name = HibernateConsts.TEACHER_FK, nullable = false, updatable = false) })
+            inverseJoinColumns = { @JoinColumn(name = HibernateConsts.STAFF_FK, nullable = false, updatable = false) })
     @Fetch(FetchMode.JOIN)
-    public Set<Teacher> getTeachers() {
+    public Set<Staff> getTeachers() {
         return teachers;
     }
 
-    public void setTeachers(Set<Teacher> teachers) {
-        this.teachers = teachers;
+    public void setTeachers(Set<Staff> staffs) {
+        this.teachers = staffs;
     }
 
-    public void addTeacher(Teacher teacher) {
-        this.teachers.add(teacher);
+    public void addPerson(Staff person) {
+        this.teachers.add(person);
     }
 
     @Id
@@ -397,7 +412,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         protected transient List<Student> enrolledStudents;
         protected transient List<Assignment> assignments;
         protected List<StudentSectionGrade> studentSectionGrades;
-        protected Set<Teacher> teachers;
+        protected Set<Staff> teachers;
         protected String sourceSystemId;
         protected Integer numberOfTerms;
         protected Map<String, ArrayList<Long>> expression;
@@ -474,13 +489,13 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
             return this;
         }
 
-        public SectionBuilder withTeacher(final Teacher teacher){
-            teachers.add(teacher);
+        public SectionBuilder withTeacher(final Staff person){
+            teachers.add(person);
             return this;
         }
 
-        public SectionBuilder withTeachers(final Set<Teacher> teachers){
-            this.teachers.addAll(teachers);
+        public SectionBuilder withTeachers(final Set<Staff> persons){
+            this.teachers.addAll(persons);
             return this;
         }
 

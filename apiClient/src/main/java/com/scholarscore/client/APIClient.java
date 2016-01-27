@@ -16,9 +16,8 @@ import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.factory.AssignmentFactory;
 import com.scholarscore.models.gpa.Gpa;
-import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -205,22 +204,22 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         return response;
     }
 
-    public Teacher createTeacher(Teacher teacher) throws HttpClientException {
+    public Staff createTeacher(Staff teacher) throws HttpClientException {
         EntityId id = create(teacher, TEACHER_ENDPOINT);
-        Teacher response = new Teacher(teacher);
+        Staff response = new Staff(teacher);
         response.setId(id.getId());
         return response;
     }
 
     @Override
-    public Collection<Teacher> getTeachers() throws HttpClientException {
-        Teacher[] teachers = get(Teacher[].class, BASE_API_ENDPOINT + TEACHER_ENDPOINT);
+    public Collection<Staff> getTeachers() throws HttpClientException {
+        Staff[] teachers = get(Staff[].class, BASE_API_ENDPOINT + TEACHER_ENDPOINT);
         return Arrays.asList(teachers);
     }
 
     @Override
-    public Collection<Administrator> getAdministrators() throws HttpClientException {
-        Administrator[] admins = get(Administrator[].class, BASE_API_ENDPOINT + ADMINISTRATOR_ENDPOINT);
+    public Collection<Staff> getAdministrators() throws HttpClientException {
+        Staff[] admins = get(Staff[].class, BASE_API_ENDPOINT + ADMINISTRATOR_ENDPOINT);
         return Arrays.asList(admins);
     }
 
@@ -249,9 +248,9 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         return response;
     }
 
-    public Administrator createAdministrator(Administrator administrator) throws HttpClientException {
+    public Staff createAdministrator(Staff administrator) throws HttpClientException {
         EntityId id = create(administrator, ADMINISTRATOR_ENDPOINT);
-        Administrator response = new Administrator(administrator);
+        Staff response = new Staff(administrator);
         response.setId(id.getId());
         return response;
     }

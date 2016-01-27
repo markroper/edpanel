@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -22,7 +22,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Objects;
 
@@ -45,7 +44,7 @@ import java.util.Objects;
 public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 
     private Student student;
-    private Teacher teacher;
+    private Staff staff;
     private Double desiredValue;
     private Double calculatedValue;
     private Boolean approved;
@@ -58,7 +57,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     public Goal(Goal goal) {
         super(goal);
         this.student = goal.student;
-        this.teacher = goal.teacher;
+        this.staff = goal.staff;
         this.desiredValue = goal.desiredValue;
         this.calculatedValue = goal.calculatedValue;
         this.approved = goal.approved;
@@ -102,9 +101,9 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     }
 
     @OneToOne(optional = true)
-    @JoinColumn(name=HibernateConsts.TEACHER_FK, nullable = true)
-    public Teacher getTeacher() {
-        return teacher;
+    @JoinColumn(name=HibernateConsts.STAFF_FK, nullable = true)
+    public Staff getStaff() {
+        return staff;
     }
 
     public void setCalculatedValue(Double value) {
@@ -116,8 +115,8 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         return calculatedValue;
     }
 
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
+    public void setStaff(Staff staff) {
+        this.staff = staff;
     }
 
     @Column(name = HibernateConsts.DESIRED_GOAL_VALUE)
@@ -172,7 +171,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         if (!super.equals(o)) return false;
         Goal goal = (Goal) o;
         return Objects.equals(student, goal.student) &&
-                Objects.equals(teacher, goal.teacher) &&
+                Objects.equals(staff, goal.staff) &&
                 Objects.equals(desiredValue, goal.desiredValue) &&
                 Objects.equals(calculatedValue, goal.calculatedValue) &&
                 Objects.equals(approved, goal.approved) &&
@@ -181,7 +180,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), student, teacher, desiredValue, calculatedValue, approved, goalType);
+        return Objects.hash(super.hashCode(), student, staff, desiredValue, calculatedValue, approved, goalType);
     }
 
     @Override
@@ -195,7 +194,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
                         + "Approved: " + getApproved() + "\n"
                         + "GoalType: " + getGoalType() + "\n"
                         + "Student: " + getStudent() + "\n"
-                        + "Teacher: " + getTeacher() + "\n";
+                        + "Staff: " + getStaff() + "\n";
     }
 
     /**
@@ -206,7 +205,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     public static abstract class GoalBuilder<U extends GoalBuilder<U, T>, T extends Goal> extends ApiModelBuilder<U,T>{
 
         private Student student;
-        private Teacher teacher;
+        private Staff staff;
         private Double desiredValue;
         private Double calculatedValue;
         private Boolean approved;
@@ -217,8 +216,8 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
             return me();
         }
 
-        public U withTeacher(final Teacher teacher){
-            this.teacher = teacher;
+        public U withStaff(final Staff person){
+            this.staff = person;
             return me();
         }
 
@@ -245,7 +244,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         public T build(){
             T goal = super.build();
             goal.setStudent(student);
-            goal.setTeacher(teacher);
+            goal.setStaff(staff);
             goal.setDesiredValue(desiredValue);
             goal.setCalculatedValue(calculatedValue);
             goal.setApproved(approved);

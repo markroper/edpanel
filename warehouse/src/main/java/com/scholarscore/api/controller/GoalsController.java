@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.goal.Goal;
@@ -50,6 +51,7 @@ public class GoalsController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody
     ResponseEntity getAll(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
@@ -66,6 +68,7 @@ public class GoalsController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity get(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
@@ -83,6 +86,7 @@ public class GoalsController extends BaseController {
             method = RequestMethod.POST,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity create(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
@@ -99,6 +103,7 @@ public class GoalsController extends BaseController {
             method = RequestMethod.PUT,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity replaceGoal(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
@@ -117,6 +122,7 @@ public class GoalsController extends BaseController {
             method = RequestMethod.PATCH,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity updateGoal(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
@@ -134,6 +140,7 @@ public class GoalsController extends BaseController {
             method = RequestMethod.DELETE,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity deleteGoal(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,

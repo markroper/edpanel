@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.Section;
@@ -76,6 +77,7 @@ public class SurveyController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity getSurvey(
             @ApiParam(name = "surveyId", required = true, value = "Survey ID")
             @PathVariable(value="surveyId") Long surveyId) {
@@ -91,6 +93,7 @@ public class SurveyController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "userId")
     public @ResponseBody ResponseEntity getSurveysByCreatingUserId(
             @ApiParam(name = "userId", required = true, value = "User ID")
             @PathVariable(value="userId") Long userId) {
@@ -106,6 +109,7 @@ public class SurveyController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "respondentId")
     public @ResponseBody ResponseEntity getSurveysForRespondentId(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
@@ -151,6 +155,7 @@ public class SurveyController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity getSurveysBySchoolId(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
@@ -168,6 +173,7 @@ public class SurveyController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity getSurveysBySectionlId(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
@@ -187,8 +193,9 @@ public class SurveyController extends BaseController {
             method = RequestMethod.POST,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody
-    ResponseEntity createSurvey(@RequestBody @Valid SurveyResponse response) {
+    ResponseEntity createSurveyResp(@RequestBody @Valid SurveyResponse response) {
         return respond(pm.getSurveyManager().createSurveyResponse(response));
     }
 
@@ -201,6 +208,7 @@ public class SurveyController extends BaseController {
             method = RequestMethod.DELETE,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody
     ResponseEntity deleteSurveyResponse(@ApiParam(name = "surveyId", required = true, value = "Survey ID")
                                         @PathVariable(value="surveyId") Long surveyId,
@@ -218,8 +226,9 @@ public class SurveyController extends BaseController {
             method = RequestMethod.PUT,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody
-    ResponseEntity deleteSurveyResponse(@ApiParam(name = "surveyId", required = true, value = "Survey ID")
+    ResponseEntity updateSurveyResponse(@ApiParam(name = "surveyId", required = true, value = "Survey ID")
                                         @PathVariable(value="surveyId") Long surveyId,
                                         @ApiParam(name = "responseId", required = true, value = "Response ID")
                                         @PathVariable(value="responseId") Long responseId,
@@ -251,6 +260,7 @@ public class SurveyController extends BaseController {
             method = RequestMethod.GET,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "respondentId")
     public @ResponseBody
     ResponseEntity getAllSurveyResponses(@ApiParam(name = "respondentId", required = true, value = "Respondent ID")
                                          @PathVariable(value="respondentId") Long respondentId,
@@ -268,6 +278,7 @@ public class SurveyController extends BaseController {
             method = RequestMethod.GET,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody
     ResponseEntity getSurveyResponse(@ApiParam(name = "surveyId", required = true, value = "Survey ID")
                                     @PathVariable(value="surveyId") Long surveyId,

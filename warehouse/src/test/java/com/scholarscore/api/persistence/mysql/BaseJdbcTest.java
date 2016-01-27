@@ -20,9 +20,8 @@ import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.goal.AssignmentGoal;
 import com.scholarscore.models.goal.BehaviorGoal;
 import com.scholarscore.models.goal.Goal;
-import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -38,7 +37,7 @@ public class BaseJdbcTest {
     protected final Address address = new Address();
     protected final School school = new School();
     protected final Student student = new Student();
-    protected final Teacher teacher = new Teacher();
+    protected final Staff teacher = new Staff();
     protected final Section section = new Section();
     protected final Course course = new Course();
     protected final SchoolYear schoolYear = new SchoolYear();
@@ -46,7 +45,7 @@ public class BaseJdbcTest {
     protected final BehaviorGoal behaviorGoal = new BehaviorGoal();
     protected final AssignmentGoal assignmentGoal = new AssignmentGoal();
 
-    protected final Administrator admin = new Administrator();
+    protected final Staff admin = new Staff();
     protected final ApplicationContext ctx;
 
     protected final UserPersistence userDao;
@@ -70,7 +69,7 @@ public class BaseJdbcTest {
     private User createdUser;
     private Student createdStudent;
     private StudentSectionGrade createdStudentSectionGrade;
-    private Teacher createdTeacher;
+    private Staff createdTeacher;
     private BehaviorGoal createdBehaviorGoal;
     private AssignmentGoal createdAssignmentGoal;
 
@@ -107,12 +106,14 @@ public class BaseJdbcTest {
         school.setSourceSystemId("1");
         school.setMainPhone("555-555-1212");
 
-        Administrator adminUser = new Administrator();
+        Staff adminUser = new Staff();
         adminUser.setUsername("mattg");
+        adminUser.setIsAdmin(true);
         admin.setHomePhone("555-1212");
         admin.setName("Matt Greenwood");
         admin.setSourceSystemId("1");
         admin.setHomeAddress(address);
+        admin.setIsAdmin(true);
 
         Student studentUser = new Student();
         studentUser.setUsername("mattg");
@@ -120,7 +121,7 @@ public class BaseJdbcTest {
         student.setSourceSystemId("1234");
         student.setHomeAddress(address);
 
-        Teacher teacherUser = new Teacher();
+        Staff teacherUser = new Staff();
         teacherUser.setUsername("mattg");
         teacher.setHomePhone("555-1212");
         teacher.setSourceSystemId("abc");
@@ -148,7 +149,7 @@ public class BaseJdbcTest {
         term.setSchoolYear(schoolYear);
 
         behaviorGoal.setApproved(false);
-        behaviorGoal.setTeacher(teacher);
+        behaviorGoal.setStaff(teacher);
         behaviorGoal.setStudent(student);
         behaviorGoal.setDesiredValue(5d);
         behaviorGoal.setName("Does this behave as expected");
@@ -157,7 +158,7 @@ public class BaseJdbcTest {
         behaviorGoal.setEndDate(LocalDate.now());
 
         assignmentGoal.setApproved(false);
-        assignmentGoal.setTeacher(teacher);
+        assignmentGoal.setStaff(teacher);
         assignmentGoal.setStudent(student);
         assignmentGoal.setDesiredValue(5d);
         assignmentGoal.setName("Does this behave as expected");
@@ -222,7 +223,7 @@ public class BaseJdbcTest {
 
     public User createUser() {
         if (null == createdUser) {
-            Administrator user = new Administrator();
+            Staff user = new Staff();
             user.setUsername("foobar" + System.currentTimeMillis());
             user.setPassword("testPassword");
             user.setEnabled(true);
@@ -261,7 +262,7 @@ public class BaseJdbcTest {
         return createdStudentSectionGrade;
     }
 
-    public Teacher createTeacher() {
+    public Staff createTeacher() {
         if (null == createdTeacher) {
             Long id = teacherDao.createTeacher(teacher);
             createdTeacher = teacherDao.select(id);
@@ -278,7 +279,7 @@ public class BaseJdbcTest {
             createdBehaviorGoal.setEndDate(LocalDate.now());
             createdBehaviorGoal.setStartDate(LocalDate.now());
             createdBehaviorGoal.setStudent(createStudent());
-            createdBehaviorGoal.setTeacher(createTeacher());
+            createdBehaviorGoal.setStaff(createTeacher());
             createdBehaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
             createdBehaviorGoal.setApproved(false);
             createdBehaviorGoal.setDesiredValue(5d);
@@ -291,7 +292,7 @@ public class BaseJdbcTest {
             createdAssignmentGoal = new AssignmentGoal();
             createdAssignmentGoal.setName("Behaves nicely when created");
             createdAssignmentGoal.setStudent(createStudent());
-            createdAssignmentGoal.setTeacher(createTeacher());
+            createdAssignmentGoal.setStaff(createTeacher());
             createdAssignmentGoal.setParentId(1L);
             createdAssignmentGoal.setApproved(false);
             createdAssignmentGoal.setDesiredValue(5d);

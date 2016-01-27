@@ -2,7 +2,7 @@ package com.scholarscore.api.manager;
 
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
-import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Staff;
 
 import java.util.Collection;
 
@@ -12,11 +12,11 @@ import java.util.Collection;
  * Created by mattg on 7/20/15.
  */
 public interface AdminManager {
-    ServiceResponse<Collection<Administrator>> getAllAdministrators();
+    ServiceResponse<Collection<Staff>> getAllAdministrators();
     StatusCode administratorExists(long administratorId);
-    ServiceResponse<Administrator> getAdministrator(long administratorId);
-    ServiceResponse<Long> createAdministrator(Administrator admin);
-    ServiceResponse<Long> replaceAdministrator(long administratorId, Administrator administrator);
-    ServiceResponse<Long> updateAdministrator(long administratorId, Administrator administrator);
+    ServiceResponse<Staff> getAdministrator(long administratorId);
+    ServiceResponse<Long> createAdministrator(Staff admin);
+    ServiceResponse<Long> replaceAdministrator(long administratorId, Staff administrator);
+    ServiceResponse<Long> updateAdministrator(long administratorId, Staff administrator);
     ServiceResponse<Long> deleteAdministrator(long administratorId);
 }

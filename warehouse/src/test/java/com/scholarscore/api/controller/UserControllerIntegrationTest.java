@@ -1,9 +1,8 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.controller.base.IntegrationBase;
-import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.models.user.User;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -81,11 +80,11 @@ public class UserControllerIntegrationTest extends IntegrationBase {
         studentUser.setName("student user");
         studentUser.setEmail("bluemarker@gmail.com");
         
-        User teacherUser = new Teacher();
+        User teacherUser = new Staff();
         teacherUser.setName(localeServiceUtil.generateName(12));
         teacherUser.setUsername(localeServiceUtil.generateName(12));
         
-        User adminUser = new Administrator();
+        User adminUser = new Staff();
         adminUser.setName(localeServiceUtil.generateName(12));
         adminUser.setUsername(localeServiceUtil.generateName(12));
 
