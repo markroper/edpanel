@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller.uiControllers;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.api.controller.BaseController;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.Behavior;
@@ -49,6 +50,7 @@ public class UiEndpointsController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity
         getSchool(@ApiParam(name = "studentId", required = true, value = "Student ID")
              @PathVariable(value="studentId") Long studentId,
@@ -134,6 +136,7 @@ public class UiEndpointsController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity
     getStudentDemerits(@ApiParam(name = "studentId", required = true, value = "Student ID")
               @PathVariable(value="studentId") Long studentId,
