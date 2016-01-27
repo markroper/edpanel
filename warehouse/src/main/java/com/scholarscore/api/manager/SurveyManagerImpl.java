@@ -14,6 +14,8 @@ import com.scholarscore.models.survey.SurveyResponse;
 import com.scholarscore.models.survey.answer.QuestionAnswer;
 import com.scholarscore.models.survey.question.SurveyMultipleChoiceQuestion;
 import com.scholarscore.models.survey.question.SurveyQuestion;
+import com.scholarscore.models.user.User;
+import com.scholarscore.models.user.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -139,7 +141,9 @@ public class SurveyManagerImpl implements SurveyManager {
                     StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{SURVEY, surveyId}));
         }
         response.setSurvey(s);
-        if(!response.isvalid()) {
+        User curr = pm.getUserManager().getCurrentUserDetails().getUser();
+        if(!response.isvalid() ||
+                (curr.getType().equals(UserType.STUDENT) && !curr.getId().equals(response.getRespondent().getId()))) {
             StatusCode code = StatusCodes.getStatusCode(
                     StatusCodeType.ENTITY_INVALID_IN_CONTEXT,
                     new Object[]{ SURVEY_RESP, "null", SURVEY, surveyId });
@@ -150,8 +154,16 @@ public class SurveyManagerImpl implements SurveyManager {
 
     @Override
     public ServiceResponse<Void> deleteSurveyResponse(long surveyId, long surveyResponseId) {
+        SurveyResponse resp = surveyPersistence.selectSurveyResponse(surveyId, surveyResponseId);
+        User curr = pm.getUserManager().getCurrentUserDetails().getUser();
+        if(curr.getType().equals(UserType.STUDENT) && !curr.getId().equals(resp.getRespondent().getId())) {
+            StatusCode code = StatusCodes.getStatusCode(
+                    StatusCodeType.MODEL_NOT_FOUND,
+                    new Object[]{ SURVEY_RESP });
+            return new ServiceResponse<>(code);
+        }
         surveyPersistence.deleteSurveyResponse(surveyId, surveyResponseId);
-        return new ServiceResponse<Void>((Void) null);
+        return new ServiceResponse<>((Void) null);
     }
 
     @Override
@@ -161,7 +173,9 @@ public class SurveyManagerImpl implements SurveyManager {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{SURVEY, surveyId}));
         }
         response.setSurvey(s);
-        if(!response.isvalid()) {
+        User curr = pm.getUserManager().getCurrentUserDetails().getUser();
+        if(!response.isvalid() ||
+                (curr.getType().equals(UserType.STUDENT) && !curr.getId().equals(response.getRespondent().getId()))) {
             StatusCode code = StatusCodes.getStatusCode(
                     StatusCodeType.ENTITY_INVALID_IN_CONTEXT,
                     new Object[]{ SURVEY_RESP, surveyResponseId, SURVEY, surveyId });
@@ -178,7 +192,9 @@ public class SurveyManagerImpl implements SurveyManager {
             return new ServiceResponse<>(code);
         }
         SurveyResponse s = surveyPersistence.selectSurveyResponse(surveyId, responseId);
-        if(null == s) {
+        User curr = pm.getUserManager().getCurrentUserDetails().getUser();
+        if(null == s ||
+                (curr.getType().equals(UserType.STUDENT) && !s.getRespondent().getId().equals(curr.getId()))) {
             return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{SURVEY_RESP, surveyId}));
         };
         return new ServiceResponse<>(s);

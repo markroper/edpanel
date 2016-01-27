@@ -2,7 +2,7 @@ package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.user.Administrator;
+import com.scholarscore.models.user.Staff;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +36,7 @@ public class AdministratorController extends BaseController {
     @ApiOperation(
             value = "Get a administrator by ID",
             notes = "Given a administrator ID, the endpoint returns the administrator",
-            response = Administrator.class)
+            response = Staff.class)
     @RequestMapping(
             value = "/{administratorId}",
             method = RequestMethod.GET,
@@ -56,7 +56,7 @@ public class AdministratorController extends BaseController {
             method = RequestMethod.POST,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity create(@RequestBody @Valid Administrator admin) {
+    public @ResponseBody ResponseEntity create(@RequestBody @Valid Staff admin) {
         System.out.println("Admin create called with entity sourceSystemId: " + admin.getSourceSystemId());
         return respond(pm.getAdminManager().createAdministrator(admin));
     }
@@ -73,7 +73,7 @@ public class AdministratorController extends BaseController {
     public @ResponseBody ResponseEntity replace(
             @ApiParam(name = "administratorId", required = true, value = "Administrator ID")
             @PathVariable(value="administratorId") Long administratorId,
-            @RequestBody @Valid Administrator admin) {
+            @RequestBody @Valid Staff admin) {
         return respond(pm.getAdminManager().replaceAdministrator(administratorId, admin));
     }
 
@@ -89,7 +89,7 @@ public class AdministratorController extends BaseController {
     public @ResponseBody ResponseEntity update(
             @ApiParam(name = "administratorId", required = true, value = "Administrator ID")
             @PathVariable(value="administratorId") Long administratorId,
-            @RequestBody @Valid Administrator administrator) {
+            @RequestBody @Valid Staff administrator) {
         return respond(pm.getAdminManager().updateAdministrator(administratorId, administrator));
     }
 

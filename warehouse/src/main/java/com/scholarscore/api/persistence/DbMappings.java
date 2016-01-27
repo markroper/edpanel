@@ -117,8 +117,8 @@ public class DbMappings {
                put(Dimension.SECTION, HibernateConsts.SECTION_TABLE);
                put(Dimension.TERM, HibernateConsts.TERM_TABLE);
                put(Dimension.STUDENT, HibernateConsts.STUDENT_TABLE);
-               put(Dimension.TEACHER, HibernateConsts.TEACHER_TABLE);
-               put(Dimension.ADMINISTRATOR, HibernateConsts.ADMIN_TABLE);
+               put(Dimension.TEACHER, HibernateConsts.STAFF_TABLE);
+               put(Dimension.ADMINISTRATOR, HibernateConsts.STAFF_TABLE);
                put(Dimension.YEAR, HibernateConsts.SCHOOL_YEAR_TABLE);
                 put(Dimension.ASSIGNMENT, HibernateConsts.ASSIGNMENT_TABLE);
                 put(Dimension.USER, HibernateConsts.USERS_TABLE);
@@ -137,11 +137,11 @@ public class DbMappings {
         put(new DimensionField(Dimension.STUDENT, StudentDimension.CITY_OF_RESIDENCE), STUDENT_HOME_CITY_COL);
         put(new DimensionField(Dimension.STUDENT, StudentDimension.SCHOOL), HibernateConsts.SCHOOL_FK);
         //Teacher dimension field to DB column name lookup
-        put(new DimensionField(Dimension.TEACHER, TeacherDimension.NAME), HibernateConsts.TEACHER_NAME);
-        put(new DimensionField(Dimension.TEACHER, TeacherDimension.ID), HibernateConsts.TEACHER_USER_FK);
+        put(new DimensionField(Dimension.TEACHER, TeacherDimension.NAME), HibernateConsts.STAFF_NAME);
+        put(new DimensionField(Dimension.TEACHER, TeacherDimension.ID), HibernateConsts.STAFF_USER_FK);
         put(new DimensionField(Dimension.TEACHER, TeacherDimension.SCHOOL), HibernateConsts.SCHOOL_FK);
-        put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.NAME), HibernateConsts.ADMIN_NAME);
-        put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.ID), HibernateConsts.ADMIN_USER_FK);
+        put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.NAME), HibernateConsts.STAFF_NAME);
+        put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.ID), HibernateConsts.STAFF_USER_FK);
         put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.SCHOOL), HibernateConsts.SCHOOL_FK);
         put(new DimensionField(Dimension.USER, UserDimension.ID), HibernateConsts.USER_ID);
 

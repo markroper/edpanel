@@ -1,7 +1,7 @@
 package com.scholarscore.models.notification.group;
 
 import com.scholarscore.models.HibernateConsts;
-import com.scholarscore.models.user.Teacher;
+import com.scholarscore.models.user.Staff;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -17,7 +17,7 @@ import java.util.Objects;
 @Entity
 @DiscriminatorValue(value = "SINGLE_TEACHER")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class SingleTeacher extends NotificationGroup<Teacher> {
+public class SingleTeacher extends NotificationGroup<Staff> {
     private Long teacherId;
 
     @Column(name = HibernateConsts.TEACHER_FK)

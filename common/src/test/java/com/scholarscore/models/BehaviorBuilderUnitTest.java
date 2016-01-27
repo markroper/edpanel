@@ -1,7 +1,7 @@
 package com.scholarscore.models;
 
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 import com.scholarscore.utils.CommonTestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.testng.annotations.DataProvider;
@@ -29,7 +29,7 @@ public class BehaviorBuilderUnitTest extends AbstractBuilderUnitTest<Behavior>{
         String pointValue = RandomStringUtils.random(10);
         String roster = RandomStringUtils.random(10);
         Student student = CommonTestUtils.generateStudent();
-        Teacher teacher = CommonTestUtils.generateTeacher();
+        Staff teacher = CommonTestUtils.generateTeacher();
 
 
         Behavior fullBehavior = new Behavior();

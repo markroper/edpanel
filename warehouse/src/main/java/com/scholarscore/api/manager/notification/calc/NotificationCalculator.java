@@ -16,10 +16,9 @@ import com.scholarscore.models.notification.group.SingleAdministrator;
 import com.scholarscore.models.notification.group.SingleStudent;
 import com.scholarscore.models.notification.group.SingleTeacher;
 import com.scholarscore.models.notification.window.Duration;
-import com.scholarscore.models.user.Administrator;
 import com.scholarscore.models.user.Person;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.Teacher;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -95,12 +94,12 @@ public interface NotificationCalculator {
                 return new ArrayList<>(studsResp.getValue());
             }
         } else if(group instanceof SchoolAdministrators) {
-            ServiceResponse<Collection<Administrator>> adminsResp = manager.getAdminManager().getAllAdministrators();
+            ServiceResponse<Collection<Staff>> adminsResp = manager.getAdminManager().getAllAdministrators();
             if(null != adminsResp) {
                 return new ArrayList<>(adminsResp.getValue());
             }
         } else if(group instanceof SchoolTeachers) {
-            ServiceResponse<Collection<Teacher>> teachersResp = manager.getTeacherManager().getAllTeachers();
+            ServiceResponse<Collection<Staff>> teachersResp = manager.getTeacherManager().getAllTeachers();
             if(null != teachersResp.getValue()) {
                 return new ArrayList<>(teachersResp.getValue());
             }
@@ -112,10 +111,10 @@ public interface NotificationCalculator {
                 return s.getEnrolledStudents();
             }
         } else if(group instanceof SingleAdministrator) {
-            ServiceResponse<Administrator> adminResp =
+            ServiceResponse<Staff> adminResp =
                     manager.getAdminManager().getAdministrator(((SingleAdministrator) group).getAdministratorId());
             if(null != adminResp.getValue()) {
-                Administrator a = adminResp.getValue();
+                Staff a = adminResp.getValue();
                 return Arrays.asList(a);
             }
         } else if(group instanceof SingleStudent) {
@@ -126,10 +125,10 @@ public interface NotificationCalculator {
                 return Arrays.asList(s);
             }
         } else if(group instanceof SingleTeacher) {
-            ServiceResponse<Teacher> teacherResp =
+            ServiceResponse<Staff> teacherResp =
                     manager.getTeacherManager().getTeacher(((SingleTeacher) group).getTeacherId());
             if(null != teacherResp.getValue()) {
-                Teacher t = teacherResp.getValue();
+                Staff t = teacherResp.getValue();
                 return Arrays.asList(t);
             }
         }

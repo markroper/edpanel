@@ -1,6 +1,7 @@
 package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
+import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.School;
@@ -37,6 +38,7 @@ public class SchoolController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity getAllSchools() {
         return respond(new ArrayList<>(pm.getSchoolManager().getAllSchools()));
     }
@@ -50,6 +52,7 @@ public class SchoolController extends BaseController {
             method = RequestMethod.GET, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity getSchool(
             @ApiParam(name = "schoolId", required = true, value = "The school long ID")
             @PathVariable(value="schoolId") Long schoolId) {
@@ -123,6 +126,7 @@ public class SchoolController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "id")
     public @ResponseBody ResponseEntity getGpas(
             @ApiParam(name = "schoolId", required = true, value = "The school ID")
             @PathVariable(value="schoolId") Long schoolId,
@@ -151,6 +155,7 @@ public class SchoolController extends BaseController {
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
+    @StudentAccessible
     public @ResponseBody ResponseEntity getAllSectionsInSchool(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId) {
