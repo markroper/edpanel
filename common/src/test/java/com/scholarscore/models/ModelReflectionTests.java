@@ -100,7 +100,7 @@ public class ModelReflectionTests {
         add(packageToScan + "." + "goal.ComplexGoal");
         add(packageToScan + "." + "goal.AssignmentGoal");
         add(packageToScan + "." + "goal.BehaviorGoal");
-//        add(packageToScan + "." + "goal.CumulativeGradeGoal");
+        add(packageToScan + "." + "goal.CumulativeGradeGoal");
     }};
     
     public String getPackageToScan() {
@@ -640,6 +640,7 @@ public class ModelReflectionTests {
         if (type.isAssignableFrom(Long.class)) { return alt ? 22L : 2L; }
         if (type.isAssignableFrom(String.class)) { return alt ? "anotherStringValue" : "stringValue"; }
         if (type.isAssignableFrom(Boolean.class)) { return !alt; }
+        if (type.isAssignableFrom(boolean.class)) { return !alt; } // I assumed boolean.class isAssignableFrom Boolean.class, but no. weird.
         if (type.isAssignableFrom(Integer.class)) { return alt ? 33: 3; }
         
         long epochSecondsFirstDate = 1322462400000L;
@@ -751,8 +752,9 @@ public class ModelReflectionTests {
             return new Record(list);
         }
 
-        // if it's in our model package, do our best guess to automatically find a field that can be tweaked to test (in)equality 
-        if (type.getPackage().toString().toLowerCase().contains(packageToScan.toLowerCase())) {
+        // if it's in our model package, do our best guess to automatically find a field that can be tweaked to test (in)equality
+        if (type.getPackage() != null &&
+                type.getPackage().toString().toLowerCase().contains(packageToScan.toLowerCase())) {
             if (Modifier.isAbstract(type.getModifiers())) {
                 // can't best-guess implementations for interfaces without more work, skip for now
             } else if (type.isEnum()) {
