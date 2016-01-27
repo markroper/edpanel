@@ -40,7 +40,6 @@ import com.scholarscore.models.survey.question.SurveyMultipleChoiceQuestion;
 import com.scholarscore.models.survey.question.SurveyQuestion;
 import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.ui.SectionGradeWithProgression;
-import com.scholarscore.models.user.ContactType;
 import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.User;
@@ -99,8 +98,7 @@ public class ModelReflectionTests {
         // TODO Jordan: come back to this one, I think it's a bug in the reflection tester
         add(packageToScan + "." + "goal.ComplexGoal");
         add(packageToScan + "." + "goal.AssignmentGoal");
-        add(packageToScan + "." + "goal.BehaviorGoal");
-        add(packageToScan + "." + "goal.CumulativeGradeGoal");
+//        add(packageToScan + "." + "goal.BehaviorGoal");
     }};
     
     public String getPackageToScan() {
@@ -158,10 +156,11 @@ public class ModelReflectionTests {
             checkMergePropertiesIfNullForApiModel(clazz);
             logDebug("");
         }
+        StringBuilder debugStringBuilder = new StringBuilder();
         if (numberOfFailedDefaultFieldAttempts <= 0) {
-            logDebug("\nDONE. No problems.");
+            // just shut up if everything is fine.
+            //  debugStringBuilder.append("\nDONE. No problems.");
         } else {
-            StringBuilder debugStringBuilder = new StringBuilder();
             debugStringBuilder.append("\nDONE. \n"
                     + "One or more test(s) (" + numberOfFailedDefaultFieldAttempts + ", " + fieldsThatNeedDefaults.size() + " unique) were skipped because \n"
                     + "of an inability to construct objects with sensible default values."
@@ -171,9 +170,9 @@ public class ModelReflectionTests {
             for (String field : fieldsThatNeedDefaults) {
                 debugStringBuilder.append("\n" + field);
             }
-            // show this final output regardless of logging flags
-            System.out.println(debugStringBuilder.toString());
         }
+        // show this final output regardless of logging flags
+        System.out.println(debugStringBuilder.toString());
     }
 
     private void checkMergePropertiesIfNullForApiModel(Class<?> clazz) {
@@ -338,11 +337,7 @@ public class ModelReflectionTests {
     private <S, T extends S> Object buildPopulatedObject(Class<T> clazz, String fieldNameToModify) { 
         return buildPopulatedObject(clazz, clazz, fieldNameToModify);
     }
-
-    private <S,T extends S> T buildPopulatedObject(Class<T> concreteClass, Class<S> sourceOfFieldsClass) {
-        return buildPopulatedObject(concreteClass, sourceOfFieldsClass, null);
-    }
-        
+     
     /* 
      * Create a reasonable test object. 
      * If fieldNameToModify is set, this field will be varied from the normal default value typical to this field type.
@@ -365,19 +360,20 @@ public class ModelReflectionTests {
 
         // using an already-created instance, provide best-guess values for a list of fields pulled from a specified class 
     // (the specified class to pull fields from is either the class of the instance or a superclass)
-    private <S,T extends S> T buildPopulatedObject(T instance, Class<S> sourceOfFieldsClass, String fieldNameToModify, boolean fieldTweaked) {
+    private <S,T extends S> T buildPopulatedObject(T instance, Class<S> sourceOfFieldsClass, String fieldNameToModify, boolean fieldAlreadyTweaked) {
         
         Field[] fields = sourceOfFieldsClass.getDeclaredFields();
         // although the instance that is returned in successful cases is the same,
         // NULL is returned when a field can't be tweaked. So refactor this.
         T returnedInstance = null;
-//        boolean fieldTweaked = false;
         try {
             boolean fieldTweakedInFields = populateObjectFields(instance, fields, fieldNameToModify);
             returnedInstance = instance;
-            fieldTweaked |= fieldTweakedInFields;
-        } catch (CannotSetDefaultException e) {
-            // failure to populate field
+            fieldAlreadyTweaked |= fieldTweakedInFields;
+        } catch (NoDefaultValueForTypeException | UnableToSetValueException e) {
+            // NoDefaultValueForTypeException - failure to figure out a sensible default for field
+            // UnableToSetValueException - sensible default known, but object field isn't set even after calling corresponding setter
+            System.out.println("buildPopulatedObject returning NULL for object " + instance.getClass().getName() + " when trying to tweak field " + fieldNameToModify);
             returnedInstance = null;
         }
         // if exception not thrown, we can safely assume defaults have been set for the fields specified
@@ -387,7 +383,7 @@ public class ModelReflectionTests {
             Class<? super S> superclass = sourceOfFieldsClass.getSuperclass();
             if (superclass.getPackage().toString().toLowerCase().contains(packageToScan.toLowerCase())) {
                 logDebug("Hit in-package parent class of " + sourceOfFieldsClass + ", superclass " + superclass.getSimpleName());
-                returnedInstance = buildPopulatedObject(returnedInstance, superclass, fieldNameToModify, fieldTweaked);
+                returnedInstance = buildPopulatedObject(returnedInstance, superclass, fieldNameToModify, fieldAlreadyTweaked);
 
                 if (returnedInstance == null) {
                     logDebug("ERROR populating object when ascending hierarchy... abandoning attempt to populate "
@@ -396,9 +392,9 @@ public class ModelReflectionTests {
                 }
             } else {
                 // okay, we've gotten as high as we're going to get in the hierarchy. confirm
-                // that the field that we're supposed to tweak has been tweaked, and noisily complain if it hasn't been.
+                // that the field that we're supposed to tweak has been tweaked, and noisily complain (throw exception?) if it hasn't been.
 //                System.out.println("Parent of " + sourceOfFieldsClass + " (" + superclass.getSimpleName() + ") is not in package, done ascending hierarchy...");
-                if (fieldNameToModify != null && !fieldTweaked) {
+                if (fieldNameToModify != null && !fieldAlreadyTweaked) {
                     System.out.println("WARNING - object " + instance + " being returned without tweaking field " + fieldNameToModify);                    
                 }
             }
@@ -406,14 +402,97 @@ public class ModelReflectionTests {
         return returnedInstance;
     }
     
-    private class CannotSetDefaultException extends Exception { }
+    private class NoDefaultValueForTypeException extends Exception {
+        NoDefaultValueForTypeException() { super(); }
+        NoDefaultValueForTypeException(String msg) { super(); }
+    }
     
-    private <T> boolean populateObjectFields(T instance, Field[] fields, String fieldNameToModify) throws CannotSetDefaultException {
+    private class UnableToSetValueException extends Exception {
+        UnableToSetValueException() { super(); }
+        UnableToSetValueException(String msg) { super(msg); }
+    }
+    
+    // This method is provided an instance, a field that is found on that instance, and the new value that is desired for that field
+    
+    private void assignValueToField(Object instance, Field field, Object value) throws UnableToSetValueException {
+        // actually do the setting. prefer to use a setter method but directly twiddle the field if necessary.
+        ArrayList<Method> matchingSetters = new ArrayList<>();
+        Class<?> instanceClass = instance.getClass();
+        Method[] instanceMethods = instanceClass.getMethods();
+        for (Method method : instanceMethods) {
+            // we want to set variable named <field.getName()> but would prefer to go through a setter, if existent
+            if (method.getName().toLowerCase().equals("set" + field.getName().toLowerCase())) {
+                if (method.getParameterCount() == 1) {
+                    matchingSetters.add(method);
+                    // all done, don't need to continue
+                    break;
+                }
+            }
+        }
+
+        Method bestSetterMatch = null;
+        if (matchingSetters.size() == 1) {
+            // use the matching setter
+            bestSetterMatch = matchingSetters.get(0);
+        } else if (matchingSetters.size() > 1) {
+            // more than one setter... hmmm. probably need to do more to figure out how to pick one here...
+            System.out.println("OOPS! I see more than one potential setter for field " + field.getName()
+                    + " on class " + instance.getClass().getSimpleName() + ". For now, just taking the first one I see...");
+            bestSetterMatch = matchingSetters.get(0);
+        }
+
+        try {
+            if (bestSetterMatch != null) {
+                // can use a setter, the preferred way
+                try {
+                    bestSetterMatch.invoke(instance, value);
+                } catch (InvocationTargetException e) {
+                    System.out.println("FAILED to invoke matching setter on " + instance.getClass().getSimpleName());
+                }
+            } else {
+                // no matching setters, use direct-twiddle approach
+                field.setAccessible(true);
+                field.set(instance, value);
+            }
+
+            field.setAccessible(true);
+            Object setValue = field.get(instance);
+            if (!setValue.equals(value)) {
+                // TODO Jordan: current problem -- setGoalType alt value produces BEHAVIOR (the second enum)
+                // so even though this is a "fake field" -- e.g. one that cannot actually be toggled -- 
+                // we don't know it because we set it to one value, and that happens to be the ONLY value this field
+                //returns. I guess we need to set this field to at least 2 values to guarantee we can actually set it!
+                System.out.println("WARNING - used setter "
+                        + (bestSetterMatch != null ? bestSetterMatch.getName() : "<direct access>") + " with value " + value
+                        + " but got back " + setValue + " from field.");
+                throw new UnableToSetValueException("cannot set value!");
+            }
+        } catch (IllegalAccessException iae) {
+            throw new RuntimeException("IllegalAccessException failed trying to twiddle field " + field.getName() + " -- Reflection tests cannot function");
+        }
+
+    }
+    
+    // attempt to set each of a provided list of fields on a provided object instance. The fields of the object 
+    // will be set to reasonable defaults based on their type.
+    // The instance argument is the object which will have specified fields populated.
+    // The collection of fields is used to specify which fields on the instance should be assigned defaults.
+    // The optional/nullable fieldNameToModify argument will set the field with the provided name to a different 
+    // value than would normally be set. This is used in (un)equals method verification.
+    // ------ ------ ------ ------ ------ ------ ------ ------ ------
+    // for some types of fields, such as static and final, population will not be attempted.
+    // in some cases, (such as when the setter exists but does not actually set the field) the population will be attempted
+    // but will fail. In these cases, an error will only be thrown if the field value being set is 'fieldNameToModify' -
+    // otherwise it is assumed that this field cannot be 'freely' set.
+    // 
+    // throws an exception in the case of any problems
+    // returns TRUE or FALSE, depending on if a field was set to a non-default value (only ever true if fieldNameToModify is supplied)
+    private <T> boolean populateObjectFields(T instance, Field[] fields, String fieldNameToModify) throws NoDefaultValueForTypeException, UnableToSetValueException {
 //        System.out.println("populateObjectFields called on instance: " + instance + " of class " + instance.getClass());
         if (instance.getClass().getName().contains("$")) {
             System.out.println("WARNING: Inner class! I think. " + instance);
         }
-        try {
+
             boolean fieldTweaked = false;
             for (Field field : fields) {
                 if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
@@ -437,55 +516,21 @@ public class ModelReflectionTests {
                     numberOfFailedDefaultFieldAttempts++;
                     // if can't get default for any fields, assume the test is screwed for this object (skip it, but keep testing others)
 //                    return null;
-                    throw new CannotSetDefaultException();
+                    throw new NoDefaultValueForTypeException();
                 }
 
-                // actually do the setting. prefer to use a setter method but directly twiddle the field if necessary.
-                ArrayList<Method> matchingSetters = new ArrayList<>();
-                Class<?> instanceClass = instance.getClass();
-                Method[] instanceMethods = instanceClass.getMethods();
-                for (Method method : instanceMethods) {
-                    // we want to set variable named <field.getName()> but would prefer to go through a setter, if existent
-                    if (method.getName().toLowerCase().equals("set" + field.getName().toLowerCase())) {
-                        if (method.getParameterCount() == 1) {
-                            matchingSetters.add(method);
-                            // all done, don't need to continue
-                            break;
-                        }
+                try {
+                    assignValueToField(instance, field, value);
+                } catch (UnableToSetValueException e) {
+                    // raise a warning if the field we're trying to tweak to a non-standard value doesn't actually get 'set'
+                    // otherwise, just ignore it
+                    if (field.getName().equals(fieldNameToModify)) {
+//                        System.out.println("FAILURE to tweak field to different value on object " + instance.getClass().getName() + ", unequal testing will probably fail.");
+//                        e.printStackTrace(); 
+//                        return null;
+                        throw e;
                     }
                 }
-
-                Method bestSetterMatch = null;
-                if (matchingSetters.size() == 1) {
-                    // use the matching setter
-                    bestSetterMatch = matchingSetters.get(0);
-                } else if (matchingSetters.size() > 1) {
-                    // more than one setter... hmmm. probably need to do more to figure out how to pick one here...
-                    System.out.println("OOPS! I see more than one potential setter for field " + field.getName() 
-                            + " on class " + instance.getClass().getSimpleName() + ". For now, just taking the first one I see...");
-                    bestSetterMatch = matchingSetters.get(0);
-                }
-                
-                if (bestSetterMatch != null) {
-                    // can use a setter, the preferred way
-                    try {
-                        bestSetterMatch.invoke(instance, value);
-                        field.setAccessible(true);
-                        Object setValue = field.get(instance);
-                        if (!setValue.equals(value)) {
-                            System.out.println("WARNING - used setter " + bestSetterMatch.getName() + " with value " + value 
-                                    + " but got back " + setValue + " from field.");
-                        }
-                    } catch (InvocationTargetException e) {
-                        System.out.println("FAILED to invoke matching setter on " + instance.getClass().getSimpleName());
-//                        e.printStackTrace();
-                    }
-                } else {
-                    // no matching setters, use direct-twiddle approach
-                    field.setAccessible(true);
-                    field.set(instance, value);
-                }
-
             }
             // This method can be called without specifying a fieldNameToModify, but if it is specified and the field isn't found, warn the caller!
             if (!fieldTweaked && fieldNameToModify != null) {
@@ -497,10 +542,6 @@ public class ModelReflectionTests {
 //                System.out.println("WARNING - this will soon be an exception!");
             }
             return fieldTweaked;
-//            return instance;
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("IllegalAccessException failed trying to twiddle field " + fieldNameToModify + " -- Reflection tests cannot function");
-        }
     }
 
     private Object getSensibleValueForField(Field field) {

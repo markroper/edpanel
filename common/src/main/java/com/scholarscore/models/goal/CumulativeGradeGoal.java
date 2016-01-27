@@ -55,7 +55,7 @@ public class CumulativeGradeGoal extends Goal implements CalculatableCumulative 
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         CumulativeGradeGoal that = (CumulativeGradeGoal) o;
-        return Objects.equals(parentId, that.parentId);
+            return Objects.equals(parentId, that.parentId);
     }
 
     @Override
