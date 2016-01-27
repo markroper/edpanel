@@ -2,6 +2,7 @@ package com.scholarscore.api.manager;
 
 import com.scholarscore.api.manager.notification.NotificationTriggerEvaluator;
 import com.scholarscore.api.persistence.NotificationPersistence;
+import com.scholarscore.api.security.config.UserDetailsProxy;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
@@ -9,10 +10,15 @@ import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.notification.Notification;
 import com.scholarscore.models.notification.TriggeredNotification;
+import com.scholarscore.models.notification.group.NotificationGroup;
+import com.scholarscore.models.notification.group.NotificationGroupType;
+import com.scholarscore.models.notification.group.SingleStudent;
+import com.scholarscore.models.user.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,12 +46,43 @@ public class NotificationManagerImpl implements NotificationManager {
 
     @Override
     public ServiceResponse<Notification> getNotification(Long notificationId) {
+        //Return the requested notification if the requester is the owner or in the subjects
         Notification n = notificationPersistence.select(notificationId);
-        if(null == n) {
+        boolean permitted = userCanAccessNotification(n, pm.getUserManager().getCurrentUserDetails());
+        if(permitted) {
+            return new ServiceResponse<>(n);
+        } else {
             return new ServiceResponse<>(
-                    StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{ NOTIFICATION, notificationId}));
-        };
-        return new ServiceResponse<>(n);
+                    StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
+                            new Object[]{ NOTIFICATION, notificationId}));
+        }
+    }
+
+    private static final boolean userCanAccessNotification(Notification n, UserDetailsProxy udp) {
+        if(null == n || null == udp) {
+            return false;
+        }
+        UserType typ = udp.getUser().getType();
+        boolean permitted = false;
+        if(udp.getUser().getId().equals(n.getOwner().getId())) {
+            permitted = true;
+        } else if(typ.equals(UserType.SUPER_ADMIN) ||
+                typ.equals(UserType.ADMINISTRATOR) ||
+                typ.equals(UserType.TEACHER)) {
+            permitted = true;
+        } else if(typ.equals(UserType.STUDENT)) {
+            NotificationGroup g = n.getSubscribers();
+            if(g.getType().equals(NotificationGroupType.SINGLE_STUDENT)) {
+                if(udp.getUser().getId().equals(((SingleStudent)g).getStudent().getId())) {
+                    permitted = true;
+                }
+            } else if(g.getType().equals(NotificationGroupType.SECTION_STUDENTS) ||
+                    g.getType().equals(NotificationGroupType.FILTERED_STUDENTS)) {
+                //if the recipients to be alerted are groups of students, permit the request
+                permitted = true;
+            }
+        }
+        return permitted;
     }
 
     @Override
@@ -59,7 +96,17 @@ public class NotificationManagerImpl implements NotificationManager {
 
     @Override
     public ServiceResponse<List<Notification>> getAllNotifications() {
-        return new ServiceResponse<>(notificationPersistence.selectAll());
+        List<Notification> ns = notificationPersistence.selectAll();
+        List<Notification> filtered = new ArrayList<>();
+        if( null != ns) {
+            UserDetailsProxy udp = pm.getUserManager().getCurrentUserDetails();
+            for (Notification n : ns) {
+                if (userCanAccessNotification(n, udp)) {
+                    filtered.add(n);
+                }
+            }
+        }
+        return new ServiceResponse<>(filtered);
     }
 
     @Override
@@ -95,15 +142,29 @@ public class NotificationManagerImpl implements NotificationManager {
 
     @Override
     public ServiceResponse<Void> replaceNotification(Long notificationId, Notification notification) {
-        notificationPersistence.replaceNotification(notificationId, notification);
-        return new ServiceResponse<>((Void) null);
+        ServiceResponse<Notification> nResp = getNotification(notificationId);
+        if(null == nResp.getCode() || nResp.getCode().isOK()) {
+            UserDetailsProxy udp = pm.getUserManager().getCurrentUserDetails();
+            if(userCanAccessNotification(nResp.getValue(), udp)) {
+                notificationPersistence.replaceNotification(notificationId, notification);
+                return new ServiceResponse<>((Void) null);
+            }
+        }
+        return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.FORBIDDEN, null));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public ServiceResponse<Void> deleteNotification(Long notificationId) {
-        notificationPersistence.deleteNotification(notificationId);
-        return new ServiceResponse<>((Void) null);
+        ServiceResponse<Notification> nResp = getNotification(notificationId);
+        if(null == nResp.getCode() || nResp.getCode().isOK()) {
+            UserDetailsProxy udp = pm.getUserManager().getCurrentUserDetails();
+            if(userCanAccessNotification(nResp.getValue(), udp)) {
+                notificationPersistence.deleteNotification(notificationId);
+                return new ServiceResponse<>((Void) null);
+            }
+        }
+        return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.FORBIDDEN, null));
     }
 
     @Override
@@ -129,8 +190,16 @@ public class NotificationManagerImpl implements NotificationManager {
                             new Object[]{ TRIGGERED_NOTIFICATION, triggeredId});
             return new ServiceResponse<>(code);
         }
-        tn.setIsActive(false);
-        notificationPersistence.updateTriggeredNotification(triggeredId, tn);
-        return new ServiceResponse<>((Void) null);
+        UserDetailsProxy udp = pm.getUserManager().getCurrentUserDetails();
+        UserType typ = udp.getUser().getType();
+        if(tn.getUserIdToNotify().equals(udp.getUser().getId()) ||
+                UserType.SUPER_ADMIN.equals(typ) ||
+                UserType.ADMINISTRATOR.equals(typ) ||
+                UserType.TEACHER.equals(typ)) {
+            tn.setIsActive(false);
+            notificationPersistence.updateTriggeredNotification(triggeredId, tn);
+            return new ServiceResponse<>((Void) null);
+        }
+        return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.FORBIDDEN, null));
     }
 }
