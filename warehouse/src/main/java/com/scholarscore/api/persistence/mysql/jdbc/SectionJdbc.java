@@ -3,7 +3,7 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 import com.scholarscore.api.persistence.EntityPersistence;
 import com.scholarscore.api.persistence.SectionPersistence;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;

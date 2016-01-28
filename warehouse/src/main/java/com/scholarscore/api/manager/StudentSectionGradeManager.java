@@ -2,7 +2,7 @@ package com.scholarscore.api.manager;
 
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.ui.SectionGradeWithProgression;
 
 import java.util.Collection;

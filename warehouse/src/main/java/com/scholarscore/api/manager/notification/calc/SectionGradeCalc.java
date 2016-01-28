@@ -2,7 +2,7 @@ package com.scholarscore.api.manager.notification.calc;
 
 import com.scholarscore.api.manager.OrchestrationManager;
 import com.scholarscore.api.util.ServiceResponse;
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.notification.Notification;
 import com.scholarscore.models.notification.TriggeredNotification;
 import com.scholarscore.models.notification.window.NotificationWindow;
@@ -43,7 +43,7 @@ public class SectionGradeCalc implements NotificationCalculator {
                             manager.getStudentSectionGradeManager().getStudentSectionGrade(
                                     notification.getSchoolId(), -1L, -1L, notification.getSection().getId(), sid);
                     if(null != ssgResp.getValue()) {
-                        Double grade = ssgResp.getValue().getGrade();
+                        Double grade = ssgResp.getValue().getOverallGrade().getScore();
                         if ((triggerValue >= grade && !notification.getTriggerWhenGreaterThan()) ||
                                 (triggerValue <= grade && notification.getTriggerWhenGreaterThan())) {
                             triggered.addAll(NotificationCalculator.createTriggeredNotifications(
@@ -63,7 +63,7 @@ public class SectionGradeCalc implements NotificationCalculator {
                                     notification.getSchoolId(), -1L, -1L, notification.getSection().getId(), sid);
                     if(null != ssgResp.getValue()) {
                         num++;
-                        gradeSum += ssgResp.getValue().getGrade();
+                        gradeSum += ssgResp.getValue().getOverallGrade().getScore();
                     }
                 }
                 //If the aggregate function is average, adjust the triggered value, otherwise, assume SUM

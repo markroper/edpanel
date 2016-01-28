@@ -7,7 +7,8 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.SectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.UiAttributes;
 import com.scholarscore.models.assignment.Assignment;
@@ -184,7 +185,12 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                     for(Student s : section.getEnrolledStudents()) {
                         StudentSectionGrade ssg = new StudentSectionGrade();
                         ssg.setComplete(true);
-                        ssg.setGrade(100D - new Random().nextInt(35));
+                        SectionGrade sg = new SectionGrade();
+                        sg.setDate(LocalDate.now());
+                        sg.setScore(100D - new Random().nextInt(35));
+                        sg.setSectionFk(section.getId());
+                        sg.setStudentFk(s.getId());
+                        ssg.setOverallGrade(sg);
                         ssg.setSection(createdSection);
                         ssg.setStudent(s);
                         StudentSectionGrade savedGrade = studentSectionGradeValidatingExecutor.update(

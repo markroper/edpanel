@@ -5,12 +5,15 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.SectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.user.Student;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import java.time.LocalDate;
 
 @Test(groups = { "integration" })
 public class StudentSectionGradeIntegrationTest extends IntegrationBase {
@@ -71,7 +74,12 @@ public class StudentSectionGradeIntegrationTest extends IntegrationBase {
         
         Student namedStudent = generateNewStudent();
         StudentSectionGrade namedStudentSectionGrade = new StudentSectionGrade(emptyStudentSectionGrade);
-        namedStudentSectionGrade.setGrade(5.3);
+        SectionGrade sg = new SectionGrade();
+        sg.setDate(LocalDate.now());
+        sg.setScore(5.3);
+        sg.setSectionFk(section.getId());
+        sg.setStudentFk(namedStudent.getId());
+        namedStudentSectionGrade.setOverallGrade(sg);
         namedStudentSectionGrade.setStudent(namedStudent);
         namedStudentSectionGrade.setSection(section);
         namedStudentSectionGrade.setComplete(false);

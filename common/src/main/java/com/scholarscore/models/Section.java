@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
