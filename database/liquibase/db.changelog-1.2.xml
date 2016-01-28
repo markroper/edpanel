@@ -50,6 +50,7 @@
                     remarks="foreign key to school">
             </column>
         </createTable>
+        
         <addForeignKeyConstraint baseTableName="staff"
                                  baseColumnNames="school_fk"
                                  constraintName="staff$school_fk"
@@ -72,6 +73,26 @@
                                  referencedColumnNames="user_id"
                                  referencedTableName="user"/>
 
+        <!-- migrate data -->
+        <sql>
+            INSERT INTO staff
+            (staff_name, staff_source_system_id, staff_source_system_user_id, staff_user_fk,
+            staff_home_phone, staff_homeAddress_fk, school_fk, admin, teacher)
+            SELECT
+            administrator_name, administrator_source_system_id, administrator_source_system_user_id,
+            administrator_user_fk, administrator_home_phone, administrator_homeAddress_fk,
+            school_fk, '1', '1' FROM administrator;
+
+            INSERT INTO staff
+            (staff_name, staff_source_system_id, staff_source_system_user_id, staff_user_fk,
+            staff_home_phone, staff_homeAddress_fk, school_fk, admin, teacher)
+            SELECT
+            teacher_name, teacher_source_system_id, teacher_source_system_user_id,
+            teacher_user_fk, teacher_home_phone, teacher_homeAddress_fk,
+            school_fk, '0', '1' FROM teacher;
+        </sql>
+
+        
         <!--Modify teacher section -->
 
         <dropForeignKeyConstraint
@@ -136,25 +157,6 @@
                                  onUpdate="CASCADE"
                                  referencedColumnNames="staff_user_fk"
                                  referencedTableName="staff"/>
-
-        <sql>
-            INSERT INTO staff
-            (staff_name, staff_source_system_id, staff_source_system_user_id, staff_user_fk,
-            staff_home_phone, staff_homeAddress_fk, school_fk, admin, teacher)
-            SELECT
-            administrator_name, administrator_source_system_id, administrator_source_system_user_id,
-            administrator_user_fk, administrator_home_phone, administrator_homeAddress_fk,
-            school_fk, '1', '1' FROM administrator;
-
-            INSERT INTO staff
-            (staff_name, staff_source_system_id, staff_source_system_user_id, staff_user_fk,
-            staff_home_phone, staff_homeAddress_fk, school_fk, admin, teacher)
-            SELECT
-            teacher_name, teacher_source_system_id, teacher_source_system_user_id,
-            teacher_user_fk, teacher_home_phone, teacher_homeAddress_fk,
-            school_fk, '0', '1' FROM teacher;
-        </sql>
-
 
         <!--Drop admin and teacher tables-->
         <dropTable cascadeConstraints="true"
