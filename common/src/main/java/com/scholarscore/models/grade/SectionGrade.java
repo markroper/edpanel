@@ -73,7 +73,7 @@ public class SectionGrade extends Score {
         this.studentFk = studentFk;
     }
 
-    @Column(name = HibernateConsts.SECTION_GRADE_COMMENT)
+    @Column(name = HibernateConsts.SECTION_GRADE_COMMENT, columnDefinition = "blob")
     public String getComment() {
         return comment;
     }
