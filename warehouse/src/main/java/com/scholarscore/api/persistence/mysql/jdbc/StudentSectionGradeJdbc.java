@@ -5,7 +5,8 @@ import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.StudentSectionGradePersistence;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.SectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
@@ -108,10 +109,18 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Long delete(long sectionId, long studentId) {
         StudentSectionGrade toDelete = select(sectionId, studentId);
         if (null != toDelete) {
             hibernateTemplate.delete(toDelete);
+        }
+        String[] params = new String[]{ "sectionId", "studentId" };
+        Object[] paramValues = new Object[]{ sectionId, studentId };
+        List<SectionGrade> sgs = (List<SectionGrade>)hibernateTemplate.findByNamedParam("select sg from " + HibernateConsts.SECTION_GRADE_TABLE +
+                " sg where sg.sectionFk = :sectionId and sg.studentFk = :studentId", params, paramValues);
+        if(null != sgs) {
+            hibernateTemplate.deleteAll(sgs);
         }
         return toDelete.getId();
     }

@@ -6,9 +6,10 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.models.grade.SectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.ui.SectionGradeWithProgression;
@@ -101,7 +102,8 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         StudentSectionGrade grade = studentSectionGradePersistence.select(sectionId, studentId);
         Boolean complete = grade.getComplete();
         //Only calculate the grade if there is not a grade on it already
-        if((null == complete || complete.equals(Boolean.FALSE)) && null == grade.getGrade()) {
+        if((null == complete || complete.equals(Boolean.FALSE)) &&
+                (null == grade.getOverallGrade() || null == grade.getOverallGrade().getScore())) {
             Section sect = grade.getSection();
             ServiceResponse<Collection<StudentAssignment>> assignmentResp =
                     pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, sectionId);
@@ -127,7 +129,10 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                 if(null != formula && null != assignments) {
                     HashSet<StudentAssignment> assignmentSet = new HashSet<StudentAssignment>(assignments);
                     Double calculatedGrade = formula.calculateGrade(assignmentSet);
-                    grade.setGrade(calculatedGrade);
+                    SectionGrade overall = new SectionGrade();
+                    overall.setDate(LocalDate.now());
+                    overall.setScore(calculatedGrade);
+                    grade.setOverallGrade(overall);
                 }
             }
         }
@@ -145,7 +150,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         ServiceResponse<StudentSectionGrade> ssgResp = getStudentSectionGrade(schoolId, yearId, termId, sectionId, studentId);
 
         SectionGradeWithProgression gradeWithProgression = new SectionGradeWithProgression();
-        gradeWithProgression.setCurrentOverallGrade(ssgResp.getValue().getGrade());
+        gradeWithProgression.setCurrentOverallGrade(ssgResp.getValue().getOverallGrade().getScore());
         gradeWithProgression.setTermGrades(ssgResp.getValue().getTermGrades());
         Section section = ssgResp.getValue().getSection();
 
@@ -209,6 +214,10 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
         }
+        if(null != grade.getOverallGrade()) {
+            grade.getOverallGrade().setStudentFk(studentId);
+            grade.getOverallGrade().setSectionFk(sectionId);
+        }
         return new ServiceResponse<>(
                 studentSectionGradePersistence.insert(sectionId, studentId, grade));
     }
@@ -223,6 +232,12 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
         }
+        for(StudentSectionGrade ssg: grades) {
+            if(null != ssg.getOverallGrade()) {
+                ssg.getOverallGrade().setStudentFk(ssg.getStudent().getId());
+                ssg.getOverallGrade().setSectionFk(sectionId);
+            }
+        }
         studentSectionGradePersistence.insertAll(sectionId, grades);
         return new ServiceResponse<>((Void)null);
 
@@ -235,6 +250,10 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                 schoolId, yearId, termId, sectionId, studentId);
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
+        }
+        if(null != grade.getOverallGrade()) {
+            grade.getOverallGrade().setStudentFk(grade.getStudent().getId());
+            grade.getOverallGrade().setSectionFk(sectionId);
         }
         return new ServiceResponse<>(
                 studentSectionGradePersistence.update(sectionId, studentId, grade));
@@ -249,6 +268,10 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
             return new ServiceResponse<>(code);
         }
         grade.mergePropertiesIfNull(studentSectionGradePersistence.select(sectionId, studentId));
+        if(null != grade.getOverallGrade()) {
+            grade.getOverallGrade().setStudentFk(studentId);
+            grade.getOverallGrade().setSectionFk(sectionId);
+        }
         return new ServiceResponse<>(
                 studentSectionGradePersistence.update(sectionId, studentId, grade));
     }

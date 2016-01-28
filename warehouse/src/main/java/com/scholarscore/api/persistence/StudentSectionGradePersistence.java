@@ -1,8 +1,7 @@
 package com.scholarscore.api.persistence;
 
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 

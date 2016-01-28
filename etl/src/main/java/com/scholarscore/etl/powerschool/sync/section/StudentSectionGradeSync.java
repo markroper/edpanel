@@ -16,15 +16,22 @@ import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.MissingStudentMigrator;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.School;
-import com.scholarscore.models.Score;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.Score;
+import com.scholarscore.models.grade.SectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.user.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -126,10 +133,12 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                 if(sourceSsg.getStudent().getId().equals(edPanelSsg.getStudent().getId())) {
                     sourceSsg.setStudent(edPanelSsg.getStudent());
                 }
+                sourceSsg.getOverallGrade().setId(edPanelSsg.getOverallGrade().getId());
                 if(sourceSsg.getSection().getId().equals(edPanelSsg.getSection().getId())) {
                     sourceSsg.setSection(edPanelSsg.getSection());
                 }
                 if(!edPanelSsg.equals(sourceSsg)) {
+                    sourceSsg.getOverallGrade().setId(null);
                     try {
                         edPanel.replaceStudentSectionGrade(
                                 school.getId(),
@@ -212,6 +221,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                     //For the enrollment, get all the final scores.
                     HashMap<Long, Score> termScores = new HashMap<>();
                     PsResponse<PtFinalScoreWrapper> scoresResponse = powerSchool.getPowerTeacherFinalScore(enrollment.id);
+                    SectionGrade overall = new SectionGrade();
                     for(PsResponseInner<PtFinalScoreWrapper> scoreWrapper: scoresResponse.record) {
                         PtFinalScore ptScore = scoreWrapper.tables.psm_finalscore;
                         Long powerTeacherReportingTermId = ptScore.reportingtermid;
@@ -225,7 +235,10 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                         termScores.put(powerTeacherReportingTermId, score);
                         if(null != createdSection.getGradeFormula() &&
                                 createdSection.getGradeFormula().getId().equals(powerTeacherReportingTermId)){
-                            ssg.setGrade(score.getScore());
+                            SectionGrade gr = new SectionGrade(score);
+                            gr.setSectionFk(createdSection.getId());
+                            gr.setStudentFk(edpanelStudent.getId());
+                            ssg.setOverallGrade(gr);
                         }
                     }
                     ssg.setTermGrades(termScores);
