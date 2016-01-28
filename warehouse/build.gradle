@@ -111,7 +111,7 @@ task integrationLocal(type: Test) {
     }
 }
 
-task integrationLocalWithContainer(type: Test, dependsOn: 'war') << {
+task integrationLocalWithContainer(type: Test, dependsOn: 'war') {
     group 'Verification'
     description 'use tomcat to start a local container, then run the integrationLocal task, then stop container'
 }
