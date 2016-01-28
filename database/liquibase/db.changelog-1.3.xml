@@ -63,7 +63,7 @@
                     remarks="The value that represents the section grade">
             </column>
             <column name="comment"
-                    type="varchar(512)"
+                    type="blob"
                     remarks="The teacher comment on the grade">
             </column>
             <column name="manually_overridden"
@@ -100,11 +100,15 @@
         <addForeignKeyConstraint baseTableName="student_section_grade"
                                  baseColumnNames="section_grade_fk"
                                  constraintName="section_grade$section_grade_fk"
-                                 onDelete="CASCADE"
-                                 onUpdate="CASCADE"
+                                 onDelete="SET NULL"
+                                 onUpdate="SET NULL"
                                  referencedColumnNames="section_grade_id"
                                  referencedTableName="section_grade"/>
         <dropColumn columnName="grade"
                     tableName="student_section_grade"/>
+
+        <sql>
+            alter table student_section_grade change term_grades term_grades blob
+        </sql>
     </changeSet>
 </databaseChangeLog>

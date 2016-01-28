@@ -221,7 +221,6 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                     //For the enrollment, get all the final scores.
                     HashMap<Long, Score> termScores = new HashMap<>();
                     PsResponse<PtFinalScoreWrapper> scoresResponse = powerSchool.getPowerTeacherFinalScore(enrollment.id);
-                    SectionGrade overall = new SectionGrade();
                     for(PsResponseInner<PtFinalScoreWrapper> scoreWrapper: scoresResponse.record) {
                         PtFinalScore ptScore = scoreWrapper.tables.psm_finalscore;
                         Long powerTeacherReportingTermId = ptScore.reportingtermid;

@@ -2,15 +2,12 @@ package com.scholarscore.models.grade;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.WeightedGradable;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.util.EdPanelObjectMapper;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
@@ -26,7 +23,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Objects;
@@ -85,27 +81,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
         }
     }
 
-    @JsonIgnore
-    @Column(name = HibernateConsts.STUDENT_SECTION_GRADE_TERM_GRADES)
-    public String getTermGradesString() {
-        try {
-            return EdPanelObjectMapper.MAPPER.writeValueAsString(termGrades);
-        } catch (JsonProcessingException | NullPointerException e) {
-            return null;
-        }
-    }
-    @JsonIgnore
-    public void setTermGradesString(String gradesString) {
-        try {
-            this.termGrades = EdPanelObjectMapper.MAPPER.readValue(
-                    gradesString, new TypeReference<HashMap<Long, Score>>(){});
-        } catch (IOException | NullPointerException e) {
-            this.termGrades = null;
-        }
-    }
-
-
-    @Transient
+    @Column(name = HibernateConsts.STUDENT_SECTION_GRADE_TERM_GRADES, columnDefinition="blob")
     public HashMap<Long, Score> getTermGrades() {
         return termGrades;
     }
