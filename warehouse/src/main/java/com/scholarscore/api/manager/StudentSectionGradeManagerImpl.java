@@ -234,7 +234,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
      * @param date
      * @return
      */
-    private SectionGrade getStudentSectionGradeAsOfDate(long studentId, long sectionId, LocalDate date) {
+    public SectionGrade getStudentSectionGradeAsOfDate(long studentId, long sectionId, LocalDate date) {
         StudentSectionGrade grade = studentSectionGradePersistence.select(sectionId, studentId);
         if(null == grade) {
             return null;

@@ -2,9 +2,11 @@ package com.scholarscore.api.manager;
 
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
+import com.scholarscore.models.grade.SectionGrade;
 import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.ui.SectionGradeWithProgression;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -79,6 +81,17 @@ public interface StudentSectionGradeManager {
     public ServiceResponse<SectionGradeWithProgression> getStudentSectionGradeByWeek(
             long schoolId, long yearId, long termId, long sectionId, long studentId);
 
+    /**
+     * Returns a student's section grade as of the specified date, pulling the value first from the cached historical
+     * values stored from the SIS.  If there is not stored value, one is calculated.  If the date is out of bounds
+     * or the request is otherwise unresolvable, null is returned.
+     *
+     * @param studentId
+     * @param sectionId
+     * @param date
+     * @return
+     */
+    SectionGrade getStudentSectionGradeAsOfDate(long studentId, long sectionId, LocalDate date);
     /**
      * Stores a new student section grade instance in the system and returns the assigned ID populated on
      * the ServiceResponse. In degenerate cases, the returned ServiceResponse
