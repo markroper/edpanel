@@ -250,10 +250,6 @@ public class ModelReflectionTests {
     }
 
     private void checkEqualsAndHashCodeForClass(Class clazz) {
-//        checkEqualsAndHashCodeForClass(clazz, clazz);
-//    }
-//
-//    private void checkEqualsAndHashCodeForClass(Class concreteClass, Class sourceOfFieldsClass) {
     
         // TODO Jordan: just temporary -- finish refactoring to use concreteClass and sourceOfFieldsClass below 
         Class<?> concreteClass = clazz;
