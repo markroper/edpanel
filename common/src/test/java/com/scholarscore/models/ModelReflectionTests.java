@@ -95,10 +95,6 @@ public class ModelReflectionTests {
     private final Set<String> excludedClassNames = new HashSet<String>() {{
         // if you want to exclude a model class from this test, add it here (including packageToScan)...
         add(packageToScan + "." + testClassName);
-        // TODO Jordan: come back to this one, I think it's a bug in the reflection tester
-        add(packageToScan + "." + "goal.ComplexGoal");
-        add(packageToScan + "." + "goal.AssignmentGoal");
-//        add(packageToScan + "." + "goal.BehaviorGoal");
     }};
     
     public String getPackageToScan() {
@@ -348,7 +344,7 @@ public class ModelReflectionTests {
             return null;
         }             
         return buildPopulatedObject(instance, sourceOfFieldsClass, fieldNameToModify);
-    }
+    }   
 
     private <S,T extends S> T buildPopulatedObject(T instance, Class<S> sourceOfFieldsClass, String fieldNameToModify) {
         return buildPopulatedObject(instance, sourceOfFieldsClass, fieldNameToModify, false);
@@ -368,8 +364,8 @@ public class ModelReflectionTests {
             fieldAlreadyTweaked |= fieldTweakedInFields;
         } catch (NoDefaultValueForTypeException | UnableToSetValueException e) {
             // NoDefaultValueForTypeException - failure to figure out a sensible default for field
-            // UnableToSetValueException - sensible default known, but object field isn't set even after calling corresponding setter
-            System.out.println("buildPopulatedObject returning NULL for object " + instance.getClass().getName() + " when trying to tweak field " + fieldNameToModify);
+            // UnableToSetValueException - sensible default known, but object field doesn't get set even after calling corresponding setter
+//            System.out.println("buildPopulatedObject returning NULL for object " + instance.getClass().getName() + " when trying to tweak field " + fieldNameToModify);
             returnedInstance = null;
         }
         // if exception not thrown, we can safely assume defaults have been set for the fields specified
@@ -454,13 +450,6 @@ public class ModelReflectionTests {
             field.setAccessible(true);
             Object setValue = field.get(instance);
             if (!setValue.equals(value)) {
-                // TODO Jordan: current problem -- setGoalType alt value produces BEHAVIOR (the second enum)
-                // so even though this is a "fake field" -- e.g. one that cannot actually be toggled -- 
-                // we don't know it because we set it to one value, and that happens to be the ONLY value this field
-                //returns. I guess we need to set this field to at least 2 values to guarantee we can actually set it!
-                System.out.println("WARNING - used setter "
-                        + (bestSetterMatch != null ? bestSetterMatch.getName() : "<direct access>") + " with value " + value
-                        + " but got back " + setValue + " from field.");
                 throw new UnableToSetValueException("cannot set value!");
             }
         } catch (IllegalAccessException iae) {
@@ -483,7 +472,9 @@ public class ModelReflectionTests {
     // 
     // throws an exception in the case of any problems
     // returns TRUE or FALSE, depending on if a field was set to a non-default value (only ever true if fieldNameToModify is supplied)
-    private <T> boolean populateObjectFields(T instance, Field[] fields, String fieldNameToModify) throws NoDefaultValueForTypeException, UnableToSetValueException {
+    private <T> boolean populateObjectFields(T instance, 
+                                             Field[] fields, 
+                                             String fieldNameToModify) throws NoDefaultValueForTypeException, UnableToSetValueException {
 //        System.out.println("populateObjectFields called on instance: " + instance + " of class " + instance.getClass());
         if (instance.getClass().getName().contains("$")) {
             System.out.println("WARNING: Inner class! I think. " + instance);
@@ -495,14 +486,34 @@ public class ModelReflectionTests {
                     // ignore static/final
                     continue;
                 }
-
+                
+                // Since we're testing field value inequality by setting the values on two different
+                // instances of an object to two different values, it will be a problem if the setter
+                // doesn't actually set. How to detect this? 
+                // Well, we can try setting the setter using a certain value and then accessing the field.
+                // If the value in the field is the value we set the field to, well, the setter works.
+                // But wait! What if the field _always_ returns that value, and we just happened to call
+                // the setter with (and check the resulting field value equality against) the object
+                // (e.g. enum type) that the field is ALWAYS going to return anyway. So the setter doesn't 
+                // 'truly' work, but if the test attempts to set it to the value that it's always set to,
+                // the above test fails. SO we have two values that must be different, and we will try to 
+                // set the field to BOTH of them, and then test that the resulting read of the field
+                // reads each value correctly. This ensures the field does not always return one value.
+                Object intermediateValue;
+//                Object ultimateValue;
+                
+                // TODO Jordan: assert that intermediateValue and ultimateValue are not the same,
+                // or else we can't even test the damn setter
+                
                 Object value;
                 if (field.getName().equals(fieldNameToModify)) {
+                    intermediateValue = getSensibleValueForField(field);
                     value = getAnotherValueForField(field);
                     if (value != null) {
                         fieldTweaked = true;
                     }
                 } else {
+                    intermediateValue = getAnotherValueForField(field);
                     value = getSensibleValueForField(field);
                 }
 
@@ -516,6 +527,7 @@ public class ModelReflectionTests {
                 }
 
                 try {
+                    assignValueToField(instance, field, intermediateValue);
                     assignValueToField(instance, field, value);
                 } catch (UnableToSetValueException e) {
                     // raise a warning if the field we're trying to tweak to a non-standard value doesn't actually get 'set'
