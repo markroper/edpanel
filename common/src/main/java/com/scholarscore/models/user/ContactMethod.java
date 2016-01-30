@@ -160,8 +160,7 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
                 && Objects.equals(this.contactValue, other.contactValue)
                 && Objects.equals(this.confirmCode, other.confirmCode)
                 && Objects.equals(this.confirmCodeCreated, other.confirmCodeCreated)
-                && Objects.equals(this.confirmed, other.confirmed)
-                && Objects.equals(this.user, other.user);
+                && Objects.equals(this.confirmed, other.confirmed);
     }
     @Override
     public int hashCode() {
@@ -169,8 +168,7 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
                 contactValue,
                 confirmCode,
                 confirmCodeCreated,
-                confirmed,
-                user);
+                confirmed);
     }
 
     @Override

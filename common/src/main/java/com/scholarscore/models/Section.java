@@ -369,8 +369,33 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 Objects.equals(this.numberOfTerms, other.numberOfTerms) &&
                 Objects.equals(this.gradeFormula, other.gradeFormula) && 
                 Objects.equals(this.term, other.term) &&
-                Objects.equals(this.teachers, other.teachers) &&
+                teachersEqual(other.teachers) &&
                 Objects.equals(this.expression, other.expression);
+    }
+
+    private boolean teachersEqual(Set<Staff> otherTeachers) {
+        if(null == otherTeachers && null != this.teachers) {
+            return false;
+        }
+        if(null == this.teachers && null != otherTeachers) {
+            return false;
+        }
+        if(null == this.teachers && null == otherTeachers) {
+            return true;
+        }
+        if(this.teachers.size() != otherTeachers.size()) {
+            return false;
+        }
+        Map<Long, Staff> currStaffMap = new HashMap<>();
+        for(Staff s: this.teachers) {
+            currStaffMap.put(s.getId(), s);
+        }
+        for(Staff s: otherTeachers) {
+            if(!currStaffMap.containsKey(s.getId()) || !s.equals(currStaffMap.get(s.getId()))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

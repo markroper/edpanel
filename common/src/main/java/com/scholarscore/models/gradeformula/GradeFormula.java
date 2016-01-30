@@ -431,12 +431,37 @@ public class GradeFormula implements Serializable {
                 && Objects.equals(this.startDate, other.startDate)
                 && Objects.equals(this.endDate, other.endDate)
                 && Objects.equals(this.parentId, other.parentId)
-                && Objects.equals(this.children, other.children)
+                && childrenEqual(other.children)
                 && Objects.equals(this.sourceSystemDescription, other.sourceSystemDescription)
                 && Objects.equals(this.assignmentTypeWeights, other.assignmentTypeWeights)
                 && Objects.equals(this.assignmentWeights, other.assignmentWeights)
                 && Objects.equals(this.lowScoreToDiscard, other.lowScoreToDiscard)
                 && Objects.equals(this.assignmentTypeDefaultPoints, other.assignmentTypeDefaultPoints)
                 && Objects.equals(this.childWeights, other.childWeights);
+    }
+
+    private boolean childrenEqual(Set<GradeFormula> children) {
+        if(null == children && null != this.children) {
+            return false;
+        }
+        if(null == this.children && null != children) {
+            return false;
+        }
+        if(null == this.children && null == children) {
+            return true;
+        }
+        if(this.children.size() != children.size()) {
+            return false;
+        }
+        Map<Long, GradeFormula> currStaffMap = new HashMap<>();
+        for(GradeFormula s: this.children) {
+            currStaffMap.put(s.getId(), s);
+        }
+        for(GradeFormula s: children) {
+            if(!currStaffMap.containsKey(s.getId()) || !s.equals(currStaffMap.get(s.getId()))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

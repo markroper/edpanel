@@ -85,6 +85,7 @@ public class ModelReflectionTests {
     private final Set<String> excludedClassNames = new HashSet<String>() {{
         // if you want to exclude a model class from this test, add it here (including packageToScan)...
         add(packageToScan + "." + testClassName);
+        add("com.scholarscore.models.user.ContactMethod");
     }};
     
     public String getPackageToScan() {
