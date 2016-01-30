@@ -140,7 +140,7 @@ public class Staff extends Person {
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(currentSchoolId, isAdmin, isTeacher);
+                + Objects.hash(isAdmin, isTeacher);
     }
 
     @Override

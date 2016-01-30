@@ -133,14 +133,16 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                 if(sourceSsg.getStudent().getId().equals(edPanelSsg.getStudent().getId())) {
                     sourceSsg.setStudent(edPanelSsg.getStudent());
                 }
-                if(null != sourceSsg.getOverallGrade()) {
+                if(null != sourceSsg.getOverallGrade() && null != edPanelSsg.getOverallGrade()) {
                     sourceSsg.getOverallGrade().setId(edPanelSsg.getOverallGrade().getId());
                 }
                 if(sourceSsg.getSection().getId().equals(edPanelSsg.getSection().getId())) {
                     sourceSsg.setSection(edPanelSsg.getSection());
                 }
                 if(!edPanelSsg.equals(sourceSsg)) {
-                    sourceSsg.getOverallGrade().setId(null);
+                    if(!sourceSsg.getOverallGrade().getDate().equals(edPanelSsg.getOverallGrade().getDate())) {
+                        sourceSsg.getOverallGrade().setId(null);
+                    }
                     try {
                         edPanel.replaceStudentSectionGrade(
                                 school.getId(),
@@ -159,12 +161,14 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
         }
         //Bulk Create those identified as new in the while loop!
         try {
-            edPanel.createStudentSectionGrades(
-                    school.getId(),
-                    createdSection.getTerm().getSchoolYear().getId(),
-                    createdSection.getTerm().getId(),
-                    createdSection.getId(),
-                    ssgsToCreate);
+            if(!ssgsToCreate.isEmpty()) {
+                edPanel.createStudentSectionGrades(
+                        school.getId(),
+                        createdSection.getTerm().getSchoolYear().getId(),
+                        createdSection.getTerm().getId(),
+                        createdSection.getId(),
+                        ssgsToCreate);
+            }
         } catch (HttpClientException e) {
             results.studentSectionGradeCreateFailed(Long.valueOf(createdSection.getSourceSystemId()), createdSection.getId());
         }
