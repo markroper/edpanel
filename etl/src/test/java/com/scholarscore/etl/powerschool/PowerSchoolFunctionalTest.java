@@ -27,7 +27,7 @@ import static org.testng.Assert.assertTrue;
  *
  * Created by mattg on 7/2/15.
  */
-@Test
+@Test(groups = { "functional" })
 @ContextConfiguration(locations = { "classpath:powerschool.xml" })
 public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests {
 
