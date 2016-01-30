@@ -70,6 +70,9 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
     
     public Section() {
         super();
+        enrolledStudents = Lists.newArrayList();
+        assignments = Lists.newArrayList();
+        teachers = Sets.newHashSet();
     }
 
     public Section(LocalDate startDate, LocalDate endDate, String room, GradeFormula gradeFormula, Integer numberOfTerms, Map<String,ArrayList<Long>> expression) {
@@ -326,14 +329,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         if(null == room) {
             room = mergeFrom.room;
         }
-        if(null == enrolledStudents) {
-            enrolledStudents = mergeFrom.enrolledStudents;
+        if(null != enrolledStudents && enrolledStudents.size() == 0) {
+            enrolledStudents.addAll(mergeFrom.enrolledStudents);
         }
-        if(null == teachers) {
-            teachers = mergeFrom.teachers;
+        if(null != teachers && teachers.size() == 0) {
+            teachers.addAll(mergeFrom.teachers);
         }
-        if(null == assignments) {
-            assignments = mergeFrom.assignments;
+        if(null != assignments && assignments.size() == 0) {
+            assignments.addAll(mergeFrom.assignments);
         }
         if(null == gradeFormula) {
             this.gradeFormula = mergeFrom.gradeFormula;

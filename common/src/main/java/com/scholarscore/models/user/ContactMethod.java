@@ -43,8 +43,9 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
     private String confirmCode;
     private Date confirmCodeCreated;
 
+    // TODO This field used by hibernate - any way to refactor it out?
+    // The two-way link from User<->ContactMethod creates infinite loops in auto-generated equals/hashcode/toString 
     private User user;
-    
     
     private Boolean confirmed = true;
     
@@ -160,8 +161,8 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
                 && Objects.equals(this.contactValue, other.contactValue)
                 && Objects.equals(this.confirmCode, other.confirmCode)
                 && Objects.equals(this.confirmCodeCreated, other.confirmCodeCreated)
-                && Objects.equals(this.confirmed, other.confirmed)
-                && Objects.equals(this.user, other.user);
+                && Objects.equals(this.confirmed, other.confirmed);
+//                && Objects.equals(this.user, other.user);
     }
     @Override
     public int hashCode() {
@@ -169,8 +170,8 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
                 contactValue,
                 confirmCode,
                 confirmCodeCreated,
-                confirmed,
-                user);
+                confirmed);
+        // not including user to not cause infinite looping!
     }
 
     @Override
@@ -182,7 +183,7 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
                 ", confirmCode='" + confirmCode + '\'' +
                 ", confirmCodeCreated=" + confirmCodeCreated +
                 ", confirmed=" + confirmed +
-                ", user=" + user +
+//                ", user=" + user +
                 '}';
     }
 

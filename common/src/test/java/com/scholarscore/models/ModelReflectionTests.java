@@ -95,6 +95,8 @@ public class ModelReflectionTests {
     private final Set<String> excludedClassNames = new HashSet<String>() {{
         // if you want to exclude a model class from this test, add it here (including packageToScan)...
         add(packageToScan + "." + testClassName);
+        // ContactMethod does not actually compare the 'user' field in equals() or include it in hashcode()
+        add(packageToScan + "." + "user.ContactMethod");
     }};
     
     public String getPackageToScan() {
