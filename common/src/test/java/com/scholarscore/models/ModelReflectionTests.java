@@ -172,7 +172,7 @@ public class ModelReflectionTests {
         // show this final output regardless of logging flags
         System.out.println(debugStringBuilder.toString());
     }
-
+    
     private void checkMergePropertiesIfNullForApiModel(Class<?> clazz) {
         // this test is only applicable to classes that implement IApiModel
         if (IApiModel.class.isAssignableFrom(clazz)) {
@@ -185,10 +185,6 @@ public class ModelReflectionTests {
                     System.out.println("Failed to construct " + clazz.getSimpleName() + ", aborting this test...");
                     return;
                 }
-                // if any fields on emptyObject actually aren't null, we need to know that 
-                // or we'll get a false failure because the objects won't be equal
-//                Field[] fields = clazz.getDeclaredFields();
-
                 // return all fields from sourceOfFieldsClass, as well as any and all superclasses within package being tested
                 Field[] allFields = getAllFieldNamesWithinEligibleSuperclasses(clazz);
 
@@ -215,7 +211,7 @@ public class ModelReflectionTests {
                     }
                 }
 
-                    emptyObject.mergePropertiesIfNull(populatedObject);
+                emptyObject.mergePropertiesIfNull(populatedObject);
                 assertEquals(emptyObject, populatedObject, "A new object of class " + clazz 
                         + " had mergePropertiesIfNull invoked with a populated instance of the object.\n" 
                         + "After merging, the new object was not equal to to the populated object.");
@@ -224,9 +220,7 @@ public class ModelReflectionTests {
                 logDebug("Error constructing class, skipping...");
                 e.printStackTrace();
             } 
-        } else {
-//            logVerbose("-Class " + clazz + " does not implement IApiModel, skipping mergePropertiesIfNull test.");
-        }
+        } // else (class does not implement IAPImodel)
     }
 
     private void checkCopyConstructorForClass(Class<?> clazz) {
@@ -248,46 +242,29 @@ public class ModelReflectionTests {
     }
 
     private void checkEqualsAndHashCodeForClass(Class clazz) {
-    
-        // TODO Jordan: just temporary -- finish refactoring to use concreteClass and sourceOfFieldsClass below 
-        Class<?> concreteClass = clazz;
-        Class<?> sourceOfFieldsClass = clazz;
-        
-        boolean sameClass = (concreteClass == sourceOfFieldsClass);
         
         final Object unmodifiedInstance = buildPopulatedObject(clazz);
-//        Field[] fields = sourceOfFieldsClass.getDeclaredFields();
-        
-        String classDescString = sameClass ? "class " + concreteClass.getSimpleName() 
-                : "class (impl)" + concreteClass.getSimpleName() + " (fields)" + sourceOfFieldsClass.getSimpleName();
-    
+        String classDescString = "class " + clazz.getSimpleName();
         logDebug("*Checking equals and hashcode for " + classDescString + "...");
         
         // return all fields from sourceOfFieldsClass, as well as any and all superclasses within package being tested
-        Field[] allFields = getAllFieldNamesWithinEligibleSuperclasses(sourceOfFieldsClass);
+        Field[] allFields = getAllFieldNamesWithinEligibleSuperclasses(clazz);
         
         // for each field in the object under test, make a copy of the object with just that field tweaked.
         // then check resulting equals/hashcode between them and see what we can discover
-
         for (Field field : allFields) {
             if (Modifier.isFinal(field.getModifiers()) 
                     || Modifier.isStatic(field.getModifiers())) {
                 // skip static and final fields. our concern is equals() and hashcode() which don't consider these
                 continue;
             }
-//            if (Modifier.isTransient(field.getModifiers())) {
-                // TODO Jordan: should test to ensure transients are NOT considered in equals
-//                System.out.println("Transient field detected, should test that it doesn't affect equals");
-//                continue;
-//            }
-            
+
             Object instanceWithTweakedField = buildPopulatedObject(clazz, field.getName());
             if (instanceWithTweakedField == null) {
                 logDebug("Couldn't build object with tweaked field " + field.getName() + ", skipping this check.");
-                // TODO: make a note of this?
+                // TODO: store these objects and print them out at the end
                 continue;
             }
-            // logDebug("Checking equals() and hashcode() on " + clazz.getName() + " with field " + field.getName() + " modified...");
             String both = "original:\n" + unmodifiedInstance + "\ntweaked:\n" + instanceWithTweakedField;
             String objMsg = "For class " + clazz + ", ";
             String equalsMsg = objMsg + "Equals() returned true even though objects have different values for field " + field.getName() + "\n" + both;
@@ -296,7 +273,7 @@ public class ModelReflectionTests {
                 field.setAccessible(true);
                 Object unmodifiedValue = field.get(unmodifiedInstance);
                 Object modifiedValue = field.get(instanceWithTweakedField);
-//                equalsMsg += "\n(Unmodified value: " + unmodifiedValue + ", Modified value: " + modifiedValue + ")";
+                equalsMsg += "\n(Unmodified value: " + unmodifiedValue + ", Modified value: " + modifiedValue + ")";
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -306,11 +283,13 @@ public class ModelReflectionTests {
         logDebug("*Equals and HashCode are good (assuming no problems were just displayed)");
     }
 
+    // for a given class, return a collection of all that class's fields, as well as the fields on any superclasses of 
+    // this class within the eligible package (the package being tested)
     private Field[] getAllFieldNamesWithinEligibleSuperclasses(Class<?> clazz) {
         ArrayList<Field> allFields = new ArrayList<>();
         allFields.addAll(Arrays.asList(clazz.getDeclaredFields()));
         if (clazz.getSuperclass().getPackage().toString().toLowerCase().contains(packageToScan.toLowerCase())) {
-            // keep going!
+            // The class's superclass is within the package we're scanning (or one of its subpackages)
             Field[] superclassFields = getAllFieldNamesWithinEligibleSuperclasses(clazz.getSuperclass());
             allFields.addAll(Arrays.asList(superclassFields));
         }
@@ -325,32 +304,24 @@ public class ModelReflectionTests {
     }
     
     private <T> Object buildPopulatedObject(Class<T> clazz) {
-        return buildPopulatedObject(clazz, clazz, (String)null);
+        return buildPopulatedObject(clazz, null);
     }
     
-    private <S, T extends S> Object buildPopulatedObject(Class<T> clazz, String fieldNameToModify) { 
-        return buildPopulatedObject(clazz, clazz, fieldNameToModify);
-    }
-     
     /* 
      * Create a reasonable test object. 
      * If fieldNameToModify is set, this field will be varied from the normal default value typical to this field type.
      */
-    private <S,T extends S> T buildPopulatedObject(Class<T> concreteClass, Class<S> sourceOfFieldsClass, String fieldNameToModify) {
+    private <T> T buildPopulatedObject(Class<T> clazz, String fieldNameToModify) {
         T instance;
         try {
-            instance = concreteClass.newInstance();
+            instance = clazz.newInstance();
         } catch (InstantiationException|IllegalAccessException ie) {
             // this is expected to happen if we can't build the object with a no-arg constructor. just move on and pretend nothing happened.
             logDebug("InstantiationException|IllegalAccessException " + ie);
             return null;
         }             
-        return buildPopulatedObject(instance, sourceOfFieldsClass, fieldNameToModify);
+        return buildPopulatedObject(instance, clazz, fieldNameToModify, false);
     }   
-
-    private <S,T extends S> T buildPopulatedObject(T instance, Class<S> sourceOfFieldsClass, String fieldNameToModify) {
-        return buildPopulatedObject(instance, sourceOfFieldsClass, fieldNameToModify, false);
-    }
 
         // using an already-created instance, provide best-guess values for a list of fields pulled from a specified class 
     // (the specified class to pull fields from is either the class of the instance or a superclass)
@@ -367,11 +338,9 @@ public class ModelReflectionTests {
         } catch (NoDefaultValueForTypeException | UnableToSetValueException e) {
             // NoDefaultValueForTypeException - failure to figure out a sensible default for field
             // UnableToSetValueException - sensible default known, but object field doesn't get set even after calling corresponding setter
-//            System.out.println("buildPopulatedObject returning NULL for object " + instance.getClass().getName() + " when trying to tweak field " + fieldNameToModify);
             returnedInstance = null;
         }
         // if exception not thrown, we can safely assume defaults have been set for the fields specified
-        
         // don't try to ascend the hierarchy unless it has gone well up to this point...
         if (returnedInstance != null) {
             Class<? super S> superclass = sourceOfFieldsClass.getSuperclass();
@@ -387,7 +356,6 @@ public class ModelReflectionTests {
             } else {
                 // okay, we've gotten as high as we're going to get in the hierarchy. confirm
                 // that the field that we're supposed to tweak has been tweaked, and noisily complain (throw exception?) if it hasn't been.
-//                System.out.println("Parent of " + sourceOfFieldsClass + " (" + superclass.getSimpleName() + ") is not in package, done ascending hierarchy...");
                 if (fieldNameToModify != null && !fieldAlreadyTweaked) {
                     System.out.println("WARNING - object " + instance + " being returned without tweaking field " + fieldNameToModify);                    
                 }
@@ -407,7 +375,6 @@ public class ModelReflectionTests {
     }
     
     // This method is provided an instance, a field that is found on that instance, and the new value that is desired for that field
-    
     private void assignValueToField(Object instance, Field field, Object value) throws UnableToSetValueException {
         // actually do the setting. prefer to use a setter method but directly twiddle the field if necessary.
         ArrayList<Method> matchingSetters = new ArrayList<>();
@@ -477,7 +444,6 @@ public class ModelReflectionTests {
     private <T> boolean populateObjectFields(T instance, 
                                              Field[] fields, 
                                              String fieldNameToModify) throws NoDefaultValueForTypeException, UnableToSetValueException {
-//        System.out.println("populateObjectFields called on instance: " + instance + " of class " + instance.getClass());
         if (instance.getClass().getName().contains("$")) {
             System.out.println("WARNING: Inner class! I think. " + instance);
         }
@@ -502,10 +468,6 @@ public class ModelReflectionTests {
                 // set the field to BOTH of them, and then test that the resulting read of the field
                 // reads each value correctly. This ensures the field does not always return one value.
                 Object intermediateValue;
-//                Object ultimateValue;
-                
-                // TODO Jordan: assert that intermediateValue and ultimateValue are not the same,
-                // or else we can't even test the damn setter
                 
                 Object value;
                 if (field.getName().equals(fieldNameToModify)) {
@@ -524,7 +486,15 @@ public class ModelReflectionTests {
                     fieldsThatNeedDefaults.add(field.toString());
                     numberOfFailedDefaultFieldAttempts++;
                     // if can't get default for any fields, assume the test is screwed for this object (skip it, but keep testing others)
-//                    return null;
+                    throw new NoDefaultValueForTypeException();
+                }
+                
+                if (intermediateValue == value) {
+                    // TODO Jordan: do more special handling on this case -- for this type, there's only ONE value, but no alt
+                    System.out.println("Adding field... " + field.toString() + " because it has only ONE default value...");
+                    fieldsThatNeedDefaults.add(field.toString());
+                    numberOfFailedDefaultFieldAttempts++;
+                    // if can't get default for any fields, assume the test is screwed for this object (skip it, but keep testing others)
                     throw new NoDefaultValueForTypeException();
                 }
 
@@ -532,24 +502,11 @@ public class ModelReflectionTests {
                     assignValueToField(instance, field, intermediateValue);
                     assignValueToField(instance, field, value);
                 } catch (UnableToSetValueException e) {
-                    // raise a warning if the field we're trying to tweak to a non-standard value doesn't actually get 'set'
-                    // otherwise, just ignore it
+                    // raise a warning if the field that doesn't get 'set' is the specific one we're trying to tweak...
                     if (field.getName().equals(fieldNameToModify)) {
-//                        System.out.println("FAILURE to tweak field to different value on object " + instance.getClass().getName() + ", unequal testing will probably fail.");
-//                        e.printStackTrace(); 
-//                        return null;
                         throw e;
                     }
                 }
-            }
-            // This method can be called without specifying a fieldNameToModify, but if it is specified and the field isn't found, warn the caller!
-            if (!fieldTweaked && fieldNameToModify != null) {
-                // today, this only happens if trying to tweak a field that belongs to a superclass. should be supported.
-//                logDebug("WARNING - object " + instance + " being returned without tweaking field " + fieldNameToModify);
-//                System.out.println("OBSOLETE INNER WARNING - object " + instance + " being returned without tweaking field " + fieldNameToModify);
-                // TODO Jordan: this could probably be an exception, but should wait until after superclass fields are checked
-                // to enforce this
-//                System.out.println("WARNING - this will soon be an exception!");
             }
             return fieldTweaked;
     }
@@ -711,17 +668,13 @@ public class ModelReflectionTests {
         if (ApiModel.class.isAssignableFrom(type) && !Modifier.isAbstract(type.getModifiers())) {
             try {
                 ApiModel apiModel = (ApiModel)type.newInstance();
-                if (alt) {
-                    apiModel.setName("apiModel2");
-                } else {
-                    apiModel.setName("apiModel1");
-                }
+                apiModel.setName(alt ? "apiModel2" : "apiModel1");
                 return apiModel;
             } catch (InstantiationException e) {
                 logDebug("ERROR Trying to construct new instance of " + type + " to cast to type ApiModel.");
-                e.printStackTrace();
+//                e.printStackTrace();
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         }
 
@@ -737,16 +690,7 @@ public class ModelReflectionTests {
             return gradeFormula;
         }
 
-        if (type.isAssignableFrom(Assignment.class)) {
-            Assignment assignment = null;
-            if (alt) {
-                assignment = new AttendanceAssignment();
-            } else {
-                assignment = new GradedAssignment();
-            }
-            return assignment;
-        }
-
+        if (type.isAssignableFrom(Assignment.class)) { return (alt ? new AttendanceAssignment() : new GradedAssignment()); }
         if (type.isAssignableFrom(SchoolDay.class)) { return buildPopulatedObject(SchoolDay.class, "date", alt); }
         if (type.isAssignableFrom(Expression.class)) { return buildPopulatedObject(Expression.class, "leftHandSide", alt); }
         if (type.isAssignableFrom(Address.class)) { return buildPopulatedObject(Address.class, "postalCode", alt); }
@@ -831,22 +775,21 @@ public class ModelReflectionTests {
     }
     
     private Field getTweakableFieldForType(Class<?> type) { 
-//        System.out.println("trying to get tweakable field for type " + type.getSimpleName() + "...");
         if (type.isEnum()) {
             throw new RuntimeException("Enum type: should not be trying to tweak field!");
         }
         
         for (Field field : type.getDeclaredFields()) {
             Class<?> fieldClass = field.getType();
-            // try to return a primative or wrapper first, as it will be less complicated
+            // try to return a primitive or wrapper first, as it will be less complicated
             if (fieldClass.isPrimitive() || isWrapperType(fieldClass)) {
                 return field;
             }
         }
 
-        for (Field field : type.getDeclaredFields()) {
+        if (type.getDeclaredFields().length > 0) {
             // otherwise, just return the first until we have a better approach.
-            return field;
+            return type.getDeclaredFields()[0];
         }
         return null;
     }
