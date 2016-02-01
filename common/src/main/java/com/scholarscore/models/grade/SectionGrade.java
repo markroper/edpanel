@@ -12,6 +12,10 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 /**
+ * A SectionGrade represents the grade for a single student in a single class on a specfic date.
+ * StudentSectionGrade points to the most recent SectionGrade for a student in section, but the
+ * database stores SectionGrades over time so that EdPanel can support historical values.
+ *
  * Created by markroper on 1/26/16.
  */
 @Entity(name = HibernateConsts.SECTION_GRADE_TABLE)

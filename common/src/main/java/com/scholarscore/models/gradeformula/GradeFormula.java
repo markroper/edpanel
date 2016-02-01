@@ -440,6 +440,15 @@ public class GradeFormula implements Serializable {
                 && Objects.equals(this.childWeights, other.childWeights);
     }
 
+    /**
+     * In Java, Set relies on the hashCode value of objects when their put in the set to compare equality.
+     * This means that if an object changes after its put into a set, the hashCode the set associates with
+     * the object would no longer correlate with the hashCode() of the entity, causing functionally equal Sets
+     * to return false when .equals() is called. Because we have mutable obejcts in our sets, I've implemented
+     * an equals method to avoid this problem.
+     * @param children
+     * @return
+     */
     private boolean childrenEqual(Set<GradeFormula> children) {
         if(null == children && null != this.children) {
             return false;
