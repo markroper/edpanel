@@ -13,6 +13,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.util.EdPanelObjectMapper;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +32,9 @@ import java.util.Optional;
  */
 public abstract class ListDeserializer<T extends List, E> extends JsonDeserializer<T> {
     private static final DateTimeFormatter LOCAL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(ListDeserializer.class);
+    
     abstract String getEntityName();
 
     @Override
@@ -120,10 +125,15 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
                             Class impl = annotation.using();
                         }
                     default:
-                        Object innerObj = readObj(
-                                node.findValue(field.getName().toLowerCase()),
-                                field.getType());
-                        field.set(out, innerObj);
+                        JsonNode value = node.findValue(field.getName().toLowerCase());
+                        if (value != null) {
+                            Object innerObj = readObj(
+                                    value,
+                                    field.getType());
+                            field.set(out, innerObj);
+                        } else {
+                            LOGGER.warn("ListDeserializer unable to read node " + node + " into object of class " + clazz);
+                        }
                         break;
                 }
             }
