@@ -1,6 +1,6 @@
 package com.scholarscore.api.persistence.mysql;
 
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.*;

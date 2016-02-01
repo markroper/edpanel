@@ -5,12 +5,15 @@ import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.StudentSectionGradePersistence;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.SectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -20,6 +23,7 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
     public static final String SSG_HQL_BASE =  "select ssg from " + HibernateConsts.STUDENT_SECTION_GRADE_TABLE + " ssg " +
             "join fetch ssg.student st left join fetch st.homeAddress left join fetch st.mailingAddress " +
             "left join fetch st.contactMethods " +
+            "left join fetch ssg.overallGrade " +
             "join fetch ssg.section s join fetch s.course c join fetch c.school " +
             "join fetch s.term t join fetch t.schoolYear y join fetch y.school " +
             "left join fetch s.teachers te left join fetch te.homeAddress left join fetch te.contactMethods ";
@@ -108,14 +112,47 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Long delete(long sectionId, long studentId) {
         StudentSectionGrade toDelete = select(sectionId, studentId);
         if (null != toDelete) {
             hibernateTemplate.delete(toDelete);
         }
+        String[] params = new String[]{ "sectionId", "studentId" };
+        Object[] paramValues = new Object[]{ sectionId, studentId };
+        List<SectionGrade> sgs = (List<SectionGrade>)hibernateTemplate.findByNamedParam(
+                "select sg from " + HibernateConsts.SECTION_GRADE_TABLE +
+                " sg where sg.sectionFk = :sectionId and sg.studentFk = :studentId", params, paramValues);
+        if(null != sgs) {
+            hibernateTemplate.deleteAll(sgs);
+        }
         return toDelete.getId();
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<SectionGrade> getSectionGradeOverTime(long studentId, long sectionId, LocalDate start, LocalDate end) {
+        List<String> paramList = Arrays.asList("sectionId", "studentId");
+        List<Object> paramValuesList = Arrays.asList(sectionId, studentId);
+        String hql = "select sg from " + HibernateConsts.SECTION_GRADE_TABLE +
+                " sg where sg.sectionFk = :sectionId and sg.studentFk = :studentId";
+        if(null != start) {
+            paramList.add("startDate");
+            paramValuesList.add(start);
+            hql += " and sg.date >= :startDate";
+        }
+        if(null != end) {
+            paramList.add("endDate");
+            paramValuesList.add(end);
+            hql += " and sg.date <= :endDate";
+        }
+        String[] params = new String[paramList.size()];
+        params = paramList.toArray(params);
+        Object[] values = new Object[paramValuesList.size()];
+        values = paramValuesList.toArray(values);
+        List<SectionGrade> sgs = (List<SectionGrade>)hibernateTemplate.findByNamedParam(hql, params, values);
+        return sgs;
+    }
     public HibernateTemplate getHibernateTemplate() {
         return hibernateTemplate;
     }

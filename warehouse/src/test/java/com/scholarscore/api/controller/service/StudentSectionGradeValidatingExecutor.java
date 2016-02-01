@@ -3,7 +3,7 @@ package com.scholarscore.api.controller.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
@@ -169,9 +169,12 @@ public class StudentSectionGradeValidatingExecutor {
         if(method == HttpMethod.PATCH) {
             returnStudentSectionGrade.mergePropertiesIfNull(created);
         }
-        if(null == returnStudentSectionGrade.getGrade()) {
-            returnStudentSectionGrade.setGrade(created.getGrade());
+        if(null == returnStudentSectionGrade.getOverallGrade()) {
+            returnStudentSectionGrade.setOverallGrade(created.getOverallGrade());
+        } else if(null == returnStudentSectionGrade.getOverallGrade().getId()) {
+            returnStudentSectionGrade.getOverallGrade().setId(created.getOverallGrade().getId());
         }
+
         returnStudentSectionGrade.setId(created.getId());
         returnStudentSectionGrade.setStudent(created.getStudent());
         returnStudentSectionGrade.setSection(created.getSection());

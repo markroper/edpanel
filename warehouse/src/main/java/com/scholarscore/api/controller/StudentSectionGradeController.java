@@ -3,7 +3,7 @@ package com.scholarscore.api.controller;
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
@@ -171,7 +171,7 @@ public class StudentSectionGradeController extends BaseController {
             method = RequestMethod.PATCH, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
-    public @ResponseBody ResponseEntity updateGrade(
+    public @ResponseBody ResponseEntity updateStudentSectionGrade(
             @ApiParam(name = "schoolId", required = true, value = "School ID")
             @PathVariable(value="schoolId") Long schoolId,
             @ApiParam(name = "yearId", required = true, value = "School year ID")

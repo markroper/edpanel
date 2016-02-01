@@ -14,7 +14,8 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.SectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.goal.AssignmentGoal;
@@ -255,7 +256,12 @@ public class BaseJdbcTest {
             createdStudentSectionGrade = new StudentSectionGrade();
             createdStudentSectionGrade.setSection(createSection());
             createdStudentSectionGrade.setComplete(true);
-            createdStudentSectionGrade.setGrade(5d);
+            SectionGrade sg = new SectionGrade();
+            sg.setDate(LocalDate.now());
+            sg.setScore(5D);
+            sg.setSectionFk(section.getId());
+            sg.setStudentFk(createdStudentSectionGrade.getStudent().getId());
+            createdStudentSectionGrade.setOverallGrade(sg);
             createdStudentSectionGrade.setStudent(createStudent());
             studentSectionGradeDao.insert(createdStudentSectionGrade.getSection().getId(), createdStudentSectionGrade.getStudent().getId(), createdStudentSectionGrade);
         }

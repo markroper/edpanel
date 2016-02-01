@@ -25,7 +25,6 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
@@ -286,7 +285,8 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 
 	@Override
 	public int hashCode() {
-		return 31 * super.hashCode() + Objects.hash(username, password, enabled, oneTimePass, oneTimePassCreated, homeAddress, contactMethods, mustResetPassword);
+		return 31 * super.hashCode() + Objects.hash(username, password, enabled, oneTimePass,
+				oneTimePassCreated, homeAddress, contactMethods, mustResetPassword);
 	}
 
 	@Override
