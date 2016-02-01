@@ -140,7 +140,10 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                     sourceSsg.setSection(edPanelSsg.getSection());
                 }
                 if(!edPanelSsg.equals(sourceSsg)) {
-                    if(!sourceSsg.getOverallGrade().getDate().equals(edPanelSsg.getOverallGrade().getDate())) {
+                    if(null != sourceSsg.getOverallGrade() &&
+                            null != sourceSsg.getOverallGrade().getDate() &&
+                            null != edPanelSsg.getOverallGrade() &&
+                            !sourceSsg.getOverallGrade().getDate().equals(edPanelSsg.getOverallGrade().getDate())) {
                         sourceSsg.getOverallGrade().setId(null);
                     }
                     try {
