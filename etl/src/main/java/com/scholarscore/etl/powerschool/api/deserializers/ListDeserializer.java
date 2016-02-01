@@ -125,6 +125,10 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
                             Class impl = annotation.using();
                         }
                     default:
+                        if (field.isSynthetic()) {
+                            System.out.println("Ignoring synethic field " + field.getName() + " of type " + field.getType());
+                            continue;
+                        }
                         Object innerObj = readObj(
                                 node.findValue(field.getName().toLowerCase()),
                                 field.getType());
