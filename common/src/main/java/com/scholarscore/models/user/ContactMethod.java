@@ -162,7 +162,7 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
                 && Objects.equals(this.confirmCode, other.confirmCode)
                 && Objects.equals(this.confirmCodeCreated, other.confirmCodeCreated)
                 && Objects.equals(this.confirmed, other.confirmed);
-//                && Objects.equals(this.user, other.user);
+//              user is intentionally omitted from equals() and hashcode() to avoid infinite loops
     }
     @Override
     public int hashCode() {
@@ -171,7 +171,6 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
                 confirmCode,
                 confirmCodeCreated,
                 confirmed);
-        // not including user to not cause infinite looping!
     }
 
     @Override
@@ -183,7 +182,6 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
                 ", confirmCode='" + confirmCode + '\'' +
                 ", confirmCodeCreated=" + confirmCodeCreated +
                 ", confirmed=" + confirmed +
-//                ", user=" + user +
                 '}';
     }
 

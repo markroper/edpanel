@@ -137,7 +137,17 @@ public class HibernateConsts {
     public static final String STUDENT_SECTION_GRADE_GRADE = "grade";
     public static final String STUDENT_SECTION_GRADE_TERM_GRADES = "term_grades";
     public static final String STUDENT_SECTION_GRADE_FK = "student_section_grade_fk";
-    
+
+    //Section grade
+    public static final String SECTION_GRADE_TABLE = "section_grade";
+    public static final String SECTION_GRADE_FK = "section_grade_fk";
+    public static final String SECTION_GRADE_ID = "section_grade_id";
+    public static final String SECTION_GRADE_COMMENT = "comment";
+    public static final String SECTION_GRADE_GRADE = "grade";
+    public static final String SECTION_GRADE_DATE = "date";
+    public static final String SECTION_GRADE_MANUALLY_OVERRIDDEN = "manually_overridden";
+    public static final String SECTION_GRADE_LETTER_GRADE = "letter_grade";
+
     //Teacher constants
     public static final String TEACHER_TABLE = "teacher";
     public static final String TEACHER_NAME = "teacher_name";

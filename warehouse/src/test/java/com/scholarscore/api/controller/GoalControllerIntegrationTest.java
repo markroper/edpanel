@@ -7,7 +7,8 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.SectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.GradedAssignment;
@@ -96,7 +97,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         section = new Section();
         section.setCourse(course);
         section.setName(localeServiceUtil.generateName());
-        section.setEnrolledStudents(new ArrayList<Student>());
+        section.setEnrolledStudents(new ArrayList<>());
         section.getEnrolledStudents().add(student);
         section.setTeachers(new HashSet<>());
         section.getTeachers().add(teacher);
@@ -125,7 +126,12 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
                 section.getId(), sectionAssignment.getId(), studentAssignment, "Initializing assignmnet");
 
         studentSectionGrade = new StudentSectionGrade();
-        studentSectionGrade.setGrade(EXPECTED_SECTION_GRADE.doubleValue());
+        SectionGrade sg = new SectionGrade();
+        sg.setDate(LocalDate.now());
+        sg.setScore(EXPECTED_SECTION_GRADE.doubleValue());
+        sg.setSectionFk(section.getId());
+        sg.setStudentFk(student.getId());
+        studentSectionGrade.setOverallGrade(sg);
         studentSectionGrade.setComplete(false);
         studentSectionGrade = studentSectionGradeValidatingExecutor.update(school.getId(), schoolYear.getId(), term.getId(), section.getId(),
                 student.getId(), studentSectionGrade, "update student section grade w/ value " + EXPECTED_SECTION_GRADE);

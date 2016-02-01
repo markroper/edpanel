@@ -12,6 +12,7 @@ import com.scholarscore.models.goal.GoalComponent;
 import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.gpa.SimpleGpa;
 import com.scholarscore.models.gpa.WeightedGpa;
+import com.scholarscore.models.grade.Score;
 import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.message.topic.BehaviorTopic;
 import com.scholarscore.models.message.topic.GpaTopic;

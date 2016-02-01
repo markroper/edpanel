@@ -1,7 +1,7 @@
 package com.scholarscore.api.persistence.goalCalculators;
 
 import com.scholarscore.api.persistence.StudentSectionGradePersistence;
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.goal.CalculatableCumulative;
 
 /**

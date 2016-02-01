@@ -431,12 +431,46 @@ public class GradeFormula implements Serializable {
                 && Objects.equals(this.startDate, other.startDate)
                 && Objects.equals(this.endDate, other.endDate)
                 && Objects.equals(this.parentId, other.parentId)
-                && Objects.equals(this.children, other.children)
+                && childrenEqual(other.children)
                 && Objects.equals(this.sourceSystemDescription, other.sourceSystemDescription)
                 && Objects.equals(this.assignmentTypeWeights, other.assignmentTypeWeights)
                 && Objects.equals(this.assignmentWeights, other.assignmentWeights)
                 && Objects.equals(this.lowScoreToDiscard, other.lowScoreToDiscard)
                 && Objects.equals(this.assignmentTypeDefaultPoints, other.assignmentTypeDefaultPoints)
                 && Objects.equals(this.childWeights, other.childWeights);
+    }
+
+    /**
+     * In Java, Set relies on the hashCode value of objects when their put in the set to compare equality.
+     * This means that if an object changes after its put into a set, the hashCode the set associates with
+     * the object would no longer correlate with the hashCode() of the entity, causing functionally equal Sets
+     * to return false when .equals() is called. Because we have mutable obejcts in our sets, I've implemented
+     * an equals method to avoid this problem.
+     * @param children
+     * @return
+     */
+    private boolean childrenEqual(Set<GradeFormula> children) {
+        if(null == children && null != this.children) {
+            return false;
+        }
+        if(null == this.children && null != children) {
+            return false;
+        }
+        if(null == this.children && null == children) {
+            return true;
+        }
+        if(this.children.size() != children.size()) {
+            return false;
+        }
+        Map<Long, GradeFormula> currStaffMap = new HashMap<>();
+        for(GradeFormula s: this.children) {
+            currStaffMap.put(s.getId(), s);
+        }
+        for(GradeFormula s: children) {
+            if(!currStaffMap.containsKey(s.getId()) || !s.equals(currStaffMap.get(s.getId()))) {
+                return false;
+            }
+        }
+        return true;
     }
 }
