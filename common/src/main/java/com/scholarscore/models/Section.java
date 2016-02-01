@@ -373,6 +373,16 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 Objects.equals(this.expression, other.expression);
     }
 
+    /**
+     * In Java, Set relies on the hashCode value of objects when their put in the set to compare equality.
+     * This means that if an object changes after its put into a set, the hashCode the set associates with
+     * the object would no longer correlate with the hashCode() of the entity, causing functionally equal Sets
+     * to return false when .equals() is called. Because we have mutable obejcts in our sets, I've implemented
+     * an equals method to avoid this problem.
+     * 
+     * @param otherTeachers
+     * @return
+     */
     private boolean teachersEqual(Set<Staff> otherTeachers) {
         if(null == otherTeachers && null != this.teachers) {
             return false;
