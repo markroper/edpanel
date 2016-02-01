@@ -102,6 +102,7 @@ public class StaffSync implements ISync<Person> {
                     else {
                         created = edPanel.createTeacher((Staff)sourceUser);
                     }
+                    sourceUser = created;
                 } catch (HttpClientException e) {
                     results.staffCreateFailed(ssid);
                     continue;
@@ -116,14 +117,16 @@ public class StaffSync implements ISync<Person> {
                 sourceUser.setEnabled(edPanelUser.getEnabled());
                 edPanelUser.setPassword(null);
                 Address add = ((Person)edPanelUser).getHomeAddress();
-                if(null != add) {
-                    add.setId(null);
+                if(null != add && null != sourceUser.getHomeAddress()) {
+                    sourceUser.getHomeAddress().setId(add.getId());
                 }
                 if(!edPanelUser.equals(sourceUser)) {
                     try {
-                        edPanel.replaceUser(sourceUser);
+                        sourceUser = edPanel.replaceUser(sourceUser);
                     } catch (IOException e) {
-                        results.staffUpdateFailed(entry.getKey(), sourceUser.getId());
+                        if(null != sourceUser.getId()) {
+                            results.staffUpdateFailed(entry.getKey(), sourceUser.getId());
+                        }
                         continue;
                     }
                     results.staffUpdated(entry.getKey(), sourceUser.getId());

@@ -7,13 +7,14 @@ import com.scholarscore.models.Gender;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.AttendanceAssignment;
 import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.goal.GoalType;
+import com.scholarscore.models.grade.SectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
@@ -353,8 +354,13 @@ public class CommonTestUtils {
     }
 
     public static StudentSectionGrade generateSectionGrade(Section section, Student student){
+        SectionGrade grade = new SectionGrade();
+        grade.setDate(LocalDate.now());
+        grade.setScore(RandomUtils.nextDouble(0d, 100d));
+        grade.setManuallyOverridden(false);
+        grade.setSectionFk(section.getId());
         return new StudentSectionGrade.StudentSectionGradeBuilder().
-                withGrade(RandomUtils.nextDouble(0d, 100d)).
+                withOverallGrade(grade).
                 withComplete(getRandomBoolean()).
                 withSection(section).
                 withStudent(student).
@@ -364,8 +370,12 @@ public class CommonTestUtils {
     }
 
     public static StudentSectionGrade generateSectionGradeWithoutSection(Student student){
+        SectionGrade grade = new SectionGrade();
+        grade.setDate(LocalDate.now());
+        grade.setScore(RandomUtils.nextDouble(0d, 100d));
+        grade.setManuallyOverridden(false);
         return new StudentSectionGrade.StudentSectionGradeBuilder().
-                withGrade(RandomUtils.nextDouble(0d, 100d)).
+                withOverallGrade(grade).
                 withComplete(getRandomBoolean()).
                 withStudent(student).
                 withId(RandomUtils.nextLong(0L, Long.MAX_VALUE)).

@@ -3,6 +3,7 @@ package com.scholarscore.models;
 import com.beust.jcommander.internal.Lists;
 import com.beust.jcommander.internal.Sets;
 import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;

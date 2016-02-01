@@ -5,7 +5,7 @@ import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.util.RoleConstants;
 import com.scholarscore.models.Authority;
 import com.scholarscore.models.HibernateConsts;
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.notification.group.FilteredStudents;
 import com.scholarscore.models.user.Student;
 import org.springframework.beans.factory.annotation.Autowired;

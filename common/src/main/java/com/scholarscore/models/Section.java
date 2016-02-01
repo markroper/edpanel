@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
@@ -368,8 +369,43 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
                 Objects.equals(this.numberOfTerms, other.numberOfTerms) &&
                 Objects.equals(this.gradeFormula, other.gradeFormula) && 
                 Objects.equals(this.term, other.term) &&
-                Objects.equals(this.teachers, other.teachers) &&
+                teachersEqual(other.teachers) &&
                 Objects.equals(this.expression, other.expression);
+    }
+
+    /**
+     * In Java, Set relies on the hashCode value of objects when their put in the set to compare equality.
+     * This means that if an object changes after its put into a set, the hashCode the set associates with
+     * the object would no longer correlate with the hashCode() of the entity, causing functionally equal Sets
+     * to return false when .equals() is called. Because we have mutable obejcts in our sets, I've implemented
+     * an equals method to avoid this problem.
+     * 
+     * @param otherTeachers
+     * @return
+     */
+    private boolean teachersEqual(Set<Staff> otherTeachers) {
+        if(null == otherTeachers && null != this.teachers) {
+            return false;
+        }
+        if(null == this.teachers && null != otherTeachers) {
+            return false;
+        }
+        if(null == this.teachers && null == otherTeachers) {
+            return true;
+        }
+        if(this.teachers.size() != otherTeachers.size()) {
+            return false;
+        }
+        Map<Long, Staff> currStaffMap = new HashMap<>();
+        for(Staff s: this.teachers) {
+            currStaffMap.put(s.getId(), s);
+        }
+        for(Staff s: otherTeachers) {
+            if(!currStaffMap.containsKey(s.getId()) || !s.equals(currStaffMap.get(s.getId()))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

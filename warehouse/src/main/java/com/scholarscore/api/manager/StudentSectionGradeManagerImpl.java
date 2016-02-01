@@ -6,9 +6,10 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.models.grade.SectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.ui.SectionGradeWithProgression;
@@ -17,8 +18,10 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -101,7 +104,8 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         StudentSectionGrade grade = studentSectionGradePersistence.select(sectionId, studentId);
         Boolean complete = grade.getComplete();
         //Only calculate the grade if there is not a grade on it already
-        if((null == complete || complete.equals(Boolean.FALSE)) && null == grade.getGrade()) {
+        if((null == complete || complete.equals(Boolean.FALSE)) &&
+                (null == grade.getOverallGrade() || null == grade.getOverallGrade().getScore())) {
             Section sect = grade.getSection();
             ServiceResponse<Collection<StudentAssignment>> assignmentResp =
                     pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, sectionId);
@@ -127,7 +131,10 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                 if(null != formula && null != assignments) {
                     HashSet<StudentAssignment> assignmentSet = new HashSet<StudentAssignment>(assignments);
                     Double calculatedGrade = formula.calculateGrade(assignmentSet);
-                    grade.setGrade(calculatedGrade);
+                    SectionGrade overall = new SectionGrade();
+                    overall.setDate(LocalDate.now());
+                    overall.setScore(calculatedGrade);
+                    grade.setOverallGrade(overall);
                 }
             }
         }
@@ -136,7 +143,8 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
 
     @Override
     @SuppressWarnings("unchecked")
-    public ServiceResponse<SectionGradeWithProgression> getStudentSectionGradeByWeek(long schoolId, long yearId, long termId, long sectionId, long studentId) {
+    public ServiceResponse<SectionGradeWithProgression> getStudentSectionGradeByWeek(
+            long schoolId, long yearId, long termId, long sectionId, long studentId) {
         StatusCode code = studentSectionGradeExists(
                 schoolId, yearId, termId, sectionId, studentId);
         if(!code.isOK()) {
@@ -145,7 +153,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         ServiceResponse<StudentSectionGrade> ssgResp = getStudentSectionGrade(schoolId, yearId, termId, sectionId, studentId);
 
         SectionGradeWithProgression gradeWithProgression = new SectionGradeWithProgression();
-        gradeWithProgression.setCurrentOverallGrade(ssgResp.getValue().getGrade());
+        gradeWithProgression.setCurrentOverallGrade(ssgResp.getValue().getOverallGrade().getScore());
         gradeWithProgression.setTermGrades(ssgResp.getValue().getTermGrades());
         Section section = ssgResp.getValue().getSection();
 
@@ -175,6 +183,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
             LocalDate currentLastDayOfWeek = null;
             int i = 1;
             assignments.sort((object1, object2) -> object1.getAssignment().getDueDate().compareTo(object2.getAssignment().getDueDate()));
+            Map<LocalDate, SectionGrade> storedGradeMap = getStoredGradeHistoryForStudentInSection(sectionId, studentId, null, null);
             for(StudentAssignment a: assignments) {
                 LocalDate dueDate = a.getAssignment().getDueDate();
                 int daysToAdd = DayOfWeek.SATURDAY.getValue() - dueDate.getDayOfWeek().getValue();
@@ -186,7 +195,12 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                     Set<StudentAssignment> subassignments = new HashSet<>(assignments.subList(0, i));
                     ScoreAsOfWeek g = new ScoreAsOfWeek();
                     g.setWeekEnding(currentLastDayOfWeek);
-                    g.setScore(formula.calculateGrade(subassignments));
+                    //If there is a cached grade from the SIS, use it, otherwise calculate the grade
+                    if(storedGradeMap.containsKey(endOfWeek)) {
+                        g.setScore(storedGradeMap.get(endOfWeek).getScore());
+                    } else {
+                        g.setScore(formula.calculateGrade(subassignments));
+                    }
                     grades.add(g);
                     currentLastDayOfWeek = endOfWeek;
                 }
@@ -195,6 +209,82 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         }
         gradeWithProgression.setWeeklyGradeProgression(grades);
         return new ServiceResponse<>(gradeWithProgression);
+    }
+
+    private Map<LocalDate, SectionGrade> getStoredGradeHistoryForStudentInSection(
+            long sectionId, long studentId, LocalDate start, LocalDate end) {
+        List<SectionGrade> sgs =
+                studentSectionGradePersistence.getSectionGradeOverTime(studentId, sectionId, start, end);
+        Map<LocalDate, SectionGrade> gradeMap = new HashMap<>();
+        if(null != sgs) {
+            for (SectionGrade g : sgs) {
+                gradeMap.put(g.getDate(), g);
+            }
+        }
+        return gradeMap;
+    }
+
+    /**
+     * Returns a student's section grade as of the specified date, pulling the value first from the cached historical
+     * values stored from the SIS.  If there is not stored value, one is calculated.  If the date is out of bounds
+     * or the request is otherwise unresolvable, null is returned.
+     *
+     * @param studentId
+     * @param sectionId
+     * @param date
+     * @return
+     */
+    public SectionGrade getStudentSectionGradeAsOfDate(long studentId, long sectionId, LocalDate date) {
+        StudentSectionGrade grade = studentSectionGradePersistence.select(sectionId, studentId);
+        if(null == grade) {
+            return null;
+        }
+        Map<LocalDate, SectionGrade> storedGradeMap = getStoredGradeHistoryForStudentInSection(sectionId, studentId, null, null);
+        if(storedGradeMap.containsKey(date)){
+            return storedGradeMap.get(date);
+        }
+
+        Section section = grade.getSection();
+        ServiceResponse<Collection<StudentAssignment>> assignmentResp =
+                pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(studentId, sectionId);
+        Term term = section.getTerm();
+        if(null == assignmentResp.getCode() || assignmentResp.getCode().isOK()) {
+            GradeFormula formula = section.getGradeFormula();
+            if(null != term) {
+                if(null == formula) {
+                    formula = new GradeFormula();
+                    formula.setStartDate(term.getStartDate());
+                    formula.setEndDate(term.getEndDate());
+                } else {
+                    formula = formula.resolveFormulaMatchingDate(LocalDate.now());
+                    if(null == formula) {
+                        formula = section.getGradeFormula();
+                    }
+                    formula.setStartDate(section.getGradeFormula().getStartDate());
+                    formula.setEndDate(section.getGradeFormula().getEndDate());
+                }
+            }
+            ArrayList<StudentAssignment> assignments = (ArrayList<StudentAssignment>)assignmentResp.getValue();
+            assignments.sort((object1, object2) -> object1.getAssignment().getDueDate().compareTo(object2.getAssignment().getDueDate()));
+            int i = 0;
+            if(null != assignments) {
+                for (StudentAssignment a : assignments) {
+                    i++;
+                    LocalDate dueDate = a.getAssignment().getDueDate();
+                    if (dueDate.isEqual(date) || dueDate.isAfter(date)) {
+                        continue;
+                    }
+                    Set<StudentAssignment> subassignments = new HashSet<>(assignments.subList(0, i));
+                    SectionGrade gr = new SectionGrade();
+                    gr.setSectionFk(sectionId);
+                    gr.setStudentFk(studentId);
+                    gr.setDate(date);
+                    gr.setScore(formula.calculateGrade(subassignments));
+                    return gr;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -208,6 +298,10 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         code = pm.getStudentManager().studentExists(studentId);
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
+        }
+        if(null != grade.getOverallGrade()) {
+            grade.getOverallGrade().setStudentFk(studentId);
+            grade.getOverallGrade().setSectionFk(sectionId);
         }
         return new ServiceResponse<>(
                 studentSectionGradePersistence.insert(sectionId, studentId, grade));
@@ -223,6 +317,12 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
         }
+        for(StudentSectionGrade ssg: grades) {
+            if(null != ssg.getOverallGrade()) {
+                ssg.getOverallGrade().setStudentFk(ssg.getStudent().getId());
+                ssg.getOverallGrade().setSectionFk(sectionId);
+            }
+        }
         studentSectionGradePersistence.insertAll(sectionId, grades);
         return new ServiceResponse<>((Void)null);
 
@@ -235,6 +335,10 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                 schoolId, yearId, termId, sectionId, studentId);
         if(!code.isOK()) {
             return new ServiceResponse<>(code);
+        }
+        if(null != grade.getOverallGrade()) {
+            grade.getOverallGrade().setStudentFk(grade.getStudent().getId());
+            grade.getOverallGrade().setSectionFk(sectionId);
         }
         return new ServiceResponse<>(
                 studentSectionGradePersistence.update(sectionId, studentId, grade));
@@ -249,6 +353,10 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
             return new ServiceResponse<>(code);
         }
         grade.mergePropertiesIfNull(studentSectionGradePersistence.select(sectionId, studentId));
+        if(null != grade.getOverallGrade()) {
+            grade.getOverallGrade().setStudentFk(studentId);
+            grade.getOverallGrade().setSectionFk(sectionId);
+        }
         return new ServiceResponse<>(
                 studentSectionGradePersistence.update(sectionId, studentId, grade));
     }

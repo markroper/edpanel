@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -120,9 +121,47 @@ public class NotificationManagerImpl implements NotificationManager {
             for(Notification n: notifications) {
                 List<TriggeredNotification> triggeredNotifications = factory.evaluate(n);
                 if(null != triggeredNotifications) {
+                    //Resolve existing triggered notification for this notifiaiton and store in a map for 0(1) access
+                    List<TriggeredNotification> active = notificationPersistence.selectTriggeredActive(n.getId());
+                    HashMap<Long, HashMap<Long, TriggeredNotification>> activeMap = new HashMap<>();
+                    if(null != active) {
+                        for(TriggeredNotification not: active) {
+                            if(!activeMap.containsKey(not.getUserIdToNotify())) {
+                                activeMap.put(not.getUserIdToNotify(), new HashMap<>());
+                            }
+                            Long subjectId = not.getSubjectUserId();
+                            if(null == subjectId) {
+                                subjectId = -1L;
+                            }
+                            activeMap.get(not.getUserIdToNotify()).put(subjectId, not);
+                        }
+                    }
+                    //For every triggered notification, insert it into the database, first marking any previous
+                    //triggered notifications on the same data as inactive so that the most recent triggered notification
+                    //is the active triggered notification, which users will see
                     for(TriggeredNotification tr : triggeredNotifications) {
                         try {
-                            notificationPersistence.insertTriggeredNotification(n.getId(), n.getOwner().getId(), tr);
+                            TriggeredNotification prev = null;
+                            if(activeMap.containsKey(tr.getUserIdToNotify())) {
+                                Long subjectId = tr.getSubjectUserId();
+                                if(null == subjectId) {
+                                    subjectId = -1L;
+                                }
+                                if(activeMap.get(tr.getUserIdToNotify()).containsKey(subjectId)) {
+                                    prev = activeMap.get(tr.getUserIdToNotify()).get(subjectId);
+                                    tr.setId(prev.getId());
+                                    if(!prev.equals(tr)) {
+                                        prev.setIsActive(false);
+                                        notificationPersistence.updateTriggeredNotification(prev.getId(), prev);
+                                    }
+                                }
+                            }
+                            //Only insert if the new triggered notification if there wasn't one already triggered
+                            //for this combination of notification, recipient and target or if the values are unequal
+                            if(null == prev || !prev.equals(tr)) {
+                                tr.setId(null);
+                                notificationPersistence.insertTriggeredNotification(n.getId(), n.getOwner().getId(), tr);
+                            }
                         } catch(Exception e) {
                             LOGGER.info("Triggered notification not inserted due to: " + e.getMessage());
                         }

@@ -14,6 +14,7 @@ import com.scholarscore.models.goal.GoalComponent;
 import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.gpa.SimpleGpa;
 import com.scholarscore.models.gpa.WeightedGpa;
+import com.scholarscore.models.grade.Score;
 import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.AggregateMeasure;
@@ -84,6 +85,7 @@ public class ModelReflectionTests {
     private final Set<String> excludedClassNames = new HashSet<String>() {{
         // if you want to exclude a model class from this test, add it here (including packageToScan)...
         add(packageToScan + "." + testClassName);
+        add("com.scholarscore.models.user.ContactMethod");
     }};
     
     public String getPackageToScan() {
