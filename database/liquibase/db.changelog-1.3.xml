@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <changeSet author="mark" id="changelog-1.3-change1">
+        <dropForeignKeyConstraint baseTableName="triggered_notification" constraintName="triggered_notification$notification_fk"/>
+        <dropForeignKeyConstraint baseTableName="triggered_notification" constraintName="triggered_notification$user_fk"/>
+        <dropForeignKeyConstraint baseTableName="triggered_notification" constraintName="triggered_notification$subject_user_fk"/>
+        <dropUniqueConstraint
+                constraintName="quniq$user$subject$notification"
+                tableName="triggered_notification"/>
+
+        <addForeignKeyConstraint baseTableName="triggered_notification"
+                                 baseColumnNames="notification_fk"
+                                 constraintName="triggered_notification$notification_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="notification_id"
+                                 referencedTableName="notification"/>
+        <addForeignKeyConstraint baseTableName="triggered_notification"
+                                 baseColumnNames="user_fk"
+                                 constraintName="triggered_notification$user_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="user"/>
+        <addForeignKeyConstraint baseTableName="triggered_notification"
+                                 baseColumnNames="subject_user_fk"
+                                 constraintName="triggered_notification$subject_user_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="user"/>
+    </changeSet>
+
+    <changeSet author="mark" id="changelog-1.3-change2">
+        <createTable tableName="section_grade">
+            <column name="section_grade_id"
+                    type="bigint unsigned"
+                    remarks="'Primary key identity column for a section grade"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="date"
+                    type="date"
+                    remarks="The date the section grade was calculated">
+                <constraints nullable="false"/>
+            </column>
+            <column name="section_fk"
+                    type="bigint unsigned"
+                    remarks="The fk to the section">
+                <constraints nullable="false"/>
+            </column>
+            <column name="student_fk"
+                    type="bigint unsigned"
+                    remarks="The fk to the student">
+                <constraints nullable="false"/>
+            </column>
+            <column name="grade"
+                    type="double"
+                    remarks="The value that represents the section grade">
+            </column>
+            <column name="comment"
+                    type="blob"
+                    remarks="The teacher comment on the grade">
+            </column>
+            <column name="manually_overridden"
+                    type="bit(1)"
+                    remarks="True if the grade was manually overrriden, otherwise false">
+            </column>
+            <column name="letter_grade"
+                    type="varchar(8)"
+                    remarks="The letter grade at the time of calculation">
+            </column>
+            <column name="term_fk"
+                    type="bigint unsigned"
+                    remarks="The FK to the term">
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="section_grade"
+                                 baseColumnNames="section_fk"
+                                 constraintName="section_grade$section_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="section_id"
+                                 referencedTableName="section"/>
+        <addForeignKeyConstraint baseTableName="section_grade"
+                                 baseColumnNames="student_fk"
+                                 constraintName="section_grade$student_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="student_user_fk"
+                                 referencedTableName="student"/>
+
+        <addColumn tableName="student_section_grade">
+            <column name="section_grade_fk" type="bigint unsigned"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="student_section_grade"
+                                 baseColumnNames="section_grade_fk"
+                                 constraintName="section_grade$section_grade_fk"
+                                 onDelete="SET NULL"
+                                 onUpdate="SET NULL"
+                                 referencedColumnNames="section_grade_id"
+                                 referencedTableName="section_grade"/>
+        <dropColumn columnName="grade"
+                    tableName="student_section_grade"/>
+
+        <sql>
+            alter table student_section_grade change term_grades term_grades blob
+        </sql>
+    </changeSet>
+</databaseChangeLog>

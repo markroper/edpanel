@@ -1,7 +1,7 @@
 package com.scholarscore.models.ui;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.scholarscore.models.Score;
+import com.scholarscore.models.grade.Score;
 
 import java.util.HashMap;
 import java.util.List;

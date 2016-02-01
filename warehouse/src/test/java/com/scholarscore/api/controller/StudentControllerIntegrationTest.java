@@ -7,7 +7,8 @@ import com.scholarscore.models.PrepScore;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.SectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.user.Student;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.testng.Assert.assertEquals;
@@ -142,7 +144,12 @@ public class StudentControllerIntegrationTest extends IntegrationBase {
             section = sectionValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section, "create base section");
             
             StudentSectionGrade studentSectionGrade = new StudentSectionGrade();
-            studentSectionGrade.setGrade(grade);
+            SectionGrade sg = new SectionGrade();
+            sg.setDate(LocalDate.now());
+            sg.setScore(grade);
+            sg.setSectionFk(section.getId());
+            sg.setStudentFk(student.getId());
+            studentSectionGrade.setOverallGrade(sg);
             studentSectionGrade.setStudent(student);
             studentSectionGrade.setSection(section);
             studentSectionGradeValidatingExecutor.create(school.getId(), schoolYear.getId(), term.getId(), section.getId(),

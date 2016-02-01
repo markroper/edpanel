@@ -1,6 +1,6 @@
 package com.scholarscore.models.gpa;
 
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;

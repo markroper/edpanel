@@ -1,6 +1,7 @@
 package com.scholarscore.api.persistence;
 
-import com.scholarscore.models.StudentSectionGrade;
+import com.scholarscore.models.grade.SectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -35,4 +36,6 @@ public interface StudentSectionGradePersistence {
             StudentSectionGrade entity);
 
     public Long delete(long sectionId, long studentId);
+
+    List<SectionGrade> getSectionGradeOverTime(long studentId, long sectionId, LocalDate start, LocalDate end);
 }

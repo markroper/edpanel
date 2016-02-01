@@ -97,6 +97,14 @@ public class NotificationJdbc implements NotificationPersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public List<TriggeredNotification> selectTriggeredActive(long notificationFk) {
+        return (List<TriggeredNotification>) hibernateTemplate.findByNamedParam(
+                TRIGGERED_NOTIFICATION_BASE_HQL +
+                " where t.isActive = (1) and t.notification.id = :notificationFk", "notificationFk", notificationFk);
+    }
+
+    @Override
     public Long insertTriggeredNotification(long notificationId, long userId, TriggeredNotification triggered) {
         TriggeredNotification n = this.hibernateTemplate.merge(triggered);
         return n.getId();
