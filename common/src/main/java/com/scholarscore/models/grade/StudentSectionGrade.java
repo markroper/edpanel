@@ -55,7 +55,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
     }
     
     public StudentSectionGrade(StudentSectionGrade grade) {
-        this.id = grade.id;
+        super(grade);
         this.complete = grade.complete;
         this.student = grade.student;
         this.section = grade.section;
@@ -65,6 +65,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
     
     @Override
     public void mergePropertiesIfNull(StudentSectionGrade mergeFrom) {
+        super.mergePropertiesIfNull(mergeFrom);
         if(null == id) {
             id = mergeFrom.id;
         }
@@ -168,24 +169,29 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
     public void setComplete(Boolean complete) {
         this.complete = complete;
     }
-    
+
+    @Override
+    public int hashCode() {
+        return 31 * super.hashCode() + Objects.hash(complete, termGrades, section, student, overallGrade);
+    }
+
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
+        if (!super.equals(obj)) {
+            return false;
+        }
         final StudentSectionGrade other = (StudentSectionGrade) obj;
-        return Objects.equals(this.id, other.id) && 
-                Objects.equals(this.complete, other.complete) &&
-                Objects.equals(this.student, other.student) &&
-                Objects.equals(this.section, other.section) &&
-                Objects.equals(this.overallGrade, other.overallGrade) &&
-                Objects.equals(this.termGrades, other.termGrades);
-    }
-    
-    @Override
-    public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(id, complete, student, section, termGrades, overallGrade);
+        return Objects.equals(this.complete, other.complete)
+                && Objects.equals(this.termGrades, other.termGrades)
+                && Objects.equals(this.section, other.section)
+                && Objects.equals(this.student, other.student)
+                && Objects.equals(this.overallGrade, other.overallGrade);
     }
 
     @Override

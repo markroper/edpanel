@@ -77,6 +77,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		this.oneTimePass = value.oneTimePass;
 		this.oneTimePassCreated = value.oneTimePassCreated;
 		this.contactMethods = value.contactMethods;
+		this.mustResetPassword = value.mustResetPassword;
 	}
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
@@ -320,12 +321,15 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 
 	@Override
 	public String toString() {
-		return super.toString() + "\n" +
-				"User{" +
+		return "User{" +
+				"username='" + username + '\'' +
 				", password='" + password + '\'' +
-				", username='" + username + '\'' +
-				", homeAddress='" + homeAddress + '\'' +
 				", enabled=" + enabled +
+				", oneTimePass='" + oneTimePass + '\'' +
+				", oneTimePassCreated=" + oneTimePassCreated +
+				", homeAddress=" + homeAddress +
+				", contactMethods=" + contactMethods +
+				", mustResetPassword=" + mustResetPassword +
 				'}';
 	}
 

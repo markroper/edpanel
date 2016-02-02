@@ -330,11 +330,14 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
         if(null == room) {
             room = mergeFrom.room;
         }
-        if(null == enrolledStudents) {
-            enrolledStudents = mergeFrom.enrolledStudents;
+        if(null != enrolledStudents && enrolledStudents.size() == 0) {
+            enrolledStudents.addAll(mergeFrom.enrolledStudents);
         }
-        if(null == assignments) {
-            assignments = mergeFrom.assignments;
+        if(null != teachers && teachers.size() == 0) {
+            teachers.addAll(mergeFrom.teachers);
+        }
+        if(null != assignments && assignments.size() == 0) {
+            assignments.addAll(mergeFrom.assignments);
         }
         if(null == gradeFormula) {
             this.gradeFormula = mergeFrom.gradeFormula;
@@ -416,7 +419,7 @@ public class Section extends ApiModel implements Serializable, IApiModel<Section
 
     @Override
     public String toString() {
-        return "Section{" +
+        return "Section{super(" + super.toString() + ")" +
                 "startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", room='" + room + '\'' +

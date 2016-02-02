@@ -31,6 +31,7 @@ public class AttendanceAssignment extends Assignment implements Serializable {
     
     public AttendanceAssignment(AttendanceAssignment assignment) {
         super(assignment);
+        
     }
 
     @Override
@@ -54,6 +55,8 @@ public class AttendanceAssignment extends Assignment implements Serializable {
         return 31 * super.hashCode();
     }
 
+        
+        
     /**
      * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
      * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily

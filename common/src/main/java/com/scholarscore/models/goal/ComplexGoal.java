@@ -55,6 +55,11 @@ public class ComplexGoal extends Goal {
         }
 
     }
+    
+    @Override
+    public void setGoalType(GoalType goalType) { 
+        super.setGoalType(GoalType.COMPLEX);
+    }
 
     @Override
     public boolean equals(Object o) {
