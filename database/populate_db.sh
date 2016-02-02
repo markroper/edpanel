@@ -10,7 +10,7 @@ if [ ! -f "$SCRIPT_DIR/$DUMMY_DB_FILENAME" ]; then
     exit 1
 fi
 
-##
+## the fifth argument enables SSL
 if [ $5 ]
 then
     echo "drop database $DATABASE_NAME;" | mysql -u$1 -p$2 --port=$3 --host=$4 --ssl-ca=$SCRIPT_DIR/../warehouse/src/main/resources/db-public-key.ca-bundle
