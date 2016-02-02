@@ -2,10 +2,10 @@ package com.scholarscore.etl.powerschool.sync.user;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.School;
@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -118,6 +119,24 @@ public class StudentSync implements ISync<Student> {
                     }
                     results.studentUpdated(entry.getKey(), sourceUser.getId());
                 }
+            }
+        }
+
+        //Withdraw any students not returned by source system
+        Iterator<Map.Entry<Long, Student>> edpanelIterator = ed.entrySet().iterator();
+        while(edpanelIterator.hasNext()) {
+            Map.Entry<Long, Student> entry = edpanelIterator.next();
+            if(school.getId().equals(entry.getValue().getCurrentSchoolId()) &&
+                    !sourceStudents.containsKey(entry.getKey())) {
+                try {
+                    entry.getValue().setWithdrawalDate(LocalDate.now());
+                    edPanel.replaceUser(entry.getValue());
+                } catch (IOException e) {
+                    results.studentUpdateFailed(entry.getKey(), entry.getValue().getId());
+                    continue;
+                }
+                LOGGER.info("Student withdrawn, student ID: " + entry.getValue().getId());
+                results.studentUpdated(entry.getKey(), entry.getValue().getId());
             }
         }
 
