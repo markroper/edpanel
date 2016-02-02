@@ -282,6 +282,15 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		}
     }
 
+	/**
+	 * Why aren't contatMethods here in the hashCode? Pull up a chair my friend.  Hibernate 5 NPEs
+	 * when mapping contact methods if they're included in the hashcode.  I think this is because
+	 * we have a User object on a ContactMethod and a Set<ContactMethod> here on User.  We use some
+	 * Hibernate annotations to tell it how to handle this mapping, but there is some bug in Hibernate
+	 * that is causing an NPE if we include contactMethods in hashCode() here.
+	 *
+	 * @return
+	 */
 	@Override
 	public int hashCode() {
 		return 31 * super.hashCode() + Objects.hash(username, password, enabled, oneTimePass,

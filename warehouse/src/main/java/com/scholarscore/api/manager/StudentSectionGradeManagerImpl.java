@@ -271,7 +271,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                 for (StudentAssignment a : assignments) {
                     i++;
                     LocalDate dueDate = a.getAssignment().getDueDate();
-                    if (dueDate.isEqual(date) || dueDate.isAfter(date)) {
+                    if (dueDate.isEqual(date) || dueDate.isBefore(date)) {
                         continue;
                     }
                     Set<StudentAssignment> subassignments = new HashSet<>(assignments.subList(0, i));
