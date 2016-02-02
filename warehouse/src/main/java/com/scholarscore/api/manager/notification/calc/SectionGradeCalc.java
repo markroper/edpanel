@@ -9,7 +9,6 @@ import com.scholarscore.models.notification.TriggeredNotification;
 import com.scholarscore.models.notification.window.Duration;
 import com.scholarscore.models.notification.window.NotificationWindow;
 import com.scholarscore.models.query.AggregateFunction;
-import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.user.Person;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
@@ -97,8 +96,6 @@ public class SectionGradeCalc implements NotificationCalculator {
         LocalDate start = NotificationCalculator.resolveStartDate(dur, manager, notification);
         Map<Long, MutablePair<SectionGrade, SectionGrade>> gradesByStudent = new HashMap<>();
         for(Long sid: studentIds) {
-            ServiceResponse<List<ScoreAsOfWeek>> scores =
-                    manager.getStudentManager().getStudentHomeworkRates(sid, start, LocalDate.now());
             SectionGrade beforeGrade = manager.getStudentSectionGradeManager().
                     getStudentSectionGradeAsOfDate(sid, notification.getSection().getId(), start);
             if(null == beforeGrade) {
