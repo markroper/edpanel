@@ -124,4 +124,14 @@ public class SectionGrade extends Score {
                 && Objects.equals(this.studentFk, other.studentFk)
                 && Objects.equals(this.id, other.id);
     }
+
+    @Override
+    public String toString() {
+        return "SectionGrade{(super:" + super.toString() + ")" +
+                "date=" + date +
+                ", sectionFk=" + sectionFk +
+                ", id=" + id +
+                ", studentFk=" + studentFk +
+                '}';
+    }
 }
