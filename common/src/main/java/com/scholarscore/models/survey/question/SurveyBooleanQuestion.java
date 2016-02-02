@@ -39,18 +39,18 @@ public class SurveyBooleanQuestion extends SurveyQuestion<Boolean> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(showAsCheckbox);
+        return 31 * super.hashCode() + Objects.hash(showAsCheckbox);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(!super.equals(obj)) {
-            return false;
-        }
         if (this == obj) {
             return true;
         }
         if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
             return false;
         }
         final SurveyBooleanQuestion other = (SurveyBooleanQuestion) obj;

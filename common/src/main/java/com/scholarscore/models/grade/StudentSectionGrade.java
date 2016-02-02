@@ -2,12 +2,15 @@ package com.scholarscore.models.grade;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.WeightedGradable;
 import com.scholarscore.models.user.Student;
+import com.scholarscore.util.EdPanelObjectMapper;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
@@ -23,6 +26,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Objects;
@@ -51,7 +55,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
     }
     
     public StudentSectionGrade(StudentSectionGrade grade) {
-        this.id = grade.id;
+        super(grade);
         this.complete = grade.complete;
         this.student = grade.student;
         this.section = grade.section;
@@ -61,6 +65,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
     
     @Override
     public void mergePropertiesIfNull(StudentSectionGrade mergeFrom) {
+        super.mergePropertiesIfNull(mergeFrom);
         if(null == id) {
             id = mergeFrom.id;
         }
@@ -81,7 +86,26 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
         }
     }
 
-    @Column(name = HibernateConsts.STUDENT_SECTION_GRADE_TERM_GRADES, columnDefinition="blob")
+    @JsonIgnore
+    @Column(name = HibernateConsts.STUDENT_SECTION_GRADE_TERM_GRADES, columnDefinition = "blob")
+    public String getTermGradesString() {
+        try {
+            return EdPanelObjectMapper.MAPPER.writeValueAsString(termGrades);
+        } catch (JsonProcessingException | NullPointerException e) {
+            return null;
+        }
+    }
+    @JsonIgnore
+    public void setTermGradesString(String gradesString) {
+        try {
+            this.termGrades = EdPanelObjectMapper.MAPPER.readValue(
+                    gradesString, new TypeReference<HashMap<Long, Score>>(){});
+        } catch (IOException | NullPointerException e) {
+            this.termGrades = null;
+        }
+    }
+
+    @Transient
     public HashMap<Long, Score> getTermGrades() {
         return termGrades;
     }
@@ -90,7 +114,7 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
         this.termGrades = termGrades;
     }
 
-    @OneToOne(optional = true, fetch=FetchType.EAGER, orphanRemoval = false)
+    @OneToOne(optional = true, fetch=FetchType.EAGER)
     @JoinColumn(name=HibernateConsts.SECTION_GRADE_FK)
     @Fetch(FetchMode.JOIN)
     @Cascade(CascadeType.ALL)
@@ -145,24 +169,29 @@ public class StudentSectionGrade extends ApiModel implements Serializable, Weigh
     public void setComplete(Boolean complete) {
         this.complete = complete;
     }
-    
+
+    @Override
+    public int hashCode() {
+        return 31 * super.hashCode() + Objects.hash(complete, termGrades, section, student, overallGrade);
+    }
+
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
+        if (!super.equals(obj)) {
+            return false;
+        }
         final StudentSectionGrade other = (StudentSectionGrade) obj;
-        return Objects.equals(this.id, other.id) && 
-                Objects.equals(this.complete, other.complete) &&
-                Objects.equals(this.student, other.student) &&
-                Objects.equals(this.section, other.section) &&
-                Objects.equals(this.overallGrade, other.overallGrade) &&
-                Objects.equals(this.termGrades, other.termGrades);
-    }
-    
-    @Override
-    public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(id, complete, student, section, termGrades, overallGrade);
+        return Objects.equals(this.complete, other.complete)
+                && Objects.equals(this.termGrades, other.termGrades)
+                && Objects.equals(this.section, other.section)
+                && Objects.equals(this.student, other.student)
+                && Objects.equals(this.overallGrade, other.overallGrade);
     }
 
     @Override

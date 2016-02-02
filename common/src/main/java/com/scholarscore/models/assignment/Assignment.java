@@ -114,6 +114,8 @@ public abstract class Assignment
         this.weight = assignment.weight;
         this.includeInFinalGrades = assignment.includeInFinalGrades;
         this.sourceSystemId = assignment.sourceSystemId;
+        this.sectionFK = assignment.sectionFK;
+        this.section = assignment.section;
     }
     
     public void mergePropertiesIfNull(Assignment assignment) {
@@ -122,7 +124,7 @@ public abstract class Assignment
             return;
         }
         if(null == this.type) {
-            this.type = assignment.type;
+            setType(assignment.type);
         }
         if(null == this.dueDate) {
             this.dueDate = assignment.dueDate;
@@ -141,6 +143,12 @@ public abstract class Assignment
         }
         if(null == this.sourceSystemId) {
             this.sourceSystemId = assignment.sourceSystemId;
+        }
+        if (null == this.section) {
+            this.section = assignment.section;
+        }
+        if (null == this.sectionFK) {
+            this.sectionFK = assignment.sectionFK;
         }
     }
 
@@ -222,23 +230,46 @@ public abstract class Assignment
     }
 
     @Override
+    public int hashCode() {
+        return 31 * super.hashCode() + Objects.hash(type, userDefinedType, dueDate, availablePoints, section, sectionFK, weight, includeInFinalGrades, sourceSystemId);
+    }
+
+    @Override
     public boolean equals(Object obj) {
-        if(! super.equals(obj)) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
             return false;
         }
         final Assignment other = (Assignment) obj;
-        return Objects.equals(this.type, other.type) 
+        return Objects.equals(this.type, other.type)
+                && Objects.equals(this.userDefinedType, other.userDefinedType)
                 && Objects.equals(this.dueDate, other.dueDate)
+                && Objects.equals(this.availablePoints, other.availablePoints)
+                && Objects.equals(this.section, other.section)
+                && Objects.equals(this.sectionFK, other.sectionFK)
                 && Objects.equals(this.weight, other.weight)
                 && Objects.equals(this.includeInFinalGrades, other.includeInFinalGrades)
-                && Objects.equals(this.userDefinedType, other.userDefinedType)
-                && Objects.equals(this.sourceSystemId, other.sourceSystemId)
-                && Objects.equals(this.availablePoints, other.availablePoints);
+                && Objects.equals(this.sourceSystemId, other.sourceSystemId);
     }
-    
+
     @Override
-    public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(type, dueDate, sourceSystemId, userDefinedType, weight, includeInFinalGrades, availablePoints);
+    public String toString() {
+        return "Assignment{super(" + super.toString() + ")" +
+                "type=" + type +
+                ", userDefinedType='" + userDefinedType + '\'' +
+                ", dueDate=" + dueDate +
+                ", availablePoints=" + availablePoints +
+                ", section=" + section +
+                ", sectionFK=" + sectionFK +
+                ", weight=" + weight +
+                ", includeInFinalGrades=" + includeInFinalGrades +
+                ", sourceSystemId='" + sourceSystemId + '\'' +
+                '}';
     }
 
     /**

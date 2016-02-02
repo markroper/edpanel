@@ -58,7 +58,6 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	private String oneTimePass;
 	private Date oneTimePassCreated;
 	protected Address homeAddress;
-
 	private Set<ContactMethod> contactMethods;
 	
 	// this optional boolean is usually null, but will be set to true in the special case 
@@ -78,6 +77,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		this.oneTimePass = value.oneTimePass;
 		this.oneTimePassCreated = value.oneTimePassCreated;
 		this.contactMethods = value.contactMethods;
+		this.mustResetPassword = value.mustResetPassword;
 	}
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
@@ -282,10 +282,19 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		}
     }
 
+	/**
+	 * Why aren't contatMethods here in the hashCode? Pull up a chair my friend.  Hibernate 5 NPEs
+	 * when mapping contact methods if they're included in the hashcode.  I think this is because
+	 * we have a User object on a ContactMethod and a Set<ContactMethod> here on User.  We use some
+	 * Hibernate annotations to tell it how to handle this mapping, but there is some bug in Hibernate
+	 * that is causing an NPE if we include contactMethods in hashCode() here.
+	 *
+	 * @return
+	 */
 	@Override
 	public int hashCode() {
 		return 31 * super.hashCode() + Objects.hash(username, password, enabled, oneTimePass,
-				oneTimePassCreated, homeAddress, contactMethods, mustResetPassword);
+				oneTimePassCreated, homeAddress, mustResetPassword);
 	}
 
 	@Override
@@ -312,12 +321,15 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 
 	@Override
 	public String toString() {
-		return super.toString() + "\n" +
-				"User{" +
+		return "User{" +
+				"username='" + username + '\'' +
 				", password='" + password + '\'' +
-				", username='" + username + '\'' +
-				", homeAddress='" + homeAddress + '\'' +
 				", enabled=" + enabled +
+				", oneTimePass='" + oneTimePass + '\'' +
+				", oneTimePassCreated=" + oneTimePassCreated +
+				", homeAddress=" + homeAddress +
+				", contactMethods=" + contactMethods +
+				", mustResetPassword=" + mustResetPassword +
 				'}';
 	}
 

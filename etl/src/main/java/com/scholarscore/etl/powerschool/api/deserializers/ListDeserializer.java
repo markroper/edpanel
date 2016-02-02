@@ -125,15 +125,14 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
                             Class impl = annotation.using();
                         }
                     default:
-                        JsonNode value = node.findValue(field.getName().toLowerCase());
-                        if (value != null) {
-                            Object innerObj = readObj(
-                                    value,
-                                    field.getType());
-                            field.set(out, innerObj);
-                        } else {
-                            LOGGER.warn("ListDeserializer unable to read node " + node + " into object of class " + clazz);
+                        if (field.isSynthetic()) {
+                            System.out.println("Ignoring synethic field " + field.getName() + " of type " + field.getType());
+                            continue;
                         }
+                        Object innerObj = readObj(
+                                node.findValue(field.getName().toLowerCase()),
+                                field.getType());
+                        field.set(out, innerObj);
                         break;
                 }
             }

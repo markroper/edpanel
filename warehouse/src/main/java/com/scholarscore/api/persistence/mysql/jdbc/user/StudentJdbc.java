@@ -2,9 +2,9 @@ package com.scholarscore.api.persistence.mysql.jdbc.user;
 
 import com.scholarscore.api.persistence.AuthorityPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
+import com.scholarscore.api.persistence.mysql.jdbc.StudentSectionGradeJdbc;
 import com.scholarscore.api.util.RoleConstants;
 import com.scholarscore.models.Authority;
-import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.notification.group.FilteredStudents;
 import com.scholarscore.models.user.Student;
@@ -112,10 +112,10 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Student> selectAllStudentsInSection(long sectionId) {
-        String sql = "FROM " + HibernateConsts.STUDENT_SECTION_GRADE_TABLE + " ssg WHERE ssg.section.id = (?)";
+        String sql = StudentSectionGradeJdbc.SSG_HQL_BASE +  " WHERE ssg.section.id = :sectionId";
 
-        List<StudentSectionGrade> studentSectionGrades = (List<StudentSectionGrade>) hibernateTemplate.find(
-                sql, sectionId);
+        List<StudentSectionGrade> studentSectionGrades = (List<StudentSectionGrade>) hibernateTemplate.findByNamedParam(
+                sql, "sectionId", sectionId);
         List<Student> students = new ArrayList<>();
         for (StudentSectionGrade grade : studentSectionGrades) {
             Student student = grade.getStudent();
