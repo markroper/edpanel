@@ -38,18 +38,18 @@ public class SurveyOpenResponseQuestion extends SurveyQuestion<String> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(maxResponseLength);
+        return 31 * super.hashCode() + Objects.hash(maxResponseLength);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(!super.equals(obj)) {
-            return false;
-        }
         if (this == obj) {
             return true;
         }
         if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
             return false;
         }
         final SurveyOpenResponseQuestion other = (SurveyOpenResponseQuestion) obj;

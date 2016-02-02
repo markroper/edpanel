@@ -65,6 +65,11 @@ public class AssignmentGoal extends Goal implements CalculatableAssignment {
         AssignmentGoal that = (AssignmentGoal) o;
         return Objects.equals(parentId, that.parentId);
     }
+    
+    @Override
+    public void setGoalType(GoalType goalType) {
+        super.setGoalType(GoalType.ASSIGNMENT);
+    }
 
     @Override
     public int hashCode() {

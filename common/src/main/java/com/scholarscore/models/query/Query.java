@@ -93,10 +93,11 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     Expression filter;
 
     public Query() {
-        
+        super();
     }
     
     public Query(Query q) {
+        super(q);
         aggregateMeasures = q.getAggregateMeasures();
         fields = q.getFields();
         filter = q.getFilter();
@@ -240,4 +241,13 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
                 + Objects.hash(aggregateMeasures, filter, fields);
     }
 
+    @Override
+    public String toString() {
+        return "Query{" +
+                "(super: " + super.toString() + ")" +
+                "aggregateMeasures=" + aggregateMeasures +
+                ", fields=" + fields +
+                ", filter=" + filter +
+                '}';
+    }
 }

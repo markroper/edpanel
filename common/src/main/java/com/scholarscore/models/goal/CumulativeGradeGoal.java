@@ -55,7 +55,7 @@ public class CumulativeGradeGoal extends Goal implements CalculatableCumulative 
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         CumulativeGradeGoal that = (CumulativeGradeGoal) o;
-        return Objects.equals(parentId, that.parentId);
+            return Objects.equals(parentId, that.parentId);
     }
 
     @Override
@@ -73,11 +73,18 @@ public class CumulativeGradeGoal extends Goal implements CalculatableCumulative 
             }
         }
 
-    }    
+    }
+
+    @Override
+    public void setGoalType(GoalType goalType) {
+        // don't allow the parent class goalType to be set to anything besides BEHAVIOR
+        super.setGoalType(GoalType.CUMULATIVE_GRADE);
+    }
+    
     @Override
     public String toString() {
         return
-                "GOAL " + "\n"
+                "GOAL (super:" + super.toString() + ")" + "\n"
                         + "Id  : " + getId() + "\n"
                         + "Name: " + getName() + "\n"
                         + "DesiredValue: " + getDesiredValue() +"\n"
