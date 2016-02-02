@@ -40,7 +40,7 @@ public class SectionController extends BaseController {
             @PathVariable(value="schoolYearId") Long schoolYearId,
             @ApiParam(name = "termId", required = true, value = "Term ID")
             @PathVariable(value="termId") Long termId) {
-        return respond(pm.getSectionManager().getAllSections(schoolId, schoolYearId, termId));
+        return respond(pm.getSectionManager().getAllSectionsWithStudentsAndAssignments(schoolId, schoolYearId, termId));
     }
     
     @ApiOperation(

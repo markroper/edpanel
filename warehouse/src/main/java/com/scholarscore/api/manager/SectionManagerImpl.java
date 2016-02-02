@@ -50,7 +50,8 @@ public class SectionManagerImpl implements SectionManager {
      * @return
      */
     @Override
-    public ServiceResponse<Collection<Section>> getAllSections(long schoolId, long yearId, long termId) {
+    public ServiceResponse<Collection<Section>> getAllSectionsWithStudentsAndAssignments(
+            long schoolId, long yearId, long termId) {
         StatusCode code = pm.getTermManager().termExists(schoolId, yearId, termId);
         if(!code.isOK()) {
             return new ServiceResponse<Collection<Section>>(code);
