@@ -85,4 +85,13 @@ public class MessageThread {
                 Objects.equals(this.participants, other.participants) &&
                 Objects.equals(this.topic, other.topic);
     }
+
+    @Override
+    public String toString() {
+        return "MessageThread{" +
+                "id=" + id +
+                ", participants=" + participants +
+                ", topic=" + topic +
+                '}';
+    }
 }

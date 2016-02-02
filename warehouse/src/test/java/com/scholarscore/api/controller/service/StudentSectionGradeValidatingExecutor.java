@@ -171,8 +171,13 @@ public class StudentSectionGradeValidatingExecutor {
         }
         if(null == returnStudentSectionGrade.getOverallGrade()) {
             returnStudentSectionGrade.setOverallGrade(created.getOverallGrade());
-        } else if(null == returnStudentSectionGrade.getOverallGrade().getId()) {
-            returnStudentSectionGrade.getOverallGrade().setId(created.getOverallGrade().getId());
+        } else if (created.getOverallGrade() != null) {
+            if (null == returnStudentSectionGrade.getOverallGrade().getId()) {
+                returnStudentSectionGrade.getOverallGrade().setId(created.getOverallGrade().getId());
+            } 
+            if (null == returnStudentSectionGrade.getOverallGrade().getSectionFk()) {
+                returnStudentSectionGrade.getOverallGrade().setSectionFk(created.getOverallGrade().getSectionFk());
+            }
         }
 
         returnStudentSectionGrade.setId(created.getId());

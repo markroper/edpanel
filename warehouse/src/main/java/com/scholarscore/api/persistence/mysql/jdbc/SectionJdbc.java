@@ -15,6 +15,10 @@ import java.util.List;
 
 @Transactional
 public class SectionJdbc implements SectionPersistence {
+    public static final String SECTION_HQL = "from section s join fetch s.course c join fetch c.school " +
+            "join fetch s.term t join fetch t.schoolYear y join fetch y.school " +
+            "left join fetch s.teachers ts left join fetch ts.homeAddress left join fetch ts.contactMethods";
+
     @Autowired
     private HibernateTemplate hibernateTemplate;
 
@@ -34,7 +38,8 @@ public class SectionJdbc implements SectionPersistence {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Section> selectAll(long termId) {
-        return (Collection<Section>)hibernateTemplate.findByNamedParam("from section s where s.term.id = :id", "id", termId);
+        return (Collection<Section>)hibernateTemplate.findByNamedParam(
+                SECTION_HQL + " where t.id = :id", "id", termId);
     }
 
     @Override
@@ -102,20 +107,16 @@ public class SectionJdbc implements SectionPersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<Section> selectAllSectionForTeacher(
             long termId, long teacherId) {
         String[] params = new String[]{"termId", "teacherId"};
         Object[] paramValues = new Object[]{ new Long(termId), new Long(teacherId) }; 
-        List<?> objects = hibernateTemplate.findByNamedParam(
-                "from section s join s.teachers ts where s.term.id = :termId and ts.id = :teacherId", 
+        List<Section> objects = (List<Section>)hibernateTemplate.findByNamedParam(
+                SECTION_HQL + " where s.term.id = :termId and ts.id = :teacherId",
                 params, 
                 paramValues);
-        ArrayList<Section> sectionList = new ArrayList<>();
-        for(Object obj : objects) {
-            Object[] coll = (Object[]) obj;
-            sectionList.add((Section)coll[0]);    
-        }
-        return sectionList;
+        return objects;
     }
 
     @Override
@@ -124,7 +125,7 @@ public class SectionJdbc implements SectionPersistence {
         String[] params = new String[]{"schoolId"};
         Object[] paramValues = new Object[]{ new Long(schoolId) };
         List<Section> objects = (List<Section>)hibernateTemplate.findByNamedParam(
-                "from section s where s.term.schoolYear.school.id = :schoolId",
+                SECTION_HQL + " where s.term.schoolYear.school.id = :schoolId",
                 params,
                 paramValues);
         return objects;

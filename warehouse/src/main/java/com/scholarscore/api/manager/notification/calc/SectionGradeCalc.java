@@ -9,7 +9,6 @@ import com.scholarscore.models.notification.TriggeredNotification;
 import com.scholarscore.models.notification.window.Duration;
 import com.scholarscore.models.notification.window.NotificationWindow;
 import com.scholarscore.models.query.AggregateFunction;
-import com.scholarscore.models.ui.ScoreAsOfWeek;
 import com.scholarscore.models.user.Person;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
@@ -97,8 +96,6 @@ public class SectionGradeCalc implements NotificationCalculator {
         LocalDate start = NotificationCalculator.resolveStartDate(dur, manager, notification);
         Map<Long, MutablePair<SectionGrade, SectionGrade>> gradesByStudent = new HashMap<>();
         for(Long sid: studentIds) {
-            ServiceResponse<List<ScoreAsOfWeek>> scores =
-                    manager.getStudentManager().getStudentHomeworkRates(sid, start, LocalDate.now());
             SectionGrade beforeGrade = manager.getStudentSectionGradeManager().
                     getStudentSectionGradeAsOfDate(sid, notification.getSection().getId(), start);
             if(null == beforeGrade) {
@@ -156,11 +153,14 @@ public class SectionGradeCalc implements NotificationCalculator {
         //If the Notification is triggered on percent change, we need to calculate the
         //percent difference between the start and end values and compare that pct to the trigger value.
         //Otherwise we compare the absolute value of endValue - startValue to the trigger value.
+        if(null == endValue || null == startValue || startValue.equals(0D)) {
+            return null;
+        }
         if(null != isPercent && isPercent) {
             //Calculate pct different between start and end date
-            if(notification.getTriggerValue() <= Math.abs(1D - (endValue / startValue))) {
+            if(notification.getTriggerValue() <= Math.abs(NotificationCalculator.percentChange(startValue, endValue))) {
                 return NotificationCalculator.createTriggeredNotifications(
-                        notification, 1D - (endValue / startValue), manager, subjectId);
+                        notification, NotificationCalculator.percentChange(startValue, endValue), manager, subjectId);
             }
         } else {
             //abs value of difference between
