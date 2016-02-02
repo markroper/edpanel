@@ -118,6 +118,7 @@ public class HibernateConsts {
     //Student constants
     public static final String STUDENT_TABLE = "student";
     public static final String STUDENT_SOURCE_SYSTEM_ID = "source_system_id";
+    public static final String STUDENT_WITHDRAWAL_DATE = "withdrawal_date";
     public static final String STUDENT_NAME = "student_name";
     public static final String STUDENT_MAILING_FK = "mailing_fk";
     public static final String STUDENT_HOME_FK = "home_fk";

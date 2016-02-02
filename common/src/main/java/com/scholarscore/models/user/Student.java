@@ -44,6 +44,7 @@ public class Student extends Person implements Serializable {
     //EthnicityRace
     private String federalRace;
     private String federalEthnicity;
+    private LocalDate withdrawalDate;
     
     public Student() {
         
@@ -102,7 +103,19 @@ public class Student extends Person implements Serializable {
             if(null == getUserId()) {
                 setUserId(merge.getUserId());
             }
+            if(null == getUserId()) {
+                setUserId(merge.getUserId());
+            }
         }
+    }
+
+    @Column(name = HibernateConsts.STUDENT_WITHDRAWAL_DATE)
+    public LocalDate getWithdrawalDate() {
+        return withdrawalDate;
+    }
+
+    public void setWithdrawalDate(LocalDate withdrawnDate) {
+        this.withdrawalDate = withdrawnDate;
     }
 
     @Column(name = HibernateConsts.STUDENT_SOURCE_SYSTEM_ID)
@@ -247,6 +260,7 @@ public class Student extends Person implements Serializable {
                 && Objects.equals(this.projectedGraduationYear, other.projectedGraduationYear)
                 && Objects.equals(this.socialSecurityNumber, other.socialSecurityNumber)
                 && Objects.equals(this.federalRace, other.federalRace)
+                && Objects.equals(this.withdrawalDate, other.withdrawalDate)
                 && Objects.equals(this.federalEthnicity, other.federalEthnicity)
                 && Objects.equals(this.currentSchoolId, other.currentSchoolId);
     }
@@ -256,7 +270,7 @@ public class Student extends Person implements Serializable {
         return 31 * super.hashCode()
                 + Objects.hash(mailingAddress, gender, birthDate,
                         districtEntryDate, projectedGraduationYear, socialSecurityNumber, 
-                        federalRace, federalEthnicity, currentSchoolId);
+                        federalRace, federalEthnicity, currentSchoolId, withdrawalDate);
     }
 
     @Override
@@ -271,6 +285,7 @@ public class Student extends Person implements Serializable {
                 ", federalRace='" + federalRace + '\'' +
                 ", federalEthnicity='" + federalEthnicity + '\'' +
                 ", currentSchoolId=" + currentSchoolId +
+                ", withdrawalDate=" + withdrawalDate +
                 '}';
     }
 
@@ -296,6 +311,12 @@ public class Student extends Person implements Serializable {
         private String federalRace;
         private String federalEthnicity;
         private Long currentSchoolId;
+        private LocalDate withdrawalDate;
+
+        public StudentBuilder withWithdrawalDate(final LocalDate date) {
+            this.withdrawalDate = date;
+            return this;
+        }
 
         public StudentBuilder withSourceSystemId(final String sourceSystemId){
             this.sourceSystemId = sourceSystemId;
@@ -365,6 +386,7 @@ public class Student extends Person implements Serializable {
             student.setFederalRace(federalRace);
             student.setFederalEthnicity(federalEthnicity);
             student.setCurrentSchoolId(currentSchoolId);
+            student.setWithdrawalDate(withdrawalDate);
             return student;
         }
 
