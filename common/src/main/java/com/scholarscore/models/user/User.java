@@ -58,7 +58,6 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	private String oneTimePass;
 	private Date oneTimePassCreated;
 	protected Address homeAddress;
-
 	private Set<ContactMethod> contactMethods;
 	
 	// this optional boolean is usually null, but will be set to true in the special case 
@@ -285,7 +284,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	@Override
 	public int hashCode() {
 		return 31 * super.hashCode() + Objects.hash(username, password, enabled, oneTimePass,
-				oneTimePassCreated, homeAddress, contactMethods, mustResetPassword);
+				oneTimePassCreated, homeAddress, mustResetPassword);
 	}
 
 	@Override

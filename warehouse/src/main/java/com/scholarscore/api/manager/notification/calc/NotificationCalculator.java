@@ -182,4 +182,11 @@ public interface NotificationCalculator {
         }
         return start;
     }
+
+    public static Double percentChange(Double start, Double end) {
+        if(null == start || null == end || start.equals(0D)) {
+            return null;
+        }
+        return (end - start) / start * 100D;
+    }
 }
