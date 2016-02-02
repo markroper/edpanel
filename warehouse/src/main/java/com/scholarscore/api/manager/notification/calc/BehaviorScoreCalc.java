@@ -154,11 +154,14 @@ public class BehaviorScoreCalc implements NotificationCalculator {
         //If the Notification is triggered on percent change, we need to calculate the
         //percent difference between the start and end values and compare that pct to the trigger value.
         //Otherwise we compare the absolute value of endValue - startValue to the trigger value.
+        if(null == endValue || null == startValue || startValue.equals(0D)) {
+            return null;
+        }
         if(null != isPercent && isPercent) {
             //Calculate pct different between start and end date
-            if(notification.getTriggerValue() <= Math.abs(1D - (endValue / startValue))) {
+            if(notification.getTriggerValue() <= Math.abs(NotificationCalculator.percentChange(startValue, endValue))) {
                 return NotificationCalculator.createTriggeredNotifications(
-                        notification, 1D - (endValue / startValue), manager, subjectId);
+                        notification, NotificationCalculator.percentChange(startValue, endValue), manager, subjectId);
             }
         } else {
             //abs value of difference between
