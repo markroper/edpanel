@@ -60,6 +60,7 @@ public class Student extends Person implements Serializable {
         this.socialSecurityNumber = student.socialSecurityNumber;
         this.federalRace = student.federalRace;
         this.federalEthnicity = student.federalEthnicity;
+        this.withdrawalDate = student.withdrawalDate;
     }
     
     public Student(String race, String ethnicity, Long currentSchoolId, Gender gender, String name, Long expectedGraduationYear) {
@@ -103,8 +104,8 @@ public class Student extends Person implements Serializable {
             if(null == getUserId()) {
                 setUserId(merge.getUserId());
             }
-            if(null == getUserId()) {
-                setUserId(merge.getUserId());
+            if(null == getWithdrawalDate()) {
+                setWithdrawalDate(merge.getWithdrawalDate());
             }
         }
     }
