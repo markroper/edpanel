@@ -123,7 +123,7 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Student> selectAllStudentsInSection(long sectionId) {
-        String sql = StudentSectionGradeJdbc.SSG_HQL_BASE +  " WHERE st.withdrawalDate is null ssg.section.id = :sectionId";
+        String sql = StudentSectionGradeJdbc.SSG_HQL_BASE +  " WHERE st.withdrawalDate is null and ssg.section.id = :sectionId";
 
         List<StudentSectionGrade> studentSectionGrades = (List<StudentSectionGrade>) hibernateTemplate.findByNamedParam(
                 sql, "sectionId", sectionId);
