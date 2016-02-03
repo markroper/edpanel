@@ -275,8 +275,8 @@ public class Student extends Person implements Serializable {
 
     @Override
     public String toString() {
-        return "Student{" + "(super: " + super.toString() + ")" +
-                ", mailingAddress=" + mailingAddress +
+        return "Student{super(" + super.toString() + ")" +
+                "mailingAddress=" + mailingAddress +
                 ", gender=" + gender +
                 ", birthDate=" + birthDate +
                 ", districtEntryDate=" + districtEntryDate +
