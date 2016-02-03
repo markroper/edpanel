@@ -77,6 +77,17 @@ public class Score implements Serializable {
                 && Objects.equals(this.termId, other.termId);
     }
 
+    @Override
+    public String toString() {
+        return "Score{" +
+                "comment='" + comment + '\'' +
+                ", manuallyOverridden=" + manuallyOverridden +
+                ", letterGrade='" + letterGrade + '\'' +
+                ", score=" + score +
+                ", termId=" + termId +
+                '}';
+    }
+
     public static class ScoreBuilder {
         protected String comment;
         protected Boolean manuallyOverridden;

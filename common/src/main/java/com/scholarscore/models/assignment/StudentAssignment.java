@@ -57,6 +57,7 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
 
     @Override
     public void mergePropertiesIfNull(StudentAssignment mergeFrom) {
+        super.mergePropertiesIfNull(mergeFrom);
         if(null == mergeFrom) {
             return;
         }
@@ -187,6 +188,19 @@ public class StudentAssignment extends ApiModel implements Serializable, Weighte
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(assignment, exempt, comment, awardedPoints, student, completionDate);
+    }
+
+    @Override
+    public String toString() {
+        return "StudentAssignment{" +
+                "(super:" + super.toString() + ")" +
+                "completionDate=" + completionDate +
+                ", awardedPoints=" + awardedPoints +
+                ", assignment=" + assignment +
+                ", student=" + student +
+                ", exempt=" + exempt +
+                ", comment='" + comment + '\'' +
+                '}';
     }
 
     /**
