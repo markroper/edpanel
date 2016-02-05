@@ -74,7 +74,7 @@ public enum Measure {
             case SECTION_TARDY:
                 return new SectionTardyMeasure();
             default:
-                return null;   
+                throw new QueryException("Unsupported measure " + measure + "!");
         }
     }
 }

@@ -162,12 +162,12 @@ public class QuerySqlGeneratorUnitTest {
                 "( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) " +
                 "GROUP BY student.student_user_fk";
 
-        Query sectionAbsenseQuery  = new Query();
+        Query sectionAbsenceQuery  = new Query();
         ArrayList<AggregateMeasure> sectionAbsenseMeasures = new ArrayList<>();
         sectionAbsenseMeasures.add(new AggregateMeasure(Measure.SECTION_ABSENCE, AggregateFunction.COUNT));
-        sectionAbsenseQuery.setAggregateMeasures(sectionAbsenseMeasures);
-        sectionAbsenseQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
-        sectionAbsenseQuery.addField(new DimensionField(Dimension.SECTION, SectionDimension.ID));
+        sectionAbsenceQuery.setAggregateMeasures(sectionAbsenseMeasures);
+        sectionAbsenceQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
+        sectionAbsenceQuery.addField(new DimensionField(Dimension.SECTION, SectionDimension.ID));
 
 
         ListNumericOperand sectionList = new ListNumericOperand();
@@ -179,7 +179,7 @@ public class QuerySqlGeneratorUnitTest {
                 new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)),
                 ComparisonOperator.IN,
                 sectionList);
-        sectionAbsenseQuery.setFilter(sectionAbsenseClause);
+        sectionAbsenceQuery.setFilter(sectionAbsenseClause);
         String sectionAbsenceSql = "SELECT student.student_user_fk, section.section_id, " +
                 "COUNT( if(attendance.attendance_status in ('ABSENT') AND attendance.attendance_type = 'SECTION', 1, 0)) " +
                 "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " +
@@ -232,6 +232,20 @@ public class QuerySqlGeneratorUnitTest {
                 + "WHERE  ( ( behavior.date  >  '2014-09-01 00:00:00.0' )  "
                 + "AND  ( student.student_user_fk  =  1 ) ) "
                 + "GROUP BY student.student_user_fk";
+        
+        // this test builds a query to get the school name for the school with id 1.
+        // this requires support for a query with NO aggregate function 
+        Query schoolNameQuery  = new Query();
+        schoolNameQuery.addField(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME));
+
+        NumericOperand schoolId = new NumericOperand(1);
+        Expression schoolNameClause = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.SCHOOL, SectionDimension.ID)),
+                ComparisonOperator.EQUAL,
+                schoolId);
+        schoolNameQuery.setFilter(schoolNameClause);
+        String schoolNameSql = "SELECT school.school_name FROM school WHERE  ( school.school_id  =  1 ) GROUP BY school.school_name";
+        
         return new Object[][] {
                 { "Course Grade query", courseGradeQuery, courseGradeQuerySql }, 
                 { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql }, 
@@ -239,8 +253,9 @@ public class QuerySqlGeneratorUnitTest {
                 { "Behavior query", behaviorQuery, behaviorSql},
                 {"Attendance query", attendanceQuery, attendanceSql },
                 {"Homework by Section query", homeworkSectionCompletionQuery, homeworkSectionSql},
-                {"Absence by Section query", sectionAbsenseQuery, sectionAbsenceSql},
-                {"Tardy be Section query", sectionTardyQuery, sectionTardySql}
+                {"Absence by Section query", sectionAbsenceQuery, sectionAbsenceSql},
+                {"Tardy be Section query", sectionTardyQuery, sectionTardySql},
+                {"School name query", schoolNameQuery, schoolNameSql}
         };
     }
     
