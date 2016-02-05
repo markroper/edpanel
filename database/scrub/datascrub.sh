@@ -24,8 +24,7 @@ OUTPUT_BUFFER="${OUTPUT_BUFFER}USE ${DATABASE_NAME};\n"
 OUTPUT_BUFFER="${OUTPUT_BUFFER}START TRANSACTION;\n"
 
 STUDENT_FKS_TO_UPDATE=$($MYSQL_LOGIN_COMMAND -se "select student_user_fk from student;")
-TEACHER_FKS_TO_UPDATE=$($MYSQL_LOGIN_COMMAND -se "select teacher_user_fk from teacher;")
-ADMIN_FKS_TO_UPDATE=$($MYSQL_LOGIN_COMMAND -se "select administrator_user_fk from administrator;")
+STAFF_FKS_TO_UPDATE=$($MYSQL_LOGIN_COMMAND -se "select staff_user_fk from staff;")
 SCHOOLS_TO_UPDATE=$($MYSQL_LOGIN_COMMAND -se "select school_id from school;")
 
 PERSON_INDEX=1
@@ -42,24 +41,13 @@ for STUDENT_TO_UPDATE in $STUDENT_FKS_TO_UPDATE; do
     fi
 done
 
-for TEACHER_TO_UPDATE in $TEACHER_FKS_TO_UPDATE; do
-    TEACHER_NEW_NAME=$(random_person_name $PERSON_INDEX);
-    if [[ -z "${TEACHER_NEW_NAME// }" ]]; then
+for STAFF_TO_UPDATE in $STAFF_FKS_TO_UPDATE; do
+    STAFF_NEW_NAME=$(random_person_name $PERSON_INDEX);
+    if [[ -z "${STAFF_NEW_NAME// }" ]]; then
         printf "ERROR - insufficient # of person names in list\n"
         exit 1
     else 
-        OUTPUT_BUFFER="${OUTPUT_BUFFER}update teacher set teacher_name='$TEACHER_NEW_NAME' where teacher_user_fk='$TEACHER_TO_UPDATE';\n"
-        ((PERSON_INDEX++))
-    fi
-done
-
-for ADMIN_TO_UPDATE in $ADMIN_FKS_TO_UPDATE; do
-    ADMIN_NEW_NAME=$(random_person_name $PERSON_INDEX);
-    if [[ -z "${ADMIN_NEW_NAME// }" ]]; then
-        printf "ERROR - insufficient # of person names in list\n"
-        exit 1
-    else 
-        OUTPUT_BUFFER="${OUTPUT_BUFFER}update administrator set administrator_name='$ADMIN_NEW_NAME' where administrator_user_fk='$ADMIN_TO_UPDATE';\n"
+        OUTPUT_BUFFER="${OUTPUT_BUFFER}update staff set staff_name='$STAFF_NEW_NAME' where staff_user_fk='$STAFF_TO_UPDATE';\n"
         ((PERSON_INDEX++))
     fi
 done
