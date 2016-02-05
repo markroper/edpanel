@@ -362,12 +362,12 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         List<TriggeredNotification> student2TriggeredNotifications =
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(student2.getId(), "Student 2 triggered notifications");
         Assert.assertEquals(student2TriggeredNotifications.size(), 1, "Unexpected number of teacher triggered notifications returned");
+        TriggeredNotification tr = student2TriggeredNotifications.get(0);
+        notificationValidatingExecutor.disableTriggeredNotification(tr.getNotification().getId(), tr.getId(), student2.getId(), "Disabling notification");
+        student2TriggeredNotifications =
+                notificationValidatingExecutor.getTriggeredNotificationsForUser(student2.getId(), "Student 3 triggered notifications");
+        Assert.assertEquals(student2TriggeredNotifications.size(), 0, "Unexpected number of teacher triggered notifications returned");
         List<TriggeredNotification> student3TriggeredNotifications =
-                notificationValidatingExecutor.getTriggeredNotificationsForUser(student3.getId(), "Student 3 triggered notifications");
-        Assert.assertEquals(student3TriggeredNotifications.size(), 1, "Unexpected number of teacher triggered notifications returned");
-        TriggeredNotification tr = student3TriggeredNotifications.get(0);
-        notificationValidatingExecutor.disableTriggeredNotification(tr.getNotification().getId(), tr.getId(), student3.getId(), "Disabling notification");
-        student3TriggeredNotifications =
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(student3.getId(), "Student 3 triggered notifications");
         Assert.assertEquals(student3TriggeredNotifications.size(), 0, "Unexpected number of teacher triggered notifications returned");
     }
