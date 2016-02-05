@@ -41,9 +41,15 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Collection<Student> selectAll(Long schoolId) {
+    public Collection<Student> selectAll(Long schoolId, Boolean activeStudents) {
+        String whereClause = " WHERE s.currentSchoolId = :schoolId";
+        if(null == activeStudents || !activeStudents) {
+            whereClause += " and s.withdrawalDate is not null";
+        } else {
+            whereClause += " and s.withdrawalDate is null";
+        }
         if(null != schoolId) {
-            String sql = STUDENT_HQL + " WHERE s.currentSchoolId = :schoolId";
+            String sql = STUDENT_HQL + whereClause;
             return (List<Student>) hibernateTemplate.findByNamedParam(sql, "schoolId", schoolId);
         } else {
             return hibernateTemplate.loadAll(Student.class);
@@ -52,7 +58,7 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Collection<Student> selectAll(Long schoolId, FilteredStudents students) {
+    public Collection<Student> selectAll(Long schoolId, FilteredStudents students, Boolean activeStudents) {
         String[] params;
         Object[] paramValues;
         List<String> paramsList = new ArrayList<>();
@@ -62,6 +68,11 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
             paramsList.add("schoolId");
             paramValuesList.add(schoolId);
             studentWhereClause += " and s.currentSchoolId = :schoolId";
+        }
+        if(null != activeStudents || !activeStudents) {
+            studentWhereClause += " and s.withdrawalDate is not null";
+        } else {
+            studentWhereClause += " and s.withdrawalDate is null";
         }
         if(null != students) {
             if(null != students.getGender()) {
@@ -112,7 +123,7 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Student> selectAllStudentsInSection(long sectionId) {
-        String sql = StudentSectionGradeJdbc.SSG_HQL_BASE +  " WHERE ssg.section.id = :sectionId";
+        String sql = StudentSectionGradeJdbc.SSG_HQL_BASE +  " WHERE st.withdrawalDate is null and ssg.section.id = :sectionId";
 
         List<StudentSectionGrade> studentSectionGrades = (List<StudentSectionGrade>) hibernateTemplate.findByNamedParam(
                 sql, "sectionId", sectionId);
