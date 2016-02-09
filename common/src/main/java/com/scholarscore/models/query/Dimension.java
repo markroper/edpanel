@@ -5,6 +5,7 @@ import com.scholarscore.models.query.dimension.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Enumerates the supported dimensions of the warehouse report and querying model.
@@ -63,8 +64,7 @@ public enum Dimension {
             case USER:
                 return new UserDimension();
             default:
-                return null;
-            
+                throw new QueryException("Unsupported Dimension " + d + "!");
         }
     }
     
@@ -77,14 +77,7 @@ public enum Dimension {
      * @return
      */
     public static List<Dimension> resolveOrderedDimensions(Set<Dimension> selectedDims) {
-        List<Dimension> orderedDimTables = new ArrayList<>();
-        
-        for(Dimension d : orderedDimensions) {
-            if(selectedDims.contains(d)) {
-                orderedDimTables.add(d);
-            }
-        }
-        return orderedDimTables;
+        return orderedDimensions.stream().filter(selectedDims::contains).collect(Collectors.toList());
     }
     
     private static final List<Dimension> orderedDimensions = new ArrayList<Dimension>(){{

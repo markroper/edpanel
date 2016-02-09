@@ -77,9 +77,11 @@ public abstract class QuerySqlGenerator {
             }
             sqlBuilder.append(delimeter + generateDimensionFieldSql(f)); 
         }
-        for(AggregateMeasure am: q.getAggregateMeasures()) {
-            MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
-            sqlBuilder.append(", " + mss.toSelectClause(am.getAggregation()));
+        if (q.getAggregateMeasures() != null) {
+            for (AggregateMeasure am : q.getAggregateMeasures()) {
+                MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
+                sqlBuilder.append(", " + mss.toSelectClause(am.getAggregation()));
+            }
         }
         sqlBuilder.append(" ");
     }
@@ -103,10 +105,14 @@ public abstract class QuerySqlGenerator {
         Dimension currTable = orderedTables.get(0);
         sqlBuilder.append(DbMappings.DIMENSION_TO_TABLE_NAME.get(currTable) + " ");
         
-        //Join in the measures table on the FROM table
-        AggregateMeasure am = q.getAggregateMeasures().get(0);
-        MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
-        sqlBuilder.append(mss.toJoinClause(currTable));
+        //Join in the measures table on the FROM table (if there is a measure)
+        AggregateMeasure am = null;
+        MeasureSqlSerializer mss = null;
+        if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
+            am = q.getAggregateMeasures().get(0);
+            mss = MeasureSqlSerializerFactory.get(am.getMeasure());
+            sqlBuilder.append(mss.toJoinClause(currTable));
+        }
         
         //Join in the remaining dimensions tables, if any
         if(orderedTables.size() > 1) {
@@ -117,8 +123,10 @@ public abstract class QuerySqlGenerator {
                 //PK/FK relationship between the two, try to join on the measure table directly. If the measure is 
                 //not compatible with the dimension for joining, try joining on the previous dimension in the hierarchy.
                 //If that doesn't match, check the dimension before that.
-                if(!Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
-                    if(Measure.buildMeasure(am.getMeasure()).getCompatibleDimensions().contains(joinDim)){
+                if (Dimension.buildDimension(currTable).getParentDimensions() != null &&
+                !Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
+                    if(am != null && am.getMeasure() != null && mss != null &&
+                            Measure.buildMeasure(am.getMeasure()).getCompatibleDimensions().contains(joinDim)){
                         currentTableName = mss.toTableName();
                     } else {
                         Dimension dimDesc = currTable;
