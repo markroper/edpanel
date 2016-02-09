@@ -113,7 +113,7 @@ public class QuerySqlGeneratorUnitTest {
         Expression comb1 = new Expression(termClause, BinaryOperator.AND, yearClause);
         Expression comb2 = new Expression(comb1, BinaryOperator.AND, sectionClause);
         homeworkCompletionQuery.setFilter(comb2);
-        String homeworkSql = "SELECT student.student_user_fk, AVG( if(assignment.type_fk = 'HOMEWORK', " +
+        String homeworkSql = "SELECT student.student_user_fk, AVG(if(assignment.type_fk = 'HOMEWORK', " +
                 "if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) " +
                 "FROM student LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " +
                 "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id " +
@@ -128,7 +128,7 @@ public class QuerySqlGeneratorUnitTest {
         homeworkSectionCompletionQuery.setAggregateMeasures(homeworkSectionMeasures);
         homeworkSectionCompletionQuery.addField(new DimensionField(Dimension.SECTION, SectionDimension.ID));
         homeworkSectionCompletionQuery.setFilter(comb2);
-        String homeworkSectionSql = "SELECT section.section_id, AVG( if(assignment.type_fk = 'HOMEWORK', " +
+        String homeworkSectionSql = "SELECT section.section_id, AVG(if(assignment.type_fk = 'HOMEWORK', " +
                 "if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) " +
                 "FROM section LEFT OUTER JOIN assignment ON assignment.section_fk = section.section_id " +
                 "LEFT OUTER JOIN student_assignment ON student_assignment.assignment_fk = assignment.assignment_id " +
@@ -154,7 +154,7 @@ public class QuerySqlGeneratorUnitTest {
         Expression attendanceDateRangeExpression = new Expression(greaterThanDate, BinaryOperator.AND, lessThanDate);
         attendanceQuery.setFilter(attendanceDateRangeExpression);
         String attendanceSql = "SELECT student.student_user_fk, " +
-                "SUM( if(attendance.attendance_status in ('ABSENT'), 1, 0)) " +
+                "SUM(if(attendance.attendance_status in ('ABSENT'), 1, 0)) " +
                 "FROM student " +
                 "LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " +
                 "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk " +
@@ -181,7 +181,7 @@ public class QuerySqlGeneratorUnitTest {
                 sectionList);
         sectionAbsenceQuery.setFilter(sectionAbsenseClause);
         String sectionAbsenceSql = "SELECT student.student_user_fk, section.section_id, " +
-                "COUNT( if(attendance.attendance_status in ('ABSENT') AND attendance.attendance_type = 'SECTION', 1, 0)) " +
+                "COUNT(if(attendance.attendance_status in ('ABSENT') AND attendance.attendance_type = 'SECTION', 1, 0)) " +
                 "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " +
                 "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk " +
                 "LEFT OUTER JOIN section ON section.section_id = attendance.section_fk " +
@@ -200,7 +200,7 @@ public class QuerySqlGeneratorUnitTest {
                 sectionList);
         sectionTardyQuery.setFilter(sectionTardyClause);
         String sectionTardySql = "SELECT student.student_user_fk, section.section_id, " +
-                "COUNT( if(attendance.attendance_status in ('TARDY') AND attendance.attendance_type = 'SECTION', 1, 0)) " +
+                "COUNT(if(attendance.attendance_status in ('TARDY') AND attendance.attendance_type = 'SECTION', 1, 0)) " +
                 "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " +
                 "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk " +
                 "LEFT OUTER JOIN section ON section.section_id = attendance.section_fk " +

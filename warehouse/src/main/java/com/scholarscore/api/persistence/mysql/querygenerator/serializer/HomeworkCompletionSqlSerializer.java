@@ -15,7 +15,7 @@ public class HomeworkCompletionSqlSerializer implements MeasureSqlSerializer {
     @Override
     public String toSelectInner() {
         //TODO: currently less than 35% is considered 'incomplete' this is based on how Excel does grading, need to make this configurable
-        return "( if(" + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TYPE_FK + " = '" + AssignmentType.HOMEWORK.name() +
+        return "if(" + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TYPE_FK + " = '" + AssignmentType.HOMEWORK.name() +
                 "', if(" + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.STUDENT_ASSIGNMENT_AWARDED_POINTS +" is null, 0," +
                 " if(" + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.STUDENT_ASSIGNMENT_AWARDED_POINTS + "/" +
                 HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_AVAILABLE_POINTS + " <= .35, 0, 1)), null)";

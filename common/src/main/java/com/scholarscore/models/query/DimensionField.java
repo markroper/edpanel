@@ -1,9 +1,12 @@
 package com.scholarscore.models.query;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.io.Serializable;
 import java.util.Objects;
 
 @SuppressWarnings("serial")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DimensionField extends QueryField implements Serializable {
     Dimension dimension;
     String field;

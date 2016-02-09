@@ -263,7 +263,7 @@ public abstract class QuerySqlGenerator {
         //If there are buckets involved in the aggregate query, inject the bucket psuedo column
         if(null != q.getAggregateMeasures()) {
             for (AggregateMeasure m : q.getAggregateMeasures()) {
-                if(null != m.getMeasure() && !m.getBuckets().isEmpty()) {
+                if(null != m.getBuckets() && !m.getBuckets().isEmpty()) {
                     String bucketFieldName = generateBucketPsuedoColumnName(m);
                     if (isFirst) {
                         sqlBuilder.append(bucketFieldName);

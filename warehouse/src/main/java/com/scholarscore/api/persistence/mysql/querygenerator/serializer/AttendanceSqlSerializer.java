@@ -13,7 +13,7 @@ public class AttendanceSqlSerializer implements MeasureSqlSerializer {
 
     @Override
     public String toSelectInner() {
-        return "( if(" + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.ATTENDANCE_STATUS + " in ('"
+        return "if(" + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.ATTENDANCE_STATUS + " in ('"
                 + AttendanceStatus.ABSENT + "'), 1, 0)";
     }
 
