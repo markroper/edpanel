@@ -60,6 +60,8 @@ public interface MeasureSqlSerializer {
     }
     
     public String toJoinClause(Dimension dimToJoinUpon);
+
+    public String toFromClause();
     
     public String toTableName();
     

@@ -19,10 +19,18 @@ public class AssignmentGradeSqlSerializer implements MeasureSqlSerializer {
         return LEFT_OUTER_JOIN + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + ON +
                 dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) + 
                 EQUALS + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + dimTableName + FK_COL_SUFFIX +
-                " " +
-                LEFT_OUTER_JOIN + HibernateConsts.ASSIGNMENT_TABLE + ON +
+                " " + joinStudentAssignmentFragment();
+    }
+
+    private String joinStudentAssignmentFragment() {
+        return LEFT_OUTER_JOIN + HibernateConsts.ASSIGNMENT_TABLE + ON +
                 HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + FK_COL_SUFFIX +
                 EQUALS + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + ID_COL_SUFFIX + " ";
+    }
+
+    @Override
+    public String toFromClause() {
+        return HibernateConsts.STUDENT_ASSIGNMENT_TABLE + " " + joinStudentAssignmentFragment();
     }
 
     @Override

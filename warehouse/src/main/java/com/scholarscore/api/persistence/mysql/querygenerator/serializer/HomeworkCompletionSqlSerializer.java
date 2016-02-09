@@ -54,6 +54,14 @@ public class HomeworkCompletionSqlSerializer implements MeasureSqlSerializer {
     }
 
     @Override
+    public String toFromClause() {
+        return HibernateConsts.STUDENT_ASSIGNMENT_TABLE + " " +
+                LEFT_OUTER_JOIN + HibernateConsts.ASSIGNMENT_TABLE + ON +
+                HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + FK_COL_SUFFIX +
+                EQUALS + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + ID_COL_SUFFIX + " ";
+    }
+
+    @Override
     public String toTableName() {
         return HibernateConsts.ASSIGNMENT_TABLE;
     }

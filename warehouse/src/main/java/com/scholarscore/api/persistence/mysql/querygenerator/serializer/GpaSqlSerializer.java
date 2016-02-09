@@ -24,6 +24,11 @@ public class GpaSqlSerializer implements MeasureSqlSerializer {
     }
 
     @Override
+    public String toFromClause() {
+        return HibernateConsts.GPA_TABLE;
+    }
+
+    @Override
     public String toTableName() {
         return HibernateConsts.GPA_TABLE;
     }

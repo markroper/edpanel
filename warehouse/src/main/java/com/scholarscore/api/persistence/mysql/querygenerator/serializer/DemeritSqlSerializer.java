@@ -27,6 +27,11 @@ public class DemeritSqlSerializer implements MeasureSqlSerializer {
     }
 
     @Override
+    public String toFromClause() {
+        return HibernateConsts.BEHAVIOR_TABLE;
+    }
+
+    @Override
     public String toTableName() {
         return HibernateConsts.BEHAVIOR_TABLE;
     }

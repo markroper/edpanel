@@ -172,7 +172,12 @@ public abstract class QuerySqlGenerator {
             }
         } else if (null != q.getAggregateMeasures() && q.getAggregateMeasures().size() > 0) {
             //There are no dimensions, query off the measure table directly.
-            sqlBuilder.append(DbMappings.MEASURE_TO_TABLE_NAME.get(q.getAggregateMeasures().get(0)) + " ");
+            MeasureSqlSerializer mss = null;
+            if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
+                AggregateMeasure am = q.getAggregateMeasures().get(0);
+                mss = MeasureSqlSerializerFactory.get(am.getMeasure());
+                sqlBuilder.append(mss.toFromClause() + " ");
+            }
         } else {
             throw new SqlGenerationException("No tables were resolved to query in the FROM clause");
         }

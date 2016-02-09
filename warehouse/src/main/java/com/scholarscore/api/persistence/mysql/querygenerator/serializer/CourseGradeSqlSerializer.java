@@ -21,6 +21,11 @@ public class CourseGradeSqlSerializer implements MeasureSqlSerializer {
     }
 
     @Override
+    public String toFromClause() {
+        return HibernateConsts.STUDENT_SECTION_GRADE_TABLE;
+    }
+
+    @Override
     public String toTableName() {
         return HibernateConsts.STUDENT_SECTION_GRADE_TABLE;
     }

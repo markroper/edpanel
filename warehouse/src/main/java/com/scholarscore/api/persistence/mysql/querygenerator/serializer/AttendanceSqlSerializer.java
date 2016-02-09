@@ -35,6 +35,11 @@ public class AttendanceSqlSerializer implements MeasureSqlSerializer {
     }
 
     @Override
+    public String toFromClause() {
+        return HibernateConsts.ATTENDANCE_TABLE;
+    }
+
+    @Override
     public String toTableName() {
         return HibernateConsts.ATTENDANCE_TABLE;
     }

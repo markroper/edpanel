@@ -14,4 +14,9 @@ public class DailyTardySqlSerializer extends AttendanceSqlSerializer {
                 + AttendanceStatus.TARDY + "') AND "
                 + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.ATTENDANCE_TYPE + " = '" + AttendanceTypes.DAILY + "', 1, 0)";
     }
+
+    @Override
+    public String toFromClause() {
+        return HibernateConsts.ATTENDANCE_TABLE;
+    }
 }
