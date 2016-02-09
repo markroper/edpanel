@@ -33,7 +33,7 @@ import java.util.Objects;
         @JsonSubTypes.Type(value = DateBucket.class, name = DateBucket.BUCKET_TYPE),
         @JsonSubTypes.Type(value = NumericBucket.class, name = NumericBucket.BUCKET_TYPE)
 })
-public abstract class AggregationBucket<T> implements Serializable {
+public abstract class AggregationBucket<T extends Comparable> implements Serializable {
     //Start value for the bucket inclusive
     private T start;
     //End value for the bucket, exclusive

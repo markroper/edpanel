@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @SuppressWarnings("serial")
-public class DimensionField implements Serializable {
+public class DimensionField extends QueryField implements Serializable {
     Dimension dimension;
     String field;
     
@@ -41,6 +41,9 @@ public class DimensionField implements Serializable {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
+        if (!super.equals(obj)) {
+            return false;
+        }
         final DimensionField other = (DimensionField) obj;
         return Objects.equals(this.dimension, other.dimension) 
                 && Objects.equals(this.field, other.field);
@@ -48,6 +51,6 @@ public class DimensionField implements Serializable {
     
     @Override
     public int hashCode() {
-        return 31 * Objects.hash(dimension, field);
+        return 31 * super.hashCode() +  Objects.hash(dimension, field);
     }
 }

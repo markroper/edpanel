@@ -5,6 +5,9 @@ import com.scholarscore.api.persistence.mysql.querygenerator.SqlGenerationExcept
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.MeasureField;
+import com.scholarscore.models.query.bucket.AggregationBucket;
+
+import java.util.List;
 
 public interface MeasureSqlSerializer {
     public static final String LEFT_OUTER_JOIN = "LEFT OUTER JOIN ";
@@ -13,8 +16,46 @@ public interface MeasureSqlSerializer {
     public static final String ON = " ON ";
     public static final String DOT = ".";
     public static final String EQUALS = " = ";
-    
-    public String toSelectClause(AggregateFunction agg);
+
+    public String toSelectInner();
+
+    default String toSelectBucketPsuedoColumn(List<AggregationBucket> buckets) throws SqlGenerationException {
+        StringBuilder b = new StringBuilder();
+        b.append("CASE \n");
+        String fieldInner = toSelectInner();
+        for(AggregationBucket bucket: buckets) {
+            if(null != bucket.getStart() && null != bucket.getEnd()) {
+                if(bucket.getStart().compareTo(bucket.getEnd()) == 1) {
+                    throw new SqlGenerationException("Bucket start is greater than end, which is invalid");
+                }
+                b.append("WHEN ");
+                boolean isFirst = true;
+                if(null != bucket.getStart()) {
+                    b.append(fieldInner);
+                    b.append(" >= ");
+                    b.append(bucket.getStart());
+                    isFirst = false;
+                }
+                if(null != bucket.getEnd()) {
+                    if(!isFirst) {
+                        b.append(" AND ");
+                    }
+                    b.append(fieldInner);
+                    b.append(" < ");
+                    b.append(bucket.getEnd());
+                }
+                b.append(" THEN ");
+                b.append(bucket.getLabel());
+                b.append("\n");
+            }
+        }
+        b.append("ELSE NULL \nEND");
+        return b.toString();
+    }
+
+    default String toSelectClause(AggregateFunction agg) {
+        return agg.name() + "(" + toSelectInner() + ")";
+    }
     
     public String toJoinClause(Dimension dimToJoinUpon);
     

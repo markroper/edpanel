@@ -3,17 +3,15 @@ package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
 import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.models.HibernateConsts;
-import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.Measure;
 
 public class DemeritSqlSerializer implements MeasureSqlSerializer {
 
     @Override
-    public String toSelectClause(AggregateFunction agg) {
-        return agg.name() + 
-                "(if(" + HibernateConsts.BEHAVIOR_TABLE + DOT + HibernateConsts.BEHAVIOR_CATEGORY + " = '" + Measure.DEMERIT.name() + 
-                "', 1, 0))";
+    public String toSelectInner() {
+        return "if(" + HibernateConsts.BEHAVIOR_TABLE + DOT + HibernateConsts.BEHAVIOR_CATEGORY + " = '" + Measure.DEMERIT.name() +
+        "', 1, 0)";
     }
 
     @Override

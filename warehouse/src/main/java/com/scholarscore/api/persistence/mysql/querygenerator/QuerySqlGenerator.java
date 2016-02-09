@@ -53,6 +53,7 @@ public abstract class QuerySqlGenerator {
     private static final String NOT_EQUAL = "NOT_EQUAL";
     private static final String ID_SUFFIX = "_id";
     private static final String FK_SUFFIX = "_fk";
+    private static final String DELIM = ", ";
     
     public static SqlWithParameters generate(Query q) throws SqlGenerationException {
         Map<String, Object> params = new HashMap<>();
@@ -70,17 +71,28 @@ public abstract class QuerySqlGenerator {
         sqlBuilder.append(SELECT);
         boolean isFirst = true;
         for(DimensionField f: q.getFields()) {
-            String delimeter = ", ";
             if(isFirst) {
-                delimeter = "";
+                sqlBuilder.append(generateDimensionFieldSql(f));
                 isFirst = false;
+            } else {
+                sqlBuilder.append(DELIM + generateDimensionFieldSql(f));
             }
-            sqlBuilder.append(delimeter + generateDimensionFieldSql(f)); 
         }
         if (q.getAggregateMeasures() != null) {
             for (AggregateMeasure am : q.getAggregateMeasures()) {
                 MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
                 sqlBuilder.append(", " + mss.toSelectClause(am.getAggregation()));
+                //If there are buckets involved in the aggregate query, inject the bucket psuedo column
+                if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
+                    if(!isFirst) {
+                        sqlBuilder.append(DELIM);
+                    } else {
+                        isFirst = false;
+                    }
+                    sqlBuilder.append(mss.toSelectBucketPsuedoColumn(am.getBuckets()));
+                    sqlBuilder.append(" as ");
+                    sqlBuilder.append(generateBucketPsuedoColumnName(am));
+                }
             }
         }
         sqlBuilder.append(" ");
@@ -241,15 +253,32 @@ public abstract class QuerySqlGenerator {
         sqlBuilder.append(GROUP_BY);
         boolean isFirst = true;
         for(DimensionField f: q.getFields()) {
-            String delimeter = ", ";
             if(isFirst) {
-                delimeter = "";
+                sqlBuilder.append(generateDimensionFieldSql(f));
                 isFirst = false;
+            } else {
+                sqlBuilder.append(DELIM + generateDimensionFieldSql(f));
             }
-            sqlBuilder.append(delimeter + generateDimensionFieldSql(f)); 
+        }
+        //If there are buckets involved in the aggregate query, inject the bucket psuedo column
+        if(null != q.getAggregateMeasures()) {
+            for (AggregateMeasure m : q.getAggregateMeasures()) {
+                if(null != m.getMeasure() && !m.getBuckets().isEmpty()) {
+                    String bucketFieldName = generateBucketPsuedoColumnName(m);
+                    if (isFirst) {
+                        sqlBuilder.append(bucketFieldName);
+                        isFirst = false;
+                    } else {
+                        sqlBuilder.append(DELIM + bucketFieldName);
+                    }
+                }
+            }
         }
     }
-    
+
+    public static String generateBucketPsuedoColumnName(AggregateMeasure m) {
+        return m.getAggregation().name().toLowerCase() + "_" + m.getMeasure().name().toLowerCase() + "_group";
+    }
     protected static String generateDimensionFieldSql(DimensionField f) throws SqlGenerationException {
         String tableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(f.getDimension());
         String columnName = DbMappings.DIMENSION_TO_COL_NAME.get(f);

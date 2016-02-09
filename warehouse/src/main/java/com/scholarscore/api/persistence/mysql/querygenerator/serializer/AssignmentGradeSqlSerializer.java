@@ -3,19 +3,14 @@ package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
 import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.models.HibernateConsts;
-import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.Dimension;
 
 public class AssignmentGradeSqlSerializer implements MeasureSqlSerializer {
-
-    @Override
-    public String toSelectClause(AggregateFunction agg) {
-        return agg.name() + 
-                "(" + 
-                HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.STUDENT_ASSIGNMENT_AWARDED_POINTS + 
-                " / " + 
-                HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_AVAILABLE_POINTS +
-                ")";
+    public String toSelectInner() {
+        return
+            HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.STUDENT_ASSIGNMENT_AWARDED_POINTS +
+            " / " +
+            HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_AVAILABLE_POINTS;
     }
 
     @Override
