@@ -70,6 +70,10 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         this.calculatedValue = goal.calculatedValue;
         this.approved = goal.approved;
         this.setGoalType(goal.goalType);
+        this.goalProgress = goal.goalProgress;
+        this.autocomplete = goal.autocomplete;
+        this.plan = goal.plan;
+        this.teacherFollowup = goal.teacherFollowup;
     }
 
     @Id
@@ -229,6 +233,18 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         if (null == staff) {
             this.staff = mergeFrom.staff;
         }
+        if (null == goalProgress) {
+            this.goalProgress = mergeFrom.goalProgress;
+        }
+        if (null == autocomplete) {
+            this.autocomplete = mergeFrom.autocomplete;
+        }
+        if (null == plan) {
+            this.plan = mergeFrom.plan;
+        }
+        if (null == teacherFollowup) {
+            this.teacherFollowup = mergeFrom.teacherFollowup;
+        }
     }
 
     @Override
@@ -242,12 +258,16 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
                 Objects.equals(desiredValue, goal.desiredValue) &&
                 Objects.equals(calculatedValue, goal.calculatedValue) &&
                 Objects.equals(approved, goal.approved) &&
-                Objects.equals(goalType, goal.goalType);
+                Objects.equals(goalType, goal.goalType) &&
+                Objects.equals(goalProgress, goal.goalProgress) &&
+                Objects.equals(autocomplete, goal.autocomplete) &&
+                Objects.equals(plan, goal.plan) &&
+                Objects.equals(teacherFollowup, goal.teacherFollowup);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), student, staff, desiredValue, calculatedValue, approved, goalType);
+        return Objects.hash(super.hashCode(), student, staff, desiredValue, calculatedValue, approved, goalType, goalProgress, autocomplete, plan, teacherFollowup);
     }
 
     @Override
@@ -261,7 +281,11 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
                         + "Approved: " + getApproved() + "\n"
                         + "GoalType: " + getGoalType() + "\n"
                         + "Student: " + getStudent() + "\n"
-                        + "Staff: " + getStaff() + "\n";
+                        + "Staff: " + getStaff() + "\n"
+                        + "GoalProgress: " + getGoalProgress() + "\n"
+                        + "Autocomplete: " + getAutocomplete() + "\n"
+                        + "Plan: " + getPlan() + "\n"
+                        + "TeacherFollowup: " + getTeacherFollowup() + "\n";
     }
 
     /**
