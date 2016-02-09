@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The query generator provides a single public method generate(Query q), which returns an object 
@@ -70,25 +71,27 @@ public abstract class QuerySqlGenerator {
             throws SqlGenerationException {
         sqlBuilder.append(SELECT);
         boolean isFirst = true;
-        for(DimensionField f: q.getFields()) {
-            if(isFirst) {
-                sqlBuilder.append(generateDimensionFieldSql(f));
-                isFirst = false;
-            } else {
-                sqlBuilder.append(DELIM + generateDimensionFieldSql(f));
+        if(null != q.getFields()) {
+            for (DimensionField f : q.getFields()) {
+                if (isFirst) {
+                    sqlBuilder.append(generateDimensionFieldSql(f));
+                    isFirst = false;
+                } else {
+                    sqlBuilder.append(DELIM + generateDimensionFieldSql(f));
+                }
             }
         }
         if (q.getAggregateMeasures() != null) {
             for (AggregateMeasure am : q.getAggregateMeasures()) {
                 MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
-                sqlBuilder.append(", " + mss.toSelectClause(am.getAggregation()));
+                if(!isFirst) {
+                    sqlBuilder.append(DELIM);
+                    isFirst = false;
+                }
+                sqlBuilder.append(mss.toSelectClause(am.getAggregation()));
                 //If there are buckets involved in the aggregate query, inject the bucket psuedo column
                 if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
-                    if(!isFirst) {
-                        sqlBuilder.append(DELIM);
-                    } else {
-                        isFirst = false;
-                    }
+                    sqlBuilder.append(DELIM);
                     sqlBuilder.append(mss.toSelectBucketPsuedoColumn(am.getBuckets()));
                     sqlBuilder.append(" as ");
                     sqlBuilder.append(generateBucketPsuedoColumnName(am));
@@ -103,69 +106,78 @@ public abstract class QuerySqlGenerator {
         
         //Get the dimensions in the correct order for joining:
         HashSet<Dimension> selectedDims = new HashSet<Dimension>();
-        for(DimensionField f: q.getFields()) {
-            selectedDims.add(f.getDimension());
+        if(null != q.getFields()) {
+            for (DimensionField f : q.getFields()) {
+                selectedDims.add(f.getDimension());
+            }
         }
         //Add any dimensions to join that may be referenced only in the WHERE clause
-        selectedDims.addAll(q.resolveFilterDimensions());
+        Set<Dimension> filterDims = q.resolveFilterDimensions();
+        if(null != filterDims) {
+            selectedDims.addAll(filterDims);
+        }
         List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
-        if(null == orderedTables || orderedTables.isEmpty()) {
+        //Use the first dimension in the sorted columns as the FROM table
+        if(null != orderedTables && !orderedTables.isEmpty()) {
+            //Use the first dimension in the sorted columns as the FROM table
+            Dimension currTable = orderedTables.get(0);
+            sqlBuilder.append(DbMappings.DIMENSION_TO_TABLE_NAME.get(currTable) + " ");
+            //Join in the measures table on the FROM table (if there is a measure)
+            AggregateMeasure am = null;
+            MeasureSqlSerializer mss = null;
+            if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
+                am = q.getAggregateMeasures().get(0);
+                mss = MeasureSqlSerializerFactory.get(am.getMeasure());
+                sqlBuilder.append(mss.toJoinClause(currTable));
+            }
+            //Join in the remaining dimensions tables, if any
+            if(orderedTables.size() > 1) {
+                for(int i = 1; i < orderedTables.size(); i++) {
+                    Dimension joinDim = orderedTables.get(i);
+                    String currentTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(currTable);
+                    //If the next dimension is not compatible with the previous table for joining, that is, there is no
+                    //PK/FK relationship between the two, try to join on the measure table directly. If the measure is
+                    //not compatible with the dimension for joining, try joining on the previous dimension in the hierarchy.
+                    //If that doesn't match, check the dimension before that.
+                    if (Dimension.buildDimension(currTable).getParentDimensions() != null &&
+                            !Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
+                        if(am != null && am.getMeasure() != null && mss != null &&
+                                Measure.buildMeasure(am.getMeasure()).getCompatibleDimensions().contains(joinDim)){
+                            currentTableName = mss.toTableName();
+                        } else {
+                            Dimension dimDesc = currTable;
+                            //Start with the previous dimension since we're already dealing with i and i-1...
+                            int descIndex = i - 2;
+                            while(descIndex >= 0 && !Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
+                                dimDesc = orderedTables.get(descIndex);
+                                descIndex--;
+                            }
+                            if(Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
+                                currentTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimDesc);
+                            } else {
+                                throw new SqlGenerationException(
+                                        "Cannot join dimension to either previous dimension or measure: " + joinDim);
+                            }
+                        }
+                    }
+                    String joinTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(joinDim);
+                    if(null == currentTableName || null == joinTableName) {
+                        throw new SqlGenerationException("Unable to generate JOIN clause due to null table name");
+                    }
+                    sqlBuilder.append(LEFT_OUTER_JOIN + joinTableName + " " + ON + " ");
+                    sqlBuilder.append(joinTableName + "." + resolvePrimaryKeyField(joinTableName) + " = ");
+                    sqlBuilder.append(currentTableName + "." + joinTableName + FK_SUFFIX + " ");
+                    currTable = joinDim;
+                }
+            }
+        } else if (null != q.getAggregateMeasures() && q.getAggregateMeasures().size() > 0) {
+            //There are no dimensions, query off the measure table directly.
+            sqlBuilder.append(DbMappings.MEASURE_TO_TABLE_NAME.get(q.getAggregateMeasures().get(0)) + " ");
+        } else {
             throw new SqlGenerationException("No tables were resolved to query in the FROM clause");
         }
         
-        //Use the first dimension in the sorted columns as the FROM table
-        Dimension currTable = orderedTables.get(0);
-        sqlBuilder.append(DbMappings.DIMENSION_TO_TABLE_NAME.get(currTable) + " ");
-        
-        //Join in the measures table on the FROM table (if there is a measure)
-        AggregateMeasure am = null;
-        MeasureSqlSerializer mss = null;
-        if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
-            am = q.getAggregateMeasures().get(0);
-            mss = MeasureSqlSerializerFactory.get(am.getMeasure());
-            sqlBuilder.append(mss.toJoinClause(currTable));
-        }
-        
-        //Join in the remaining dimensions tables, if any
-        if(orderedTables.size() > 1) {
-            for(int i = 1; i < orderedTables.size(); i++) {
-                Dimension joinDim = orderedTables.get(i);
-                String currentTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(currTable);
-                //If the next dimension is not compatible with the previous table for joining, that is, there is no 
-                //PK/FK relationship between the two, try to join on the measure table directly. If the measure is 
-                //not compatible with the dimension for joining, try joining on the previous dimension in the hierarchy.
-                //If that doesn't match, check the dimension before that.
-                if (Dimension.buildDimension(currTable).getParentDimensions() != null &&
-                !Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
-                    if(am != null && am.getMeasure() != null && mss != null &&
-                            Measure.buildMeasure(am.getMeasure()).getCompatibleDimensions().contains(joinDim)){
-                        currentTableName = mss.toTableName();
-                    } else {
-                        Dimension dimDesc = currTable;
-                        //Start with the previous dimension since we're already dealing with i and i-1...
-                        int descIndex = i - 2;
-                        while(descIndex >= 0 && !Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
-                            dimDesc = orderedTables.get(descIndex); 
-                            descIndex--;
-                        }
-                        if(Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
-                            currentTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimDesc);
-                        } else {
-                            throw new SqlGenerationException(
-                                    "Cannot join dimension to either previous dimension or measure: " + joinDim);
-                        }
-                    }
-                }
-                String joinTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(joinDim);
-                if(null == currentTableName || null == joinTableName) {
-                    throw new SqlGenerationException("Unable to generate JOIN clause due to null table name");
-                }
-                sqlBuilder.append(LEFT_OUTER_JOIN + joinTableName + " " + ON + " ");
-                sqlBuilder.append(joinTableName + "." + resolvePrimaryKeyField(joinTableName) + " = ");
-                sqlBuilder.append(currentTableName + "." + joinTableName + FK_SUFFIX + " ");
-                currTable = joinDim;
-            }
-        }
+
     }
     
     /**
@@ -188,6 +200,9 @@ public abstract class QuerySqlGenerator {
     
     protected static void populateWhereClause(StringBuilder sqlBuilder, Map<String, Object> params, Query q) 
             throws SqlGenerationException {
+        if(null == q.getFilter()) {
+            return;
+        }
         sqlBuilder.append(WHERE);
         expressionToSql(q.getFilter(), params, sqlBuilder);
     }
@@ -252,12 +267,14 @@ public abstract class QuerySqlGenerator {
     protected static void populateGroupByClause(StringBuilder sqlBuilder, Query q) throws SqlGenerationException {
         sqlBuilder.append(GROUP_BY);
         boolean isFirst = true;
-        for(DimensionField f: q.getFields()) {
-            if(isFirst) {
-                sqlBuilder.append(generateDimensionFieldSql(f));
-                isFirst = false;
-            } else {
-                sqlBuilder.append(DELIM + generateDimensionFieldSql(f));
+        if(null != q.getFields()) {
+            for (DimensionField f : q.getFields()) {
+                if (isFirst) {
+                    sqlBuilder.append(generateDimensionFieldSql(f));
+                    isFirst = false;
+                } else {
+                    sqlBuilder.append(DELIM + generateDimensionFieldSql(f));
+                }
             }
         }
         //If there are buckets involved in the aggregate query, inject the bucket psuedo column

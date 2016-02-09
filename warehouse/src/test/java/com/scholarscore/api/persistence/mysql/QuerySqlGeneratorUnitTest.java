@@ -265,7 +265,12 @@ public class QuerySqlGeneratorUnitTest {
         gpaMeasure.setBuckets(buckets);
         gpaMeasures.add(gpaMeasure);
 
-        String gpaSqlStatement = "";
+        String gpaSqlStatement = "SELECT COUNT(gpa.gpa_score), CASE \n" +
+                "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
+                "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
+                "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '3-3'\n" +
+                "ELSE NULL \n" +
+                "END as count_gpa_group FROM null GROUP BY count_gpa_group";
         return new Object[][] {
                 { "Course Grade query", courseGradeQuery, courseGradeQuerySql },
                 { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql },
