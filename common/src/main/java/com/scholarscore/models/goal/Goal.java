@@ -23,6 +23,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -49,6 +50,13 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     private Double calculatedValue;
     private Boolean approved;
     private GoalType goalType;
+    private LocalDate startDate;
+    private LocalDate endDate;
+
+    private GoalProgress goalProgress;
+    private Boolean autocomplete;
+    private String plan;
+    private Boolean teacherFollowup;
 
     public Goal() {
         super();
@@ -71,11 +79,70 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         return super.getId();
     }
 
+    @Column(name = HibernateConsts.GOAL_PROGRESS, insertable = false, updatable = false)
+    @Enumerated(EnumType.STRING)
+    public GoalProgress getGoalProgress() {
+        return goalProgress;
+    }
+
+    public void setGoalProgress(GoalProgress goalProgress) {
+        this.goalProgress = goalProgress;
+    }
+
+    @Column(name = HibernateConsts.GOAL_AUTOCOMPLETE)
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    public Boolean getAutocomplete() {
+        return autocomplete;
+    }
+
+    public void setAutocomplete(Boolean autocomplete) {
+        this.autocomplete = autocomplete;
+    }
+
+    @Column(name = HibernateConsts.GOAL_START_DATE)
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    @Column(name = HibernateConsts.GOAL_END_DATE)
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    @Column(name = HibernateConsts.GOAL_PLAN, columnDefinition = "blob")
+    public String getPlan() {
+        return plan;
+    }
+
+    public void setPlan(String plan) {
+        this.plan = plan;
+    }
+
+    @Column(name = HibernateConsts.GOAL_FOLLOWUP)
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    public Boolean getTeacherFollowup() {
+        return teacherFollowup;
+    }
+
+    public void setTeacherFollowup(Boolean teacherFollowup) {
+        this.teacherFollowup = teacherFollowup;
+    }
+
     @Override
     @Column(name = HibernateConsts.GOAL_NAME)
     public String getName() {
         return super.getName();
     }
+
+
 
 
     @Column(name = HibernateConsts.GOAL_APPROVED)
