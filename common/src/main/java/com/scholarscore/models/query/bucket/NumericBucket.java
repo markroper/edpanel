@@ -5,4 +5,12 @@ package com.scholarscore.models.query.bucket;
  */
 public class NumericBucket extends AggregationBucket<Double> {
     public static final String BUCKET_TYPE = "NUMERIC";
+
+    public NumericBucket() {
+        super();
+    }
+
+    public NumericBucket(Double start, Double end, String label) {
+        super(start, end, label);
+    }
 }

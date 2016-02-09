@@ -10,11 +10,17 @@ import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
 import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.Query;
+import com.scholarscore.models.query.bucket.AggregationBucket;
+import com.scholarscore.models.query.bucket.NumericBucket;
 import com.scholarscore.models.query.dimension.SchoolDimension;
 import com.scholarscore.models.query.dimension.SectionDimension;
 import com.scholarscore.models.query.dimension.StudentDimension;
 import com.scholarscore.models.query.expressions.Expression;
-import com.scholarscore.models.query.expressions.operands.*;
+import com.scholarscore.models.query.expressions.operands.DateOperand;
+import com.scholarscore.models.query.expressions.operands.DimensionOperand;
+import com.scholarscore.models.query.expressions.operands.ListNumericOperand;
+import com.scholarscore.models.query.expressions.operands.MeasureOperand;
+import com.scholarscore.models.query.expressions.operands.NumericOperand;
 import com.scholarscore.models.query.expressions.operators.BinaryOperator;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
@@ -245,17 +251,32 @@ public class QuerySqlGeneratorUnitTest {
                 schoolId);
         schoolNameQuery.setFilter(schoolNameClause);
         String schoolNameSql = "SELECT school.school_name FROM school WHERE  ( school.school_id  =  1 ) GROUP BY school.school_name";
-        
+
+
+        Query gpaBucketQuery = new Query();
+        ArrayList<AggregateMeasure> gpaMeasures = new ArrayList<>();
+        gpaBucketQuery.setAggregateMeasures(gpaMeasures);
+        AggregateMeasure gpaMeasure = new AggregateMeasure(Measure.GPA, AggregateFunction.COUNT);
+        List<AggregationBucket> buckets = new ArrayList<>();
+        buckets.add(new NumericBucket(0D, 1D, "0-1"));
+        buckets.add(new NumericBucket(1D, 2D, "1-2"));
+        buckets.add(new NumericBucket(2D, 3D, "3-3"));
+        buckets.add(new NumericBucket(4D, null, "4+"));
+        gpaMeasure.setBuckets(buckets);
+        gpaMeasures.add(gpaMeasure);
+
+        String gpaSqlStatement = "";
         return new Object[][] {
-                { "Course Grade query", courseGradeQuery, courseGradeQuerySql }, 
-                { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql }, 
+                { "Course Grade query", courseGradeQuery, courseGradeQuerySql },
+                { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql },
                 { "Homework query", homeworkCompletionQuery, homeworkSql },
                 { "Behavior query", behaviorQuery, behaviorSql},
-                {"Attendance query", attendanceQuery, attendanceSql },
-                {"Homework by Section query", homeworkSectionCompletionQuery, homeworkSectionSql},
-                {"Absence by Section query", sectionAbsenceQuery, sectionAbsenceSql},
-                {"Tardy be Section query", sectionTardyQuery, sectionTardySql},
-                {"School name query", schoolNameQuery, schoolNameSql}
+                { "Attendance query", attendanceQuery, attendanceSql },
+                { "Homework by Section query", homeworkSectionCompletionQuery, homeworkSectionSql },
+                { "Absence by Section query", sectionAbsenceQuery, sectionAbsenceSql },
+                { "Tardy be Section query", sectionTardyQuery, sectionTardySql },
+                { "School name query", schoolNameQuery, schoolNameSql },
+                { "GPA with buckets", gpaBucketQuery, gpaSqlStatement }
         };
     }
     

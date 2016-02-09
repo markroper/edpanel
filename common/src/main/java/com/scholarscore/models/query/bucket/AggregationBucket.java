@@ -41,6 +41,15 @@ public abstract class AggregationBucket<T extends Comparable> implements Seriali
     @Max(32)
     private String label;
 
+    public AggregationBucket() {
+
+    }
+
+    public AggregationBucket(T start, T end, String label) {
+        this.start = start;
+        this.end = end;
+        this.label = label;
+    }
     public T getStart() {
         return start;
     }

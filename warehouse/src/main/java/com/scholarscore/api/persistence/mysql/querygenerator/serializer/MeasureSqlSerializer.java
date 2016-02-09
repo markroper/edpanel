@@ -45,8 +45,9 @@ public interface MeasureSqlSerializer {
                     b.append(" < ");
                     b.append(bucket.getEnd());
                 }
-                b.append(" THEN ");
+                b.append(" THEN '");
                 b.append(bucket.getLabel());
+                b.append("'");
                 b.append("\n");
             }
         }

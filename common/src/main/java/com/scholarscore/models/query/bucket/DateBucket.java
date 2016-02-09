@@ -7,4 +7,11 @@ import java.time.LocalDate;
  */
 public class DateBucket extends AggregationBucket<LocalDate> {
     public static final String BUCKET_TYPE = "DATE";
+    public DateBucket() {
+        super();
+    }
+
+    public DateBucket(LocalDate start, LocalDate end, String label) {
+        super(start, end, label);
+    }
 }
