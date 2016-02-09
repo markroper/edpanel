@@ -150,7 +150,6 @@
 
     <bean id="assignmentCalc"
           class="com.scholarscore.api.persistence.goalCalculators.AssignmentGoalCalc">
-        <property name="studentAssignmentPersistence" ref="studentAssignmentPersistence"/>
     </bean>
 
     <bean id="cumulativeGradeCalc"

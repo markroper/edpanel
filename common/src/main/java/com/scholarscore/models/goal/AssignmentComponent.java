@@ -1,4 +1,6 @@
 package com.scholarscore.models.goal;
+import com.scholarscore.models.assignment.StudentAssignment;
+
 import java.util.Objects;
 
 /**
@@ -7,19 +9,20 @@ import java.util.Objects;
  */
 public class AssignmentComponent extends GoalComponent implements CalculatableAssignment {
 
-    private Long parentId;
+    private StudentAssignment studentAssignment;
 
     public AssignmentComponent() {
         setComponentType(GoalType.ASSIGNMENT);
     }
 
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
+    @Override
+    public StudentAssignment getStudentAssignment() {
+        return studentAssignment;
     }
 
-    public Long getParentId() {
-        return parentId;
+    @Override
+    public void setStudentAssignment(StudentAssignment studentAssignment) {
+        this.studentAssignment = studentAssignment;
     }
 
     @Override
@@ -28,19 +31,19 @@ public class AssignmentComponent extends GoalComponent implements CalculatableAs
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         AssignmentComponent that = (AssignmentComponent) o;
-        return  Objects.equals(parentId, that.parentId);
+        return  Objects.equals(studentAssignment, that.studentAssignment);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), parentId);
+        return Objects.hash(super.hashCode(), studentAssignment);
     }
 
     @Override
     public String toString() {
         return
                 "GOAL " + "\n"
-                        + "ParentId: " + getParentId() +"\n"
+                        + "StudentAssignment: " + getStudentAssignment() +"\n"
                         + "ComponentType:" + getComponentType() + "\n"
                         + "Student: " + getStudent() + "\n"
                         + "Modifier: " + getModifier();

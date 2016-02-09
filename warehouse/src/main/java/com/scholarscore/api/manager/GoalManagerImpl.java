@@ -54,12 +54,17 @@ public class GoalManagerImpl implements GoalManager {
         }
         if (goal.getGoalType() == GoalType.ASSIGNMENT) {
             AssignmentGoal assignmentGoal = (AssignmentGoal)goal;
-            // The first parameter is not used.
-            StudentAssignment assignment = studentAssignmentPersistence.select(1L,assignmentGoal.getParentId());
-            if(null == assignment) {
-                return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
-                        new Object[]{STUDENT_ASSIGNMENT, assignmentGoal.getParentId()}));
+            // If we have a null goal we don't need to check if it exists because we can create an assignment goal
+            //If a teacher hasn't created the assignment yet
+            //However, if they specify an assignment it better exist
+            if (null != assignmentGoal.getStudentAssignment()) {
+                StudentAssignment assignment = studentAssignmentPersistence.select(1L,assignmentGoal.getStudentAssignment().getId());
+                if(null == assignment) {
+                    return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
+                            new Object[]{STUDENT_ASSIGNMENT, assignmentGoal.getStudentAssignment()}));
+                }
             }
+
             //TODO I don't like this duplication of code from the JDBC to the managers
         } else if (goal.getGoalType() == GoalType.CUMULATIVE_GRADE){
             CumulativeGradeGoal cumulativeGradeGoal = (CumulativeGradeGoal)goal;
