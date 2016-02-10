@@ -82,5 +82,23 @@ public class MessageThreadParticipant {
         public void setParticipantId(Long participantId) {
             this.participantId = participantId;
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(threadId, participantId);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            final ParticipantPk other = (ParticipantPk) obj;
+            return Objects.equals(this.threadId, other.threadId)
+                    && Objects.equals(this.participantId, other.participantId);
+        }
     }
 }

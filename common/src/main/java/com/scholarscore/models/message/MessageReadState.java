@@ -96,5 +96,23 @@ public class MessageReadState {
         public void setParticipantId(Long participantId) {
             this.participantId = participantId;
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(messageId, participantId);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            final ReadStatePk other = (ReadStatePk) obj;    
+            return Objects.equals(this.messageId, other.messageId)
+                    && Objects.equals(this.participantId, other.participantId);
+        }
     }
 }
