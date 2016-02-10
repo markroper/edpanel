@@ -103,86 +103,8 @@ public abstract class QuerySqlGenerator {
                 }
             }
         }
-        boolean isFirst = true;
-        boolean isGroupByFirst = true;
-        //For every column, pluck the correct dimension or measure from the subquery
-        for(SubqueryColumnRef col: q.getSubqueryColumnsByPosition()) {
-            Integer pos = col.getPosition();
-            AggregateFunction function = col.getFunction();
-            if(-1 == pos) {
-                if(isFirst) {
-                    isFirst = false;
-                } else {
-                    sqlBuilder.append(DELIM);
-                }
-                sqlBuilder.append(function.name() + "(*)");
-            } else if(pos > numChildDimensions - 1) {
-                //Find the right agg measure
-                pos -= numChildDimensions;
-                if(pos < numAggregateMeasures) {
-                    if(isFirst) {
-                        isFirst = false;
-                    } else {
-                        sqlBuilder.append(DELIM);
-                    }
-                    int counter = 0;
-                    for(AggregateMeasure am: q.getAggregateMeasures()) {
-                        if(counter == pos) {
-                            if(null != function) {
-                                sqlBuilder.append(function.name() + ")");
-                            }
-                            sqlBuilder.append(tableAlias + DOT + generateAggColumnName(am));
-                            if(null != function) {
-                                sqlBuilder.append(function.name() + ")");
-                            } else {
-                                if(isGroupByFirst) {
-                                    isGroupByFirst = false;
-                                } else {
-                                    groupByBuilder.append(DELIM);
-                                }
-                                groupByBuilder.append(tableAlias + DOT + generateAggColumnName(am));
-                            }
-                        }
-                        counter++;
-                        if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
-                            if(counter == pos) {
-                                if(null != function) {
-                                    sqlBuilder.append(function.name() + "(");
-                                }
-                                sqlBuilder.append(tableAlias + DOT + generateBucketPsuedoColumnName(am));
-                                if(null != function) {
-                                    sqlBuilder.append(function.name() + ")");
-                                } else {
-                                    if(isGroupByFirst) {
-                                        isGroupByFirst = false;
-                                    } else {
-                                        groupByBuilder.append(DELIM);
-                                    }
-                                    groupByBuilder.append(tableAlias + DOT + generateBucketPsuedoColumnName(am));
-                                }
-                            }
-                            counter++;
-                        }
-                    }
-                }
-            } else {
-                //find the right dimension
-                if(isFirst) {
-                    isFirst = false;
-                } else {
-                    sqlBuilder.append(DELIM);
-                }
-                //look for the dimension
-                sqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
-                if(isGroupByFirst) {
-                    isGroupByFirst = false;
-                } else {
-                    groupByBuilder.append(DELIM);
-                }
-                groupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
-
-            }
-        }
+        //SELECT CLAUSE
+        toSqlSelectAgainstSubquery(sqlBuilder, groupByBuilder, q, tableAlias, numChildDimensions, numAggregateMeasures);
         //FROM CLAUSE
         sqlBuilder.append(" \nFROM (\n");
         sqlBuilder.append(child.getSql());
@@ -548,5 +470,89 @@ public abstract class QuerySqlGenerator {
                 throw new SqlGenerationException("Operator not supported: " + op.name());
         }
         return operator;
+    }
+    private static void toSqlSelectAgainstSubquery(StringBuilder sqlBuilder, StringBuilder groupByBuilder,
+                                                   Query q, String tableAlias, Integer numChildDimensions,
+                                                   Integer numAggregateMeasures) throws SqlGenerationException {
+        boolean isFirst = true;
+        boolean isGroupByFirst = true;
+        //For every column, pluck the correct dimension or measure from the subquery
+        for(SubqueryColumnRef col: q.getSubqueryColumnsByPosition()) {
+            Integer pos = col.getPosition();
+            AggregateFunction function = col.getFunction();
+            if(-1 == pos) {
+                if(isFirst) {
+                    isFirst = false;
+                } else {
+                    sqlBuilder.append(DELIM);
+                }
+                sqlBuilder.append(function.name() + "(*)");
+            } else if(pos > numChildDimensions - 1) {
+                //Find the right agg measure
+                pos -= numChildDimensions;
+                if(pos < numAggregateMeasures) {
+                    if(isFirst) {
+                        isFirst = false;
+                    } else {
+                        sqlBuilder.append(DELIM);
+                    }
+                    int counter = 0;
+                    for(AggregateMeasure am: q.getAggregateMeasures()) {
+                        if(counter == pos) {
+                            if(null != function) {
+                                sqlBuilder.append(function.name() + ")");
+                            }
+                            sqlBuilder.append(tableAlias + DOT + generateAggColumnName(am));
+                            if(null != function) {
+                                sqlBuilder.append(function.name() + ")");
+                            } else {
+                                if(isGroupByFirst) {
+                                    isGroupByFirst = false;
+                                } else {
+                                    groupByBuilder.append(DELIM);
+                                }
+                                groupByBuilder.append(tableAlias + DOT + generateAggColumnName(am));
+                            }
+                        }
+                        counter++;
+                        if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
+                            if(counter == pos) {
+                                if(null != function) {
+                                    sqlBuilder.append(function.name() + "(");
+                                }
+                                sqlBuilder.append(tableAlias + DOT + generateBucketPsuedoColumnName(am));
+                                if(null != function) {
+                                    sqlBuilder.append(function.name() + ")");
+                                } else {
+                                    if(isGroupByFirst) {
+                                        isGroupByFirst = false;
+                                    } else {
+                                        groupByBuilder.append(DELIM);
+                                    }
+                                    groupByBuilder.append(tableAlias + DOT + generateBucketPsuedoColumnName(am));
+                                }
+                            }
+                            counter++;
+                        }
+                    }
+                }
+            } else {
+                //find the right dimension
+                if(isFirst) {
+                    isFirst = false;
+                } else {
+                    sqlBuilder.append(DELIM);
+                }
+                //look for the dimension
+                sqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
+                if(isGroupByFirst) {
+                    isGroupByFirst = false;
+                } else {
+                    groupByBuilder.append(DELIM);
+                }
+                groupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
+
+            }
+        }
     }
 }
