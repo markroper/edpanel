@@ -5,6 +5,9 @@ import com.scholarscore.api.persistence.mysql.querygenerator.SqlGenerationExcept
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.MeasureField;
+import com.scholarscore.models.query.bucket.AggregationBucket;
+
+import java.util.List;
 
 public interface MeasureSqlSerializer {
     public static final String LEFT_OUTER_JOIN = "LEFT OUTER JOIN ";
@@ -13,15 +16,61 @@ public interface MeasureSqlSerializer {
     public static final String ON = " ON ";
     public static final String DOT = ".";
     public static final String EQUALS = " = ";
-    
-    public String toSelectClause(AggregateFunction agg);
+
+    public String toSelectInner();
+
+    @SuppressWarnings("unchecked")
+    default String toSelectBucketPsuedoColumn(List<AggregationBucket> buckets) throws SqlGenerationException {
+        StringBuilder b = new StringBuilder();
+        b.append("CASE \n");
+        String fieldInner = toSelectInner();
+        for(AggregationBucket bucket: buckets) {
+            if(null != bucket.getStart() || null != bucket.getEnd()) {
+                if(null != bucket.getStart() && null != bucket.getEnd() &&
+                        bucket.getStart().compareTo(bucket.getEnd()) == 1) {
+                    throw new SqlGenerationException("Bucket start is greater than end, which is invalid");
+                }
+                b.append("WHEN ");
+                boolean isFirst = true;
+                if(null != bucket.getStart()) {
+                    b.append(fieldInner);
+                    b.append(" >= ");
+                    b.append(bucket.getStart());
+                    isFirst = false;
+                }
+                if(null != bucket.getEnd()) {
+                    if(!isFirst) {
+                        b.append(" AND ");
+                    }
+                    b.append(fieldInner);
+                    b.append(" < ");
+                    b.append(bucket.getEnd());
+                }
+                b.append(" THEN '");
+                b.append(bucket.getLabel());
+                b.append("'");
+                b.append("\n");
+            }
+        }
+        b.append("ELSE NULL \nEND");
+        return b.toString();
+    }
+
+    default String toSelectClause(AggregateFunction agg) {
+        return agg.name() + "(" + toSelectInner() + ")";
+    }
     
     public String toJoinClause(Dimension dimToJoinUpon);
+
+    public String toFromClause();
     
     public String toTableName();
     
-    public default String generateMeasureFieldSql(MeasureField f) throws SqlGenerationException {
+    public default String generateMeasureFieldSql(MeasureField f, String tableAlias) throws SqlGenerationException {
         String tableName = DbMappings.MEASURE_TO_TABLE_NAME.get(f.getMeasure());
+        if(null != tableAlias) {
+            tableName = tableAlias;
+        }
         String columnName = DbMappings.MEASURE_FIELD_TO_COL_NAME.get(f);
         if(null == tableName || null == columnName) {
             throw new SqlGenerationException("Invalid dimension, tableName (" + 

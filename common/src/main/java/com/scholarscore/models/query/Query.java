@@ -91,6 +91,10 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     List<DimensionField> fields;
     // In SQL terms, this defines the WHERE clause of a query
     Expression filter;
+    //Support for a parent query to aggregate the nested subquery
+    List<SubqueryColumnRef> subqueryColumnsByPosition;
+    //AND'd together only
+    List<SubqueryExpression> subqueryFilter;
 
     public Query() {
         super();
@@ -101,8 +105,10 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         aggregateMeasures = q.getAggregateMeasures();
         fields = q.getFields();
         filter = q.getFilter();
+        subqueryColumnsByPosition = q.getSubqueryColumnsByPosition();
+        subqueryFilter = q.getSubqueryFilter();
     }
-    
+
     @Override
     public void mergePropertiesIfNull(Query mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
@@ -119,9 +125,31 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         if (null == this.fields) {
             this.fields = query.fields;
         }
+        if (null == this.subqueryColumnsByPosition) {
+            this.subqueryColumnsByPosition = query.subqueryColumnsByPosition;
+        }
+        if (null == this.subqueryFilter) {
+            this.subqueryFilter = query.subqueryFilter;
+        }
     }
 
     // Getters, setters, equals(), hashCode(), toString()
+    public List<SubqueryColumnRef> getSubqueryColumnsByPosition() {
+        return subqueryColumnsByPosition;
+    }
+
+    public void setSubqueryColumnsByPosition(List<SubqueryColumnRef> subqueryColumnsByPosition) {
+        this.subqueryColumnsByPosition = subqueryColumnsByPosition;
+    }
+
+    public List<SubqueryExpression> getSubqueryFilter() {
+        return subqueryFilter;
+    }
+
+    public void setSubqueryFilter(List<SubqueryExpression> subqueryFilter) {
+        this.subqueryFilter = subqueryFilter;
+    }
+
     public List<AggregateMeasure> getAggregateMeasures() {
         return aggregateMeasures;
     }
@@ -232,13 +260,15 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         final Query other = (Query) obj;
         return Objects.equals(this.aggregateMeasures, other.aggregateMeasures)
                 && Objects.equals(this.filter, other.filter)
-                && Objects.equals(this.fields, other.fields);
+                && Objects.equals(this.fields, other.fields)
+                && Objects.equals(this.subqueryColumnsByPosition, other.subqueryColumnsByPosition)
+                && Objects.equals(this.subqueryFilter, other.subqueryFilter);
     }
 
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(aggregateMeasures, filter, fields);
+                + Objects.hash(aggregateMeasures, filter, fields, subqueryColumnsByPosition, subqueryFilter);
     }
 
     @Override

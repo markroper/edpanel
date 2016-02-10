@@ -27,6 +27,8 @@ public class MeasureSqlSerializerFactory {
                 return new MeritSqlSerializer();
             case GPA:
                 return new GpaSqlSerializer();
+            case CURRENT_GPA:
+                return new CurrentGpaSqlSerializer();
             default:
                 return null;
         }
