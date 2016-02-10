@@ -36,6 +36,7 @@ public enum Measure {
     SUSPENSION,
     //Academic measures
     GPA,
+    CURRENT_GPA,
     COURSE_GRADE,
     ASSIGNMENT_GRADE,
     HW_COMPLETION;

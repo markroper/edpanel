@@ -5,7 +5,6 @@ import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.api.persistence.mysql.querygenerator.SqlGenerationException;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.attendance.AttendanceStatus;
-import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
@@ -13,10 +12,9 @@ import com.scholarscore.models.query.measure.AttendanceMeasure;
 public class AttendanceSqlSerializer implements MeasureSqlSerializer {
 
     @Override
-    public String toSelectClause(AggregateFunction agg) {
-        return agg.name() + 
-                "( if(" + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.ATTENDANCE_STATUS + " in ('" 
-                + AttendanceStatus.ABSENT + "'), 1, 0))";
+    public String toSelectInner() {
+        return "if(" + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.ATTENDANCE_STATUS + " in ('"
+                + AttendanceStatus.ABSENT + "'), 1, 0)";
     }
 
     @Override
@@ -37,13 +35,21 @@ public class AttendanceSqlSerializer implements MeasureSqlSerializer {
     }
 
     @Override
+    public String toFromClause() {
+        return HibernateConsts.ATTENDANCE_TABLE;
+    }
+
+    @Override
     public String toTableName() {
         return HibernateConsts.ATTENDANCE_TABLE;
     }
     
     @Override
-    public String generateMeasureFieldSql(MeasureField f) throws SqlGenerationException {
+    public String generateMeasureFieldSql(MeasureField f, String tableAlias) throws SqlGenerationException {
         String tableName = DbMappings.MEASURE_TO_TABLE_NAME.get(f.getMeasure());
+        if(null != tableAlias) {
+            tableName = tableAlias;
+        }
         //We are actually interrogating the school_day table which is joined in above, in the case of school_fk or date related values
         if(f.getField().equals(AttendanceMeasure.DATE) || f.getField().equals(AttendanceMeasure.SCHOOL_FK)) {
             tableName = HibernateConsts.SCHOOL_DAY_TABLE;

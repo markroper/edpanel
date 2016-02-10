@@ -30,6 +30,8 @@ public class DbMappings {
                put(Measure.ATTENDANCE, HibernateConsts.ATTENDANCE_TABLE);
                put(Measure.ABSENCE, HibernateConsts.ATTENDANCE_TABLE);
                put(Measure.TARDY, HibernateConsts.ATTENDANCE_TABLE);
+               put(Measure.GPA, HibernateConsts.GPA_TABLE);
+               put(Measure.CURRENT_GPA, HibernateConsts.CURRENT_GPA_TABLE);
            }};
    public static final Map<Measure, String> MEASURE_TO_COL_NAME = 
            new HashMap<Measure, String>() {{

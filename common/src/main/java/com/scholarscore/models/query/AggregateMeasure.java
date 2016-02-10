@@ -1,17 +1,21 @@
 package com.scholarscore.models.query;
 
+import com.scholarscore.models.query.bucket.AggregationBucket;
+
 import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Encapsulates a measure value and the aggregate function to use when querying
  * for that measure in an aggregate query.
- * 
+ *
+ * @see AggregationBucket
+ * @see AggregateFunction
  * @author markroper
  *
  */
 @SuppressWarnings("serial")
-public class AggregateMeasure implements Serializable {
+public class AggregateMeasure extends QueryField implements Serializable {
     Measure measure;
     AggregateFunction aggregation;
 
@@ -47,6 +51,9 @@ public class AggregateMeasure implements Serializable {
             return true;
         }
         if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
             return false;
         }
         final AggregateMeasure other = (AggregateMeasure) obj;
