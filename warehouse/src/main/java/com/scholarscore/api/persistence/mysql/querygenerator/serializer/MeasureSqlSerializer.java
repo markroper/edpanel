@@ -66,8 +66,11 @@ public interface MeasureSqlSerializer {
     
     public String toTableName();
     
-    public default String generateMeasureFieldSql(MeasureField f) throws SqlGenerationException {
+    public default String generateMeasureFieldSql(MeasureField f, String tableAlias) throws SqlGenerationException {
         String tableName = DbMappings.MEASURE_TO_TABLE_NAME.get(f.getMeasure());
+        if(null != tableAlias) {
+            tableName = tableAlias;
+        }
         String columnName = DbMappings.MEASURE_FIELD_TO_COL_NAME.get(f);
         if(null == tableName || null == columnName) {
             throw new SqlGenerationException("Invalid dimension, tableName (" + 

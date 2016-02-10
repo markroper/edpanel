@@ -67,8 +67,11 @@ public class HomeworkCompletionSqlSerializer implements MeasureSqlSerializer {
     }
 
     @Override
-    public String generateMeasureFieldSql(MeasureField f) throws SqlGenerationException {
+    public String generateMeasureFieldSql(MeasureField f, String tableAlias) throws SqlGenerationException {
         String tableName = DbMappings.MEASURE_TO_TABLE_NAME.get(f.getMeasure());
+        if(null != tableAlias) {
+            tableName = tableAlias;
+        }
         String columnName = DbMappings.MEASURE_FIELD_TO_COL_NAME.get(f);
         //Homework dimensions (all student assignment level dimenions) obscure a join between the assignment
         //and the student_assignment tables. For this reason, fields that the user can access as if they were

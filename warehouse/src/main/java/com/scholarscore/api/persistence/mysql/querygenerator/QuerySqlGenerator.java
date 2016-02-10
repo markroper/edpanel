@@ -4,6 +4,7 @@ import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureSqlSerializer;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureSqlSerializerFactory;
 import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.AggregateMeasure;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
@@ -21,6 +22,7 @@ import com.scholarscore.models.query.expressions.operands.StringOperand;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,11 +64,189 @@ public abstract class QuerySqlGenerator {
         
         populateSelectClause(sqlBuilder, params, q);
         populateFromClause(sqlBuilder, q);
-        populateWhereClause(sqlBuilder, params, q);
+        populateWhereClause(sqlBuilder, params, q, null);
         populateGroupByClause(sqlBuilder, q);
+        SqlWithParameters sql = new SqlWithParameters(sqlBuilder.toString(), params);
+        if(null != q.getSubqueryColumnsByPosition()) {
+            return generateQueryOfSubquery(q, sql);
+        }
+        return sql;
+    }
+
+    /**
+     * Generates a non-root query. One that references only things within the subquery.
+     *
+     * @param q
+     * @param child
+     * @return
+     * @throws SqlGenerationException
+     */
+    private static SqlWithParameters generateQueryOfSubquery(Query q, SqlWithParameters child) throws SqlGenerationException {
+        Map<String, Object> params = new HashMap<>();
+        StringBuilder sqlBuilder = new StringBuilder();
+        StringBuilder groupByBuilder = new StringBuilder();
+        groupByBuilder.append(" GROUP BY ");
+        String tableAlias = "subq_1";
+        sqlBuilder.append(SELECT);
+        int numChildDimensions = 0;
+        if(null != q.getFields()) {
+            numChildDimensions = q.getFields().size();
+        }
+        int numAggregateMeasures = 0;
+        if(null != q.getAggregateMeasures()) {
+            numAggregateMeasures = q.getAggregateMeasures().size();
+            for(AggregateMeasure am: q.getAggregateMeasures()) {
+                if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
+                    numAggregateMeasures++;
+                }
+            }
+        }
+        boolean isFirst = true;
+        boolean isGroupByFirst = true;
+        //For every column, pluck the correct dimension or measure from the subquery
+        for(MutablePair<Integer, AggregateFunction> col: q.getSubqueryColumnsByPosition()) {
+            Integer pos = col.getLeft();
+            AggregateFunction function = col.getRight();
+            if(-1 == pos) {
+                if(isFirst) {
+                    isFirst = false;
+                } else {
+                    sqlBuilder.append(DELIM);
+                }
+                sqlBuilder.append(function.name() + "(*)");
+            } else if(pos > numChildDimensions - 1) {
+                //Find the right agg measure
+                pos -= numChildDimensions;
+                if(pos < numAggregateMeasures) {
+                    if(isFirst) {
+                        isFirst = false;
+                    } else {
+                        sqlBuilder.append(DELIM);
+                    }
+                    int counter = 0;
+                    for(AggregateMeasure am: q.getAggregateMeasures()) {
+                        if(counter == pos) {
+                            if(null != function) {
+                                sqlBuilder.append(function.name() + ")");
+                            }
+                            sqlBuilder.append(tableAlias + "." + generateAggColumnName(am));
+                            if(null != function) {
+                                sqlBuilder.append(function.name() + ")");
+                            } else {
+                                if(isGroupByFirst) {
+                                    isGroupByFirst = false;
+                                } else {
+                                    groupByBuilder.append(DELIM);
+                                }
+                                groupByBuilder.append(tableAlias + "." + generateAggColumnName(am));
+                            }
+                        }
+                        counter++;
+                        if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
+                            if(counter == pos) {
+                                if(null != function) {
+                                    sqlBuilder.append(function.name() + "(");
+                                }
+                                sqlBuilder.append(tableAlias + "." + generateBucketPsuedoColumnName(am));
+                                if(null != function) {
+                                    sqlBuilder.append(function.name() + ")");
+                                } else {
+                                    if(isGroupByFirst) {
+                                        isGroupByFirst = false;
+                                    } else {
+                                        groupByBuilder.append(DELIM);
+                                    }
+                                    groupByBuilder.append(tableAlias + "." + generateBucketPsuedoColumnName(am));
+                                }
+                            }
+                            counter++;
+                        }
+                    }
+                }
+            } else {
+                //find the right dimension
+                if(isFirst) {
+                    isFirst = false;
+                } else {
+                    sqlBuilder.append(DELIM);
+                }
+                //look for the dimension
+                sqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
+                if(isGroupByFirst) {
+                    isGroupByFirst = false;
+                } else {
+                    groupByBuilder.append(DELIM);
+                }
+                groupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
+
+            }
+        }
+        //FROM CLAUSE
+        sqlBuilder.append(" \nFROM (\n");
+        sqlBuilder.append(child.getSql());
+        sqlBuilder.append("\n) as ");
+        sqlBuilder.append(tableAlias);
+        sqlBuilder.append(" \n");
+        //WHERE CLAUSE
+        if(null != q.getSubqueryFilter() && !q.getSubqueryFilter().isEmpty()) {
+            sqlBuilder.append("\nWHERE ");
+            boolean first = true;
+            for(Map.Entry<Integer, MutablePair<IOperator, IOperand>> entry: q.getSubqueryFilter().entrySet()) {
+                Integer pos = entry.getKey();
+                IOperator operator = entry.getValue().getLeft();
+                IOperand operand = entry.getValue().getRight();
+                if(pos > numChildDimensions - 1) {
+                    if(first) {
+                        first = false;
+                    } else {
+                        sqlBuilder.append(DELIM);
+                    }
+                    pos = pos - numChildDimensions;
+                    int counter = 0;
+                    for(AggregateMeasure am: q.getAggregateMeasures()) {
+                        if(counter == pos) {
+                            sqlBuilder.append(tableAlias + "." + generateAggColumnName(am));
+                            sqlBuilder.append(" ");
+                            sqlBuilder.append(resolveOperatorSql(operator));
+                            sqlBuilder.append(" ");
+                            operandToSql(operand, params, sqlBuilder, tableAlias);
+                            break;
+                        }
+                        counter++;
+                        if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
+                            if(counter == pos) {
+                                sqlBuilder.append(tableAlias + "." + generateBucketPsuedoColumnName(am));
+                                sqlBuilder.append(" ");
+                                sqlBuilder.append(resolveOperatorSql(operator));
+                                sqlBuilder.append(" ");
+                                operandToSql(operand, params, sqlBuilder, tableAlias);
+                                break;
+                            }
+                            counter++;
+                        }
+                    }
+                } else {
+                    //find the right dimension
+                    if(first) {
+                        first = false;
+                    } else {
+                        sqlBuilder.append(DELIM);
+                    }
+                    //look for the dimension
+                    sqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
+                    sqlBuilder.append(" ");
+                    sqlBuilder.append(resolveOperatorSql(operator));
+                    sqlBuilder.append(" ");
+                    operandToSql(operand, params, sqlBuilder, tableAlias);
+                }
+            }
+        }
+        //GROUP BY
+        sqlBuilder.append(groupByBuilder.toString());
+        params.putAll(child.getParams());
         return new SqlWithParameters(sqlBuilder.toString(), params);
     }
-    
+
     protected static void populateSelectClause(StringBuilder sqlBuilder, Map<String, Object> params, Query q) 
             throws SqlGenerationException {
         sqlBuilder.append(SELECT);
@@ -74,10 +254,10 @@ public abstract class QuerySqlGenerator {
         if(null != q.getFields()) {
             for (DimensionField f : q.getFields()) {
                 if (isFirst) {
-                    sqlBuilder.append(generateDimensionFieldSql(f));
+                    sqlBuilder.append(generateDimensionFieldSql(f, null));
                     isFirst = false;
                 } else {
-                    sqlBuilder.append(DELIM + generateDimensionFieldSql(f));
+                    sqlBuilder.append(DELIM + generateDimensionFieldSql(f, null));
                 }
             }
         }
@@ -88,7 +268,7 @@ public abstract class QuerySqlGenerator {
                     sqlBuilder.append(DELIM);
                     isFirst = false;
                 }
-                sqlBuilder.append(mss.toSelectClause(am.getAggregation()));
+                sqlBuilder.append(mss.toSelectClause(am.getAggregation()) + " as " + generateAggColumnName(am));
                 //If there are buckets involved in the aggregate query, inject the bucket psuedo column
                 if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
                     sqlBuilder.append(DELIM);
@@ -203,20 +383,20 @@ public abstract class QuerySqlGenerator {
         return primaryKeyFieldReference;
     }
     
-    protected static void populateWhereClause(StringBuilder sqlBuilder, Map<String, Object> params, Query q) 
+    protected static void populateWhereClause(StringBuilder sqlBuilder, Map<String, Object> params, Query q, String tableAlias)
             throws SqlGenerationException {
         if(null == q.getFilter()) {
             return;
         }
         sqlBuilder.append(WHERE);
-        expressionToSql(q.getFilter(), params, sqlBuilder);
+        expressionToSql(q.getFilter(), params, sqlBuilder, tableAlias);
     }
     
-    protected static void expressionToSql(Expression exp, Map<String, Object> params, StringBuilder sqlBuilder) 
+    protected static void expressionToSql(Expression exp, Map<String, Object> params, StringBuilder sqlBuilder, String tableAlias)
             throws SqlGenerationException{
         sqlBuilder.append(" (");
         //Serialize the left hand side
-        operandToSql(exp.getLeftHandSide(), params, sqlBuilder);
+        operandToSql(exp.getLeftHandSide(), params, sqlBuilder, tableAlias);
         //Serialize the operator
         String operator = resolveOperatorSql(exp.getOperator());
         sqlBuilder.append(" " + operator + " ");
@@ -224,30 +404,30 @@ public abstract class QuerySqlGenerator {
             sqlBuilder.append(" (");
         }
         //Serialize the right hand side
-        operandToSql(exp.getRightHandSide(), params, sqlBuilder);
+        operandToSql(exp.getRightHandSide(), params, sqlBuilder, tableAlias);
         if(exp.getOperator().equals(ComparisonOperator.IN)) {
             sqlBuilder.append(") ");
         }
         sqlBuilder.append(") ");
     }
 
-    protected static void operandToSql(IOperand operand, Map<String, Object> params, StringBuilder sqlBuilder) 
+    protected static void operandToSql(IOperand operand, Map<String, Object> params, StringBuilder sqlBuilder, String tableAlias)
             throws SqlGenerationException {
         switch(operand.getType()) {
             case DATE:
                 sqlBuilder.append(" '" + DbMappings.resolveTimestamp(((DateOperand)operand).getValue()) + "' ");
                 break;
             case DIMENSION:
-                sqlBuilder.append(" " + generateDimensionFieldSql( ((DimensionOperand)operand).getValue()) + " ");
+                sqlBuilder.append(" " + generateDimensionFieldSql( ((DimensionOperand)operand).getValue(), tableAlias) + " ");
                 break;
             case MEASURE:
-                sqlBuilder.append(" " + generateMeasureFieldSql(((MeasureOperand)operand).getValue()) + " ");
+                sqlBuilder.append(" " + generateMeasureFieldSql(((MeasureOperand)operand).getValue(), tableAlias) + " ");
                 break;
             case NUMERIC:
                 sqlBuilder.append(" " + ((NumericOperand)operand).getValue() + " ");
                 break;
             case EXPRESSION:
-                expressionToSql((Expression) operand, params, sqlBuilder);
+                expressionToSql((Expression) operand, params, sqlBuilder, tableAlias);
                 break;
             case STRING:
                 //Protect against SQL injection attack:
@@ -275,10 +455,10 @@ public abstract class QuerySqlGenerator {
         if(null != q.getFields()) {
             for (DimensionField f : q.getFields()) {
                 if (isFirst) {
-                    sqlBuilder.append(generateDimensionFieldSql(f));
+                    sqlBuilder.append(generateDimensionFieldSql(f, null));
                     isFirst = false;
                 } else {
-                    sqlBuilder.append(DELIM + generateDimensionFieldSql(f));
+                    sqlBuilder.append(DELIM + generateDimensionFieldSql(f, null));
                 }
             }
         }
@@ -301,8 +481,14 @@ public abstract class QuerySqlGenerator {
     public static String generateBucketPsuedoColumnName(AggregateMeasure m) {
         return m.getAggregation().name().toLowerCase() + "_" + m.getMeasure().name().toLowerCase() + "_group";
     }
-    protected static String generateDimensionFieldSql(DimensionField f) throws SqlGenerationException {
+    public static String generateAggColumnName(AggregateMeasure m) {
+        return m.getAggregation().name().toLowerCase() + "_" + m.getMeasure().name().toLowerCase() + "_agg";
+    }
+    protected static String generateDimensionFieldSql(DimensionField f, String tableAlias) throws SqlGenerationException {
         String tableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(f.getDimension());
+        if(null != tableAlias) {
+            tableName = tableAlias;
+        }
         String columnName = DbMappings.DIMENSION_TO_COL_NAME.get(f);
         if(null == tableName || null == columnName) {
             throw new SqlGenerationException("Invalid dimension, tableName (" + 
@@ -312,8 +498,8 @@ public abstract class QuerySqlGenerator {
         return tableName + "." + columnName;
     }
     
-    protected static String generateMeasureFieldSql(MeasureField f) throws SqlGenerationException {
-        return MeasureSqlSerializerFactory.get(f.getMeasure()).generateMeasureFieldSql(f);
+    protected static String generateMeasureFieldSql(MeasureField f, String tableAlias) throws SqlGenerationException {
+        return MeasureSqlSerializerFactory.get(f.getMeasure()).generateMeasureFieldSql(f, tableAlias);
     }
     
     protected static String resolveOperatorSql(IOperator op) throws SqlGenerationException {

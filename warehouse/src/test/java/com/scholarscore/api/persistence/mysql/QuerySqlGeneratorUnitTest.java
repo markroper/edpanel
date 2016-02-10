@@ -18,13 +18,18 @@ import com.scholarscore.models.query.dimension.StudentDimension;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
+import com.scholarscore.models.query.expressions.operands.IOperand;
 import com.scholarscore.models.query.expressions.operands.ListNumericOperand;
 import com.scholarscore.models.query.expressions.operands.MeasureOperand;
 import com.scholarscore.models.query.expressions.operands.NumericOperand;
+import com.scholarscore.models.query.expressions.operands.StringOperand;
 import com.scholarscore.models.query.expressions.operators.BinaryOperator;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
+import com.scholarscore.models.query.expressions.operators.IOperator;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
 import com.scholarscore.models.query.measure.BehaviorMeasure;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -34,7 +39,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Test(groups = { "unit" })
 public class QuerySqlGeneratorUnitTest {
@@ -74,14 +81,15 @@ public class QuerySqlGeneratorUnitTest {
         whereClause.setOperator(BinaryOperator.AND);
         whereClause.setRightHandSide(maxBound);
         courseGradeQuery.setFilter(whereClause);   
-        String courseGradeQuerySql = "SELECT student.birth_date, student.federal_ethnicity, school.school_address, SUM(student_section_grade.grade) "
-                + "FROM student "
-                + "LEFT OUTER JOIN student_section_grade ON student.student_user_fk = student_section_grade.student_fk "
-                + "LEFT OUTER JOIN section ON section.section_id = student_section_grade.section_fk "
-                + "LEFT OUTER JOIN school ON school.school_id = student.school_fk "
-                + "WHERE  ( ( '2014-09-01 00:00:00.0'  >=  section.section_start_date )  "
-                + "AND  ( '2015-09-01 00:00:00.0'  <=  section.section_start_date ) ) "
-                + "GROUP BY student.birth_date, student.federal_ethnicity, school.school_address";
+        String courseGradeQuerySql = "SELECT student.birth_date, student.federal_ethnicity, school.school_address, " +
+                "SUM(section_grade.grade) as sum_course_grade_agg FROM student " +
+                "LEFT OUTER JOIN student_section_grade ON student.student_user_fk = student_section_grade.student_fk " +
+                "LEFT OUTER JOIN section_grade ON student_section_grade.section_grade_fk = section_grade.section_grade_id " +
+                "LEFT OUTER JOIN section ON section.section_id = student_section_grade.section_fk " +
+                "LEFT OUTER JOIN school ON school.school_id = student.school_fk " +
+                "WHERE  ( ( '2014-09-01 00:00:00.0'  >=  section.section_start_date )  " +
+                "AND  ( '2015-09-01 00:00:00.0'  <=  section.section_start_date ) ) " +
+                "GROUP BY student.birth_date, student.federal_ethnicity, school.school_address";
         Query assignmentGradesQuery  = new Query();
         ArrayList<AggregateMeasure> assginmentMeasures = new ArrayList<>();
         assginmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVG));
@@ -92,13 +100,14 @@ public class QuerySqlGeneratorUnitTest {
                 ComparisonOperator.EQUAL, 
                 new NumericOperand(4));
         assignmentGradesQuery.setFilter(assignmentWhereClause);
-        String assignmentGradesQuerySql = "SELECT student.student_name, AVG(student_assignment.awarded_points / assignment.available_points) "
-                + "FROM student "
-                + "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk "
-                + "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id "
-                + "LEFT OUTER JOIN section ON section.section_id = student_assignment.section_fk "
-                + "WHERE  ( section.section_id  =  4 ) "
-                + "GROUP BY student.student_name";
+        String assignmentGradesQuerySql = "SELECT student.student_name, " +
+                "AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg " +
+                "FROM student " +
+                "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " +
+                "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id " +
+                "LEFT OUTER JOIN section ON section.section_id = student_assignment.section_fk " +
+                "WHERE  ( section.section_id  =  4 ) " +
+                "GROUP BY student.student_name";
         Query homeworkCompletionQuery  = new Query();
         ArrayList<AggregateMeasure> homeworkMeasures = new ArrayList<>();
         homeworkMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
@@ -119,9 +128,11 @@ public class QuerySqlGeneratorUnitTest {
         Expression comb1 = new Expression(termClause, BinaryOperator.AND, yearClause);
         Expression comb2 = new Expression(comb1, BinaryOperator.AND, sectionClause);
         homeworkCompletionQuery.setFilter(comb2);
-        String homeworkSql = "SELECT student.student_user_fk, AVG(if(assignment.type_fk = 'HOMEWORK', " +
-                "if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) " +
-                "FROM student LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " +
+        String homeworkSql = "SELECT student.student_user_fk, " +
+                "AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, " +
+                "if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) " +
+                "as avg_hw_completion_agg FROM student " +
+                "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " +
                 "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id " +
                 "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk " +
                 "LEFT OUTER JOIN term ON term.term_id = section.term_fk " +
@@ -134,14 +145,7 @@ public class QuerySqlGeneratorUnitTest {
         homeworkSectionCompletionQuery.setAggregateMeasures(homeworkSectionMeasures);
         homeworkSectionCompletionQuery.addField(new DimensionField(Dimension.SECTION, SectionDimension.ID));
         homeworkSectionCompletionQuery.setFilter(comb2);
-        String homeworkSectionSql = "SELECT section.section_id, AVG(if(assignment.type_fk = 'HOMEWORK', " +
-                "if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) " +
-                "FROM section LEFT OUTER JOIN assignment ON assignment.section_fk = section.section_id " +
-                "LEFT OUTER JOIN student_assignment ON student_assignment.assignment_fk = assignment.assignment_id " +
-                "LEFT OUTER JOIN term ON term.term_id = section.term_fk " +
-                "LEFT OUTER JOIN school_year ON school_year.school_year_id = term.school_year_fk " +
-                "WHERE  ( ( ( term.term_id  =  1 )  AND  ( school_year.school_year_id  =  1 ) )  " +
-                "AND  ( section.section_id  !=  0 ) ) GROUP BY section.section_id";
+        String homeworkSectionSql = "SELECT section.section_id, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg FROM section LEFT OUTER JOIN assignment ON assignment.section_fk = section.section_id LEFT OUTER JOIN student_assignment ON student_assignment.assignment_fk = assignment.assignment_id LEFT OUTER JOIN term ON term.term_id = section.term_fk LEFT OUTER JOIN school_year ON school_year.school_year_id = term.school_year_fk WHERE  ( ( ( term.term_id  =  1 )  AND  ( school_year.school_year_id  =  1 ) )  AND  ( section.section_id  !=  0 ) ) GROUP BY section.section_id";
 
         Query attendanceQuery  = new Query();
         ArrayList<AggregateMeasure> attendanceMeasures = new ArrayList<>();
@@ -159,14 +163,7 @@ public class QuerySqlGeneratorUnitTest {
                 new DateOperand(date2));
         Expression attendanceDateRangeExpression = new Expression(greaterThanDate, BinaryOperator.AND, lessThanDate);
         attendanceQuery.setFilter(attendanceDateRangeExpression);
-        String attendanceSql = "SELECT student.student_user_fk, " +
-                "SUM(if(attendance.attendance_status in ('ABSENT'), 1, 0)) " +
-                "FROM student " +
-                "LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " +
-                "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk " +
-                "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  " +
-                "( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) " +
-                "GROUP BY student.student_user_fk";
+        String attendanceSql = "SELECT student.student_user_fk, SUM(if(attendance.attendance_status in ('ABSENT'), 1, 0)) as sum_attendance_agg FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) GROUP BY student.student_user_fk";
 
         Query sectionAbsenceQuery  = new Query();
         ArrayList<AggregateMeasure> sectionAbsenseMeasures = new ArrayList<>();
@@ -186,12 +183,7 @@ public class QuerySqlGeneratorUnitTest {
                 ComparisonOperator.IN,
                 sectionList);
         sectionAbsenceQuery.setFilter(sectionAbsenseClause);
-        String sectionAbsenceSql = "SELECT student.student_user_fk, section.section_id, " +
-                "COUNT(if(attendance.attendance_status in ('ABSENT') AND attendance.attendance_type = 'SECTION', 1, 0)) " +
-                "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " +
-                "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk " +
-                "LEFT OUTER JOIN section ON section.section_id = attendance.section_fk " +
-                "WHERE  ( section.section_id  IN  (2,3) ) GROUP BY student.student_user_fk, section.section_id";
+        String sectionAbsenceSql = "SELECT student.student_user_fk, section.section_id, COUNT(if(attendance.attendance_status in ('ABSENT') AND attendance.attendance_type = 'SECTION', 1, 0)) as count_section_absence_agg FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk LEFT OUTER JOIN section ON section.section_id = attendance.section_fk WHERE  ( section.section_id  IN  (2,3) ) GROUP BY student.student_user_fk, section.section_id";
 
         Query sectionTardyQuery  = new Query();
         ArrayList<AggregateMeasure> sectionTardyMeasures = new ArrayList<>();
@@ -205,12 +197,7 @@ public class QuerySqlGeneratorUnitTest {
                 ComparisonOperator.IN,
                 sectionList);
         sectionTardyQuery.setFilter(sectionTardyClause);
-        String sectionTardySql = "SELECT student.student_user_fk, section.section_id, " +
-                "COUNT(if(attendance.attendance_status in ('TARDY') AND attendance.attendance_type = 'SECTION', 1, 0)) " +
-                "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " +
-                "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk " +
-                "LEFT OUTER JOIN section ON section.section_id = attendance.section_fk " +
-                "WHERE  ( section.section_id  IN  (2,3) ) GROUP BY student.student_user_fk, section.section_id";
+        String sectionTardySql = "SELECT student.student_user_fk, section.section_id, COUNT(if(attendance.attendance_status in ('TARDY') AND attendance.attendance_type = 'SECTION', 1, 0)) as count_section_tardy_agg FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk LEFT OUTER JOIN section ON section.section_id = attendance.section_fk WHERE  ( section.section_id  IN  (2,3) ) GROUP BY student.student_user_fk, section.section_id";
         
         Query behaviorQuery = new Query();
         ArrayList<AggregateMeasure> behaviorMeasures = new ArrayList<>();
@@ -233,11 +220,10 @@ public class QuerySqlGeneratorUnitTest {
                 new DateOperand(afterDate));
         Expression topClause = new Expression(dateClause, BinaryOperator.AND, studentIdClause);
         behaviorQuery.setFilter(topClause);
-        String behaviorSql = "SELECT student.student_user_fk, SUM(if(behavior.category = 'DEMERIT', 1, 0)) "
-                + "FROM student LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk "
-                + "WHERE  ( ( behavior.date  >  '2014-09-01 00:00:00.0' )  "
-                + "AND  ( student.student_user_fk  =  1 ) ) "
-                + "GROUP BY student.student_user_fk";
+        String behaviorSql = "SELECT student.student_user_fk, SUM(if(behavior.category = 'DEMERIT', 1, 0)) as sum_demerit_agg " +
+                "FROM student LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk " +
+                "WHERE  ( ( behavior.date  >  '2014-09-01 00:00:00.0' )  AND  ( student.student_user_fk  =  1 ) ) " +
+                "GROUP BY student.student_user_fk";
         
         // this test builds a query to get the school name for the school with id 1.
         // this requires support for a query with NO aggregate function 
@@ -264,7 +250,7 @@ public class QuerySqlGeneratorUnitTest {
         buckets.add(new NumericBucket(3D, null, "4+"));
         gpaMeasure.setBuckets(buckets);
         gpaMeasures.add(gpaMeasure);
-        String gpaSqlStatement = "SELECT COUNT(gpa.gpa_score), CASE \n" +
+        String gpaSqlStatement = "SELECT COUNT(gpa.gpa_score) as count_gpa_agg, CASE \n" +
                 "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
                 "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
                 "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
@@ -278,31 +264,80 @@ public class QuerySqlGeneratorUnitTest {
         ArrayList<AggregateMeasure> currGpaMeasures = new ArrayList<>();
         currGpaMeasures.add(currGpaMeasure);
         currGpaQuery.setAggregateMeasures(currGpaMeasures);
-        String currGpaSqlStatement = "SELECT COUNT(gpa.gpa_score), CASE \n" +
+        String currGpaSqlStatement = "SELECT COUNT(gpa.gpa_score) as count_current_gpa_agg, CASE \n" +
                 "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
                 "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
                 "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
                 "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
                 "ELSE NULL \n" +
-                "END as count_current_gpa_group FROM current_gpa LEFT OUTER JOIN gpa " +
-                "ON gpa.gpa_id = current_gpa.gpa_fk GROUP BY count_current_gpa_group";
+                "END as count_current_gpa_group FROM current_gpa LEFT OUTER JOIN gpa ON gpa.gpa_id = current_gpa.gpa_fk GROUP BY count_current_gpa_group";
+
+        /*
+            select count(*), num_grades
+            from (
+                SELECT
+                    student.student_user_fk,
+                    CASE
+                        WHEN section_grade.grade >= 70.0 THEN 'pass'
+                        WHEN section_grade.grade < 70.0 THEN 'fail'
+                        ELSE NULL
+                    END as count_course_grade_group,
+                    COUNT(section_grade.grade) as num_grades
+                FROM student
+                    LEFT OUTER JOIN student_section_grade ON student.student_user_fk = student_section_grade.student_fk
+                    LEFT OUTER JOIN section_grade ON section_grade.section_grade_id = student_section_grade.section_grade_fk
+                where student.school_fk = 1
+                GROUP BY student.student_user_fk, count_course_grade_group
+            ) as subq
+            where subq.count_course_grade_group = 'fail'
+            group by num_grades
+         */
+        Query courseGradesBucketed = new Query();
+        AggregateMeasure gradeBucketMeasure = new AggregateMeasure(Measure.COURSE_GRADE, AggregateFunction.COUNT);
+        courseGradesBucketed.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
+        ArrayList<AggregateMeasure> gradeMeasures = new ArrayList<>();
+        gradeMeasures.add(gradeBucketMeasure);
+        courseGradesBucketed.setAggregateMeasures(gradeMeasures);
+        List<AggregationBucket> gradeBuckets = new ArrayList<>();
+        gradeBuckets.add(new NumericBucket(70D, null, "pass"));
+        gradeBuckets.add(new NumericBucket(null, 70D, "fail"));
+        gradeBucketMeasure.setBuckets(gradeBuckets);
+        List<MutablePair<Integer, AggregateFunction>> wrapperFields = new ArrayList<>();
+        wrapperFields.add(new MutablePair<>(-1, AggregateFunction.COUNT));
+        wrapperFields.add(new MutablePair<>(1, null));
+        courseGradesBucketed.setSubqueryColumnsByPosition(wrapperFields);
+        Map<Integer, MutablePair<IOperator, IOperand>> superFilter = new HashMap<>();
+        superFilter.put(2, new MutablePair<>(ComparisonOperator.EQUAL, new StringOperand("fail")));
+        courseGradesBucketed.setSubqueryFilter(superFilter);
+        String gradeBucketedSql = "SELECT COUNT(*), subq_1.count_course_grade_agg \n" +
+                "FROM (\n" +
+                "SELECT student.student_user_fk, COUNT(section_grade.grade) as count_course_grade_agg, CASE \n" +
+                "WHEN section_grade.grade >= 70.0 THEN 'pass'\n" +
+                "WHEN section_grade.grade < 70.0 THEN 'fail'\n" +
+                "ELSE NULL \n" +
+                "END as count_course_grade_group FROM student LEFT OUTER JOIN student_section_grade ON student.student_user_fk = student_section_grade.student_fk LEFT OUTER JOIN section_grade ON student_section_grade.section_grade_fk = section_grade.section_grade_id GROUP BY student.student_user_fk, count_course_grade_group\n" +
+                ") as subq_1 \n" +
+                "\n" +
+                "WHERE subq_1.count_course_grade_group =  :hkUcLiIxGoTRYdsgpwyBYMvBsWshfuXY  GROUP BY subq_1.count_course_grade_agg";
+
         return new Object[][] {
-                { "Course Grade query", courseGradeQuery, courseGradeQuerySql },
-                { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql },
-                { "Homework query", homeworkCompletionQuery, homeworkSql },
-                { "Behavior query", behaviorQuery, behaviorSql},
-                { "Attendance query", attendanceQuery, attendanceSql },
-                { "Homework by Section query", homeworkSectionCompletionQuery, homeworkSectionSql },
-                { "Absence by Section query", sectionAbsenceQuery, sectionAbsenceSql },
-                { "Tardy be Section query", sectionTardyQuery, sectionTardySql },
-                { "School name query", schoolNameQuery, schoolNameSql },
-                { "GPA with buckets", gpaBucketQuery, gpaSqlStatement },
-                { "Current GPA with buckets", currGpaQuery, currGpaSqlStatement }
+                { "Course Grade query", courseGradeQuery, courseGradeQuerySql, null },
+                { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql, null },
+                { "Homework query", homeworkCompletionQuery, homeworkSql, null },
+                { "Behavior query", behaviorQuery, behaviorSql, null},
+                { "Attendance query", attendanceQuery, attendanceSql, null },
+                { "Homework by Section query", homeworkSectionCompletionQuery, homeworkSectionSql, null },
+                { "Absence by Section query", sectionAbsenceQuery, sectionAbsenceSql, null },
+                { "Tardy be Section query", sectionTardyQuery, sectionTardySql, null },
+                { "School name query", schoolNameQuery, schoolNameSql, null },
+                { "GPA with buckets", gpaBucketQuery, gpaSqlStatement, null },
+                { "Current GPA with buckets", currGpaQuery, currGpaSqlStatement, null },
+                { "Course grade buckets", courseGradesBucketed, gradeBucketedSql, 32 }
         };
     }
     
    @Test(dataProvider = "queriesProvider")
-    public void toSqlTest(String msg, Query q, String expectedSql) {
+    public void toSqlTest(String msg, Query q, String expectedSql, Integer levValue) {
         SqlWithParameters sql = null;
         try {
             sql = QuerySqlGenerator.generate(q);
@@ -310,6 +345,10 @@ public class QuerySqlGeneratorUnitTest {
             Assert.fail(msg);
         }
         Assert.assertNotNull(sql, msg);
-        Assert.assertEquals(sql.getSql(), expectedSql, msg);
+       if(null == levValue) {
+           Assert.assertEquals(sql.getSql(), expectedSql, msg);
+       } else {
+           Assert.assertTrue(StringUtils.getLevenshteinDistance(sql.getSql(), expectedSql) <= levValue);
+       }
     }
 }
