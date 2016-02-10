@@ -39,8 +39,7 @@ import java.util.Objects;
         @JsonSubTypes.Type(value = BehaviorGoal.class, name="BEHAVIOR"),
         @JsonSubTypes.Type(value = AssignmentGoal.class, name = "ASSIGNMENT"),
         @JsonSubTypes.Type(value = SectionGradeGoal.class, name = "SECTION_GRADE"),
-        @JsonSubTypes.Type(value = AttendanceGoal.class, name = "ATTENDANCE"),
-        @JsonSubTypes.Type(value = ComplexGoal.class, name = "COMPLEX")
+        @JsonSubTypes.Type(value = AttendanceGoal.class, name = "ATTENDANCE")
 })
 public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 
@@ -72,6 +71,8 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         this.setGoalType(goal.goalType);
         this.goalProgress = goal.goalProgress;
         this.autocomplete = goal.autocomplete;
+        this.startDate = goal.startDate;
+        this.endDate = goal.endDate;
         this.plan = goal.plan;
         this.teacherFollowup = goal.teacherFollowup;
     }
@@ -245,29 +246,45 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         if (null == teacherFollowup) {
             this.teacherFollowup = mergeFrom.teacherFollowup;
         }
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        Goal goal = (Goal) o;
-        return Objects.equals(student, goal.student) &&
-                Objects.equals(staff, goal.staff) &&
-                Objects.equals(desiredValue, goal.desiredValue) &&
-                Objects.equals(calculatedValue, goal.calculatedValue) &&
-                Objects.equals(approved, goal.approved) &&
-                Objects.equals(goalType, goal.goalType) &&
-                Objects.equals(goalProgress, goal.goalProgress) &&
-                Objects.equals(autocomplete, goal.autocomplete) &&
-                Objects.equals(plan, goal.plan) &&
-                Objects.equals(teacherFollowup, goal.teacherFollowup);
+        if (null == startDate) {
+            this.startDate = mergeFrom.startDate;
+        }
+
+        if (null == endDate) {
+            this.endDate = mergeFrom.endDate;
+        }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), student, staff, desiredValue, calculatedValue, approved, goalType, goalProgress, autocomplete, plan, teacherFollowup);
+        return 31 * super.hashCode() + Objects.hash(student, staff, desiredValue, calculatedValue, approved, goalType, startDate, endDate, goalProgress, autocomplete, plan, teacherFollowup);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        final Goal other = (Goal) obj;
+        return Objects.equals(this.student, other.student)
+                && Objects.equals(this.staff, other.staff)
+                && Objects.equals(this.desiredValue, other.desiredValue)
+                && Objects.equals(this.calculatedValue, other.calculatedValue)
+                && Objects.equals(this.approved, other.approved)
+                && Objects.equals(this.goalType, other.goalType)
+                && Objects.equals(this.startDate, other.startDate)
+                && Objects.equals(this.endDate, other.endDate)
+                && Objects.equals(this.goalProgress, other.goalProgress)
+                && Objects.equals(this.autocomplete, other.autocomplete)
+                && Objects.equals(this.plan, other.plan)
+                && Objects.equals(this.teacherFollowup, other.teacherFollowup);
     }
 
     @Override
@@ -282,6 +299,8 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
                         + "GoalType: " + getGoalType() + "\n"
                         + "Student: " + getStudent() + "\n"
                         + "Staff: " + getStaff() + "\n"
+                        + "StartDate: " + getStartDate() + "\n"
+                        + "EndDate: " + getEndDate() + "\n"
                         + "GoalProgress: " + getGoalProgress() + "\n"
                         + "Autocomplete: " + getAutocomplete() + "\n"
                         + "Plan: " + getPlan() + "\n"

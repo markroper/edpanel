@@ -7,8 +7,6 @@ import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.AttendanceAssignment;
 import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.attendance.SchoolDay;
-import com.scholarscore.models.goal.BehaviorComponent;
-import com.scholarscore.models.goal.GoalComponent;
 import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.gpa.SimpleGpa;
 import com.scholarscore.models.gpa.WeightedGpa;
@@ -419,7 +417,16 @@ public class ModelReflectionTests {
 
             field.setAccessible(true);
             Object setValue = field.get(instance);
-            if (!setValue.equals(value)) {
+            if (setValue == null) {
+                System.out.print("HELP ME JORDANNNNN");
+            }
+            if (setValue == null && value != null) {
+                throw new UnableToSetValueException("cannot set value!");
+            }
+            if (setValue == null) {
+                // we know value is null too. So actually, we have done what we set out to do.
+                // DON'T throw unable to set exception, also don't check next line because it will NPE
+            } else if (!setValue.equals(value)) {
                 throw new UnableToSetValueException("cannot set value!");
             }
         } catch (IllegalAccessException iae) {
@@ -704,7 +711,6 @@ public class ModelReflectionTests {
         if (type.isAssignableFrom(JsonAttributes.class)) { return buildPopulatedObject(JsonAttributes.class, "jsonString", alt); }
         if (type.isAssignableFrom(JsonNode.class)) { return new TextNode(alt ? "string1" : "string2"); }
         if (type.isAssignableFrom(Score.class)) { return buildPopulatedObject(Score.class, "comment", alt); }
-        if (type.isAssignableFrom(GoalComponent.class)) { return buildPopulatedObject(BehaviorComponent.class, "startDate", alt); }
         if (type.isAssignableFrom(Gpa.class)) { return alt ? new SimpleGpa() : new WeightedGpa();  }
 
         if (type.isAssignableFrom(SurveyQuestion.class)) { return alt ?

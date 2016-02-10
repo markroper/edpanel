@@ -75,17 +75,7 @@ public class AttendanceGoal extends Goal implements CalculatableAttendance{
     @Override
     public String toString() {
         return
-                "GOAL " + "\n"
-                        + "Id  : " + getId() + "\n"
-                        + "Name: " + getName() + "\n"
-                        + "DesiredValue: " + getDesiredValue() +"\n"
-                        + "CalculatedValue: " + getCalculatedValue() + "\n"
-                        + "Approved: " + getApproved() + "\n"
-                        + "GoalType: " + getGoalType() + "\n"
-                        + "Student: " + getStudent() + "\n"
-                        + "Teacher: " + getStaff() + "\n"
-                        + "Section: " + getSection() + "\n"
-                        + "StartDate: " + getStartDate() + "\n"
-                        + "EndDate: " + getEndDate();
+                "GOAL super(" + super.toString() +")" + "\n"
+                        + "Section:" + getSection() + "\n";
     }
 }

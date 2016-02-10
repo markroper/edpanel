@@ -23,8 +23,6 @@ import java.util.Objects;
 @DiscriminatorValue(value = "BEHAVIOR")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class BehaviorGoal extends Goal implements CalculatableBehavior {
-    private LocalDate startDate;
-    private LocalDate endDate;
     private BehaviorCategory behaviorCategory;
 
     public BehaviorGoal() {
@@ -35,29 +33,10 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
     public BehaviorGoal(BehaviorGoal goal) {
         super(goal);
         this.setGoalType(GoalType.BEHAVIOR);
-        this.startDate = goal.startDate;
-        this.endDate = goal.endDate;
         this.behaviorCategory = goal.behaviorCategory;
 
     }
 
-    @Column(name = HibernateConsts.GOAL_START_DATE, columnDefinition="DATE")
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    @Column(name = HibernateConsts.GOAL_END_DATE, columnDefinition = "DATE")
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
     
     @Override
     public void setGoalType(GoalType goalType) {
@@ -80,12 +59,6 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
         super.mergePropertiesIfNull(mergeFrom);
         if (mergeFrom instanceof BehaviorGoal) {
             BehaviorGoal mergeFromBehavior = (BehaviorGoal) mergeFrom;
-            if (null == this.startDate) {
-                this.startDate = mergeFromBehavior.startDate;
-            }
-            if (null == endDate) {
-                this.endDate = mergeFromBehavior.endDate;
-            }
             if (null == behaviorCategory) {
                 this.behaviorCategory = mergeFromBehavior.behaviorCategory;
             }
@@ -99,31 +72,19 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         BehaviorGoal that = (BehaviorGoal) o;
-        return Objects.equals(startDate, that.startDate) &&
-                Objects.equals(endDate, that.endDate) &&
-                Objects.equals(behaviorCategory, that.behaviorCategory);
+        return Objects.equals(behaviorCategory, that.behaviorCategory);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), startDate, endDate, behaviorCategory);
+        return Objects.hash(super.hashCode(), behaviorCategory);
     }
 
     @Override
     public String toString() {
         return
-                "GOAL " + "\n"
-                        + "Id  : " + getId() + "\n"
-                        + "Name: " + getName() + "\n"
-                        + "BehaviorCategory: " + getBehaviorCategory() + "\n"
-                        + "DesiredValue: " + getDesiredValue() + "\n"
-                        + "CalculatedValue: " + getCalculatedValue() + "\n"
-                        + "Approved: " + getApproved() + "\n"
-                        + "GoalType: " + getGoalType() + "\n"
-                        + "Student: " + getStudent() + "\n"
-                        + "Teacher: " + getStaff() + "\n"
-                        + "StartDate: " + getStartDate() + "\n"
-                        + "EndDate: " + getEndDate();
+                "GOAL (super:" + super.toString() + ")" + "\n"
+                        + "BehaviorCategory: " + getBehaviorCategory();
     }
 
     /**
