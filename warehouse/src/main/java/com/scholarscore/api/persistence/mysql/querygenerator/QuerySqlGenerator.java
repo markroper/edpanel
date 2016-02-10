@@ -139,7 +139,7 @@ public abstract class QuerySqlGenerator {
                         counter++;
                         if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
                             if(counter == pos) {
-                                sqlBuilder.append(tableAlias + DOT + generateBucketPsuedoColumnName(am));
+                                sqlBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
                                 sqlBuilder.append(" ");
                                 sqlBuilder.append(resolveOperatorSql(operator));
                                 sqlBuilder.append(" ");
@@ -198,7 +198,7 @@ public abstract class QuerySqlGenerator {
                     sqlBuilder.append(DELIM);
                     sqlBuilder.append(mss.toSelectBucketPsuedoColumn(am.getBuckets()));
                     sqlBuilder.append(" as ");
-                    sqlBuilder.append(generateBucketPsuedoColumnName(am));
+                    sqlBuilder.append(generateBucketPseudoColumnName(am));
                 }
             }
         }
@@ -397,7 +397,7 @@ public abstract class QuerySqlGenerator {
         if(null != q.getAggregateMeasures()) {
             for (AggregateMeasure m : q.getAggregateMeasures()) {
                 if(null != m.getBuckets() && !m.getBuckets().isEmpty()) {
-                    String bucketFieldName = generateBucketPsuedoColumnName(m);
+                    String bucketFieldName = generateBucketPseudoColumnName(m);
                     if (isFirst) {
                         sqlBuilder.append(bucketFieldName);
                         isFirst = false;
@@ -409,7 +409,7 @@ public abstract class QuerySqlGenerator {
         }
     }
 
-    public static String generateBucketPsuedoColumnName(AggregateMeasure m) {
+    public static String generateBucketPseudoColumnName(AggregateMeasure m) {
         return m.getAggregation().name().toLowerCase() + "_" + m.getMeasure().name().toLowerCase() + "_group";
     }
     public static String generateAggColumnName(AggregateMeasure m) {
@@ -520,7 +520,7 @@ public abstract class QuerySqlGenerator {
                                 if(null != function) {
                                     sqlBuilder.append(function.name() + "(");
                                 }
-                                sqlBuilder.append(tableAlias + DOT + generateBucketPsuedoColumnName(am));
+                                sqlBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
                                 if(null != function) {
                                     sqlBuilder.append(function.name() + ")");
                                 } else {
@@ -529,7 +529,7 @@ public abstract class QuerySqlGenerator {
                                     } else {
                                         groupByBuilder.append(DELIM);
                                     }
-                                    groupByBuilder.append(tableAlias + DOT + generateBucketPsuedoColumnName(am));
+                                    groupByBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
                                 }
                             }
                             counter++;
