@@ -123,7 +123,7 @@ public abstract class QuerySqlGenerator {
                     if(first) {
                         first = false;
                     } else {
-                        sqlBuilder.append(DELIM);
+                        sqlBuilder.append(" AND ");
                     }
                     pos = pos - numChildDimensions;
                     int counter = 0;

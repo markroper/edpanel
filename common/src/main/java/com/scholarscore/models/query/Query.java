@@ -91,8 +91,9 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     List<DimensionField> fields;
     // In SQL terms, this defines the WHERE clause of a query
     Expression filter;
-
+    //Support for a parent query to aggregate the nested subquery
     List<SubqueryColumnRef> subqueryColumnsByPosition;
+    //AND'd together only
     List<SubqueryExpression> subqueryFilter;
 
     public Query() {
