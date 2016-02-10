@@ -55,6 +55,8 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
     private Staff teacher;
     private List<SchoolDay> days;
 
+    private static final double STUDENT_3_ABSENCE_THRESHOLD = 4;
+    
     @BeforeClass
     public void init() {
         authenticate();
@@ -308,7 +310,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         dailyAbsence.setName("Daily Absence");
         dailyAbsence.setOwner(student3);
         dailyAbsence.setSchoolId(school.getId());
-        dailyAbsence.setTriggerValue(4D);
+        dailyAbsence.setTriggerValue(STUDENT_3_ABSENCE_THRESHOLD);
         //subscribers & subjects group are the same in this case
         SingleStudent stud3 = new SingleStudent();
         stud3.setStudent(student3);
@@ -383,6 +385,9 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         // check that student 3 has 0 triggered notifications 
         List<TriggeredNotification> student3TriggeredNotifications =
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(student3.getId(), "Student 3 triggered notifications");
-        Assert.assertEquals(student3TriggeredNotifications.size(), 1, "Unexpected number of Student 3 triggered notifications returned");
+        
+        // if there are the same number or more absences than the trigger threshold, expect the alert to be triggered
+        int triggeredNotifications = (AttendanceStatus.values().length >= STUDENT_3_ABSENCE_THRESHOLD) ? 1 : 0;
+        Assert.assertEquals(student3TriggeredNotifications.size(), triggeredNotifications, "Unexpected number of Student 3 triggered notifications returned");
     }
 }
