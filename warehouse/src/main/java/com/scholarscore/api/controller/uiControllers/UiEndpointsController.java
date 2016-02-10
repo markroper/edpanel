@@ -90,6 +90,8 @@ public class UiEndpointsController extends BaseController {
                             withStudent(onlyIdStudent).
                             withApproved(Boolean.FALSE).
                             withDesiredValue(80D).
+                            withPlan("Work hard, improve score").
+                            withAutoComplete(Boolean.FALSE).
                             withName("Section Goal").
                             withStaff(t).
                             build();

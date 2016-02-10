@@ -325,6 +325,18 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         private Double calculatedValue;
         private Boolean approved;
         private GoalType goalType;
+        private Boolean autocomplete;
+        private String plan;
+
+        public U withAutoComplete(final Boolean autoComplete) {
+            this.autocomplete = autoComplete;
+            return me();
+        }
+
+        public U withPlan(final String plan) {
+            this.plan = plan;
+            return me();
+        }
 
         public U withStudent(final Student student){
             this.student = student;
@@ -360,10 +372,13 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
             T goal = super.build();
             goal.setStudent(student);
             goal.setStaff(staff);
+            goal.setPlan(plan);
+            goal.setAutocomplete(autocomplete);
             goal.setDesiredValue(desiredValue);
             goal.setCalculatedValue(calculatedValue);
             goal.setApproved(approved);
             goal.setGoalType(goalType);
+            goal.setAutocomplete(autocomplete);
             return goal;
         }
     }

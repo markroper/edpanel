@@ -417,9 +417,6 @@ public class ModelReflectionTests {
 
             field.setAccessible(true);
             Object setValue = field.get(instance);
-            if (setValue == null) {
-                System.out.print("HELP ME JORDANNNNN");
-            }
             if (setValue == null && value != null) {
                 throw new UnableToSetValueException("cannot set value!");
             }
