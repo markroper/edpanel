@@ -25,8 +25,9 @@ public interface MeasureSqlSerializer {
         b.append("CASE \n");
         String fieldInner = toSelectInner();
         for(AggregationBucket bucket: buckets) {
-            if(null != bucket.getStart() && null != bucket.getEnd()) {
-                if(bucket.getStart().compareTo(bucket.getEnd()) == 1) {
+            if(null != bucket.getStart() || null != bucket.getEnd()) {
+                if(null != bucket.getStart() && null != bucket.getEnd() &&
+                        bucket.getStart().compareTo(bucket.getEnd()) == 1) {
                     throw new SqlGenerationException("Bucket start is greater than end, which is invalid");
                 }
                 b.append("WHEN ");

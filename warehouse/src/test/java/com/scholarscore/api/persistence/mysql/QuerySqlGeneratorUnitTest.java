@@ -260,17 +260,32 @@ public class QuerySqlGeneratorUnitTest {
         List<AggregationBucket> buckets = new ArrayList<>();
         buckets.add(new NumericBucket(0D, 1D, "0-1"));
         buckets.add(new NumericBucket(1D, 2D, "1-2"));
-        buckets.add(new NumericBucket(2D, 3D, "3-3"));
-        buckets.add(new NumericBucket(4D, null, "4+"));
+        buckets.add(new NumericBucket(2D, 3D, "2-3"));
+        buckets.add(new NumericBucket(3D, null, "4+"));
         gpaMeasure.setBuckets(buckets);
         gpaMeasures.add(gpaMeasure);
-
         String gpaSqlStatement = "SELECT COUNT(gpa.gpa_score), CASE \n" +
                 "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
                 "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
-                "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '3-3'\n" +
+                "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
+                "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
                 "ELSE NULL \n" +
-                "END as count_gpa_group FROM null GROUP BY count_gpa_group";
+                "END as count_gpa_group FROM gpa GROUP BY count_gpa_group";
+
+        Query currGpaQuery = new Query();
+        AggregateMeasure currGpaMeasure = new AggregateMeasure(Measure.CURRENT_GPA, AggregateFunction.COUNT);
+        currGpaMeasure.setBuckets(buckets);
+        ArrayList<AggregateMeasure> currGpaMeasures = new ArrayList<>();
+        currGpaMeasures.add(currGpaMeasure);
+        currGpaQuery.setAggregateMeasures(currGpaMeasures);
+        String currGpaSqlStatement = "SELECT COUNT(gpa.gpa_score), CASE \n" +
+                "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
+                "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
+                "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
+                "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
+                "ELSE NULL \n" +
+                "END as count_current_gpa_group FROM current_gpa LEFT OUTER JOIN gpa " +
+                "ON gpa.gpa_id = current_gpa.gpa_fk GROUP BY count_current_gpa_group";
         return new Object[][] {
                 { "Course Grade query", courseGradeQuery, courseGradeQuerySql },
                 { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql },
@@ -281,7 +296,8 @@ public class QuerySqlGeneratorUnitTest {
                 { "Absence by Section query", sectionAbsenceQuery, sectionAbsenceSql },
                 { "Tardy be Section query", sectionTardyQuery, sectionTardySql },
                 { "School name query", schoolNameQuery, schoolNameSql },
-                { "GPA with buckets", gpaBucketQuery, gpaSqlStatement }
+                { "GPA with buckets", gpaBucketQuery, gpaSqlStatement },
+                { "Current GPA with buckets", currGpaQuery, currGpaSqlStatement }
         };
     }
     
