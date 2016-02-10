@@ -68,11 +68,11 @@ public class GoalManagerImpl implements GoalManager {
             //TODO I don't like this duplication of code from the JDBC to the managers
         } else if (goal.getGoalType() == GoalType.SECTION_GRADE){
             SectionGradeGoal sectionGradeGoal = (SectionGradeGoal)goal;
-            StudentSectionGrade ssg = studentSectionGradePersistence.select(sectionGradeGoal.getParentId(),studentId);
+            StudentSectionGrade ssg = studentSectionGradePersistence.select(sectionGradeGoal.getSection().getId(),studentId);
             if(null == ssg) {
                 return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
                         new Object[]{STUDENT_SECTION_GRADE,
-                                "section id: " + sectionGradeGoal.getParentId() + ", student id: " + studentId}));
+                                "section id: " + sectionGradeGoal.getSection().getId() + ", student id: " + studentId}));
             }
         }
 

@@ -93,4 +93,38 @@ public class SectionGradeGoal extends Goal implements CalculatableSection {
                         + "Section: " + getSection();
     }
 
+    /**
+     * Each class's Builder holds a copy of each attribute that the parent POJO has. We build up these properties using
+     * a pattern of with[Attribute](Attribute attribute) and return the same instance of the Builder so that one can easily
+     * chain setting attributes together.
+     */
+    public static class SectionGradeGoalBuilder extends GoalBuilder<SectionGradeGoalBuilder, SectionGradeGoal>{
+
+        private Section section;
+
+        public SectionGradeGoalBuilder withSection(final Section section){
+            this.section = section;
+            return this;
+        }
+
+        public SectionGradeGoal build(){
+            SectionGradeGoal goal = super.build();
+            goal.setGoalType(GoalType.SECTION_GRADE);
+            goal.setSection(section);
+            return goal;
+        }
+
+        @Override
+        protected SectionGradeGoalBuilder me() {
+            return this;
+        }
+
+        @Override
+        public SectionGradeGoal getInstance() {
+            return new SectionGradeGoal();
+        }
+    }
+
 }
+
+

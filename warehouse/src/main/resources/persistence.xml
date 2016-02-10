@@ -65,7 +65,6 @@
         <property name="behaviorGoalCalc" ref="behaviorCalc"/>
         <property name="sectionGoalCalc" ref="cumulativeGradeCalc"/>
         <property name="attendanceGoalCalc" ref="attendanceGoalCalc"/>
-        <property name="complexGoalCalc" ref="complexGoalCalc"/>
     </bean>
 
     <bean id="teacherPersistence"
@@ -162,13 +161,6 @@
         <property name="attendancePersistence" ref="attendancePersistence"/>
     </bean>
 
-    <bean id="complexGoalCalc"
-          class="com.scholarscore.api.persistence.goalCalculators.ComplexGoalCalc">
-        <property name="attendanceGoalCalc" ref="attendanceGoalCalc"/>
-        <property name="sectionGoalCalc" ref="cumulativeGradeCalc"/>
-        <property name="assignmentGoalCalc" ref="assignmentCalc"/>
-        <property name="behaviorGoalCalc" ref="behaviorCalc"/>
-    </bean>
 
     <bean id="schoolDayPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.SchoolDayJdbc">

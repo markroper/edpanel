@@ -92,8 +92,8 @@ public class AttendanceJdbc implements AttendancePersistence {
     @Override
     public Collection<Attendance> selectAllAttendance(Long schoolId,
                                                       Long studentId) {
-        String[] paramNames = new String[] {"studentId" };
-        Object[] paramValues = new Object[]{ studentId };
+        String[] paramNames = new String[] {"schoolId", "studentId" };
+        Object[] paramValues = new Object[]{ schoolId, studentId };
         return (Collection<Attendance>)hibernateTemplate.findByNamedParam(
                 ATTENDANCE_HQL + " where a.schoolDay.school.id = :schoolId and a.student.id = :studentId",
                 paramNames,

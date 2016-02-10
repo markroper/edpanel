@@ -59,6 +59,11 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 
     public Goal() {
         super();
+        //THis is maybe controversial. Goals should not be completed upon creation and a teacher followup
+        //Should not have already happened. So we will set them to initial conditions
+        this.teacherFollowup = Boolean.FALSE;
+        this.goalProgress = GoalProgress.IN_PROGRESS;
+
     }
 
     public Goal(Goal goal) {
@@ -84,7 +89,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         return super.getId();
     }
 
-    @Column(name = HibernateConsts.GOAL_PROGRESS, insertable = false, updatable = false)
+    @Column(name = HibernateConsts.GOAL_PROGRESS, insertable = true, updatable = true)
     @Enumerated(EnumType.STRING)
     public GoalProgress getGoalProgress() {
         return goalProgress;

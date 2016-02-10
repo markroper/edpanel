@@ -7,25 +7,17 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.grade.SectionGrade;
-import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.assignment.StudentAssignment;
-import com.scholarscore.models.goal.AssignmentComponent;
 import com.scholarscore.models.goal.AssignmentGoal;
-import com.scholarscore.models.goal.AttendanceComponent;
 import com.scholarscore.models.goal.AttendanceGoal;
-import com.scholarscore.models.goal.BehaviorComponent;
 import com.scholarscore.models.goal.BehaviorGoal;
-import com.scholarscore.models.goal.ComplexGoal;
-import com.scholarscore.models.goal.ConstantComponent;
-import com.scholarscore.models.goal.CumulativeGradeComponent;
-import com.scholarscore.models.goal.SectionGradeGoal;
 import com.scholarscore.models.goal.Goal;
-import com.scholarscore.models.goal.GoalAggregate;
-import com.scholarscore.models.goal.GoalComponent;
+import com.scholarscore.models.goal.SectionGradeGoal;
+import com.scholarscore.models.grade.SectionGrade;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
 import org.testng.annotations.BeforeClass;
@@ -38,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 
 import static org.testng.Assert.fail;
 
@@ -153,85 +144,46 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         behaviorGoal.setDesiredValue(41.5d);
         behaviorGoal.setName("To win them all");
         behaviorGoal.setApproved(false);
+        behaviorGoal.setAutocomplete(false);
+        behaviorGoal.setPlan("WE WILL MAKE THE GAOL");
 
         AssignmentGoal assGoal = new AssignmentGoal();
         assGoal.setStudent(student);
         assGoal.setStaff(teacher);
         assGoal.setName("The final final");
         assGoal.setApproved(false);
-        assGoal.setParentId(studentAssignment.getId());
+        assGoal.setStudentAssignment(studentAssignment);
         assGoal.setDesiredValue(95d);
+        assGoal.setAutocomplete(false);
+        assGoal.setPlan("WE WILL MAKE THE GAOL");
+
+        //When we get goals with sections we don't want enrolled students to come back when we query for goals
+        Section goalSection = new Section(section);
+        goalSection.setEnrolledStudents(new ArrayList<Student>());
 
         SectionGradeGoal sectionGradeGoal = new SectionGradeGoal();
         sectionGradeGoal.setStudent(student);
         sectionGradeGoal.setStaff(teacher);
         sectionGradeGoal.setName("ALL OF THE As");
         sectionGradeGoal.setApproved(false);
-        sectionGradeGoal.setParentId(section.getId());
+        sectionGradeGoal.setSection(goalSection);
         sectionGradeGoal.setDesiredValue(6d);
+        sectionGradeGoal.setAutocomplete(false);
+        sectionGradeGoal.setPlan("WE WILL MAKE THE GAOL");
 
         AttendanceGoal attendanceGoal = new AttendanceGoal();
         attendanceGoal.setStudent(student);
         attendanceGoal.setStaff(teacher);
         attendanceGoal.setName("Weekly attendance goal");
         attendanceGoal.setApproved(false);
-        attendanceGoal.setParentId(section.getId());
+        attendanceGoal.setSection(goalSection);
         attendanceGoal.setDesiredValue(5D);
         attendanceGoal.setStartDate(today);
         attendanceGoal.setEndDate(nextYear);
-
-        //Generate goal Components for complex goal
-        GoalAggregate aggregate = new GoalAggregate();
-        List<GoalComponent> goalComponents = new ArrayList<GoalComponent>();
-        aggregate.setGoalComponents(goalComponents);
-
-        //Behavior component
-        BehaviorComponent behaviorComponent = new BehaviorComponent();
-        behaviorComponent.setBehaviorCategory(BehaviorCategory.DEMERIT);
-        behaviorComponent.setStartDate(today);
-        behaviorComponent.setEndDate(nextYear);
-        behaviorComponent.setModifier(2D);
-        behaviorComponent.setStudent(student);
-        goalComponents.add(behaviorComponent);
-
-        //Assignment Component
-        AssignmentComponent assignmentComponent = new AssignmentComponent();
-        assignmentComponent.setParentId(studentAssignment.getId());
-        assignmentComponent.setModifier(1D);
-        assignmentComponent.setStudent(student);
-        goalComponents.add(assignmentComponent);
-
-        //Attendance Component
-        AttendanceComponent attendanceComponent = new AttendanceComponent();
-        attendanceComponent.setStartDate(today);
-        attendanceComponent.setEndDate(nextYear);
-        attendanceComponent.setParentId(section.getId());
-        attendanceComponent.setStudent(student);
-        attendanceComponent.setModifier(3D);
-        goalComponents.add(attendanceComponent);
-
-        //Cumulative Component
-        CumulativeGradeComponent cumulativeGradeComponent = new CumulativeGradeComponent();
-        cumulativeGradeComponent.setStudent(student);
-        cumulativeGradeComponent.setParentId(section.getId());
-        cumulativeGradeComponent.setModifier(4D);
-        goalComponents.add(cumulativeGradeComponent);
-
-        //Constant Component
-        ConstantComponent constantComponent = new ConstantComponent();
-        constantComponent.setStudent(student);
-        constantComponent.setInitialValue(50D);
-        goalComponents.add(constantComponent);
+        attendanceGoal.setAutocomplete(false);
+        attendanceGoal.setPlan("WE WILL MAKE THE GAOL");
 
 
-        //Generate complex goal
-        ComplexGoal complexGoal = new ComplexGoal();
-        complexGoal.setStudent(student);
-        complexGoal.setStaff(teacher);
-        complexGoal.setName("Formula Goal");
-        complexGoal.setApproved(false);
-        complexGoal.setDesiredValue(100D);
-        complexGoal.setGoalAggregate(aggregate);
 
 
 
@@ -239,8 +191,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
                 {behaviorGoal, "Test failed with a behavior goal"},
                 {assGoal, "Test failed with an assignment goal"},
                 {sectionGradeGoal, "Test failed with a cumulative grade goal"},
-                {attendanceGoal, "Test failed with an attendance goal"},
-                {complexGoal, "Test failed with a complex goal"}
+                {attendanceGoal, "Test failed with an attendance goal"}
         };
     }
 
@@ -286,32 +237,13 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         behaviorGoal.setName("To win them all");
         behaviorGoal.setApproved(false);
         behaviorGoal.setCalculatedValue(EXPECTED_VALUE);
+        behaviorGoal.setAutocomplete(false);
+        behaviorGoal.setPlan("WE WILL MAKE THE GAOL");
 
-        //Generate goal components that make up our complex goal
-        List<GoalComponent> goalComponents = new ArrayList<GoalComponent>();
-        BehaviorComponent behaviorComponent = new BehaviorComponent();
-        behaviorComponent.setBehaviorCategory(BehaviorCategory.DEMERIT);
-        behaviorComponent.setStartDate(today);
-        behaviorComponent.setEndDate(lastYear);
-        behaviorComponent.setModifier(2D);
-        behaviorComponent.setStudent(student);
-        goalComponents.add(behaviorComponent);
-        GoalAggregate aggregate = new GoalAggregate();
-        aggregate.setGoalComponents(goalComponents);
 
-        //Generate Complex Goal with expected value of twice the behavior goal
-        ComplexGoal complexGoal = new ComplexGoal();
-        complexGoal.setStudent(student);
-        complexGoal.setStaff(teacher);
-        complexGoal.setName("Formula Goal");
-        complexGoal.setApproved(false);
-        complexGoal.setDesiredValue(100D);
-        complexGoal.setCalculatedValue(EXPECTED_VALUE * 2);
-        complexGoal.setGoalAggregate(aggregate);
 
         return new Object[][]{
-                {behaviorGoal, "We did not receive teh expected value from your goal"},
-                {complexGoal, "We did not receive expected value for complex goal"}
+                {behaviorGoal, "We did not receive teh expected value from your goal"}
         };
 
     }

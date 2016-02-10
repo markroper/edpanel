@@ -68,7 +68,7 @@ public class UiEndpointsController extends BaseController {
         for (Goal goal: goalsResponse.getValue()) {
             if (goal.getGoalType() == GoalType.SECTION_GRADE) {
                 SectionGradeGoal cumGoal = (SectionGradeGoal)goal;
-                sectionGoalMap.put(cumGoal.getParentId(), cumGoal);
+                sectionGoalMap.put(cumGoal.getSection().getId(), cumGoal);
             }
         }
         Student onlyIdStudent = new Student.StudentBuilder().withId(studentId).build();
@@ -85,8 +85,8 @@ public class UiEndpointsController extends BaseController {
                     if(null != persons && !persons.isEmpty()) {
                         t = persons.iterator().next();
                     }
-                    SectionGradeGoal fullSectionGradeGoalByBuilder = new SectionGradeGoal.CumulativeGradeGoalBuilder().
-                            withParentId(s.getId()).
+                    SectionGradeGoal fullSectionGradeGoalByBuilder = new SectionGradeGoal.SectionGradeGoalBuilder().
+                            withSection(s).
                             withStudent(onlyIdStudent).
                             withApproved(Boolean.FALSE).
                             withDesiredValue(80D).
