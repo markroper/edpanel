@@ -63,7 +63,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         school = schoolValidatingExecutor.create(school, "Create base school");
 
         teacher = new Staff();
-        teacher.setName("Mr. Jones");
+        teacher.setName(localeServiceUtil.generateName());
         teacher.setIsTeacher(true);
         teacher.setCurrentSchoolId(school.getId());
         teacher = teacherValidatingExecutor.create(teacher, "Create a base teacher");
@@ -183,7 +183,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
             day.setSchool(school);
             days.add(schoolDayValidatingExecutor.create(school.getId(), day, "creating a school"));
         }
-        //Make some absensces
+        //Make some absences
         section.setEnrolledStudents(new ArrayList<>());
         for(SchoolDay day: days) {
             Attendance a = new Attendance();
@@ -305,7 +305,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         dailyAbsence.setTriggerWhenGreaterThan(true);
         dailyAbsence.setExpiryDate(LocalDate.now().plusMonths(3));
         dailyAbsence.setMeasure(NotificationMeasure.SCHOOL_ABSENCE);
-        dailyAbsence.setName("Section tardy");
+        dailyAbsence.setName("Daily Absence");
         dailyAbsence.setOwner(student3);
         dailyAbsence.setSchoolId(school.getId());
         dailyAbsence.setTriggerValue(4D);
@@ -354,21 +354,35 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         List<Notification> allNotifications = notificationValidatingExecutor.getAll("all notifications");
         Assert.assertTrue(allNotifications.size() >= 6, "Unexpected number of notifications returned by getAll()");
 
+        // evaluate all notifications
         notificationValidatingExecutor.evaluateNotifications(school.getId());
-
+        
+        // check that teacher has 2 triggered notifications
         List<TriggeredNotification> teacherTriggeredNotifications =
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(teacher.getId(), "Teacher triggered notifications");
         Assert.assertEquals(teacherTriggeredNotifications.size(), 2, "Unexpected number of teacher triggered notifications returned");
+
+        // check that student 2 has 1 triggered notification
         List<TriggeredNotification> student2TriggeredNotifications =
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(student2.getId(), "Student 2 triggered notifications");
-        Assert.assertEquals(student2TriggeredNotifications.size(), 1, "Unexpected number of teacher triggered notifications returned");
-        TriggeredNotification tr = student2TriggeredNotifications.get(0);
-        notificationValidatingExecutor.disableTriggeredNotification(tr.getNotification().getId(), tr.getId(), student2.getId(), "Disabling notification");
+        Assert.assertEquals(student2TriggeredNotifications.size(), 1, "Unexpected number of student2 triggered notifications returned");
+        
+        // get student 2's one triggered notification and disable (acknowledge) it
+        TriggeredNotification student2TriggeredNotification = student2TriggeredNotifications.get(0);
+        notificationValidatingExecutor.disableTriggeredNotification(
+                student2TriggeredNotification.getNotification().getId(), 
+                student2TriggeredNotification.getId(),
+                student2.getId(),
+                "Disabling notification");
+        
+        // confirm that the acknowledgement of the one triggered notification worked, and that now there are zero
         student2TriggeredNotifications =
-                notificationValidatingExecutor.getTriggeredNotificationsForUser(student2.getId(), "Student 3 triggered notifications");
-        Assert.assertEquals(student2TriggeredNotifications.size(), 0, "Unexpected number of teacher triggered notifications returned");
+                notificationValidatingExecutor.getTriggeredNotificationsForUser(student2.getId(), "Student 2 triggered notifications");
+        Assert.assertEquals(student2TriggeredNotifications.size(), 0, "Unexpected number of Student 2 triggered notifications after acknowledgement");
+        
+        // check that student 3 has 0 triggered notifications 
         List<TriggeredNotification> student3TriggeredNotifications =
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(student3.getId(), "Student 3 triggered notifications");
-        Assert.assertEquals(student3TriggeredNotifications.size(), 0, "Unexpected number of teacher triggered notifications returned");
+        Assert.assertEquals(student3TriggeredNotifications.size(), 1, "Unexpected number of Student 3 triggered notifications returned");
     }
 }

@@ -28,7 +28,10 @@ public class BehaviorScoreCalc implements NotificationCalculator {
     @Override
     public List<TriggeredNotification> calculate(
             List<? extends Person> subjects, Notification notification, OrchestrationManager manager) {
-        List<Long> studentIds = new ArrayList<>();
+        if (subjects == null || subjects.size() <= 0) {
+            return null;
+        }
+        List<Long> studentIds = new ArrayList<>(subjects.size());
         for(Person p : subjects) {
             studentIds.add(p.getId());
         }
