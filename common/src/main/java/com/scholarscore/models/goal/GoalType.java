@@ -11,7 +11,5 @@ public enum GoalType implements Serializable {
     ATTENDANCE,
     BEHAVIOR,
     SECTION_GRADE,
-    ASSIGNMENT,
-    COMPLEX,
-    CONSTANT
+    ASSIGNMENT
 }
