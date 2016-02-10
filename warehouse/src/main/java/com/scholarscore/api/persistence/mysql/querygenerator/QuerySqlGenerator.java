@@ -58,6 +58,7 @@ public abstract class QuerySqlGenerator {
     private static final String ID_SUFFIX = "_id";
     private static final String FK_SUFFIX = "_fk";
     private static final String DELIM = ", ";
+    private static final String DOT = ".";
     
     public static SqlWithParameters generate(Query q) throws SqlGenerationException {
         Map<String, Object> params = new HashMap<>();
@@ -130,7 +131,7 @@ public abstract class QuerySqlGenerator {
                             if(null != function) {
                                 sqlBuilder.append(function.name() + ")");
                             }
-                            sqlBuilder.append(tableAlias + "." + generateAggColumnName(am));
+                            sqlBuilder.append(tableAlias + DOT + generateAggColumnName(am));
                             if(null != function) {
                                 sqlBuilder.append(function.name() + ")");
                             } else {
@@ -139,7 +140,7 @@ public abstract class QuerySqlGenerator {
                                 } else {
                                     groupByBuilder.append(DELIM);
                                 }
-                                groupByBuilder.append(tableAlias + "." + generateAggColumnName(am));
+                                groupByBuilder.append(tableAlias + DOT + generateAggColumnName(am));
                             }
                         }
                         counter++;
@@ -148,7 +149,7 @@ public abstract class QuerySqlGenerator {
                                 if(null != function) {
                                     sqlBuilder.append(function.name() + "(");
                                 }
-                                sqlBuilder.append(tableAlias + "." + generateBucketPsuedoColumnName(am));
+                                sqlBuilder.append(tableAlias + DOT + generateBucketPsuedoColumnName(am));
                                 if(null != function) {
                                     sqlBuilder.append(function.name() + ")");
                                 } else {
@@ -157,7 +158,7 @@ public abstract class QuerySqlGenerator {
                                     } else {
                                         groupByBuilder.append(DELIM);
                                     }
-                                    groupByBuilder.append(tableAlias + "." + generateBucketPsuedoColumnName(am));
+                                    groupByBuilder.append(tableAlias + DOT + generateBucketPsuedoColumnName(am));
                                 }
                             }
                             counter++;
@@ -206,7 +207,7 @@ public abstract class QuerySqlGenerator {
                     int counter = 0;
                     for(AggregateMeasure am: q.getAggregateMeasures()) {
                         if(counter == pos) {
-                            sqlBuilder.append(tableAlias + "." + generateAggColumnName(am));
+                            sqlBuilder.append(tableAlias + DOT + generateAggColumnName(am));
                             sqlBuilder.append(" ");
                             sqlBuilder.append(resolveOperatorSql(operator));
                             sqlBuilder.append(" ");
@@ -216,7 +217,7 @@ public abstract class QuerySqlGenerator {
                         counter++;
                         if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
                             if(counter == pos) {
-                                sqlBuilder.append(tableAlias + "." + generateBucketPsuedoColumnName(am));
+                                sqlBuilder.append(tableAlias + DOT + generateBucketPsuedoColumnName(am));
                                 sqlBuilder.append(" ");
                                 sqlBuilder.append(resolveOperatorSql(operator));
                                 sqlBuilder.append(" ");
@@ -346,7 +347,7 @@ public abstract class QuerySqlGenerator {
                         throw new SqlGenerationException("Unable to generate JOIN clause due to null table name");
                     }
                     sqlBuilder.append(LEFT_OUTER_JOIN + joinTableName + " " + ON + " ");
-                    sqlBuilder.append(joinTableName + "." + resolvePrimaryKeyField(joinTableName) + " = ");
+                    sqlBuilder.append(joinTableName + DOT + resolvePrimaryKeyField(joinTableName) + " = ");
                     //Assignment is simplified to the user which means it can be ambiguous which dimension to actually join on
                     //So we join on assignment if we're dealing with anything up a student or an assignment table directly
                     if(currentTableName.equals(HibernateConsts.STUDENT_ASSIGNMENT_TABLE) &&
@@ -354,7 +355,7 @@ public abstract class QuerySqlGenerator {
                             !joinTableName.equals(HibernateConsts.ASSIGNMENT_TABLE)) {
                         currentTableName = HibernateConsts.ASSIGNMENT_TABLE;
                     }
-                    sqlBuilder.append(currentTableName + "." + joinTableName + FK_SUFFIX + " ");
+                    sqlBuilder.append(currentTableName + DOT + joinTableName + FK_SUFFIX + " ");
                     currTable = joinDim;
                 }
             }
@@ -503,7 +504,7 @@ public abstract class QuerySqlGenerator {
                     tableName + ") and columnName (" + 
                     columnName + ") must both be non-null");
         }
-        return tableName + "." + columnName;
+        return tableName + DOT + columnName;
     }
     
     protected static String generateMeasureFieldSql(MeasureField f, String tableAlias) throws SqlGenerationException {
