@@ -7,7 +7,7 @@ import com.scholarscore.models.goal.AssignmentGoal;
 import com.scholarscore.models.goal.AttendanceGoal;
 import com.scholarscore.models.goal.BehaviorGoal;
 import com.scholarscore.models.goal.ComplexGoal;
-import com.scholarscore.models.goal.CumulativeGradeGoal;
+import com.scholarscore.models.goal.SectionGradeGoal;
 import com.scholarscore.models.goal.Goal;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -103,8 +103,8 @@ public class GoalValidatingExecutor {
                 case ASSIGNMENT:
                     returnGoal = new AssignmentGoal((AssignmentGoal)submitted);
                     break;
-                case CUMULATIVE_GRADE:
-                    returnGoal =  new CumulativeGradeGoal((CumulativeGradeGoal)submitted);
+                case SECTION_GRADE:
+                    returnGoal =  new SectionGradeGoal((SectionGradeGoal)submitted);
                     break;
                 case ATTENDANCE:
                     returnGoal = new AttendanceGoal((AttendanceGoal)submitted);

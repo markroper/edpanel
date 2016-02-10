@@ -9,39 +9,39 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
- * CumulativeGradeGoalBuilderUnitTest tests
+ * SectionGradeGoalBuilderUnitTest tests
  * Created by cschneider on 10/11/15.
  */
 @Test(groups = { "unit" })
-public class CumulativeGradeGoalBuilderUnitTest extends AbstractBuilderUnitTest<CumulativeGradeGoal> {
+public class SectionGradeGoalBuilderUnitTest extends AbstractBuilderUnitTest<SectionGradeGoal> {
 
     @DataProvider
     @Override
     public Object[][] builderProvider() {
-        CumulativeGradeGoal emptyCumulativeGradeGoal = new CumulativeGradeGoal();
-        CumulativeGradeGoal emptyCumulativeGradeGoalByBuilder = new CumulativeGradeGoal.CumulativeGradeGoalBuilder().build();
+        SectionGradeGoal emptySectionGradeGoal = new SectionGradeGoal();
+        SectionGradeGoal emptySectionGradeGoalByBuilder = new SectionGradeGoal.CumulativeGradeGoalBuilder().build();
 
         Long id = RandomUtils.nextLong(0L, Long.MAX_VALUE);
         Long parentId = RandomUtils.nextLong(0L, Long.MAX_VALUE);
         Student student = CommonTestUtils.generateStudent();
         Double calculatedValue = RandomUtils.nextDouble(0d, Double.MIN_VALUE);
         Double desiredValue = RandomUtils.nextDouble(0d, Double.MIN_VALUE);
-        GoalType goalType = GoalType.CUMULATIVE_GRADE;
+        GoalType goalType = GoalType.SECTION_GRADE;
         String name = CommonTestUtils.generateName();
         Staff teacher = CommonTestUtils.generateTeacher();
 
-        CumulativeGradeGoal fullCumulativeGradeGoal = new CumulativeGradeGoal();
-        fullCumulativeGradeGoal.setId(id);
-        fullCumulativeGradeGoal.setParentId(parentId);
-        fullCumulativeGradeGoal.setStudent(student);
-        fullCumulativeGradeGoal.setApproved(Boolean.TRUE);
-        fullCumulativeGradeGoal.setCalculatedValue(calculatedValue);
-        fullCumulativeGradeGoal.setDesiredValue(desiredValue);
-        fullCumulativeGradeGoal.setGoalType(goalType);
-        fullCumulativeGradeGoal.setName(name);
-        fullCumulativeGradeGoal.setStaff(teacher);
+        SectionGradeGoal fullSectionGradeGoal = new SectionGradeGoal();
+        fullSectionGradeGoal.setId(id);
+        fullSectionGradeGoal.setParentId(parentId);
+        fullSectionGradeGoal.setStudent(student);
+        fullSectionGradeGoal.setApproved(Boolean.TRUE);
+        fullSectionGradeGoal.setCalculatedValue(calculatedValue);
+        fullSectionGradeGoal.setDesiredValue(desiredValue);
+        fullSectionGradeGoal.setGoalType(goalType);
+        fullSectionGradeGoal.setName(name);
+        fullSectionGradeGoal.setStaff(teacher);
 
-        CumulativeGradeGoal fullCumulativeGradeGoalByBuilder = new CumulativeGradeGoal.CumulativeGradeGoalBuilder().
+        SectionGradeGoal fullSectionGradeGoalByBuilder = new SectionGradeGoal.CumulativeGradeGoalBuilder().
                 withId(id).
                 withParentId(parentId).
                 withStudent(student).
@@ -54,8 +54,8 @@ public class CumulativeGradeGoalBuilderUnitTest extends AbstractBuilderUnitTest<
                 build();
 
         return new Object[][]{
-                {"Empty cumulative grade goal", emptyCumulativeGradeGoalByBuilder, emptyCumulativeGradeGoal},
-                {"Full cumulative grade goal", fullCumulativeGradeGoalByBuilder, fullCumulativeGradeGoal}
+                {"Empty cumulative grade goal", emptySectionGradeGoalByBuilder, emptySectionGradeGoal},
+                {"Full cumulative grade goal", fullSectionGradeGoalByBuilder, fullSectionGradeGoal}
         };
     }
 }

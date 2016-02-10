@@ -38,7 +38,7 @@ import java.util.Objects;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = BehaviorGoal.class, name="BEHAVIOR"),
         @JsonSubTypes.Type(value = AssignmentGoal.class, name = "ASSIGNMENT"),
-        @JsonSubTypes.Type(value = CumulativeGradeGoal.class, name = "CUMULATIVE_GRADE"),
+        @JsonSubTypes.Type(value = SectionGradeGoal.class, name = "SECTION_GRADE"),
         @JsonSubTypes.Type(value = AttendanceGoal.class, name = "ATTENDANCE"),
         @JsonSubTypes.Type(value = ComplexGoal.class, name = "COMPLEX")
 })

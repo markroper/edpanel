@@ -16,7 +16,7 @@ import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.goal.AssignmentGoal;
 import com.scholarscore.models.goal.AttendanceGoal;
 import com.scholarscore.models.goal.BehaviorGoal;
-import com.scholarscore.models.goal.CumulativeGradeGoal;
+import com.scholarscore.models.goal.SectionGradeGoal;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.notification.Notification;
@@ -956,7 +956,7 @@ public class SchoolDataFactory {
             int assignmentIndex = ThreadLocalRandom.current().nextInt(studentAssignments.size()-1);
             ArrayList<Goal> studentGoalList = new ArrayList<Goal>();
 
-            CumulativeGradeGoal sectionGradeGoal = new CumulativeGradeGoal();
+            SectionGradeGoal sectionGradeGoal = new SectionGradeGoal();
 
             if (null == enrolledSections.get(index)) {
                 sectionGradeGoal.setParentId(enrolledSections.get(0));

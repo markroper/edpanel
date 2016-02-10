@@ -22,7 +22,7 @@ import com.scholarscore.models.goal.BehaviorGoal;
 import com.scholarscore.models.goal.ComplexGoal;
 import com.scholarscore.models.goal.ConstantComponent;
 import com.scholarscore.models.goal.CumulativeGradeComponent;
-import com.scholarscore.models.goal.CumulativeGradeGoal;
+import com.scholarscore.models.goal.SectionGradeGoal;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.goal.GoalAggregate;
 import com.scholarscore.models.goal.GoalComponent;
@@ -162,13 +162,13 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         assGoal.setParentId(studentAssignment.getId());
         assGoal.setDesiredValue(95d);
 
-        CumulativeGradeGoal cumulativeGradeGoal = new CumulativeGradeGoal();
-        cumulativeGradeGoal.setStudent(student);
-        cumulativeGradeGoal.setStaff(teacher);
-        cumulativeGradeGoal.setName("ALL OF THE As");
-        cumulativeGradeGoal.setApproved(false);
-        cumulativeGradeGoal.setParentId(section.getId());
-        cumulativeGradeGoal.setDesiredValue(6d);
+        SectionGradeGoal sectionGradeGoal = new SectionGradeGoal();
+        sectionGradeGoal.setStudent(student);
+        sectionGradeGoal.setStaff(teacher);
+        sectionGradeGoal.setName("ALL OF THE As");
+        sectionGradeGoal.setApproved(false);
+        sectionGradeGoal.setParentId(section.getId());
+        sectionGradeGoal.setDesiredValue(6d);
 
         AttendanceGoal attendanceGoal = new AttendanceGoal();
         attendanceGoal.setStudent(student);
@@ -238,7 +238,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         return new Object[][] {
                 {behaviorGoal, "Test failed with a behavior goal"},
                 {assGoal, "Test failed with an assignment goal"},
-                {cumulativeGradeGoal, "Test failed with a cumulative grade goal"},
+                {sectionGradeGoal, "Test failed with a cumulative grade goal"},
                 {attendanceGoal, "Test failed with an attendance goal"},
                 {complexGoal, "Test failed with a complex goal"}
         };

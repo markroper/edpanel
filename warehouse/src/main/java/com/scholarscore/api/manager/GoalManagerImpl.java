@@ -7,10 +7,10 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
+import com.scholarscore.models.goal.SectionGradeGoal;
 import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.goal.AssignmentGoal;
-import com.scholarscore.models.goal.CumulativeGradeGoal;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.goal.GoalType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,13 +66,13 @@ public class GoalManagerImpl implements GoalManager {
             }
 
             //TODO I don't like this duplication of code from the JDBC to the managers
-        } else if (goal.getGoalType() == GoalType.CUMULATIVE_GRADE){
-            CumulativeGradeGoal cumulativeGradeGoal = (CumulativeGradeGoal)goal;
-            StudentSectionGrade ssg = studentSectionGradePersistence.select(cumulativeGradeGoal.getParentId(),studentId);
+        } else if (goal.getGoalType() == GoalType.SECTION_GRADE){
+            SectionGradeGoal sectionGradeGoal = (SectionGradeGoal)goal;
+            StudentSectionGrade ssg = studentSectionGradePersistence.select(sectionGradeGoal.getParentId(),studentId);
             if(null == ssg) {
                 return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
                         new Object[]{STUDENT_SECTION_GRADE,
-                                "section id: " + cumulativeGradeGoal.getParentId() + ", student id: " + studentId}));
+                                "section id: " + sectionGradeGoal.getParentId() + ", student id: " + studentId}));
             }
         }
 

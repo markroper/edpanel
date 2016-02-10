@@ -18,7 +18,7 @@ public class ComplexGoalCalc implements GoalCalc<ComplexGoal> {
     private AssignmentGoalCalc assignmentGoalCalc;
     private AttendanceGoalCalc attendanceGoalCalc;
     private BehaviorGoalCalc behaviorGoalCalc;
-    private CumulativeGoalCalc cumulativeGoalCalc;
+    private SectionGoalCalc sectionGoalCalc;
 
     public void setAssignmentGoalCalc(AssignmentGoalCalc assignmentGoalCalc) {
         this.assignmentGoalCalc = assignmentGoalCalc;
@@ -32,8 +32,8 @@ public class ComplexGoalCalc implements GoalCalc<ComplexGoal> {
         this.behaviorGoalCalc = behaviorGoalCalc;
     }
 
-    public void setCumulativeGoalCalc(CumulativeGoalCalc cumulativeGoalCalc) {
-        this.cumulativeGoalCalc = cumulativeGoalCalc;
+    public void setSectionGoalCalc(SectionGoalCalc sectionGoalCalc) {
+        this.sectionGoalCalc = sectionGoalCalc;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class ComplexGoalCalc implements GoalCalc<ComplexGoal> {
                 return attendanceGoalCalc.calculateGoal(attendanceComponent) * component.getModifier();
             case CUMULATIVE_GRADE:
                 CumulativeGradeComponent cumulativeGradeComponent = (CumulativeGradeComponent) component;
-                return cumulativeGoalCalc.calculateGoal(cumulativeGradeComponent);
+                return sectionGoalCalc.calculateGoal(cumulativeGradeComponent);
             case COMPLEX:
                 break;
 

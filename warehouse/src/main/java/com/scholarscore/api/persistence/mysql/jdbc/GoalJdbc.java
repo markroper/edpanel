@@ -6,12 +6,12 @@ import com.scholarscore.api.persistence.goalCalculators.AssignmentGoalCalc;
 import com.scholarscore.api.persistence.goalCalculators.AttendanceGoalCalc;
 import com.scholarscore.api.persistence.goalCalculators.BehaviorGoalCalc;
 import com.scholarscore.api.persistence.goalCalculators.ComplexGoalCalc;
-import com.scholarscore.api.persistence.goalCalculators.CumulativeGoalCalc;
+import com.scholarscore.api.persistence.goalCalculators.SectionGoalCalc;
 import com.scholarscore.models.goal.AssignmentGoal;
 import com.scholarscore.models.goal.AttendanceGoal;
 import com.scholarscore.models.goal.BehaviorGoal;
 import com.scholarscore.models.goal.ComplexGoal;
-import com.scholarscore.models.goal.CumulativeGradeGoal;
+import com.scholarscore.models.goal.SectionGradeGoal;
 import com.scholarscore.models.goal.Goal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -35,7 +35,7 @@ public class GoalJdbc implements GoalPersistence {
 
     private StudentPersistence studentPersistence;
 
-    private CumulativeGoalCalc cumulativeGoalCalc;
+    private SectionGoalCalc sectionGoalCalc;
     private BehaviorGoalCalc behaviorGoalCalc;
     private AssignmentGoalCalc assignmentGoalCalc;
     private AttendanceGoalCalc attendanceGoalCalc;
@@ -49,8 +49,8 @@ public class GoalJdbc implements GoalPersistence {
         this.attendanceGoalCalc = attendanceGoalCalc;
     }
 
-    public void setCumulativeGoalCalc(CumulativeGoalCalc cumulativeGoalCalc) {
-        this.cumulativeGoalCalc = cumulativeGoalCalc;
+    public void setSectionGoalCalc(SectionGoalCalc sectionGoalCalc) {
+        this.sectionGoalCalc = sectionGoalCalc;
     }
 
     public void setBehaviorGoalCalc(BehaviorGoalCalc behaviorGoalCalc) {
@@ -141,10 +141,10 @@ public class GoalJdbc implements GoalPersistence {
                     goal.setCalculatedValue(assignmentGoalCalc.calculateGoal(assignmentGoal));
                 }
                 break;
-            case CUMULATIVE_GRADE:
-                if (goal instanceof CumulativeGradeGoal) {
-                    CumulativeGradeGoal cumulativeGradeGoal = (CumulativeGradeGoal)goal;
-                    goal.setCalculatedValue(cumulativeGoalCalc.calculateGoal(cumulativeGradeGoal));
+            case SECTION_GRADE:
+                if (goal instanceof SectionGradeGoal) {
+                    SectionGradeGoal sectionGradeGoal = (SectionGradeGoal)goal;
+                    goal.setCalculatedValue(sectionGoalCalc.calculateGoal(sectionGradeGoal));
                 }
                 break;
             case ATTENDANCE:
