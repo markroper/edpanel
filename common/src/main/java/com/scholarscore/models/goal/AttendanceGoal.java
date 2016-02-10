@@ -3,13 +3,14 @@ package com.scholarscore.models.goal;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.Section;
 
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import java.time.LocalDate;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import java.util.Objects;
 /**
  * Goal type for goals that are based on performance on attendance over a range of dates
@@ -22,9 +23,7 @@ import java.util.Objects;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class AttendanceGoal extends Goal implements CalculatableAttendance{
     //References the sectionId of the section we have an attendance goal in
-    private Long parentId;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private Section section;
 
     public AttendanceGoal() {
         setGoalType(GoalType.ATTENDANCE);
@@ -33,51 +32,27 @@ public class AttendanceGoal extends Goal implements CalculatableAttendance{
     public AttendanceGoal(AttendanceGoal goal) {
         super(goal);
         this.setGoalType(GoalType.ATTENDANCE);
-        this.parentId = goal.parentId;
-        this.startDate = goal.startDate;
-        this.endDate = goal.endDate;
+        this.section = goal.section;
     }
 
-    @Column(name = HibernateConsts.PARENT_FK)
-    public Long getParentId() {
-        return parentId;
+    @OneToOne(optional = true)
+    @JoinColumn(name=HibernateConsts.SECTION_FK, nullable = true)
+    public Section getSection() {
+        return section;
     }
 
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
+    public void setSection(Section section) {
+        this.section = section;
     }
 
-    @Column(name = HibernateConsts.GOAL_START_DATE, columnDefinition="DATE")
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    @Column(name = HibernateConsts.GOAL_END_DATE, columnDefinition="DATE")
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
 
     @Override
     public void mergePropertiesIfNull(Goal mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
         if (mergeFrom instanceof AttendanceGoal) {
             AttendanceGoal mergeFromBehavior = (AttendanceGoal)mergeFrom;
-            if (null == this.startDate) {
-                this.startDate = mergeFromBehavior.startDate;
-            }
-            if (null == endDate) {
-                this.endDate = mergeFromBehavior.endDate;
-            }
-            if (null == parentId) {
-                this.parentId = mergeFromBehavior.parentId;
+            if (null == section) {
+                this.section = mergeFromBehavior.section;
             }
         }
 
@@ -89,14 +64,12 @@ public class AttendanceGoal extends Goal implements CalculatableAttendance{
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         AttendanceGoal that = (AttendanceGoal) o;
-        return Objects.equals(parentId, that.parentId) &&
-                Objects.equals(startDate, that.startDate) &&
-                Objects.equals(endDate, that.endDate);
+        return Objects.equals(section, that.section);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), parentId, startDate, endDate);
+        return Objects.hash(super.hashCode(), section);
     }
 
     @Override
@@ -111,7 +84,7 @@ public class AttendanceGoal extends Goal implements CalculatableAttendance{
                         + "GoalType: " + getGoalType() + "\n"
                         + "Student: " + getStudent() + "\n"
                         + "Teacher: " + getStaff() + "\n"
-                        + "ParentId: " + getParentId() + "\n"
+                        + "Section: " + getSection() + "\n"
                         + "StartDate: " + getStartDate() + "\n"
                         + "EndDate: " + getEndDate();
     }

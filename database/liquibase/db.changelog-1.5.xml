@@ -44,5 +44,20 @@
                                  onUpdate="CASCADE"
                                  referencedColumnNames="student_assignment_id"
                                  referencedTableName="student_assignment"/>
+
+        <addColumn tableName="goal">
+            <column
+                    name="section_fk"
+                    type="bigint unsigned">
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="goal"
+                                 baseColumnNames="section_fk"
+                                 constraintName="goal$section_fk"
+                                 onDelete="SET NULL"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="section_id"
+                                 referencedTableName="section"/>
+
     </changeSet>
 </databaseChangeLog>

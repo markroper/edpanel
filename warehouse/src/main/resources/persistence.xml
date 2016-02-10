@@ -159,7 +159,7 @@
 
     <bean id="attendanceGoalCalc"
           class="com.scholarscore.api.persistence.goalCalculators.AttendanceGoalCalc">
-        <property name="studentAssignmentPersistence" ref="studentAssignmentPersistence"/>
+        <property name="attendancePersistence" ref="attendancePersistence"/>
     </bean>
 
     <bean id="complexGoalCalc"
