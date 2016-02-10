@@ -7,14 +7,11 @@ import com.scholarscore.models.IApiModel;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
 import com.scholarscore.models.query.expressions.operands.IOperand;
-import com.scholarscore.models.query.expressions.operators.IOperator;
-import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -95,8 +92,8 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     // In SQL terms, this defines the WHERE clause of a query
     Expression filter;
 
-    List<MutablePair<Integer, AggregateFunction>> subqueryColumnsByPosition;
-    Map<Integer, MutablePair<IOperator, IOperand>> subqueryFilter;
+    List<SubqueryColumnRef> subqueryColumnsByPosition;
+    List<SubqueryExpression> subqueryFilter;
 
     public Query() {
         super();
@@ -136,19 +133,19 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     }
 
     // Getters, setters, equals(), hashCode(), toString()
-    public List<MutablePair<Integer, AggregateFunction>> getSubqueryColumnsByPosition() {
+    public List<SubqueryColumnRef> getSubqueryColumnsByPosition() {
         return subqueryColumnsByPosition;
     }
 
-    public void setSubqueryColumnsByPosition(List<MutablePair<Integer, AggregateFunction>> subqueryColumnsByPosition) {
+    public void setSubqueryColumnsByPosition(List<SubqueryColumnRef> subqueryColumnsByPosition) {
         this.subqueryColumnsByPosition = subqueryColumnsByPosition;
     }
 
-    public Map<Integer, MutablePair<IOperator, IOperand>> getSubqueryFilter() {
+    public List<SubqueryExpression> getSubqueryFilter() {
         return subqueryFilter;
     }
 
-    public void setSubqueryFilter(Map<Integer, MutablePair<IOperator, IOperand>> subqueryFilter) {
+    public void setSubqueryFilter(List<SubqueryExpression> subqueryFilter) {
         this.subqueryFilter = subqueryFilter;
     }
 

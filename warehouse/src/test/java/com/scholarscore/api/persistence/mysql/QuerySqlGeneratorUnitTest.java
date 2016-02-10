@@ -10,6 +10,8 @@ import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
 import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.Query;
+import com.scholarscore.models.query.SubqueryColumnRef;
+import com.scholarscore.models.query.SubqueryExpression;
 import com.scholarscore.models.query.bucket.AggregationBucket;
 import com.scholarscore.models.query.bucket.NumericBucket;
 import com.scholarscore.models.query.dimension.SchoolDimension;
@@ -18,18 +20,15 @@ import com.scholarscore.models.query.dimension.StudentDimension;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
-import com.scholarscore.models.query.expressions.operands.IOperand;
 import com.scholarscore.models.query.expressions.operands.ListNumericOperand;
 import com.scholarscore.models.query.expressions.operands.MeasureOperand;
 import com.scholarscore.models.query.expressions.operands.NumericOperand;
 import com.scholarscore.models.query.expressions.operands.StringOperand;
 import com.scholarscore.models.query.expressions.operators.BinaryOperator;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
-import com.scholarscore.models.query.expressions.operators.IOperator;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
 import com.scholarscore.models.query.measure.BehaviorMeasure;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.MutablePair;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -39,9 +38,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Test(groups = { "unit" })
 public class QuerySqlGeneratorUnitTest {
@@ -56,7 +53,7 @@ public class QuerySqlGeneratorUnitTest {
         //No date dimension for this query
         courseGradeQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.AGE));
         courseGradeQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ETHNICITY));
-        courseGradeQuery.addField(new DimensionField(Dimension.SCHOOL, SchoolDimension.ADDRESS));
+        courseGradeQuery.addField(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME));
         //Create expression
         Expression whereClause = new Expression();
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -81,7 +78,7 @@ public class QuerySqlGeneratorUnitTest {
         whereClause.setOperator(BinaryOperator.AND);
         whereClause.setRightHandSide(maxBound);
         courseGradeQuery.setFilter(whereClause);   
-        String courseGradeQuerySql = "SELECT student.birth_date, student.federal_ethnicity, school.school_address, " +
+        String courseGradeQuerySql = "SELECT student.birth_date, student.federal_ethnicity, school.school_name, " +
                 "SUM(section_grade.grade) as sum_course_grade_agg FROM student " +
                 "LEFT OUTER JOIN student_section_grade ON student.student_user_fk = student_section_grade.student_fk " +
                 "LEFT OUTER JOIN section_grade ON student_section_grade.section_grade_fk = section_grade.section_grade_id " +
@@ -89,7 +86,7 @@ public class QuerySqlGeneratorUnitTest {
                 "LEFT OUTER JOIN school ON school.school_id = student.school_fk " +
                 "WHERE  ( ( '2014-09-01 00:00:00.0'  >=  section.section_start_date )  " +
                 "AND  ( '2015-09-01 00:00:00.0'  <=  section.section_start_date ) ) " +
-                "GROUP BY student.birth_date, student.federal_ethnicity, school.school_address";
+                "GROUP BY student.birth_date, student.federal_ethnicity, school.school_name";
         Query assignmentGradesQuery  = new Query();
         ArrayList<AggregateMeasure> assginmentMeasures = new ArrayList<>();
         assginmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVG));
@@ -100,14 +97,7 @@ public class QuerySqlGeneratorUnitTest {
                 ComparisonOperator.EQUAL, 
                 new NumericOperand(4));
         assignmentGradesQuery.setFilter(assignmentWhereClause);
-        String assignmentGradesQuerySql = "SELECT student.student_name, " +
-                "AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg " +
-                "FROM student " +
-                "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " +
-                "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id " +
-                "LEFT OUTER JOIN section ON section.section_id = student_assignment.section_fk " +
-                "WHERE  ( section.section_id  =  4 ) " +
-                "GROUP BY student.student_name";
+        String assignmentGradesQuerySql = "SELECT student.student_name, AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg FROM student LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id LEFT OUTER JOIN section ON section.section_id = assignment.section_fk WHERE  ( section.section_id  =  4 ) GROUP BY student.student_name";
         Query homeworkCompletionQuery  = new Query();
         ArrayList<AggregateMeasure> homeworkMeasures = new ArrayList<>();
         homeworkMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
@@ -302,12 +292,15 @@ public class QuerySqlGeneratorUnitTest {
         gradeBuckets.add(new NumericBucket(70D, null, "pass"));
         gradeBuckets.add(new NumericBucket(null, 70D, "fail"));
         gradeBucketMeasure.setBuckets(gradeBuckets);
-        List<MutablePair<Integer, AggregateFunction>> wrapperFields = new ArrayList<>();
-        wrapperFields.add(new MutablePair<>(-1, AggregateFunction.COUNT));
-        wrapperFields.add(new MutablePair<>(1, null));
+
+
+        List<SubqueryColumnRef> wrapperFields = new ArrayList<>();
+        wrapperFields.add(new SubqueryColumnRef(-1, AggregateFunction.COUNT));
+        wrapperFields.add(new SubqueryColumnRef(1, null));
+
         courseGradesBucketed.setSubqueryColumnsByPosition(wrapperFields);
-        Map<Integer, MutablePair<IOperator, IOperand>> superFilter = new HashMap<>();
-        superFilter.put(2, new MutablePair<>(ComparisonOperator.EQUAL, new StringOperand("fail")));
+        List<SubqueryExpression> superFilter = new ArrayList<>();
+        superFilter.add(new SubqueryExpression(2, ComparisonOperator.EQUAL, new StringOperand("fail")));
         courseGradesBucketed.setSubqueryFilter(superFilter);
         String gradeBucketedSql = "SELECT COUNT(*), subq_1.count_course_grade_agg \n" +
                 "FROM (\n" +

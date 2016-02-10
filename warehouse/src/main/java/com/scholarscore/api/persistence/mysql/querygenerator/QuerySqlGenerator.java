@@ -11,6 +11,8 @@ import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
 import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.Query;
+import com.scholarscore.models.query.SubqueryColumnRef;
+import com.scholarscore.models.query.SubqueryExpression;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
@@ -22,7 +24,6 @@ import com.scholarscore.models.query.expressions.operands.StringOperand;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -104,9 +105,9 @@ public abstract class QuerySqlGenerator {
         boolean isFirst = true;
         boolean isGroupByFirst = true;
         //For every column, pluck the correct dimension or measure from the subquery
-        for(MutablePair<Integer, AggregateFunction> col: q.getSubqueryColumnsByPosition()) {
-            Integer pos = col.getLeft();
-            AggregateFunction function = col.getRight();
+        for(SubqueryColumnRef col: q.getSubqueryColumnsByPosition()) {
+            Integer pos = col.getPosition();
+            AggregateFunction function = col.getFunction();
             if(-1 == pos) {
                 if(isFirst) {
                     isFirst = false;
@@ -191,10 +192,10 @@ public abstract class QuerySqlGenerator {
         if(null != q.getSubqueryFilter() && !q.getSubqueryFilter().isEmpty()) {
             sqlBuilder.append("\nWHERE ");
             boolean first = true;
-            for(Map.Entry<Integer, MutablePair<IOperator, IOperand>> entry: q.getSubqueryFilter().entrySet()) {
-                Integer pos = entry.getKey();
-                IOperator operator = entry.getValue().getLeft();
-                IOperand operand = entry.getValue().getRight();
+            for(SubqueryExpression entry: q.getSubqueryFilter()) {
+                Integer pos = entry.getPosition();
+                IOperator operator = entry.getOperator();
+                IOperand operand = entry.getOperand();
                 if(pos > numChildDimensions - 1) {
                     if(first) {
                         first = false;
@@ -346,6 +347,13 @@ public abstract class QuerySqlGenerator {
                     }
                     sqlBuilder.append(LEFT_OUTER_JOIN + joinTableName + " " + ON + " ");
                     sqlBuilder.append(joinTableName + "." + resolvePrimaryKeyField(joinTableName) + " = ");
+                    //Assignment is simplified to the user which means it can be ambiguous which dimension to actually join on
+                    //So we join on assignment if we're dealing with anything up a student or an assignment table directly
+                    if(currentTableName.equals(HibernateConsts.STUDENT_ASSIGNMENT_TABLE) &&
+                            !joinTableName.equals(HibernateConsts.STUDENT_TABLE) &&
+                            !joinTableName.equals(HibernateConsts.ASSIGNMENT_TABLE)) {
+                        currentTableName = HibernateConsts.ASSIGNMENT_TABLE;
+                    }
                     sqlBuilder.append(currentTableName + "." + joinTableName + FK_SUFFIX + " ");
                     currTable = joinDim;
                 }
