@@ -110,6 +110,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         filter = q.getFilter();
         subqueryColumnsByPosition = q.getSubqueryColumnsByPosition();
         subqueryFilter = q.getSubqueryFilter();
+        hints = q.getHints();
     }
 
     @Override
@@ -133,6 +134,9 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         }
         if (null == this.subqueryFilter) {
             this.subqueryFilter = query.subqueryFilter;
+        }
+        if (null == this.hints) {
+            this.hints = query.hints;
         }
     }
 
@@ -281,22 +285,25 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
                 && Objects.equals(this.filter, other.filter)
                 && Objects.equals(this.fields, other.fields)
                 && Objects.equals(this.subqueryColumnsByPosition, other.subqueryColumnsByPosition)
-                && Objects.equals(this.subqueryFilter, other.subqueryFilter);
+                && Objects.equals(this.subqueryFilter, other.subqueryFilter)
+                && Objects.equals(this.hints, other.hints);
     }
 
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(aggregateMeasures, filter, fields, subqueryColumnsByPosition, subqueryFilter);
+                + Objects.hash(aggregateMeasures, filter, fields, subqueryColumnsByPosition, subqueryFilter, hints);
     }
 
     @Override
     public String toString() {
         return "Query{" +
-                "(super: " + super.toString() + ")" +
                 "aggregateMeasures=" + aggregateMeasures +
                 ", fields=" + fields +
                 ", filter=" + filter +
+                ", subqueryColumnsByPosition=" + subqueryColumnsByPosition +
+                ", subqueryFilter=" + subqueryFilter +
+                ", hints=" + hints +
                 '}';
     }
 }
