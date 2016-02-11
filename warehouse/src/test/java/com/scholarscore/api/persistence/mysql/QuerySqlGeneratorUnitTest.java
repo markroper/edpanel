@@ -337,7 +337,7 @@ public class QuerySqlGeneratorUnitTest {
         referralQuery.setSubqueryColumnsByPosition(referralWrappers);
         String referralSql = "SELECT COUNT(*), subq_1.sum_referral_agg \n" +
                 "FROM (\n" +
-                "SELECT student.student_user_fk, SUM(if(behavior.category = 'REFERRAL', 1, 0)) as sum_referral_agg FROM student LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk GROUP BY student.student_user_fk\n" +
+                "SELECT student.student_user_fk, SUM(if(behavior.category = 'REFERRAL', 1, null)) as sum_referral_agg FROM student LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk GROUP BY student.student_user_fk\n" +
                 ") as subq_1 \n" +
                 " GROUP BY subq_1.sum_referral_agg";
 

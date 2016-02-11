@@ -10,6 +10,6 @@ public class ReferralSqlSerializer extends DemeritSqlSerializer {
     @Override
     public String toSelectInner() {
         return "if(" + HibernateConsts.BEHAVIOR_TABLE + DOT + HibernateConsts.BEHAVIOR_CATEGORY + " = '" + Measure.REFERRAL.name() +
-                "', 1, 0)";
+                "', 1, null)";
     }
 }
