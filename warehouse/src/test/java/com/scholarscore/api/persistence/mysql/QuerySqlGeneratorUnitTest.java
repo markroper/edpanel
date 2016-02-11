@@ -313,6 +313,34 @@ public class QuerySqlGeneratorUnitTest {
                 "\n" +
                 "WHERE subq_1.count_course_grade_group =  :hkUcLiIxGoTRYdsgpwyBYMvBsWshfuXY  GROUP BY subq_1.count_course_grade_agg";
 
+        /*
+             SELECT COUNT(*), subq_1.sum_referral_agg
+             FROM (
+                 SELECT
+                    student.student_user_fk,
+                    SUM(if(behavior.category = 'REFERRAL', 1, 0)) as sum_referral_agg
+                 FROM student
+                 LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk
+                 GROUP BY student.student_user_fk
+             ) as subq_1
+             GROUP BY subq_1.sum_referral_agg
+         */
+        Query referralQuery = new Query();
+        AggregateMeasure referralMeasure = new AggregateMeasure(Measure.REFERRAL, AggregateFunction.SUM);
+        List<AggregateMeasure> referrals = new ArrayList<>();
+        referrals.add(referralMeasure);
+        referralQuery.setAggregateMeasures(referrals);
+        referralQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
+        List<SubqueryColumnRef> referralWrappers = new ArrayList<>();
+        referralWrappers.add(new SubqueryColumnRef(-1, AggregateFunction.COUNT));
+        referralWrappers.add(new SubqueryColumnRef(1, null));
+        referralQuery.setSubqueryColumnsByPosition(referralWrappers);
+        String referralSql = "SELECT COUNT(*), subq_1.sum_referral_agg \n" +
+                "FROM (\n" +
+                "SELECT student.student_user_fk, SUM(if(behavior.category = 'REFERRAL', 1, 0)) as sum_referral_agg FROM student LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk GROUP BY student.student_user_fk\n" +
+                ") as subq_1 \n" +
+                " GROUP BY subq_1.sum_referral_agg";
+
         return new Object[][] {
                 { "Course Grade query", courseGradeQuery, courseGradeQuerySql, null },
                 { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql, null },
@@ -325,7 +353,8 @@ public class QuerySqlGeneratorUnitTest {
                 { "School name query", schoolNameQuery, schoolNameSql, null },
                 { "GPA with buckets", gpaBucketQuery, gpaSqlStatement, null },
                 { "Current GPA with buckets", currGpaQuery, currGpaSqlStatement, null },
-                { "Course grade buckets", courseGradesBucketed, gradeBucketedSql, 32 }
+                { "Course grade buckets", courseGradesBucketed, gradeBucketedSql, 32 },
+                { "Referral with subq", referralQuery, referralSql, null }
         };
     }
     
