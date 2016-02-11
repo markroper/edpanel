@@ -387,15 +387,11 @@ public abstract class QuerySqlGenerator {
     
     protected static void populateGroupByClause(StringBuilder sqlBuilder, Query q) throws SqlGenerationException {
         sqlBuilder.append(GROUP_BY);
-        boolean isFirst = true;
+        FirstAwareWrapper innerSqlBuilder = new FirstAwareWrapper(sqlBuilder);
         if(null != q.getFields()) {
             for (DimensionField f : q.getFields()) {
-                if (isFirst) {
-                    sqlBuilder.append(generateDimensionFieldSql(f, null));
-                    isFirst = false;
-                } else {
-                    sqlBuilder.append(DELIM + generateDimensionFieldSql(f, null));
-                }
+                innerSqlBuilder.markNotFirstOrAppend(DELIM);
+                innerSqlBuilder.append(generateDimensionFieldSql(f, null));
             }
         }
         //If there are buckets involved in the aggregate query, inject the bucket psuedo column
@@ -403,12 +399,8 @@ public abstract class QuerySqlGenerator {
             for (AggregateMeasure m : q.getAggregateMeasures()) {
                 if(null != m.getBuckets() && !m.getBuckets().isEmpty()) {
                     String bucketFieldName = generateBucketPseudoColumnName(m);
-                    if (isFirst) {
-                        sqlBuilder.append(bucketFieldName);
-                        isFirst = false;
-                    } else {
-                        sqlBuilder.append(DELIM + bucketFieldName);
-                    }
+                    innerSqlBuilder.markNotFirstOrAppend(DELIM);
+                    innerSqlBuilder.append(bucketFieldName);
                 }
             }
         }
@@ -479,62 +471,46 @@ public abstract class QuerySqlGenerator {
     private static void toSqlSelectAgainstSubquery(StringBuilder sqlBuilder, StringBuilder groupByBuilder,
                                                    Query q, String tableAlias, Integer numChildDimensions,
                                                    Integer numAggregateMeasures) throws SqlGenerationException {
-        boolean isFirst = true;
-        boolean isGroupByFirst = true;
+        FirstAwareWrapper innerSqlBuilder = new FirstAwareWrapper(sqlBuilder);
+        FirstAwareWrapper innerGroupByBuilder = new FirstAwareWrapper(groupByBuilder);
         //For every column, pluck the correct dimension or measure from the subquery
         for(SubqueryColumnRef col: q.getSubqueryColumnsByPosition()) {
             Integer pos = col.getPosition();
             AggregateFunction function = col.getFunction();
             if(-1 == pos) {
-                if(isFirst) {
-                    isFirst = false;
-                } else {
-                    sqlBuilder.append(DELIM);
-                }
-                sqlBuilder.append(function.name() + "(*)");
+                innerSqlBuilder.markNotFirstOrAppend(DELIM);
+                innerSqlBuilder.append(function.name() + "(*)");
             } else if(pos > numChildDimensions - 1) {
                 //Find the right agg measure
                 pos -= numChildDimensions;
                 if(pos < numAggregateMeasures) {
-                    if(isFirst) {
-                        isFirst = false;
-                    } else {
-                        sqlBuilder.append(DELIM);
-                    }
+                    innerSqlBuilder.markNotFirstOrAppend(DELIM);
                     int counter = 0;
                     for(AggregateMeasure am: q.getAggregateMeasures()) {
                         if(counter == pos) {
                             if(null != function) {
-                                sqlBuilder.append(function.name() + ")");
+                                innerSqlBuilder.append(function.name() + ")");
                             }
-                            sqlBuilder.append(tableAlias + DOT + generateAggColumnName(am));
+                            innerSqlBuilder.append(tableAlias + DOT + generateAggColumnName(am));
                             if(null != function) {
-                                sqlBuilder.append(function.name() + ")");
+                                innerSqlBuilder.append(function.name() + ")");
                             } else {
-                                if(isGroupByFirst) {
-                                    isGroupByFirst = false;
-                                } else {
-                                    groupByBuilder.append(DELIM);
-                                }
-                                groupByBuilder.append(tableAlias + DOT + generateAggColumnName(am));
+                                innerGroupByBuilder.markNotFirstOrAppend(DELIM);
+                                innerGroupByBuilder.append(tableAlias + DOT + generateAggColumnName(am));
                             }
                         }
                         counter++;
                         if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
                             if(counter == pos) {
                                 if(null != function) {
-                                    sqlBuilder.append(function.name() + "(");
+                                    innerSqlBuilder.append(function.name() + "(");
                                 }
-                                sqlBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
+                                innerSqlBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
                                 if(null != function) {
-                                    sqlBuilder.append(function.name() + ")");
+                                    innerSqlBuilder.append(function.name() + ")");
                                 } else {
-                                    if(isGroupByFirst) {
-                                        isGroupByFirst = false;
-                                    } else {
-                                        groupByBuilder.append(DELIM);
-                                    }
-                                    groupByBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
+                                    innerGroupByBuilder.markNotFirstOrAppend(DELIM);
+                                    innerGroupByBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
                                 }
                             }
                             counter++;
@@ -543,21 +519,31 @@ public abstract class QuerySqlGenerator {
                 }
             } else {
                 //find the right dimension
-                if(isFirst) {
-                    isFirst = false;
-                } else {
-                    sqlBuilder.append(DELIM);
-                }
+                innerSqlBuilder.markNotFirstOrAppend(DELIM);
                 //look for the dimension
-                sqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
-                if(isGroupByFirst) {
-                    isGroupByFirst = false;
-                } else {
-                    groupByBuilder.append(DELIM);
-                }
-                groupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
-
+                innerSqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
+                innerGroupByBuilder.markNotFirstOrAppend(DELIM);
+                innerGroupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
             }
         }
+    }
+    
+    private static class FirstAwareWrapper { 
+        StringBuilder sb;
+        boolean first = true;
+        
+        public FirstAwareWrapper(StringBuilder stringBuilder) { 
+            if (stringBuilder == null) { throw new IllegalArgumentException("FirstAwareWrapper requires StringBuffer to not be null"); }
+            this.sb = stringBuilder;
+        }
+        
+        private void markNotFirstOrAppend(String append) { 
+            if (first) { first = false; } 
+            else { append(append); }
+        }
+        
+        private void append(Object toAppend) { sb.append(toAppend); }
+        
+        @Override public String toString() { return sb.toString(); }
     }
 }
