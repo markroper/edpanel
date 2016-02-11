@@ -100,6 +100,8 @@ public class SectionGradeCalc implements NotificationCalculator {
                     getStudentSectionGradeAsOfDate(sid, notification.getSection().getId(), start);
             if(null == beforeGrade) {
                 beforeGrade = new SectionGrade();
+            } else if(null != beforeGrade.getScore() && beforeGrade.getScore() < 1D) {
+                beforeGrade.setScore(beforeGrade.getScore() * 100D);
             }
             ServiceResponse<StudentSectionGrade> currGrade =
                     manager.getStudentSectionGradeManager().getStudentSectionGrade(

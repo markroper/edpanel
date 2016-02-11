@@ -25,6 +25,8 @@ public class MeasureSqlSerializerFactory {
                 return new DemeritSqlSerializer();
             case MERIT:
                 return new MeritSqlSerializer();
+            case REFERRAL:
+                return new ReferralSqlSerializer();
             case GPA:
                 return new GpaSqlSerializer();
             case CURRENT_GPA:
