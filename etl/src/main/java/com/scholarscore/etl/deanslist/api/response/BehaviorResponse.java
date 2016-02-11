@@ -35,6 +35,9 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
     private static final String DETENTION = "detention";
     private static final String DEMERIT = "demerit";
     private static final String MERIT = "merit";
+    private static final String REFERRAL = "referral";
+    private static final String OUT_OF_CLASS = "out of class";
+    private static final String OFFICE = "office";
 
     @Override
     public Collection<com.scholarscore.models.Behavior> toInternalModel() {
@@ -104,6 +107,8 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
             return BehaviorCategory.DEMERIT;
         } else if (lowercased.contains(MERIT)) {
             return BehaviorCategory.MERIT;
+        } else if(lowercased.contains(REFERRAL) || lowercased.contains(OUT_OF_CLASS) || lowercased.contains(OFFICE)) {
+            return BehaviorCategory.REFERRAL;
         }
         return BehaviorCategory.OTHER;
     }
