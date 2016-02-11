@@ -611,7 +611,8 @@ public class QuerySqlGeneratorUnitTest {
                 { currGpaTestQuery },
                 { courseGradesBucketedTestQuery },
                 { requiresMultipleJoinsTestQuery }, 
-                { queryIncludingMultipleTablesUsingHints }
+                { queryIncludingMultipleTablesUsingHints },
+                { referralTestQuery }
         };
     }
     
