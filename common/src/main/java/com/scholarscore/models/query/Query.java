@@ -97,7 +97,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     List<SubqueryExpression> subqueryFilter;
     // If the object(s) being queried will not be joined with the tables automatically pulled into the query,
     // an explicit join path can be specified here
-    HashSet<Dimension> hints;
+    HashSet<Dimension> joinTables;
     
     public Query() {
         super();
@@ -110,7 +110,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         filter = q.getFilter();
         subqueryColumnsByPosition = q.getSubqueryColumnsByPosition();
         subqueryFilter = q.getSubqueryFilter();
-        hints = q.getHints();
+        joinTables = q.getJoinTables();
     }
 
     @Override
@@ -135,8 +135,8 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         if (null == this.subqueryFilter) {
             this.subqueryFilter = query.subqueryFilter;
         }
-        if (null == this.hints) {
-            this.hints = query.hints;
+        if (null == this.joinTables) {
+            this.joinTables = query.joinTables;
         }
     }
 
@@ -189,20 +189,20 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         this.fields.add(field);
     }
 
-    public HashSet<Dimension> getHints() {
-        return hints;
+    public HashSet<Dimension> getJoinTables() {
+        return joinTables;
     }
 
-    public void setHints(HashSet<Dimension> hints) {
-        this.hints = hints;
+    public void setJoinTables(HashSet<Dimension> joinTables) {
+        this.joinTables = joinTables;
     }
 
     // hint to this query that this table/dimension needs to be used when joining
     public void addHint(Dimension dimension) { 
-        if (null == this.hints) {
-            this.hints = new HashSet<Dimension>();
+        if (null == this.joinTables) {
+            this.joinTables = new HashSet<Dimension>();
         }
-        this.hints.add(dimension);
+        this.joinTables.add(dimension);
     }
 
     @JsonIgnore
@@ -286,13 +286,13 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
                 && Objects.equals(this.fields, other.fields)
                 && Objects.equals(this.subqueryColumnsByPosition, other.subqueryColumnsByPosition)
                 && Objects.equals(this.subqueryFilter, other.subqueryFilter)
-                && Objects.equals(this.hints, other.hints);
+                && Objects.equals(this.joinTables, other.joinTables);
     }
 
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(aggregateMeasures, filter, fields, subqueryColumnsByPosition, subqueryFilter, hints);
+                + Objects.hash(aggregateMeasures, filter, fields, subqueryColumnsByPosition, subqueryFilter, joinTables);
     }
 
     @Override
@@ -303,7 +303,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
                 ", filter=" + filter +
                 ", subqueryColumnsByPosition=" + subqueryColumnsByPosition +
                 ", subqueryFilter=" + subqueryFilter +
-                ", hints=" + hints +
+                ", joinTables=" + joinTables +
                 '}';
     }
 }
