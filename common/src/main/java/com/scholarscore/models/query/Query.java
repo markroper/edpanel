@@ -95,7 +95,10 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     List<SubqueryColumnRef> subqueryColumnsByPosition;
     //AND'd together only
     List<SubqueryExpression> subqueryFilter;
-
+    // If the object(s) being queried will not be joined with the tables automatically pulled into the query,
+    // an explicit join path can be specified here
+    HashSet<Dimension> hints;
+    
     public Query() {
         super();
     }
@@ -180,6 +183,22 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
             this.fields = new ArrayList<DimensionField>();
         }
         this.fields.add(field);
+    }
+
+    public HashSet<Dimension> getHints() {
+        return hints;
+    }
+
+    public void setHints(HashSet<Dimension> hints) {
+        this.hints = hints;
+    }
+
+    // hint to this query that this table/dimension needs to be used when joining
+    public void addHint(Dimension dimension) { 
+        if (null == this.hints) {
+            this.hints = new HashSet<Dimension>();
+        }
+        this.hints.add(dimension);
     }
 
     @JsonIgnore

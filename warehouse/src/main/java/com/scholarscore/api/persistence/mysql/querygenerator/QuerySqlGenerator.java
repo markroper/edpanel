@@ -215,6 +215,11 @@ public abstract class QuerySqlGenerator {
                 selectedDims.add(f.getDimension());
             }
         }
+        if (null != q.getHints()) {
+            for (Dimension d : q.getHints()) {
+                selectedDims.add(d);
+            }
+        }
         //Add any dimensions to join that may be referenced only in the WHERE clause
         Set<Dimension> filterDims = q.resolveFilterDimensions();
         if(null != filterDims) {

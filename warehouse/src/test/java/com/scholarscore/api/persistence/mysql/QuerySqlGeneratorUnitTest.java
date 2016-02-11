@@ -14,6 +14,7 @@ import com.scholarscore.models.query.SubqueryColumnRef;
 import com.scholarscore.models.query.SubqueryExpression;
 import com.scholarscore.models.query.bucket.AggregationBucket;
 import com.scholarscore.models.query.bucket.NumericBucket;
+import com.scholarscore.models.query.dimension.CourseDimension;
 import com.scholarscore.models.query.dimension.SchoolDimension;
 import com.scholarscore.models.query.dimension.SectionDimension;
 import com.scholarscore.models.query.dimension.StudentDimension;
@@ -75,8 +76,8 @@ public class QuerySqlGeneratorUnitTest {
                 new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)),
                 ComparisonOperator.NOT_EQUAL,
                 new NumericOperand(0));
-        final Expression comb1 = new Expression(termClause, BinaryOperator.AND, yearClause);
-        final Expression comb2 = new Expression(comb1, BinaryOperator.AND, sectionClause);
+        final Expression termAndYearClause = new Expression(termClause, BinaryOperator.AND, yearClause);
+        final Expression termAndYearAndSectionClause = new Expression(termAndYearClause, BinaryOperator.AND, sectionClause);
         
         final ListNumericOperand sectionList = new ListNumericOperand();
         ArrayList<Number> sections = new ArrayList<>();
@@ -175,7 +176,7 @@ public class QuerySqlGeneratorUnitTest {
                 homeworkMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
                 homeworkCompletionQuery.setAggregateMeasures(homeworkMeasures);
                 homeworkCompletionQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
-                homeworkCompletionQuery.setFilter(comb2);
+                homeworkCompletionQuery.setFilter(termAndYearAndSectionClause);
                 return homeworkCompletionQuery;
             }
 
@@ -207,7 +208,7 @@ public class QuerySqlGeneratorUnitTest {
                 homeworkSectionMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
                 homeworkSectionCompletionQuery.setAggregateMeasures(homeworkSectionMeasures);
                 homeworkSectionCompletionQuery.addField(new DimensionField(Dimension.SECTION, SectionDimension.ID));
-                homeworkSectionCompletionQuery.setFilter(comb2);
+                homeworkSectionCompletionQuery.setFilter(termAndYearAndSectionClause);
                 return homeworkSectionCompletionQuery;
             }
 
@@ -479,6 +480,57 @@ public class QuerySqlGeneratorUnitTest {
             public Integer levDistance() { return 32; }
         };
         
+        TestQuery requiresMultipleJoinsTestQuery = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Multiple join table test query";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query query = new Query();
+                ArrayList<AggregateMeasure> aggregateMeasures = new ArrayList<>();
+                aggregateMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
+                query.setAggregateMeasures(aggregateMeasures);
+                // Our selection of fields here is deliberate. Each of these tables has at least one
+                // mapping to another.
+                query.addField(new DimensionField(Dimension.SCHOOL, SectionDimension.ID));
+                query.addField(new DimensionField(Dimension.COURSE, CourseDimension.NAME));
+                query.addField(new DimensionField(Dimension.SECTION, SectionDimension.NAME));
+                return query;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT school.school_id, course.course_name, section.section_name, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg FROM section LEFT OUTER JOIN assignment ON assignment.section_fk = section.section_id LEFT OUTER JOIN student_assignment ON student_assignment.assignment_fk = assignment.assignment_id LEFT OUTER JOIN course ON course.course_id = section.course_fk LEFT OUTER JOIN school ON school.school_id = course.school_fk GROUP BY school.school_id, course.course_name, section.section_name";
+            }
+        };
+
+        TestQuery queryIncludingMultipleTablesUsingHints = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Intermediate Tables with Hints query";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query query = new Query();
+                ArrayList<AggregateMeasure> aggregateMeasures = new ArrayList<>();
+                aggregateMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
+                query.setAggregateMeasures(aggregateMeasures);
+                query.addField(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME));
+                query.addHint(Dimension.SECTION);
+                query.addHint(Dimension.COURSE);
+                return query;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT school.school_name, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg FROM section LEFT OUTER JOIN assignment ON assignment.section_fk = section.section_id LEFT OUTER JOIN student_assignment ON student_assignment.assignment_fk = assignment.assignment_id LEFT OUTER JOIN course ON course.course_id = section.course_fk LEFT OUTER JOIN school ON school.school_id = course.school_fk GROUP BY school.school_name";
+            }
+        };
+        
+        
         /*
             select count(*), num_grades
             from (
@@ -512,24 +564,10 @@ public class QuerySqlGeneratorUnitTest {
                 { schoolNameTestQuery }, 
                 { gpaBucketTestQuery },
                 { currGpaTestQuery },
-                { courseGradesBucketedTestQuery }
+                { courseGradesBucketedTestQuery },
+                { requiresMultipleJoinsTestQuery }, 
+                { queryIncludingMultipleTablesUsingHints }
         };
-
-                /*
-        return new Object[][] {
-                { "Course Grade query", courseGradeQuery, courseGradeQuerySql, null },
-                { "Assignment Grades query", assignmentGradesQuery, assignmentGradesQuerySql, null },
-                { "Homework query", homeworkCompletionQuery, homeworkSql, null },
-                { "Behavior query", behaviorQuery, behaviorSql, null},
-                { "Attendance query", attendanceQuery, attendanceSql, null },
-                { "Homework by Section query", homeworkSectionCompletionQuery, homeworkSectionSql, null },
-                { "Absence by Section query", sectionAbsenceQuery, sectionAbsenceSql, null },
-                { "Tardy be Section query", sectionTardyQuery, sectionTardySql, null },
-                { "School name query", schoolNameQuery, schoolNameSql, null },
-                { "GPA with buckets", gpaBucketQuery, gpaSqlStatement, null },
-                { "Current GPA with buckets", currGpaQuery, currGpaSqlStatement, null },
-                { "Course grade buckets", courseGradesBucketed, gradeBucketedSql, 32 }
-        };                */
     }
     
    @Test(dataProvider = "queriesProvider")
@@ -543,7 +581,7 @@ public class QuerySqlGeneratorUnitTest {
         try {
             sql = QuerySqlGenerator.generate(q);
         } catch (SqlGenerationException e) {
-            Assert.fail(msg);
+            Assert.fail(msg + " failed with exception " + e.getMessage());
         }
         Assert.assertNotNull(sql, msg);
        if(null == levValue) {
