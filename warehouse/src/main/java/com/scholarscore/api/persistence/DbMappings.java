@@ -27,6 +27,7 @@ public class DbMappings {
                put(Measure.MERIT, HibernateConsts.BEHAVIOR_TABLE);
                put(Measure.SUSPENSION, HibernateConsts.BEHAVIOR_TABLE);
                put(Measure.DETENTION, HibernateConsts.BEHAVIOR_TABLE);
+               put(Measure.REFERRAL, HibernateConsts.BEHAVIOR_TABLE);
                put(Measure.ATTENDANCE, HibernateConsts.ATTENDANCE_TABLE);
                put(Measure.ABSENCE, HibernateConsts.ATTENDANCE_TABLE);
                put(Measure.TARDY, HibernateConsts.ATTENDANCE_TABLE);
@@ -103,6 +104,14 @@ public class DbMappings {
                put(new MeasureField(Measure.DETENTION, BehaviorMeasure.POINTS), HibernateConsts.BEHAVIOR_POINT_VALUE);
                put(new MeasureField(Measure.DETENTION, BehaviorMeasure.CATEGORY), HibernateConsts.BEHAVIOR_CATEGORY);
                put(new MeasureField(Measure.DETENTION, BehaviorMeasure.ROSTER), HibernateConsts.BEHAVIOR_ROSTER);
+               put(new MeasureField(Measure.REFERRAL, BehaviorMeasure.ID), HibernateConsts.BEHAVIOR_ID);
+               put(new MeasureField(Measure.REFERRAL, BehaviorMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
+               put(new MeasureField(Measure.REFERRAL, BehaviorMeasure.TEACHER_FK), HibernateConsts.TEACHER_FK);
+               put(new MeasureField(Measure.REFERRAL, BehaviorMeasure.DATE), HibernateConsts.BEHAVIOR_DATE);
+               put(new MeasureField(Measure.REFERRAL, BehaviorMeasure.POINTS), HibernateConsts.BEHAVIOR_POINT_VALUE);
+               put(new MeasureField(Measure.REFERRAL, BehaviorMeasure.CATEGORY), HibernateConsts.BEHAVIOR_CATEGORY);
+               put(new MeasureField(Measure.REFERRAL, BehaviorMeasure.ROSTER), HibernateConsts.BEHAVIOR_ROSTER);
+               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.ID), HibernateConsts.BEHAVIOR_ID);
                put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.ID), HibernateConsts.BEHAVIOR_ID);
                put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
                put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.TEACHER_FK), HibernateConsts.TEACHER_FK);
