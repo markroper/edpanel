@@ -519,8 +519,8 @@ public class QuerySqlGeneratorUnitTest {
                 aggregateMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
                 query.setAggregateMeasures(aggregateMeasures);
                 query.addField(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME));
-                query.addHint(Dimension.SECTION);
-                query.addHint(Dimension.COURSE);
+                query.addJoinTable(Dimension.SECTION);
+                query.addJoinTable(Dimension.COURSE);
                 return query;
             }
 

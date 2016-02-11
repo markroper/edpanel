@@ -198,7 +198,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     }
 
     // hint to this query that this table/dimension needs to be used when joining
-    public void addHint(Dimension dimension) { 
+    public void addJoinTable(Dimension dimension) { 
         if (null == this.joinTables) {
             this.joinTables = new HashSet<Dimension>();
         }
