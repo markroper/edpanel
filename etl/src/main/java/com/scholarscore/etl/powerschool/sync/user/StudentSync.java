@@ -103,7 +103,7 @@ public class StudentSync implements ISync<Student> {
                 sourceUser.setEnabled(edPanelUser.getEnabled());
                 edPanelUser.setPassword(null);
                 Address add = sourceUser.getHomeAddress();
-                if(null != add) {
+                if(null != add && null != edPanelUser.getHomeAddress()) {
                     add.setId(edPanelUser.getHomeAddress().getId());
                 }
                 add = sourceUser.getMailingAddress();
