@@ -11,5 +11,6 @@ public enum BehaviorCategory {
     DETENTION,
     OUT_OF_SCHOOL_SUSPENSION,
     IN_SCHOOL_SUSPENSION,
-    OTHER
+    OTHER,
+    REFERRAL
 }

@@ -32,7 +32,7 @@ public enum Measure {
     DEMERIT,
     MERIT,
     DETENTION,
-    HOMEWORK_CLUB,
+    PRIDE_SCORE,
     SUSPENSION,
     //Academic measures
     GPA,
