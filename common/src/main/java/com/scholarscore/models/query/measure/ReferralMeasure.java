@@ -6,10 +6,12 @@ import com.scholarscore.models.query.Measure;
 
 import java.util.Set;
 
-@SuppressWarnings("serial")
-public class DetentionMeasure extends BehaviorMeasure implements IMeasure {
-    final Set<Measure> compatibleMeasures = ImmutableSet.of(Measure.DEMERIT, Measure.MERIT, Measure.SUSPENSION, Measure.REFERRAL);
-    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR, 
+/**
+ * Created by markroper on 2/11/16.
+ */
+public class ReferralMeasure extends BehaviorMeasure implements IMeasure {
+    final Set<Measure> compatibleMeasures = ImmutableSet.of(Measure.DEMERIT, Measure.MERIT, Measure.DETENTION, Measure.SUSPENSION);
+    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR,
             Dimension.STUDENT, Dimension.TEACHER, Dimension.SCHOOL, Dimension.GRADE_LEVEL);
     @Override
     public Set<Dimension> getCompatibleDimensions() {
@@ -23,12 +25,11 @@ public class DetentionMeasure extends BehaviorMeasure implements IMeasure {
 
     @Override
     public Measure getMeasure() {
-        return Measure.DETENTION;
+        return Measure.REFERRAL;
     }
 
     @Override
     public String getName() {
-        return Measure.DETENTION.name();
+        return Measure.REFERRAL.name();
     }
-
 }

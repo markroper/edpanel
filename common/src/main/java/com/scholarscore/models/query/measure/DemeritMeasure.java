@@ -8,7 +8,7 @@ import java.util.Set;
 
 @SuppressWarnings("serial")
 public class DemeritMeasure extends BehaviorMeasure implements IMeasure {
-    final Set<Measure> compatibleMeasures = ImmutableSet.of(Measure.MERIT, Measure.DETENTION, Measure.SUSPENSION);
+    final Set<Measure> compatibleMeasures = ImmutableSet.of(Measure.MERIT, Measure.DETENTION, Measure.SUSPENSION, Measure.REFERRAL);
     final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR, 
             Dimension.STUDENT, Dimension.TEACHER, Dimension.SCHOOL, Dimension.USER, Dimension.GRADE_LEVEL);
     @Override
