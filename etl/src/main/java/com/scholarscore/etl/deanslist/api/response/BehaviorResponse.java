@@ -35,6 +35,9 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
     private static final String DETENTION = "detention";
     private static final String DEMERIT = "demerit";
     private static final String MERIT = "merit";
+    private static final String REFERRAL = "referral";
+    private static final String OUT_OF_CLASS = "out of class";
+    private static final String OFFICE = "office";
 
     @Override
     public Collection<com.scholarscore.models.Behavior> toInternalModel() {
@@ -60,7 +63,7 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
             }
             out.setName(behaviorName);
             
-            BehaviorCategory parsedCategory = determineBehaviorCategory(dlBehavior.BehaviorCategory);
+            BehaviorCategory parsedCategory = determineBehaviorCategory(dlBehavior.BehaviorCategory, dlBehavior.Behavior);
             if (parsedCategory == null) {
                 logger.warn("WARNING Could not parse category. Skipping...");
             }
@@ -87,11 +90,15 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
     // the conversion to the BehaviorCategory enum from 'whatever data has been jammed into deanslist' 
     // is best effort - it'll work in the 'default' Deanslist configuration but we need to do some
     // best-effort guessing for the cases where they've changed the names
-    private BehaviorCategory determineBehaviorCategory(String behaviorCategoryString) {
+    private BehaviorCategory determineBehaviorCategory(String behaviorCategoryString, String behavior) {
         if (behaviorCategoryString == null) {
             return null;
         }
         String lowercased = behaviorCategoryString.toLowerCase();
+        String lowerBehavior = "";
+        if(null != behavior) {
+            lowerBehavior = behavior.toLowerCase();
+        }
         if (lowercased.contains(SUSPENSION) &&
                 lowercased.contains(IN) &&
                 lowercased.contains(SCHOOL)) {
@@ -104,6 +111,9 @@ public class BehaviorResponse implements Serializable, ITranslateCollection<com.
             return BehaviorCategory.DEMERIT;
         } else if (lowercased.contains(MERIT)) {
             return BehaviorCategory.MERIT;
+        } else if(lowercased.contains(REFERRAL) || lowercased.contains(OUT_OF_CLASS) || lowercased.contains(OFFICE) ||
+                lowerBehavior.contains(REFERRAL) || lowerBehavior.contains(OUT_OF_CLASS) || lowerBehavior.contains(OFFICE)) {
+            return BehaviorCategory.REFERRAL;
         }
         return BehaviorCategory.OTHER;
     }
