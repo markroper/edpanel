@@ -32,7 +32,8 @@ public enum Measure {
     DEMERIT,
     MERIT,
     DETENTION,
-    HOMEWORK_CLUB,
+    PRIDE_SCORE,
+    REFERRAL,
     SUSPENSION,
     //Academic measures
     GPA,
@@ -64,6 +65,8 @@ public enum Measure {
                 return new DetentionMeasure();
             case SUSPENSION:
                 return new SuspensionMeasure();
+            case REFERRAL:
+                return new ReferralMeasure();
             case ATTENDANCE:
                 return new AttendanceMeasure();
             case ABSENCE:
