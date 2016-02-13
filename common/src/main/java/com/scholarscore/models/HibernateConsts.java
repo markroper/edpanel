@@ -217,6 +217,8 @@ public class HibernateConsts {
     public static final String GOAL_NAME = "name";
     public static final String GOAL_SECTION_FK = "section_fk";
     public static final String GOAL_PLAN = "plan";
+    public static final String GOAL_OBSTACLE = "obstacle";
+    public static final String GOAL_OUTCOME = "outcome";
     public static final String GOAL_PROGRESS = "progress";
     public static final String GOAL_AGGREGATE = "goal_aggregate";
     

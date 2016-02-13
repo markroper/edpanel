@@ -5,6 +5,13 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
     <changeSet author="chris" id="changelog-1.5-change1">
+        <sql>
+            truncate goal
+        </sql>
+        <dropColumn columnName="parent_fk"
+                    tableName="goal"/>
+        <dropColumn columnName="goal_aggregate"
+                    tableName="goal"/>
         <addColumn tableName="goal">
             <column name="progress" type="varchar(256)">
                 <constraints nullable="false"/>
@@ -22,6 +29,18 @@
                     name="plan"
                     type="blob">
                 <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="goal">
+            <column
+                    name="outcome"
+                    type="blob">
+            </column>
+        </addColumn>
+        <addColumn tableName="goal">
+            <column
+                    name="obstacle"
+                    type="blob">
             </column>
         </addColumn>
         <addColumn tableName="goal">

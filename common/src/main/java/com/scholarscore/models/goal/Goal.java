@@ -55,6 +55,8 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     private GoalProgress goalProgress;
     private Boolean autocomplete;
     private String plan;
+    private String outcome;
+    private String obstacles;
     private Boolean teacherFollowup;
 
     public Goal() {
@@ -79,6 +81,8 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         this.startDate = goal.startDate;
         this.endDate = goal.endDate;
         this.plan = goal.plan;
+        this.outcome = goal.outcome;
+        this.obstacles = goal.obstacles;
         this.teacherFollowup = goal.teacherFollowup;
     }
 
@@ -134,6 +138,24 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 
     public void setPlan(String plan) {
         this.plan = plan;
+    }
+
+    @Column(name = HibernateConsts.GOAL_OBSTACLE, columnDefinition = "blob")
+    public String getObstacles() {
+        return obstacles;
+    }
+
+    public void setObstacles(String obstacles) {
+        this.obstacles = obstacles;
+    }
+
+    @Column(name = HibernateConsts.GOAL_OUTCOME, columnDefinition = "blob")
+    public String getOutcome() {
+        return outcome;
+    }
+
+    public void setOutcome(String outcome) {
+        this.outcome = outcome;
     }
 
     @Column(name = HibernateConsts.GOAL_FOLLOWUP)
@@ -248,6 +270,12 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         if (null == plan) {
             this.plan = mergeFrom.plan;
         }
+        if (null == outcome) {
+            this.outcome = mergeFrom.outcome;
+        }
+        if (null == obstacles) {
+            this.obstacles = mergeFrom.obstacles;
+        }
         if (null == teacherFollowup) {
             this.teacherFollowup = mergeFrom.teacherFollowup;
         }
@@ -263,7 +291,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(student, staff, desiredValue, calculatedValue, approved, goalType, startDate, endDate, goalProgress, autocomplete, plan, teacherFollowup);
+        return 31 * super.hashCode() + Objects.hash(student, staff, desiredValue, calculatedValue, approved, goalType, startDate, endDate, goalProgress, autocomplete, plan, teacherFollowup, obstacles, outcome);
     }
 
     @Override
@@ -289,6 +317,8 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
                 && Objects.equals(this.goalProgress, other.goalProgress)
                 && Objects.equals(this.autocomplete, other.autocomplete)
                 && Objects.equals(this.plan, other.plan)
+                && Objects.equals(this.obstacles, other.obstacles)
+                && Objects.equals(this.outcome, other.outcome)
                 && Objects.equals(this.teacherFollowup, other.teacherFollowup);
     }
 
@@ -309,6 +339,8 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
                         + "GoalProgress: " + getGoalProgress() + "\n"
                         + "Autocomplete: " + getAutocomplete() + "\n"
                         + "Plan: " + getPlan() + "\n"
+                        + "Outcome: " + getOutcome() + "\n"
+                        + "Obstacles: " + getObstacles() + "\n"
                         + "TeacherFollowup: " + getTeacherFollowup() + "\n";
     }
 
@@ -327,6 +359,8 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         private GoalType goalType;
         private Boolean autocomplete;
         private String plan;
+        private String outcome;
+        private String obstacle;
 
         public U withAutoComplete(final Boolean autoComplete) {
             this.autocomplete = autoComplete;
@@ -335,6 +369,16 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 
         public U withPlan(final String plan) {
             this.plan = plan;
+            return me();
+        }
+
+        public U withObstacle(final String obstacle) {
+            this.obstacle = obstacle;
+            return me();
+        }
+
+        public U withOutcome(final String outcome) {
+            this.outcome = outcome;
             return me();
         }
 
@@ -379,6 +423,8 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
             goal.setApproved(approved);
             goal.setGoalType(goalType);
             goal.setAutocomplete(autocomplete);
+            goal.setObstacles(obstacle);
+            goal.setOutcome(outcome);
             return goal;
         }
     }
