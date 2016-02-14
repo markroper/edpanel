@@ -95,7 +95,10 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     List<SubqueryColumnRef> subqueryColumnsByPosition;
     //AND'd together only
     List<SubqueryExpression> subqueryFilter;
-
+    // If the object(s) being queried will not be joined with the tables automatically pulled into the query,
+    // an explicit join path can be specified here
+    HashSet<Dimension> joinTables;
+    
     public Query() {
         super();
     }
@@ -107,6 +110,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         filter = q.getFilter();
         subqueryColumnsByPosition = q.getSubqueryColumnsByPosition();
         subqueryFilter = q.getSubqueryFilter();
+        joinTables = q.getJoinTables();
     }
 
     @Override
@@ -130,6 +134,9 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         }
         if (null == this.subqueryFilter) {
             this.subqueryFilter = query.subqueryFilter;
+        }
+        if (null == this.joinTables) {
+            this.joinTables = query.joinTables;
         }
     }
 
@@ -180,6 +187,22 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
             this.fields = new ArrayList<DimensionField>();
         }
         this.fields.add(field);
+    }
+
+    public HashSet<Dimension> getJoinTables() {
+        return joinTables;
+    }
+
+    public void setJoinTables(HashSet<Dimension> joinTables) {
+        this.joinTables = joinTables;
+    }
+
+    // hint to this query that this table/dimension needs to be used when joining
+    public void addJoinTable(Dimension dimension) { 
+        if (null == this.joinTables) {
+            this.joinTables = new HashSet<Dimension>();
+        }
+        this.joinTables.add(dimension);
     }
 
     @JsonIgnore
@@ -262,22 +285,25 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
                 && Objects.equals(this.filter, other.filter)
                 && Objects.equals(this.fields, other.fields)
                 && Objects.equals(this.subqueryColumnsByPosition, other.subqueryColumnsByPosition)
-                && Objects.equals(this.subqueryFilter, other.subqueryFilter);
+                && Objects.equals(this.subqueryFilter, other.subqueryFilter)
+                && Objects.equals(this.joinTables, other.joinTables);
     }
 
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(aggregateMeasures, filter, fields, subqueryColumnsByPosition, subqueryFilter);
+                + Objects.hash(aggregateMeasures, filter, fields, subqueryColumnsByPosition, subqueryFilter, joinTables);
     }
 
     @Override
     public String toString() {
         return "Query{" +
-                "(super: " + super.toString() + ")" +
                 "aggregateMeasures=" + aggregateMeasures +
                 ", fields=" + fields +
                 ", filter=" + filter +
+                ", subqueryColumnsByPosition=" + subqueryColumnsByPosition +
+                ", subqueryFilter=" + subqueryFilter +
+                ", joinTables=" + joinTables +
                 '}';
     }
 }

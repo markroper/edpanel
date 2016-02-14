@@ -11,7 +11,7 @@ import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.StudentAssignment;
-import com.scholarscore.models.goal.CumulativeGradeGoal;
+import com.scholarscore.models.goal.SectionGradeGoal;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.goal.GoalType;
 import com.scholarscore.models.ui.SectionGradeWithProgression;
@@ -87,11 +87,11 @@ public class UiEndpointsController extends BaseController {
                 pm.getSectionManager().getAllSections(studentId, schoolId, schoolYearId, sectionsTermId);
 
         ServiceResponse<Collection<Goal>> goalsResponse = pm.getGoalManager().getAllGoals(studentId);
-        HashMap<Long, CumulativeGradeGoal> sectionGoalMap = new HashMap<>();
+        HashMap<Long, SectionGradeGoal> sectionGoalMap = new HashMap<>();
         for (Goal goal: goalsResponse.getValue()) {
-            if (goal.getGoalType() == GoalType.CUMULATIVE_GRADE) {
-                CumulativeGradeGoal cumGoal = (CumulativeGradeGoal)goal;
-                sectionGoalMap.put(cumGoal.getParentId(), cumGoal);
+            if (goal.getGoalType() == GoalType.SECTION_GRADE) {
+                SectionGradeGoal cumGoal = (SectionGradeGoal)goal;
+                sectionGoalMap.put(cumGoal.getSection().getId(), cumGoal);
             }
         }
         Student onlyIdStudent = new Student.StudentBuilder().withId(studentId).build();
@@ -99,7 +99,7 @@ public class UiEndpointsController extends BaseController {
             for(Section s: sectionsResponse.getValue()) {
                 StudentSectionDashboardData sectionDashData = new StudentSectionDashboardData();
                 sectionDashData.setSection(s);
-                CumulativeGradeGoal sectionGoal = sectionGoalMap.get(s.getId());
+                SectionGradeGoal sectionGoal = sectionGoalMap.get(s.getId());
                 if ( null != sectionGoal) {
                     sectionDashData.setGradeGoal(sectionGoal);
                 } else {
@@ -108,20 +108,22 @@ public class UiEndpointsController extends BaseController {
                     if(null != persons && !persons.isEmpty()) {
                         t = persons.iterator().next();
                     }
-                    CumulativeGradeGoal fullCumulativeGradeGoalByBuilder = new CumulativeGradeGoal.CumulativeGradeGoalBuilder().
-                            withParentId(s.getId()).
+                    SectionGradeGoal fullSectionGradeGoalByBuilder = new SectionGradeGoal.SectionGradeGoalBuilder().
+                            withSection(s).
                             withStudent(onlyIdStudent).
                             withApproved(Boolean.FALSE).
                             withDesiredValue(80D).
+                            withPlan("Work hard, improve score").
+                            withAutoComplete(Boolean.FALSE).
                             withName("Section Goal").
                             withStaff(t).
                             build();
                     ServiceResponse<Long> createdGoalResp =
-                            pm.getGoalManager().createGoal(studentId, fullCumulativeGradeGoalByBuilder);
+                            pm.getGoalManager().createGoal(studentId, fullSectionGradeGoalByBuilder);
                     if(null != createdGoalResp.getValue()) {
-                        fullCumulativeGradeGoalByBuilder.setId(createdGoalResp.getValue());
+                        fullSectionGradeGoalByBuilder.setId(createdGoalResp.getValue());
                     }
-                    sectionDashData.setGradeGoal(fullCumulativeGradeGoalByBuilder);
+                    sectionDashData.setGradeGoal(fullSectionGradeGoalByBuilder);
                 }
                 ServiceResponse<Collection<StudentAssignment>> studAssesResp = pm.getStudentAssignmentManager().
                         getOneSectionOneStudentsAssignments(studentId,  s.getId());

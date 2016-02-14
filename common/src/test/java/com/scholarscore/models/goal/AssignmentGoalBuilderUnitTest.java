@@ -1,6 +1,7 @@
 package com.scholarscore.models.goal;
 
 import com.scholarscore.models.AbstractBuilderUnitTest;
+import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.utils.CommonTestUtils;
@@ -29,10 +30,11 @@ public class AssignmentGoalBuilderUnitTest extends AbstractBuilderUnitTest<Assig
         GoalType goalType = GoalType.ASSIGNMENT;
         String name = CommonTestUtils.generateName();
         Staff teacher = CommonTestUtils.generateTeacher();
+        StudentAssignment studAss = new StudentAssignment();
 
         AssignmentGoal fullAssignmentGoal = new AssignmentGoal();
         fullAssignmentGoal.setId(id);
-        fullAssignmentGoal.setParentId(parentId);
+        fullAssignmentGoal.setStudentAssignment(studAss);
         fullAssignmentGoal.setStudent(student);
         fullAssignmentGoal.setApproved(Boolean.TRUE);
         fullAssignmentGoal.setCalculatedValue(calculatedValue);
@@ -43,7 +45,7 @@ public class AssignmentGoalBuilderUnitTest extends AbstractBuilderUnitTest<Assig
 
         AssignmentGoal fullAssignmentGoalByBuilder = new AssignmentGoal.AssignmentGoalBuilder().
                 withId(id).
-                withParentId(parentId).
+                withStudentAsssignment(studAss).
                 withStudent(student).
                 withApproved(Boolean.TRUE).
                 withCalculatedValue(calculatedValue).
