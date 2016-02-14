@@ -7,10 +7,10 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
+import com.scholarscore.models.goal.SectionGradeGoal;
 import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.goal.AssignmentGoal;
-import com.scholarscore.models.goal.CumulativeGradeGoal;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.goal.GoalType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,20 +54,25 @@ public class GoalManagerImpl implements GoalManager {
         }
         if (goal.getGoalType() == GoalType.ASSIGNMENT) {
             AssignmentGoal assignmentGoal = (AssignmentGoal)goal;
-            // The first parameter is not used.
-            StudentAssignment assignment = studentAssignmentPersistence.select(1L,assignmentGoal.getParentId());
-            if(null == assignment) {
-                return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
-                        new Object[]{STUDENT_ASSIGNMENT, assignmentGoal.getParentId()}));
+            // If we have a null goal we don't need to check if it exists because we can create an assignment goal
+            //If a teacher hasn't created the assignment yet
+            //However, if they specify an assignment it better exist
+            if (null != assignmentGoal.getStudentAssignment()) {
+                StudentAssignment assignment = studentAssignmentPersistence.select(1L,assignmentGoal.getStudentAssignment().getId());
+                if(null == assignment) {
+                    return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
+                            new Object[]{STUDENT_ASSIGNMENT, assignmentGoal.getStudentAssignment()}));
+                }
             }
+
             //TODO I don't like this duplication of code from the JDBC to the managers
-        } else if (goal.getGoalType() == GoalType.CUMULATIVE_GRADE){
-            CumulativeGradeGoal cumulativeGradeGoal = (CumulativeGradeGoal)goal;
-            StudentSectionGrade ssg = studentSectionGradePersistence.select(cumulativeGradeGoal.getParentId(),studentId);
+        } else if (goal.getGoalType() == GoalType.SECTION_GRADE){
+            SectionGradeGoal sectionGradeGoal = (SectionGradeGoal)goal;
+            StudentSectionGrade ssg = studentSectionGradePersistence.select(sectionGradeGoal.getSection().getId(),studentId);
             if(null == ssg) {
                 return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
                         new Object[]{STUDENT_SECTION_GRADE,
-                                "section id: " + cumulativeGradeGoal.getParentId() + ", student id: " + studentId}));
+                                "section id: " + sectionGradeGoal.getSection().getId() + ", student id: " + studentId}));
             }
         }
 

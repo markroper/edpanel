@@ -153,8 +153,8 @@ public class UISyntheticDatagenerator extends IntegrationBase {
         //Create terms
         Map<Long, List<Section>> sections = null;
         Map<Long, List<Term>> terms = SchoolDataFactory.generateTerms(generatedSchoolYears);
-        Map<Long, List<Long>> studentToSectionId = new HashMap<Long, List<Long>>();
-        Map<Long, List<Long>> studentToAssignmentId = new HashMap<Long, List<Long>>();
+        Map<Long, List<Section>> studentToSectionId = new HashMap<Long, List<Section>>();
+        Map<Long, List<StudentAssignment>> studentToAssignmentId = new HashMap<Long, List<StudentAssignment>>();
         List<Section> allSections = new ArrayList<>();
         for(Map.Entry<Long, List<Term>> termEntry : terms.entrySet()) {
             List<Term> createdTerms = new ArrayList<Term>();
@@ -203,11 +203,11 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                                 "Updating student section grade");
                         //Needed for giving goals
                         if (null == studentToSectionId.get(s.getId())) {
-                            List<Long> sectionIds = new ArrayList<Long>();
-                            sectionIds.add(section.getId());
-                            studentToSectionId.put(s.getId(),sectionIds);
+                            List<Section> sections1 = new ArrayList<Section>();
+                            sections1.add(section);
+                            studentToSectionId.put(s.getId(),sections1);
                         } else {
-                            studentToSectionId.get(s.getId()).add(createdSection.getId());
+                            studentToSectionId.get(s.getId()).add(createdSection);
                         }
                         if(null == savedGrade) {
                             System.out.println("failed to update SSG");
@@ -254,11 +254,11 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                             createdStudentAssignments.add(sa);
                             //Needed for giving goals
                             if (null == studentToAssignmentId.get(sa.getStudent().getId())) {
-                                List<Long> assignmentIds = new ArrayList<Long>();
-                                assignmentIds.add(sa.getId());
+                                List<StudentAssignment> assignmentIds = new ArrayList<>();
+                                assignmentIds.add(sa);
                                 studentToAssignmentId.put(sa.getStudent().getId(),assignmentIds);
                             } else {
-                                studentToAssignmentId.get(sa.getStudent().getId()).add(sa.getId());
+                                studentToAssignmentId.get(sa.getStudent().getId()).add(sa);
                             }
                         }
 

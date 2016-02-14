@@ -57,7 +57,7 @@ public class AttendanceManagerImpl implements AttendanceManager {
         if (!code.isOK()) {
             return new ServiceResponse<Collection<Attendance>>(code);
         }
-        Collection<Attendance> attendance = attendancePersistence.selectAttendanceForSection(schoolId, studentId, sectionId);
+        Collection<Attendance> attendance = attendancePersistence.selectAttendanceForSection(studentId, sectionId);
         return new ServiceResponse<Collection<Attendance>>(attendance);
     }
 
