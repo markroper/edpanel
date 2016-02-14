@@ -7,7 +7,9 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.School;
+import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
+import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.goal.CumulativeGradeGoal;
 import com.scholarscore.models.goal.Goal;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -61,8 +64,28 @@ public class UiEndpointsController extends BaseController {
              @ApiParam(name = "termId", required = true, value = "Term ID")
              @PathVariable(value="termId") Long termId) {
         List<StudentSectionDashboardData> response = new ArrayList<>();
+        Term rootTerm = null;
+        Term requestTerm = null;
+        ServiceResponse<SchoolYear> schoolYearResponse =
+                pm.getSchoolYearManager().getSchoolYear(schoolId, schoolYearId);
+        if(null != schoolYearResponse.getValue()) {
+            SchoolYear year = schoolYearResponse.getValue();
+            for(Term t: year.getTerms()) {
+                if(null != t.getPortion() &&  t.getPortion().equals(1L)) {
+                    rootTerm = t;
+                }
+                if(t.getId().equals(termId)) {
+                    requestTerm = t;
+                }
+            }
+        }
+        Long sectionsTermId = termId;
+        if(null != rootTerm) {
+            sectionsTermId = rootTerm.getId();
+        }
         ServiceResponse<Collection<Section>> sectionsResponse =
-                pm.getSectionManager().getAllSections(studentId, schoolId, schoolYearId, termId);
+                pm.getSectionManager().getAllSections(studentId, schoolId, schoolYearId, sectionsTermId);
+
         ServiceResponse<Collection<Goal>> goalsResponse = pm.getGoalManager().getAllGoals(studentId);
         HashMap<Long, CumulativeGradeGoal> sectionGoalMap = new HashMap<>();
         for (Goal goal: goalsResponse.getValue()) {
@@ -114,9 +137,16 @@ public class UiEndpointsController extends BaseController {
                     }
                 }
 
+                LocalDate start = null;
+                LocalDate end = null;
+                if(null != requestTerm) {
+                    start = requestTerm.getStartDate();
+                    end = requestTerm.getEndDate();
+                }
                 ServiceResponse<SectionGradeWithProgression> gradesByWeekResp =
                     pm.getStudentSectionGradeManager().getStudentSectionGradeByWeek(
-                            schoolId, schoolYearId, termId, s.getId(), studentId);
+                            schoolId, schoolYearId, termId, s.getId(), studentId, start, end);
+
                 if(null == gradesByWeekResp.getCode()) {
                     sectionDashData.setGradeProgression(gradesByWeekResp.getValue());
                     sectionDashData.getGradeGoal().setCalculatedValue(gradesByWeekResp.getValue().getCurrentOverallGrade());

@@ -79,7 +79,7 @@ public interface StudentSectionGradeManager {
      * @return
      */
     public ServiceResponse<SectionGradeWithProgression> getStudentSectionGradeByWeek(
-            long schoolId, long yearId, long termId, long sectionId, long studentId);
+            long schoolId, long yearId, long termId, long sectionId, long studentId, LocalDate start, LocalDate end);
 
     /**
      * Returns a student's section grade as of the specified date, pulling the value first from the cached historical
