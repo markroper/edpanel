@@ -2,12 +2,14 @@ package com.scholarscore.models.goal;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.assignment.StudentAssignment;
 
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import java.util.Objects;
 
 /**
@@ -21,19 +23,20 @@ import java.util.Objects;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class AssignmentGoal extends Goal implements CalculatableAssignment {
 
-    private Long parentId;
+    private StudentAssignment studentAssignment;
 
-    @Column(name = HibernateConsts.PARENT_FK)
-    public Long getParentId() {
-        return parentId;
+    @OneToOne(optional = true)
+    @JoinColumn(name=HibernateConsts.STUDENT_ASSIGNMENT_FK, nullable = true)
+    public StudentAssignment getStudentAssignment() {
+        return studentAssignment;
     }
 
     /**
-     * This should identify the composite ID of the student assignmnet we wish to set a goal for
-     * @param parentId
+     * This should be the assignment the goal is associated with
+     * @param assignment
      */
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
+    public void setStudentAssignment(StudentAssignment assignment) {
+        this.studentAssignment = assignment;
     }
 
     public AssignmentGoal() {
@@ -43,7 +46,7 @@ public class AssignmentGoal extends Goal implements CalculatableAssignment {
     public AssignmentGoal(AssignmentGoal goal) {
         super(goal);
         this.setGoalType(GoalType.ASSIGNMENT);
-        this.parentId = goal.parentId;
+        this.studentAssignment = goal.studentAssignment;
     }
 
     @Override
@@ -51,8 +54,8 @@ public class AssignmentGoal extends Goal implements CalculatableAssignment {
         super.mergePropertiesIfNull(mergeFrom);
         if (mergeFrom instanceof AssignmentGoal) {
             AssignmentGoal mergeFromBehavior = (AssignmentGoal)mergeFrom;
-            if (null == this.parentId) {
-                this.parentId = mergeFromBehavior.parentId;
+            if (null == this.studentAssignment) {
+                this.studentAssignment = mergeFromBehavior.studentAssignment;
             }
         }
     }
@@ -63,7 +66,7 @@ public class AssignmentGoal extends Goal implements CalculatableAssignment {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         AssignmentGoal that = (AssignmentGoal) o;
-        return Objects.equals(parentId, that.parentId);
+        return Objects.equals(studentAssignment, that.studentAssignment);
     }
     
     @Override
@@ -73,22 +76,14 @@ public class AssignmentGoal extends Goal implements CalculatableAssignment {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), parentId);
+        return Objects.hash(super.hashCode(), studentAssignment);
     }
 
     @Override
     public String toString() {
         return
-                "GOAL " + "\n"
-                        + "Id  : " + getId() + "\n"
-                        + "Name: " + getName() + "\n"
-                        + "DesiredValue: " + getDesiredValue() +"\n"
-                        + "CalculatedValue: " + getCalculatedValue() + "\n"
-                        + "Approved: " + getApproved() + "\n"
-                        + "GoalType: " + getGoalType() + "\n"
-                        + "Student: " + getStudent() + "\n"
-                        + "Teacher: " + getStaff() + "\n"
-                        + "ParentId: " + getParentId();
+                "GOAL super(" + super.toString() +")" + "\n"
+                        + "StudentAssignment:" + getStudentAssignment() + "\n";
     }
 
     /**
@@ -98,17 +93,17 @@ public class AssignmentGoal extends Goal implements CalculatableAssignment {
      */
     public static class AssignmentGoalBuilder extends GoalBuilder<AssignmentGoalBuilder, AssignmentGoal>{
 
-        private Long parentId;
+        private StudentAssignment studentAssignment;
 
-        public AssignmentGoalBuilder withParentId(final Long parentId){
-            this.parentId = parentId;
+        public AssignmentGoalBuilder withStudentAsssignment(final StudentAssignment studentAsssignment){
+            this.studentAssignment = studentAsssignment;
             return this;
         }
 
         public AssignmentGoal build(){
             AssignmentGoal goal = super.build();
             goal.setGoalType(GoalType.ASSIGNMENT);
-            goal.setParentId(parentId);
+            goal.setStudentAssignment(studentAssignment);
             return goal;
         }
 

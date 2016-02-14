@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <changeSet author="chris" id="changelog-1.5-change1">
+        <sql>
+            truncate goal
+        </sql>
+        <dropColumn columnName="parent_fk"
+                    tableName="goal"/>
+        <dropColumn columnName="goal_aggregate"
+                    tableName="goal"/>
+        <addColumn tableName="goal">
+            <column name="progress" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="goal">
+            <column
+                    name="autocomplete"
+                    type="int">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="goal">
+            <column
+                    name="plan"
+                    type="blob">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="goal">
+            <column
+                    name="outcome"
+                    type="blob">
+            </column>
+        </addColumn>
+        <addColumn tableName="goal">
+            <column
+                    name="obstacle"
+                    type="blob">
+            </column>
+        </addColumn>
+        <addColumn tableName="goal">
+            <column
+                    name="followup"
+                    type="int">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="goal">
+            <column
+                name="student_assignment_fk"
+                type="bigint unsigned">
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="goal"
+                                 baseColumnNames="student_assignment_fk"
+                                 constraintName="goal$student_assignment_fk"
+                                 onDelete="SET NULL"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="student_assignment_id"
+                                 referencedTableName="student_assignment"/>
+
+        <addColumn tableName="goal">
+            <column
+                    name="section_fk"
+                    type="bigint unsigned">
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="goal"
+                                 baseColumnNames="section_fk"
+                                 constraintName="goal$section_fk"
+                                 onDelete="SET NULL"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="section_id"
+                                 referencedTableName="section"/>
+
+    </changeSet>
+</databaseChangeLog>

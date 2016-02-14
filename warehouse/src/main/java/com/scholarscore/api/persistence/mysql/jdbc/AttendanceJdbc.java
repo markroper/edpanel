@@ -91,12 +91,24 @@ public class AttendanceJdbc implements AttendancePersistence {
     @SuppressWarnings("unchecked")
     @Override
     public Collection<Attendance> selectAllAttendance(Long schoolId,
-            Long studentId) {
-        String[] paramNames = new String[] { "schoolId", "studentId" }; 
+                                                      Long studentId) {
+        String[] paramNames = new String[] {"schoolId", "studentId" };
         Object[] paramValues = new Object[]{ schoolId, studentId };
         return (Collection<Attendance>)hibernateTemplate.findByNamedParam(
                 ATTENDANCE_HQL + " where a.schoolDay.school.id = :schoolId and a.student.id = :studentId",
-                paramNames, 
+                paramNames,
+                paramValues);
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Collection<Attendance> selectAllDailyAttendance(Long studentId) {
+        String[] paramNames = new String[] {"studentId" };
+        Object[] paramValues = new Object[]{studentId };
+        return (Collection<Attendance>)hibernateTemplate.findByNamedParam(
+                ATTENDANCE_HQL + " where a.attendance_type = 'DAILY' and a.student.id = :studentId",
+                paramNames,
                 paramValues);
     }
 
@@ -114,12 +126,11 @@ public class AttendanceJdbc implements AttendancePersistence {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<Attendance> selectAttendanceForSection(Long schoolId,
-                                                             Long studentId, Long sectionId) {
-        String[] paramNames = new String[] { "schoolId", "studentId", "sectionId"};
-        Object[] paramValues = new Object[]{ schoolId, studentId, sectionId};
+    public Collection<Attendance> selectAttendanceForSection(Long studentId, Long sectionId) {
+        String[] paramNames = new String[] {"studentId", "sectionId"};
+        Object[] paramValues = new Object[]{studentId, sectionId};
         return (Collection<Attendance>)hibernateTemplate.findByNamedParam(
-                ATTENDANCE_HQL + " where a.schoolDay.school.id = :schoolId and a.student.id = :studentId" +
+                ATTENDANCE_HQL + " where a.student.id = :studentId" +
                         " and a.section.id = :sectionId",
                 paramNames,
                 paramValues);

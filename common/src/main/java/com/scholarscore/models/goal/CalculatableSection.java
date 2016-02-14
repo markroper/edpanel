@@ -1,16 +1,17 @@
 package com.scholarscore.models.goal;
 
+import com.scholarscore.models.Section;
 import com.scholarscore.models.user.Student;
 
 /**
  * Interface for defining that a goal/component
  * Created by cwallace on 10/15/2015.
  */
-public interface CalculatableCumulative {
+public interface CalculatableSection {
 
-    public Long getParentId();
+    public Section getSection();
 
-    public void setParentId(Long parentId);
+    public void setSection(Section section);
 
     public void setStudent(Student student);
 
