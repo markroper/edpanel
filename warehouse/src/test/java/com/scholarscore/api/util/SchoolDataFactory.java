@@ -16,7 +16,7 @@ import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.goal.AssignmentGoal;
 import com.scholarscore.models.goal.AttendanceGoal;
 import com.scholarscore.models.goal.BehaviorGoal;
-import com.scholarscore.models.goal.CumulativeGradeGoal;
+import com.scholarscore.models.goal.SectionGradeGoal;
 import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.gradeformula.GradeFormula;
 import com.scholarscore.models.notification.Notification;
@@ -945,23 +945,23 @@ public class SchoolDataFactory {
             Staff teacher,
             LocalDate beginDate,
             LocalDate endDate,
-            Map<Long, List<Long>> studentToSSGId,
-            Map<Long, List<Long>> studentToAssignmentId
+            Map<Long, List<Section>> studentToSSGId,
+            Map<Long, List<StudentAssignment>> studentToAssignmentId
     ) {
         Map<Long, ArrayList<Goal>> studentGoals = new HashMap<Long, ArrayList<Goal>>();
         for (Student s: students) {
-            List<Long> enrolledSections = studentToSSGId.get(s.getId());
-            List<Long> studentAssignments = studentToAssignmentId.get(s.getId());
+            List<Section> enrolledSections = studentToSSGId.get(s);
+            List<StudentAssignment> studentAssignments = studentToAssignmentId.get(s);
             int index = ThreadLocalRandom.current().nextInt(1, enrolledSections.size() - 1);
             int assignmentIndex = ThreadLocalRandom.current().nextInt(studentAssignments.size()-1);
             ArrayList<Goal> studentGoalList = new ArrayList<Goal>();
 
-            CumulativeGradeGoal sectionGradeGoal = new CumulativeGradeGoal();
+            SectionGradeGoal sectionGradeGoal = new SectionGradeGoal();
 
             if (null == enrolledSections.get(index)) {
-                sectionGradeGoal.setParentId(enrolledSections.get(0));
+                sectionGradeGoal.setSection(enrolledSections.get(0));
             } else {
-                sectionGradeGoal.setParentId(enrolledSections.get(index));
+                sectionGradeGoal.setSection(enrolledSections.get(index));
             }
 
             sectionGradeGoal.setStudent(s);
@@ -984,9 +984,9 @@ public class SchoolDataFactory {
 
             AssignmentGoal assignmentGoal = new AssignmentGoal();
             if (studentAssignments.get(assignmentIndex) == null) {
-                assignmentGoal.setParentId(studentAssignments.get(0));
+                assignmentGoal.setStudentAssignment(studentAssignments.get(0));
             } else {
-                assignmentGoal.setParentId(studentAssignments.get(assignmentIndex));
+                assignmentGoal.setStudentAssignment(studentAssignments.get(assignmentIndex));
             }
 
 
@@ -1001,9 +1001,9 @@ public class SchoolDataFactory {
 
             AttendanceGoal attendanceGoal = new AttendanceGoal();
             if (null == enrolledSections.get(index)) {
-                attendanceGoal.setParentId(enrolledSections.get(0));
+                attendanceGoal.setSection(enrolledSections.get(0));
             } else {
-                attendanceGoal.setParentId(enrolledSections.get(index));
+                attendanceGoal.setSection(enrolledSections.get(index));
             }
 
             attendanceGoal.setStudent(s);

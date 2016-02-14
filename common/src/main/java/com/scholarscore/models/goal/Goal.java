@@ -23,6 +23,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -37,9 +38,8 @@ import java.util.Objects;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = BehaviorGoal.class, name="BEHAVIOR"),
         @JsonSubTypes.Type(value = AssignmentGoal.class, name = "ASSIGNMENT"),
-        @JsonSubTypes.Type(value = CumulativeGradeGoal.class, name = "CUMULATIVE_GRADE"),
-        @JsonSubTypes.Type(value = AttendanceGoal.class, name = "ATTENDANCE"),
-        @JsonSubTypes.Type(value = ComplexGoal.class, name = "COMPLEX")
+        @JsonSubTypes.Type(value = SectionGradeGoal.class, name = "SECTION_GRADE"),
+        @JsonSubTypes.Type(value = AttendanceGoal.class, name = "ATTENDANCE")
 })
 public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 
@@ -49,9 +49,23 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     private Double calculatedValue;
     private Boolean approved;
     private GoalType goalType;
+    private LocalDate startDate;
+    private LocalDate endDate;
+
+    private GoalProgress goalProgress;
+    private Boolean autocomplete;
+    private String plan;
+    private String outcome;
+    private String obstacles;
+    private Boolean teacherFollowup;
 
     public Goal() {
         super();
+        //THis is maybe controversial. Goals should not be completed upon creation and a teacher followup
+        //Should not have already happened. So we will set them to initial conditions
+        this.teacherFollowup = Boolean.FALSE;
+        this.goalProgress = GoalProgress.IN_PROGRESS;
+
     }
 
     public Goal(Goal goal) {
@@ -62,6 +76,14 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         this.calculatedValue = goal.calculatedValue;
         this.approved = goal.approved;
         this.setGoalType(goal.goalType);
+        this.goalProgress = goal.goalProgress;
+        this.autocomplete = goal.autocomplete;
+        this.startDate = goal.startDate;
+        this.endDate = goal.endDate;
+        this.plan = goal.plan;
+        this.outcome = goal.outcome;
+        this.obstacles = goal.obstacles;
+        this.teacherFollowup = goal.teacherFollowup;
     }
 
     @Id
@@ -71,11 +93,88 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         return super.getId();
     }
 
+    @Column(name = HibernateConsts.GOAL_PROGRESS, insertable = true, updatable = true)
+    @Enumerated(EnumType.STRING)
+    public GoalProgress getGoalProgress() {
+        return goalProgress;
+    }
+
+    public void setGoalProgress(GoalProgress goalProgress) {
+        this.goalProgress = goalProgress;
+    }
+
+    @Column(name = HibernateConsts.GOAL_AUTOCOMPLETE)
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    public Boolean getAutocomplete() {
+        return autocomplete;
+    }
+
+    public void setAutocomplete(Boolean autocomplete) {
+        this.autocomplete = autocomplete;
+    }
+
+    @Column(name = HibernateConsts.GOAL_START_DATE)
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    @Column(name = HibernateConsts.GOAL_END_DATE)
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    @Column(name = HibernateConsts.GOAL_PLAN, columnDefinition = "blob")
+    public String getPlan() {
+        return plan;
+    }
+
+    public void setPlan(String plan) {
+        this.plan = plan;
+    }
+
+    @Column(name = HibernateConsts.GOAL_OBSTACLE, columnDefinition = "blob")
+    public String getObstacles() {
+        return obstacles;
+    }
+
+    public void setObstacles(String obstacles) {
+        this.obstacles = obstacles;
+    }
+
+    @Column(name = HibernateConsts.GOAL_OUTCOME, columnDefinition = "blob")
+    public String getOutcome() {
+        return outcome;
+    }
+
+    public void setOutcome(String outcome) {
+        this.outcome = outcome;
+    }
+
+    @Column(name = HibernateConsts.GOAL_FOLLOWUP)
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    public Boolean getTeacherFollowup() {
+        return teacherFollowup;
+    }
+
+    public void setTeacherFollowup(Boolean teacherFollowup) {
+        this.teacherFollowup = teacherFollowup;
+    }
+
     @Override
     @Column(name = HibernateConsts.GOAL_NAME)
     public String getName() {
         return super.getName();
     }
+
+
 
 
     @Column(name = HibernateConsts.GOAL_APPROVED)
@@ -162,25 +261,65 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         if (null == staff) {
             this.staff = mergeFrom.staff;
         }
-    }
+        if (null == goalProgress) {
+            this.goalProgress = mergeFrom.goalProgress;
+        }
+        if (null == autocomplete) {
+            this.autocomplete = mergeFrom.autocomplete;
+        }
+        if (null == plan) {
+            this.plan = mergeFrom.plan;
+        }
+        if (null == outcome) {
+            this.outcome = mergeFrom.outcome;
+        }
+        if (null == obstacles) {
+            this.obstacles = mergeFrom.obstacles;
+        }
+        if (null == teacherFollowup) {
+            this.teacherFollowup = mergeFrom.teacherFollowup;
+        }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        Goal goal = (Goal) o;
-        return Objects.equals(student, goal.student) &&
-                Objects.equals(staff, goal.staff) &&
-                Objects.equals(desiredValue, goal.desiredValue) &&
-                Objects.equals(calculatedValue, goal.calculatedValue) &&
-                Objects.equals(approved, goal.approved) &&
-                Objects.equals(goalType, goal.goalType);
+        if (null == startDate) {
+            this.startDate = mergeFrom.startDate;
+        }
+
+        if (null == endDate) {
+            this.endDate = mergeFrom.endDate;
+        }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), student, staff, desiredValue, calculatedValue, approved, goalType);
+        return 31 * super.hashCode() + Objects.hash(student, staff, desiredValue, calculatedValue, approved, goalType, startDate, endDate, goalProgress, autocomplete, plan, teacherFollowup, obstacles, outcome);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        final Goal other = (Goal) obj;
+        return Objects.equals(this.student, other.student)
+                && Objects.equals(this.staff, other.staff)
+                && Objects.equals(this.desiredValue, other.desiredValue)
+                && Objects.equals(this.calculatedValue, other.calculatedValue)
+                && Objects.equals(this.approved, other.approved)
+                && Objects.equals(this.goalType, other.goalType)
+                && Objects.equals(this.startDate, other.startDate)
+                && Objects.equals(this.endDate, other.endDate)
+                && Objects.equals(this.goalProgress, other.goalProgress)
+                && Objects.equals(this.autocomplete, other.autocomplete)
+                && Objects.equals(this.plan, other.plan)
+                && Objects.equals(this.obstacles, other.obstacles)
+                && Objects.equals(this.outcome, other.outcome)
+                && Objects.equals(this.teacherFollowup, other.teacherFollowup);
     }
 
     @Override
@@ -194,7 +333,15 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
                         + "Approved: " + getApproved() + "\n"
                         + "GoalType: " + getGoalType() + "\n"
                         + "Student: " + getStudent() + "\n"
-                        + "Staff: " + getStaff() + "\n";
+                        + "Staff: " + getStaff() + "\n"
+                        + "StartDate: " + getStartDate() + "\n"
+                        + "EndDate: " + getEndDate() + "\n"
+                        + "GoalProgress: " + getGoalProgress() + "\n"
+                        + "Autocomplete: " + getAutocomplete() + "\n"
+                        + "Plan: " + getPlan() + "\n"
+                        + "Outcome: " + getOutcome() + "\n"
+                        + "Obstacles: " + getObstacles() + "\n"
+                        + "TeacherFollowup: " + getTeacherFollowup() + "\n";
     }
 
     /**
@@ -210,6 +357,30 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         private Double calculatedValue;
         private Boolean approved;
         private GoalType goalType;
+        private Boolean autocomplete;
+        private String plan;
+        private String outcome;
+        private String obstacle;
+
+        public U withAutoComplete(final Boolean autoComplete) {
+            this.autocomplete = autoComplete;
+            return me();
+        }
+
+        public U withPlan(final String plan) {
+            this.plan = plan;
+            return me();
+        }
+
+        public U withObstacle(final String obstacle) {
+            this.obstacle = obstacle;
+            return me();
+        }
+
+        public U withOutcome(final String outcome) {
+            this.outcome = outcome;
+            return me();
+        }
 
         public U withStudent(final Student student){
             this.student = student;
@@ -245,10 +416,15 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
             T goal = super.build();
             goal.setStudent(student);
             goal.setStaff(staff);
+            goal.setPlan(plan);
+            goal.setAutocomplete(autocomplete);
             goal.setDesiredValue(desiredValue);
             goal.setCalculatedValue(calculatedValue);
             goal.setApproved(approved);
             goal.setGoalType(goalType);
+            goal.setAutocomplete(autocomplete);
+            goal.setObstacles(obstacle);
+            goal.setOutcome(outcome);
             return goal;
         }
     }

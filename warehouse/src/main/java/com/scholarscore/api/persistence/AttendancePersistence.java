@@ -13,7 +13,8 @@ public interface AttendancePersistence {
     Collection<Attendance> selectAllAttendance(Long schoolId, Long studentId);
     Collection<Attendance> selectAllAttendance(Long schoolId, List<Long> studentId, LocalDate start, LocalDate end);
     Collection<Attendance> selectAllAttendanceForTerm(Long schoolId, Long studentId, Long yearId, Long termId);
-    Collection<Attendance> selectAttendanceForSection(Long schoolId, Long studentId, Long sectionId);
+    Collection<Attendance> selectAllDailyAttendance(Long studentId);
+    Collection<Attendance> selectAttendanceForSection(Long studentId, Long sectionId);
     Long delete(Long schoolId, Long studentId, Long attendanceId);
     void update(Long schoolId, Long studentId, Long attendanceId, Attendance a);
 }
