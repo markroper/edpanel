@@ -161,4 +161,21 @@ public class SchoolController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId) {
         return respond(pm.getSectionManager().getAllSectionsInSchool(schoolId));
     }
+
+
+    @ApiOperation(
+            value = "Update an existing student",
+            notes = "Updates an existing student properties. Will not overwrite existing values with null.",
+            response = EntityId.class)
+    @RequestMapping(
+            value = "/{schoolId}/students/advisor",
+            method = RequestMethod.POST,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity associateAdvisors(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId
+    ) {
+        return respond(pm.getSchoolManager().associateAdvisors(schoolId));
+    }
 }

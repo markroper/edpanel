@@ -39,6 +39,7 @@ public interface StudentManager {
     
     public ServiceResponse<Long> updateStudent(long studentId, Student student);
 
+
     public ServiceResponse<Long> deleteStudent(long studentId);
     
     public ServiceResponse<List<PrepScore>> getStudentPrepScore(Long studentIds[], Date startDate, Date endDate);
