@@ -100,6 +100,15 @@ public class StudentController extends BaseController {
         return respond(pm.getStudentManager().replaceStudent(studentId, student));
     }
 
+    @ApiOperation(
+            value = "Update an existing student",
+            notes = "Updates an existing student properties. Will not overwrite existing values with null.",
+            response = EntityId.class)
+    @RequestMapping(
+            value = "/{studentId}",
+            method = RequestMethod.PATCH,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity update(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
