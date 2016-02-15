@@ -253,10 +253,7 @@ public class EtlEngine implements IEtlEngine {
                 } catch (IOException ex2) {
                     LOGGER.warn("Failed to match advisors for school with EdPanelID : " + pair.getValue().getId());
                 }
-
             }
-
-
         }
     }
 

@@ -164,8 +164,8 @@ public class SchoolController extends BaseController {
 
 
     @ApiOperation(
-            value = "Update an existing student",
-            notes = "Updates an existing student properties. Will not overwrite existing values with null.",
+            value = "Sets the student's advisor",
+            notes = "Sync the student advisors for each school",
             response = EntityId.class)
     @RequestMapping(
             value = "/{schoolId}/students/advisor",
