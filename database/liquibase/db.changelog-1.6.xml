@@ -67,7 +67,7 @@
                                  referencedTableName="dashboard"/>
 
         <sql>
-            ALTER TABLE report MODIFY report_id BIGINT UNSIGNED;
+            ALTER TABLE report MODIFY report_id BIGINT UNSIGNED AUTO_INCREMENT;
         </sql>
 
         <createTable tableName="dashboard_report">
