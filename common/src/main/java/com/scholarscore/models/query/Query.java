@@ -2,12 +2,23 @@ package com.scholarscore.models.query;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.models.ApiModel;
+import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
 import com.scholarscore.models.query.expressions.operands.IOperand;
+import com.scholarscore.util.EdPanelObjectMapper;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -82,7 +93,9 @@ import java.util.Set;
  */
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Entity(name = HibernateConsts.REPORT_TABLE)
 public class Query extends ApiModel implements Serializable, IApiModel<Query> {
+    Long schoolId;
     // In SQL terms, this collection defines the columns that are being SUM'd, AVG'd, or otherwise aggregated
     List<AggregateMeasure> aggregateMeasures;
     // In SQL terms, the Dimension represents those columns in the GROUP BY clause.
@@ -114,6 +127,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         subqueryFilter = q.getSubqueryFilter();
         joinTables = q.getJoinTables();
         having = q.getHaving();
+        schoolId = q.getSchoolId();
     }
 
     @Override
@@ -144,9 +158,64 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         if (null == this.having) {
             this.having = query.having;
         }
+        if (null == this.schoolId) {
+            this.schoolId = query.schoolId;
+        }
+    }
+
+    @Override
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = HibernateConsts.REPORT_ID)
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = HibernateConsts.SCHOOL_FK)
+    public Long getSchoolId() {
+        return schoolId;
+    }
+
+    @JsonIgnore
+    @Column(name = HibernateConsts.REPORT_TABLE, columnDefinition="text")
+    public String getQuery() {
+        try {
+            return EdPanelObjectMapper.MAPPER.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+    }
+
+    @JsonIgnore
+    public void setQuery(String qs) {
+        Query q = null;
+        try {
+            q = EdPanelObjectMapper.MAPPER.readValue( qs, new TypeReference<Query>(){});
+        } catch (IOException e) {
+            q = new Query();
+        }
+        this.schoolId = q.schoolId;
+        this.aggregateMeasures = q.aggregateMeasures;
+        this.fields = q.fields;
+        this.filter = q.filter;
+        this.having = q.having;
+        this.subqueryFilter = q.subqueryFilter;
+        this.subqueryColumnsByPosition = q.subqueryColumnsByPosition;
+        this.joinTables = q.joinTables;
+    }
+
+    public void setSchoolId(Long schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    @Override
+    @Transient
+    public String getName() {
+        return super.getName();
     }
 
     // Getters, setters, equals(), hashCode(), toString()
+    @Transient
     public List<SubqueryColumnRef> getSubqueryColumnsByPosition() {
         return subqueryColumnsByPosition;
     }
@@ -155,6 +224,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         this.subqueryColumnsByPosition = subqueryColumnsByPosition;
     }
 
+    @Transient
     public Expression getHaving() {
         return having;
     }
@@ -163,6 +233,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         this.having = having;
     }
 
+    @Transient
     public List<SubqueryExpression> getSubqueryFilter() {
         return subqueryFilter;
     }
@@ -171,6 +242,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         this.subqueryFilter = subqueryFilter;
     }
 
+    @Transient
     public List<AggregateMeasure> getAggregateMeasures() {
         return aggregateMeasures;
     }
@@ -180,6 +252,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         this.aggregateMeasures = aggregateMeasures;
     }
 
+    @Transient
     public Expression getFilter() {
         return filter;
     }
@@ -188,6 +261,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         this.filter = filter;
     }
 
+    @Transient
     public List<DimensionField> getFields() {
         return fields;
     }
@@ -203,6 +277,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         this.fields.add(field);
     }
 
+    @Transient
     public HashSet<Dimension> getJoinTables() {
         return joinTables;
     }
@@ -220,6 +295,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     }
 
     @JsonIgnore
+    @Transient
     public boolean isValid() {
         //Are the measures in the AggregateMeasures compatible?
         Set<Measure> measuresInUse = new HashSet<Measure>();
@@ -301,13 +377,14 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
                 && Objects.equals(this.subqueryColumnsByPosition, other.subqueryColumnsByPosition)
                 && Objects.equals(this.subqueryFilter, other.subqueryFilter)
                 && Objects.equals(this.having, other.having)
+                && Objects.equals(this.schoolId, other.schoolId)
                 && Objects.equals(this.joinTables, other.joinTables);
     }
 
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(aggregateMeasures, filter, fields, subqueryColumnsByPosition, subqueryFilter, having, joinTables);
+                + Objects.hash(aggregateMeasures, filter, fields, subqueryColumnsByPosition, subqueryFilter, having, joinTables, schoolId);
     }
 
     @Override
@@ -320,6 +397,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
                 ", subqueryFilter=" + subqueryFilter +
                 ", joinTables=" + joinTables +
                 ", having=" + having +
+                ", schoolId=" + schoolId +
                 '}';
     }
 }
