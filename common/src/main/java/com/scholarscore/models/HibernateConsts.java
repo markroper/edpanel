@@ -321,4 +321,26 @@ public class HibernateConsts {
     public static final String MESSAGE_TOPIC_ID = "message_topic_id";
     public static final String MESSAGE_TOPIC_TYPE = "message_topic_type";
     public static final String MESSAGE_TOPIC_FK = "message_topic_fk";
+
+    //Dashboards
+    public static final String REPORT_TABLE = "report";
+    public static final String REPORT_ID = "report_id";
+
+    public static final String REPORT_FK = "report_fk";
+    public static final String DASHBOARD_TABLE = "dashboard";
+    public static final String DASHBOARD_ID = "dashboard_id";
+    public static final String DASHBOARD_NAME = "dashboard_name";
+    public static final String DASHBOARD_FK = "dashboard_FK";
+
+    public static final String DASHBOARD_ROW_TABLE = "dashboard_row";
+    public static final String DASHBOARD_ROW_ID = "dashboard_row_id";
+    public static final String DASHBOARD_ROW_FK = "dashboard_row_fk";
+    public static final String DASHBOARD_ROW_POSITION = "dashboard_row_position";
+
+    public static final String DASHBOARD_REPORT_TABLE = "dashboard_report";
+    public static final String DASHBOARD_REPORT_NAME = "dashboard_report_name";
+    public static final String DASHBOARD_REPORT_ID = "dashboard_report_id";
+    public static final String DASHBOARD_REPORT_COLUMN_DEFS = "dashboard_report_column_defs";
+    public static final String DASHBOARD_REPORT_POSITION = "dashboard_report_position";
+    public static final String DASHBOARD_REPORT_CLICK_REPORT_FK = "click_report_fk";
 }
