@@ -30,4 +30,6 @@ public interface SectionPersistence extends EntityPersistence<Section> {
      */
     public Collection<Section> selectAllInSchool(
             long schoolId);
+
+    public Collection<Section> selectAllInYear(long yearId);
 }
