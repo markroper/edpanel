@@ -91,6 +91,8 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
     List<DimensionField> fields;
     // In SQL terms, this defines the WHERE clause of a query
     Expression filter;
+    //The having clause (where clause conditions that act upon the aggregate function values)
+    Expression having;
     //Support for a parent query to aggregate the nested subquery
     List<SubqueryColumnRef> subqueryColumnsByPosition;
     //AND'd together only
@@ -111,6 +113,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         subqueryColumnsByPosition = q.getSubqueryColumnsByPosition();
         subqueryFilter = q.getSubqueryFilter();
         joinTables = q.getJoinTables();
+        having = q.getHaving();
     }
 
     @Override
@@ -138,6 +141,9 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
         if (null == this.joinTables) {
             this.joinTables = query.joinTables;
         }
+        if (null == this.having) {
+            this.having = query.having;
+        }
     }
 
     // Getters, setters, equals(), hashCode(), toString()
@@ -147,6 +153,14 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
 
     public void setSubqueryColumnsByPosition(List<SubqueryColumnRef> subqueryColumnsByPosition) {
         this.subqueryColumnsByPosition = subqueryColumnsByPosition;
+    }
+
+    public Expression getHaving() {
+        return having;
+    }
+
+    public void setHaving(Expression having) {
+        this.having = having;
     }
 
     public List<SubqueryExpression> getSubqueryFilter() {
@@ -286,13 +300,14 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
                 && Objects.equals(this.fields, other.fields)
                 && Objects.equals(this.subqueryColumnsByPosition, other.subqueryColumnsByPosition)
                 && Objects.equals(this.subqueryFilter, other.subqueryFilter)
+                && Objects.equals(this.having, other.having)
                 && Objects.equals(this.joinTables, other.joinTables);
     }
 
     @Override
     public int hashCode() {
         return 31 * super.hashCode()
-                + Objects.hash(aggregateMeasures, filter, fields, subqueryColumnsByPosition, subqueryFilter, joinTables);
+                + Objects.hash(aggregateMeasures, filter, fields, subqueryColumnsByPosition, subqueryFilter, having, joinTables);
     }
 
     @Override
@@ -304,6 +319,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
                 ", subqueryColumnsByPosition=" + subqueryColumnsByPosition +
                 ", subqueryFilter=" + subqueryFilter +
                 ", joinTables=" + joinTables +
+                ", having=" + having +
                 '}';
     }
 }
