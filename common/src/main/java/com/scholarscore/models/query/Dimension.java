@@ -88,7 +88,7 @@ public enum Dimension {
         add(Dimension.TERM);
         add(Dimension.YEAR);
         add(Dimension.COURSE);
-        add(Dimension.SUBJECT_AREA);
+        add(Dimension.SUBJECT_AREA);    
         add(Dimension.GRADE_LEVEL);
         add(Dimension.SCHOOL);
         add(Dimension.ADMINISTRATOR);

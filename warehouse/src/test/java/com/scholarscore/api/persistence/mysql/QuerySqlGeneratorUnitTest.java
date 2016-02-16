@@ -146,9 +146,9 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public Query buildQuery() {
                 Query assignmentGradesQuery  = new Query();
-                ArrayList<AggregateMeasure> assginmentMeasures = new ArrayList<>();
-                assginmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVG));
-                assignmentGradesQuery.setAggregateMeasures(assginmentMeasures);
+                ArrayList<AggregateMeasure> assignmentMeasures = new ArrayList<>();
+                assignmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVG));
+                assignmentGradesQuery.setAggregateMeasures(assignmentMeasures);
                 assignmentGradesQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
                 Expression assignmentWhereClause = new Expression(
                         new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)),
@@ -160,7 +160,13 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT student.student_name, AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg FROM student LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id LEFT OUTER JOIN section ON section.section_id = assignment.section_fk WHERE  ( section.section_id  =  4 ) GROUP BY student.student_name";
+                return "SELECT student.student_name, " + 
+                        "AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg " + 
+                        "FROM student " + 
+                        "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " + 
+                        "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id " + 
+                        "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk " + 
+                        "WHERE  ( section.section_id  =  4 ) GROUP BY student.student_name";
             }
         };
         TestQuery homeworkCompletionTestQuery = new TestQuery() {
@@ -529,7 +535,32 @@ public class QuerySqlGeneratorUnitTest {
                 return "SELECT school.school_name, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg FROM section LEFT OUTER JOIN assignment ON assignment.section_fk = section.section_id LEFT OUTER JOIN student_assignment ON student_assignment.assignment_fk = assignment.assignment_id LEFT OUTER JOIN course ON course.course_id = section.course_fk LEFT OUTER JOIN school ON school.school_id = course.school_fk GROUP BY school.school_name";
             }
         };
-        
+
+        // Note: this test should NOT be included in the list of tests run below (yet) 
+        // because the functionality that it relies on to pass is currently being created
+        TestQuery queryIncludingMultipleTablesWithAutomaticJoinPathFinding = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Intermediate Tables with Automatic pathfinding query";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query query = new Query();
+                ArrayList<AggregateMeasure> aggregateMeasures = new ArrayList<>();
+                aggregateMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
+                query.setAggregateMeasures(aggregateMeasures);
+                query.addField(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME));
+//                query.addHint(Dimension.SECTION);
+//                query.addHint(Dimension.COURSE);
+                return query;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT school.school_name, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg FROM section LEFT OUTER JOIN assignment ON assignment.section_fk = section.section_id LEFT OUTER JOIN student_assignment ON student_assignment.assignment_fk = assignment.assignment_id LEFT OUTER JOIN course ON course.course_id = section.course_fk LEFT OUTER JOIN school ON school.school_id = course.school_fk GROUP BY school.school_name";
+            }
+        };
         
         /*
             select count(*), num_grades
@@ -553,8 +584,9 @@ public class QuerySqlGeneratorUnitTest {
          */
 
         return new Object[][] {
-                { courseGradeTestQuery },
-                { assignmentGradesTestQuery },
+
+//                { courseGradeTestQuery },
+                { assignmentGradesTestQuery },/*
                 { homeworkCompletionTestQuery },
                 { homeworkSectionCompletionTestQuery },
                 { attendanceTestQuery },
@@ -566,12 +598,16 @@ public class QuerySqlGeneratorUnitTest {
                 { currGpaTestQuery },
                 { courseGradesBucketedTestQuery },
                 { requiresMultipleJoinsTestQuery }, 
-                { queryIncludingMultipleTablesUsingHints }
+                { queryIncludingMultipleTablesUsingHints },*/
+//                { queryIncludingMultipleTablesWithAutomaticJoinPathFinding }
         };
     }
     
    @Test(dataProvider = "queriesProvider")
    public void toSqlTest(TestQuery testQuery) {
+       System.out.println("");
+       System.out.println("");
+       System.out.println("QUERY " + testQuery.queryName() + "...");
        String msg = testQuery.queryName();
        Query q = testQuery.buildQuery();
        String expectedSql = testQuery.buildSQL();
