@@ -10,8 +10,6 @@ import java.io.Serializable;
 public enum GoalType implements Serializable {
     ATTENDANCE,
     BEHAVIOR,
-    CUMULATIVE_GRADE,
-    ASSIGNMENT,
-    COMPLEX,
-    CONSTANT
+    SECTION_GRADE,
+    ASSIGNMENT
 }
