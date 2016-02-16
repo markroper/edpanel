@@ -1,9 +1,10 @@
 package com.scholarscore.api.persistence.goalCalculators;
 
-import com.scholarscore.api.persistence.StudentAssignmentPersistence;
-import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.api.persistence.AttendancePersistence;
+import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.goal.CalculatableAttendance;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 /**
@@ -11,25 +12,40 @@ import java.util.Collection;
  */
 public class AttendanceGoalCalc implements GoalCalc<CalculatableAttendance> {
 
-    private StudentAssignmentPersistence studentAssignmentPersistence;
+    private AttendancePersistence attendancePersistence;
 
-    public void setStudentAssignmentPersistence(StudentAssignmentPersistence studentAssignmentPersistence) {
-        this.studentAssignmentPersistence = studentAssignmentPersistence;
+    public void setAttendancePersistence(AttendancePersistence attendancePersistence) {
+        this.attendancePersistence = attendancePersistence;
     }
 
     public Double calculateGoal(CalculatableAttendance goal) {
-        Collection<StudentAssignment> attendances = studentAssignmentPersistence.selectAllAttendanceSection(goal.getParentId(), goal.getStudent().getId());
-        Double missedClasses = 0d;
-        for (StudentAssignment dayAttendance : attendances) {
-            if (dayAttendance.getAssignment().getDueDate().isAfter(goal.getEndDate()) ||
-                    dayAttendance.getAssignment().getDueDate().isBefore(goal.getStartDate())) {
-                continue;
-            }
-            Double points = dayAttendance.getAwardedPoints();
-            if (null == points) {
 
-            } else if (points == 0) {
-                missedClasses += 1;
+        Collection<Attendance> attendances;
+        if (null != goal.getSection()) {
+            attendances = attendancePersistence.selectAttendanceForSection(goal.getStudent().getId(),goal.getSection().getId());
+        } else {
+            attendances = attendancePersistence.selectAllDailyAttendance(goal.getStudent().getId());
+        }
+
+        Double missedClasses = 0d;
+        //TODO SHOULD FINISHED GOALS BE PRESERVED WITH A FINAL VALUE SO WE HAVE LESS QUERYING;
+        for (Attendance dayAttendance : attendances) {
+            if (dayAttendance.getSchoolDay().getDate().isAfter(goal.getStartDate()) ||
+                    dayAttendance.getSchoolDay().getDate().equals(goal.getStartDate())){
+                //We have atleast started this goal...
+
+                //We don't always have an end date to goals. If they are teacher complete stuff
+                LocalDate endDate = goal.getEndDate();
+                if (null == endDate) {
+                    //Teacher is going to close off this goal so we don't care what the end date is
+                    missedClasses += 1;
+                } else {
+                    if (dayAttendance.getSchoolDay().getDate().isBefore(goal.getEndDate()) ||
+                            dayAttendance.getSchoolDay().getDate().equals(goal.getEndDate())) {
+                        //This is in the valid timeframe
+                        missedClasses += 1;
+                    }
+                }
             }
 
         }

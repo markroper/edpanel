@@ -14,6 +14,7 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
+import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.grade.SectionGrade;
 import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.Term;
@@ -45,6 +46,7 @@ public class BaseJdbcTest {
     protected final Term term = new Term();
     protected final BehaviorGoal behaviorGoal = new BehaviorGoal();
     protected final AssignmentGoal assignmentGoal = new AssignmentGoal();
+    protected final StudentAssignment studentAssignment = new StudentAssignment();
 
     protected final Staff admin = new Staff();
     protected final ApplicationContext ctx;
@@ -163,7 +165,7 @@ public class BaseJdbcTest {
         assignmentGoal.setStudent(student);
         assignmentGoal.setDesiredValue(5d);
         assignmentGoal.setName("Does this behave as expected");
-        assignmentGoal.setParentId(1L);
+        assignmentGoal.setStudentAssignment(studentAssignment);
     }
 
     public School createSchool() {
@@ -299,7 +301,7 @@ public class BaseJdbcTest {
             createdAssignmentGoal.setName("Behaves nicely when created");
             createdAssignmentGoal.setStudent(createStudent());
             createdAssignmentGoal.setStaff(createTeacher());
-            createdAssignmentGoal.setParentId(1L);
+            createdAssignmentGoal.setStudentAssignment(studentAssignment);
             createdAssignmentGoal.setApproved(false);
             createdAssignmentGoal.setDesiredValue(5d);
         }

@@ -8,9 +8,9 @@ import java.util.Set;
 
 @SuppressWarnings("serial")
 public class SuspensionMeasure extends BehaviorMeasure implements IMeasure {
-    final Set<Measure> compatibleMeasures = ImmutableSet.of(Measure.DEMERIT, Measure.MERIT, Measure.DETENTION);
+    final Set<Measure> compatibleMeasures = ImmutableSet.of(Measure.DEMERIT, Measure.MERIT, Measure.DETENTION, Measure.REFERRAL);
     final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR, 
-            Dimension.STUDENT, Dimension.TEACHER, Dimension.SCHOOL, Dimension.GRADE_LEVEL);
+            Dimension.STUDENT, Dimension.TEACHER, Dimension.SCHOOL);
     @Override
     public Set<Dimension> getCompatibleDimensions() {
         return compatibleDimensions;

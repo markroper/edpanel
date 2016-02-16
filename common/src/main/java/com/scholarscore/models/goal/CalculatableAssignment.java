@@ -1,5 +1,6 @@
 package com.scholarscore.models.goal;
 
+import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.user.Student;
 
 /**
@@ -9,9 +10,9 @@ import com.scholarscore.models.user.Student;
  */
 public interface CalculatableAssignment {
 
-    public Long getParentId();
+    public StudentAssignment getStudentAssignment();
 
-    public void setParentId(Long parentId);
+    public void setStudentAssignment(StudentAssignment assignment);
 
     public void setStudent(Student student);
 

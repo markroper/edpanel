@@ -221,8 +221,8 @@ public abstract class QuerySqlGenerator {
             }
         }
         // if any hints are included, use them 
-        if (null != q.getHints()) {
-            for (Dimension d : q.getHints()) {
+        if (null != q.getJoinTables()) {
+            for (Dimension d : q.getJoinTables()) {
                 selectedDims.add(d);
             }
         }

@@ -206,6 +206,8 @@ public class HibernateConsts {
     public static final String GOAL_TABLE = "goal";
     public static final String GOAL_ID = "goal_id";
     public static final String GOAL_APPROVED = "approved";
+    public static final String GOAL_AUTOCOMPLETE = "autocomplete";
+    public static final String GOAL_FOLLOWUP = "followup";
     public static final String PARENT_FK = "parent_fk";
     public static final String DESIRED_GOAL_VALUE = "desired_value";
     public static final String GOAL_TYPE = "goal_type";
@@ -214,6 +216,10 @@ public class HibernateConsts {
     public static final String BEHAVIOR_GOAL_CATEGORY = "behavior_category";
     public static final String GOAL_NAME = "name";
     public static final String GOAL_SECTION_FK = "section_fk";
+    public static final String GOAL_PLAN = "plan";
+    public static final String GOAL_OBSTACLE = "obstacle";
+    public static final String GOAL_OUTCOME = "outcome";
+    public static final String GOAL_PROGRESS = "progress";
     public static final String GOAL_AGGREGATE = "goal_aggregate";
     
     //School days

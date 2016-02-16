@@ -3,7 +3,7 @@ package com.scholarscore.models.ui;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.assignment.StudentAssignment;
-import com.scholarscore.models.goal.CumulativeGradeGoal;
+import com.scholarscore.models.goal.SectionGradeGoal;
 
 import java.io.Serializable;
 import java.util.List;
@@ -18,13 +18,13 @@ public class StudentSectionDashboardData implements Serializable {
     protected Section section;
     protected List<StudentAssignment> studentAssignments;
     protected SectionGradeWithProgression gradeProgression;
-    protected CumulativeGradeGoal gradeGoal;
+    protected SectionGradeGoal gradeGoal;
 
-    public CumulativeGradeGoal getGradeGoal() {
+    public SectionGradeGoal getGradeGoal() {
         return gradeGoal;
     }
 
-    public void setGradeGoal(CumulativeGradeGoal gradeGoal) {
+    public void setGradeGoal(SectionGradeGoal gradeGoal) {
         this.gradeGoal = gradeGoal;
     }
 
