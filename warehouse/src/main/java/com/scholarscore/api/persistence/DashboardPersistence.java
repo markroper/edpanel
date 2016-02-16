@@ -7,8 +7,8 @@ import com.scholarscore.models.dashboard.Dashboard;
  */
 public interface DashboardPersistence {
     Long insertDashboard(Dashboard dashboard);
-    Dashboard selectDashboard(long schoolId, long dashboardId);
-    Dashboard selectDashboardForUser(long schoolId, long userId);
-    void deleteDashboard(long dashboardId);
-    void updateDashboard(long schoolId, long dashboardId, Dashboard dash);
+    Dashboard selectDashboard(Long schoolId, Long dashboardId);
+    Dashboard selectDashboardForUser(Long schoolId, Long userId);
+    void deleteDashboard(Long dashboardId);
+    void updateDashboard(Long schoolId, Long dashboardId, Dashboard dash);
 }

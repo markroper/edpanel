@@ -1,7 +1,10 @@
 package com.scholarscore.api.manager;
 
 import com.scholarscore.api.persistence.DashboardPersistence;
+import com.scholarscore.api.security.config.UserDetailsProxy;
 import com.scholarscore.api.util.ServiceResponse;
+import com.scholarscore.api.util.StatusCodeType;
+import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.dashboard.Dashboard;
 import org.slf4j.Logger;
@@ -20,7 +23,7 @@ public class DashboardManagerImpl implements DashboardManager {
     @Autowired
     private OrchestrationManager pm;
 
-    private static final String NOTIFICATION = "dashboard";
+    private static final String DASHBOARD = "dashboard";
 
     public void setDashboardPersistence(DashboardPersistence dpersist) {
         this.dashboardPersistence = dpersist;
@@ -29,28 +32,58 @@ public class DashboardManagerImpl implements DashboardManager {
     public void setPm(OrchestrationManager pm) {
         this.pm = pm;
     }
+
     @Override
-    public ServiceResponse<Dashboard> getDashboard(Long dashboardId) {
-        return null;
+    public ServiceResponse<Dashboard> getDashboard(Long schoolId) {
+        UserDetailsProxy udp = pm.getUserManager().getCurrentUserDetails();
+
+        Dashboard d = dashboardPersistence.selectDashboardForUser(schoolId, udp.getUser().getId());
+        if(null == d) {
+            d = dashboardPersistence.selectDashboardForUser(schoolId, null);
+        }
+        if(null == d) {
+            return new ServiceResponse<>(
+                    StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
+                    new Object[]{DASHBOARD, null}));
+        }
+        return new ServiceResponse<>(d);
     }
 
     @Override
     public ServiceResponse<Dashboard> getDashboard(Long schoolId, Long dashboardId) {
-        return null;
+        Dashboard d = dashboardPersistence.selectDashboard(schoolId, dashboardId);
+        if(null == d) {
+            return new ServiceResponse<>(
+                    StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
+                            new Object[]{DASHBOARD, dashboardId}));
+        }
+        return new ServiceResponse<>(d);
     }
 
     @Override
     public ServiceResponse<EntityId> createDashboard(Long schoolId, Dashboard dashboard) {
-        return null;
+        dashboard.setSchoolId(schoolId);
+        Long id = dashboardPersistence.insertDashboard(dashboard);
+        return new ServiceResponse<>(new EntityId(id));
     }
 
     @Override
     public ServiceResponse<Void> replaceDashboard(Long schoolId, Long dashboardId, Dashboard dashboard) {
-        return null;
+        Dashboard d = dashboardPersistence.selectDashboard(schoolId, dashboardId);
+        if(null == d) {
+            return new ServiceResponse<>(
+                    StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND,
+                            new Object[]{DASHBOARD, dashboardId}));
+        }
+        dashboard.setSchoolId(schoolId);
+        dashboard.setId(dashboardId);
+        dashboardPersistence.updateDashboard(schoolId, dashboardId, dashboard);
+        return new ServiceResponse<>((Void) null);
     }
 
     @Override
     public ServiceResponse<Void> deleteDashboard(Long schoolId, Long dashboardId) {
-        return null;
+        dashboardPersistence.deleteDashboard(dashboardId);
+        return new ServiceResponse<>((Void) null);
     }
 }
