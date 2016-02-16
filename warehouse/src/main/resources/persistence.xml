@@ -206,6 +206,11 @@
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
     </bean>
 
+    <bean id="dashboardPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.DashboardJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
     <bean id="notificationPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.NotificationJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
