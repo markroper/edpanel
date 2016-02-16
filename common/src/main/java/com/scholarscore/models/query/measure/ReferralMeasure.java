@@ -12,7 +12,7 @@ import java.util.Set;
 public class ReferralMeasure extends BehaviorMeasure implements IMeasure {
     final Set<Measure> compatibleMeasures = ImmutableSet.of(Measure.DEMERIT, Measure.MERIT, Measure.DETENTION, Measure.SUSPENSION);
     final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR,
-            Dimension.STUDENT, Dimension.TEACHER, Dimension.SCHOOL, Dimension.GRADE_LEVEL);
+            Dimension.STUDENT, Dimension.TEACHER, Dimension.SCHOOL);
     @Override
     public Set<Dimension> getCompatibleDimensions() {
         return compatibleDimensions;

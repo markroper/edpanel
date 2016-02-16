@@ -24,7 +24,7 @@ public class StudentDimension implements IDimension {
             ImmutableSet.of(ID, NAME, GENDER, AGE, ETHNICITY, RACE, CITY_OF_RESIDENCE, 
                     HOME_ADDRESS, MAILING_ADDRESS, PROJECTED_GRADUATION_YEAR, SCHOOL);
     public static final Set<Dimension> PARENT_DIMENSIONS = 
-            ImmutableSet.of(Dimension.SCHOOL, Dimension.GRADE_LEVEL);
+            ImmutableSet.of(Dimension.SCHOOL);
     
     @Override
     public Dimension getType() {
