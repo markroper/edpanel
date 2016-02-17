@@ -10,6 +10,8 @@ import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.dimension.AssignmentDimension;
 
+import java.util.Set;
+
 public class HomeworkCompletionSqlSerializer implements MeasureSqlSerializer {
 
     @Override
@@ -90,4 +92,10 @@ public class HomeworkCompletionSqlSerializer implements MeasureSqlSerializer {
         return tableName + "." + columnName;
     }
 
+    @Override
+    public Set<Dimension> allJoinedTables() {
+        Set<Dimension> set = MeasureSqlSerializer.super.allJoinedTables();
+        set.add(Dimension.STUDENT_ASSIGNMENT);
+        return set;
+    }
 }

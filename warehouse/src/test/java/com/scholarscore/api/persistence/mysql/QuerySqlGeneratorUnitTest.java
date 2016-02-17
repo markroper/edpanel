@@ -191,7 +191,8 @@ public class QuerySqlGeneratorUnitTest {
                 return "SELECT student.student_user_fk, " +
                         "AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, " +
                         "if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) " +
-                        "as avg_hw_completion_agg FROM student " +
+                        "as avg_hw_completion_agg " + 
+                        "FROM student " +
                         "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " +
                         "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id " +
                         "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk " +
@@ -251,7 +252,12 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT student.student_user_fk, SUM(if(attendance.attendance_status in ('ABSENT'), 1, 0)) as sum_attendance_agg FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) GROUP BY student.student_user_fk";
+                return "SELECT student.student_user_fk, SUM(if(attendance.attendance_status in ('ABSENT'), 1, 0)) as sum_attendance_agg " + 
+                        "FROM student " + 
+                        "LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " + 
+                        "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk " + 
+                        "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) " + 
+                        "GROUP BY student.student_user_fk";
             }
         };
         TestQuery sectionAbsenceTestQuery = new TestQuery() {
@@ -408,7 +414,7 @@ public class QuerySqlGeneratorUnitTest {
                         "END as count_gpa_group FROM gpa GROUP BY count_gpa_group";
             }
         };
-        TestQuery currGpaTestQuery = new TestQuery() {
+        TestQuery currGpaWithBucketsTestQuery = new TestQuery() {
             @Override
             public String queryName() {
                 return "Current GPA with buckets";
@@ -639,12 +645,12 @@ public class QuerySqlGeneratorUnitTest {
                 { behaviorTestQuery },
                 { schoolNameTestQuery }, 
                 { gpaBucketTestQuery },
-                { currGpaTestQuery },
+                { currGpaWithBucketsTestQuery },
                 { courseGradesBucketedTestQuery },
                 { requiresMultipleJoinsTestQuery }, 
                 { queryIncludingMultipleTablesUsingHints },
-                { referralTestQuery },
-                { queryIncludingMultipleTablesWithAutomaticJoinPathFinding }
+                  { referralTestQuery },
+//                { queryIncludingMultipleTablesWithAutomaticJoinPathFinding }
         };
     }
     

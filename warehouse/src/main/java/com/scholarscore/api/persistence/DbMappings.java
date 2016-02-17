@@ -121,19 +121,38 @@ public class DbMappings {
                put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.ROSTER), HibernateConsts.BEHAVIOR_ROSTER);
            }};
 
-    public static final Map<Dimension, String> DIMENSION_TO_TABLE_NAME = 
+    public static final Map<Dimension, String> DIMENSION_TO_TABLE_NAME =
             new HashMap<Dimension, String>() {{
-               put(Dimension.SCHOOL, HibernateConsts.SCHOOL_TABLE);
-               put(Dimension.COURSE, HibernateConsts.COURSE_TABLE);
-               put(Dimension.SECTION, HibernateConsts.SECTION_TABLE);
-               put(Dimension.TERM, HibernateConsts.TERM_TABLE);
-               put(Dimension.STUDENT, HibernateConsts.STUDENT_TABLE);
-               put(Dimension.TEACHER, HibernateConsts.STAFF_TABLE);
-               put(Dimension.ADMINISTRATOR, HibernateConsts.STAFF_TABLE);
-               put(Dimension.YEAR, HibernateConsts.SCHOOL_YEAR_TABLE);
+                put(Dimension.SCHOOL, HibernateConsts.SCHOOL_TABLE);
+                put(Dimension.COURSE, HibernateConsts.COURSE_TABLE);
+                put(Dimension.SECTION, HibernateConsts.SECTION_TABLE);
+                put(Dimension.TERM, HibernateConsts.TERM_TABLE);
+                put(Dimension.STUDENT, HibernateConsts.STUDENT_TABLE);
+                put(Dimension.TEACHER, HibernateConsts.STAFF_TABLE);
+                put(Dimension.ADMINISTRATOR, HibernateConsts.STAFF_TABLE);
+                put(Dimension.YEAR, HibernateConsts.SCHOOL_YEAR_TABLE);
                 put(Dimension.ASSIGNMENT, HibernateConsts.ASSIGNMENT_TABLE);
                 put(Dimension.USER, HibernateConsts.USERS_TABLE);
+                
+                // TODO Jordan: below are pseudo-dimensions... 
+                put(Dimension.STUDENT_ASSIGNMENT, HibernateConsts.STUDENT_ASSIGNMENT_TABLE);
+                put(Dimension.STUDENT_SECTION_GRADE, HibernateConsts.STUDENT_SECTION_GRADE_TABLE);
+                put(Dimension.SECTION_GRADE, HibernateConsts.SECTION_GRADE_TABLE);
+                put(Dimension.SCHOOL_DAY, HibernateConsts.SCHOOL_DAY_TABLE);
+                put(Dimension.ATTENDANCE, HibernateConsts.ATTENDANCE_TABLE);
             }};
+    
+    public static Dimension getDimensionFromTableName(String tableName) {
+        for (Dimension dimensionKey : DbMappings.DIMENSION_TO_TABLE_NAME.keySet()) {
+            String thisTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimensionKey);
+            if (thisTableName.equals(tableName)) {
+                // this is the dimension! 
+                // measureDimension = dimensionKey;
+                return dimensionKey;
+            }
+        }
+        return null;
+    }
 
     public static final Map<DimensionField, String> DIMENSION_TO_COL_NAME = 
             new HashMap<DimensionField, String>(){{
