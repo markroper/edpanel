@@ -10,7 +10,7 @@ import com.scholarscore.models.attendance.AttendanceTypes;
 public class SectionAbsenceSqlSerializer extends AttendanceSqlSerializer {
     @Override
     public String toSelectInner() {
-        return "if(" + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.ATTENDANCE_STATUS + " in ('"
+        return "if(" + toTableName() + DOT + HibernateConsts.ATTENDANCE_STATUS + " in ('"
                 + AttendanceStatus.ABSENT + "') AND "
                 + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.ATTENDANCE_TYPE + " = '" + AttendanceTypes.SECTION + "', 1, 0)";
     }

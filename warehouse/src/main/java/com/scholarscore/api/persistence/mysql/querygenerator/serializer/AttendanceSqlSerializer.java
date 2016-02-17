@@ -13,7 +13,7 @@ public class AttendanceSqlSerializer implements MeasureSqlSerializer {
 
     @Override
     public String toSelectInner() {
-        return "if(" + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.ATTENDANCE_STATUS + " in ('"
+        return "if(" + toTableName() + DOT + HibernateConsts.ATTENDANCE_STATUS + " in ('"
                 + AttendanceStatus.ABSENT + "'), 1, 0)";
     }
 
@@ -21,22 +21,22 @@ public class AttendanceSqlSerializer implements MeasureSqlSerializer {
     public String toJoinClause(Dimension dimToJoinUpon) {
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         if(dimToJoinUpon.equals(Dimension.STUDENT)) {
-            return LEFT_OUTER_JOIN + HibernateConsts.ATTENDANCE_TABLE + ON + dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) 
-                    + EQUALS + HibernateConsts.ATTENDANCE_TABLE + DOT + dimTableName + FK_COL_SUFFIX + " "
+            return LEFT_OUTER_JOIN + toTableName() + ON + dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) 
+                    + EQUALS + toTableName() + DOT + dimTableName + FK_COL_SUFFIX + " "
                     + LEFT_OUTER_JOIN + HibernateConsts.SCHOOL_DAY_TABLE + ON + HibernateConsts.SCHOOL_DAY_TABLE + DOT + HibernateConsts.SCHOOL_DAY_ID
-                    + EQUALS + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.SCHOOL_DAY_FK + " ";
+                    + EQUALS + toTableName() + DOT + HibernateConsts.SCHOOL_DAY_FK + " ";
         } else if(dimToJoinUpon.equals(Dimension.SCHOOL)){
             return LEFT_OUTER_JOIN + HibernateConsts.SCHOOL_DAY_TABLE + ON + dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) 
                     + EQUALS + HibernateConsts.SCHOOL_DAY_TABLE + DOT + dimTableName + FK_COL_SUFFIX + " "
-                    + LEFT_OUTER_JOIN + HibernateConsts.ATTENDANCE_TABLE + ON + HibernateConsts.SCHOOL_DAY_TABLE + DOT + HibernateConsts.SCHOOL_DAY_ID
-                    + EQUALS + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.SCHOOL_DAY_FK + " ";
+                    + LEFT_OUTER_JOIN + toTableName() + ON + HibernateConsts.SCHOOL_DAY_TABLE + DOT + HibernateConsts.SCHOOL_DAY_ID
+                    + EQUALS + toTableName() + DOT + HibernateConsts.SCHOOL_DAY_FK + " ";
         }
         return null;
     }
 
     @Override
     public String toFromClause() {
-        return HibernateConsts.ATTENDANCE_TABLE;
+        return toTableName();
     }
 
     @Override
