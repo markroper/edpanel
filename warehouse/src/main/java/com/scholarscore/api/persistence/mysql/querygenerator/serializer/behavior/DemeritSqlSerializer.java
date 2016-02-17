@@ -1,14 +1,12 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior;
 
-import com.scholarscore.api.persistence.DbMappings;
-import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.BaseSqlSerializer;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureSqlSerializer;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.Measure;
 
-public class DemeritSqlSerializer extends BaseSqlSerializer implements MeasureSqlSerializer {
+public class DemeritSqlSerializer extends BehaviorSqlSerializer implements MeasureSqlSerializer {
 
     @Override
     public String toSelectInner() {
@@ -22,8 +20,6 @@ public class DemeritSqlSerializer extends BaseSqlSerializer implements MeasureSq
     }
 
     @Override
-    // TODO Jordan: handle this break in DB convention - rename userId to staffId?
-    // this is preventing the use of the common method in BaseSqlSerializer
     protected String getTableNameFk(String tableName) {
         if (tableName != null && tableName.equals(HibernateConsts.STAFF_TABLE)) {
             return HibernateConsts.USER_FK;
