@@ -1,7 +1,9 @@
-package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
+package com.scholarscore.api.persistence.mysql.querygenerator.serializer.academic;
 
 import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.BaseSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureSqlSerializer;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.query.Dimension;
 
@@ -21,10 +23,7 @@ public class CurrentGpaSqlSerializer extends BaseSqlSerializer implements Measur
     }
 
     private String gpaCurrGpaJoin() {
-        return LEFT_OUTER_JOIN + HibernateConsts.GPA_TABLE + ON +
-                toTableName() + DOT + HibernateConsts.GPA_FK + 
-                EQUALS +
-                HibernateConsts.GPA_TABLE + DOT + HibernateConsts.GPA_ID;
+        return joinTable(HibernateConsts.GPA_TABLE);
     }
     @Override
     public String toFromClause() {

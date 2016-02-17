@@ -1,8 +1,10 @@
-package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
+package com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance;
 
 import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.api.persistence.mysql.querygenerator.SqlGenerationException;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.BaseSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureSqlSerializer;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.query.Dimension;
@@ -21,16 +23,14 @@ public class AttendanceSqlSerializer extends BaseSqlSerializer implements Measur
     public String toJoinClause(Dimension dimToJoinUpon) {
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         if(dimToJoinUpon.equals(Dimension.STUDENT)) {
-            return super.toJoinClause(dimToJoinUpon)
-                    + LEFT_OUTER_JOIN + HibernateConsts.SCHOOL_DAY_TABLE + ON
-                    + toTableName() + DOT + HibernateConsts.SCHOOL_DAY_FK 
-                    + EQUALS + HibernateConsts.SCHOOL_DAY_TABLE + DOT + HibernateConsts.SCHOOL_DAY_ID + " "
-                     ;
+            return super.toJoinClause(dimToJoinUpon)  + joinTable(HibernateConsts.SCHOOL_DAY_TABLE);
         } else if(dimToJoinUpon.equals(Dimension.SCHOOL)){
-            return LEFT_OUTER_JOIN + HibernateConsts.SCHOOL_DAY_TABLE + ON + dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) 
-                    + EQUALS + HibernateConsts.SCHOOL_DAY_TABLE + DOT + dimTableName + FK_COL_SUFFIX + " "
-                    + LEFT_OUTER_JOIN + toTableName() + ON + HibernateConsts.SCHOOL_DAY_TABLE + DOT + HibernateConsts.SCHOOL_DAY_ID
-                    + EQUALS + toTableName() + DOT + HibernateConsts.SCHOOL_DAY_FK + " ";
+            return toJoinClause(HibernateConsts.SCHOOL_DAY_TABLE) +
+                    LEFT_OUTER_JOIN + HibernateConsts.SCHOOL_DAY_TABLE + ON 
+                    + dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) 
+                    + EQUALS 
+                    + HibernateConsts.SCHOOL_DAY_TABLE + DOT + dimTableName + FK_COL_SUFFIX 
+                    + " " ;
         }
         return null;
     }
