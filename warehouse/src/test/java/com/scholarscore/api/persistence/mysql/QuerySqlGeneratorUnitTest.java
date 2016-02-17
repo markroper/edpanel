@@ -217,10 +217,10 @@ public class QuerySqlGeneratorUnitTest {
                 return "SELECT section.section_id, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg FROM section LEFT OUTER JOIN assignment ON assignment.section_fk = section.section_id LEFT OUTER JOIN student_assignment ON student_assignment.assignment_fk = assignment.assignment_id LEFT OUTER JOIN term ON term.term_id = section.term_fk LEFT OUTER JOIN school_year ON school_year.school_year_id = term.school_year_fk WHERE  ( ( ( term.term_id  =  1 )  AND  ( school_year.school_year_id  =  1 ) )  AND  ( section.section_id  !=  0 ) ) GROUP BY section.section_id";
             }
         };
-        TestQuery attendanceTestQuery = new TestQuery() {
+        TestQuery studentAttendanceQuery = new TestQuery() {
             @Override
             public String queryName() {
-                return "Attendance query";
+                return "Student Attendance query";
             }
 
             @Override
@@ -252,6 +252,43 @@ public class QuerySqlGeneratorUnitTest {
                         "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) GROUP BY student.student_user_fk";
             }
         };
+
+        TestQuery schoolAttendanceQuery = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "School Attendance query";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query attendanceQuery  = new Query();
+                ArrayList<AggregateMeasure> attendanceMeasures = new ArrayList<>();
+                attendanceMeasures.add(new AggregateMeasure(Measure.ATTENDANCE, AggregateFunction.SUM));
+                attendanceQuery.setAggregateMeasures(attendanceMeasures);
+                attendanceQuery.addField(new DimensionField(Dimension.SCHOOL, SchoolDimension.ID));
+                Expression greaterThanDate = new Expression(
+                        new MeasureOperand(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.DATE)),
+                        ComparisonOperator.GREATER_THAN_OR_EQUAL,
+                        new DateOperand(date1));
+                Expression lessThanDate = new Expression(
+                        new MeasureOperand(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.DATE)),
+                        ComparisonOperator.LESS_THAN_OR_EQUAL,
+                        new DateOperand(date2));
+                Expression attendanceDateRangeExpression = new Expression(greaterThanDate, BinaryOperator.AND, lessThanDate);
+                attendanceQuery.setFilter(attendanceDateRangeExpression);
+                return attendanceQuery;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT school.school_id, SUM(if(attendance.attendance_status in ('ABSENT'), 1, 0)) as sum_attendance_agg " + 
+                        "FROM school " + 
+                        "LEFT OUTER JOIN school_day ON school.school_id = school_day.school_fk " + 
+                        "LEFT OUTER JOIN attendance ON school_day.school_day_id = attendance.school_day_fk " + 
+                        "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) GROUP BY school.school_id";
+            }
+        };
+
         TestQuery sectionAbsenceTestQuery = new TestQuery() {
             @Override
             public String queryName() {
@@ -617,7 +654,8 @@ public class QuerySqlGeneratorUnitTest {
                 { assignmentGradesTestQuery },
                 { homeworkCompletionTestQuery },
                 { homeworkSectionCompletionTestQuery },
-                { attendanceTestQuery },
+                { studentAttendanceQuery },
+                { schoolAttendanceQuery },
                 { sectionAbsenceTestQuery },
                 { sectionTardyTestQuery }, 
                 { behaviorTestQuery },
