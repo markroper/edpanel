@@ -25,7 +25,6 @@ public enum Dimension {
     TERM,
     YEAR,
     SUBJECT_AREA,
-    GRADE_LEVEL,
     SCHOOL,
     TEACHER,
     STUDENT,
@@ -49,8 +48,6 @@ public enum Dimension {
                 return new SchoolYearDimension();
             case SUBJECT_AREA:
                 return new SubjectAreaDimension();
-            case GRADE_LEVEL:
-                return new GradeLevelDimension();
             case SCHOOL:
                 return new SchoolDimension();
             case TEACHER:
@@ -89,7 +86,6 @@ public enum Dimension {
         add(Dimension.YEAR);
         add(Dimension.COURSE);
         add(Dimension.SUBJECT_AREA);
-        add(Dimension.GRADE_LEVEL);
         add(Dimension.SCHOOL);
         add(Dimension.ADMINISTRATOR);
         add(Dimension.USER);
