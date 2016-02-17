@@ -19,11 +19,11 @@
             <column name="user_fk"
                     type="bigint unsigned"
                     remarks="The owning user of the dashboard">
-                <constraints nullable="false"/>
             </column>
             <column name="school_fk"
                     type="bigint unsigned"
                     remarks="The school associated with the dashboard, if any">
+                <constraints nullable="false"/>
             </column>
         </createTable>
         <addForeignKeyConstraint baseTableName="dashboard"

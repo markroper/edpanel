@@ -16,6 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,10 +27,26 @@ import java.util.Objects;
 @Entity(name = HibernateConsts.DASHBOARD_TABLE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Dashboard extends ApiModel {
+    @NotNull
     protected Long schoolId;
     protected Long userId;
     protected List<DashboardRow> rows;
 
+    public Dashboard() {
+
+    }
+
+    public Dashboard(Dashboard d) {
+        this.schoolId = d.schoolId;
+        this.userId = d.userId;
+        if(null != d.getRows()) {
+            this.rows = new ArrayList<>();
+            for(DashboardRow r: d.getRows()) {
+                this.rows.add(new DashboardRow(r));
+            }
+        }
+
+    }
     @Override
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
