@@ -649,13 +649,13 @@ public class QuerySqlGeneratorUnitTest {
             }
         };
         
-        return new Object[][] {/*
+        return new Object[][] {
                 { courseGradeTestQuery },
                 { assignmentGradesTestQuery },
                 { homeworkCompletionTestQuery },
                 { homeworkSectionCompletionTestQuery },
                 { studentAttendanceQuery },
-                */{ schoolAttendanceQuery },/*
+                { schoolAttendanceQuery },
                 { sectionAbsenceTestQuery },
                 { sectionTardyTestQuery }, 
                 { behaviorTestQuery },
@@ -665,7 +665,7 @@ public class QuerySqlGeneratorUnitTest {
                 { courseGradesBucketedTestQuery },
                 { requiresMultipleJoinsTestQuery }, 
                 { queryIncludingMultipleTablesUsingHints },
-                { referralTestQuery }*/
+                { referralTestQuery }
         };
     }
     

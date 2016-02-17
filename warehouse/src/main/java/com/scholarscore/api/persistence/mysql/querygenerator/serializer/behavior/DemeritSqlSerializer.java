@@ -18,7 +18,7 @@ public class DemeritSqlSerializer extends BaseSqlSerializer implements MeasureSq
 
     @Override
     public String toJoinClause(Dimension dimToJoinUpon) {
-        return super.toJoinClause(dimToJoinUpon) + " <BARG> ";
+        return super.toJoinClause(dimToJoinUpon);
     }
 
     @Override
