@@ -11,12 +11,11 @@ import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
 
-public class AttendanceSqlSerializer extends BaseSqlSerializer implements MeasureSqlSerializer {
-
+public class AttendanceSqlSerializer extends BaseAttendanceSqlSerializer implements MeasureSqlSerializer {
+    
     @Override
-    public String toSelectInner() {
-        return "if(" + toTableName() + DOT + HibernateConsts.ATTENDANCE_STATUS + " in ('"
-                + AttendanceStatus.ABSENT + "'), 1, 0)";
+    AttendanceStatus attendanceStatusMatches() {
+        return AttendanceStatus.ABSENT;
     }
 
     @Override

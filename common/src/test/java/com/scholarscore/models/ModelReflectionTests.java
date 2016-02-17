@@ -495,7 +495,7 @@ public class ModelReflectionTests {
                 }
                 
                 if (intermediateValue == value) {
-                    // TODO Jordan: do more special handling on this case -- for this type, there's only ONE value, but no alt
+                    // could do more special handling on this case -- for this type, there's only ONE value, but no alt
                     System.out.println("Adding field... " + field.toString() + " because it has only ONE default value...");
                     fieldsThatNeedDefaults.add(field.toString());
                     numberOfFailedDefaultFieldAttempts++;
