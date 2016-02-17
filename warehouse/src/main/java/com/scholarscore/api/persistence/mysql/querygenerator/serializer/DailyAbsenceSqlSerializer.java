@@ -10,13 +10,8 @@ import com.scholarscore.models.attendance.AttendanceTypes;
 public class DailyAbsenceSqlSerializer extends AttendanceSqlSerializer {
     @Override
     public String toSelectInner() {
-        return "if(" + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.ATTENDANCE_STATUS + " in ('"
+        return "if(" + toTableName() + DOT + HibernateConsts.ATTENDANCE_STATUS + " in ('"
                 + AttendanceStatus.ABSENT + "') AND "
                 + HibernateConsts.ATTENDANCE_TABLE + DOT + HibernateConsts.ATTENDANCE_TYPE + " = '" + AttendanceTypes.DAILY + "', 1, 0)";
-    }
-
-    @Override
-    public String toFromClause() {
-        return HibernateConsts.ATTENDANCE_TABLE;
     }
 }

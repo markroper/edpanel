@@ -8,7 +8,7 @@ import com.scholarscore.models.query.Dimension;
 public class AssignmentGradeSqlSerializer implements MeasureSqlSerializer {
     public String toSelectInner() {
         return
-            HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.STUDENT_ASSIGNMENT_AWARDED_POINTS +
+            toTableName() + DOT + HibernateConsts.STUDENT_ASSIGNMENT_AWARDED_POINTS +
             " / " +
             HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_AVAILABLE_POINTS;
     }
@@ -16,21 +16,21 @@ public class AssignmentGradeSqlSerializer implements MeasureSqlSerializer {
     @Override
     public String toJoinClause(Dimension dimToJoinUpon) {
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
-        return LEFT_OUTER_JOIN + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + ON +
+        return LEFT_OUTER_JOIN + toTableName() + ON +
                 dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) + 
-                EQUALS + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + dimTableName + FK_COL_SUFFIX +
+                EQUALS + toTableName() + DOT + dimTableName + FK_COL_SUFFIX +
                 " " + joinStudentAssignmentFragment();
     }
 
     private String joinStudentAssignmentFragment() {
         return LEFT_OUTER_JOIN + HibernateConsts.ASSIGNMENT_TABLE + ON +
-                HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + FK_COL_SUFFIX +
+                toTableName() + DOT + HibernateConsts.ASSIGNMENT_TABLE + FK_COL_SUFFIX +
                 EQUALS + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + ID_COL_SUFFIX + " ";
     }
 
     @Override
     public String toFromClause() {
-        return HibernateConsts.STUDENT_ASSIGNMENT_TABLE + " " + joinStudentAssignmentFragment();
+        return toTableName() + " " + joinStudentAssignmentFragment();
     }
 
     @Override

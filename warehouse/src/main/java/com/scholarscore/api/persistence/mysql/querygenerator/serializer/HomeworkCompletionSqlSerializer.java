@@ -34,31 +34,29 @@ public class HomeworkCompletionSqlSerializer implements MeasureSqlSerializer {
 
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         if (dimTableName.equals(HibernateConsts.SECTION_TABLE)) {
-            return LEFT_OUTER_JOIN + HibernateConsts.ASSIGNMENT_TABLE + ON +
-                    HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.SECTION_FK +
+            return LEFT_OUTER_JOIN + toTableName() + ON +
+                    toTableName() + DOT + HibernateConsts.SECTION_FK +
                     EQUALS + HibernateConsts.SECTION_TABLE + DOT + HibernateConsts.SECTION_TABLE + ID_COL_SUFFIX +
                     " " +
                     LEFT_OUTER_JOIN + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + ON +
                     HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_FK +
-                    EQUALS + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + ID_COL_SUFFIX +
-                    " ";
+                    EQUALS + toTableName() + DOT + HibernateConsts.ASSIGNMENT_ID + " ";
         } else {
             return LEFT_OUTER_JOIN + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + ON +
                     dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) +
                     EQUALS + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + dimTableName + FK_COL_SUFFIX +
                     " " +
-                    LEFT_OUTER_JOIN + HibernateConsts.ASSIGNMENT_TABLE + ON +
-                    HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + FK_COL_SUFFIX +
-                    EQUALS + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + ID_COL_SUFFIX + " ";    }
-
+                    LEFT_OUTER_JOIN + toTableName() + ON +
+                    HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_FK + 
+                    EQUALS + toTableName() + DOT + HibernateConsts.ASSIGNMENT_ID + " ";    }
     }
 
     @Override
     public String toFromClause() {
         return HibernateConsts.STUDENT_ASSIGNMENT_TABLE + " " +
-                LEFT_OUTER_JOIN + HibernateConsts.ASSIGNMENT_TABLE + ON +
-                HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + FK_COL_SUFFIX +
-                EQUALS + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + ID_COL_SUFFIX + " ";
+                LEFT_OUTER_JOIN + toTableName() + ON +
+                HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_FK + 
+                EQUALS + toTableName() + DOT + HibernateConsts.ASSIGNMENT_ID;
     }
 
     @Override
