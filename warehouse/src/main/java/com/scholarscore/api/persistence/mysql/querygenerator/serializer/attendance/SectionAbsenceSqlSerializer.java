@@ -1,4 +1,4 @@
-package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
+package com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance;
 
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.attendance.AttendanceStatus;

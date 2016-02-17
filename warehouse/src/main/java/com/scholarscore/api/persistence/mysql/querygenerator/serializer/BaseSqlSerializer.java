@@ -21,6 +21,15 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
         // TODO Jordan refactoring in progress - many sqlizers include another join here. currently they must override toJoinClause and add it.
     }
 
+    // TODO Jordan: this will go away once with new dimension types. Just a hack so I can sanity check this without adding all that.
+    protected String toJoinClause(String tableToJoinUpon) {
+        String dimTableName = tableToJoinUpon;
+        return LEFT_OUTER_JOIN + toTableName() + ON +
+                dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) + EQUALS +
+                toTableName() + DOT + dimTableName + FK_COL_SUFFIX + " ";
+        // TODO Jordan refactoring in progress - many sqlizers include another join here. currently they must override toJoinClause and add it.
+    }
+     
     /* 
 * Generic method to join to a table
 * */

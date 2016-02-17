@@ -1,4 +1,4 @@
-package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
+package com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior;
 
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.query.Measure;

@@ -1,5 +1,18 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
 
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.academic.AssignmentGradeSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.academic.CourseGradeSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.academic.CurrentGpaSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.academic.GpaSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.academic.HomeworkCompletionSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance.AttendanceSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance.DailyAbsenceSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance.DailyTardySqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance.SectionAbsenceSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance.SectionTardySqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.DemeritSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.MeritSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.ReferralSqlSerializer;
 import com.scholarscore.models.query.Measure;
 
 public class MeasureSqlSerializerFactory {
