@@ -193,10 +193,10 @@ public abstract class QuerySqlGenerator {
                     isFirst = false;
                 }
                 sqlBuilder.append(mss.toSelectClause(am.getAggregation()) + " as " + generateAggColumnName(am));
-                //If there are buckets involved in the aggregate query, inject the bucket psuedo column
+                //If there are buckets involved in the aggregate query, inject the bucket pseudo column
                 if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
                     sqlBuilder.append(DELIM);
-                    sqlBuilder.append(mss.toSelectBucketPsuedoColumn(am.getBuckets()));
+                    sqlBuilder.append(mss.toSelectBucketPseudoColumn(am.getBuckets()));
                     sqlBuilder.append(" as ");
                     sqlBuilder.append(generateBucketPseudoColumnName(am));
                 }
@@ -398,7 +398,7 @@ public abstract class QuerySqlGenerator {
                 }
             }
         }
-        //If there are buckets involved in the aggregate query, inject the bucket psuedo column
+        //If there are buckets involved in the aggregate query, inject the bucket pseudo column
         if(null != q.getAggregateMeasures()) {
             for (AggregateMeasure m : q.getAggregateMeasures()) {
                 if(null != m.getBuckets() && !m.getBuckets().isEmpty()) {
