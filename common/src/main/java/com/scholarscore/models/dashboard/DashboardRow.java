@@ -1,5 +1,6 @@
 package com.scholarscore.models.dashboard;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.scholarscore.models.HibernateConsts;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -15,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,8 +27,25 @@ import java.util.Objects;
 public class DashboardRow implements Serializable {
     //Max width is 3
     protected Long id;
+    protected Long dashboardFk;
     protected Long position;
     protected List<Report> reports;
+
+    public DashboardRow() {
+
+    }
+
+    public DashboardRow(DashboardRow r) {
+        this.id = r.id;
+        this.dashboardFk = r.dashboardFk;
+        this.position = r.position;
+        if(null != r.getReports()) {
+            this.reports = new ArrayList<>();
+            for(Report rpt: r.getReports()) {
+                this.reports.add(new Report(rpt));
+            }
+        }
+    }
 
     @OneToMany
     @JoinColumn(name=HibernateConsts.DASHBOARD_ROW_FK, referencedColumnName=HibernateConsts.DASHBOARD_ROW_ID)
@@ -53,6 +72,7 @@ public class DashboardRow implements Serializable {
     }
 
     @Column(name=HibernateConsts.DASHBOARD_ROW_POSITION)
+    @JsonIgnore
     public Long getPosition() {
         return position;
     }
@@ -61,9 +81,18 @@ public class DashboardRow implements Serializable {
         this.position = position;
     }
 
+    @Column(name = HibernateConsts.DASHBOARD_FK)
+    public Long getDashboardFk() {
+        return dashboardFk;
+    }
+
+    public void setDashboardFk(Long dashboardFk) {
+        this.dashboardFk = dashboardFk;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, position, reports);
+        return Objects.hash(id, position, reports, dashboardFk);
     }
 
     @Override
@@ -77,6 +106,7 @@ public class DashboardRow implements Serializable {
         final DashboardRow other = (DashboardRow) obj;
         return Objects.equals(this.id, other.id)
                 && Objects.equals(this.position, other.position)
+                && Objects.equals(this.dashboardFk, other.dashboardFk)
                 && Objects.equals(this.reports, other.reports);
     }
 }

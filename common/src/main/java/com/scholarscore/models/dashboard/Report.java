@@ -39,9 +39,24 @@ public class Report extends ApiModel {
     //Optional.  If the click through query is defined, this defines which columns in the result
     //set to map into the user-visible table of the detailed data
     protected List<ColumnDef> columnDefs;
-
     protected Long position;
+    protected Long rowFk;
 
+    public Report() {
+
+    }
+
+    public Report(Report r) {
+        if(null != r.chartQuery) {
+            this.chartQuery = new Query(r.chartQuery);
+        }
+        if(null != r.getClickTableQuery()) {
+            this.clickTableQuery = new Query(r.getClickTableQuery());
+        }
+        this.rowFk = r.rowFk;
+        this.columnDefs = r.getColumnDefs();
+        this.position = r.getPosition();
+    }
     @Override
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,6 +95,15 @@ public class Report extends ApiModel {
         this.clickTableQuery = clickTableQuery;
     }
 
+    @Column(name = HibernateConsts.DASHBOARD_ROW_FK)
+    public Long getRowFk() {
+        return rowFk;
+    }
+
+    public void setRowFk(Long rowFk) {
+        this.rowFk = rowFk;
+    }
+
     @Transient
     public List<ColumnDef> getColumnDefs() {
         return columnDefs;
@@ -108,6 +132,7 @@ public class Report extends ApiModel {
     }
 
     @Column(name = HibernateConsts.DASHBOARD_REPORT_POSITION)
+    @JsonIgnore
     public Long getPosition() {
         return position;
     }
@@ -118,7 +143,7 @@ public class Report extends ApiModel {
 
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(chartQuery, clickTableQuery, columnDefs, position);
+        return 31 * super.hashCode() + Objects.hash(chartQuery, clickTableQuery, columnDefs, position, rowFk);
     }
 
     @Override
@@ -136,6 +161,7 @@ public class Report extends ApiModel {
         return Objects.equals(this.chartQuery, other.chartQuery)
                 && Objects.equals(this.clickTableQuery, other.clickTableQuery)
                 && Objects.equals(this.columnDefs, other.columnDefs)
+                && Objects.equals(this.rowFk, other.rowFk)
                 && Objects.equals(this.position, other.position);
     }
 }

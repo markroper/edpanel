@@ -12,6 +12,15 @@ public class ColumnDef implements Serializable {
     //The name to display as the column header for this column e.g. 'name'
     protected String displayName;
 
+    public ColumnDef() {
+
+    }
+
+    public ColumnDef(String field, String displayName) {
+        this.field = field;
+        this.displayName = displayName;
+    }
+
     public String getField() {
         return field;
     }
