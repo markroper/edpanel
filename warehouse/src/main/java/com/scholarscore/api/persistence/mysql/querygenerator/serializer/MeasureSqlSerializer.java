@@ -20,7 +20,7 @@ public interface MeasureSqlSerializer {
     public String toSelectInner();
 
     @SuppressWarnings("unchecked")
-    default String toSelectBucketPsuedoColumn(List<AggregationBucket> buckets) throws SqlGenerationException {
+    default String toSelectBucketPseudoColumn(List<AggregationBucket> buckets) throws SqlGenerationException {
         StringBuilder b = new StringBuilder();
         b.append("CASE \n");
         String fieldInner = toSelectInner();
