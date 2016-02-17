@@ -9,7 +9,7 @@ import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
 
-public class AttendanceSqlSerializer implements MeasureSqlSerializer {
+public class AttendanceSqlSerializer extends BaseSqlSerializer implements MeasureSqlSerializer {
 
     @Override
     public String toSelectInner() {
@@ -21,10 +21,11 @@ public class AttendanceSqlSerializer implements MeasureSqlSerializer {
     public String toJoinClause(Dimension dimToJoinUpon) {
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         if(dimToJoinUpon.equals(Dimension.STUDENT)) {
-            return LEFT_OUTER_JOIN + toTableName() + ON + dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) 
-                    + EQUALS + toTableName() + DOT + dimTableName + FK_COL_SUFFIX + " "
-                    + LEFT_OUTER_JOIN + HibernateConsts.SCHOOL_DAY_TABLE + ON + HibernateConsts.SCHOOL_DAY_TABLE + DOT + HibernateConsts.SCHOOL_DAY_ID
-                    + EQUALS + toTableName() + DOT + HibernateConsts.SCHOOL_DAY_FK + " ";
+            return super.toJoinClause(dimToJoinUpon)
+                    + LEFT_OUTER_JOIN + HibernateConsts.SCHOOL_DAY_TABLE + ON
+                    + toTableName() + DOT + HibernateConsts.SCHOOL_DAY_FK 
+                    + EQUALS + HibernateConsts.SCHOOL_DAY_TABLE + DOT + HibernateConsts.SCHOOL_DAY_ID + " "
+                     ;
         } else if(dimToJoinUpon.equals(Dimension.SCHOOL)){
             return LEFT_OUTER_JOIN + HibernateConsts.SCHOOL_DAY_TABLE + ON + dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) 
                     + EQUALS + HibernateConsts.SCHOOL_DAY_TABLE + DOT + dimTableName + FK_COL_SUFFIX + " "

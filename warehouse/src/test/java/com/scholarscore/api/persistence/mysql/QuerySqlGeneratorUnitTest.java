@@ -245,7 +245,11 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT student.student_user_fk, SUM(if(attendance.attendance_status in ('ABSENT'), 1, 0)) as sum_attendance_agg FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) GROUP BY student.student_user_fk";
+                return "SELECT student.student_user_fk, SUM(if(attendance.attendance_status in ('ABSENT'), 1, 0)) as sum_attendance_agg " + 
+                        "FROM student " + 
+                        "LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " + 
+                        "LEFT OUTER JOIN school_day ON attendance.school_day_fk = school_day.school_day_id " + 
+                        "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) GROUP BY student.student_user_fk";
             }
         };
         TestQuery sectionAbsenceTestQuery = new TestQuery() {
@@ -272,13 +276,18 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT student.student_user_fk, section.section_id, COUNT(if(attendance.attendance_status in ('ABSENT') AND attendance.attendance_type = 'SECTION', 1, 0)) as count_section_absence_agg FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk LEFT OUTER JOIN section ON section.section_id = attendance.section_fk WHERE  ( section.section_id  IN  (2,3) ) GROUP BY student.student_user_fk, section.section_id";
+                return "SELECT student.student_user_fk, section.section_id, COUNT(if(attendance.attendance_status in ('ABSENT') AND attendance.attendance_type = 'SECTION', 1, 0)) as count_section_absence_agg " + 
+                        "FROM student " + 
+                        "LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " + 
+                        "LEFT OUTER JOIN school_day ON attendance.school_day_fk = school_day.school_day_id " + 
+                        "LEFT OUTER JOIN section ON section.section_id = attendance.section_fk " + 
+                        "WHERE  ( section.section_id  IN  (2,3) ) GROUP BY student.student_user_fk, section.section_id";
             }
         };
         TestQuery sectionTardyTestQuery = new TestQuery() {
             @Override
             public String queryName() {
-                return "Tardy be Section query";
+                return "Tardy by Section query";
             }
 
             @Override
@@ -299,7 +308,12 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT student.student_user_fk, section.section_id, COUNT(if(attendance.attendance_status in ('TARDY') AND attendance.attendance_type = 'SECTION', 1, 0)) as count_section_tardy_agg FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk LEFT OUTER JOIN section ON section.section_id = attendance.section_fk WHERE  ( section.section_id  IN  (2,3) ) GROUP BY student.student_user_fk, section.section_id";
+                return "SELECT student.student_user_fk, section.section_id, " + 
+                            "COUNT(if(attendance.attendance_status in ('TARDY') AND attendance.attendance_type = 'SECTION', 1, 0)) as count_section_tardy_agg " + 
+                        "FROM student " + 
+                        "LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " + 
+                        "LEFT OUTER JOIN school_day ON attendance.school_day_fk = school_day.school_day_id " + 
+                        "LEFT OUTER JOIN section ON section.section_id = attendance.section_fk WHERE  ( section.section_id  IN  (2,3) ) GROUP BY student.student_user_fk, section.section_id";
             }
         };
         TestQuery behaviorTestQuery = new TestQuery() {

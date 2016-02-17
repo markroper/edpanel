@@ -5,7 +5,9 @@ import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.query.Dimension;
 
-public class AssignmentGradeSqlSerializer implements MeasureSqlSerializer {
+public class AssignmentGradeSqlSerializer extends BaseSqlSerializer implements MeasureSqlSerializer {
+    
+    @Override
     public String toSelectInner() {
         return
             toTableName() + DOT + HibernateConsts.STUDENT_ASSIGNMENT_AWARDED_POINTS +
@@ -15,19 +17,13 @@ public class AssignmentGradeSqlSerializer implements MeasureSqlSerializer {
 
     @Override
     public String toJoinClause(Dimension dimToJoinUpon) {
-        String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
-        return LEFT_OUTER_JOIN + toTableName() + ON +
-                dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) + 
-                EQUALS + toTableName() + DOT + dimTableName + FK_COL_SUFFIX +
-                " " + joinStudentAssignmentFragment();
+        return super.toJoinClause(dimToJoinUpon) + joinTable(HibernateConsts.ASSIGNMENT_TABLE);
     }
 
     private String joinStudentAssignmentFragment() {
-        return LEFT_OUTER_JOIN + HibernateConsts.ASSIGNMENT_TABLE + ON +
-                toTableName() + DOT + HibernateConsts.ASSIGNMENT_TABLE + FK_COL_SUFFIX +
-                EQUALS + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + ID_COL_SUFFIX + " ";
+        return joinTable(HibernateConsts.ASSIGNMENT_TABLE);
     }
-
+    
     @Override
     public String toFromClause() {
         return toTableName() + " " + joinStudentAssignmentFragment();
