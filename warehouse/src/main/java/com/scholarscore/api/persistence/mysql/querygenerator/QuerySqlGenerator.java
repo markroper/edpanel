@@ -119,17 +119,13 @@ public abstract class QuerySqlGenerator {
         //WHERE CLAUSE
         if(null != q.getSubqueryFilter() && !q.getSubqueryFilter().isEmpty()) {
             sqlBuilder.append("\nWHERE ");
-            boolean first = true;
+            FirstAwareWrapper innerSqlBuilder = new FirstAwareWrapper(sqlBuilder);
             for(SubqueryExpression entry: q.getSubqueryFilter()) {
                 Integer pos = entry.getPosition();
                 IOperator operator = entry.getOperator();
                 IOperand operand = entry.getOperand();
                 if(pos > numChildDimensions - 1) {
-                    if(first) {
-                        first = false;
-                    } else {
-                        sqlBuilder.append(" AND ");
-                    }
+                    innerSqlBuilder.markNotFirstOrAppend(" AND ");
                     pos = pos - numChildDimensions;
                     int counter = 0;
                     for(AggregateMeasure am: q.getAggregateMeasures()) {
@@ -155,12 +151,7 @@ public abstract class QuerySqlGenerator {
                         }
                     }
                 } else {
-                    //find the right dimension
-                    if(first) {
-                        first = false;
-                    } else {
-                        sqlBuilder.append(DELIM);
-                    }
+                    innerSqlBuilder.markNotFirstOrAppend(DELIM);
                     //look for the dimension
                     sqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
                     sqlBuilder.append(" ");
