@@ -7,7 +7,9 @@ import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.bucket.AggregationBucket;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public interface MeasureSqlSerializer {
     public static final String LEFT_OUTER_JOIN = "LEFT OUTER JOIN ";
@@ -60,13 +62,22 @@ public interface MeasureSqlSerializer {
         return agg.name() + "(" + toSelectInner() + ")";
     }
     
-    public String toJoinClause(Dimension dimToJoinUpon);
+    String toJoinClause(Dimension dimToJoinUpon);
 
-    public String toFromClause();
+    String toFromClause();
     
-    public String toTableName();
+    String toTableName();
     
-    public default String generateMeasureFieldSql(MeasureField f, String tableAlias) throws SqlGenerationException {
+    // TODO Jordan: this might not actually return dimension, but rather an IDimension (or whatever will include Pseudo Dimensions)
+    // (also this is horrible -- clean it up if this idea pans out)
+    default Set<Dimension> allJoinedTables() {
+        HashSet<Dimension> hashSet = new HashSet<>();
+        Dimension dim = DbMappings.getDimensionFromTableName(toTableName());
+        if (dim != null) { hashSet.add(dim); }
+        return hashSet;
+    }
+    
+    default String generateMeasureFieldSql(MeasureField f, String tableAlias) throws SqlGenerationException {
         String tableName = DbMappings.MEASURE_TO_TABLE_NAME.get(f.getMeasure());
         if(null != tableAlias) {
             tableName = tableAlias;

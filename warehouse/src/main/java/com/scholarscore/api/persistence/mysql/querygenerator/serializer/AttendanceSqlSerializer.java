@@ -9,6 +9,8 @@ import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
 
+import java.util.Set;
+
 public class AttendanceSqlSerializer implements MeasureSqlSerializer {
 
     @Override
@@ -63,4 +65,10 @@ public class AttendanceSqlSerializer implements MeasureSqlSerializer {
         return tableName + "." + columnName;
     }
 
+    @Override
+    public Set<Dimension> allJoinedTables() {
+        Set<Dimension> set = MeasureSqlSerializer.super.allJoinedTables();
+        set.add(Dimension.SCHOOL_DAY);
+        return set;
+    }
 }

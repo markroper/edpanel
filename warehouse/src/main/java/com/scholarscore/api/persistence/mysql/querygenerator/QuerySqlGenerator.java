@@ -232,11 +232,15 @@ public abstract class QuerySqlGenerator {
             selectedDims.addAll(filterDims);
         }
         List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
-        
+
+        // TODO Jordan: just experimentin' 
+        List<Dimension> copyOfOrderedTables = new ArrayList<>();
+        copyOfOrderedTables.addAll(orderedTables);
+
         // I was hoping to get the other table (from the measure) here as well...
         // well, let's try hacky to start and maybe later work our way up to elegant
 //        String measureTableName = null;
-        Dimension measureDimension = null;
+//        Dimension measureDimension = null;
         if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
             AggregateMeasure aggregateMeasure = q.getAggregateMeasures().get(0);
             String measureTableName = DbMappings.MEASURE_TO_TABLE_NAME.get(aggregateMeasure.getMeasure());
@@ -247,25 +251,28 @@ public abstract class QuerySqlGenerator {
                 // or assignment table?
 //                measureTableName = HibernateConsts.ASSIGNMENT_TABLE;
 //            }
-            
+
+            MeasureSqlSerializer serializer = MeasureSqlSerializerFactory.get(aggregateMeasure.getMeasure());
+            if (serializer != null) {
+                copyOfOrderedTables.addAll(serializer.allJoinedTables());
+            }
+
+            /*
             for (Dimension dimensionKey : DbMappings.DIMENSION_TO_TABLE_NAME.keySet()) {
                 String thisTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimensionKey);
                 if (thisTableName.equals(measureTableName)) {
                     // this is the dimension! 
-                    measureDimension = dimensionKey;
+                    // measureDimension = dimensionKey;
+                    copyOfOrderedTables.add(dimensionKey);
                     break;
                 }
             }
-
+            */
         }
 
-        // TODO Jordan: just experimentin' 
-        List<Dimension> copyOfOrderedTables = new ArrayList<>();
-        copyOfOrderedTables.addAll(orderedTables);
-
-        if (measureDimension != null) {
-            copyOfOrderedTables.add(measureDimension);
-        }
+//        if (measureDimension != null) {
+//            copyOfOrderedTables.add(measureDimension);
+//        }
         
         // errg. just make it fit.
         boolean hasCompletePath = hasCompleteJoinPath(copyOfOrderedTables);
@@ -630,6 +637,7 @@ public abstract class QuerySqlGenerator {
     
     // right now this only checks the neighbors a node points to and all nodes pointing at a node
     private static Set<Node> findImmediateNeighbors(Node dimensionNode) {
+        if (dimensionNode == null) { return new HashSet<>(); }
         Set<Node> allNodes = new HashSet<>();
         // all nodes this node points at
         for (Edge edge : dimensionNode.edges) {
@@ -680,6 +688,13 @@ public abstract class QuerySqlGenerator {
         // if there's any unmatched tables, the join path is incomplete.
         if (unmatchedTables.size() > 0) {
             System.out.println("Unmatched Table! Could not match on table(s)...");
+            System.out.print("ALL TABLES: ( ");
+            for (Dimension table : orderedTables) {
+                if (table != null) {
+                    System.out.print(table.name() + " ");
+                }
+            }
+            System.out.println(")");
             for (Node unmatchedTable : unmatchedTables) {
                 System.out.println("NO MATCH FOR TABLE " + unmatchedTable);
             }
