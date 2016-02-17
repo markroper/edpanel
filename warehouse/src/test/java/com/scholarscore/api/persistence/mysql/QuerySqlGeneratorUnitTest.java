@@ -441,7 +441,8 @@ public class QuerySqlGeneratorUnitTest {
                         "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
                         "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
                         "ELSE NULL \n" +
-                        "END as count_current_gpa_group FROM current_gpa LEFT OUTER JOIN gpa ON gpa.gpa_id = current_gpa.gpa_fk GROUP BY count_current_gpa_group";
+                        "END as count_current_gpa_group FROM current_gpa " + 
+                        "LEFT OUTER JOIN gpa ON current_gpa.gpa_fk = gpa.gpa_id GROUP BY count_current_gpa_group";
 
             }
         };

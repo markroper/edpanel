@@ -12,6 +12,7 @@ import com.scholarscore.models.query.Dimension;
 public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
 
     @Override
+    // Note: non-standard relationships (not using conventional _id / _fk) will BREAK this method. override if needed
     public String toJoinClause(Dimension dimToJoinUpon) {
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         return LEFT_OUTER_JOIN + toTableName() + ON +

@@ -13,17 +13,13 @@ public class CourseGradeSqlSerializer extends BaseSqlSerializer implements Measu
 
     @Override
     public String toJoinClause(Dimension dimToJoinUpon) {
-        String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
-        return LEFT_OUTER_JOIN + toTableName() + ON +
-                dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) + EQUALS +
-                toTableName() + DOT + dimTableName + FK_COL_SUFFIX + " " + sectionGradeJoin();
+        return super.toJoinClause(dimToJoinUpon) + sectionGradeJoin();
     }
 
     private String sectionGradeJoin() {
-        return LEFT_OUTER_JOIN + HibernateConsts.SECTION_GRADE_TABLE + ON +
-                toTableName() + DOT + HibernateConsts.SECTION_GRADE_FK + EQUALS +
-                HibernateConsts.SECTION_GRADE_TABLE + DOT + HibernateConsts.SECTION_GRADE_ID + " ";
+        return joinTable(HibernateConsts.SECTION_GRADE_TABLE);
     }
+    
     @Override
     public String toFromClause() {
         return toTableName() + " " + sectionGradeJoin();
