@@ -49,8 +49,6 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
         return joinTable(tableToJoin, toTableName(), inferredJoinToColumnName, inferredJoinFromColumnName);
     }
     
-//    protected String joinTable()
-
     /* 
     * Overloaded method to join tables allowing the join tables and foreign key columns to be specified.
     * This method should be avoided if possible and more straightforward serializers should not need to use it.
