@@ -387,16 +387,16 @@ public abstract class QuerySqlGenerator {
         }
     }
     
-    protected static void populateGroupByClause(StringBuilder sqlBuilder, Query q) throws SqlGenerationException {
-        sqlBuilder.append(GROUP_BY);
+    protected static void populateGroupByClause(StringBuilder parentSqlBuilder, Query q) throws SqlGenerationException {
+        StringBuilder groupBySqlBuilder = new StringBuilder();
         boolean isFirst = true;
         if(null != q.getFields()) {
             for (DimensionField f : q.getFields()) {
                 if (isFirst) {
-                    sqlBuilder.append(generateDimensionFieldSql(f, null));
+                    groupBySqlBuilder.append(generateDimensionFieldSql(f, null));
                     isFirst = false;
                 } else {
-                    sqlBuilder.append(DELIM + generateDimensionFieldSql(f, null));
+                    groupBySqlBuilder.append(DELIM + generateDimensionFieldSql(f, null));
                 }
             }
         }
@@ -406,13 +406,19 @@ public abstract class QuerySqlGenerator {
                 if(null != m.getBuckets() && !m.getBuckets().isEmpty()) {
                     String bucketFieldName = generateBucketPseudoColumnName(m);
                     if (isFirst) {
-                        sqlBuilder.append(bucketFieldName);
+                        groupBySqlBuilder.append(bucketFieldName);
                         isFirst = false;
                     } else {
-                        sqlBuilder.append(DELIM + bucketFieldName);
+                        groupBySqlBuilder.append(DELIM + bucketFieldName);
                     }
                 }
             }
+        }
+        
+        // "GROUP BY" may not be present -- only append "GROUP BY" if the rest of the string exists
+        if (groupBySqlBuilder.length() > 0) {
+            parentSqlBuilder.append(GROUP_BY);
+            parentSqlBuilder.append(groupBySqlBuilder.toString());
         }
     }
 

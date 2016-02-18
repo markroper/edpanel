@@ -89,7 +89,7 @@ public class StudentController extends BaseController {
             notes = "Overwrites an existing student entity within a district with the ID provided",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{studentId}", 
+            value = "/{studentId}",
             method = RequestMethod.PUT, 
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -99,14 +99,14 @@ public class StudentController extends BaseController {
             @RequestBody @Valid Student student) {
         return respond(pm.getStudentManager().replaceStudent(studentId, student));
     }
-    
+
     @ApiOperation(
-            value = "Update an existing student", 
+            value = "Update an existing student",
             notes = "Updates an existing student properties. Will not overwrite existing values with null.",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{studentId}", 
-            method = RequestMethod.PATCH, 
+            value = "/{studentId}",
+            method = RequestMethod.PATCH,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     public @ResponseBody ResponseEntity update(

@@ -455,6 +455,27 @@ public class QuerySqlGeneratorUnitTest {
             }
         };
 
+        TestQuery demeritWithoutDimensionTestQuery = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Demerit w/ only measure, no dimensiontest query";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query behaviorQuery = new Query();
+                ArrayList<AggregateMeasure> behaviorMeasures = new ArrayList<>();
+                behaviorMeasures.add(new AggregateMeasure(Measure.DEMERIT, AggregateFunction.SUM));
+                behaviorQuery.setAggregateMeasures(behaviorMeasures);
+                return behaviorQuery;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT SUM(if(behavior.category = 'DEMERIT', 1, 0)) as sum_demerit_agg FROM behavior ";
+            }
+        };
+
         TestQuery meritTestQuery = new TestQuery() {
             @Override
             public String queryName() {
@@ -800,6 +821,7 @@ public class QuerySqlGeneratorUnitTest {
                 { demeritTestQuery },
                 { meritTestQuery },
                 { demeritWithStaffTestQuery },
+                { demeritWithoutDimensionTestQuery },
                 { schoolNameTestQuery }, 
                 { gpaBucketTestQuery },
                 { currGpaTestQuery },

@@ -43,6 +43,13 @@ public class SectionJdbc implements SectionPersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public Collection<Section> selectAllInYear(long yearId) {
+        return (Collection<Section>)hibernateTemplate.findByNamedParam(
+                SECTION_HQL + " where y.id = :id", "id", yearId);
+    }
+
+    @Override
     public Section select(long termId, long sectionId) {
         return hibernateTemplate.get(Section.class, sectionId);
     }
