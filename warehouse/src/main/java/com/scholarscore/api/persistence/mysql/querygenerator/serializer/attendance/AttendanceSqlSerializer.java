@@ -21,7 +21,7 @@ public class AttendanceSqlSerializer extends BaseAttendanceSqlSerializer impleme
     @Override
     public String toJoinClause(Dimension dimToJoinUpon) {
         if(dimToJoinUpon.equals(Dimension.STUDENT)) {
-            return super.toJoinClause(dimToJoinUpon)  + joinTable(HibernateConsts.SCHOOL_DAY_TABLE);
+            return super.toJoinClause(dimToJoinUpon) + joinTable(HibernateConsts.SCHOOL_DAY_TABLE);
         } else if(dimToJoinUpon.equals(Dimension.SCHOOL)){
             // this may be confusing because SCHOOL_DAY_TABLE is the argument for both, but this is actually expected, here's why -
             // * toJoinClause is joining this sqlizer's dimension (ATTENDANCE) to the supplied dimension (SCHOOL_DAY)
@@ -33,13 +33,8 @@ public class AttendanceSqlSerializer extends BaseAttendanceSqlSerializer impleme
                             QuerySqlGenerator.resolvePrimaryKeyField(HibernateConsts.SCHOOL_TABLE) // table FROM col
                     );
         }
-        // TODO Jordan: throw new SqlGenerationException("AttendanceSqlSerializer does not support Dimension " + dimToJoinUpon + "!");
+        // TODO: throw new SqlGenerationException("AttendanceSqlSerializer does not support Dimension " + dimToJoinUpon + "!");
         return null;
-    }
-
-    @Override
-    public String toFromClause() {
-        return toTableName();
     }
 
     @Override

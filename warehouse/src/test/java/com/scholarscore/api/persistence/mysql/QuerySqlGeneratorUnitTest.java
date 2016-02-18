@@ -215,7 +215,14 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT section.section_id, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg FROM section LEFT OUTER JOIN assignment ON assignment.section_fk = section.section_id LEFT OUTER JOIN student_assignment ON student_assignment.assignment_fk = assignment.assignment_id LEFT OUTER JOIN term ON term.term_id = section.term_fk LEFT OUTER JOIN school_year ON school_year.school_year_id = term.school_year_fk WHERE  ( ( ( term.term_id  =  1 )  AND  ( school_year.school_year_id  =  1 ) )  AND  ( section.section_id  !=  0 ) ) GROUP BY section.section_id";
+                return "SELECT section.section_id, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg " + 
+                        "FROM section " + 
+                        "LEFT OUTER JOIN assignment ON section.section_id = assignment.section_fk " + 
+                        "LEFT OUTER JOIN student_assignment ON assignment.assignment_id = student_assignment.assignment_fk " + 
+                        "LEFT OUTER JOIN term ON term.term_id = section.term_fk " + 
+                        "LEFT OUTER JOIN school_year ON school_year.school_year_id = term.school_year_fk " + 
+                        "WHERE  ( ( ( term.term_id  =  1 )  AND  ( school_year.school_year_id  =  1 ) )  AND  ( section.section_id  !=  0 ) ) " + 
+                        "GROUP BY section.section_id";
             }
         };
         TestQuery studentAttendanceQuery = new TestQuery() {
@@ -674,7 +681,12 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT school.school_id, course.course_name, section.section_name, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg FROM section LEFT OUTER JOIN assignment ON assignment.section_fk = section.section_id LEFT OUTER JOIN student_assignment ON student_assignment.assignment_fk = assignment.assignment_id LEFT OUTER JOIN course ON course.course_id = section.course_fk LEFT OUTER JOIN school ON school.school_id = course.school_fk GROUP BY school.school_id, course.course_name, section.section_name";
+                return "SELECT school.school_id, course.course_name, section.section_name, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg " + 
+                        "FROM section " + 
+                        "LEFT OUTER JOIN assignment ON section.section_id = assignment.section_fk " + 
+                        "LEFT OUTER JOIN student_assignment ON assignment.assignment_id = student_assignment.assignment_fk " + 
+                        "LEFT OUTER JOIN course ON course.course_id = section.course_fk " + 
+                        "LEFT OUTER JOIN school ON school.school_id = course.school_fk GROUP BY school.school_id, course.course_name, section.section_name";
             }
         };
 
@@ -698,7 +710,12 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT school.school_name, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg FROM section LEFT OUTER JOIN assignment ON assignment.section_fk = section.section_id LEFT OUTER JOIN student_assignment ON student_assignment.assignment_fk = assignment.assignment_id LEFT OUTER JOIN course ON course.course_id = section.course_fk LEFT OUTER JOIN school ON school.school_id = course.school_fk GROUP BY school.school_name";
+                return "SELECT school.school_name, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg " + 
+                        "FROM section " + 
+                        "LEFT OUTER JOIN assignment ON section.section_id = assignment.section_fk " + 
+                        "LEFT OUTER JOIN student_assignment ON assignment.assignment_id = student_assignment.assignment_fk " + 
+                        "LEFT OUTER JOIN course ON course.course_id = section.course_fk " + 
+                        "LEFT OUTER JOIN school ON school.school_id = course.school_fk GROUP BY school.school_name";
             }
         };
         

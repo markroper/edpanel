@@ -48,6 +48,8 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
         String inferredJoinToColumnName = tableToJoin + ID_COL_SUFFIX;
         return joinTable(tableToJoin, toTableName(), inferredJoinToColumnName, inferredJoinFromColumnName);
     }
+    
+//    protected String joinTable()
 
     /* 
     * Overloaded method to join tables allowing the join tables and foreign key columns to be specified.
