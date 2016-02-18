@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 public abstract class QueryField implements Serializable {
     //If an AggregateMeasure has buckets, aggregate values are bucketed according to the buckets defined
-    //and the bucket psuedo-column gets included in the GROUP BY. The aggregate column will also be generated
+    //and the bucket pseudo-column gets included in the GROUP BY. The aggregate column will also be generated
     //and NOT included in the group by.  For example:
     //
     //    count(*),

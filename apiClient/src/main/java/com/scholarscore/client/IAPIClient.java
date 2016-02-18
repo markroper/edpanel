@@ -38,6 +38,7 @@ public interface IAPIClient {
     Student updateStudent(Long studentId, Student student) throws HttpClientException;
     Collection<Student> getStudents(Long schoolId) throws HttpClientException;
     Student getStudent(Long ssid) throws HttpClientException;
+    void updateAdvisors(Long schoolId) throws IOException;
     
     Collection<Staff> getTeachers() throws HttpClientException;
     Collection<Staff> getAdministrators() throws HttpClientException;

@@ -24,7 +24,7 @@ public class SectionDimension implements IDimension {
     
     @Override
     public Dimension getType() {
-        return Dimension.YEAR;
+        return Dimension.SECTION;
     }
 
     @Override

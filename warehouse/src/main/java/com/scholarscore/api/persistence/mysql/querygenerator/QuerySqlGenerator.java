@@ -192,10 +192,10 @@ public abstract class QuerySqlGenerator {
                     isFirst = false;
                 }
                 sqlBuilder.append(mss.toSelectClause(am.getAggregation()) + " as " + generateAggColumnName(am));
-                //If there are buckets involved in the aggregate query, inject the bucket psuedo column
+                //If there are buckets involved in the aggregate query, inject the bucket pseudo column
                 if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
                     sqlBuilder.append(DELIM);
-                    sqlBuilder.append(mss.toSelectBucketPsuedoColumn(am.getBuckets()));
+                    sqlBuilder.append(mss.toSelectBucketPseudoColumn(am.getBuckets()));
                     sqlBuilder.append(" as ");
                     sqlBuilder.append(generateBucketPseudoColumnName(am));
                 }
@@ -394,36 +394,42 @@ public abstract class QuerySqlGenerator {
         }
     }
     
-    protected static void populateGroupByClause(StringBuilder sqlBuilder, Query q, Map<String, Object> params) throws SqlGenerationException {
-        sqlBuilder.append(GROUP_BY);
+    protected static void populateGroupByClause(StringBuilder parentSqlBuilder, Query q, Map<String, Object> params) throws SqlGenerationException {
+        StringBuilder groupBySqlBuilder = new StringBuilder();
         boolean isFirst = true;
         if(null != q.getFields()) {
             for (DimensionField f : q.getFields()) {
                 if (isFirst) {
-                    sqlBuilder.append(generateDimensionFieldSql(f, null));
+                    groupBySqlBuilder.append(generateDimensionFieldSql(f, null));
                     isFirst = false;
                 } else {
-                    sqlBuilder.append(DELIM + generateDimensionFieldSql(f, null));
+                    groupBySqlBuilder.append(DELIM + generateDimensionFieldSql(f, null));
                 }
             }
         }
-        //If there are buckets involved in the aggregate query, inject the bucket psuedo column
+        //If there are buckets involved in the aggregate query, inject the bucket pseudo column
         if(null != q.getAggregateMeasures()) {
             for (AggregateMeasure m : q.getAggregateMeasures()) {
                 if(null != m.getBuckets() && !m.getBuckets().isEmpty()) {
                     String bucketFieldName = generateBucketPseudoColumnName(m);
                     if (isFirst) {
-                        sqlBuilder.append(bucketFieldName);
+                        groupBySqlBuilder.append(bucketFieldName);
                         isFirst = false;
                     } else {
-                        sqlBuilder.append(DELIM + bucketFieldName);
+                        groupBySqlBuilder.append(DELIM + bucketFieldName);
                     }
                 }
             }
         }
-        if(null != q.getHaving()) {
-            sqlBuilder.append(" \nHAVING ");
-            expressionToSql(q.getHaving(), params, sqlBuilder, null);
+        
+        // "GROUP BY" may not be present -- only append "GROUP BY" if the rest of the string exists
+        if (groupBySqlBuilder.length() > 0) {
+            parentSqlBuilder.append(GROUP_BY);
+            parentSqlBuilder.append(groupBySqlBuilder.toString());
+			if(null != q.getHaving()) {
+            	parentSqlBuilder.append(" \nHAVING ");
+            	expressionToSql(q.getHaving(), params, parentSqlBuilder, null);
+        	}
         }
     }
 

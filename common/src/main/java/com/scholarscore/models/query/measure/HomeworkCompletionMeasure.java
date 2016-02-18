@@ -10,10 +10,10 @@ import java.util.Set;
 
 @SuppressWarnings("serial")
 public class HomeworkCompletionMeasure implements IMeasure {
-    final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(new HashSet<Measure>());
+    final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(new HashSet<>());
     final Set<Dimension> compatibleDimensions = ImmutableSet.of(
             Dimension.TERM, Dimension.STUDENT, Dimension.SCHOOL, Dimension.SECTION, 
-            Dimension.YEAR, Dimension.GRADE_LEVEL, Dimension.TEACHER);
+            Dimension.YEAR, Dimension.TEACHER);
     
     @Override
     public Set<Dimension> getCompatibleDimensions() {
