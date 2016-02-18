@@ -14,10 +14,11 @@ public abstract class BehaviorSqlSerializer extends BaseSqlSerializer {
 
     @Override
     public String toSelectInner() {
-        return "if(" + HibernateConsts.BEHAVIOR_TABLE + DOT + HibernateConsts.BEHAVIOR_CATEGORY + " = GARBAGE'" + matchesBehavior() +
-                "', 1, 0)";
+        return "if(" + toTableName() + DOT + HibernateConsts.BEHAVIOR_CATEGORY + " = '" + matchesBehavior() +
+                "', 1, " + valueForFalse() +")";
     }
     
-//    abstract BehaviorCategory matchesBehavior();
-    BehaviorCategory matchesBehavior() { return BehaviorCategory.DEMERIT; }
+    String valueForFalse() { return "0"; }
+    
+    abstract BehaviorCategory matchesBehavior();
 }

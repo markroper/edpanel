@@ -21,6 +21,11 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
         // TODO Jordan refactoring in progress - many sqlizers include another join here. currently they must override toJoinClause and add it.
     }
 
+    @Override
+    public String toFromClause() {
+        return toTableName();
+    }
+
     // TODO Jordan: this method is only required today because the Behavior table has a FK to staff (should be staff_fk)
     // but instead this field is named user_fk. Change it and this can be removed!
     protected String getTableNameFk(String tableName) {
