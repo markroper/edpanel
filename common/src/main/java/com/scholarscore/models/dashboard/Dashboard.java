@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +31,7 @@ public class Dashboard extends ApiModel {
     @NotNull
     protected Long schoolId;
     protected Long userId;
+    @Size(min = 0, max = 5)
     protected List<DashboardRow> rows;
 
     public Dashboard() {

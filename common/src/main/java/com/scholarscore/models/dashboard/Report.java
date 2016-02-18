@@ -95,7 +95,7 @@ public class Report extends ApiModel {
         this.clickTableQuery = clickTableQuery;
     }
 
-    @Column(name = HibernateConsts.DASHBOARD_ROW_FK)
+    @Column(name = HibernateConsts.DASHBOARD_ROW_FK, nullable = false)
     public Long getRowFk() {
         return rowFk;
     }

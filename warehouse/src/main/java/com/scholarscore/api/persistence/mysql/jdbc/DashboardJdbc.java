@@ -5,6 +5,7 @@ import com.scholarscore.models.dashboard.Dashboard;
 import com.scholarscore.models.dashboard.DashboardRow;
 import com.scholarscore.models.dashboard.Report;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +18,7 @@ import java.util.Map;
  * Created by markroper on 2/16/16.
  */
 @Transactional
-public class DashboardJdbc implements DashboardPersistence {
+public class DashboardJdbc extends BaseJdbc implements DashboardPersistence {
     public static final String DASH_HQL = "from dashboard d " +
             "join fetch rows r " +
             "join fetch r.reports rs " +
@@ -89,10 +90,11 @@ public class DashboardJdbc implements DashboardPersistence {
 
     @Override
     public void deleteDashboard(Long dashboardId) {
-        Dashboard d = selectDashboard(null, dashboardId);
-        if(null != d) {
-            hibernateTemplate.delete(d);
-        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("dashboardId", dashboardId);
+        jdbcTemplate.update(
+                "DELETE FROM `scholar_warehouse`.`dashboard` WHERE `dashboard_id` = :dashboardId",
+                new MapSqlParameterSource(params));
     }
 
     @Override
