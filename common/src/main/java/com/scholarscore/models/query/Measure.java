@@ -32,9 +32,10 @@ public enum Measure {
     DEMERIT,
     MERIT,
     DETENTION,
-    PRIDE_SCORE,
+//    PRIDE_SCORE,  // TODO: need IMeasure class and SqlSerializer for pride-score before it can be used
     REFERRAL,
-    SUSPENSION,
+    IN_SCHOOL_SUSPENSION,
+    OUT_OF_SCHOOL_SUSPENSION,
     //Academic measures
     GPA,
     CURRENT_GPA,
@@ -63,8 +64,10 @@ public enum Measure {
                 return new DemeritMeasure();
             case DETENTION:
                 return new DetentionMeasure();
-            case SUSPENSION:
-                return new SuspensionMeasure();
+            case IN_SCHOOL_SUSPENSION:
+                return new InSchoolSuspensionMeasure();
+            case OUT_OF_SCHOOL_SUSPENSION:
+                return new OutOfSchoolSuspensionMeasure();
             case REFERRAL:
                 return new ReferralMeasure();
             case ATTENDANCE:
@@ -77,6 +80,8 @@ public enum Measure {
                 return new SectionAbsenceMeasure();
             case SECTION_TARDY:
                 return new SectionTardyMeasure();
+            case CURRENT_GPA:
+                return new CurrentGpaMeasure();
             default:
                 throw new QueryException("Unsupported measure " + measure + "!");
         }

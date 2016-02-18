@@ -480,7 +480,7 @@ public class QuerySqlGeneratorUnitTest {
         TestQuery demeritWithoutDimensionTestQuery = new TestQuery() {
             @Override
             public String queryName() {
-                return "Demerit w/ only measure, no dimensiontest query";
+                return "Demerit w/ only measure, no dimension test query";
             }
 
             @Override
@@ -498,6 +498,28 @@ public class QuerySqlGeneratorUnitTest {
             }
         };
 
+
+        TestQuery detentionWithoutDimensionTestQuery = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Detention w/ only measure, no dimension test query";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query behaviorQuery = new Query();
+                ArrayList<AggregateMeasure> behaviorMeasures = new ArrayList<>();
+                behaviorMeasures.add(new AggregateMeasure(Measure.DETENTION, AggregateFunction.SUM));
+                behaviorQuery.setAggregateMeasures(behaviorMeasures);
+                return behaviorQuery;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT SUM(if(behavior.category = 'DETENTION', 1, 0)) as sum_detention_agg FROM behavior ";
+            }
+        };
+        
         TestQuery meritTestQuery = new TestQuery() {
             @Override
             public String queryName() {
@@ -845,6 +867,7 @@ public class QuerySqlGeneratorUnitTest {
                 { meritTestQuery },
                 { demeritWithStaffTestQuery },
                 { demeritWithoutDimensionTestQuery },
+                { detentionWithoutDimensionTestQuery },
                 { schoolNameTestQuery }, 
                 { gpaBucketTestQuery },
                 { currGpaTestQuery },
