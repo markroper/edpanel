@@ -19,10 +19,10 @@ import com.scholarscore.models.query.expressions.Expression;
     @JsonSubTypes.Type(value = Expression.class, name = "EXPRESSION"),
     @JsonSubTypes.Type(value = MeasureOperand.class, name = "MEASURE"),
     @JsonSubTypes.Type(value = ListNumericOperand.class, name = "LIST_NUMERIC"),
-    @JsonSubTypes.Type(value = PlaceholderOperand.class, name = "PLACEHOLDER_STRING"),
-    @JsonSubTypes.Type(value = PlaceholderOperand.class, name = "PLACEHOLDER_DATE"),
-    @JsonSubTypes.Type(value = PlaceholderOperand.class, name = "PLACEHOLDER_NUMERIC"),
-    @JsonSubTypes.Type(value = PlaceholderOperand.class, name = "PLACEHOLDER_LIST_NUMERIC")
+    @JsonSubTypes.Type(value = StringPlaceholder.class, name = "PLACEHOLDER_STRING"),
+    @JsonSubTypes.Type(value = DatePlaceholder.class, name = "PLACEHOLDER_DATE"),
+    @JsonSubTypes.Type(value = NumericPlaceholder.class, name = "PLACEHOLDER_NUMERIC"),
+    @JsonSubTypes.Type(value = NumericListPlaceholder.class, name = "PLACEHOLDER_LIST_NUMERIC")
 })
 public interface IOperand {
     /**

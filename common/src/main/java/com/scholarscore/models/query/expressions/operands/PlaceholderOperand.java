@@ -13,20 +13,14 @@ import java.util.Objects;
  *
  * Created by markroper on 2/15/16.
  */
-public class PlaceholderOperand implements Serializable, IOperand {
+public abstract class PlaceholderOperand implements Serializable, IOperand {
     String value;
-    OperandType type;
 
     public PlaceholderOperand() {
     }
 
-    public PlaceholderOperand(String value, OperandType type) {
+    public PlaceholderOperand(String value) {
         this.value = value;
-        this.type = type;
-    }
-    @Override
-    public OperandType getType() {
-        return null;
     }
 
     public String getValue() {
@@ -37,13 +31,13 @@ public class PlaceholderOperand implements Serializable, IOperand {
         this.value = value;
     }
 
-    public void setType(OperandType type) {
-        this.type = type;
+    public void setType(OperandType t){
+        //no op
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value, type);
+        return Objects.hash(value);
     }
 
     @Override
@@ -55,7 +49,6 @@ public class PlaceholderOperand implements Serializable, IOperand {
             return false;
         }
         final PlaceholderOperand other = (PlaceholderOperand) obj;
-        return Objects.equals(this.value, other.value)
-                && Objects.equals(this.type, other.type);
+        return Objects.equals(this.value, other.value);
     }
 }

@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
 import org.testng.Assert;
 
+import java.util.ArrayList;
+
 /**
  * Created by markroper on 2/17/16.
  */
@@ -148,6 +150,9 @@ public class DashboardValidatingExecutor {
                     }
                 }
             }
+        }
+        if(null == returnDashboard.getRows()) {
+            returnDashboard.setRows(new ArrayList<>());
         }
 
         return returnDashboard;
