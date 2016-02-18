@@ -361,6 +361,28 @@ public class QuerySqlGeneratorUnitTest {
                         "LEFT OUTER JOIN section ON section.section_id = attendance.section_fk WHERE  ( section.section_id  IN  (2,3) ) GROUP BY student.student_user_fk, section.section_id";
             }
         };
+
+        TestQuery sectionTardyWithoutDimensionTestQuery = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Tardy by Section without dimension query";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query sectionTardyQuery = new Query();
+                ArrayList<AggregateMeasure> sectionTardyMeasures = new ArrayList<>();
+                sectionTardyMeasures.add(new AggregateMeasure(Measure.SECTION_TARDY, AggregateFunction.COUNT));
+                sectionTardyQuery.setAggregateMeasures(sectionTardyMeasures);
+                return sectionTardyQuery;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT COUNT(if(attendance.attendance_status in ('TARDY') AND attendance.attendance_type = 'SECTION', 1, 0)) as count_section_tardy_agg FROM attendance ";
+            }
+        };
+        
         TestQuery dailyTardyTestQuery = new TestQuery() {
             @Override
             public String queryName() {
@@ -815,7 +837,8 @@ public class QuerySqlGeneratorUnitTest {
                 { studentAttendanceQuery },
                 { schoolAttendanceQuery },
                 { sectionAbsenceTestQuery },
-                { sectionTardyTestQuery }, 
+                { sectionTardyTestQuery },
+                { sectionTardyWithoutDimensionTestQuery },
                 { dailyTardyTestQuery },
                 { dailyAbsenceTestQuery },
                 { demeritTestQuery },
