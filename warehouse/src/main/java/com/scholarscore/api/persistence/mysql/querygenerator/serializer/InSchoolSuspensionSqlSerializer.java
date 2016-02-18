@@ -1,5 +1,6 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
 
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.DemeritSqlSerializer;
 import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.HibernateConsts;
 
