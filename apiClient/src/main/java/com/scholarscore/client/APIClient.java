@@ -195,6 +195,11 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         return s;
     }
 
+    public void updateAdvisors(Long schoolId) throws IOException{
+        post(null, BASE_API_ENDPOINT + SCHOOL_ENDPOINT + "/" + schoolId +
+                STUDENT_ENDPOINT + "/advisor");
+    }
+
     @Override
     public Student updateStudent(Long studentId, Student student) throws HttpClientException {
         if (studentId == null || studentId < 0) { return null; }

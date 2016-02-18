@@ -2,7 +2,6 @@ package com.scholarscore.models.query;
 
 import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.query.dimension.CourseDimension;
-import com.scholarscore.models.query.dimension.GradeLevelDimension;
 import com.scholarscore.models.query.dimension.IDimension;
 import com.scholarscore.models.query.dimension.SchoolDimension;
 import com.scholarscore.models.query.dimension.SchoolYearDimension;
@@ -35,7 +34,7 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class QueryComponents implements Serializable {
 
-    protected final Set<IDimension> availableDimensions = ImmutableSet.of(new CourseDimension(), new GradeLevelDimension(), new SchoolDimension(),
+    protected final Set<IDimension> availableDimensions = ImmutableSet.of(new CourseDimension(), new SchoolDimension(),
             new SchoolYearDimension(), new SectionDimension(), new StudentDimension(), new SubjectAreaDimension(), new TeacherDimension(),
             new TermDimension());
     protected final Set<IMeasure> availableMeasures = ImmutableSet.of(

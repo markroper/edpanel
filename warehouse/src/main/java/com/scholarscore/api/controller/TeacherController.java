@@ -1,4 +1,4 @@
-package com.scholarscore.api.controller;
+ package com.scholarscore.api.controller;
 
 import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.annotation.StudentAccessible;
