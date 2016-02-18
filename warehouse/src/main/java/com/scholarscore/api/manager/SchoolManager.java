@@ -82,4 +82,6 @@ public interface SchoolManager {
      */
     public ServiceResponse<Long> deleteSchool(long schoolId);
 
+    public ServiceResponse<Long> associateAdvisors(long schoolId);
+
 }
