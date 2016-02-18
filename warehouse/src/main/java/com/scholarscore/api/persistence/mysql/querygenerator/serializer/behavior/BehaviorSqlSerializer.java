@@ -3,7 +3,6 @@ package com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavio
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.BaseSqlSerializer;
 import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.HibernateConsts;
-import com.scholarscore.models.query.Measure;
 
 /**
  * User: jordan
