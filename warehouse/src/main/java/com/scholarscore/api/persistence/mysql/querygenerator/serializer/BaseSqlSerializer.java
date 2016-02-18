@@ -17,7 +17,7 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         return LEFT_OUTER_JOIN + toTableName() + ON +
                 dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) + EQUALS +
-                toTableName() + DOT + dimTableName + FK_COL_SUFFIX + " "; // + sectionGradeJoin();
+                toTableName() + DOT + getTableNameFk(dimTableName) + " "; // + sectionGradeJoin();
         // TODO Jordan refactoring in progress - many sqlizers include another join here. currently they must override toJoinClause and add it.
     }
 

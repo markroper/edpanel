@@ -375,7 +375,7 @@ public class QuerySqlGeneratorUnitTest {
                 return "SELECT student.student_user_fk, COUNT(if(attendance.attendance_status in ('TARDY') AND attendance.attendance_type = 'DAILY', 1, 0)) as count_tardy_agg " + 
                         "FROM student " + 
                         "LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " + 
-                        "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk " + 
+                        "LEFT OUTER JOIN school_day ON attendance.school_day_fk = school_day.school_day_id " + 
                         "GROUP BY student.student_user_fk";
             }
         };
@@ -401,7 +401,7 @@ public class QuerySqlGeneratorUnitTest {
                 return "SELECT student.student_user_fk, COUNT(if(attendance.attendance_status in ('ABSENT') AND attendance.attendance_type = 'DAILY', 1, 0)) as count_absence_agg " +
                         "FROM student " +
                         "LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " +
-                        "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk " +
+                        "LEFT OUTER JOIN school_day ON attendance.school_day_fk = school_day.school_day_id " +
                         "GROUP BY student.student_user_fk";
             }
         };
@@ -441,7 +441,8 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT student.student_user_fk, SUM(if(behavior.category = 'DEMERIT', 1, 0)) as sum_demerit_agg " +
-                        "FROM student LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk " +
+                        "FROM student " + 
+                        "LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk " +
                         "WHERE  ( ( behavior.date  >  '2014-09-01 00:00:00.0' )  AND  ( student.student_user_fk  =  1 ) ) " +
                         "GROUP BY student.student_user_fk";
             }
