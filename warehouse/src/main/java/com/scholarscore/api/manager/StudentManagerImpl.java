@@ -120,6 +120,8 @@ public class StudentManagerImpl implements StudentManager {
         return new ServiceResponse<>(studentId);
     }
 
+
+
     @Override
     public ServiceResponse<Long> updateStudent(long studentId, Student student) {
         StatusCode code = studentExists(studentId);
@@ -142,7 +144,6 @@ public class StudentManagerImpl implements StudentManager {
                 pm.getStudentAssignmentManager().getOneSectionOneStudentsAssignments(
                 studentId, sectionId);
         return determineWeeklyScore(studAssResp);
-
     }
 
     @Override
