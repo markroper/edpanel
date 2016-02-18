@@ -445,24 +445,6 @@ public class QuerySqlGeneratorUnitTest {
                 ArrayList<AggregateMeasure> behaviorMeasures = new ArrayList<>();
                 behaviorMeasures.add(new AggregateMeasure(Measure.DEMERIT, AggregateFunction.SUM));
                 behaviorQuery.setAggregateMeasures(behaviorMeasures);
-                /*
-                Expression studentIdClause = new Expression(
-                        new DimensionOperand(new DimensionField(Dimension.STUDENT, StudentDimension.ID)),
-                        ComparisonOperator.EQUAL,
-                        new NumericOperand(1L));
-                Date afterDate = null;
-                try {
-                    afterDate = dateFormat.parse("01-09-2014");
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                Expression dateClause = new Expression(
-                        new MeasureOperand(new MeasureField(Measure.DEMERIT, BehaviorMeasure.DATE)),
-                        ComparisonOperator.GREATER_THAN,
-                        new DateOperand(afterDate));
-                Expression topClause = new Expression(dateClause, BinaryOperator.AND, studentIdClause);
-                behaviorQuery.setFilter(topClause);
-                */
                 return behaviorQuery;
             }
 
