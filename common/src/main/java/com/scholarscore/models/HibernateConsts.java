@@ -330,7 +330,7 @@ public class HibernateConsts {
     public static final String DASHBOARD_TABLE = "dashboard";
     public static final String DASHBOARD_ID = "dashboard_id";
     public static final String DASHBOARD_NAME = "dashboard_name";
-    public static final String DASHBOARD_FK = "dashboard_FK";
+    public static final String DASHBOARD_FK = "dashboard_fk";
 
     public static final String DASHBOARD_ROW_TABLE = "dashboard_row";
     public static final String DASHBOARD_ROW_ID = "dashboard_row_id";

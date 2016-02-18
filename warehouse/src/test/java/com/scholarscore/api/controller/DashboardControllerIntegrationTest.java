@@ -95,5 +95,6 @@ public class DashboardControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createDashboardProvider")
     public void createDeleteDashboard(String msg, Dashboard dash) {
         Dashboard d = this.dashboardValidatingExecutor.create(school.getId(), dash, msg);
+        this.dashboardValidatingExecutor.delete(school.getId(), d.getId(), msg);
     }
 }

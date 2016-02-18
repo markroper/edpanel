@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +26,10 @@ import java.util.Objects;
  */
 @Entity(name = HibernateConsts.DASHBOARD_ROW_TABLE)
 public class DashboardRow implements Serializable {
-    //Max width is 3
     protected Long id;
     protected Long dashboardFk;
     protected Long position;
+    @Size(min = 1, max = 3)
     protected List<Report> reports;
 
     public DashboardRow() {
