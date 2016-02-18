@@ -1,24 +1,21 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior;
 
-import com.scholarscore.api.persistence.mysql.querygenerator.serializer.BaseSqlSerializer;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureSqlSerializer;
+import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.HibernateConsts;
-import com.scholarscore.models.query.Dimension;
-import com.scholarscore.models.query.Measure;
 
 public class DemeritSqlSerializer extends BehaviorSqlSerializer implements MeasureSqlSerializer {
 
     @Override
-    public String toSelectInner() {
-        return "if(" + HibernateConsts.BEHAVIOR_TABLE + DOT + HibernateConsts.BEHAVIOR_CATEGORY + " = '" + Measure.DEMERIT.name() +
-        "', 1, 0)";
+    public String toTableName() {
+        return HibernateConsts.BEHAVIOR_TABLE;
     }
 
     @Override
-    public String toJoinClause(Dimension dimToJoinUpon) {
-        return super.toJoinClause(dimToJoinUpon);
+    BehaviorCategory matchesBehavior() {
+        return BehaviorCategory.DEMERIT;
     }
-
+    
     @Override
     protected String getTableNameFk(String tableName) {
         if (tableName != null && tableName.equals(HibernateConsts.STAFF_TABLE)) {
@@ -26,15 +23,5 @@ public class DemeritSqlSerializer extends BehaviorSqlSerializer implements Measu
         }
         return super.getTableNameFk(tableName);
     }
-
-    @Override
-    public String toFromClause() {
-        return HibernateConsts.BEHAVIOR_TABLE;
-    }
-
-    @Override
-    public String toTableName() {
-        return HibernateConsts.BEHAVIOR_TABLE;
-    }
-
+    
 }

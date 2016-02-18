@@ -1,5 +1,6 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior;
 
+import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.query.Measure;
 
@@ -8,8 +9,11 @@ import com.scholarscore.models.query.Measure;
  */
 public class ReferralSqlSerializer extends DemeritSqlSerializer {
     @Override
-    public String toSelectInner() {
-        return "if(" + HibernateConsts.BEHAVIOR_TABLE + DOT + HibernateConsts.BEHAVIOR_CATEGORY + " = '" + Measure.REFERRAL.name() +
-                "', 1, null)";
+    BehaviorCategory matchesBehavior() {
+        return BehaviorCategory.REFERRAL;
     }
+
+    @Override
+    // I don't know why every other SQL if statement uses 1,0 and this one uses 1,null -- but sticking with existing behavior.
+    String valueForFalse() { return "null"; }
 }

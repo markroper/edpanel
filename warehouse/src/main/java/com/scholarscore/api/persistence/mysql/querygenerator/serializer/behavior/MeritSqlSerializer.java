@@ -1,5 +1,6 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior;
 
+import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.query.Measure;
 
@@ -8,8 +9,7 @@ import com.scholarscore.models.query.Measure;
  */
 public class MeritSqlSerializer extends DemeritSqlSerializer {
     @Override
-    public String toSelectInner() {
-        return "if(" + HibernateConsts.BEHAVIOR_TABLE + DOT + HibernateConsts.BEHAVIOR_CATEGORY + " = '" + Measure.MERIT.name() +
-        "', 1, 0)";
+    BehaviorCategory matchesBehavior() {
+        return BehaviorCategory.MERIT;
     }
 }
