@@ -17,10 +17,9 @@ import com.scholarscore.models.query.SubqueryColumnRef;
 import com.scholarscore.models.query.dimension.StudentDimension;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.MeasureOperand;
-import com.scholarscore.models.query.expressions.operands.OperandType;
+import com.scholarscore.models.query.expressions.operands.NumericPlaceholder;
 import com.scholarscore.models.query.expressions.operands.PlaceholderOperand;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -72,7 +71,7 @@ public class DashboardControllerIntegrationTest extends IntegrationBase {
         referralClick.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
         referralClick.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
         MeasureOperand mo = new MeasureOperand(new MeasureField(Measure.REFERRAL, AggregateFunction.SUM.name()));
-        PlaceholderOperand po = new PlaceholderOperand("${clickValue}", OperandType.PLACEHOLDER_NUMERIC);
+        PlaceholderOperand po = new NumericPlaceholder("${clickValue}");
         Expression referralClickExp = new Expression(mo, ComparisonOperator.EQUAL, po);
         referralClick.setHaving(referralClickExp);
         ColumnDef col1 = new ColumnDef("values[1]", "name");
@@ -88,7 +87,7 @@ public class DashboardControllerIntegrationTest extends IntegrationBase {
 
 
         return new Object[][] {
-//                { "empty dashboard", emptyDash },
+                { "empty dashboard", emptyDash },
                 { "complete dashboard", completeDash }
         };
     }
@@ -96,6 +95,5 @@ public class DashboardControllerIntegrationTest extends IntegrationBase {
     @Test(dataProvider = "createDashboardProvider")
     public void createDeleteDashboard(String msg, Dashboard dash) {
         Dashboard d = this.dashboardValidatingExecutor.create(school.getId(), dash, msg);
-        Assert.assertEquals(dash, d, "Unexpectedly unequal dashboard instances after creation for case: " + msg);
     }
 }
