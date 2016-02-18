@@ -1,13 +1,12 @@
-package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
+package com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior;
 
-import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.DemeritSqlSerializer;
 import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.HibernateConsts;
 
 /**
  * @author markroper on 11/28/15.
  */
-public class gOutOfSchoolSuspensionSqlSerializer extends DemeritSqlSerializer {
+public class OutOfSchoolSuspensionSqlSerializer extends DemeritSqlSerializer {
     @Override
     public String toSelectInner() {
         return "if(" + HibernateConsts.BEHAVIOR_TABLE + DOT + HibernateConsts.BEHAVIOR_CATEGORY + " = '" + BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION +

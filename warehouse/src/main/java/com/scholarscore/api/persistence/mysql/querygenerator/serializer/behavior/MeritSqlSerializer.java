@@ -12,4 +12,6 @@ public class MeritSqlSerializer extends DemeritSqlSerializer {
     BehaviorCategory matchesBehavior() {
         return BehaviorCategory.MERIT;
     }
+    
+    
 }
