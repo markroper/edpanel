@@ -11,7 +11,10 @@ import com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendan
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance.SectionAbsenceSqlSerializer;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance.SectionTardySqlSerializer;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.DemeritSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.DetentionSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.InSchoolSuspensionSqlSerializer;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.MeritSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.OutOfSchoolSuspensionSqlSerializer;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.ReferralSqlSerializer;
 import com.scholarscore.models.query.Measure;
 
