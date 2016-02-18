@@ -3,6 +3,7 @@ package com.scholarscore.api.persistence.mysql.querygenerator.serializer.academi
 import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.api.persistence.mysql.querygenerator.SqlGenerationException;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.BaseSqlSerializer;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureSqlSerializer;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.assignment.AssignmentType;
@@ -11,7 +12,7 @@ import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.dimension.AssignmentDimension;
 
-public class HomeworkCompletionSqlSerializer implements MeasureSqlSerializer {
+public class HomeworkCompletionSqlSerializer extends BaseSqlSerializer implements MeasureSqlSerializer {
 
     @Override
     public String toSelectInner() {
@@ -35,15 +36,13 @@ public class HomeworkCompletionSqlSerializer implements MeasureSqlSerializer {
 
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         if (dimTableName.equals(HibernateConsts.SECTION_TABLE)) {
-            return LEFT_OUTER_JOIN + toTableName() + ON +
-                    toTableName() + DOT + HibernateConsts.SECTION_FK +
-                    EQUALS + HibernateConsts.SECTION_TABLE + DOT + HibernateConsts.SECTION_TABLE + ID_COL_SUFFIX +
-                    " " +
+            return super.toJoinClause(dimToJoinUpon) +
                     LEFT_OUTER_JOIN + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + ON +
+                    toTableName() + DOT + HibernateConsts.ASSIGNMENT_ID +
+                    EQUALS +
                     HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_FK +
-                    EQUALS + toTableName() + DOT + HibernateConsts.ASSIGNMENT_ID + " ";
+                    " ";
         } else {
-            
             return LEFT_OUTER_JOIN + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + ON +
                     dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) +
                     EQUALS + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + dimTableName + FK_COL_SUFFIX +
