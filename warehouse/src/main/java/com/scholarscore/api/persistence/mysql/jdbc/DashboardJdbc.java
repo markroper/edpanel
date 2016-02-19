@@ -128,9 +128,12 @@ public class DashboardJdbc extends BaseJdbc implements DashboardPersistence {
         Dashboard d = selectDashboard(schoolId, dashboardId);
         for(Map.Entry<Integer, List<Report>> entry: reportsToCreate.entrySet()) {
             DashboardRow row = d.getRows().get(entry.getKey());
+            long rptPos = 0;
             for(Report rpt: entry.getValue()) {
                 rpt.setRowFk(row.getId());
+                rpt.setPosition(rptPos);
                 hibernateTemplate.merge(rpt);
+                rptPos++;
             }
         }
     }

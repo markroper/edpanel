@@ -81,7 +81,6 @@ public class DashboardControllerIntegrationTest extends IntegrationBase {
         referralReport.setChartQuery(referralQuery);
         referralReport.setClickTableQuery(referralClick);
         referralReport.setColumnDefs(defs);
-
         row1.setReports(new ArrayList<Report>(){{ add(referralReport); }});
         completeDash.setRows(new ArrayList<DashboardRow>(){{ add(row1); }});
 
@@ -90,6 +89,16 @@ public class DashboardControllerIntegrationTest extends IntegrationBase {
                 { "empty dashboard", emptyDash },
                 { "complete dashboard", completeDash }
         };
+    }
+
+    @Test
+    public void createAndUpdate() {
+        Object[][] inputs = createDashboardProvider();
+        Dashboard d = this.dashboardValidatingExecutor.create(
+                school.getId(), (Dashboard)inputs[0][1], "create empty dashboard");
+        d.setRows(((Dashboard)inputs[1][1]).getRows());
+        this.dashboardValidatingExecutor.replace(school.getId(), d.getId(), d, "Update");
+        this.dashboardValidatingExecutor.delete(school.getId(), d.getId(), "delete");
     }
 
     @Test(dataProvider = "createDashboardProvider")
