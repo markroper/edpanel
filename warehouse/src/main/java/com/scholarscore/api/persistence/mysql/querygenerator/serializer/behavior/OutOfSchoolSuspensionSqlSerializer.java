@@ -6,10 +6,11 @@ import com.scholarscore.models.HibernateConsts;
 /**
  * @author markroper on 11/28/15.
  */
-public class OutOfSchoolSuspensionSqlSerializer extends DemeritSqlSerializer {
+public class OutOfSchoolSuspensionSqlSerializer extends BehaviorSqlSerializer {
+
     @Override
-    public String toSelectInner() {
-        return "if(" + HibernateConsts.BEHAVIOR_TABLE + DOT + HibernateConsts.BEHAVIOR_CATEGORY + " = '" + BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION +
-        "', 1, 0)";
+    BehaviorCategory matchesBehavior() {
+        return BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION;
     }
+
 }

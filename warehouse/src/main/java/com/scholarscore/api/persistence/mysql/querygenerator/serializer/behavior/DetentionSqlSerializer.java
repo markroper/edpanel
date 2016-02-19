@@ -7,10 +7,11 @@ import com.scholarscore.models.query.Measure;
 /**
  * @author markroper on 11/28/15.
  */
-public class DetentionSqlSerializer extends DemeritSqlSerializer {
+public class DetentionSqlSerializer extends BehaviorSqlSerializer {
+
     @Override
-    public String toSelectInner() {
-        return "if(" + HibernateConsts.BEHAVIOR_TABLE + DOT + HibernateConsts.BEHAVIOR_CATEGORY + " = '" + BehaviorCategory.DETENTION +
-        "', 1, 0)";
+    BehaviorCategory matchesBehavior() {
+        return BehaviorCategory.DETENTION;
     }
+
 }
