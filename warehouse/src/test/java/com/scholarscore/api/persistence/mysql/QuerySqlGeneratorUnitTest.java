@@ -183,7 +183,8 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg FROM student_assignment LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id  ";
+                return "SELECT AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg \n" +
+                        "FROM student_assignment LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id  ";
             }
         };
 
@@ -526,7 +527,8 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT SUM(if(behavior.category = 'DETENTION', 1, 0)) as sum_detention_agg FROM behavior ";
+                return "SELECT SUM(if(behavior.category = 'DETENTION', 1, 0)) as sum_detention_agg \n" +
+                        "FROM behavior ";
             }
         };
         
