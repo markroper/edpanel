@@ -147,9 +147,9 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public Query buildQuery() {
                 Query assignmentGradesQuery  = new Query();
-                ArrayList<AggregateMeasure> assginmentMeasures = new ArrayList<>();
-                assginmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVG));
-                assignmentGradesQuery.setAggregateMeasures(assginmentMeasures);
+                ArrayList<AggregateMeasure> assignmentMeasures = new ArrayList<>();
+                assignmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVG));
+                assignmentGradesQuery.setAggregateMeasures(assignmentMeasures);
                 assignmentGradesQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
                 Expression assignmentWhereClause = new Expression(
                         new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)),
@@ -164,6 +164,28 @@ public class QuerySqlGeneratorUnitTest {
                 return "SELECT student.student_name, AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg FROM student LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id LEFT OUTER JOIN section ON section.section_id = assignment.section_fk WHERE  ( section.section_id  =  4 ) GROUP BY student.student_name";
             }
         };
+
+        TestQuery assignmentGradesNoDimensionsTestQuery = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Assignment Grades No Dimensions query";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query assignmentGradesQuery  = new Query();
+                ArrayList<AggregateMeasure> assignmentMeasures = new ArrayList<>();
+                assignmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVG));
+                assignmentGradesQuery.setAggregateMeasures(assignmentMeasures);
+                return assignmentGradesQuery;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg FROM student_assignment LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id  ";
+            }
+        };
+
         TestQuery homeworkCompletionTestQuery = new TestQuery() {
             @Override
             public String queryName() {
@@ -854,6 +876,7 @@ public class QuerySqlGeneratorUnitTest {
         return new Object[][] {
                 { courseGradeTestQuery },
                 { assignmentGradesTestQuery },
+                { assignmentGradesNoDimensionsTestQuery },
                 { homeworkCompletionTestQuery },
                 { homeworkSectionCompletionTestQuery },
                 { studentAttendanceQuery },
