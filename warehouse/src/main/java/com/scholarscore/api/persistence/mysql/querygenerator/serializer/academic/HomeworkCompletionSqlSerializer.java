@@ -57,7 +57,7 @@ public class HomeworkCompletionSqlSerializer extends BaseSqlSerializer implement
         return HibernateConsts.STUDENT_ASSIGNMENT_TABLE + " " +
                 LEFT_OUTER_JOIN + toTableName() + ON +
                 HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_FK + 
-                EQUALS + toTableName() + DOT + HibernateConsts.ASSIGNMENT_ID;
+                EQUALS + toTableName() + DOT + HibernateConsts.ASSIGNMENT_ID + " ";
     }
 
     @Override
