@@ -112,7 +112,7 @@ public abstract class QuerySqlGenerator {
         sqlBuilder.append(" \n");
         //WHERE CLAUSE
         if(null != q.getSubqueryFilter() && !q.getSubqueryFilter().isEmpty()) {
-            sqlBuilder.append("\nWHERE ");
+            sqlBuilder.append(WHERE);
             boolean first = true;
             for(SubqueryExpression entry: q.getSubqueryFilter()) {
                 Integer pos = entry.getPosition();

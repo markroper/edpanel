@@ -283,11 +283,10 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT school.school_id, SUM(if(attendance.attendance_status in ('ABSENT'), 1, 0)) as sum_attendance_agg " + 
-                        "FROM school " + 
-                        "LEFT OUTER JOIN school_day ON school.school_id = school_day.school_fk " + 
-                        "LEFT OUTER JOIN attendance ON school_day.school_day_id = attendance.school_day_fk " + 
-                        "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) GROUP BY school.school_id";
+                return "SELECT school.school_id, SUM(if(attendance.attendance_status in ('ABSENT'), 1, 0)) as sum_attendance_agg \n" +
+                        "FROM school LEFT OUTER JOIN school_day ON school.school_id = school_day.school_fk LEFT OUTER JOIN attendance ON school_day.school_day_id = attendance.school_day_fk \n" +
+                        "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) \n" +
+                        "GROUP BY school.school_id";
             }
         };
 
@@ -371,7 +370,8 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT COUNT(if(attendance.attendance_status in ('TARDY') AND attendance.attendance_type = 'SECTION', 1, 0)) as count_section_tardy_agg FROM attendance ";
+                return "SELECT COUNT(if(attendance.attendance_status in ('TARDY') AND attendance.attendance_type = 'SECTION', 1, 0)) as count_section_tardy_agg \n" +
+                        "FROM attendance ";
             }
         };
         
@@ -393,10 +393,8 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT student.student_user_fk, COUNT(if(attendance.attendance_status in ('TARDY') AND attendance.attendance_type = 'DAILY', 1, 0)) as count_tardy_agg " + 
-                        "FROM student " + 
-                        "LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " + 
-                        "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk " + 
+                return "SELECT student.student_user_fk, COUNT(if(attendance.attendance_status in ('TARDY') AND attendance.attendance_type = 'DAILY', 1, 0)) as count_tardy_agg \n" +
+                        "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk \n" +
                         "GROUP BY student.student_user_fk";
             }
         };
@@ -419,10 +417,8 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT student.student_user_fk, COUNT(if(attendance.attendance_status in ('ABSENT') AND attendance.attendance_type = 'DAILY', 1, 0)) as count_absence_agg " +
-                        "FROM student " +
-                        "LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " +
-                        "LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk " +
+                return "SELECT student.student_user_fk, COUNT(if(attendance.attendance_status in ('ABSENT') AND attendance.attendance_type = 'DAILY', 1, 0)) as count_absence_agg \n" +
+                        "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk \n" +
                         "GROUP BY student.student_user_fk";
             }
         };
@@ -485,7 +481,8 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT SUM(if(behavior.category = 'DEMERIT', 1, 0)) as sum_demerit_agg FROM behavior ";
+                return "SELECT SUM(if(behavior.category = 'DEMERIT', 1, 0)) as sum_demerit_agg \n" +
+                        "FROM behavior ";
             }
         };
 
@@ -523,9 +520,9 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT student.student_user_fk, SUM(if(behavior.category = 'MERIT', 1, 0)) as sum_merit_agg " +
-                        "FROM student LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk " +
-                        "WHERE  ( ( behavior.date  >  '2014-09-01 00:00:00.0' )  AND  ( student.student_user_fk  =  1 ) ) " +
+                return "SELECT student.student_user_fk, SUM(if(behavior.category = 'MERIT', 1, 0)) as sum_merit_agg \n" +
+                        "FROM student LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk \n" +
+                        "WHERE  ( ( behavior.date  >  '2014-09-01 00:00:00.0' )  AND  ( student.student_user_fk  =  1 ) ) \n" +
                         "GROUP BY student.student_user_fk";
             }
         };
@@ -548,9 +545,9 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT staff.staff_user_fk, SUM(if(behavior.category = 'DEMERIT', 1, 0)) as sum_demerit_agg " + 
-                        "FROM staff " + 
-                        "LEFT OUTER JOIN behavior ON staff.staff_user_fk = behavior.user_fk GROUP BY staff.staff_user_fk";
+                return "SELECT staff.staff_user_fk, SUM(if(behavior.category = 'DEMERIT', 1, 0)) as sum_demerit_agg \n" +
+                        "FROM staff LEFT OUTER JOIN behavior ON staff.staff_user_fk = behavior.user_fk \n" +
+                        "GROUP BY staff.staff_user_fk";
             }
         };
 
@@ -841,7 +838,6 @@ public class QuerySqlGeneratorUnitTest {
                 { dailyAbsenceTestQuery },
                 { demeritTestQuery },
                 { meritTestQuery },
-				{ behaviorTestQuery },
                 { demeritWithStaffTestQuery },
                 { demeritWithoutDimensionTestQuery },
                 { schoolNameTestQuery }, 

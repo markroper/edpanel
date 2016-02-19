@@ -110,4 +110,14 @@ public class DashboardRow implements Serializable {
                 && Objects.equals(this.dashboardFk, other.dashboardFk)
                 && Objects.equals(this.reports, other.reports);
     }
+
+    @Override
+    public String toString() {
+        return "DashboardRow{ (" + super.toString() + ") " +
+                "id=" + id +
+                ", dashboardFk=" + dashboardFk +
+                ", position=" + position +
+                ", reports=" + reports +
+                '}';
+    }
 }

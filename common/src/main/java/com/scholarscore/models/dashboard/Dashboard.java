@@ -39,6 +39,7 @@ public class Dashboard extends ApiModel {
     }
 
     public Dashboard(Dashboard d) {
+        super(d);
         this.schoolId = d.schoolId;
         this.userId = d.userId;
         if(null != d.getRows()) {
@@ -101,6 +102,9 @@ public class Dashboard extends ApiModel {
 
     @Override
     public boolean equals(Object obj) {
+        if(!super.equals(obj)) {
+            return false;
+        }
         if (this == obj) {
             return true;
         }
@@ -114,5 +118,14 @@ public class Dashboard extends ApiModel {
         return Objects.equals(this.schoolId, other.schoolId)
                 && Objects.equals(this.userId, other.userId)
                 && Objects.equals(this.rows, other.rows);
+    }
+
+    @Override
+    public String toString() {
+        return "Dashboard{ (super:" + super.toString() +")" +
+                "schoolId=" + schoolId +
+                ", userId=" + userId +
+                ", rows=" + rows +
+                '}';
     }
 }
