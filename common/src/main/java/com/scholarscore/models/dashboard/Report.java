@@ -47,6 +47,7 @@ public class Report extends ApiModel {
     }
 
     public Report(Report r) {
+        super(r);
         if(null != r.chartQuery) {
             this.chartQuery = new Query(r.chartQuery);
         }
@@ -148,6 +149,9 @@ public class Report extends ApiModel {
 
     @Override
     public boolean equals(Object obj) {
+        if(!super.equals(obj)) {
+            return false;
+        }
         if (this == obj) {
             return true;
         }
