@@ -144,9 +144,9 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public Query buildQuery() {
                 Query assignmentGradesQuery  = new Query();
-                ArrayList<AggregateMeasure> assginmentMeasures = new ArrayList<>();
-                assginmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVG));
-                assignmentGradesQuery.setAggregateMeasures(assginmentMeasures);
+                ArrayList<AggregateMeasure> assignmentMeasures = new ArrayList<>();
+                assignmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVG));
+                assignmentGradesQuery.setAggregateMeasures(assignmentMeasures);
                 assignmentGradesQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
                 Expression assignmentWhereClause = new Expression(
                         new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)),
@@ -165,6 +165,28 @@ public class QuerySqlGeneratorUnitTest {
                         "GROUP BY student.student_name";
             }
         };
+
+        TestQuery assignmentGradesNoDimensionsTestQuery = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Assignment Grades No Dimensions query";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query assignmentGradesQuery  = new Query();
+                ArrayList<AggregateMeasure> assignmentMeasures = new ArrayList<>();
+                assignmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVG));
+                assignmentGradesQuery.setAggregateMeasures(assignmentMeasures);
+                return assignmentGradesQuery;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg FROM student_assignment LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id  ";
+            }
+        };
+
         TestQuery homeworkCompletionTestQuery = new TestQuery() {
             @Override
             public String queryName() {
@@ -467,7 +489,7 @@ public class QuerySqlGeneratorUnitTest {
         TestQuery demeritWithoutDimensionTestQuery = new TestQuery() {
             @Override
             public String queryName() {
-                return "Demerit w/ only measure, no dimensiontest query";
+                return "Demerit w/ only measure, no dimension test query";
             }
 
             @Override
@@ -486,6 +508,28 @@ public class QuerySqlGeneratorUnitTest {
             }
         };
 
+
+        TestQuery detentionWithoutDimensionTestQuery = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Detention w/ only measure, no dimension test query";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query behaviorQuery = new Query();
+                ArrayList<AggregateMeasure> behaviorMeasures = new ArrayList<>();
+                behaviorMeasures.add(new AggregateMeasure(Measure.DETENTION, AggregateFunction.SUM));
+                behaviorQuery.setAggregateMeasures(behaviorMeasures);
+                return behaviorQuery;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT SUM(if(behavior.category = 'DETENTION', 1, 0)) as sum_detention_agg FROM behavior ";
+            }
+        };
+        
         TestQuery meritTestQuery = new TestQuery() {
             @Override
             public String queryName() {
@@ -827,6 +871,7 @@ public class QuerySqlGeneratorUnitTest {
         return new Object[][] {
                 { courseGradeTestQuery },
                 { assignmentGradesTestQuery },
+                { assignmentGradesNoDimensionsTestQuery },
                 { homeworkCompletionTestQuery },
                 { homeworkSectionCompletionTestQuery },
                 { studentAttendanceQuery },
@@ -840,6 +885,7 @@ public class QuerySqlGeneratorUnitTest {
                 { meritTestQuery },
                 { demeritWithStaffTestQuery },
                 { demeritWithoutDimensionTestQuery },
+                { detentionWithoutDimensionTestQuery },
                 { schoolNameTestQuery }, 
                 { gpaBucketTestQuery },
                 { currGpaTestQuery },
