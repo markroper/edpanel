@@ -36,4 +36,8 @@ public class AssignmentGradeSqlSerializer extends BaseSqlSerializer implements M
         return HibernateConsts.STUDENT_ASSIGNMENT_TABLE;
     }
 
+    @Override
+    public String optionalJoinedTable() {
+        return HibernateConsts.ASSIGNMENT_TABLE;
+    }
 }

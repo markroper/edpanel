@@ -23,9 +23,13 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
 
     @Override
     public String toFromClause() {
-        return toTableName();
+        String optClause = (null == optionalJoinedTable() ? "" : joinTable(optionalJoinedTable()));
+        return toTableName() + " " + optClause;
     }
 
+    // dear serializers -- return something other than null and it shall be joined upon
+    public String optionalJoinedTable() { return null; } 
+    
     // TODO Jordan: this method is only required today because the Behavior table has a FK to staff (should be staff_fk)
     // but instead this field is named user_fk. Change it and this can be removed!
     protected String getTableNameFk(String tableName) {
