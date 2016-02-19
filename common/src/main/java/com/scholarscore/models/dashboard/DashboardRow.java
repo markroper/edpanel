@@ -83,6 +83,7 @@ public class DashboardRow implements Serializable {
     }
 
     @Column(name = HibernateConsts.DASHBOARD_FK)
+    @JsonIgnore
     public Long getDashboardFk() {
         return dashboardFk;
     }

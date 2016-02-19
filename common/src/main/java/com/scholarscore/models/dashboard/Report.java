@@ -97,6 +97,7 @@ public class Report extends ApiModel {
     }
 
     @Column(name = HibernateConsts.DASHBOARD_ROW_FK, nullable = false)
+    @JsonIgnore
     public Long getRowFk() {
         return rowFk;
     }
