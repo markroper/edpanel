@@ -40,7 +40,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Test(groups = { "unit" })
 public class QuerySqlGeneratorUnitTest {
@@ -186,6 +188,27 @@ public class QuerySqlGeneratorUnitTest {
             }
         };
 
+        TestQuery courseGradesNoDimensionsTestQuery = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Course Grades No Dimensions query";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query assignmentGradesQuery  = new Query();
+                ArrayList<AggregateMeasure> assignmentMeasures = new ArrayList<>();
+                assignmentMeasures.add(new AggregateMeasure(Measure.COURSE_GRADE, AggregateFunction.AVG));
+                assignmentGradesQuery.setAggregateMeasures(assignmentMeasures);
+                return assignmentGradesQuery;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT AVG(section_grade.grade) as avg_course_grade_agg FROM student_section_grade LEFT OUTER JOIN section_grade ON student_section_grade.section_grade_fk = section_grade.section_grade_id ";
+            }
+        };
+        
         TestQuery homeworkCompletionTestQuery = new TestQuery() {
             @Override
             public String queryName() {
@@ -697,6 +720,30 @@ public class QuerySqlGeneratorUnitTest {
 
             }
         };
+        TestQuery currGpaWithDimensionsTestQuery = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Current GPA with Dimensions Test Query";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query currGpaQuery = new Query();
+                AggregateMeasure currGpaMeasure = new AggregateMeasure(Measure.CURRENT_GPA, AggregateFunction.COUNT);
+                ArrayList<AggregateMeasure> currGpaMeasures = new ArrayList<>();
+                currGpaMeasures.add(currGpaMeasure);
+                currGpaQuery.setAggregateMeasures(currGpaMeasures);
+                currGpaQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
+                return currGpaQuery;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT student.student_name, COUNT(gpa.gpa_score) as count_current_gpa_agg FROM student LEFT OUTER JOIN current_gpa ON student.student_user_fk = current_gpa.student_fk LEFT OUTER JOIN gpa ON current_gpa.gpa_fk = gpa.gpa_id GROUP BY student.student_name";
+
+            }
+        };
+
         TestQuery courseGradesBucketedTestQuery = new TestQuery() {
             @Override
             public String queryName() {
@@ -877,6 +924,7 @@ public class QuerySqlGeneratorUnitTest {
                 { courseGradeTestQuery },
                 { assignmentGradesTestQuery },
                 { assignmentGradesNoDimensionsTestQuery },
+                { courseGradesNoDimensionsTestQuery },
                 { homeworkCompletionTestQuery },
                 { homeworkSectionCompletionTestQuery },
                 { studentAttendanceQuery },
@@ -891,11 +939,12 @@ public class QuerySqlGeneratorUnitTest {
                 { demeritWithStaffTestQuery },
                 { demeritWithoutDimensionTestQuery },
                 { detentionWithoutDimensionTestQuery },
-                { schoolNameTestQuery }, 
+                { schoolNameTestQuery },
                 { gpaBucketTestQuery },
                 { currGpaTestQuery },
+                { currGpaWithDimensionsTestQuery },
                 { courseGradesBucketedTestQuery },
-                { requiresMultipleJoinsTestQuery }, 
+                { requiresMultipleJoinsTestQuery },
                 { queryIncludingMultipleTablesUsingHints },
                 { referralTestQuery }
         };
@@ -918,7 +967,7 @@ public class QuerySqlGeneratorUnitTest {
        if(null == levValue) {
            Assert.assertEquals(sql.getSql(), expectedSql, msg);
        } else {
-           Assert.assertTrue(StringUtils.getLevenshteinDistance(sql.getSql(), expectedSql) <= levValue);
+           Assert.assertTrue(StringUtils.getLevenshteinDistance(sql.getSql(), expectedSql) <= levValue, msg);
        }
     }
 }

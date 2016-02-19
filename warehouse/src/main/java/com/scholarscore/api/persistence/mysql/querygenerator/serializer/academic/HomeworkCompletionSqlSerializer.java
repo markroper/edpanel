@@ -36,7 +36,7 @@ public class HomeworkCompletionSqlSerializer extends BaseSqlSerializer implement
 
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         if (dimTableName.equals(HibernateConsts.SECTION_TABLE)) {
-            return super.toJoinClause(dimToJoinUpon) +
+            return super.toJoinClause(Dimension.SECTION) +
                     LEFT_OUTER_JOIN + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + ON +
                     toTableName() + DOT + HibernateConsts.ASSIGNMENT_ID +
                     EQUALS +
