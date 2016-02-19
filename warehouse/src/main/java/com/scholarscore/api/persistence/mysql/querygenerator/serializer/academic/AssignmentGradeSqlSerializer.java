@@ -14,23 +14,9 @@ public class AssignmentGradeSqlSerializer extends BaseSqlSerializer implements M
         return
             toTableName() + DOT + HibernateConsts.STUDENT_ASSIGNMENT_AWARDED_POINTS +
             " / " +
-            HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_AVAILABLE_POINTS;
-    }
-
-    @Override
-    public String toJoinClause(Dimension dimToJoinUpon) {
-        return super.toJoinClause(dimToJoinUpon) + joinStudentAssignmentFragment();
-    }
-
-    private String joinStudentAssignmentFragment() {
-        return joinTable(HibernateConsts.ASSIGNMENT_TABLE);
+            optionalJoinedTable() + DOT + HibernateConsts.ASSIGNMENT_AVAILABLE_POINTS;
     }
     
-    @Override
-    public String toFromClause() {
-        return toTableName() + " " + joinStudentAssignmentFragment();
-    }
-
     @Override
     public String toTableName() {
         return HibernateConsts.STUDENT_ASSIGNMENT_TABLE;
