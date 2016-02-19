@@ -31,6 +31,12 @@ public class MeasureSqlSerializerFactory {
                 return new GpaSqlSerializer();
             case CURRENT_GPA:
                 return new CurrentGpaSqlSerializer();
+            case DETENTION:
+                return new DetentionSqlSerializer();
+            case IN_SCHOOL_SUSPENSION:
+                return new InSchoolSuspensionSqlSerializer();
+            case OUT_OF_SCHOOL_SUSPENSION:
+                return new OutOfSchoolSuspensionSqlSerializer();
             default:
                 return null;
         }
