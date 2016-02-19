@@ -182,7 +182,7 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg FROM student_assignment LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id  ";
+                return "SELECT AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg FROM student_assignment LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id ";
             }
         };
 
