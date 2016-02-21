@@ -230,7 +230,10 @@ public class DashboardManagerImpl implements DashboardManager {
         AggregateMeasure failingMeasure = new AggregateMeasure(Measure.COURSE_GRADE, AggregateFunction.COUNT);
         failingMeasures.add(failingMeasure);
         failingQ.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
-
+        List<SubqueryColumnRef> failingWrappers = new ArrayList<>();
+        failingWrappers.add(new SubqueryColumnRef(-1, AggregateFunction.COUNT));
+        failingWrappers.add(new SubqueryColumnRef(1, null));
+        failingQ.setSubqueryColumnsByPosition(failingWrappers);
         Expression sc = new Expression(
                 new MeasureOperand(new MeasureField(Measure.COURSE_GRADE, CourseGradeMeasure.GRADE)),
                 ComparisonOperator.LESS_THAN_OR_EQUAL,
@@ -238,7 +241,7 @@ public class DashboardManagerImpl implements DashboardManager {
         );
         Expression startDate = new Expression(
                 new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.START_DATE)),
-                ComparisonOperator.LESS_THAN_OR_EQUAL,
+                ComparisonOperator.GREATER_THAN_OR_EQUAL,
                 new DatePlaceholder("${startDate}")
         );
         Expression endDate = new Expression(
@@ -251,6 +254,22 @@ public class DashboardManagerImpl implements DashboardManager {
         failingQ.setFilter(new Expression(whereClause, BinaryOperator.AND, scoreAndDate));
         failingClasses.setChartQuery(failingQ);
         row1.getReports().add(failingClasses);
+
+        Query failingClick = new Query();
+        failingClick.setAggregateMeasures(failingMeasures);
+        failingClick.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
+        failingClick.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
+        Expression failingHaving = new Expression(
+                new MeasureOperand(new MeasureField(Measure.COURSE_GRADE, AggregateFunction.COUNT.name())),
+                ComparisonOperator.EQUAL,
+                new NumericPlaceholder("${clickValue}"));
+        failingClick.setFilter(new Expression(whereClause, BinaryOperator.AND, scoreAndDate));
+        failingClick.setHaving(failingHaving);
+        List<ColumnDef> failingDefs = new ArrayList<>();
+        failingDefs.add(new ColumnDef("values[1]", "Name"));
+        failingDefs.add(new ColumnDef("values[2]", "Failing Classes"));
+        failingClasses.setColumnDefs(failingDefs);
+        failingClasses.setClickTableQuery(failingClick);
 
         //Fill up row 2 with 1 report
         Report meritDemerit = new Report();
