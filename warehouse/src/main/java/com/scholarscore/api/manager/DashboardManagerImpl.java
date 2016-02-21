@@ -131,7 +131,7 @@ public class DashboardManagerImpl implements DashboardManager {
 
         //Fill up row 1 with 3 reports
         Report gpa = new Report();
-        gpa.setName("Student Counts by GPA");
+        gpa.setName("Students by GPA Range");
         Query gpaBucketQuery = new Query();
         ArrayList<AggregateMeasure> gpaMeasures = new ArrayList<>();
         gpaBucketQuery.setAggregateMeasures(gpaMeasures);
@@ -187,7 +187,7 @@ public class DashboardManagerImpl implements DashboardManager {
         //ATTENDANCE QUERY
         Report attendance = new Report();
         Query attendanceQ = new Query();
-        attendance.setName("Number of Students by Absence");
+        attendance.setName("Students by Absences");
         ArrayList<AggregateMeasure> attendanceMeasures = new ArrayList<>();
         attendanceQ.setAggregateMeasures(attendanceMeasures);
         AggregateMeasure attendanceMeasure = new AggregateMeasure(Measure.ATTENDANCE, AggregateFunction.COUNT);
@@ -224,7 +224,7 @@ public class DashboardManagerImpl implements DashboardManager {
         //FAILING COURSES QUERY
         Report failingClasses = new Report();
         Query failingQ = new Query();
-        failingClasses.setName("Number of Students by Failing Classes");
+        failingClasses.setName("Count of Students Failing Classes");
         ArrayList<AggregateMeasure> failingMeasures = new ArrayList<>();
         failingQ.setAggregateMeasures(failingMeasures);
         AggregateMeasure failingMeasure = new AggregateMeasure(Measure.COURSE_GRADE, AggregateFunction.COUNT);
@@ -237,7 +237,7 @@ public class DashboardManagerImpl implements DashboardManager {
         Expression sc = new Expression(
                 new MeasureOperand(new MeasureField(Measure.COURSE_GRADE, CourseGradeMeasure.GRADE)),
                 ComparisonOperator.LESS_THAN_OR_EQUAL,
-                new NumericOperand(68D)
+                new NumericOperand(70D)
         );
         Expression startDate = new Expression(
                 new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.START_DATE)),
@@ -273,7 +273,7 @@ public class DashboardManagerImpl implements DashboardManager {
 
         //Fill up row 2 with 1 report
         Report meritDemerit = new Report();
-        meritDemerit.setName("Merit & Demerit Counts by Teacher");
+        meritDemerit.setName("Demerit & Merit Counts by Staff");
         Query meritDemeritQ = new Query();
         AggregateMeasure meritMeasure = new AggregateMeasure(Measure.MERIT, AggregateFunction.SUM);
         AggregateMeasure demeritMeasure = new AggregateMeasure(Measure.DEMERIT, AggregateFunction.SUM);
@@ -289,7 +289,7 @@ public class DashboardManagerImpl implements DashboardManager {
 
         //Row 3 with one report
         Report ref = new Report();
-        ref.setName("Counts of Students by Number of Referrals");
+        ref.setName("Number of Students by Referral Count");
         Query referralQuery = new Query();
         AggregateMeasure referralMeasure = new AggregateMeasure(Measure.REFERRAL, AggregateFunction.SUM);
         List<AggregateMeasure> referrals = new ArrayList<>();
