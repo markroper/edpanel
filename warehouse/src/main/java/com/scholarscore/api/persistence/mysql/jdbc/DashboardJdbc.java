@@ -20,10 +20,10 @@ import java.util.Map;
 @Transactional
 public class DashboardJdbc extends BaseJdbc implements DashboardPersistence {
     public static final String DASH_HQL = "from dashboard d " +
-            "join fetch rows r " +
+            "join fetch d.rows r " +
             "join fetch r.reports rs " +
             "join fetch rs.chartQuery " +
-            "join fetch rs.clickTableQuery";
+            "left join fetch rs.clickTableQuery";
     @Autowired
     private HibernateTemplate hibernateTemplate;
 

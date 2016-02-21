@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface MeasureSqlSerializer {
     public static final String LEFT_OUTER_JOIN = "LEFT OUTER JOIN ";
+    public static final String INNER_JOIN = "INNER JOIN ";
     public static final String ID_COL_SUFFIX = "_id";
     public static final String FK_COL_SUFFIX = "_fk";
     public static final String ON = " ON ";

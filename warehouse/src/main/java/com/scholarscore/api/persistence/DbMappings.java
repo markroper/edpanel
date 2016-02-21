@@ -8,6 +8,7 @@ import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.dimension.*;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
 import com.scholarscore.models.query.measure.BehaviorMeasure;
+import com.scholarscore.models.query.measure.CurrentGpaMeasure;
 import com.scholarscore.models.query.measure.GpaMeasure;
 
 import java.sql.Timestamp;
@@ -33,7 +34,7 @@ public class DbMappings {
                put(Measure.ABSENCE, HibernateConsts.ATTENDANCE_TABLE);
                put(Measure.TARDY, HibernateConsts.ATTENDANCE_TABLE);
                put(Measure.GPA, HibernateConsts.GPA_TABLE);
-               put(Measure.CURRENT_GPA, HibernateConsts.CURRENT_GPA_TABLE);
+               put(Measure.CURRENT_GPA, HibernateConsts.GPA_TABLE);
            }};
    public static final Map<Measure, String> MEASURE_TO_COL_NAME = 
            new HashMap<Measure, String>() {{
@@ -47,6 +48,11 @@ public class DbMappings {
                put(new MeasureField(Measure.GPA, GpaMeasure.DATE), HibernateConsts.GPA_CALCULATION_DATE);
                put(new MeasureField(Measure.GPA, GpaMeasure.STUDENT), HibernateConsts.STUDENT_FK);
                put(new MeasureField(Measure.GPA, GpaMeasure.TYPE), HibernateConsts.GPA_TYPE);
+               put(new MeasureField(Measure.GPA, CurrentGpaMeasure.GPA), HibernateConsts.GPA_SCORE);
+               put(new MeasureField(Measure.CURRENT_GPA, GpaMeasure.DATE), HibernateConsts.GPA_CALCULATION_DATE);
+               put(new MeasureField(Measure.CURRENT_GPA, GpaMeasure.STUDENT), HibernateConsts.STUDENT_FK);
+               put(new MeasureField(Measure.CURRENT_GPA, GpaMeasure.TYPE), HibernateConsts.GPA_TYPE);
+               put(new MeasureField(Measure.CURRENT_GPA, CurrentGpaMeasure.GPA), HibernateConsts.GPA_SCORE);
                
                // attendance (true/false for if section should be included)
                populateAttendanceTypeMeasureToColNames(this, Measure.ATTENDANCE, true);
