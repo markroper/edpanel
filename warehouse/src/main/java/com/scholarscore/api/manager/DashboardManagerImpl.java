@@ -22,9 +22,11 @@ import com.scholarscore.models.query.SubqueryColumnRef;
 import com.scholarscore.models.query.bucket.AggregationBucket;
 import com.scholarscore.models.query.bucket.NumericBucket;
 import com.scholarscore.models.query.dimension.SchoolDimension;
+import com.scholarscore.models.query.dimension.SectionDimension;
 import com.scholarscore.models.query.dimension.StudentDimension;
 import com.scholarscore.models.query.dimension.TeacherDimension;
 import com.scholarscore.models.query.expressions.Expression;
+import com.scholarscore.models.query.expressions.operands.DatePlaceholder;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
 import com.scholarscore.models.query.expressions.operands.MeasureOperand;
 import com.scholarscore.models.query.expressions.operands.NumericOperand;
@@ -33,6 +35,7 @@ import com.scholarscore.models.query.expressions.operands.StringOperand;
 import com.scholarscore.models.query.expressions.operators.BinaryOperator;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
+import com.scholarscore.models.query.measure.CourseGradeMeasure;
 import com.scholarscore.models.query.measure.CurrentGpaMeasure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -218,11 +221,36 @@ public class DashboardManagerImpl implements DashboardManager {
         attDefs.add(new ColumnDef("values[2]", "Absences"));
         attendance.setColumnDefs(attDefs);
         row1.getReports().add(attendance);
-
-
-
         //FAILING COURSES QUERY
         Report failingClasses = new Report();
+        Query failingQ = new Query();
+        failingClasses.setName("Number of Students by Failing Classes");
+        ArrayList<AggregateMeasure> failingMeasures = new ArrayList<>();
+        failingQ.setAggregateMeasures(failingMeasures);
+        AggregateMeasure failingMeasure = new AggregateMeasure(Measure.COURSE_GRADE, AggregateFunction.COUNT);
+        failingMeasures.add(failingMeasure);
+        failingQ.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
+
+        Expression sc = new Expression(
+                new MeasureOperand(new MeasureField(Measure.COURSE_GRADE, CourseGradeMeasure.GRADE)),
+                ComparisonOperator.LESS_THAN_OR_EQUAL,
+                new NumericOperand(68D)
+        );
+        Expression startDate = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.START_DATE)),
+                ComparisonOperator.LESS_THAN_OR_EQUAL,
+                new DatePlaceholder("${startDate}")
+        );
+        Expression endDate = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.START_DATE)),
+                ComparisonOperator.LESS_THAN_OR_EQUAL,
+                new DatePlaceholder("${endDate}")
+        );
+        Expression dateRange = new Expression(startDate, BinaryOperator.AND, endDate);
+        Expression scoreAndDate = new Expression(dateRange, BinaryOperator.AND, sc);
+        failingQ.setFilter(new Expression(whereClause, BinaryOperator.AND, scoreAndDate));
+        failingClasses.setChartQuery(failingQ);
+        row1.getReports().add(failingClasses);
 
         //Fill up row 2 with 1 report
         Report meritDemerit = new Report();
