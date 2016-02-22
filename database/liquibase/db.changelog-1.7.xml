@@ -103,6 +103,14 @@
                     type="blob"
                     remarks="represents the display configuration for the click-through query results">
             </column>
+            <column name="dashboard_report_support_date_filter"
+                    type="bit(1)"
+                    remarks="True if the report supports date filtering">
+            </column>
+            <column name="dashboard_report_support_demographic_filter"
+                    type="bit(1)"
+                    remarks="True if the report supports student demographic filtering">
+            </column>
         </createTable>
         <addForeignKeyConstraint baseTableName="dashboard_report"
                                  baseColumnNames="dashboard_row_fk"

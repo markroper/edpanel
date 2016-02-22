@@ -35,6 +35,7 @@ import com.scholarscore.models.query.expressions.operands.StringOperand;
 import com.scholarscore.models.query.expressions.operators.BinaryOperator;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
+import com.scholarscore.models.query.measure.BehaviorMeasure;
 import com.scholarscore.models.query.measure.CourseGradeMeasure;
 import com.scholarscore.models.query.measure.CurrentGpaMeasure;
 import org.slf4j.Logger;
@@ -131,6 +132,7 @@ public class DashboardManagerImpl implements DashboardManager {
 
         //Fill up row 1 with 3 reports
         Report gpa = new Report();
+        gpa.setSupportDemographicFilter(true);
         gpa.setName("Students by GPA Range");
         Query gpaBucketQuery = new Query();
         ArrayList<AggregateMeasure> gpaMeasures = new ArrayList<>();
@@ -186,6 +188,8 @@ public class DashboardManagerImpl implements DashboardManager {
         row1.getReports().add(gpa);
         //ATTENDANCE QUERY
         Report attendance = new Report();
+        attendance.setSupportDemographicFilter(true);
+        attendance.setSupportDateFilter(true);
         Query attendanceQ = new Query();
         attendance.setName("Students by Absences");
         ArrayList<AggregateMeasure> attendanceMeasures = new ArrayList<>();
@@ -202,13 +206,26 @@ public class DashboardManagerImpl implements DashboardManager {
                 ComparisonOperator.EQUAL,
                 new StringOperand(AttendanceTypes.DAILY.name())
         );
-        attendanceQ.setFilter(new Expression(whereClause, BinaryOperator.AND, attType));
+        Expression dateMin = new Expression(
+                new MeasureOperand(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.DATE)),
+                ComparisonOperator.GREATER_THAN_OR_EQUAL,
+                new DatePlaceholder("${startDate}")
+        );
+        Expression dateMax = new Expression(
+                new MeasureOperand(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.DATE)),
+                ComparisonOperator.LESS_THAN_OR_EQUAL,
+                new DatePlaceholder("${endDate}")
+        );
+        Expression dateExp = new Expression(dateMin, BinaryOperator.AND, dateMax);
+        Expression dateAndAtt = new Expression(dateExp, BinaryOperator.AND, attType);
+        Expression attendanceFilter = new Expression(whereClause, BinaryOperator.AND, dateAndAtt);
+        attendanceQ.setFilter(attendanceFilter);
         attendance.setChartQuery(attendanceQ);
         Query attendanceClick = new Query();
         attendanceClick.setAggregateMeasures(attendanceMeasures);
         attendanceClick.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
         attendanceClick.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
-        attendanceClick.setFilter(new Expression(whereClause, BinaryOperator.AND, attType));
+        attendanceClick.setFilter(attendanceFilter);
         Expression attHaving = new Expression(
                 new MeasureOperand(new MeasureField(Measure.ATTENDANCE, AggregateFunction.SUM.name())),
                 ComparisonOperator.EQUAL,
@@ -221,8 +238,11 @@ public class DashboardManagerImpl implements DashboardManager {
         attDefs.add(new ColumnDef("values[2]", "Absences"));
         attendance.setColumnDefs(attDefs);
         row1.getReports().add(attendance);
+
         //FAILING COURSES QUERY
         Report failingClasses = new Report();
+        failingClasses.setSupportDemographicFilter(true);
+        failingClasses.setSupportDateFilter(true);
         Query failingQ = new Query();
         failingClasses.setName("Count of Students Failing Classes");
         ArrayList<AggregateMeasure> failingMeasures = new ArrayList<>();
@@ -289,6 +309,8 @@ public class DashboardManagerImpl implements DashboardManager {
 
         //Row 3 with one report
         Report ref = new Report();
+        ref.setSupportDemographicFilter(true);
+        ref.setSupportDateFilter(true);
         ref.setName("Number of Students by Referral Count");
         Query referralQuery = new Query();
         AggregateMeasure referralMeasure = new AggregateMeasure(Measure.REFERRAL, AggregateFunction.SUM);
@@ -300,7 +322,19 @@ public class DashboardManagerImpl implements DashboardManager {
         referralWrappers.add(new SubqueryColumnRef(-1, AggregateFunction.COUNT));
         referralWrappers.add(new SubqueryColumnRef(1, null));
         referralQuery.setSubqueryColumnsByPosition(referralWrappers);
-        referralQuery.setFilter(whereClause);
+        Expression refStart = new Expression(
+                new MeasureOperand(new MeasureField(Measure.REFERRAL, BehaviorMeasure.DATE)),
+                ComparisonOperator.GREATER_THAN_OR_EQUAL,
+                new DatePlaceholder("${startDate}")
+        );
+        Expression refEnd = new Expression(
+                new MeasureOperand(new MeasureField(Measure.REFERRAL, BehaviorMeasure.DATE)),
+                ComparisonOperator.LESS_THAN_OR_EQUAL,
+                new DatePlaceholder("${endDate}")
+        );
+        Expression refRange = new Expression(refStart, BinaryOperator.AND, refEnd);
+        Expression refExp = new Expression(whereClause, BinaryOperator.AND, refRange);
+        referralQuery.setFilter(refExp);
         ref.setChartQuery(referralQuery);
 
         Query refClick = new Query();
@@ -311,7 +345,7 @@ public class DashboardManagerImpl implements DashboardManager {
                 new MeasureOperand(new MeasureField(Measure.REFERRAL, AggregateFunction.SUM.name())),
                 ComparisonOperator.EQUAL,
                 new NumericPlaceholder("${clickValue}"));
-        refClick.setFilter(whereClause);
+        refClick.setFilter(refExp);
         refClick.setHaving(having);
         ref.setClickTableQuery(refClick);
 
