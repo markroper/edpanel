@@ -271,7 +271,7 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT student.student_user_fk, SUM(if(attendance.attendance_status in ('ABSENT'), 1, 0)) as sum_attendance_agg \n" +
+                return "SELECT student.student_user_fk, SUM(if(attendance.attendance_status in ('ABSENT'), 1, null)) as sum_attendance_agg \n" +
                         "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk \n" +
                         "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) \n" +
                         "GROUP BY student.student_user_fk";
@@ -306,7 +306,7 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT school.school_id, SUM(if(attendance.attendance_status in ('ABSENT'), 1, 0)) as sum_attendance_agg \n" +
+                return "SELECT school.school_id, SUM(if(attendance.attendance_status in ('ABSENT'), 1, null)) as sum_attendance_agg \n" +
                         "FROM school LEFT OUTER JOIN school_day ON school.school_id = school_day.school_fk LEFT OUTER JOIN attendance ON school_day.school_day_id = attendance.school_day_fk \n" +
                         "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) \n" +
                         "GROUP BY school.school_id";
@@ -688,7 +688,7 @@ public class QuerySqlGeneratorUnitTest {
                         "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
                         "ELSE NULL \n" +
                         "END as count_current_gpa_group \n" +
-                        "FROM current_gpa LEFT OUTER JOIN gpa ON gpa.gpa_id = current_gpa.gpa_fk \n" +
+                        "FROM current_gpa INNER JOIN current_gpa ON gpa.gpa_id = current_gpa.gpa_fk \n" +
                         "GROUP BY count_current_gpa_group";
             }
         };

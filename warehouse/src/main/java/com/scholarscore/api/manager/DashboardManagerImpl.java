@@ -139,12 +139,12 @@ public class DashboardManagerImpl implements DashboardManager {
         gpaBucketQuery.setAggregateMeasures(gpaMeasures);
         AggregateMeasure gpaMeasure = new AggregateMeasure(Measure.CURRENT_GPA, AggregateFunction.COUNT);
         List<AggregationBucket> buckets = new ArrayList<>();
-        buckets.add(new NumericBucket(0D, 1D, "0-1"));
-        buckets.add(new NumericBucket(1D, 2D, "1-2"));
-        buckets.add(new NumericBucket(2D, 2.5D, "2-2.5"));
-        buckets.add(new NumericBucket(2.5D, 3D, "2.5-3"));
-        buckets.add(new NumericBucket(3D, 3.5D, "3-3.5"));
-        buckets.add(new NumericBucket(3.5D, 4D, "3.5-4"));
+        buckets.add(new NumericBucket(0D, 1D, "0 - 1"));
+        buckets.add(new NumericBucket(1D, 2D, "1 - 2"));
+        buckets.add(new NumericBucket(2D, 2.5D, "2 - 2.5"));
+        buckets.add(new NumericBucket(2.5D, 3D, "2.5 - 3"));
+        buckets.add(new NumericBucket(3D, 3.5D, "3 - 3.5"));
+        buckets.add(new NumericBucket(3.5D, 4D, "3.5 - 4"));
         buckets.add(new NumericBucket(4D, null, "4+"));
         gpaMeasure.setBuckets(buckets);
         gpaMeasures.add(gpaMeasure);
