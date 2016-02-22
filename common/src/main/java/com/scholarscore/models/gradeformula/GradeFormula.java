@@ -137,6 +137,21 @@ public class GradeFormula implements Serializable {
         return 1D;
     }
 
+    public Map<String, Double> calculateCategoryGrades(
+            Set<StudentAssignment> studentAssignments, LocalDate start, LocalDate end) {
+        if(null == start && null == end) {
+            return calculateCategoryGrades(studentAssignments);
+        }
+        Set<StudentAssignment> subset = new HashSet<>();
+        for(StudentAssignment sa : studentAssignments) {
+            if((null == start || sa.getAssignment().getDueDate().isAfter(start.minusDays(1))) &&
+                    (null == end || sa.getAssignment().getDueDate().isBefore(end.plusDays(1)))) {
+                subset.add(sa);
+            }
+        }
+        return calculateCategoryGrades(subset);
+    }
+
     public Map<String, Double> calculateCategoryGrades(Set<StudentAssignment> studentAssignments) {
         Double numerator = 0D;
         Double denominator = 0D;

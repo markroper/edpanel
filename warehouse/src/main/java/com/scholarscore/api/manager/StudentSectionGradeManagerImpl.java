@@ -144,7 +144,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
     @Override
     @SuppressWarnings("unchecked")
     public ServiceResponse<SectionGradeWithProgression> getStudentSectionGradeByWeek(
-            long schoolId, long yearId, long termId, long sectionId, long studentId) {
+            long schoolId, long yearId, long termId, long sectionId, long studentId, LocalDate categoryStart, LocalDate categoryEnd) {
         StatusCode code = studentSectionGradeExists(
                 schoolId, yearId, termId, sectionId, studentId);
         if(!code.isOK()) {
@@ -178,7 +178,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                 }
             }
             ArrayList<StudentAssignment> assignments = (ArrayList<StudentAssignment>)assignmentResp.getValue();
-            gradeWithProgression.setCurrentCategoryGrades(formula.calculateCategoryGrades(new HashSet<>(assignments)));
+            gradeWithProgression.setCurrentCategoryGrades(formula.calculateCategoryGrades(new HashSet<>(assignments), categoryStart, categoryEnd));
             //Sort by due date
             LocalDate currentLastDayOfWeek = null;
             int i = 1;
