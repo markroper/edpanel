@@ -41,6 +41,8 @@ public class Report extends ApiModel {
     protected List<ColumnDef> columnDefs;
     protected Long position;
     protected Long rowFk;
+    protected Boolean supportDateFilter;
+    protected Boolean supportDemographicFilter;
 
     public Report() {
 
@@ -57,7 +59,28 @@ public class Report extends ApiModel {
         this.rowFk = r.rowFk;
         this.columnDefs = r.getColumnDefs();
         this.position = r.getPosition();
+        this.supportDateFilter = r.getSupportDateFilter();
+        this.supportDemographicFilter = r.getSupportDemographicFilter();
     }
+
+    @Column(name = HibernateConsts.DASHBOARD_REPORT_SUPPORT_DATE_FILTER)
+    public Boolean getSupportDateFilter() {
+        return supportDateFilter;
+    }
+
+    public void setSupportDateFilter(Boolean supportDateFilter) {
+        this.supportDateFilter = supportDateFilter;
+    }
+
+    @Column(name = HibernateConsts.DASHBOARD_REPORT_SUPPORT_DEMOGRAPHIC_FILTER)
+    public Boolean getSupportDemographicFilter() {
+        return supportDemographicFilter;
+    }
+
+    public void setSupportDemographicFilter(Boolean supportDemographicFilter) {
+        this.supportDemographicFilter = supportDemographicFilter;
+    }
+
     @Override
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -145,7 +168,8 @@ public class Report extends ApiModel {
 
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(chartQuery, clickTableQuery, columnDefs, position, rowFk);
+        return 31 * super.hashCode() + Objects.hash(chartQuery, clickTableQuery, columnDefs,
+                position, rowFk, supportDateFilter, supportDemographicFilter);
     }
 
     @Override
@@ -167,6 +191,8 @@ public class Report extends ApiModel {
                 && Objects.equals(this.clickTableQuery, other.clickTableQuery)
                 && Objects.equals(this.columnDefs, other.columnDefs)
                 && Objects.equals(this.rowFk, other.rowFk)
+                && Objects.equals(this.supportDateFilter, other.supportDateFilter)
+                && Objects.equals(this.supportDemographicFilter, other.supportDemographicFilter)
                 && Objects.equals(this.position, other.position);
     }
 }

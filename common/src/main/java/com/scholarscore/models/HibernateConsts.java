@@ -340,6 +340,8 @@ public class HibernateConsts {
     public static final String DASHBOARD_REPORT_TABLE = "dashboard_report";
     public static final String DASHBOARD_REPORT_NAME = "dashboard_report_name";
     public static final String DASHBOARD_REPORT_ID = "dashboard_report_id";
+    public static final String DASHBOARD_REPORT_SUPPORT_DEMOGRAPHIC_FILTER = "dashboard_report_support_demographic_filter";
+    public static final String DASHBOARD_REPORT_SUPPORT_DATE_FILTER = "dashboard_report_support_date_filter";
     public static final String DASHBOARD_REPORT_COLUMN_DEFS = "dashboard_report_column_defs";
     public static final String DASHBOARD_REPORT_POSITION = "dashboard_report_position";
     public static final String DASHBOARD_REPORT_CLICK_REPORT_FK = "click_report_fk";
