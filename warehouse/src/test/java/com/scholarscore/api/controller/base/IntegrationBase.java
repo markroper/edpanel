@@ -14,6 +14,7 @@ import com.scholarscore.api.controller.service.AttendanceValidatingExecutor;
 import com.scholarscore.api.controller.service.AuthValidatingExecutor;
 import com.scholarscore.api.controller.service.BehaviorValidatingExecutor;
 import com.scholarscore.api.controller.service.CourseValidatingExecutor;
+import com.scholarscore.api.controller.service.DashboardValidatingExecutor;
 import com.scholarscore.api.controller.service.GoalValidatingExecutor;
 import com.scholarscore.api.controller.service.GpaValidatingExecutor;
 import com.scholarscore.api.controller.service.LocaleServiceUtil;
@@ -106,6 +107,7 @@ public class IntegrationBase {
     private static final String NOTIFICATIONS_ENDPOINT = "/notifications";
     private static final String MESSAGE_THREADS_ENDPOINT = "/messagethreads";
     private static final String MESSAGE_ENDPOINT = "/messages";
+    private static final String DASHBOARD_ENDPOINT = "/dashboards";
 
     public LocaleServiceUtil localeServiceUtil;
     public CourseValidatingExecutor courseValidatingExecutor;
@@ -132,6 +134,7 @@ public class IntegrationBase {
     public SurveyResponseValidatingExecutor surveyResponseValidatingExecutor;
     public NotificationValidatingExecutor notificationValidatingExecutor;
     public MessageValidatingExecutor messageValidatingExecutor;
+    public DashboardValidatingExecutor dashboardValidatingExecutor;
 
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Student> studentsCreated = new CopyOnWriteArrayList<>();
@@ -199,6 +202,7 @@ public class IntegrationBase {
         surveyResponseValidatingExecutor = new SurveyResponseValidatingExecutor(this);
         notificationValidatingExecutor = new NotificationValidatingExecutor(this);
         messageValidatingExecutor = new MessageValidatingExecutor(this);
+        dashboardValidatingExecutor = new DashboardValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
         EdPanelObjectMapper.MAPPER.registerModule(new JavaTimeModule());
@@ -257,6 +261,7 @@ public class IntegrationBase {
         Assert.assertNotNull(surveyResponseValidatingExecutor, "Unable to configure survey response service");
         Assert.assertNotNull(notificationValidatingExecutor, "Unable to configure notification service");
         Assert.assertNotNull(messageValidatingExecutor, "Unable to configure message service");
+        Assert.assertNotNull(dashboardValidatingExecutor, "Unable to configure dashboard service");
     }
 
     /**
@@ -887,6 +892,14 @@ public class IntegrationBase {
 
     public String getUsersEndpoint(Long userId) {
         return BASE_API_ENDPOINT + USERS_ENDPOINT + pathify(userId);
+    }
+
+    public String getDashboardEndpoint(Long schoolId) {
+        return getSchoolEndpoint(schoolId) + DASHBOARD_ENDPOINT;
+    }
+
+    public String getDashboardEndpoint(Long schoolId, Long dashId) {
+        return getDashboardEndpoint(schoolId) + pathify(dashId);
     }
 
     public String getSurveyEndpoint() {
