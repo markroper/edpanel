@@ -34,6 +34,15 @@ public class OrchestrationManager {
     private SurveyManager surveyManager;
     private NotificationManager notificationManager;
     private MessageManager messageManager;
+    private DashboardManager dashboardManager;
+
+    public DashboardManager getDashboardManager() {
+        return dashboardManager;
+    }
+
+    public void setDashboardManager(DashboardManager dashboardManager) {
+        this.dashboardManager = dashboardManager;
+    }
 
     public MessageManager getMessageManager() {
         return messageManager;
