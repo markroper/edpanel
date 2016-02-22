@@ -9,5 +9,9 @@ public enum OperandType implements Serializable {
     NUMERIC,
     EXPRESSION,
     STRING,
-    LIST_NUMERIC;
+    LIST_NUMERIC,
+    PLACEHOLDER_DATE,
+    PLACEHOLDER_NUMERIC,
+    PLACEHOLDER_STRING,
+    PLACEHOLDER_LIST_NUMERIC;
 }

@@ -10,6 +10,9 @@ import java.util.Set;
 
 @SuppressWarnings("serial")
 public class CourseGradeMeasure implements IMeasure {
+    public static final String GRADE = "Grade";
+    private static final Set<String> FIELDS =
+            ImmutableSet.of(GRADE);
     final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(new HashSet<Measure>());
     final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SECTION);
     
@@ -35,7 +38,7 @@ public class CourseGradeMeasure implements IMeasure {
 
     @Override
     public Set<String> getFields() {
-        return new HashSet<String>();
+        return FIELDS;
     }
 
 }

@@ -18,14 +18,13 @@ public class CurrentGpaSqlSerializer implements MeasureSqlSerializer {
     @Override
     public String toJoinClause(Dimension dimToJoinUpon) {
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
-        return LEFT_OUTER_JOIN + HibernateConsts.CURRENT_GPA_TABLE + ON +
+        return LEFT_OUTER_JOIN + HibernateConsts.GPA_TABLE + ON +
                 dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) + EQUALS +
-                HibernateConsts.CURRENT_GPA_TABLE + DOT + dimTableName + FK_COL_SUFFIX + " " +
-                gpaCurrGpaJoin();
+                HibernateConsts.GPA_TABLE + DOT + dimTableName + FK_COL_SUFFIX + " " + gpaCurrGpaJoin();
     }
 
     private static String gpaCurrGpaJoin() {
-        return LEFT_OUTER_JOIN + HibernateConsts.GPA_TABLE + ON +
+        return INNER_JOIN + HibernateConsts.CURRENT_GPA_TABLE + ON +
                 HibernateConsts.GPA_TABLE + DOT + HibernateConsts.GPA_ID + EQUALS +
                 HibernateConsts.CURRENT_GPA_TABLE + DOT + HibernateConsts.GPA_FK;
     }
