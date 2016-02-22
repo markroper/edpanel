@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -21,7 +20,7 @@ import java.util.Objects;
  * Some schools use semesters, others trimesters, and others quarters.  One term would be 
  * one such period.
  * 
- * Each instance of a term within a year within a school has a unqiue ID within a district.
+ * Each instance of a term within a year within a school has a unique ID within a district.
  * 
  * @author markroper
  *
