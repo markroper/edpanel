@@ -13,6 +13,8 @@ import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.QueryResults;
 import com.scholarscore.models.query.Record;
 import com.scholarscore.util.EdPanelObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 public class QueryJdbc extends BaseJdbc implements QueryPersistence {
+    private final static Logger LOGGER = LoggerFactory.getLogger(QueryJdbc.class);
     private static String INSERT_REPORT_SQL = "INSERT INTO `"+ 
             DbMappings.DATABASE +"`.`" + DbMappings.REPORT_TABLE + "` " +
             "(" + HibernateConsts.SCHOOL_FK + ", " + DbMappings.REPORT_COL + ")" +
