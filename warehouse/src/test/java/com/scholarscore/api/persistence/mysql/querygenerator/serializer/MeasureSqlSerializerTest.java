@@ -14,16 +14,6 @@ import static org.testng.Assert.assertTrue;
  */
 @Test(groups = { "unit" })
 public class MeasureSqlSerializerTest {
-
-    // this first test isn't actually a measureSqlSerializer test, it's just a MeasureTest. 
-    // since it needs nothing in warehouse, it could be moved to the common package
-    @Test
-    public void testMeasureHasClass() {
-        for (Measure measure : Measure.values()) {
-            IMeasure measureClass = Measure.buildMeasure(measure);
-            assertNotNull(measureClass, "Measure " + measure + " is defined in Measures Enum but Measure.buildMeasure produces null!");
-        }
-    }
     
     @Test
     public void testMeasureHasSerializer() { 
