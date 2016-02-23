@@ -233,20 +233,15 @@ public abstract class QuerySqlGenerator {
 //        Dimension measureDimension = null;
         if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
             AggregateMeasure aggregateMeasure = q.getAggregateMeasures().get(0);
-            String measureTableName = DbMappings.MEASURE_TO_TABLE_NAME.get(aggregateMeasure.getMeasure());
-            
-            // hmmm??? not sure of the details here...
-//            if (measureTableName != null && measureTableName.equals(HibernateConsts.STUDENT_ASSIGNMENT_TABLE)) {
-//                measureTableName = HibernateConsts.STUDENT_TABLE;
-                // or assignment table?
-//                measureTableName = HibernateConsts.ASSIGNMENT_TABLE;
-//            }
-
             MeasureSqlSerializer serializer = MeasureSqlSerializerFactory.get(aggregateMeasure.getMeasure());
-            if (serializer != null) {
-                copyOfOrderedTables.addAll(serializer.allJoinedTables());
-            }
-
+ //           Dimension table = DbMappings.getDimensionFromTableName(serializer.toTableName());
+ //           Dimension optionalTable = DbMappings.getDimensionFromTableName(serializer.optionalJoinedTable());
+            
+//            copyOfOrderedTables.add(table);
+//            if (optionalTable != null) {
+//                copyOfOrderedTables.add(optionalTable);
+//            }
+            
             /*
             for (Dimension dimensionKey : DbMappings.DIMENSION_TO_TABLE_NAME.keySet()) {
                 String thisTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimensionKey);

@@ -68,15 +68,8 @@ public interface MeasureSqlSerializer {
     String toFromClause();
     
     String toTableName();
-    
-    // TODO Jordan: this might not actually return dimension, but rather an IDimension (or whatever will include Pseudo Dimensions)
-    // (also this is horrible -- clean it up if this idea pans out)
-    default Set<Dimension> allJoinedTables() {
-        HashSet<Dimension> hashSet = new HashSet<>();
-        Dimension dim = DbMappings.getDimensionFromTableName(toTableName());
-        if (dim != null) { hashSet.add(dim); }
-        return hashSet;
-    }
+
+    default String optionalJoinedTable() { return null; }
     
     default String generateMeasureFieldSql(MeasureField f, String tableAlias) throws SqlGenerationException {
         String tableName = DbMappings.MEASURE_TO_TABLE_NAME.get(f.getMeasure());

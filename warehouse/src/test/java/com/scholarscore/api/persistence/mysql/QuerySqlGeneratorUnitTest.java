@@ -159,7 +159,9 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT student.student_name, AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg \n" +
-                        "FROM student LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
+                        "FROM student " + 
+                        "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " + 
+                        "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
                         "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk \n" +
                         "WHERE  ( section.section_id  =  4 ) \n" +
                         "GROUP BY student.student_name";
@@ -208,7 +210,9 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT student.student_user_fk, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg \n" +
-                        "FROM student LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
+                        "FROM student " + 
+                        "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " + 
+                        "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
                         "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk \n" +
                         "LEFT OUTER JOIN term ON term.term_id = section.term_fk \n" +
                         "LEFT OUTER JOIN school_year ON school_year.school_year_id = term.school_year_fk \n" +
