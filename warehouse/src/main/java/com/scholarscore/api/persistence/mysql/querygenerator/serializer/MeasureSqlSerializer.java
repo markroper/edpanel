@@ -13,6 +13,7 @@ import java.util.Set;
 
 public interface MeasureSqlSerializer {
     public static final String LEFT_OUTER_JOIN = "LEFT OUTER JOIN ";
+    public static final String INNER_JOIN = "INNER JOIN ";
     public static final String ID_COL_SUFFIX = "_id";
     public static final String FK_COL_SUFFIX = "_fk";
     public static final String ON = " ON ";
@@ -22,7 +23,7 @@ public interface MeasureSqlSerializer {
     public String toSelectInner();
 
     @SuppressWarnings("unchecked")
-    default String toSelectBucketPsuedoColumn(List<AggregationBucket> buckets) throws SqlGenerationException {
+    default String toSelectBucketPseudoColumn(List<AggregationBucket> buckets) throws SqlGenerationException {
         StringBuilder b = new StringBuilder();
         b.append("CASE \n");
         String fieldInner = toSelectInner();

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <changeSet author="mark" id="changelog-1.6-change1">
+        <createTable tableName="dashboard">
+            <column name="dashboard_id"
+                    type="bigint unsigned"
+                    remarks="'Primary key identity column for a dashboard"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="dashboard_name"
+                    type="varchar(256)"
+                    remarks="The human readable name of the dashboard">
+            </column>
+            <column name="user_fk"
+                    type="bigint unsigned"
+                    remarks="The owning user of the dashboard">
+            </column>
+            <column name="school_fk"
+                    type="bigint unsigned"
+                    remarks="The school associated with the dashboard, if any">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="dashboard"
+                                 baseColumnNames="user_fk"
+                                 constraintName="dashboard$user_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="user"/>
+        <addForeignKeyConstraint baseTableName="dashboard"
+                                 baseColumnNames="school_fk"
+                                 constraintName="dashboard$school_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="school_id"
+                                 referencedTableName="school"/>
+
+        <createTable tableName="dashboard_row">
+            <column name="dashboard_row_id"
+                    type="bigint unsigned"
+                    remarks="'Primary key identity column for a dashboard row"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="dashboard_row_position"
+                    type="bigint unsigned"
+                    remarks="the position of the row in the dashboard">
+            </column>
+            <column name="dashboard_fk"
+                    type="bigint unsigned"
+                    remarks="The FK to the parent dashboard">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="dashboard_row"
+                                 baseColumnNames="dashboard_fk"
+                                 constraintName="dashboard_row$dashboard_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="dashboard_id"
+                                 referencedTableName="dashboard"/>
+
+        <sql>
+            ALTER TABLE report MODIFY report_id BIGINT UNSIGNED AUTO_INCREMENT;
+        </sql>
+
+        <createTable tableName="dashboard_report">
+            <column name="dashboard_report_id"
+                    type="bigint unsigned"
+                    remarks="'Primary key identity column for a report"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="dashboard_report_name"
+                    type="varchar(256)"
+                    remarks="'The name of a report, if any">
+            </column>
+            <column name="dashboard_report_position"
+                    type="bigint unsigned"
+                    remarks="the position of the report in a row">
+            </column>
+            <column name="dashboard_row_fk"
+                    type="bigint unsigned"
+                    remarks="The FK to the parent dashboard row">
+                <constraints nullable="false"/>
+            </column>
+            <column name="report_fk"
+                    type="bigint unsigned"
+                    remarks="The FK to the query">
+                <constraints nullable="false"/>
+            </column>
+            <column name="click_report_fk"
+                    type="bigint unsigned"
+                    remarks="The FK to the click-through details query">
+            </column>
+            <column name="dashboard_report_column_defs"
+                    type="blob"
+                    remarks="represents the display configuration for the click-through query results">
+            </column>
+            <column name="dashboard_report_support_date_filter"
+                    type="bit(1)"
+                    remarks="True if the report supports date filtering">
+            </column>
+            <column name="dashboard_report_support_demographic_filter"
+                    type="bit(1)"
+                    remarks="True if the report supports student demographic filtering">
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="dashboard_report"
+                                 baseColumnNames="dashboard_row_fk"
+                                 constraintName="report$dashboard_row_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="dashboard_row_id"
+                                 referencedTableName="dashboard_row"/>
+        <addForeignKeyConstraint baseTableName="dashboard_report"
+                                 baseColumnNames="report_fk"
+                                 constraintName="dashboard_report$report_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="report_id"
+                                 referencedTableName="report"/>
+        <addForeignKeyConstraint baseTableName="dashboard_report"
+                                 baseColumnNames="click_report_fk"
+                                 constraintName="dashboard_report$click_report_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="report_id"
+                                 referencedTableName="report"/>
+    </changeSet>
+</databaseChangeLog>

@@ -23,7 +23,15 @@ public interface SectionManager {
      * @return
      */
     public ServiceResponse<Collection<Section>> getAllSectionsWithStudentsAndAssignments(long schoolId, long yearId, long termId);
-    
+
+    /**
+     * Return all sections within a term
+     * @param schoolId ID of parent school
+     * @param yearId ID of parent year
+     * @return
+     */
+    public ServiceResponse<Collection<Section>> getAllSectionsInYear(long schoolId, long yearId);
+
     /**
      * Return all sections within a term for a given student
      * @param studentId ID of student

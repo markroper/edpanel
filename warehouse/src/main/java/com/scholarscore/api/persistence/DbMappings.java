@@ -8,6 +8,8 @@ import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.dimension.*;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
 import com.scholarscore.models.query.measure.BehaviorMeasure;
+import com.scholarscore.models.query.measure.CourseGradeMeasure;
+import com.scholarscore.models.query.measure.CurrentGpaMeasure;
 import com.scholarscore.models.query.measure.GpaMeasure;
 
 import java.sql.Timestamp;
@@ -20,19 +22,20 @@ public class DbMappings {
     
    public static final Map<Measure, String> MEASURE_TO_TABLE_NAME = 
            new HashMap<Measure, String>() {{
-               put(Measure.COURSE_GRADE, HibernateConsts.COURSE_TABLE);
+               put(Measure.COURSE_GRADE, HibernateConsts.SECTION_GRADE_TABLE);
                put(Measure.ASSIGNMENT_GRADE, HibernateConsts.STUDENT_ASSIGNMENT_TABLE);
                put(Measure.HW_COMPLETION, HibernateConsts.STUDENT_ASSIGNMENT_TABLE);
                put(Measure.DEMERIT, HibernateConsts.BEHAVIOR_TABLE);
                put(Measure.MERIT, HibernateConsts.BEHAVIOR_TABLE);
-               put(Measure.SUSPENSION, HibernateConsts.BEHAVIOR_TABLE);
+               put(Measure.IN_SCHOOL_SUSPENSION, HibernateConsts.BEHAVIOR_TABLE);
+               put(Measure.OUT_OF_SCHOOL_SUSPENSION, HibernateConsts.BEHAVIOR_TABLE);
                put(Measure.DETENTION, HibernateConsts.BEHAVIOR_TABLE);
                put(Measure.REFERRAL, HibernateConsts.BEHAVIOR_TABLE);
                put(Measure.ATTENDANCE, HibernateConsts.ATTENDANCE_TABLE);
                put(Measure.ABSENCE, HibernateConsts.ATTENDANCE_TABLE);
                put(Measure.TARDY, HibernateConsts.ATTENDANCE_TABLE);
                put(Measure.GPA, HibernateConsts.GPA_TABLE);
-               put(Measure.CURRENT_GPA, HibernateConsts.CURRENT_GPA_TABLE);
+               put(Measure.CURRENT_GPA, HibernateConsts.GPA_TABLE);
            }};
    public static final Map<Measure, String> MEASURE_TO_COL_NAME = 
            new HashMap<Measure, String>() {{
@@ -42,86 +45,57 @@ public class DbMappings {
            }};
    public static final Map<MeasureField, String> MEASURE_FIELD_TO_COL_NAME = 
            new HashMap<MeasureField, String>() {{
-               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.ID), HibernateConsts.ATTENDANCE_ID);
-               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.DATE), HibernateConsts.SCHOOL_DAY_DATE);
-               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.SCHOOL_FK), HibernateConsts.SCHOOL_FK);
-               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.STATUS), HibernateConsts.ATTENDANCE_STATUS);
-               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.STATUS_DESCRIPTION), HibernateConsts.ATTENDANCE_DESCRIPTION);
-               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
-               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.TYPE), HibernateConsts.ATTENDANCE_TYPE);
-               put(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.SECTION_FK), HibernateConsts.SECTION_FK);
-               put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.ID), HibernateConsts.ATTENDANCE_ID);
-               put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.DATE), HibernateConsts.SCHOOL_DAY_DATE);
-               put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.SCHOOL_FK), HibernateConsts.SCHOOL_FK);
-               put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.STATUS), HibernateConsts.ATTENDANCE_STATUS);
-               put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.STATUS_DESCRIPTION), HibernateConsts.ATTENDANCE_DESCRIPTION);
-               put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
-               put(new MeasureField(Measure.ABSENCE, AttendanceMeasure.TYPE), HibernateConsts.ATTENDANCE_TYPE);
-               put(new MeasureField(Measure.SECTION_ABSENCE, AttendanceMeasure.ID), HibernateConsts.ATTENDANCE_ID);
-               put(new MeasureField(Measure.SECTION_ABSENCE, AttendanceMeasure.DATE), HibernateConsts.SCHOOL_DAY_DATE);
-               put(new MeasureField(Measure.SECTION_ABSENCE, AttendanceMeasure.SCHOOL_FK), HibernateConsts.SCHOOL_FK);
-               put(new MeasureField(Measure.SECTION_ABSENCE, AttendanceMeasure.STATUS), HibernateConsts.ATTENDANCE_STATUS);
-               put(new MeasureField(Measure.SECTION_ABSENCE, AttendanceMeasure.STATUS_DESCRIPTION), HibernateConsts.ATTENDANCE_DESCRIPTION);
-               put(new MeasureField(Measure.SECTION_ABSENCE, AttendanceMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
-               put(new MeasureField(Measure.SECTION_ABSENCE, AttendanceMeasure.TYPE), HibernateConsts.ATTENDANCE_TYPE);
-               put(new MeasureField(Measure.SECTION_ABSENCE, AttendanceMeasure.SECTION_FK), HibernateConsts.SECTION_FK);
-               put(new MeasureField(Measure.SECTION_TARDY, AttendanceMeasure.ID), HibernateConsts.ATTENDANCE_ID);
-               put(new MeasureField(Measure.SECTION_TARDY, AttendanceMeasure.DATE), HibernateConsts.SCHOOL_DAY_DATE);
-               put(new MeasureField(Measure.SECTION_TARDY, AttendanceMeasure.SCHOOL_FK), HibernateConsts.SCHOOL_FK);
-               put(new MeasureField(Measure.SECTION_TARDY, AttendanceMeasure.STATUS), HibernateConsts.ATTENDANCE_STATUS);
-               put(new MeasureField(Measure.SECTION_TARDY, AttendanceMeasure.STATUS_DESCRIPTION), HibernateConsts.ATTENDANCE_DESCRIPTION);
-               put(new MeasureField(Measure.SECTION_TARDY, AttendanceMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
-               put(new MeasureField(Measure.SECTION_TARDY, AttendanceMeasure.TYPE), HibernateConsts.ATTENDANCE_TYPE);
-               put(new MeasureField(Measure.SECTION_TARDY, AttendanceMeasure.SECTION_FK), HibernateConsts.SECTION_FK);
-               put(new MeasureField(Measure.TARDY, AttendanceMeasure.ID), HibernateConsts.ATTENDANCE_ID);
-               put(new MeasureField(Measure.TARDY, AttendanceMeasure.DATE), HibernateConsts.SCHOOL_DAY_DATE);
-               put(new MeasureField(Measure.TARDY, AttendanceMeasure.SCHOOL_FK), HibernateConsts.SCHOOL_FK);
-               put(new MeasureField(Measure.TARDY, AttendanceMeasure.STATUS), HibernateConsts.ATTENDANCE_STATUS);
-               put(new MeasureField(Measure.TARDY, AttendanceMeasure.STATUS_DESCRIPTION), HibernateConsts.ATTENDANCE_DESCRIPTION);
-               put(new MeasureField(Measure.TARDY, AttendanceMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
-               put(new MeasureField(Measure.TARDY, AttendanceMeasure.TYPE), HibernateConsts.ATTENDANCE_TYPE);
+               // gpa
                put(new MeasureField(Measure.GPA, GpaMeasure.DATE), HibernateConsts.GPA_CALCULATION_DATE);
                put(new MeasureField(Measure.GPA, GpaMeasure.STUDENT), HibernateConsts.STUDENT_FK);
                put(new MeasureField(Measure.GPA, GpaMeasure.TYPE), HibernateConsts.GPA_TYPE);
-               put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.ID), HibernateConsts.BEHAVIOR_ID);
-               put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
-               put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.TEACHER_FK), HibernateConsts.TEACHER_FK);
-               put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.DATE), HibernateConsts.BEHAVIOR_DATE);
-               put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.POINTS), HibernateConsts.BEHAVIOR_POINT_VALUE);
-               put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.CATEGORY), HibernateConsts.BEHAVIOR_CATEGORY);
-               put(new MeasureField(Measure.DEMERIT, BehaviorMeasure.ROSTER), HibernateConsts.BEHAVIOR_ROSTER);
-               put(new MeasureField(Measure.MERIT, BehaviorMeasure.ID), HibernateConsts.BEHAVIOR_ID);
-               put(new MeasureField(Measure.MERIT, BehaviorMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
-               put(new MeasureField(Measure.MERIT, BehaviorMeasure.TEACHER_FK), HibernateConsts.TEACHER_FK);
-               put(new MeasureField(Measure.MERIT, BehaviorMeasure.DATE), HibernateConsts.BEHAVIOR_DATE);
-               put(new MeasureField(Measure.MERIT, BehaviorMeasure.POINTS), HibernateConsts.BEHAVIOR_POINT_VALUE);
-               put(new MeasureField(Measure.MERIT, BehaviorMeasure.CATEGORY), HibernateConsts.BEHAVIOR_CATEGORY);
-               put(new MeasureField(Measure.MERIT, BehaviorMeasure.ROSTER), HibernateConsts.BEHAVIOR_ROSTER);
-               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.ID), HibernateConsts.BEHAVIOR_ID);
-               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
-               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.TEACHER_FK), HibernateConsts.TEACHER_FK);
-               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.DATE), HibernateConsts.BEHAVIOR_DATE);
-               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.POINTS), HibernateConsts.BEHAVIOR_POINT_VALUE);
-               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.CATEGORY), HibernateConsts.BEHAVIOR_CATEGORY);
-               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.ROSTER), HibernateConsts.BEHAVIOR_ROSTER);
-               put(new MeasureField(Measure.REFERRAL, BehaviorMeasure.ID), HibernateConsts.BEHAVIOR_ID);
-               put(new MeasureField(Measure.REFERRAL, BehaviorMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
-               put(new MeasureField(Measure.REFERRAL, BehaviorMeasure.TEACHER_FK), HibernateConsts.TEACHER_FK);
-               put(new MeasureField(Measure.REFERRAL, BehaviorMeasure.DATE), HibernateConsts.BEHAVIOR_DATE);
-               put(new MeasureField(Measure.REFERRAL, BehaviorMeasure.POINTS), HibernateConsts.BEHAVIOR_POINT_VALUE);
-               put(new MeasureField(Measure.REFERRAL, BehaviorMeasure.CATEGORY), HibernateConsts.BEHAVIOR_CATEGORY);
-               put(new MeasureField(Measure.REFERRAL, BehaviorMeasure.ROSTER), HibernateConsts.BEHAVIOR_ROSTER);
-               put(new MeasureField(Measure.DETENTION, BehaviorMeasure.ID), HibernateConsts.BEHAVIOR_ID);
-               put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.ID), HibernateConsts.BEHAVIOR_ID);
-               put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
-               put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.TEACHER_FK), HibernateConsts.TEACHER_FK);
-               put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.DATE), HibernateConsts.BEHAVIOR_DATE);
-               put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.POINTS), HibernateConsts.BEHAVIOR_POINT_VALUE);
-               put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.CATEGORY), HibernateConsts.BEHAVIOR_CATEGORY);
-               put(new MeasureField(Measure.SUSPENSION, BehaviorMeasure.ROSTER), HibernateConsts.BEHAVIOR_ROSTER);
+               put(new MeasureField(Measure.GPA, CurrentGpaMeasure.GPA), HibernateConsts.GPA_SCORE);
+               put(new MeasureField(Measure.CURRENT_GPA, GpaMeasure.DATE), HibernateConsts.GPA_CALCULATION_DATE);
+               put(new MeasureField(Measure.CURRENT_GPA, GpaMeasure.STUDENT), HibernateConsts.STUDENT_FK);
+               put(new MeasureField(Measure.CURRENT_GPA, GpaMeasure.TYPE), HibernateConsts.GPA_TYPE);
+               put(new MeasureField(Measure.CURRENT_GPA, CurrentGpaMeasure.GPA), HibernateConsts.GPA_SCORE);
+
+               put(new MeasureField(Measure.COURSE_GRADE, CourseGradeMeasure.GRADE), HibernateConsts.SECTION_GRADE_GRADE);
+               // attendance (true/false for if section should be included)
+               populateAttendanceTypeMeasureToColNames(this, Measure.ATTENDANCE, true);
+               populateAttendanceTypeMeasureToColNames(this, Measure.ABSENCE, false);
+               populateAttendanceTypeMeasureToColNames(this, Measure.SECTION_ABSENCE, true);
+               populateAttendanceTypeMeasureToColNames(this, Measure.SECTION_TARDY, true);
+               populateAttendanceTypeMeasureToColNames(this, Measure.TARDY, false);
+               
+               // behaviors
+               populateBehaviorTypeMeasureToColNames(this, Measure.DEMERIT);
+               populateBehaviorTypeMeasureToColNames(this, Measure.MERIT);
+               populateBehaviorTypeMeasureToColNames(this, Measure.DETENTION);
+               populateBehaviorTypeMeasureToColNames(this, Measure.REFERRAL);
+               populateBehaviorTypeMeasureToColNames(this, Measure.OUT_OF_SCHOOL_SUSPENSION);
+               populateBehaviorTypeMeasureToColNames(this, Measure.IN_SCHOOL_SUSPENSION);
            }};
 
-    public static final Map<Dimension, String> DIMENSION_TO_TABLE_NAME =
+    private static final void populateBehaviorTypeMeasureToColNames(HashMap<MeasureField, String> toPopulate, Measure behaviorMeasure) {
+        toPopulate.put(new MeasureField(behaviorMeasure, BehaviorMeasure.ID), HibernateConsts.BEHAVIOR_ID);
+        toPopulate.put(new MeasureField(behaviorMeasure, BehaviorMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
+        toPopulate.put(new MeasureField(behaviorMeasure, BehaviorMeasure.TEACHER_FK), HibernateConsts.TEACHER_FK);
+        toPopulate.put(new MeasureField(behaviorMeasure, BehaviorMeasure.DATE), HibernateConsts.BEHAVIOR_DATE);
+        toPopulate.put(new MeasureField(behaviorMeasure, BehaviorMeasure.POINTS), HibernateConsts.BEHAVIOR_POINT_VALUE);
+        toPopulate.put(new MeasureField(behaviorMeasure, BehaviorMeasure.CATEGORY), HibernateConsts.BEHAVIOR_CATEGORY);
+        toPopulate.put(new MeasureField(behaviorMeasure, BehaviorMeasure.ROSTER), HibernateConsts.BEHAVIOR_ROSTER);
+    }
+
+    private static final void populateAttendanceTypeMeasureToColNames(HashMap<MeasureField, String> toPopulate, Measure attendanceMeasure, boolean includeSection) {
+        toPopulate.put(new MeasureField(attendanceMeasure, AttendanceMeasure.ID), HibernateConsts.ATTENDANCE_ID);
+        toPopulate.put(new MeasureField(attendanceMeasure, AttendanceMeasure.DATE), HibernateConsts.SCHOOL_DAY_DATE);
+        toPopulate.put(new MeasureField(attendanceMeasure, AttendanceMeasure.SCHOOL_FK), HibernateConsts.SCHOOL_FK);
+        toPopulate.put(new MeasureField(attendanceMeasure, AttendanceMeasure.STATUS), HibernateConsts.ATTENDANCE_STATUS);
+        toPopulate.put(new MeasureField(attendanceMeasure, AttendanceMeasure.STATUS_DESCRIPTION), HibernateConsts.ATTENDANCE_DESCRIPTION);
+        toPopulate.put(new MeasureField(attendanceMeasure, AttendanceMeasure.STUDENT_FK), HibernateConsts.STUDENT_FK);
+        toPopulate.put(new MeasureField(attendanceMeasure, AttendanceMeasure.TYPE), HibernateConsts.ATTENDANCE_TYPE);
+        if (includeSection) {
+            toPopulate.put(new MeasureField(attendanceMeasure, AttendanceMeasure.SECTION_FK), HibernateConsts.SECTION_FK);
+        }
+    }
+
+    public static final Map<Dimension, String> DIMENSION_TO_TABLE_NAME = 
             new HashMap<Dimension, String>() {{
                 put(Dimension.SCHOOL, HibernateConsts.SCHOOL_TABLE);
                 put(Dimension.COURSE, HibernateConsts.COURSE_TABLE);

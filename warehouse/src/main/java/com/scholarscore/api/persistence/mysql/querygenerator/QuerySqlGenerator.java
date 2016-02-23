@@ -45,10 +45,10 @@ import java.util.Set;
  */
 public abstract class QuerySqlGenerator {
     private static final String SELECT = "SELECT ";
-    private static final String FROM = "FROM ";
-    private static final String LEFT_OUTER_JOIN = "LEFT OUTER JOIN ";
-    private static final String GROUP_BY = "GROUP BY ";
-    private static final String WHERE = "WHERE ";
+    private static final String FROM = "\nFROM ";
+    private static final String LEFT_OUTER_JOIN = "\nLEFT OUTER JOIN ";
+    private static final String GROUP_BY = "\nGROUP BY ";
+    private static final String WHERE = "\nWHERE ";
     private static final String OR = "OR";
     private static final String AND = "AND";
     private static final String ON = "ON";
@@ -68,11 +68,10 @@ public abstract class QuerySqlGenerator {
     public static SqlWithParameters generate(Query q) throws SqlGenerationException {
         Map<String, Object> params = new HashMap<>();
         StringBuilder sqlBuilder = new StringBuilder();
-        
         populateSelectClause(sqlBuilder, params, q);
         populateFromClause(sqlBuilder, q);
         populateWhereClause(sqlBuilder, params, q, null);
-        populateGroupByClause(sqlBuilder, q);
+        populateGroupByClause(sqlBuilder, q, params);
         SqlWithParameters sql = new SqlWithParameters(sqlBuilder.toString(), params);
         if(null != q.getSubqueryColumnsByPosition()) {
             return generateQueryOfSubquery(q, sql);
@@ -118,7 +117,7 @@ public abstract class QuerySqlGenerator {
         sqlBuilder.append(" \n");
         //WHERE CLAUSE
         if(null != q.getSubqueryFilter() && !q.getSubqueryFilter().isEmpty()) {
-            sqlBuilder.append("\nWHERE ");
+            sqlBuilder.append(WHERE);
             FirstAwareWrapper innerSqlBuilder = new FirstAwareWrapper(sqlBuilder);
             for(SubqueryExpression entry: q.getSubqueryFilter()) {
                 Integer pos = entry.getPosition();
@@ -167,7 +166,7 @@ public abstract class QuerySqlGenerator {
         return new SqlWithParameters(sqlBuilder.toString(), params);
     }
 
-    protected static void populateSelectClause(StringBuilder sqlBuilder, Map<String, Object> params, Query q) 
+    protected static void populateSelectClause(StringBuilder sqlBuilder, Map<String, Object> params, Query q)
             throws SqlGenerationException {
         sqlBuilder.append(SELECT);
         boolean isFirst = true;
@@ -189,10 +188,10 @@ public abstract class QuerySqlGenerator {
                     isFirst = false;
                 }
                 sqlBuilder.append(mss.toSelectClause(am.getAggregation()) + " as " + generateAggColumnName(am));
-                //If there are buckets involved in the aggregate query, inject the bucket psuedo column
+                //If there are buckets involved in the aggregate query, inject the bucket pseudo column
                 if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
                     sqlBuilder.append(DELIM);
-                    sqlBuilder.append(mss.toSelectBucketPsuedoColumn(am.getBuckets()));
+                    sqlBuilder.append(mss.toSelectBucketPseudoColumn(am.getBuckets()));
                     sqlBuilder.append(" as ");
                     sqlBuilder.append(generateBucketPseudoColumnName(am));
                 }
@@ -200,10 +199,10 @@ public abstract class QuerySqlGenerator {
         }
         sqlBuilder.append(" ");
     }
-    
+
     protected static void populateFromClause(StringBuilder sqlBuilder, Query q) throws SqlGenerationException {
         sqlBuilder.append(FROM);
-        
+
         //Get the dimensions in the correct order for joining:
         HashSet<Dimension> selectedDims = new HashSet<>();
         if(null != q.getFields()) {
@@ -338,25 +337,24 @@ public abstract class QuerySqlGenerator {
             }
         } else if (null != q.getAggregateMeasures() && q.getAggregateMeasures().size() > 0) {
             //There are no dimensions, query off the measure table directly.
-            MeasureSqlSerializer mss = null;
             if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
                 AggregateMeasure am = q.getAggregateMeasures().get(0);
-                mss = MeasureSqlSerializerFactory.get(am.getMeasure());
-                sqlBuilder.append(mss.toFromClause() + " ");
+                MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
+                sqlBuilder.append(mss.toFromClause());
             }
         } else {
             throw new SqlGenerationException("No tables were resolved to query in the FROM clause");
         }
-        
+
 
     }
-    
+
     /**
      * Breaking with our pattern for all other tables in the system, the Student, Teacher & Administrator
      * tables do not have a primary key field called TABLENAME_id.  This is because they have a unique FK
      * to the users table which serves as the ID.  Therefore, we have to special case the generation of the join
      * SQL for these tables because they don't follow the pattern :(.
-     * 
+     *
      * @param tableName
      * @return
      */
@@ -368,7 +366,7 @@ public abstract class QuerySqlGenerator {
         }
         return primaryKeyFieldReference;
     }
-    
+
     protected static void populateWhereClause(StringBuilder sqlBuilder, Map<String, Object> params, Query q, String tableAlias)
             throws SqlGenerationException {
         if(null == q.getFilter()) {
@@ -377,7 +375,7 @@ public abstract class QuerySqlGenerator {
         sqlBuilder.append(WHERE);
         expressionToSql(q.getFilter(), params, sqlBuilder, tableAlias);
     }
-    
+
     protected static void expressionToSql(Expression exp, Map<String, Object> params, StringBuilder sqlBuilder, String tableAlias)
             throws SqlGenerationException{
         sqlBuilder.append(" (");
@@ -407,7 +405,17 @@ public abstract class QuerySqlGenerator {
                 sqlBuilder.append(" " + generateDimensionFieldSql( ((DimensionOperand)operand).getValue(), tableAlias) + " ");
                 break;
             case MEASURE:
-                sqlBuilder.append(" " + generateMeasureFieldSql(((MeasureOperand)operand).getValue(), tableAlias) + " ");
+                MeasureOperand mo = (MeasureOperand)operand;
+                try {
+                    //This will throw an exception if the where clause field is not an agg function.
+                    //We catch that exception and look for a field on the measure table with the name in that case.
+                    AggregateFunction func = AggregateFunction.valueOf(mo.getValue().getField());
+                    MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(mo.getValue().getMeasure());
+                    sqlBuilder.append(mss.toSelectClause(func));
+                } catch(RuntimeException e) {
+                    MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(((MeasureOperand)operand).getValue().getMeasure());
+                    sqlBuilder.append(" " + generateMeasureFieldSql(((MeasureOperand)operand).getValue(), tableAlias) + " ");
+                }
                 break;
             case NUMERIC:
                 sqlBuilder.append(" " + ((NumericOperand)operand).getValue() + " ");
@@ -435,24 +443,42 @@ public abstract class QuerySqlGenerator {
         }
     }
     
-    protected static void populateGroupByClause(StringBuilder sqlBuilder, Query q) throws SqlGenerationException {
-        sqlBuilder.append(GROUP_BY);
-        FirstAwareWrapper innerSqlBuilder = new FirstAwareWrapper(sqlBuilder);
+    protected static void populateGroupByClause(StringBuilder parentSqlBuilder, Query q, Map<String, Object> params) throws SqlGenerationException {
+        StringBuilder groupBySqlBuilder = new StringBuilder();
+        boolean isFirst = true;
         if(null != q.getFields()) {
             for (DimensionField f : q.getFields()) {
-                innerSqlBuilder.markNotFirstOrAppend(DELIM);
-                innerSqlBuilder.append(generateDimensionFieldSql(f, null));
+                if (isFirst) {
+                    groupBySqlBuilder.append(generateDimensionFieldSql(f, null));
+                    isFirst = false;
+                } else {
+                    groupBySqlBuilder.append(DELIM + generateDimensionFieldSql(f, null));
+                }
             }
         }
-        //If there are buckets involved in the aggregate query, inject the bucket psuedo column
+        //If there are buckets involved in the aggregate query, inject the bucket pseudo column
         if(null != q.getAggregateMeasures()) {
             for (AggregateMeasure m : q.getAggregateMeasures()) {
                 if(null != m.getBuckets() && !m.getBuckets().isEmpty()) {
                     String bucketFieldName = generateBucketPseudoColumnName(m);
-                    innerSqlBuilder.markNotFirstOrAppend(DELIM);
-                    innerSqlBuilder.append(bucketFieldName);
+                    if (isFirst) {
+                        groupBySqlBuilder.append(bucketFieldName);
+                        isFirst = false;
+                    } else {
+                        groupBySqlBuilder.append(DELIM + bucketFieldName);
+                    }
                 }
             }
+        }
+        
+        // "GROUP BY" may not be present -- only append "GROUP BY" if the rest of the string exists
+        if (groupBySqlBuilder.length() > 0) {
+            parentSqlBuilder.append(GROUP_BY);
+            parentSqlBuilder.append(groupBySqlBuilder.toString());
+			if(null != q.getHaving()) {
+            	parentSqlBuilder.append(" \nHAVING ");
+            	expressionToSql(q.getHaving(), params, parentSqlBuilder, null);
+        	}
         }
     }
 

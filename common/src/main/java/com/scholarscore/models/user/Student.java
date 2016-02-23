@@ -12,6 +12,7 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -45,6 +46,7 @@ public class Student extends Person implements Serializable {
     private String federalRace;
     private String federalEthnicity;
     private LocalDate withdrawalDate;
+    private Staff advisor;
     
     public Student() {
         
@@ -61,15 +63,17 @@ public class Student extends Person implements Serializable {
         this.federalRace = student.federalRace;
         this.federalEthnicity = student.federalEthnicity;
         this.withdrawalDate = student.withdrawalDate;
+        this.advisor = student.advisor;
     }
     
-    public Student(String race, String ethnicity, Long currentSchoolId, Gender gender, String name, Long expectedGraduationYear) {
+    public Student(String race, String ethnicity, Long currentSchoolId, Gender gender, String name, Long expectedGraduationYear, Staff advisor) {
         this.federalRace = race;
         this.federalEthnicity = ethnicity;
         this.gender = gender;
         this.name = name;
         this.projectedGraduationYear = expectedGraduationYear;
         this.currentSchoolId = currentSchoolId;
+        this.advisor = advisor;
     }
     
     @Override
@@ -107,7 +111,21 @@ public class Student extends Person implements Serializable {
             if(null == getWithdrawalDate()) {
                 setWithdrawalDate(merge.getWithdrawalDate());
             }
+            if(null == getAdvisor()) {
+                setAdvisor(merge.getAdvisor());
+            }
         }
+    }
+
+    @OneToOne(optional = true, fetch= FetchType.EAGER)
+    @JoinColumn(name = HibernateConsts.STAFF_FK)
+    @Fetch(FetchMode.JOIN)
+    public Staff getAdvisor() {
+        return advisor;
+    }
+
+    public void setAdvisor(Staff advisor) {
+        this.advisor = advisor;
     }
 
     @Column(name = HibernateConsts.STUDENT_WITHDRAWAL_DATE)
@@ -263,7 +281,8 @@ public class Student extends Person implements Serializable {
                 && Objects.equals(this.federalRace, other.federalRace)
                 && Objects.equals(this.withdrawalDate, other.withdrawalDate)
                 && Objects.equals(this.federalEthnicity, other.federalEthnicity)
-                && Objects.equals(this.currentSchoolId, other.currentSchoolId);
+                && Objects.equals(this.currentSchoolId, other.currentSchoolId)
+                && Objects.equals(this.advisor, other.advisor);
     }
 
     @Override
@@ -271,7 +290,7 @@ public class Student extends Person implements Serializable {
         return 31 * super.hashCode()
                 + Objects.hash(mailingAddress, gender, birthDate,
                         districtEntryDate, projectedGraduationYear, socialSecurityNumber, 
-                        federalRace, federalEthnicity, currentSchoolId, withdrawalDate);
+                        federalRace, federalEthnicity, currentSchoolId, withdrawalDate, advisor);
     }
 
     @Override
@@ -285,8 +304,9 @@ public class Student extends Person implements Serializable {
                 ", socialSecurityNumber='" + socialSecurityNumber + '\'' +
                 ", federalRace='" + federalRace + '\'' +
                 ", federalEthnicity='" + federalEthnicity + '\'' +
-                ", currentSchoolId=" + currentSchoolId +
-                ", withdrawalDate=" + withdrawalDate +
+                ", currentSchoolId=" + currentSchoolId + '\'' +
+                ", withdrawalDate=" + withdrawalDate + '\'' +
+                ", advisor=" + advisor + '\'' +
                 '}';
     }
 

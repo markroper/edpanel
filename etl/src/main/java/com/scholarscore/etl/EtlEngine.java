@@ -44,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -181,6 +182,11 @@ public class EtlEngine implements IEtlEngine {
         endTime = System.currentTimeMillis();
         LOGGER.info("Section sync complete");
 
+        syncStudentAdvisors();
+        long advisorSyncCompletion = (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+        LOGGER.info("Section sync complete");
+
         syncSchoolDaysAndAttendance();
         long schoolDayCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
@@ -191,6 +197,7 @@ public class EtlEngine implements IEtlEngine {
                 " seconds, \nYears + Terms: " + yearsAndTermsComplete +
                 " seconds, \nstaff: " + staffCreationComplete +
                 " seconds, \nstudents: " + studentCreationComplete +
+                " seconds, \nadvisors: " + advisorSyncCompletion +
                 " seconds, \ndays & attendance: " + schoolDayCreationComplete +
                 " seconds, \ncourses: " + courseCreationComplete +
                 " seconds, \nsections: " + sectionCreationComplete +
@@ -231,6 +238,22 @@ public class EtlEngine implements IEtlEngine {
                     studentClasses,
                     this.periods.get(Long.valueOf(school.getValue().getSourceSystemId())));
             a.syncCreateUpdateDelete(results);
+        }
+    }
+
+    private void syncStudentAdvisors() {
+        Iterator<Map.Entry<Long,School>> it = schools.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Long,School> pair = it.next();
+            try {
+                edPanel.updateAdvisors(pair.getValue().getId());
+            } catch (IOException ex) {
+                try {
+                    edPanel.updateAdvisors(pair.getValue().getId());
+                } catch (IOException ex2) {
+                    LOGGER.warn("Failed to match advisors for school with EdPanelID : " + pair.getValue().getId());
+                }
+            }
         }
     }
 
