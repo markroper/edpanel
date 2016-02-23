@@ -1,6 +1,23 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
 
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.academic.AssignmentGradeSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.academic.CourseGradeSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.academic.CurrentGpaSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.academic.GpaSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.academic.HomeworkCompletionSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance.AttendanceSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance.DailyAbsenceSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance.DailyTardySqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance.SectionAbsenceSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance.SectionTardySqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.DemeritSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.DetentionSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.InSchoolSuspensionSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.MeritSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.OutOfSchoolSuspensionSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.ReferralSqlSerializer;
 import com.scholarscore.models.query.Measure;
+import com.scholarscore.models.query.QueryException;
 
 public class MeasureSqlSerializerFactory {
     public static MeasureSqlSerializer get(Measure measure) {
@@ -38,7 +55,8 @@ public class MeasureSqlSerializerFactory {
             case OUT_OF_SCHOOL_SUSPENSION:
                 return new OutOfSchoolSuspensionSqlSerializer();
             default:
-                return null;
+                throw new QueryException("Unsupported Measure " + measure + ": no serializer defined");
+
         }
     }
 }
