@@ -287,10 +287,9 @@ public abstract class QuerySqlGenerator {
             }
         } else if (null != q.getAggregateMeasures() && q.getAggregateMeasures().size() > 0) {
             //There are no dimensions, query off the measure table directly.
-            MeasureSqlSerializer mss = null;
             if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
                 AggregateMeasure am = q.getAggregateMeasures().get(0);
-                mss = MeasureSqlSerializerFactory.get(am.getMeasure());
+                MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
                 sqlBuilder.append(mss.toFromClause());
             }
         } else {
