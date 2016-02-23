@@ -36,12 +36,7 @@ public class HomeworkCompletionSqlSerializer extends BaseSqlSerializer implement
 
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         if (dimTableName.equals(HibernateConsts.SECTION_TABLE)) {
-            return super.toJoinClause(Dimension.SECTION) +
-                    LEFT_OUTER_JOIN + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + ON +
-                    toTableName() + DOT + HibernateConsts.ASSIGNMENT_ID +
-                    EQUALS +
-                    HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_FK +
-                    " ";
+            return super.toJoinClause(Dimension.SECTION);
         } else {
             return LEFT_OUTER_JOIN + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + ON +
                     dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) +
@@ -63,6 +58,16 @@ public class HomeworkCompletionSqlSerializer extends BaseSqlSerializer implement
     @Override
     public String toTableName() {
         return HibernateConsts.ASSIGNMENT_TABLE;
+    }
+
+    @Override
+    public String optionalJoinedTable() {
+        return HibernateConsts.STUDENT_ASSIGNMENT_TABLE;
+    }
+
+    @Override
+    protected boolean optionalJoinTableStoresFk() {
+        return true;
     }
 
     @Override
