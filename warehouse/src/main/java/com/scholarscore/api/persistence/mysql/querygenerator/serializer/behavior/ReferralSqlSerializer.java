@@ -14,6 +14,5 @@ public class ReferralSqlSerializer extends DemeritSqlSerializer {
     }
 
     @Override
-    // I don't know why every other SQL if statement uses 1,0 and this one uses 1,null -- but sticking with existing behavior.
-    String valueForFalse() { return "null"; }
+    protected String valueForFalse() { return "null"; }
 }
