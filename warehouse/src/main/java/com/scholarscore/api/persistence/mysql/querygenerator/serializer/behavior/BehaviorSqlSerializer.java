@@ -17,9 +17,6 @@ public abstract class BehaviorSqlSerializer extends BaseSqlSerializer {
                 "', 1, " + valueForFalse() +")";
     }
     
-    // children can override this to return something other than 0 when the if statement evaluated above returns false
-    String valueForFalse() { return "0"; }
-    
     // children must override this to specify which behavior they are interested in 
     abstract BehaviorCategory matchesBehavior();
 

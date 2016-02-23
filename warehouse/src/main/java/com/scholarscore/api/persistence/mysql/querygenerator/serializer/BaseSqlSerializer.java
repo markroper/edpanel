@@ -53,6 +53,9 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
     protected String joinTable(String tableToJoin) {
         String inferredJoinFromColumnName = tableToJoin + FK_COL_SUFFIX;
         String inferredJoinToColumnName = tableToJoin + ID_COL_SUFFIX;
+        // TODO Jordan: experiment with the below
+        // is this a good idea / the right place to do this?
+//        String inferredJoinToColumnName = QuerySqlGenerator.resolvePrimaryKeyField(tableToJoin);
         return joinTable(tableToJoin, toTableName(), inferredJoinToColumnName, inferredJoinFromColumnName);
     }
     
@@ -69,5 +72,15 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
 
     private String optionalJoinOrEmptyString() {
         return (null == optionalJoinedTable() ? "" : joinTable(optionalJoinedTable()));
+    }
+
+    // children can override this to return something other than 0 when the (possibly) contained if statement
+    // evaluated returns false.
+    // (some statements use 1,0 and some use 1,null -- 1,null seems better/more recent
+    // but haven't gotten to the bottom of it yet)
+    protected String valueForFalse() { return "0"; }
+
+    protected static String tableNameDotPrimaryKey(String tableName) {
+        return tableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(tableName);
     }
 }

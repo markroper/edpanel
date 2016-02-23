@@ -1,13 +1,10 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance;
 
 import com.scholarscore.api.persistence.DbMappings;
-import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.api.persistence.mysql.querygenerator.SqlGenerationException;
-import com.scholarscore.api.persistence.mysql.querygenerator.serializer.BaseSqlSerializer;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureSqlSerializer;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.attendance.AttendanceStatus;
-import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
 
@@ -17,30 +14,9 @@ public class AttendanceSqlSerializer extends BaseAttendanceSqlSerializer impleme
     AttendanceStatus attendanceStatusMatches() {
         return AttendanceStatus.ABSENT;
     }
-
+    
     @Override
-    public String toJoinClause(Dimension dimToJoinUpon) {
-        if(dimToJoinUpon.equals(Dimension.STUDENT)) {
-            return super.toJoinClause(dimToJoinUpon) + joinTable(HibernateConsts.SCHOOL_DAY_TABLE);
-        } else if(dimToJoinUpon.equals(Dimension.SCHOOL)){
-            // this may be confusing because SCHOOL_DAY_TABLE is the argument for both, but this is actually expected, here's why -
-            // * toJoinClause is joining this sqlizer's dimension (ATTENDANCE) to the supplied dimension (SCHOOL_DAY)
-            // * joinTable is joining SchoolDay to the supplied table
-            return toJoinClause(HibernateConsts.SCHOOL_DAY_TABLE) +
-                    joinTable(HibernateConsts.SCHOOL_DAY_TABLE,     // table TO
-                            HibernateConsts.SCHOOL_TABLE,           // table FROM
-                            HibernateConsts.SCHOOL_FK,     // table TO col
-                            QuerySqlGenerator.resolvePrimaryKeyField(HibernateConsts.SCHOOL_TABLE) // table FROM col
-                    );
-        }
-        // TODO: throw new SqlGenerationException("AttendanceSqlSerializer does not support Dimension " + dimToJoinUpon + "!");
-        return null;
-    }
-
-    @Override
-    public String toTableName() {
-        return HibernateConsts.ATTENDANCE_TABLE;
-    }
+    protected String valueForFalse() { return "null"; }
     
     @Override
     public String generateMeasureFieldSql(MeasureField f, String tableAlias) throws SqlGenerationException {

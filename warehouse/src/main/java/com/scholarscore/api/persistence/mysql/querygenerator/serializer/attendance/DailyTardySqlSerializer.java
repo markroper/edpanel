@@ -7,7 +7,7 @@ import com.scholarscore.models.attendance.AttendanceTypes;
 /**
  * Created by markroper on 11/29/15.
  */
-public class DailyTardySqlSerializer extends AttendanceSqlSerializer {
+public class DailyTardySqlSerializer extends BaseAttendanceSqlSerializer {
     
     @Override
     AttendanceStatus attendanceStatusMatches() { return AttendanceStatus.TARDY; }
