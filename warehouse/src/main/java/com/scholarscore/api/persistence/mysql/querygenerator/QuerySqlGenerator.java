@@ -291,9 +291,7 @@ public abstract class QuerySqlGenerator {
             if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
                 AggregateMeasure am = q.getAggregateMeasures().get(0);
                 mss = MeasureSqlSerializerFactory.get(am.getMeasure());
-                if (mss != null) {
-                    sqlBuilder.append(mss.toFromClause());
-                }
+                sqlBuilder.append(mss.toFromClause());
             }
         } else {
             throw new SqlGenerationException("No tables were resolved to query in the FROM clause");

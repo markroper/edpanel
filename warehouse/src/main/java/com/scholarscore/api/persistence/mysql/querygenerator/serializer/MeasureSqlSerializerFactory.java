@@ -17,6 +17,7 @@ import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.OutOfSchoolSuspensionSqlSerializer;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.ReferralSqlSerializer;
 import com.scholarscore.models.query.Measure;
+import com.scholarscore.models.query.QueryException;
 
 public class MeasureSqlSerializerFactory {
     public static MeasureSqlSerializer get(Measure measure) {
@@ -54,7 +55,8 @@ public class MeasureSqlSerializerFactory {
             case OUT_OF_SCHOOL_SUSPENSION:
                 return new OutOfSchoolSuspensionSqlSerializer();
             default:
-                return null;
+                throw new QueryException("Unsupported Measure " + measure + ": no serializer defined");
+
         }
     }
 }
