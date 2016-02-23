@@ -86,7 +86,7 @@ public class StudentSectionGradeController extends BaseController {
             @PathVariable(value="sectId") Long sectId,
             @ApiParam(name = "studId", required = true, value = "Student ID")
             @PathVariable(value="studId") Long studId) {
-        return respond(pm.getStudentSectionGradeManager().getStudentSectionGradeByWeek(schoolId, yearId, termId, sectId, studId));
+        return respond(pm.getStudentSectionGradeManager().getStudentSectionGradeByWeek(schoolId, yearId, termId, sectId, studId, null, null));
     }
 
 

@@ -8,10 +8,17 @@ import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.user.Staff;
+import com.scholarscore.models.user.Student;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by cwallace on 9/16/2015.
@@ -143,5 +150,45 @@ public class SchoolManagerImpl implements SchoolManager {
         //Only need to delete the parent row, FK cascades deletes
         schoolPersistence.delete(schoolId);
         return new ServiceResponse<Long>((Long) null);
+    }
+
+    @Override
+    public ServiceResponse<Long> associateAdvisors(long schoolId) {
+        Comparator<SchoolYear> schoolYearComparator = new Comparator<SchoolYear>() {
+            public int compare(SchoolYear c1, SchoolYear c2) {
+                return c2.getEndDate().compareTo(c1.getEndDate()); // use your logic
+            }
+        };
+
+        try {
+            Collection<SchoolYear> years = pm.getSchoolYearManager().getAllSchoolYears(schoolId).getValue();
+            List<SchoolYear> asList = new ArrayList<>(years);
+            Collections.sort(asList, schoolYearComparator);
+            Collection<Section> sections = pm.getSectionManager().getAllSectionsInYear(
+                    schoolId, asList.get(asList.size() - 1).getId()
+            ).getValue();
+            for (Section s : sections) {
+                if (s.getName().matches("(.*)Advisor(.*)") || s.getName().matches("(.*)Homeroom(.*)") ) {
+                    //THese are advisor sections, find enrolled students, add advisor and update
+                    List<Student> enrolledStudents = s.getEnrolledStudents();
+                    for (Student stud : enrolledStudents) {
+                        Iterator<Staff> it = s.getTeachers().iterator();
+                        //TODO, if there is more then one teacher in advisor?
+                        if (it.hasNext()) {
+                            Staff advisor = it.next();
+                            stud.setAdvisor(advisor);
+                        }
+                        //Update the student with their new advisor.
+                        pm.getStudentManager().updateStudent(stud.getId(), stud);
+
+                    }
+                }
+            }
+            return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.OK));
+        } catch (Exception e) {
+            return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.UNKNOWN_INTERNAL_SERVER_ERROR));
+        }
+
+
     }
 }

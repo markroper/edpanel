@@ -5,8 +5,6 @@ import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.query.Dimension;
 
-import java.util.Set;
-
 public class CourseGradeSqlSerializer implements MeasureSqlSerializer {
     @Override
     public String toSelectInner() {
@@ -36,9 +34,4 @@ public class CourseGradeSqlSerializer implements MeasureSqlSerializer {
         return HibernateConsts.STUDENT_SECTION_GRADE_TABLE;
     }
 
-    @Override
-    public Set<Dimension> allJoinedTables() {
-        Set<Dimension> set = MeasureSqlSerializer.super.allJoinedTables();
-        return set;
-    }
 }

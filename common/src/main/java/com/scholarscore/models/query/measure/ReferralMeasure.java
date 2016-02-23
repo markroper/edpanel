@@ -10,7 +10,8 @@ import java.util.Set;
  * Created by markroper on 2/11/16.
  */
 public class ReferralMeasure extends BehaviorMeasure implements IMeasure {
-    final Set<Measure> compatibleMeasures = ImmutableSet.of(Measure.DEMERIT, Measure.MERIT, Measure.DETENTION, Measure.SUSPENSION);
+    final Set<Measure> compatibleMeasures = ImmutableSet.of(Measure.DEMERIT, Measure.MERIT, Measure.DETENTION, 
+            Measure.IN_SCHOOL_SUSPENSION, Measure.OUT_OF_SCHOOL_SUSPENSION);
     final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR,
             Dimension.STUDENT, Dimension.TEACHER, Dimension.SCHOOL);
     @Override

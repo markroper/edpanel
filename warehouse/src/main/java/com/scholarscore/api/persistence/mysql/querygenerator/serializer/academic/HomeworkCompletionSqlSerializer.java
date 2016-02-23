@@ -1,8 +1,10 @@
-package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
+package com.scholarscore.api.persistence.mysql.querygenerator.serializer.academic;
 
 import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.api.persistence.mysql.querygenerator.SqlGenerationException;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.BaseSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.MeasureSqlSerializer;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.assignment.AssignmentType;
 import com.scholarscore.models.query.Dimension;
@@ -10,17 +12,15 @@ import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.dimension.AssignmentDimension;
 
-import java.util.Set;
-
-public class HomeworkCompletionSqlSerializer implements MeasureSqlSerializer {
+public class HomeworkCompletionSqlSerializer extends BaseSqlSerializer implements MeasureSqlSerializer {
 
     @Override
     public String toSelectInner() {
         //TODO: currently less than 35% is considered 'incomplete' this is based on how Excel does grading, need to make this configurable
-        return "if(" + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TYPE_FK + " = '" + AssignmentType.HOMEWORK.name() +
+        return "if(" + toTableName() + DOT + HibernateConsts.ASSIGNMENT_TYPE_FK + " = '" + AssignmentType.HOMEWORK.name() +
                 "', if(" + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.STUDENT_ASSIGNMENT_AWARDED_POINTS +" is null, 0," +
                 " if(" + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.STUDENT_ASSIGNMENT_AWARDED_POINTS + "/" +
-                HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_AVAILABLE_POINTS + " <= .35, 0, 1)), null)";
+                toTableName() + DOT + HibernateConsts.ASSIGNMENT_AVAILABLE_POINTS + " <= .35, 0, 1)), null)";
     }
 
     /**
@@ -36,31 +36,28 @@ public class HomeworkCompletionSqlSerializer implements MeasureSqlSerializer {
 
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         if (dimTableName.equals(HibernateConsts.SECTION_TABLE)) {
-            return LEFT_OUTER_JOIN + HibernateConsts.ASSIGNMENT_TABLE + ON +
-                    HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.SECTION_FK +
-                    EQUALS + HibernateConsts.SECTION_TABLE + DOT + HibernateConsts.SECTION_TABLE + ID_COL_SUFFIX +
-                    " " +
+            return super.toJoinClause(Dimension.SECTION) +
                     LEFT_OUTER_JOIN + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + ON +
+                    toTableName() + DOT + HibernateConsts.ASSIGNMENT_ID +
+                    EQUALS +
                     HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_FK +
-                    EQUALS + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + ID_COL_SUFFIX +
                     " ";
         } else {
             return LEFT_OUTER_JOIN + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + ON +
                     dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) +
                     EQUALS + HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + dimTableName + FK_COL_SUFFIX +
                     " " +
-                    LEFT_OUTER_JOIN + HibernateConsts.ASSIGNMENT_TABLE + ON +
-                    HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + FK_COL_SUFFIX +
-                    EQUALS + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + ID_COL_SUFFIX + " ";    }
-
+                    LEFT_OUTER_JOIN + toTableName() + ON +
+                    HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_FK + 
+                    EQUALS + toTableName() + DOT + HibernateConsts.ASSIGNMENT_ID + " ";    }
     }
 
     @Override
     public String toFromClause() {
         return HibernateConsts.STUDENT_ASSIGNMENT_TABLE + " " +
-                LEFT_OUTER_JOIN + HibernateConsts.ASSIGNMENT_TABLE + ON +
-                HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + FK_COL_SUFFIX +
-                EQUALS + HibernateConsts.ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_TABLE + ID_COL_SUFFIX + " ";
+                LEFT_OUTER_JOIN + toTableName() + ON +
+                HibernateConsts.STUDENT_ASSIGNMENT_TABLE + DOT + HibernateConsts.ASSIGNMENT_FK + 
+                EQUALS + toTableName() + DOT + HibernateConsts.ASSIGNMENT_ID + " ";
     }
 
     @Override
@@ -91,11 +88,5 @@ public class HomeworkCompletionSqlSerializer implements MeasureSqlSerializer {
         }
         return tableName + "." + columnName;
     }
-
-    @Override
-    public Set<Dimension> allJoinedTables() {
-        Set<Dimension> set = MeasureSqlSerializer.super.allJoinedTables();
-        set.add(Dimension.STUDENT_ASSIGNMENT);
-        return set;
-    }
+    
 }
