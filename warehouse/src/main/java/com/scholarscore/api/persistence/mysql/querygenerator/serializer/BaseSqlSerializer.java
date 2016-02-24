@@ -50,13 +50,26 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
     /* 
     * Generic method to join to a table
     * */
-    protected String joinTable(String tableToJoin) {
-        String inferredJoinFromColumnName = tableToJoin + FK_COL_SUFFIX;
-        String inferredJoinToColumnName = tableToJoin + ID_COL_SUFFIX;
+    private String joinTable(String tableToJoin, boolean newTableStoresFk) {
+
+        String inferredJoinFromColumnName;
+        String inferredJoinToColumnName;
+        if (newTableStoresFk) {
+            inferredJoinFromColumnName = toTableName() + ID_COL_SUFFIX;
+            inferredJoinToColumnName = toTableName() + FK_COL_SUFFIX;
+        } else {
+            inferredJoinFromColumnName = tableToJoin + FK_COL_SUFFIX;
+            inferredJoinToColumnName = tableToJoin + ID_COL_SUFFIX;
+        }
+        
         // TODO Jordan: experiment with the below
         // is this a good idea / the right place to do this?
 //        String inferredJoinToColumnName = QuerySqlGenerator.resolvePrimaryKeyField(tableToJoin);
         return joinTable(tableToJoin, toTableName(), inferredJoinToColumnName, inferredJoinFromColumnName);
+    }
+    
+    protected String joinTable(String tableToJoin) { 
+        return this.joinTable(tableToJoin, optionalJoinTableStoresFk());
     }
     
     /* 
@@ -64,16 +77,19 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
     * This method should be avoided if possible and more straightforward serializers should not need to use it.
     * Some of the more complicated existing serializers require this method (for the time being)
     * */
-    protected String joinTable(String tableToJoinTo, String tableToJoinFrom, String joinedToTableFkName, String joinedFromTableFkName) {
+    protected String joinTable(String tableToJoinTo, String tableToJoinFrom, String joinToColName, String joinFromColName) {
         return LEFT_OUTER_JOIN + tableToJoinTo + ON +
-                tableToJoinFrom + DOT + joinedFromTableFkName +
-                EQUALS + tableToJoinTo + DOT + joinedToTableFkName + " ";
+                tableToJoinFrom + DOT + joinFromColName +
+                EQUALS + tableToJoinTo + DOT + joinToColName + " ";
     }
 
     private String optionalJoinOrEmptyString() {
         return (null == optionalJoinedTable() ? "" : joinTable(optionalJoinedTable()));
     }
 
+    // override this if optional Join table is define
+    protected boolean optionalJoinTableStoresFk() { return false; }
+    
     // children can override this to return something other than 0 when the (possibly) contained if statement
     // evaluated returns false.
     // (some statements use 1,0 and some use 1,null -- 1,null seems better/more recent
