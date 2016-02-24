@@ -28,17 +28,21 @@ public abstract class BaseAttendanceSqlSerializer extends BaseSqlSerializer {
     @Override
     public String toJoinClause(Dimension dimToJoinUpon) {
         if(dimToJoinUpon.equals(Dimension.STUDENT)) {
-            return super.toJoinClause(dimToJoinUpon) + joinTable(HibernateConsts.SCHOOL_DAY_TABLE);
+            // join from student -> attendance -> school day
+            return super.toJoinClause(Dimension.STUDENT);
         } else if(dimToJoinUpon.equals(Dimension.SCHOOL)){
-            // this may be confusing because SCHOOL_DAY_TABLE is the argument for both, but this is actually expected, here's why -
-            // * toJoinClause is joining this sqlizer's dimension (ATTENDANCE) to the supplied dimension (SCHOOL_DAY)
-            // * joinTable is joining SchoolDay to the supplied table
-            return toJoinClause(HibernateConsts.SCHOOL_DAY_TABLE) +
-                    joinTable(HibernateConsts.SCHOOL_DAY_TABLE,     // table TO
-                            HibernateConsts.SCHOOL_TABLE,           // table FROM
+            // join from school -> school day -> attendance
+            return
+                    joinTable(HibernateConsts.SCHOOL_DAY_TABLE,     // table joined TO
+                            HibernateConsts.SCHOOL_TABLE,           // table joined FROM
                             HibernateConsts.SCHOOL_FK,     // table TO col
-                            QuerySqlGenerator.resolvePrimaryKeyField(HibernateConsts.SCHOOL_TABLE) // table FROM col
-                    );
+                            QuerySqlGenerator.resolvePrimaryKeyField(HibernateConsts.SCHOOL_TABLE)) // table FROM col
+                    +
+                        joinTable(HibernateConsts.ATTENDANCE_TABLE,     // table TO (contains _id)
+                                HibernateConsts.SCHOOL_DAY_TABLE,           // table FROM (contains _fk)
+                                HibernateConsts.SCHOOL_DAY_FK,     // table TO col
+                                QuerySqlGenerator.resolvePrimaryKeyField(HibernateConsts.SCHOOL_DAY_TABLE)) // table FROM col 
+                    ;
         }
         // TODO: throw new SqlGenerationException("AttendanceSqlSerializer does not support Dimension " + dimToJoinUpon + "!");
         return null;
@@ -51,6 +55,16 @@ public abstract class BaseAttendanceSqlSerializer extends BaseSqlSerializer {
     // subclasses MAY specify an AttendanceType that should be matched
     AttendanceTypes attendanceTypeMatches() { 
         return null;
+    }
+
+    @Override
+    public String toFromClause() {
+        return toTableName() + " ";
+    }
+
+    @Override
+    public String optionalJoinedTable() {
+        return HibernateConsts.SCHOOL_DAY_TABLE;
     }
 
     @Override
