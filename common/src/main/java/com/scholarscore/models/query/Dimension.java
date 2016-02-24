@@ -30,19 +30,12 @@ public enum Dimension {
     STUDENT,
     ADMINISTRATOR,
     USER,
-    
-    // should these dimensions be a different kind of enum, perhaps implementing a common interface? 
-    // the above "dimension" object is user facing and simplified, for the API caller to build queries with
-    
-    // These objects exist because we needed a similar, but slightly different, object -- one that effectively captures the directed relationship
-    // like dimension does, but these tables shouldn't be "public" like the ones above
-    // TODO Jordan: after this is working, experiment with making this a different type of enum
     STUDENT_ASSIGNMENT,
     STUDENT_SECTION_GRADE,
     SECTION_GRADE,
     SCHOOL_DAY,
-    ATTENDANCE
-    ;
+    ATTENDANCE,
+    BEHAVIOR;
     
     /**
      * Factory method for constructing an IDimension of time Dimension.
@@ -82,7 +75,9 @@ public enum Dimension {
             case SCHOOL_DAY:
                 return new SchoolDayPseudoDimension();
             case ATTENDANCE:
-                return new AttendancePseudoDimension();
+                return new AttendanceDimension();
+            case BEHAVIOR:
+                return new BehaviorDimension();
             default:
                 throw new QueryException("Unsupported Dimension " + d + "!");
         }

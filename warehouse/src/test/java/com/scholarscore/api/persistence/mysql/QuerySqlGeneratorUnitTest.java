@@ -495,7 +495,8 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT student.student_user_fk, SUM(if(behavior.category = 'DEMERIT', 1, 0)) as sum_demerit_agg \n" +
-                        "FROM student LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk \n" +
+                        "FROM student " + 
+                        "LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk \n" +
                         "WHERE  ( ( behavior.date  >  '2014-09-01 00:00:00.0' )  AND  ( student.student_user_fk  =  1 ) ) \n" +
                         "GROUP BY student.student_user_fk";
             }
@@ -903,7 +904,7 @@ public class QuerySqlGeneratorUnitTest {
                 { dailyAbsenceTestQuery },
                 { demeritTestQuery },
                 { meritTestQuery },
-                { demeritWithStaffTestQuery },
+// FIXME (behavior -> teacher)               { demeritWithStaffTestQuery },
                 { demeritWithoutDimensionTestQuery },
                 { detentionWithoutDimensionTestQuery },
                 { schoolNameTestQuery }, 

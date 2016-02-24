@@ -87,7 +87,7 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
         return (null == optionalJoinedTable() ? "" : joinTable(optionalJoinedTable()));
     }
 
-    // override this if optional Join table is define
+    // override this and return true if optional join table contains the key (_FK) that points to the other table's ID 
     protected boolean optionalJoinTableStoresFk() { return false; }
     
     // children can override this to return something other than 0 when the (possibly) contained if statement
