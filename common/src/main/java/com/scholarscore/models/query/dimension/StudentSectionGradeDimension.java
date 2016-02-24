@@ -1,6 +1,7 @@
 package com.scholarscore.models.query.dimension;
 
 import com.google.common.collect.ImmutableSet;
+import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.query.Dimension;
 
@@ -11,10 +12,10 @@ import java.util.Set;
  * Date: 2/16/16
  * Time: 5:15 PM
  */
-public class SectionGradePseudoDimension implements IDimension {
+public class StudentSectionGradeDimension implements IDimension {
 
     public static final Set<Dimension> PARENT_DIMENSIONS =
-            ImmutableSet.of(Dimension.STUDENT, Dimension.SECTION, Dimension.TERM);
+            ImmutableSet.of(Dimension.STUDENT, Dimension.SECTION_GRADE, Dimension.SECTION);
 
     @Override
     public Dimension getType() {

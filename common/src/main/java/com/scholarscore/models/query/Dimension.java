@@ -67,13 +67,13 @@ public enum Dimension {
             case USER:
                 return new UserDimension();
             case STUDENT_ASSIGNMENT:
-                return new StudentAssignmentPseudoDimension();
+                return new StudentAssignmentDimension();
             case STUDENT_SECTION_GRADE:
-                return new StudentSectionGradePseudoDimension();
+                return new StudentSectionGradeDimension();
             case SECTION_GRADE:
-                return new SectionGradePseudoDimension();
+                return new SectionGradeDimension();
             case SCHOOL_DAY:
-                return new SchoolDayPseudoDimension();
+                return new SchoolDayDimension();
             case ATTENDANCE:
                 return new AttendanceDimension();
             case BEHAVIOR:
