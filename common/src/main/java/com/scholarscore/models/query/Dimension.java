@@ -96,17 +96,22 @@ public enum Dimension {
     }
     
     private static final List<Dimension> orderedDimensions = new ArrayList<Dimension>(){{
+        add(Dimension.STUDENT_SECTION_GRADE);
+        add(Dimension.SECTION_GRADE);
+        add(Dimension.ATTENDANCE);
+        add(Dimension.BEHAVIOR);
         add(Dimension.STUDENT);
         add(Dimension.TEACHER);
-        add(Dimension.SECTION);
+        add(Dimension.ADMINISTRATOR);
         add(Dimension.STUDENT_ASSIGNMENT);
         add(Dimension.ASSIGNMENT);
+        add(Dimension.SECTION);
         add(Dimension.TERM);
         add(Dimension.YEAR);
         add(Dimension.COURSE);
         add(Dimension.SUBJECT_AREA);
+        add(Dimension.SCHOOL_DAY);
         add(Dimension.SCHOOL);
-        add(Dimension.ADMINISTRATOR);
         add(Dimension.USER);
     }};
 }
