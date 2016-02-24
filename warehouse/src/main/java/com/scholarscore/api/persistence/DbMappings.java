@@ -107,8 +107,7 @@ public class DbMappings {
                 put(Dimension.YEAR, HibernateConsts.SCHOOL_YEAR_TABLE);
                 put(Dimension.ASSIGNMENT, HibernateConsts.ASSIGNMENT_TABLE);
                 put(Dimension.USER, HibernateConsts.USERS_TABLE);
-                
-                // TODO Jordan: below are pseudo-dimensions... 
+                put(Dimension.BEHAVIOR, HibernateConsts.BEHAVIOR_TABLE);
                 put(Dimension.STUDENT_ASSIGNMENT, HibernateConsts.STUDENT_ASSIGNMENT_TABLE);
                 put(Dimension.STUDENT_SECTION_GRADE, HibernateConsts.STUDENT_SECTION_GRADE_TABLE);
                 put(Dimension.SECTION_GRADE, HibernateConsts.SECTION_GRADE_TABLE);

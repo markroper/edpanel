@@ -2,7 +2,6 @@ package com.scholarscore.models.query.dimension;
 
 import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.attendance.Attendance;
-import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.query.Dimension;
 
 import java.util.Set;
@@ -12,10 +11,10 @@ import java.util.Set;
  * Date: 2/16/16
  * Time: 5:15 PM
  */
-public class AttendancePseudoDimension implements IDimension {
+public class BehaviorDimension implements IDimension {
 
     public static final Set<Dimension> PARENT_DIMENSIONS =
-            ImmutableSet.of(Dimension.SCHOOL_DAY, Dimension.STUDENT, Dimension.SECTION);
+            ImmutableSet.of(Dimension.STUDENT, Dimension.USER);
 
     @Override
     public Dimension getType() {
