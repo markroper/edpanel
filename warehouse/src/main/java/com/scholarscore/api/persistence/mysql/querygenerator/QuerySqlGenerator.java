@@ -223,7 +223,8 @@ public abstract class QuerySqlGenerator {
         }
         List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
 
-        // TODO Jordan: just experimentin' 
+        // TODO Jordan: this is a work in progress and 
+        // doesn't touch anything else... move to
         List<Dimension> copyOfOrderedTables = new ArrayList<>();
         copyOfOrderedTables.addAll(orderedTables);
 
