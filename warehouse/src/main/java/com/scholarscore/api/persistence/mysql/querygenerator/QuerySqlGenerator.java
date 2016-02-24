@@ -234,13 +234,13 @@ public abstract class QuerySqlGenerator {
         if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
             AggregateMeasure aggregateMeasure = q.getAggregateMeasures().get(0);
             MeasureSqlSerializer serializer = MeasureSqlSerializerFactory.get(aggregateMeasure.getMeasure());
- //           Dimension table = DbMappings.getDimensionFromTableName(serializer.toTableName());
- //           Dimension optionalTable = DbMappings.getDimensionFromTableName(serializer.optionalJoinedTable());
+            Dimension table = DbMappings.getDimensionFromTableName(serializer.toTableName());
+            Dimension optionalTable = DbMappings.getDimensionFromTableName(serializer.optionalJoinedTable());
             
-//            copyOfOrderedTables.add(table);
-//            if (optionalTable != null) {
-//                copyOfOrderedTables.add(optionalTable);
-//            }
+            copyOfOrderedTables.add(table);
+            if (optionalTable != null) {
+                copyOfOrderedTables.add(optionalTable);
+            }
             
             /*
             for (Dimension dimensionKey : DbMappings.DIMENSION_TO_TABLE_NAME.keySet()) {

@@ -45,7 +45,7 @@ import java.util.List;
 @Test(groups = { "unit" })
 public class QuerySqlGeneratorUnitTest {
 
-    private interface TestQuery {
+    public interface TestQuery {
         String queryName();
         Query buildQuery();
         String buildSQL();
@@ -53,7 +53,7 @@ public class QuerySqlGeneratorUnitTest {
     }
 
     @DataProvider
-    public Object[][] queriesProvider() {
+    public static Object[][] queriesProvider() {
 
         // initialize shared objects here -- anything used by multiple queries
         final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -128,7 +128,9 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT student.birth_date, student.federal_ethnicity, school.school_name, SUM(section_grade.grade) as sum_course_grade_agg \n" +
-                        "FROM student LEFT OUTER JOIN student_section_grade ON student.student_user_fk = student_section_grade.student_fk LEFT OUTER JOIN section_grade ON student_section_grade.section_grade_fk = section_grade.section_grade_id \n" +
+                        "FROM student " + 
+                        "LEFT OUTER JOIN student_section_grade ON student.student_user_fk = student_section_grade.student_fk " + 
+                        "LEFT OUTER JOIN section_grade ON student_section_grade.section_grade_fk = section_grade.section_grade_id \n" +
                         "LEFT OUTER JOIN section ON section.section_id = student_section_grade.section_fk \n" +
                         "LEFT OUTER JOIN school ON school.school_id = student.school_fk \n" +
                         "WHERE  ( ( '2014-09-01 00:00:00.0'  >=  section.section_start_date )  AND  ( '2015-09-01 00:00:00.0'  <=  section.section_start_date ) ) \n" +
@@ -313,7 +315,7 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT school.school_id, SUM(if(attendance.attendance_status in ('ABSENT'), 1, null)) as sum_attendance_agg \n" +
-                        "FROM school LEFT OUTER JOIN attendance ON school_day.school_day_id = attendance.school_day_fk LEFT OUTER JOIN school_day ON school.school_id = school_day.school_fk \n" +
+                        "FROM school LEFT OUTER JOIN school_day ON school.school_id = school_day.school_fk LEFT OUTER JOIN attendance ON school_day.school_day_id = attendance.school_day_fk \n" +
                         "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) \n" +
                         "GROUP BY school.school_id";
             }
