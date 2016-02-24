@@ -39,6 +39,6 @@ public class SchoolDayDimension implements IDimension {
 
     @Override
     public String getName() {
-        return "SchoolDayPseudoDimension";
+        return "SchoolDayDimension";
     }
 }
