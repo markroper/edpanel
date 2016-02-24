@@ -1,8 +1,7 @@
 package com.scholarscore.models.query.dimension;
 
 import com.google.common.collect.ImmutableSet;
-import com.scholarscore.models.attendance.SchoolDay;
-import com.scholarscore.models.grade.StudentSectionGrade;
+import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.query.Dimension;
 
 import java.util.Set;
@@ -12,19 +11,19 @@ import java.util.Set;
  * Date: 2/16/16
  * Time: 5:15 PM
  */
-public class SchoolDayPseudoDimension implements IDimension {
+public class StudentAssignmentDimension implements IDimension {
 
     public static final Set<Dimension> PARENT_DIMENSIONS =
-            ImmutableSet.of(Dimension.SCHOOL);
+            ImmutableSet.of(Dimension.STUDENT, Dimension.ASSIGNMENT);
 
     @Override
     public Dimension getType() {
-        return Dimension.SCHOOL_DAY;
+        return Dimension.STUDENT_ASSIGNMENT;
     }
 
     @Override
     public Class<?> getAssociatedClass() {
-        return SchoolDay.class;
+        return StudentAssignment.class;
     }
 
     @Override
@@ -39,6 +38,6 @@ public class SchoolDayPseudoDimension implements IDimension {
 
     @Override
     public String getName() {
-        return "SchoolDayPseudoDimension";
+        return getClass().getSimpleName();
     }
 }
