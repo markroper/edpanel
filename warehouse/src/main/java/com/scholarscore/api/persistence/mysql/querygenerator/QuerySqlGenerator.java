@@ -13,6 +13,7 @@ import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.SubqueryColumnRef;
 import com.scholarscore.models.query.SubqueryExpression;
+import com.scholarscore.models.query.dimension.IDimension;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
@@ -25,10 +26,14 @@ import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
 import org.apache.commons.lang3.RandomStringUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 /**
@@ -113,17 +118,13 @@ public abstract class QuerySqlGenerator {
         //WHERE CLAUSE
         if(null != q.getSubqueryFilter() && !q.getSubqueryFilter().isEmpty()) {
             sqlBuilder.append(WHERE);
-            boolean first = true;
+            FirstAwareWrapper innerSqlBuilder = new FirstAwareWrapper(sqlBuilder);
             for(SubqueryExpression entry: q.getSubqueryFilter()) {
                 Integer pos = entry.getPosition();
                 IOperator operator = entry.getOperator();
                 IOperand operand = entry.getOperand();
                 if(pos > numChildDimensions - 1) {
-                    if(first) {
-                        first = false;
-                    } else {
-                        sqlBuilder.append(" AND ");
-                    }
+                    innerSqlBuilder.markNotFirstOrAppend(" AND ");
                     pos = pos - numChildDimensions;
                     int counter = 0;
                     for(AggregateMeasure am: q.getAggregateMeasures()) {
@@ -149,12 +150,7 @@ public abstract class QuerySqlGenerator {
                         }
                     }
                 } else {
-                    //find the right dimension
-                    if(first) {
-                        first = false;
-                    } else {
-                        sqlBuilder.append(DELIM);
-                    }
+                    innerSqlBuilder.markNotFirstOrAppend(DELIM);
                     //look for the dimension
                     sqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
                     sqlBuilder.append(" ");
@@ -177,11 +173,11 @@ public abstract class QuerySqlGenerator {
         if(null != q.getFields()) {
             for (DimensionField f : q.getFields()) {
                 if (isFirst) {
-                    sqlBuilder.append(generateDimensionFieldSql(f, null));
                     isFirst = false;
                 } else {
-                    sqlBuilder.append(DELIM + generateDimensionFieldSql(f, null));
+                    sqlBuilder.append(DELIM);
                 }
+                sqlBuilder.append(generateDimensionFieldSql(f, null));
             }
         }
         if (q.getAggregateMeasures() != null) {
@@ -208,12 +204,13 @@ public abstract class QuerySqlGenerator {
         sqlBuilder.append(FROM);
 
         //Get the dimensions in the correct order for joining:
-        HashSet<Dimension> selectedDims = new HashSet<Dimension>();
+        HashSet<Dimension> selectedDims = new HashSet<>();
         if(null != q.getFields()) {
             for (DimensionField f : q.getFields()) {
                 selectedDims.add(f.getDimension());
             }
         }
+        // if any hints are included, use them 
         if (null != q.getJoinTables()) {
             for (Dimension d : q.getJoinTables()) {
                 selectedDims.add(d);
@@ -225,6 +222,50 @@ public abstract class QuerySqlGenerator {
             selectedDims.addAll(filterDims);
         }
         List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
+
+        // TODO Jordan: just experimentin' 
+        List<Dimension> copyOfOrderedTables = new ArrayList<>();
+        copyOfOrderedTables.addAll(orderedTables);
+
+        // I was hoping to get the other table (from the measure) here as well...
+        // well, let's try hacky to start and maybe later work our way up to elegant
+//        String measureTableName = null;
+//        Dimension measureDimension = null;
+        if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
+            AggregateMeasure aggregateMeasure = q.getAggregateMeasures().get(0);
+            MeasureSqlSerializer serializer = MeasureSqlSerializerFactory.get(aggregateMeasure.getMeasure());
+            Dimension table = DbMappings.TABLE_NAME_TO_DIMENSION.get(serializer.toTableName());
+            Dimension optionalTable = DbMappings.TABLE_NAME_TO_DIMENSION.get(serializer.optionalJoinedTable());
+            
+            copyOfOrderedTables.add(table);
+            if (optionalTable != null) {
+                copyOfOrderedTables.add(optionalTable);
+            }
+            
+            /*
+            for (Dimension dimensionKey : DbMappings.DIMENSION_TO_TABLE_NAME.keySet()) {
+                String thisTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimensionKey);
+                if (thisTableName.equals(measureTableName)) {
+                    // this is the dimension! 
+                    // measureDimension = dimensionKey;
+                    copyOfOrderedTables.add(dimensionKey);
+                    break;
+                }
+            }
+            */
+        }
+
+//        if (measureDimension != null) {
+//            copyOfOrderedTables.add(measureDimension);
+//        }
+        
+        // errg. just make it fit.
+        boolean hasCompletePath = hasCompleteJoinPath(copyOfOrderedTables);
+        if (hasCompletePath) {
+            System.out.println("Query has COMPLETE join path!");
+        } else {
+            System.out.println("Query has -incomplete- join path!");
+        }
         //Use the first dimension in the sorted columns as the FROM table
         if(null != orderedTables && !orderedTables.isEmpty()) {
             //Use the first dimension in the sorted columns as the FROM table
@@ -236,7 +277,9 @@ public abstract class QuerySqlGenerator {
             if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
                 am = q.getAggregateMeasures().get(0);
                 mss = MeasureSqlSerializerFactory.get(am.getMeasure());
-                sqlBuilder.append(mss.toJoinClause(currTable));
+                if (mss != null) {
+                    sqlBuilder.append(mss.toJoinClause(currTable));
+                }
             }
             //Join in the remaining dimensions tables, if any
             if(orderedTables.size() > 1) {
@@ -249,8 +292,10 @@ public abstract class QuerySqlGenerator {
                     //If that doesn't match, check the dimension before that.
                     if (Dimension.buildDimension(currTable).getParentDimensions() != null &&
                             !Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
-                        if(am != null && am.getMeasure() != null && mss != null &&
-                                Measure.buildMeasure(am.getMeasure()).getCompatibleDimensions().contains(joinDim)){
+                        if(am != null 
+                                && mss != null
+                                && am.getMeasure() != null 
+                                && Measure.buildMeasure(am.getMeasure()).getCompatibleDimensions().contains(joinDim)){
                             currentTableName = mss.toTableName();
                         } else {
                             Dimension dimDesc = currTable;
@@ -497,62 +542,46 @@ public abstract class QuerySqlGenerator {
     private static void toSqlSelectAgainstSubquery(StringBuilder sqlBuilder, StringBuilder groupByBuilder,
                                                    Query q, String tableAlias, Integer numChildDimensions,
                                                    Integer numAggregateMeasures) throws SqlGenerationException {
-        boolean isFirst = true;
-        boolean isGroupByFirst = true;
+        FirstAwareWrapper innerSqlBuilder = new FirstAwareWrapper(sqlBuilder);
+        FirstAwareWrapper innerGroupByBuilder = new FirstAwareWrapper(groupByBuilder);
         //For every column, pluck the correct dimension or measure from the subquery
         for(SubqueryColumnRef col: q.getSubqueryColumnsByPosition()) {
             Integer pos = col.getPosition();
             AggregateFunction function = col.getFunction();
             if(-1 == pos) {
-                if(isFirst) {
-                    isFirst = false;
-                } else {
-                    sqlBuilder.append(DELIM);
-                }
-                sqlBuilder.append(function.name() + "(*)");
+                innerSqlBuilder.markNotFirstOrAppend(DELIM);
+                innerSqlBuilder.append(function.name() + "(*)");
             } else if(pos > numChildDimensions - 1) {
                 //Find the right agg measure
                 pos -= numChildDimensions;
                 if(pos < numAggregateMeasures) {
-                    if(isFirst) {
-                        isFirst = false;
-                    } else {
-                        sqlBuilder.append(DELIM);
-                    }
+                    innerSqlBuilder.markNotFirstOrAppend(DELIM);
                     int counter = 0;
                     for(AggregateMeasure am: q.getAggregateMeasures()) {
                         if(counter == pos) {
                             if(null != function) {
-                                sqlBuilder.append(function.name() + ")");
+                                innerSqlBuilder.append(function.name() + ")");
                             }
-                            sqlBuilder.append(tableAlias + DOT + generateAggColumnName(am));
+                            innerSqlBuilder.append(tableAlias + DOT + generateAggColumnName(am));
                             if(null != function) {
-                                sqlBuilder.append(function.name() + ")");
+                                innerSqlBuilder.append(function.name() + ")");
                             } else {
-                                if(isGroupByFirst) {
-                                    isGroupByFirst = false;
-                                } else {
-                                    groupByBuilder.append(DELIM);
-                                }
-                                groupByBuilder.append(tableAlias + DOT + generateAggColumnName(am));
+                                innerGroupByBuilder.markNotFirstOrAppend(DELIM);
+                                innerGroupByBuilder.append(tableAlias + DOT + generateAggColumnName(am));
                             }
                         }
                         counter++;
                         if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
                             if(counter == pos) {
                                 if(null != function) {
-                                    sqlBuilder.append(function.name() + "(");
+                                    innerSqlBuilder.append(function.name() + "(");
                                 }
-                                sqlBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
+                                innerSqlBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
                                 if(null != function) {
-                                    sqlBuilder.append(function.name() + ")");
+                                    innerSqlBuilder.append(function.name() + ")");
                                 } else {
-                                    if(isGroupByFirst) {
-                                        isGroupByFirst = false;
-                                    } else {
-                                        groupByBuilder.append(DELIM);
-                                    }
-                                    groupByBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
+                                    innerGroupByBuilder.markNotFirstOrAppend(DELIM);
+                                    innerGroupByBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
                                 }
                             }
                             counter++;
@@ -561,21 +590,214 @@ public abstract class QuerySqlGenerator {
                 }
             } else {
                 //find the right dimension
-                if(isFirst) {
-                    isFirst = false;
-                } else {
-                    sqlBuilder.append(DELIM);
-                }
+                innerSqlBuilder.markNotFirstOrAppend(DELIM);
                 //look for the dimension
-                sqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
-                if(isGroupByFirst) {
-                    isGroupByFirst = false;
-                } else {
-                    groupByBuilder.append(DELIM);
-                }
-                groupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
-
+                innerSqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
+                innerGroupByBuilder.markNotFirstOrAppend(DELIM);
+                innerGroupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
             }
         }
+    }
+    
+    private static class Node { 
+        Edge[] edges;
+        Dimension dimension;
+        
+        @Override
+        public String toString() { 
+            return "Node (d:" + dimension +") (edges: [" + edges.length + "])";
+        }
+    }
+    
+    private static class Edge {
+        Node pointedFrom;
+        Node pointedAt;
+    }
+    
+    // should probably take all dimensions and build the full graph once?
+    private static HashMap<Dimension, Node> buildGraph(List<Dimension> dimensions) { 
+        HashMap<Dimension, Node> nodesSoFar = new HashMap<>();
+        // first just build the nodes
+        for (Dimension dimension : dimensions) {
+            Node node = new Node();
+            node.dimension = dimension;
+            nodesSoFar.put(dimension, node);
+        }
+        // then wire up the edges
+        for (Dimension dimension : dimensions) {
+            Node node = nodesSoFar.get(dimension);
+            IDimension dimensionClass = Dimension.buildDimension(dimension);
+            Set<Dimension> parentDimensions = dimensionClass.getParentDimensions();
+            if (parentDimensions != null && parentDimensions.size() > 0) {
+                Edge[] edges = new Edge[parentDimensions.size()];
+                int arrayPos = 0;
+                for (Dimension parentDimension : parentDimensions) {
+                    Edge edge = new Edge();
+                    edge.pointedAt = nodesSoFar.get(parentDimension);
+                    edge.pointedFrom = nodesSoFar.get(dimension);
+                    edges[arrayPos++] = edge;
+                }
+                node.edges = edges;
+            } else {
+                node.edges = new Edge[0];
+            }
+        }
+        return nodesSoFar;
+    }
+    
+    private static final HashMap<Dimension, Node> allDimensionsGraph = buildGraph(Arrays.asList(Dimension.values()));
+    
+    // right now this only checks the neighbors a node points to and all nodes pointing at a node
+    private static Set<Node> findImmediateNeighbors(Node dimensionNode) {
+        if (dimensionNode == null) { return new HashSet<>(); }
+        Set<Node> allNodes = new HashSet<>();
+        // all nodes this node points at
+        for (Edge edge : dimensionNode.edges) {
+            allNodes.add(edge.pointedAt);
+        }
+        // all nodes that are pointing at this node
+        allNodes.addAll(getAllNodesPointingAt(dimensionNode));
+        return allNodes;
+    }
+    
+    // doesn't actually tell us a path, but rather if a given list of dimensions can be joined together w/o additional tables
+    private static boolean hasCompleteJoinPath(List<Dimension> orderedTables) {
+        if (orderedTables.size() <= 1) { return true; }
+        
+        Set<Node> unmatchedTables = new HashSet<>();
+        for (Dimension dimension : orderedTables) {
+            unmatchedTables.add(allDimensionsGraph.get(dimension));
+        }
+        
+        // take the first table and scan its neighbors, which will then lead to all connected tables being scanned.
+        HashMap<Node, Integer> tableGraph = new HashMap<>();
+        Node firstNode = unmatchedTables.iterator().next();
+        Set<Node> neighborNodes = findImmediateNeighbors(firstNode);
+        unmatchedTables.remove(firstNode);
+
+        // yeah, okay, a table hasn't been matched yet. more readable would be a separate 'isFirst' var maybe
+        // we may need to loop through this a number of times depending on the order of the tables.
+        // as long as any new table is matched, loop again.
+        boolean tableMatchedThisRound = true; 
+        
+        while (tableMatchedThisRound) {
+            tableMatchedThisRound = false;
+            // check all unmatched tables against these neighbor nodes. 
+            for (Iterator<Node> unmatchedTableIterator = unmatchedTables.iterator(); unmatchedTableIterator.hasNext(); ) {
+                Node unmatchedTable = unmatchedTableIterator.next();
+//            for (Node unmatchedTable : unmatchedTables) {
+                if (neighborNodes.contains(unmatchedTable)) {
+                    Set<Node> moreNeighborNodes = findImmediateNeighbors(unmatchedTable);
+                    unmatchedTableIterator.remove();
+                    neighborNodes.addAll(moreNeighborNodes);
+                    tableMatchedThisRound = true;
+                }
+//            }
+            }
+        }
+        
+        // okay, now all the tables are matched or they *will never* be matched.
+        // if there's any unmatched tables, the join path is incomplete.
+        if (unmatchedTables.size() > 0) {
+            System.out.println("Unmatched Table! Could not match on table(s)...");
+            System.out.print("ALL TABLES: ( ");
+            for (Dimension table : orderedTables) {
+                if (table != null) {
+                    System.out.print(table.name() + " ");
+                }
+            }
+            System.out.println(")");
+            for (Node unmatchedTable : unmatchedTables) {
+                System.out.println("NO MATCH FOR TABLE " + unmatchedTable);
+            }
+            return false;
+        }  
+        return true;
+        
+        /*
+        for (int i = 1; i < orderedTables.size(); i++) {
+            Dimension currentTable = orderedTables.get(i);
+            Node tableNode = allDimensionsGraph.get(currentTable);
+            
+            // is node already scanned? if so, we don't need to do anything else
+            if (tableGraph.keySet().contains(tableNode)) { continue; }
+            
+            // okay, node isn't scanned. This could be because our graph is directional, 
+            // so maybe *this* table points to one of the ones we've already scanned. 
+            // Additionally, it's possible that this table points to ANOTHER table that's not scanned yet, but 
+            // is found LATER in the orderedTables list (and thus, will be scanned) 
+            if (tableNode.edges != null && tableNode.edges.length > 0) {
+                for (Edge edge : tableNode.edges) {
+                    // if the node has edges, check 'em. Maybe this table points to either
+                    // (a) a table that we've already scanned 
+                    if (tableGraph.keySet().contains(edge.pointedAt.dimension)) {
+                        // ayup, already scanned a table this one is pointing at. might as well scan this one 
+                    }
+                    // or 
+                    // (b) a table that we will be scanning soon
+                }
+            }
+        }
+        */
+
+
+        /*
+        // ...
+        Set<Node> nodesPointingAt = getAllNodesPointingAt(firstDimensionNode);
+        for (Node nodePointingAt : nodesPointingAt) {
+            // if we have unscanned nodes that are directly pointing to our initial node,
+        }
+        
+
+        // now, check to see if all tables are in the set (i.e. connected) 
+        // any dimension not in the set indicates a query without a complete join path
+        for (Dimension table : orderedTables) {
+            Node tableNode = allDimensionsGraph.get(table);
+            if (!tableGraph.containsKey(tableNode)) {
+                return false;
+            }
+        }
+        return true;
+        */
+    }
+   
+    private static Set<Node> getAllNodesPointingAt(Node root) { 
+        HashSet<Node> allNodesPointingAtRoot = new HashSet<>();
+        for (Dimension dimension : allDimensionsGraph.keySet()) {
+            Node currentNode = allDimensionsGraph.get(dimension);
+            if (currentNode.edges != null) {
+                for (Edge edge : currentNode.edges) {
+                    if (edge.pointedAt != null && edge.pointedAt.equals(root)) {
+                        allNodesPointingAtRoot.add(currentNode);
+                    }
+                }
+            }
+        }
+        return allNodesPointingAtRoot;
+    }
+    
+    private static List<Dimension> breadthFirstSearch(Dimension rootDimension, Dimension targetDimension) { 
+        PriorityQueue<Dimension> dimensionsToSearch = new PriorityQueue<>();
+        
+        return null;
+    }
+    
+    private static class FirstAwareWrapper { 
+        StringBuilder sb;
+        boolean first = true;
+        
+        public FirstAwareWrapper(StringBuilder stringBuilder) { 
+            if (stringBuilder == null) { throw new IllegalArgumentException("FirstAwareWrapper requires StringBuffer to not be null"); }
+            this.sb = stringBuilder;
+        }
+        
+        private void markNotFirstOrAppend(String append) { 
+            if (first) { first = false; } 
+            else { append(append); }
+        }
+        
+        private void append(Object toAppend) { sb.append(toAppend); }
+        
+        @Override public String toString() { return sb.toString(); }
     }
 }
