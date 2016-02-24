@@ -98,9 +98,9 @@ public enum Dimension {
     private static final List<Dimension> orderedDimensions = new ArrayList<Dimension>(){{
         add(Dimension.STUDENT);
         add(Dimension.TEACHER);
-        add(Dimension.SECTION);
         add(Dimension.STUDENT_ASSIGNMENT);
         add(Dimension.ASSIGNMENT);
+        add(Dimension.SECTION);
         add(Dimension.TERM);
         add(Dimension.YEAR);
         add(Dimension.COURSE);
