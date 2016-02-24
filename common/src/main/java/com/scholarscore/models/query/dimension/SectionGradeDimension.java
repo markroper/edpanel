@@ -18,7 +18,7 @@ public class SectionGradeDimension implements IDimension {
 
     @Override
     public Dimension getType() {
-        return Dimension.STUDENT_SECTION_GRADE;
+        return Dimension.SECTION_GRADE;
     }
 
     @Override
