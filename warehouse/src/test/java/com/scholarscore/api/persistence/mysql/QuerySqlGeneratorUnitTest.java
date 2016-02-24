@@ -904,7 +904,7 @@ public class QuerySqlGeneratorUnitTest {
                 { dailyAbsenceTestQuery },
                 { demeritTestQuery },
                 { meritTestQuery },
-// FIXME (behavior -> teacher)               { demeritWithStaffTestQuery },
+                { demeritWithStaffTestQuery },
                 { demeritWithoutDimensionTestQuery },
                 { detentionWithoutDimensionTestQuery },
                 { schoolNameTestQuery }, 

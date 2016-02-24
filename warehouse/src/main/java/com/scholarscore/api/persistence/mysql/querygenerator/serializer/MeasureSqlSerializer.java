@@ -7,9 +7,7 @@ import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.bucket.AggregationBucket;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public interface MeasureSqlSerializer {
     public static final String LEFT_OUTER_JOIN = "LEFT OUTER JOIN ";
