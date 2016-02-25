@@ -1,8 +1,7 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance;
 
-import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.attendance.AttendanceStatus;
-import com.scholarscore.models.attendance.AttendanceTypes;
+import com.scholarscore.models.attendance.AttendanceType;
 
 /**
  * Created by cwallace on 1/4/16.
@@ -13,5 +12,5 @@ public class SectionAbsenceSqlSerializer extends BaseAttendanceSqlSerializer {
     AttendanceStatus attendanceStatusMatches() { return AttendanceStatus.ABSENT; }
 
     @Override
-    AttendanceTypes attendanceTypeMatches() { return AttendanceTypes.SECTION; }
+    AttendanceType attendanceTypeMatches() { return AttendanceType.SECTION; }
 }
