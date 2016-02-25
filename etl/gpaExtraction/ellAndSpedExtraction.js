@@ -1,7 +1,7 @@
 var ellAndSpedQuery =
-  "    ID "+
-  "MA_SpecEd621"+
-  "MA_EngProficiency";
+  '    ID \n\
+  MA_SpecEd621 \n\
+  MA_EngProficiency';
 
 var exportSelector = "#lnk_QuickExport";
 var formClass = '.noSubmitLoading';
@@ -55,8 +55,7 @@ function login(casper) {
 }
 
 login(casper);
-downloadStudents(casper, "#selectMaleStudents", "1", 0);
-downloadStudents(casper, "#selectFemaleStudents", "2", 0);
+downloadStudents(casper, "#selectAllStudents", "1", 0);
 
 //Downlaods the information for a selection of students
 function downloadStudents(casper, selector, fileName, attempt) {
