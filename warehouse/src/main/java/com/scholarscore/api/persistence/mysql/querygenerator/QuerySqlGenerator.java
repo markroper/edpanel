@@ -13,6 +13,7 @@ import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.SubqueryColumnRef;
 import com.scholarscore.models.query.SubqueryExpression;
+import com.scholarscore.models.query.dimension.IDimension;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
@@ -25,10 +26,14 @@ import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
 import org.apache.commons.lang3.RandomStringUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 /**
@@ -113,17 +118,13 @@ public abstract class QuerySqlGenerator {
         //WHERE CLAUSE
         if(null != q.getSubqueryFilter() && !q.getSubqueryFilter().isEmpty()) {
             sqlBuilder.append(WHERE);
-            boolean first = true;
+            FirstAwareWrapper innerSqlBuilder = new FirstAwareWrapper(sqlBuilder);
             for(SubqueryExpression entry: q.getSubqueryFilter()) {
                 Integer pos = entry.getPosition();
                 IOperator operator = entry.getOperator();
                 IOperand operand = entry.getOperand();
                 if(pos > numChildDimensions - 1) {
-                    if(first) {
-                        first = false;
-                    } else {
-                        sqlBuilder.append(" AND ");
-                    }
+                    innerSqlBuilder.markNotFirstOrAppend(" AND ");
                     pos = pos - numChildDimensions;
                     int counter = 0;
                     for(AggregateMeasure am: q.getAggregateMeasures()) {
@@ -149,12 +150,7 @@ public abstract class QuerySqlGenerator {
                         }
                     }
                 } else {
-                    //find the right dimension
-                    if(first) {
-                        first = false;
-                    } else {
-                        sqlBuilder.append(DELIM);
-                    }
+                    innerSqlBuilder.markNotFirstOrAppend(DELIM);
                     //look for the dimension
                     sqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
                     sqlBuilder.append(" ");
@@ -177,11 +173,11 @@ public abstract class QuerySqlGenerator {
         if(null != q.getFields()) {
             for (DimensionField f : q.getFields()) {
                 if (isFirst) {
-                    sqlBuilder.append(generateDimensionFieldSql(f, null));
                     isFirst = false;
                 } else {
-                    sqlBuilder.append(DELIM + generateDimensionFieldSql(f, null));
+                    sqlBuilder.append(DELIM);
                 }
+                sqlBuilder.append(generateDimensionFieldSql(f, null));
             }
         }
         if (q.getAggregateMeasures() != null) {
@@ -208,12 +204,13 @@ public abstract class QuerySqlGenerator {
         sqlBuilder.append(FROM);
 
         //Get the dimensions in the correct order for joining:
-        HashSet<Dimension> selectedDims = new HashSet<Dimension>();
+        HashSet<Dimension> selectedDims = new HashSet<>();
         if(null != q.getFields()) {
             for (DimensionField f : q.getFields()) {
                 selectedDims.add(f.getDimension());
             }
         }
+        // if any hints are included, use them 
         if (null != q.getJoinTables()) {
             for (Dimension d : q.getJoinTables()) {
                 selectedDims.add(d);
@@ -225,6 +222,7 @@ public abstract class QuerySqlGenerator {
             selectedDims.addAll(filterDims);
         }
         List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
+        
         //Use the first dimension in the sorted columns as the FROM table
         if(null != orderedTables && !orderedTables.isEmpty()) {
             //Use the first dimension in the sorted columns as the FROM table
@@ -249,8 +247,10 @@ public abstract class QuerySqlGenerator {
                     //If that doesn't match, check the dimension before that.
                     if (Dimension.buildDimension(currTable).getParentDimensions() != null &&
                             !Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
-                        if(am != null && am.getMeasure() != null && mss != null &&
-                                Measure.buildMeasure(am.getMeasure()).getCompatibleDimensions().contains(joinDim)){
+                        if(am != null 
+                                && mss != null
+                                && am.getMeasure() != null 
+                                && Measure.buildMeasure(am.getMeasure()).getCompatibleDimensions().contains(joinDim)){
                             currentTableName = mss.toTableName();
                         } else {
                             Dimension dimDesc = currTable;
@@ -287,11 +287,10 @@ public abstract class QuerySqlGenerator {
             }
         } else if (null != q.getAggregateMeasures() && q.getAggregateMeasures().size() > 0) {
             //There are no dimensions, query off the measure table directly.
-            MeasureSqlSerializer mss = null;
             if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
                 AggregateMeasure am = q.getAggregateMeasures().get(0);
-                mss = MeasureSqlSerializerFactory.get(am.getMeasure());
-                sqlBuilder.append(mss.toFromClause() + " ");
+                MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
+                sqlBuilder.append(mss.toFromClause());
             }
         } else {
             throw new SqlGenerationException("No tables were resolved to query in the FROM clause");
@@ -498,62 +497,46 @@ public abstract class QuerySqlGenerator {
     private static void toSqlSelectAgainstSubquery(StringBuilder sqlBuilder, StringBuilder groupByBuilder,
                                                    Query q, String tableAlias, Integer numChildDimensions,
                                                    Integer numAggregateMeasures) throws SqlGenerationException {
-        boolean isFirst = true;
-        boolean isGroupByFirst = true;
+        FirstAwareWrapper innerSqlBuilder = new FirstAwareWrapper(sqlBuilder);
+        FirstAwareWrapper innerGroupByBuilder = new FirstAwareWrapper(groupByBuilder);
         //For every column, pluck the correct dimension or measure from the subquery
         for(SubqueryColumnRef col: q.getSubqueryColumnsByPosition()) {
             Integer pos = col.getPosition();
             AggregateFunction function = col.getFunction();
             if(-1 == pos) {
-                if(isFirst) {
-                    isFirst = false;
-                } else {
-                    sqlBuilder.append(DELIM);
-                }
-                sqlBuilder.append(function.name() + "(*)");
+                innerSqlBuilder.markNotFirstOrAppend(DELIM);
+                innerSqlBuilder.append(function.name() + "(*)");
             } else if(pos > numChildDimensions - 1) {
                 //Find the right agg measure
                 pos -= numChildDimensions;
                 if(pos < numAggregateMeasures) {
-                    if(isFirst) {
-                        isFirst = false;
-                    } else {
-                        sqlBuilder.append(DELIM);
-                    }
+                    innerSqlBuilder.markNotFirstOrAppend(DELIM);
                     int counter = 0;
                     for(AggregateMeasure am: q.getAggregateMeasures()) {
                         if(counter == pos) {
                             if(null != function) {
-                                sqlBuilder.append(function.name() + ")");
+                                innerSqlBuilder.append(function.name() + ")");
                             }
-                            sqlBuilder.append(tableAlias + DOT + generateAggColumnName(am));
+                            innerSqlBuilder.append(tableAlias + DOT + generateAggColumnName(am));
                             if(null != function) {
-                                sqlBuilder.append(function.name() + ")");
+                                innerSqlBuilder.append(function.name() + ")");
                             } else {
-                                if(isGroupByFirst) {
-                                    isGroupByFirst = false;
-                                } else {
-                                    groupByBuilder.append(DELIM);
-                                }
-                                groupByBuilder.append(tableAlias + DOT + generateAggColumnName(am));
+                                innerGroupByBuilder.markNotFirstOrAppend(DELIM);
+                                innerGroupByBuilder.append(tableAlias + DOT + generateAggColumnName(am));
                             }
                         }
                         counter++;
                         if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
                             if(counter == pos) {
                                 if(null != function) {
-                                    sqlBuilder.append(function.name() + "(");
+                                    innerSqlBuilder.append(function.name() + "(");
                                 }
-                                sqlBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
+                                innerSqlBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
                                 if(null != function) {
-                                    sqlBuilder.append(function.name() + ")");
+                                    innerSqlBuilder.append(function.name() + ")");
                                 } else {
-                                    if(isGroupByFirst) {
-                                        isGroupByFirst = false;
-                                    } else {
-                                        groupByBuilder.append(DELIM);
-                                    }
-                                    groupByBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
+                                    innerGroupByBuilder.markNotFirstOrAppend(DELIM);
+                                    innerGroupByBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
                                 }
                             }
                             counter++;
@@ -562,21 +545,31 @@ public abstract class QuerySqlGenerator {
                 }
             } else {
                 //find the right dimension
-                if(isFirst) {
-                    isFirst = false;
-                } else {
-                    sqlBuilder.append(DELIM);
-                }
+                innerSqlBuilder.markNotFirstOrAppend(DELIM);
                 //look for the dimension
-                sqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
-                if(isGroupByFirst) {
-                    isGroupByFirst = false;
-                } else {
-                    groupByBuilder.append(DELIM);
-                }
-                groupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
-
+                innerSqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
+                innerGroupByBuilder.markNotFirstOrAppend(DELIM);
+                innerGroupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
             }
         }
+    }
+    
+    private static class FirstAwareWrapper { 
+        StringBuilder sb;
+        boolean first = true;
+        
+        public FirstAwareWrapper(StringBuilder stringBuilder) { 
+            if (stringBuilder == null) { throw new IllegalArgumentException("FirstAwareWrapper requires StringBuffer to not be null"); }
+            this.sb = stringBuilder;
+        }
+        
+        private void markNotFirstOrAppend(String append) { 
+            if (first) { first = false; } 
+            else { append(append); }
+        }
+        
+        private void append(Object toAppend) { sb.append(toAppend); }
+        
+        @Override public String toString() { return sb.toString(); }
     }
 }

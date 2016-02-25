@@ -5,6 +5,7 @@ import com.scholarscore.models.query.measure.IMeasure;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 /**
  * User: jordan
@@ -13,14 +14,6 @@ import static org.testng.Assert.assertNotNull;
  */
 @Test(groups = { "unit" })
 public class MeasureSqlSerializerTest {
-
-    // this first test requires nothing in warehouse and could be moved to the common package
-    public void testMeasureHasClass() {
-        for (Measure measure : Measure.values()) {
-            IMeasure measureClass = Measure.buildMeasure(measure);
-            assertNotNull(measureClass, "Measure " + measure + " is defined in Measures Enum but Measure.buildMeasure produces null!");
-        }
-    }
     
     @Test
     public void testMeasureHasSerializer() { 
@@ -30,4 +23,28 @@ public class MeasureSqlSerializerTest {
         }
     }
     
+    @Test
+    public void testMeasureSerializerFromClause() {
+        for (Measure measure : Measure.values()) {
+            MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(measure);
+            assertNotNull(mss, "Measure " + measure + " is defined in Measures Enum but produces a NULL MeasureSqlSerializer!");
+            String fromClause = mss.toFromClause();
+            assertNotNull(fromClause, "Measure " + measure + " returned a null fromClause from its respective MeasureSqlSerializer");
+            
+            // FROM clause *must* end with a space!
+            assertTrue(fromClause.length() > 0, "Measure " + measure + " expected to have FROM clause with length greater than 0");
+
+            String lastCharacter = fromClause.substring(fromClause.length() - 1, fromClause.length());
+            assertTrue(" ".equals(lastCharacter), "Deserializer " + mss.getClass().getSimpleName() + " (for measure " + measure + ") did not return a from Clause with a trailing space.\n From Clause: '" + fromClause + "'");
+        }
+    }
+
+    @Test
+    public void testMeasureSerializerJoinClause() {
+        for (Measure measure : Measure.values()) {
+            MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(measure);
+            // TODO Jordan: in progress (on branch)
+        }
+    }
+
 }
