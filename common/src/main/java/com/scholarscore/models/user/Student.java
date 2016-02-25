@@ -160,11 +160,11 @@ public class Student extends Person implements Serializable {
         return ell;
     }
 
-    @Column(name = HibernateConsts.STUDENT_ELL_DETAIL)
     public void setEll(Boolean ell) {
         this.ell = ell;
     }
 
+    @Column(name = HibernateConsts.STUDENT_ELL_DETAIL)
     public String getEllDetail() {
         return ellDetail;
     }
