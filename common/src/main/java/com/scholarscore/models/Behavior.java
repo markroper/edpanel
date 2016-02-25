@@ -184,7 +184,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     }
 
     @OneToOne(optional = true)
-    @JoinColumn(name=HibernateConsts.STAFF_USER_FK, nullable = true)
+    @JoinColumn(name=HibernateConsts.STAFF_FK, nullable = true)
     public Staff getAssigner() {
         return assigner;
     }
