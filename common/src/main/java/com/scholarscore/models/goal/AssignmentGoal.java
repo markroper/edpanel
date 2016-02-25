@@ -2,8 +2,10 @@ package com.scholarscore.models.goal;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.Section;
 import com.scholarscore.models.assignment.StudentAssignment;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -24,6 +26,31 @@ import java.util.Objects;
 public class AssignmentGoal extends Goal implements CalculatableAssignment {
 
     private StudentAssignment studentAssignment;
+
+    //Int he event the assignmnet is not in powerschool yet, let the student enter a string name for what it is
+    private String assignmentText;
+
+    //In the event that an assignment has not yet been created, we need to
+    private Section section;
+
+    @Column(name = HibernateConsts.GOAL_ASSIGNMENT_NAME)
+    public String getAssignmentText() {
+        return assignmentText;
+    }
+
+    public void setAssignmentText(String assignmentText) {
+        this.assignmentText = assignmentText;
+    }
+
+    @OneToOne(optional = true)
+    @JoinColumn(name=HibernateConsts.SECTION_FK, nullable = true)
+    public Section getSection() {
+        return section;
+    }
+
+    public void setSection(Section section) {
+        this.section = section;
+    }
 
     @OneToOne(optional = true)
     @JoinColumn(name=HibernateConsts.STUDENT_ASSIGNMENT_FK, nullable = true)
