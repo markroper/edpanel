@@ -14,8 +14,10 @@
     <include file="database/liquibase/db.changelog-1.4.xml"/>
     <include file="database/liquibase/db.changelog-1.5.xml"/>
     <include file="database/liquibase/db.changelog-1.6.xml"/>
-	<include file="database/liquibase/db.changelog-1.7.xml"/>
+    <include file="database/liquibase/db.changelog-1.7.xml"/>
     <include file="database/liquibase/db.changelog-1.8.xml"/>
+    <include file="database/liquibase/db.changelog-1.9.xml"/>
+    <include file="database/liquibase/db.changelog-1.10.xml"/>
 
     <!-- included files must be off project root -->
     <!-- future versions can be defined here, like this:

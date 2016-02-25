@@ -2,7 +2,7 @@ package com.scholarscore.etl.powerschool.api.model.attendance;
 
 import com.scholarscore.etl.IToApiModel;
 import com.scholarscore.models.attendance.Attendance;
-import com.scholarscore.models.attendance.AttendanceTypes;
+import com.scholarscore.models.attendance.AttendanceType;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.user.Student;
 
@@ -52,13 +52,13 @@ public class PsAttendance implements IToApiModel<Attendance> {
         a.setSchoolDay(day);
         a.setAttendanceCode(att_mode_code);
         if(null != att_mode_code && att_mode_code.equals("ATT_ModeDaily")) {
-            a.setType(AttendanceTypes.DAILY);
+            a.setType(AttendanceType.DAILY);
         } else if(null != att_mode_code && att_mode_code.equals("ATT_ModeMeeting")){
-            a.setType(AttendanceTypes.SECTION);
+            a.setType(AttendanceType.SECTION);
         } else if(null == periodid || periodid.equals(0L)) {
-            a.setType(AttendanceTypes.DAILY);
+            a.setType(AttendanceType.DAILY);
         } else {
-            a.setType(AttendanceTypes.SECTION);
+            a.setType(AttendanceType.SECTION);
         }
         stud.setSourceSystemId(String.valueOf(studentid));
         a.setStudent(stud);
