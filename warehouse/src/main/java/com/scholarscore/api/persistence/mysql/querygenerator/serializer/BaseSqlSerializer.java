@@ -28,7 +28,7 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
     private String buildJoinClause(String dimTableName) {
         return LEFT_OUTER_JOIN + toTableName() + ON +
                 dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) + EQUALS +
-                toTableName() + DOT + toTableName() + FK_COL_SUFFIX + " ";
+                toTableName() + DOT + dimTableName + FK_COL_SUFFIX + " ";
     }
     
     @Override
