@@ -29,7 +29,13 @@ public enum Dimension {
     TEACHER,
     STUDENT,
     ADMINISTRATOR,
-    USER;
+    USER,
+    STUDENT_ASSIGNMENT,
+    STUDENT_SECTION_GRADE,
+    SECTION_GRADE,
+    SCHOOL_DAY,
+    ATTENDANCE,
+    BEHAVIOR;
     
     /**
      * Factory method for constructing an IDimension of time Dimension.
@@ -60,6 +66,18 @@ public enum Dimension {
                 return new AssignmentDimension();
             case USER:
                 return new UserDimension();
+            case STUDENT_ASSIGNMENT:
+                return new StudentAssignmentDimension();
+            case STUDENT_SECTION_GRADE:
+                return new StudentSectionGradeDimension();
+            case SECTION_GRADE:
+                return new SectionGradeDimension();
+            case SCHOOL_DAY:
+                return new SchoolDayDimension();
+            case ATTENDANCE:
+                return new AttendanceDimension();
+            case BEHAVIOR:
+                return new BehaviorDimension();
             default:
                 throw new QueryException("Unsupported Dimension " + d + "!");
         }
@@ -78,16 +96,22 @@ public enum Dimension {
     }
     
     private static final List<Dimension> orderedDimensions = new ArrayList<Dimension>(){{
+        add(Dimension.STUDENT_SECTION_GRADE);
+        add(Dimension.SECTION_GRADE);
+        add(Dimension.ATTENDANCE);
+        add(Dimension.BEHAVIOR);
         add(Dimension.STUDENT);
         add(Dimension.TEACHER);
-        add(Dimension.SECTION);
+        add(Dimension.ADMINISTRATOR);
+        add(Dimension.STUDENT_ASSIGNMENT);
         add(Dimension.ASSIGNMENT);
+        add(Dimension.SECTION);
         add(Dimension.TERM);
         add(Dimension.YEAR);
         add(Dimension.COURSE);
         add(Dimension.SUBJECT_AREA);
+        add(Dimension.SCHOOL_DAY);
         add(Dimension.SCHOOL);
-        add(Dimension.ADMINISTRATOR);
         add(Dimension.USER);
     }};
 }
