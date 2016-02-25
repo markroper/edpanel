@@ -80,37 +80,56 @@ public class AssignmentGoal extends Goal implements CalculatableAssignment {
     public void mergePropertiesIfNull(Goal mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
         if (mergeFrom instanceof AssignmentGoal) {
-            AssignmentGoal mergeFromBehavior = (AssignmentGoal)mergeFrom;
+            AssignmentGoal mergeFromAssignment = (AssignmentGoal)mergeFrom;
             if (null == this.studentAssignment) {
-                this.studentAssignment = mergeFromBehavior.studentAssignment;
+                this.studentAssignment = mergeFromAssignment.studentAssignment;
+            }
+            if (null == this.section) {
+                this.section = mergeFromAssignment.section;
+            }
+
+            if (null == this.assignmentText) {
+                this.assignmentText = mergeFromAssignment.assignmentText;
             }
         }
     }
-    
+
+
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        AssignmentGoal that = (AssignmentGoal) o;
-        return Objects.equals(studentAssignment, that.studentAssignment);
+    public int hashCode() {
+        return 31 * super.hashCode() + Objects.hash(studentAssignment, assignmentText, section);
     }
-    
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        final AssignmentGoal other = (AssignmentGoal) obj;
+        return Objects.equals(this.studentAssignment, other.studentAssignment)
+                && Objects.equals(this.assignmentText, other.assignmentText)
+                && Objects.equals(this.section, other.section);
+    }
+
     @Override
     public void setGoalType(GoalType goalType) {
         super.setGoalType(GoalType.ASSIGNMENT);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), studentAssignment);
-    }
 
     @Override
     public String toString() {
         return
                 "GOAL super(" + super.toString() +")" + "\n"
-                        + "StudentAssignment:" + getStudentAssignment() + "\n";
+                        + "StudentAssignment:" + getStudentAssignment() + "\n"
+                        + "Section:" + getSection() + "\n"
+                        + "AssignmentText:" + getAssignmentText() + "\n";
     }
 
     /**
