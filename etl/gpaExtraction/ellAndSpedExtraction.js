@@ -120,7 +120,7 @@ function downloadStudents(casper, selector, fileName, attempt) {
           console.log("form.action = " + res.action);
           console.log("form.post = " + res.post);
 
-          casper.download(res.action, "ellAndSped" + fileName + ".csv", "POST", res.post);
+          casper.download(res.action, "spedAndEll" + fileName + ".csv", "POST", res.post);
         }
         else {
           console.log("Unable to extract form properties for file download!");
