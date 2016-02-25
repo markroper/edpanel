@@ -19,4 +19,5 @@ public class AdministratorJdbcTest extends BaseJdbcTest {
         assertNull(adminDao.select(adminId),
                 "Expected admin to be removed");
     }
+    
 }
