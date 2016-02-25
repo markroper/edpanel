@@ -28,7 +28,7 @@ public class GoalJdbc implements GoalPersistence {
             "join fetch g.student st left join fetch st.homeAddress left join fetch st.mailingAddress " +
             "left join fetch st.contactMethods " +
             "left join fetch g.staff t left join fetch t.homeAddress left join fetch t.contactMethods " +
-            "left join fetch g.studentAssignment left join g.section";
+            "left join fetch g.studentAssignment left join fetch g.section";
     @Autowired
     private HibernateTemplate hibernateTemplate;
 
