@@ -2,8 +2,10 @@ package com.scholarscore.models.goal;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.Section;
 import com.scholarscore.models.assignment.StudentAssignment;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -24,6 +26,31 @@ import java.util.Objects;
 public class AssignmentGoal extends Goal implements CalculatableAssignment {
 
     private StudentAssignment studentAssignment;
+
+    //Int he event the assignmnet is not in powerschool yet, let the student enter a string name for what it is
+    private String assignmentText;
+
+    //In the event that an assignment has not yet been created, we need to
+    private Section section;
+
+    @Column(name = HibernateConsts.GOAL_ASSIGNMENT_NAME)
+    public String getAssignmentText() {
+        return assignmentText;
+    }
+
+    public void setAssignmentText(String assignmentText) {
+        this.assignmentText = assignmentText;
+    }
+
+    @OneToOne(optional = true)
+    @JoinColumn(name=HibernateConsts.SECTION_FK, nullable = true)
+    public Section getSection() {
+        return section;
+    }
+
+    public void setSection(Section section) {
+        this.section = section;
+    }
 
     @OneToOne(optional = true)
     @JoinColumn(name=HibernateConsts.STUDENT_ASSIGNMENT_FK, nullable = true)
@@ -53,37 +80,56 @@ public class AssignmentGoal extends Goal implements CalculatableAssignment {
     public void mergePropertiesIfNull(Goal mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
         if (mergeFrom instanceof AssignmentGoal) {
-            AssignmentGoal mergeFromBehavior = (AssignmentGoal)mergeFrom;
+            AssignmentGoal mergeFromAssignment = (AssignmentGoal)mergeFrom;
             if (null == this.studentAssignment) {
-                this.studentAssignment = mergeFromBehavior.studentAssignment;
+                this.studentAssignment = mergeFromAssignment.studentAssignment;
+            }
+            if (null == this.section) {
+                this.section = mergeFromAssignment.section;
+            }
+
+            if (null == this.assignmentText) {
+                this.assignmentText = mergeFromAssignment.assignmentText;
             }
         }
     }
-    
+
+
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        AssignmentGoal that = (AssignmentGoal) o;
-        return Objects.equals(studentAssignment, that.studentAssignment);
+    public int hashCode() {
+        return 31 * super.hashCode() + Objects.hash(studentAssignment, assignmentText, section);
     }
-    
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        final AssignmentGoal other = (AssignmentGoal) obj;
+        return Objects.equals(this.studentAssignment, other.studentAssignment)
+                && Objects.equals(this.assignmentText, other.assignmentText)
+                && Objects.equals(this.section, other.section);
+    }
+
     @Override
     public void setGoalType(GoalType goalType) {
         super.setGoalType(GoalType.ASSIGNMENT);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), studentAssignment);
-    }
 
     @Override
     public String toString() {
         return
                 "GOAL super(" + super.toString() +")" + "\n"
-                        + "StudentAssignment:" + getStudentAssignment() + "\n";
+                        + "StudentAssignment:" + getStudentAssignment() + "\n"
+                        + "Section:" + getSection() + "\n"
+                        + "AssignmentText:" + getAssignmentText() + "\n";
     }
 
     /**

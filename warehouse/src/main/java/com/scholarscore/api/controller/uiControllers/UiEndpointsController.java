@@ -100,6 +100,7 @@ public class UiEndpointsController extends BaseController {
                 StudentSectionDashboardData sectionDashData = new StudentSectionDashboardData();
                 sectionDashData.setSection(s);
                 SectionGradeGoal sectionGoal = sectionGoalMap.get(s.getId());
+                sectionDashData.setGradeGoal(new SectionGradeGoal());
                 if ( null != sectionGoal) {
                     sectionDashData.setGradeGoal(sectionGoal);
                 } else {
@@ -108,22 +109,7 @@ public class UiEndpointsController extends BaseController {
                     if(null != persons && !persons.isEmpty()) {
                         t = persons.iterator().next();
                     }
-                    SectionGradeGoal fullSectionGradeGoalByBuilder = new SectionGradeGoal.SectionGradeGoalBuilder().
-                            withSection(s).
-                            withStudent(onlyIdStudent).
-                            withApproved(Boolean.FALSE).
-                            withDesiredValue(80D).
-                            withPlan("Work hard, improve score").
-                            withAutoComplete(Boolean.FALSE).
-                            withName("Section Goal").
-                            withStaff(t).
-                            build();
-                    ServiceResponse<Long> createdGoalResp =
-                            pm.getGoalManager().createGoal(studentId, fullSectionGradeGoalByBuilder);
-                    if(null != createdGoalResp.getValue()) {
-                        fullSectionGradeGoalByBuilder.setId(createdGoalResp.getValue());
-                    }
-                    sectionDashData.setGradeGoal(fullSectionGradeGoalByBuilder);
+
                 }
                 ServiceResponse<Collection<StudentAssignment>> studAssesResp = pm.getStudentAssignmentManager().
                         getOneSectionOneStudentsAssignments(studentId,  s.getId());
