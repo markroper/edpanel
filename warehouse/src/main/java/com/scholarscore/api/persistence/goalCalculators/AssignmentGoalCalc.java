@@ -12,6 +12,12 @@ public class AssignmentGoalCalc implements GoalCalc<CalculatableAssignment> {
     
     public Double calculateGoal(CalculatableAssignment goal) {
         StudentAssignment goalAssignment = goal.getStudentAssignment();
-        return  goalAssignment.getAwardedPoints();
+        //We may not have this because the assignment is null in which ase the teacher will ahve to approve it
+        if (null != goalAssignment) {
+            return  goalAssignment.getAwardedPoints();
+        } else {
+            return null;
+        }
+
     }
 }
