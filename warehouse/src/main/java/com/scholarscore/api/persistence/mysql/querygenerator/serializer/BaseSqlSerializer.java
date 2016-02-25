@@ -28,7 +28,7 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
     private String buildJoinClause(String dimTableName) {
         return LEFT_OUTER_JOIN + toTableName() + ON +
                 dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) + EQUALS +
-                toTableName() + DOT + getTableNameFk(dimTableName) + " ";
+                toTableName() + DOT + toTableName() + FK_COL_SUFFIX + " ";
     }
     
     @Override
@@ -40,12 +40,6 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
     // if serializers return something other than null, it shall be joined upon
     public String optionalJoinedTable() { return null; } 
     
-    // TODO Jordan: this method is only required today because the Behavior table has a FK to staff (should be staff_fk)
-    // but instead this field is named user_fk. Change it and this can be removed!
-    protected String getTableNameFk(String tableName) {
-        return tableName + FK_COL_SUFFIX;
-    }
-
     /* 
     * Generic method to join to a table
     * */
