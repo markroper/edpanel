@@ -197,7 +197,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                     g.setWeekEnding(currentLastDayOfWeek);
                     //If there is a cached grade from the SIS, use it, otherwise calculate the grade
                     if(storedGradeMap.containsKey(endOfWeek)) {
-                        g.setScore(storedGradeMap.get(endOfWeek).getScore());
+                        g.setScore(storedGradeMap.get(endOfWeek).getScore() / 100);
                     } else {
                         g.setScore(formula.calculateGrade(subassignments));
                     }

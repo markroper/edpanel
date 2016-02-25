@@ -81,7 +81,7 @@ public class DbMappings {
         toPopulate.put(new MeasureField(behaviorMeasure, BehaviorMeasure.CATEGORY), HibernateConsts.BEHAVIOR_CATEGORY);
         toPopulate.put(new MeasureField(behaviorMeasure, BehaviorMeasure.ROSTER), HibernateConsts.BEHAVIOR_ROSTER);
     }
-    
+
     private static final void populateAttendanceTypeMeasureToColNames(HashMap<MeasureField, String> toPopulate, Measure attendanceMeasure, boolean includeSection) {
         toPopulate.put(new MeasureField(attendanceMeasure, AttendanceMeasure.ID), HibernateConsts.ATTENDANCE_ID);
         toPopulate.put(new MeasureField(attendanceMeasure, AttendanceMeasure.DATE), HibernateConsts.SCHOOL_DAY_DATE);
@@ -94,21 +94,29 @@ public class DbMappings {
             toPopulate.put(new MeasureField(attendanceMeasure, AttendanceMeasure.SECTION_FK), HibernateConsts.SECTION_FK);
         }
     }
-    
+
     public static final Map<Dimension, String> DIMENSION_TO_TABLE_NAME = 
             new HashMap<Dimension, String>() {{
-               put(Dimension.SCHOOL, HibernateConsts.SCHOOL_TABLE);
-               put(Dimension.COURSE, HibernateConsts.COURSE_TABLE);
-               put(Dimension.SECTION, HibernateConsts.SECTION_TABLE);
-               put(Dimension.TERM, HibernateConsts.TERM_TABLE);
-               put(Dimension.STUDENT, HibernateConsts.STUDENT_TABLE);
-               put(Dimension.TEACHER, HibernateConsts.STAFF_TABLE);
-               put(Dimension.ADMINISTRATOR, HibernateConsts.STAFF_TABLE);
-               put(Dimension.YEAR, HibernateConsts.SCHOOL_YEAR_TABLE);
+                put(Dimension.SCHOOL, HibernateConsts.SCHOOL_TABLE);
+                put(Dimension.COURSE, HibernateConsts.COURSE_TABLE);
+                put(Dimension.SECTION, HibernateConsts.SECTION_TABLE);
+                put(Dimension.TERM, HibernateConsts.TERM_TABLE);
+                put(Dimension.STUDENT, HibernateConsts.STUDENT_TABLE);
+                put(Dimension.TEACHER, HibernateConsts.STAFF_TABLE);
+                put(Dimension.ADMINISTRATOR, HibernateConsts.STAFF_TABLE);
+                put(Dimension.YEAR, HibernateConsts.SCHOOL_YEAR_TABLE);
                 put(Dimension.ASSIGNMENT, HibernateConsts.ASSIGNMENT_TABLE);
                 put(Dimension.USER, HibernateConsts.USERS_TABLE);
+                put(Dimension.BEHAVIOR, HibernateConsts.BEHAVIOR_TABLE);
+                put(Dimension.STUDENT_ASSIGNMENT, HibernateConsts.STUDENT_ASSIGNMENT_TABLE);
+                put(Dimension.STUDENT_SECTION_GRADE, HibernateConsts.STUDENT_SECTION_GRADE_TABLE);
+                put(Dimension.SECTION_GRADE, HibernateConsts.SECTION_GRADE_TABLE);
+                put(Dimension.SCHOOL_DAY, HibernateConsts.SCHOOL_DAY_TABLE);
+                put(Dimension.ATTENDANCE, HibernateConsts.ATTENDANCE_TABLE);
             }};
-
+    
+    public static final Map<String, Dimension> TABLE_NAME_TO_DIMENSION = buildReverseMap(DIMENSION_TO_TABLE_NAME);
+    
     public static final Map<DimensionField, String> DIMENSION_TO_COL_NAME = 
             new HashMap<DimensionField, String>(){{
         //Student dimension field to db column name lookup
@@ -188,4 +196,15 @@ public class DbMappings {
         }
         return returnVal;
     }
+
+    // starting with an existing map, return a new map where the keys in the returned map are the values from the existing map,
+    // and the values in the returned map are the keys from the existing map.
+    private static <T,V> Map<T, V> buildReverseMap(Map<V, T> originalMap) {
+        HashMap<T,V> toReturn = new HashMap<>();
+        for (V key : originalMap.keySet()) {
+            toReturn.put(originalMap.get(key), key);
+        }
+        return toReturn;
+    }
+
 }
