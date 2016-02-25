@@ -6,7 +6,7 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.EntityId;
-import com.scholarscore.models.attendance.AttendanceTypes;
+import com.scholarscore.models.attendance.AttendanceType;
 import com.scholarscore.models.dashboard.ColumnDef;
 import com.scholarscore.models.dashboard.Dashboard;
 import com.scholarscore.models.dashboard.DashboardRow;
@@ -204,7 +204,7 @@ public class DashboardManagerImpl implements DashboardManager {
         Expression attType = new Expression(
                 new MeasureOperand(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.TYPE)),
                 ComparisonOperator.EQUAL,
-                new StringOperand(AttendanceTypes.DAILY.name())
+                new StringOperand(AttendanceType.DAILY.name())
         );
         Expression dateMin = new Expression(
                 new MeasureOperand(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.DATE)),
