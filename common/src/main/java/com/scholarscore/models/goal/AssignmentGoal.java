@@ -27,10 +27,11 @@ public class AssignmentGoal extends Goal implements CalculatableAssignment {
 
     private StudentAssignment studentAssignment;
 
-    //Int he event the assignmnet is not in powerschool yet, let the student enter a string name for what it is
+    //In the event the assignment is not in powerschool yet, let the student enter a string name for what it is
     private String assignmentText;
 
-    //In the event that an assignment has not yet been created, we need to
+    //In the event that an assignment has not yet been created, we need to still specify what section it
+    //should be on so we can find it later.
     private Section section;
 
     @Column(name = HibernateConsts.GOAL_ASSIGNMENT_NAME)
@@ -74,6 +75,8 @@ public class AssignmentGoal extends Goal implements CalculatableAssignment {
         super(goal);
         this.setGoalType(GoalType.ASSIGNMENT);
         this.studentAssignment = goal.studentAssignment;
+        this.section = goal.section;
+        this.assignmentText = goal.assignmentText;
     }
 
     @Override
