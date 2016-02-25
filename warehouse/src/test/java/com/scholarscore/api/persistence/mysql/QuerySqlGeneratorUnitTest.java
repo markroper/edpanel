@@ -45,7 +45,7 @@ import java.util.List;
 @Test(groups = { "unit" })
 public class QuerySqlGeneratorUnitTest {
 
-    private interface TestQuery {
+    public interface TestQuery {
         String queryName();
         Query buildQuery();
         String buildSQL();
@@ -53,7 +53,7 @@ public class QuerySqlGeneratorUnitTest {
     }
 
     @DataProvider
-    public Object[][] queriesProvider() {
+    public static Object[][] queriesProvider() {
 
         // initialize shared objects here -- anything used by multiple queries
         final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -128,7 +128,9 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT student.birth_date, student.federal_ethnicity, school.school_name, SUM(section_grade.grade) as sum_course_grade_agg \n" +
-                        "FROM student LEFT OUTER JOIN student_section_grade ON student.student_user_fk = student_section_grade.student_fk LEFT OUTER JOIN section_grade ON student_section_grade.section_grade_fk = section_grade.section_grade_id \n" +
+                        "FROM student " + 
+                        "LEFT OUTER JOIN student_section_grade ON student.student_user_fk = student_section_grade.student_fk " + 
+                        "LEFT OUTER JOIN section_grade ON student_section_grade.section_grade_fk = section_grade.section_grade_id \n" +
                         "LEFT OUTER JOIN section ON section.section_id = student_section_grade.section_fk \n" +
                         "LEFT OUTER JOIN school ON school.school_id = student.school_fk \n" +
                         "WHERE  ( ( '2014-09-01 00:00:00.0'  >=  section.section_start_date )  AND  ( '2015-09-01 00:00:00.0'  <=  section.section_start_date ) ) \n" +
@@ -159,7 +161,9 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT student.student_name, AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg \n" +
-                        "FROM student LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
+                        "FROM student " + 
+                        "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " + 
+                        "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
                         "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk \n" +
                         "WHERE  ( section.section_id  =  4 ) \n" +
                         "GROUP BY student.student_name";
@@ -184,7 +188,7 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg \n" +
-                        "FROM student_assignment LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id  ";
+                        "FROM student_assignment LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id ";
             }
         };
 
@@ -208,7 +212,9 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT student.student_user_fk, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg \n" +
-                        "FROM student LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
+                        "FROM student " + 
+                        "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " + 
+                        "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
                         "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk \n" +
                         "LEFT OUTER JOIN term ON term.term_id = section.term_fk \n" +
                         "LEFT OUTER JOIN school_year ON school_year.school_year_id = term.school_year_fk \n" +
@@ -236,7 +242,7 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT section.section_id, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg \n" +
-                        "FROM section LEFT OUTER JOIN assignment ON assignment.section_fk = section.section_id LEFT OUTER JOIN student_assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
+                        "FROM section LEFT OUTER JOIN assignment ON section.section_id = assignment.section_fk LEFT OUTER JOIN student_assignment ON assignment.assignment_id = student_assignment.assignment_fk \n" +
                         "LEFT OUTER JOIN term ON term.term_id = section.term_fk \n" +
                         "LEFT OUTER JOIN school_year ON school_year.school_year_id = term.school_year_fk \n" +
                         "WHERE  ( ( ( term.term_id  =  1 )  AND  ( school_year.school_year_id  =  1 ) )  AND  ( section.section_id  !=  0 ) ) \n" +
@@ -272,7 +278,9 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT student.student_user_fk, SUM(if(attendance.attendance_status in ('ABSENT'), 1, null)) as sum_attendance_agg \n" +
-                        "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk \n" +
+                        "FROM student " + 
+                        "LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " + 
+                        "LEFT OUTER JOIN school_day ON attendance.school_day_fk = school_day.school_day_id \n" +
                         "WHERE  ( ( school_day.school_day_date  >=  '2014-09-01 00:00:00.0' )  AND  ( school_day.school_day_date  <=  '2015-09-01 00:00:00.0' ) ) \n" +
                         "GROUP BY student.student_user_fk";
             }
@@ -338,7 +346,8 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT student.student_user_fk, section.section_id, COUNT(if(attendance.attendance_status in ('ABSENT') AND attendance.attendance_type = 'SECTION', 1, 0)) as count_section_absence_agg \n" +
-                        "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk \n" +
+                        "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " + 
+                        "LEFT OUTER JOIN school_day ON attendance.school_day_fk = school_day.school_day_id \n" +
                         "LEFT OUTER JOIN section ON section.section_id = attendance.section_fk \n" +
                         "WHERE  ( section.section_id  IN  (2,3) ) \n" +
                         "GROUP BY student.student_user_fk, section.section_id";
@@ -369,7 +378,8 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT student.student_user_fk, section.section_id, COUNT(if(attendance.attendance_status in ('TARDY') AND attendance.attendance_type = 'SECTION', 1, 0)) as count_section_tardy_agg \n" +
-                        "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk \n" +
+                        "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " + 
+                        "LEFT OUTER JOIN school_day ON attendance.school_day_fk = school_day.school_day_id \n" +
                         "LEFT OUTER JOIN section ON section.section_id = attendance.section_fk \n" +
                         "WHERE  ( section.section_id  IN  (2,3) ) \n" +
                         "GROUP BY student.student_user_fk, section.section_id";
@@ -417,7 +427,9 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT student.student_user_fk, COUNT(if(attendance.attendance_status in ('TARDY') AND attendance.attendance_type = 'DAILY', 1, 0)) as count_tardy_agg \n" +
-                        "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk \n" +
+                        "FROM student " + 
+                        "LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " + 
+                        "LEFT OUTER JOIN school_day ON attendance.school_day_fk = school_day.school_day_id \n" +
                         "GROUP BY student.student_user_fk";
             }
         };
@@ -441,7 +453,9 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT student.student_user_fk, COUNT(if(attendance.attendance_status in ('ABSENT') AND attendance.attendance_type = 'DAILY', 1, 0)) as count_absence_agg \n" +
-                        "FROM student LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk LEFT OUTER JOIN school_day ON school_day.school_day_id = attendance.school_day_fk \n" +
+                        "FROM student " + 
+                        "LEFT OUTER JOIN attendance ON student.student_user_fk = attendance.student_fk " + 
+                        "LEFT OUTER JOIN school_day ON attendance.school_day_fk = school_day.school_day_id \n" +
                         "GROUP BY student.student_user_fk";
             }
         };
@@ -481,7 +495,8 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT student.student_user_fk, SUM(if(behavior.category = 'DEMERIT', 1, 0)) as sum_demerit_agg \n" +
-                        "FROM student LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk \n" +
+                        "FROM student " + 
+                        "LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk \n" +
                         "WHERE  ( ( behavior.date  >  '2014-09-01 00:00:00.0' )  AND  ( student.student_user_fk  =  1 ) ) \n" +
                         "GROUP BY student.student_user_fk";
             }
@@ -766,7 +781,9 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT school.school_id, course.course_name, section.section_name, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg \n" +
-                        "FROM section LEFT OUTER JOIN assignment ON assignment.section_fk = section.section_id LEFT OUTER JOIN student_assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
+                        "FROM section " + 
+                        "LEFT OUTER JOIN assignment ON section.section_id = assignment.section_fk " + 
+                        "LEFT OUTER JOIN student_assignment ON assignment.assignment_id = student_assignment.assignment_fk \n" +
                         "LEFT OUTER JOIN course ON course.course_id = section.course_fk \n" +
                         "LEFT OUTER JOIN school ON school.school_id = course.school_fk \n" +
                         "GROUP BY school.school_id, course.course_name, section.section_name";
@@ -794,7 +811,9 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT school.school_name, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg \n" +
-                        "FROM section LEFT OUTER JOIN assignment ON assignment.section_fk = section.section_id LEFT OUTER JOIN student_assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
+                        "FROM section " + 
+                        "LEFT OUTER JOIN assignment ON section.section_id = assignment.section_fk " + 
+                        "LEFT OUTER JOIN student_assignment ON assignment.assignment_id = student_assignment.assignment_fk \n" +
                         "LEFT OUTER JOIN course ON course.course_id = section.course_fk \n" +
                         "LEFT OUTER JOIN school ON school.school_id = course.school_fk \n" +
                         "GROUP BY school.school_name";
