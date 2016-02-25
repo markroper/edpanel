@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
-    <changeSet author="jordan" id="changelog-1.8-change1">
+    <changeSet author="jordan" id="changelog-1.9-change1">
         
         <dropForeignKeyConstraint baseTableName="behavior" constraintName="fk_teacher$behavior" />
         
@@ -15,7 +15,7 @@
         
     </changeSet>
     
-    <changeSet id="changelog-1.8-change2" author="jordan">
+    <changeSet author="jordan" id="changelog-1.9-change2">
         <addForeignKeyConstraint baseTableName="behavior"
                                  baseColumnNames="staff_fk"
                                  constraintName="fk_staff$behavior"
