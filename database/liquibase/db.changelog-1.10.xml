@@ -6,16 +6,16 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
     <changeSet author="mark" id="changelog-1.10-change1">
         <addColumn tableName="student">
-            <column name="student_sped" type="bit(1)"></column>
+            <column name="student_sped" type="bit(1)" />
         </addColumn>
         <addColumn tableName="student">
-            <column name="student_sped_detail" type="varchar(64)"></column>
+            <column name="student_sped_detail" type="varchar(64)" />
         </addColumn>
         <addColumn tableName="student">
-            <column name="student_ell" type="bit(1)"></column>
+            <column name="student_ell" type="bit(1)" />
         </addColumn>
         <addColumn tableName="student">
-            <column name="student_ell_detail" type="varchar(64)"></column>
+            <column name="student_ell_detail" type="varchar(64)" />
         </addColumn>
     </changeSet>
 </databaseChangeLog>
