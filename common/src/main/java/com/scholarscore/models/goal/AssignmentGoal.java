@@ -75,6 +75,8 @@ public class AssignmentGoal extends Goal implements CalculatableAssignment {
         super(goal);
         this.setGoalType(GoalType.ASSIGNMENT);
         this.studentAssignment = goal.studentAssignment;
+        this.section = goal.section;
+        this.assignmentText = goal.assignmentText;
     }
 
     @Override
