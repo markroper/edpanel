@@ -25,11 +25,4 @@ public abstract class BehaviorSqlSerializer extends BaseSqlSerializer {
         return HibernateConsts.BEHAVIOR_TABLE;
     }
 
-    @Override
-    protected String getTableNameFk(String tableName) {
-        if (tableName != null && tableName.equals(HibernateConsts.STAFF_TABLE)) {
-            return HibernateConsts.USER_FK;
-        }
-        return super.getTableNameFk(tableName);
-    }
 }

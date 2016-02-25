@@ -1,7 +1,9 @@
 package com.scholarscore.api.persistence.mysql.jdbc;
 
+import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.BehaviorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
+import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.api.persistence.UserPersistence;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.user.Staff;
@@ -23,7 +25,9 @@ public class BehaviorJdbc implements BehaviorPersistence {
     private HibernateTemplate hibernateTemplate;
     
     private StudentPersistence studentPersistence;
-    private UserPersistence userPersistence;
+    
+    private TeacherPersistence teacherPersistence;
+    private AdministratorPersistence administratorPersistence;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -33,8 +37,7 @@ public class BehaviorJdbc implements BehaviorPersistence {
 
     @Override
     public Behavior select(long studentId, long behaviorId) {
-        Behavior result = hibernateTemplate.get(Behavior.class, behaviorId);
-        return result;
+        return hibernateTemplate.get(Behavior.class, behaviorId);
     }
 
     @Override
@@ -51,8 +54,14 @@ public class BehaviorJdbc implements BehaviorPersistence {
         if (behavior != null 
                 && behavior.getAssigner() != null 
                 && behavior.getAssigner().getId() != null) {
-            behavior.setAssigner(userPersistence.selectUser(behavior.getAssigner().getId()));
-
+            Long assignerId = behavior.getAssigner().getId();
+            Staff assigner = teacherPersistence.select(assignerId);
+            if (assigner == null) {
+                assigner = administratorPersistence.select(assignerId);
+            }
+            if (assigner != null) {
+                behavior.setAssigner(assigner);
+            }
         }
     }
 
@@ -92,7 +101,11 @@ public class BehaviorJdbc implements BehaviorPersistence {
         this.studentPersistence = studentPersistence;
     }
 
-    public void setUserPersistence(UserPersistence userPersistence) {
-        this.userPersistence = userPersistence;
+    public void setTeacherPersistence(TeacherPersistence teacherPersistence) {
+        this.teacherPersistence = teacherPersistence;
+    }
+
+    public void setAdministratorPersistence(AdministratorPersistence administratorPersistence) {
+        this.administratorPersistence = administratorPersistence;
     }
 }

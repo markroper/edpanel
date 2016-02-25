@@ -58,7 +58,6 @@ public class HibernateConsts {
     public static final String BEHAVIOR_CATEGORY = "category";
     public static final String BEHAVIOR_POINT_VALUE = "point_value";
     public static final String BEHAVIOR_ROSTER = "roster";
-    public static final String USER_FK = "user_fk";
     public static final String BEHAVIOR_FK = "behavior_fk";
     
     // the following column names are used in multiple places in different tables
@@ -66,6 +65,7 @@ public class HibernateConsts {
     public static final String TEACHER_FK = "teacher_fk";
     public static final String STAFF_FK = "staff_fk";
     public static final String ADMINISTRATOR_FK = "administrator_fk";
+    public static final String USER_FK = "user_fk";
     
     // these aren't defined columns in the DB, but are used by the SQL statements
     // as labels for addressing the calculated columns used by prepScore
@@ -219,8 +219,10 @@ public class HibernateConsts {
     public static final String GOAL_END_DATE = "end_date";
     public static final String BEHAVIOR_GOAL_CATEGORY = "behavior_category";
     public static final String GOAL_NAME = "name";
+    public static final String GOAL_ASSIGNMENT_NAME = "assignment_name";
     public static final String GOAL_SECTION_FK = "section_fk";
     public static final String GOAL_PLAN = "plan";
+    public static final String GOAL_MESSAGE = "message";
     public static final String GOAL_OBSTACLE = "obstacle";
     public static final String GOAL_OUTCOME = "outcome";
     public static final String GOAL_PROGRESS = "progress";

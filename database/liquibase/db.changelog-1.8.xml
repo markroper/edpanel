@@ -4,18 +4,23 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
-    <changeSet author="mark" id="changelog-1.8-change1">
-        <addColumn tableName="student">
-            <column name="student_sped" type="bit(1)"></column>
+    <changeSet author="chris" id="changelog-1.8-change1">
+        <addColumn tableName="goal">
+            <column
+                name="assignment_name"
+                type="varchar(256)">
+            </column>
         </addColumn>
-        <addColumn tableName="student">
-            <column name="student_sped_detail" type="varchar(64)"></column>
+        <addColumn tableName="goal">
+            <column
+                    name="message"
+                    type="blob">
+            </column>
         </addColumn>
-        <addColumn tableName="student">
-            <column name="student_ell" type="bit(1)"></column>
-        </addColumn>
-        <addColumn tableName="student">
-            <column name="student_ell_detail" type="varchar(64)"></column>
-        </addColumn>
+        <sql>
+            truncate goal;
+        </sql>
+
+
     </changeSet>
 </databaseChangeLog>
