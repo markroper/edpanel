@@ -17,7 +17,7 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.AttendanceStatus;
-import com.scholarscore.models.attendance.AttendanceTypes;
+import com.scholarscore.models.attendance.AttendanceType;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.user.Student;
 import org.slf4j.Logger;
@@ -192,7 +192,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                 long absenses = 0;
                 long tardies = 0;
                 for (Attendance a : entry.getValue()) {
-                    if (a.getType().equals(AttendanceTypes.DAILY)) {
+                    if (a.getType().equals(AttendanceType.DAILY)) {
                         hasDaily = true;
                         break;
                     }
@@ -211,7 +211,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                         a.setSchoolDay(entry.getKey());
                         a.setStudent(student);
                         a.setStatus(AttendanceStatus.ABSENT);
-                        a.setType(AttendanceTypes.DAILY);
+                        a.setType(AttendanceType.DAILY);
                         a.setSourceSystemId(String.valueOf(syntheticDcid));
                         a.setDescription("EdPanel generated due to daily section absenses( " +
                                 absenses +
@@ -223,7 +223,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                         a.setSchoolDay(entry.getKey());
                         a.setStudent(student);
                         a.setStatus(AttendanceStatus.TARDY);
-                        a.setType(AttendanceTypes.DAILY);
+                        a.setType(AttendanceType.DAILY);
                         a.setSourceSystemId(String.valueOf(syntheticDcid));
                         a.setDescription("EdPanel generated due to daily section absenses( " +
                                 absenses +
