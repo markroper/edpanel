@@ -1,8 +1,8 @@
 package com.scholarscore.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.User;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,7 +44,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     @Size(min=1, max=256)
     private String roster; // the class the behavior event occurred within
     private Student student;
-    private User assigner;
+    private Staff assigner;
     
     public Behavior() { }
     
@@ -184,12 +184,12 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
     }
 
     @OneToOne(optional = true)
-    @JoinColumn(name=HibernateConsts.USER_FK, nullable = true)
-    public User getAssigner() {
+    @JoinColumn(name=HibernateConsts.STAFF_FK, nullable = true)
+    public Staff getAssigner() {
         return assigner;
     }
 
-    public void setAssigner(User assigner) {
+    public void setAssigner(Staff assigner) {
         this.assigner = assigner;
     }
 
@@ -248,7 +248,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
         private String pointValue;
         private String roster;
         private Student student;
-        private User assigner;
+        private Staff assigner;
 
         public BehaviorBuilder withRemoteSystem(final String remoteSystem){
             this.remoteSystem = remoteSystem;
@@ -290,7 +290,7 @@ public class Behavior extends ApiModel implements IApiModel<Behavior> {
             return this;
         }
 
-        public BehaviorBuilder withAssigner(final User assigner){
+        public BehaviorBuilder withAssigner(final Staff assigner){
             this.assigner = assigner;
             return this;
         }
