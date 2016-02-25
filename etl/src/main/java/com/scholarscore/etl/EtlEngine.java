@@ -4,7 +4,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
-import com.scholarscore.etl.powerschool.sync.CycleSync;
 import com.scholarscore.etl.powerschool.api.model.PsPeriod;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCategory;
 import com.scholarscore.etl.powerschool.api.model.assignment.type.PtAssignmentCategoryWrapper;
@@ -26,6 +25,7 @@ import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.CourseSync;
+import com.scholarscore.etl.powerschool.sync.CycleSync;
 import com.scholarscore.etl.powerschool.sync.PeriodSync;
 import com.scholarscore.etl.powerschool.sync.SchoolSync;
 import com.scholarscore.etl.powerschool.sync.TermSync;
@@ -34,19 +34,29 @@ import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.etl.powerschool.sync.attendance.AttendanceSync;
 import com.scholarscore.etl.powerschool.sync.attendance.SchoolDaySync;
 import com.scholarscore.etl.powerschool.sync.section.SectionSyncRunnable;
+import com.scholarscore.etl.powerschool.sync.student.ellsped.SpedEllParser;
 import com.scholarscore.etl.powerschool.sync.student.gpa.GpaSync;
 import com.scholarscore.etl.powerschool.sync.user.StaffSync;
 import com.scholarscore.etl.powerschool.sync.user.StudentSync;
 import com.scholarscore.etl.runner.EtlSettings;
-import com.scholarscore.models.*;
+import com.scholarscore.models.Course;
+import com.scholarscore.models.School;
+import com.scholarscore.models.Section;
+import com.scholarscore.models.Term;
 import com.scholarscore.models.attendance.SchoolDay;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -160,7 +170,7 @@ public class EtlEngine implements IEtlEngine {
         endTime = System.currentTimeMillis();
         LOGGER.info("Staff sync complete");
 
-        createStudents();
+        createStudents(settings);
         long studentCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
         LOGGER.info("Student sync complete");
@@ -359,9 +369,21 @@ public class EtlEngine implements IEtlEngine {
         }
     }
 
-    private void createStudents() {
+    private void createStudents(EtlSettings settings) {
+        SpedEllParser parser = new SpedEllParser();
+        Map<Long, MutablePair<String, String>> spedEll = new HashMap<>();
+        try {
+            for(File gpaFile : settings.getEllSpedImportFiles()){
+                if(gpaFile.canRead() && gpaFile.isFile()) {
+                    spedEll = parser.parse(new FileInputStream(gpaFile));
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.error("Failed to resolve SPED/ELL from file", e);
+        }
+
         for (Map.Entry<Long, School> school : this.schools.entrySet()) {
-            StudentSync sync = new StudentSync(edPanel, powerSchool, school.getValue(), studentAssociator);
+            StudentSync sync = new StudentSync(edPanel, powerSchool, school.getValue(), studentAssociator, spedEll);
             studentAssociator.addOtherIdMap(sync.syncCreateUpdateDelete(results));
         }
     }
