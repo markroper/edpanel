@@ -215,8 +215,10 @@ public class HibernateConsts {
     public static final String GOAL_END_DATE = "end_date";
     public static final String BEHAVIOR_GOAL_CATEGORY = "behavior_category";
     public static final String GOAL_NAME = "name";
+    public static final String GOAL_ASSIGNMENT_NAME = "assignment_name";
     public static final String GOAL_SECTION_FK = "section_fk";
     public static final String GOAL_PLAN = "plan";
+    public static final String GOAL_MESSAGE = "message";
     public static final String GOAL_OBSTACLE = "obstacle";
     public static final String GOAL_OUTCOME = "outcome";
     public static final String GOAL_PROGRESS = "progress";
