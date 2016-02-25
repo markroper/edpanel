@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <changeSet author="jordan" id="changelog-1.9-change1">
+        
+        <dropForeignKeyConstraint baseTableName="behavior" constraintName="fk_teacher$behavior" />
+        
+        <renameColumn tableName="behavior" 
+                      oldColumnName="user_fk" 
+                      newColumnName="staff_fk"
+                      columnDataType="bigint(20) unsigned" />
+        
+    </changeSet>
+    
+    <changeSet author="jordan" id="changelog-1.9-change2">
+        <addForeignKeyConstraint baseTableName="behavior"
+                                 baseColumnNames="staff_fk"
+                                 constraintName="fk_staff$behavior"
+                                 referencedTableName="staff"
+                                 referencedColumnNames="staff_user_fk" />
+    </changeSet>
+    
+    
+</databaseChangeLog>
