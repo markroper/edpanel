@@ -12,6 +12,7 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.user.Person;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.User;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,15 +32,18 @@ public class StudentSync implements ISync<Student> {
     protected IPowerSchoolClient powerSchool;
     protected School school;
     protected StudentAssociator studentAssociator;
+    protected Map<Long, MutablePair<String, String>> spedEll;
 
     public StudentSync(IAPIClient edPanel,
                        IPowerSchoolClient powerSchool,
                        School s,
-                       StudentAssociator studentAssociator) {
+                       StudentAssociator studentAssociator,
+                       Map<Long, MutablePair<String, String>> spedEll) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
         this.studentAssociator = studentAssociator;
+        this.spedEll = spedEll;
     }
 
     @Override
@@ -149,6 +153,11 @@ public class StudentSync implements ISync<Student> {
         Collection<Student> apiListOfStaff = response.toInternalModel();
         ConcurrentHashMap<Long, Student> source = new ConcurrentHashMap<>();
         for(Student u : apiListOfStaff) {
+            MutablePair<String, String> se = spedEll.get(Long.parseLong(u.getSourceSystemId()));
+            if(null != se) {
+                u.setSped(!"00".equals(se.getLeft()));
+                u.setEll(!"00".equals(se.getRight()));
+            }
             u.setCurrentSchoolId(school.getId());
             source.put(Long.valueOf(u.getSourceSystemUserId()), u);
         }
