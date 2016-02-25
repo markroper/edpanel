@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
-    <changeSet author="mark" id="changelog-1.8-change1">
+    <changeSet author="mark" id="changelog-1.10-change1">
         <addColumn tableName="student">
             <column name="student_sped" type="bit(1)"></column>
         </addColumn>
