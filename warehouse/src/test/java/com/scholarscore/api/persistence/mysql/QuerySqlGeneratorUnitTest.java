@@ -607,7 +607,7 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT staff.staff_user_fk, SUM(if(behavior.category = 'DEMERIT', 1, 0)) as sum_demerit_agg \n" +
-                        "FROM staff LEFT OUTER JOIN behavior ON staff.staff_user_fk = behavior.user_fk \n" +
+                        "FROM staff LEFT OUTER JOIN behavior ON staff.staff_user_fk = behavior.staff_fk \n" +
                         "GROUP BY staff.staff_user_fk";
             }
         };
