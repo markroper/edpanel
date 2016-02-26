@@ -142,8 +142,10 @@ public class DbMappings {
         put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.ID), HibernateConsts.STAFF_USER_FK);
         put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.SCHOOL), HibernateConsts.SCHOOL_FK);
         put(new DimensionField(Dimension.USER, UserDimension.ID), HibernateConsts.USER_ID);
+        put(new DimensionField(Dimension.STAFF, StaffDimension.NAME), HibernateConsts.STAFF_NAME);
         put(new DimensionField(Dimension.STAFF, StaffDimension.ID), HibernateConsts.STAFF_USER_FK);
-
+        put(new DimensionField(Dimension.STAFF, StaffDimension.SCHOOL), HibernateConsts.SCHOOL_FK);
+                
         //School dimension field to DB column name lookup
         put(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME), HibernateConsts.SCHOOL_NAME);
         put(new DimensionField(Dimension.SCHOOL, SchoolDimension.ID), HibernateConsts.SCHOOL_ID);
