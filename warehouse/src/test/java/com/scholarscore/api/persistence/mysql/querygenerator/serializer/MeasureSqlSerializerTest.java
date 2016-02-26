@@ -52,7 +52,6 @@ public class MeasureSqlSerializerTest {
             Dimension testDimension = pickJoinDimension(mss);
             String joinClause = mss.toJoinClause(testDimension);
             assertNotNull(joinClause, "Expected join clause not to be null from serializer " + mss.getClass().getSimpleName());
-//            fromClause
         }
     }
     
