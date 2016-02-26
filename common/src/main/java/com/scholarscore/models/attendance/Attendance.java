@@ -17,7 +17,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -41,7 +40,7 @@ public class Attendance implements Serializable {
     //Some attendance entries may be tied to a period in the day
     private Long sourceSystemPeriodId;
     //If an attendance entry is section-level, this value will be non null
-    private AttendanceTypes type;
+    private AttendanceType type;
     private Section section;
     
     @ManyToOne(fetch=FetchType.EAGER)
@@ -119,11 +118,11 @@ public class Attendance implements Serializable {
 
     @Column(name = HibernateConsts.ATTENDANCE_TYPE)
     @Enumerated(EnumType.STRING)
-    public AttendanceTypes getType() {
+    public AttendanceType getType() {
         return type;
     }
 
-    public void setType(AttendanceTypes type) {
+    public void setType(AttendanceType type) {
         this.type = type;
     }
 
@@ -198,7 +197,7 @@ public class Attendance implements Serializable {
         //Some attendance entries may be tied to a period in the day
         private Long sourceSystemPeriodId;
         //If an attendance entry is section-level, this value will be non null
-        private AttendanceTypes type;
+        private AttendanceType type;
 
         public AttendanceBuilder(){}
 
@@ -207,7 +206,7 @@ public class Attendance implements Serializable {
             return this;
         }
 
-        public AttendanceBuilder withType(final AttendanceTypes type){
+        public AttendanceBuilder withType(final AttendanceType type){
             this.type = type;
             return this;
         }

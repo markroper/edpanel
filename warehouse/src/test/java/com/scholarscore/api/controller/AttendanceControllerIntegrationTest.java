@@ -4,7 +4,7 @@ import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.*;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.AttendanceStatus;
-import com.scholarscore.models.attendance.AttendanceTypes;
+import com.scholarscore.models.attendance.AttendanceType;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.user.Student;
 import org.springframework.http.HttpStatus;
@@ -92,7 +92,7 @@ public class AttendanceControllerIntegrationTest extends IntegrationBase {
                 a.setDescription("some desc");
                 a.setSchoolDay(days.get(i));
                 a.setStudent(student);
-                a.setType(AttendanceTypes.DAILY);
+                a.setType(AttendanceType.DAILY);
                 a.setStatus(statusValues.get(new Random().nextInt(statusValues.size())));
                 cases[i][1] = a;
             } else {
@@ -101,7 +101,7 @@ public class AttendanceControllerIntegrationTest extends IntegrationBase {
                 a.setDescription("some section desc");
                 a.setSchoolDay(days.get(i - days.size()));
                 a.setStudent(student);
-                a.setType(AttendanceTypes.SECTION);
+                a.setType(AttendanceType.SECTION);
                 a.setSection(section);
                 a.setStatus(statusValues.get(new Random().nextInt(statusValues.size())));
                 cases[i][1] = a;

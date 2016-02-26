@@ -15,6 +15,10 @@ public class StudentDimension implements IDimension {
     public static final String AGE = "Age";
     public static final String ETHNICITY = "Ethnicity";
     public static final String RACE = "Race";
+    public static final String ELL = "ELL";
+    public static final String ELL_DETAIL = "ELL Detail";
+    public static final String SPED = "Special Ed.";
+    public static final String SPED_DETAIL = "Special Ed. Detail";
     public static final String CITY_OF_RESIDENCE = "City of Residence";
     public static final String HOME_ADDRESS = "Home Address";
     public static final String MAILING_ADDRESS = "Mailing Address";
@@ -22,7 +26,8 @@ public class StudentDimension implements IDimension {
     public static final String SCHOOL = "School";
     public static final Set<String> DIMENSION_FIELDS = 
             ImmutableSet.of(ID, NAME, GENDER, AGE, ETHNICITY, RACE, CITY_OF_RESIDENCE, 
-                    HOME_ADDRESS, MAILING_ADDRESS, PROJECTED_GRADUATION_YEAR, SCHOOL);
+                    HOME_ADDRESS, MAILING_ADDRESS, PROJECTED_GRADUATION_YEAR, SCHOOL, ELL,
+                    ELL_DETAIL, SPED, SPED_DETAIL);
     public static final Set<Dimension> PARENT_DIMENSIONS = 
             ImmutableSet.of(Dimension.SCHOOL);
     

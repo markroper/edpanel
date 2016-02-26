@@ -47,6 +47,10 @@ public class Student extends Person implements Serializable {
     private String federalEthnicity;
     private LocalDate withdrawalDate;
     private Staff advisor;
+    private Boolean sped;
+    private String spedDetail;
+    private Boolean ell;
+    private String ellDetail;
     
     public Student() {
         
@@ -64,6 +68,10 @@ public class Student extends Person implements Serializable {
         this.federalEthnicity = student.federalEthnicity;
         this.withdrawalDate = student.withdrawalDate;
         this.advisor = student.advisor;
+        this.sped = student.sped;
+        this.spedDetail = student.spedDetail;
+        this.ell = student.ell;
+        this.ellDetail = student.ellDetail;
     }
     
     public Student(String race, String ethnicity, Long currentSchoolId, Gender gender, String name, Long expectedGraduationYear, Staff advisor) {
@@ -114,7 +122,55 @@ public class Student extends Person implements Serializable {
             if(null == getAdvisor()) {
                 setAdvisor(merge.getAdvisor());
             }
+            if(null == getSped()) {
+                setSped(merge.getSped());
+            }
+            if(null == getSpedDetail()) {
+                setSpedDetail(merge.getSpedDetail());
+            }
+            if(null == getEll()) {
+                setEll(merge.getEll());
+            }
+            if(null == getEllDetail()) {
+                setEllDetail(merge.getEllDetail());
+            }
         }
+    }
+
+    @Column(name = HibernateConsts.STUDENT_SPED)
+    public Boolean getSped() {
+        return sped;
+    }
+
+    public void setSped(Boolean sped) {
+        this.sped = sped;
+    }
+
+    @Column(name = HibernateConsts.STUDENT_SPED_DETAIL)
+    public String getSpedDetail() {
+        return spedDetail;
+    }
+
+    public void setSpedDetail(String spedDetail) {
+        this.spedDetail = spedDetail;
+    }
+
+    @Column(name = HibernateConsts.STUDENT_ELL)
+    public Boolean getEll() {
+        return ell;
+    }
+
+    public void setEll(Boolean ell) {
+        this.ell = ell;
+    }
+
+    @Column(name = HibernateConsts.STUDENT_ELL_DETAIL)
+    public String getEllDetail() {
+        return ellDetail;
+    }
+
+    public void setEllDetail(String ellDetail) {
+        this.ellDetail = ellDetail;
     }
 
     @OneToOne(optional = true, fetch= FetchType.EAGER)
@@ -282,6 +338,10 @@ public class Student extends Person implements Serializable {
                 && Objects.equals(this.withdrawalDate, other.withdrawalDate)
                 && Objects.equals(this.federalEthnicity, other.federalEthnicity)
                 && Objects.equals(this.currentSchoolId, other.currentSchoolId)
+                && Objects.equals(this.ell, other.ell)
+                && Objects.equals(this.ellDetail, other.ellDetail)
+                && Objects.equals(this.sped, other.sped)
+                && Objects.equals(this.spedDetail, other.spedDetail)
                 && Objects.equals(this.advisor, other.advisor);
     }
 
@@ -290,7 +350,8 @@ public class Student extends Person implements Serializable {
         return 31 * super.hashCode()
                 + Objects.hash(mailingAddress, gender, birthDate,
                         districtEntryDate, projectedGraduationYear, socialSecurityNumber, 
-                        federalRace, federalEthnicity, currentSchoolId, withdrawalDate, advisor);
+                        federalRace, federalEthnicity, currentSchoolId, withdrawalDate, advisor,
+                        ell, ellDetail, sped, spedDetail);
     }
 
     @Override
@@ -307,6 +368,10 @@ public class Student extends Person implements Serializable {
                 ", currentSchoolId=" + currentSchoolId + '\'' +
                 ", withdrawalDate=" + withdrawalDate + '\'' +
                 ", advisor=" + advisor + '\'' +
+                ", sped=" + sped + '\'' +
+                ", spedDetail=" + spedDetail + '\'' +
+                ", ell=" + ell + '\'' +
+                ", ellDetail=" + ellDetail + '\'' +
                 '}';
     }
 
@@ -333,7 +398,27 @@ public class Student extends Person implements Serializable {
         private String federalEthnicity;
         private Long currentSchoolId;
         private LocalDate withdrawalDate;
+        private Boolean sped;
+        private String spedDetail;
+        private Boolean ell;
+        private String ellDetail;
 
+        public StudentBuilder withSped(final Boolean sped) {
+            this.sped = sped;
+            return this;
+        }
+        public StudentBuilder withSpedDetail(final String spedDetail) {
+            this.spedDetail = spedDetail;
+            return this;
+        }
+        public StudentBuilder withEll(final Boolean ell) {
+            this.ell = ell;
+            return this;
+        }
+        public StudentBuilder withEllDetail(final String ellDetail) {
+            this.ellDetail = ellDetail;
+            return this;
+        }
         public StudentBuilder withWithdrawalDate(final LocalDate date) {
             this.withdrawalDate = date;
             return this;
@@ -408,6 +493,10 @@ public class Student extends Person implements Serializable {
             student.setFederalEthnicity(federalEthnicity);
             student.setCurrentSchoolId(currentSchoolId);
             student.setWithdrawalDate(withdrawalDate);
+            student.setEll(ell);
+            student.setEllDetail(ellDetail);
+            student.setSped(sped);
+            student.setSpedDetail(spedDetail);
             return student;
         }
 

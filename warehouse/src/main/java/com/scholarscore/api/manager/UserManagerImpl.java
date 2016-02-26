@@ -337,7 +337,6 @@ public class UserManagerImpl implements UserManager {
         // user logged in is not the userId that the password reset is for. maybe just take no id?
 
         // always clear onetime password + creation date when password is reset
-        // TODO Jordan: provide way to clear onetime password and time
         user.setOneTimePass(null);
         user.setOneTimePassCreated(null);
         if (!StringUtils.isEmpty(newPassword)) {
