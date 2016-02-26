@@ -1,10 +1,14 @@
-package com.scholarscore.models.query.measure;
+package com.scholarscore.models.query.measure.behavior;
 
 import com.google.common.collect.ImmutableSet;
+import com.scholarscore.models.query.Dimension;
 
 import java.util.Set;
 
 public abstract class BehaviorMeasure {
+
+    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR,
+            Dimension.STUDENT, Dimension.TEACHER, Dimension.SCHOOL, Dimension.STAFF);
     
     public static final String ID = "ID";
     public static final String STUDENT_FK = "Student";
