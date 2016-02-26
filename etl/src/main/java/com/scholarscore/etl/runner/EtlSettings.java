@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class EtlSettings {
     private List<File> gpaImportFiles = new ArrayList<>();
+    private List<File> ellSpedImportFiles = new ArrayList<>();
 
     public List<File> getGpaImportFiles() {
         return gpaImportFiles;
@@ -16,5 +17,13 @@ public class EtlSettings {
 
     public void setGpaImportFiles(List<File> gpaImportFiles) {
         this.gpaImportFiles = gpaImportFiles;
+    }
+
+    public List<File> getEllSpedImportFiles() {
+        return ellSpedImportFiles;
+    }
+
+    public void setEllSpedImportFiles(List<File> ellSpedImportFiles) {
+        this.ellSpedImportFiles = ellSpedImportFiles;
     }
 }
