@@ -35,7 +35,7 @@ import com.scholarscore.models.query.expressions.operands.StringOperand;
 import com.scholarscore.models.query.expressions.operators.BinaryOperator;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
-import com.scholarscore.models.query.measure.BehaviorMeasure;
+import com.scholarscore.models.query.measure.behavior.BehaviorMeasure;
 import com.scholarscore.models.query.measure.CourseGradeMeasure;
 import com.scholarscore.models.query.measure.CurrentGpaMeasure;
 import org.slf4j.Logger;
