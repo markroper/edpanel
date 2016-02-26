@@ -9,7 +9,7 @@ import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.AttendanceStatus;
-import com.scholarscore.models.attendance.AttendanceTypes;
+import com.scholarscore.models.attendance.AttendanceType;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.gpa.AddedValueGpa;
 import com.scholarscore.models.grade.SectionGrade;
@@ -190,14 +190,14 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         for(SchoolDay day: days) {
             Attendance a = new Attendance();
             a.setSection(section);
-            a.setType(AttendanceTypes.SECTION);
+            a.setType(AttendanceType.SECTION);
             a.setStatus(AttendanceStatus.TARDY);
             a.setStudent(student1);
             a.setSchoolDay(day);
             attendanceValidatingExecutor.create(school.getId(), student1.getId(), a, "Section absence for studenta");
 
             Attendance a2 = new Attendance();
-            a2.setType(AttendanceTypes.DAILY);
+            a2.setType(AttendanceType.DAILY);
             a2.setStatus(AttendanceStatus.ABSENT);
             a2.setStudent(student3);
             a2.setSchoolDay(day);

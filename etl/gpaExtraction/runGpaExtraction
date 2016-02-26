@@ -5,6 +5,7 @@ rm -f *.csv
 
 # To run the casper extract using Chris's gpaExtraction.js
 casperjs --ssl-protocol=any gpaExtraction.js
+casperjs --ssl-protocol=any ellAndSpedExtraction.js
 
 ## after running this, there will be one or more .csv files in this directory. 
 ## this directory path can be provided to the ETL runner which should consume these files

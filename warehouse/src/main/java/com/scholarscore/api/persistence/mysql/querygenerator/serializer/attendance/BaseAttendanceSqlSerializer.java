@@ -4,7 +4,7 @@ import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.api.persistence.mysql.querygenerator.serializer.BaseSqlSerializer;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.attendance.AttendanceStatus;
-import com.scholarscore.models.attendance.AttendanceTypes;
+import com.scholarscore.models.attendance.AttendanceType;
 import com.scholarscore.models.query.Dimension;
 
 /**
@@ -16,7 +16,7 @@ public abstract class BaseAttendanceSqlSerializer extends BaseSqlSerializer {
 
     @Override
     public String toSelectInner() {
-        AttendanceTypes attendanceType = attendanceTypeMatches();
+        AttendanceType attendanceType = attendanceTypeMatches();
         String attendanceTypeString = "";
         if (attendanceType != null) {
             attendanceTypeString = " AND " + toTableName() + DOT + HibernateConsts.ATTENDANCE_TYPE + " = '" + attendanceType + "'";
@@ -53,7 +53,7 @@ public abstract class BaseAttendanceSqlSerializer extends BaseSqlSerializer {
     abstract AttendanceStatus attendanceStatusMatches();
     
     // subclasses MAY specify an AttendanceType that should be matched
-    AttendanceTypes attendanceTypeMatches() { 
+    AttendanceType attendanceTypeMatches() { 
         return null;
     }
 

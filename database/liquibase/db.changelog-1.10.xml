@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <changeSet author="mark" id="changelog-1.10-change1">
+        <addColumn tableName="student">
+            <column name="student_sped" type="bit(1)" />
+        </addColumn>
+        <addColumn tableName="student">
+            <column name="student_sped_detail" type="varchar(64)" />
+        </addColumn>
+        <addColumn tableName="student">
+            <column name="student_ell" type="bit(1)" />
+        </addColumn>
+        <addColumn tableName="student">
+            <column name="student_ell_detail" type="varchar(64)" />
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

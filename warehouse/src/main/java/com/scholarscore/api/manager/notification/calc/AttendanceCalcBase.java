@@ -4,7 +4,7 @@ import com.scholarscore.api.manager.OrchestrationManager;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.AttendanceStatus;
-import com.scholarscore.models.attendance.AttendanceTypes;
+import com.scholarscore.models.attendance.AttendanceType;
 import com.scholarscore.models.notification.Notification;
 import com.scholarscore.models.notification.TriggeredNotification;
 import com.scholarscore.models.notification.window.Duration;
@@ -29,7 +29,7 @@ public abstract class AttendanceCalcBase {
 
     public List<TriggeredNotification> calculate(
             List<? extends Person> subjects, Notification notification,
-            OrchestrationManager manager, AttendanceStatus status, AttendanceTypes type) {
+            OrchestrationManager manager, AttendanceStatus status, AttendanceType type) {
         AggregateFunction agg = notification.getAggregateFunction();
         Double triggerValue = notification.getTriggerValue();
         NotificationWindow window = notification.getWindow();
