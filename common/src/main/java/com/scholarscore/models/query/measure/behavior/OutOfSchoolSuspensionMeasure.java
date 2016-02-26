@@ -1,17 +1,18 @@
-package com.scholarscore.models.query.measure;
+package com.scholarscore.models.query.measure.behavior;
 
 import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.Measure;
+import com.scholarscore.models.query.measure.IMeasure;
+import com.scholarscore.models.query.measure.behavior.BehaviorMeasure;
 
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class InSchoolSuspensionMeasure extends BehaviorMeasure implements IMeasure {
+public class OutOfSchoolSuspensionMeasure extends BehaviorMeasure implements IMeasure {
     final Set<Measure> compatibleMeasures = ImmutableSet.of(Measure.DEMERIT, Measure.MERIT, Measure.DETENTION, Measure.REFERRAL);
-    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR, 
-            Dimension.STUDENT, Dimension.TEACHER, Dimension.SCHOOL);
+
     @Override
     public Set<Dimension> getCompatibleDimensions() {
         return compatibleDimensions;
@@ -24,12 +25,12 @@ public class InSchoolSuspensionMeasure extends BehaviorMeasure implements IMeasu
 
     @Override
     public Measure getMeasure() {
-        return Measure.IN_SCHOOL_SUSPENSION;
+        return Measure.OUT_OF_SCHOOL_SUSPENSION;
     }
 
     @Override
     public String getName() {
-        return BehaviorCategory.IN_SCHOOL_SUSPENSION.toString();
+        return BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION.toString();
     }
 
 }

@@ -28,6 +28,7 @@ public enum Dimension {
     SCHOOL,
     TEACHER,
     STUDENT,
+    STAFF,
     ADMINISTRATOR,
     USER,
     STUDENT_ASSIGNMENT,
@@ -56,6 +57,8 @@ public enum Dimension {
                 return new SubjectAreaDimension();
             case SCHOOL:
                 return new SchoolDimension();
+            case STAFF:
+                return new StaffDimension();
             case TEACHER:
                 return new TeacherDimension();
             case STUDENT:
@@ -101,6 +104,7 @@ public enum Dimension {
         add(Dimension.ATTENDANCE);
         add(Dimension.BEHAVIOR);
         add(Dimension.STUDENT);
+        add(Dimension.STAFF);
         add(Dimension.TEACHER);
         add(Dimension.ADMINISTRATOR);
         add(Dimension.STUDENT_ASSIGNMENT);
