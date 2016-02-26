@@ -7,7 +7,7 @@ import com.scholarscore.models.query.Measure;
 import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.dimension.*;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
-import com.scholarscore.models.query.measure.BehaviorMeasure;
+import com.scholarscore.models.query.measure.behavior.BehaviorMeasure;
 import com.scholarscore.models.query.measure.CourseGradeMeasure;
 import com.scholarscore.models.query.measure.CurrentGpaMeasure;
 import com.scholarscore.models.query.measure.GpaMeasure;
@@ -104,6 +104,7 @@ public class DbMappings {
                 put(Dimension.STUDENT, HibernateConsts.STUDENT_TABLE);
                 put(Dimension.TEACHER, HibernateConsts.STAFF_TABLE);
                 put(Dimension.ADMINISTRATOR, HibernateConsts.STAFF_TABLE);
+                put(Dimension.STAFF, HibernateConsts.STAFF_TABLE);
                 put(Dimension.YEAR, HibernateConsts.SCHOOL_YEAR_TABLE);
                 put(Dimension.ASSIGNMENT, HibernateConsts.ASSIGNMENT_TABLE);
                 put(Dimension.USER, HibernateConsts.USERS_TABLE);
@@ -141,7 +142,10 @@ public class DbMappings {
         put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.ID), HibernateConsts.STAFF_USER_FK);
         put(new DimensionField(Dimension.ADMINISTRATOR, TeacherDimension.SCHOOL), HibernateConsts.SCHOOL_FK);
         put(new DimensionField(Dimension.USER, UserDimension.ID), HibernateConsts.USER_ID);
-
+        put(new DimensionField(Dimension.STAFF, StaffDimension.NAME), HibernateConsts.STAFF_NAME);
+        put(new DimensionField(Dimension.STAFF, StaffDimension.ID), HibernateConsts.STAFF_USER_FK);
+        put(new DimensionField(Dimension.STAFF, StaffDimension.SCHOOL), HibernateConsts.SCHOOL_FK);
+                
         //School dimension field to DB column name lookup
         put(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME), HibernateConsts.SCHOOL_NAME);
         put(new DimensionField(Dimension.SCHOOL, SchoolDimension.ID), HibernateConsts.SCHOOL_ID);

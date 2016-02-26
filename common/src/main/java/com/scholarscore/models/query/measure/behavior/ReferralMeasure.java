@@ -1,8 +1,10 @@
-package com.scholarscore.models.query.measure;
+package com.scholarscore.models.query.measure.behavior;
 
 import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.Measure;
+import com.scholarscore.models.query.measure.IMeasure;
+import com.scholarscore.models.query.measure.behavior.BehaviorMeasure;
 
 import java.util.Set;
 
@@ -12,8 +14,7 @@ import java.util.Set;
 public class ReferralMeasure extends BehaviorMeasure implements IMeasure {
     final Set<Measure> compatibleMeasures = ImmutableSet.of(Measure.DEMERIT, Measure.MERIT, Measure.DETENTION, 
             Measure.IN_SCHOOL_SUSPENSION, Measure.OUT_OF_SCHOOL_SUSPENSION);
-    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR,
-            Dimension.STUDENT, Dimension.TEACHER, Dimension.SCHOOL);
+
     @Override
     public Set<Dimension> getCompatibleDimensions() {
         return compatibleDimensions;
