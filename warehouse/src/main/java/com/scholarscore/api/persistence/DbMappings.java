@@ -120,6 +120,10 @@ public class DbMappings {
     public static final Map<DimensionField, String> DIMENSION_TO_COL_NAME = 
             new HashMap<DimensionField, String>(){{
         //Student dimension field to db column name lookup
+        put(new DimensionField(Dimension.STUDENT, StudentDimension.SPED), HibernateConsts.STUDENT_SPED);
+        put(new DimensionField(Dimension.STUDENT, StudentDimension.SPED_DETAIL), HibernateConsts.STUDENT_SPED_DETAIL);
+        put(new DimensionField(Dimension.STUDENT, StudentDimension.ELL), HibernateConsts.STUDENT_ELL);
+        put(new DimensionField(Dimension.STUDENT, StudentDimension.ELL_DETAIL), HibernateConsts.STUDENT_ELL_DETAIL);
         put(new DimensionField(Dimension.STUDENT, StudentDimension.AGE), HibernateConsts.STUDENT_BIRTH_DATE);
         put(new DimensionField(Dimension.STUDENT, StudentDimension.GENDER), HibernateConsts.STUDENT_GENDER);
         put(new DimensionField(Dimension.STUDENT, StudentDimension.NAME), HibernateConsts.STUDENT_NAME);
