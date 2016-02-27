@@ -249,25 +249,11 @@ public abstract class QuerySqlGenerator {
                     //If that doesn't match, check the dimension before that.
                     if (Dimension.buildDimension(currTable).getParentDimensions() != null &&
                             !Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
-                        if(am != null 
-                                && mss != null
-                                && am.getMeasure() != null 
-                                && Measure.buildMeasure(am.getMeasure()).getCompatibleDimensions().contains(joinDim)){
+                        if (measureIsCompatible(am, joinDim)){
                             currentTableName = mss.toTableName();
                         } else {
-                            Dimension dimDesc = currTable;
-                            //Start with the previous dimension since we're already dealing with i and i-1...
-                            int descIndex = i - 2;
-                            while(descIndex >= 0 && !Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
-                                dimDesc = orderedTables.get(descIndex);
-                                descIndex--;
-                            }
-                            if(Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
-                                currentTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimDesc);
-                            } else {
-                                throw new SqlGenerationException(
-                                        "Cannot join dimension to either previous dimension or measure: " + joinDim);
-                            }
+                            ;
+                            currentTableName = getDimensionJoinOrThrowException(orderedTables.subList(0, i-1), currTable, joinDim);
                         }
                     }
                     String joinTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(joinDim);
@@ -299,6 +285,27 @@ public abstract class QuerySqlGenerator {
         }
 
 
+    }
+
+    private static String getDimensionJoinOrThrowException(List<Dimension> orderedTables, Dimension dimDesc, Dimension joinDim) throws SqlGenerationException {
+        //Start with the previous dimension since we're already dealing with i and i-1...
+//        int descIndex = i - 2;
+        int descIndex = orderedTables.size()-1;
+        while(descIndex >= 0 && !Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
+            dimDesc = orderedTables.get(descIndex);
+            descIndex--;
+        }
+        if(Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
+            return DbMappings.DIMENSION_TO_TABLE_NAME.get(dimDesc);
+        } else {
+            throw new SqlGenerationException(
+                    "Cannot join dimension to either previous dimension or measure: " + joinDim);
+        }
+    }
+
+    private static boolean measureIsCompatible(AggregateMeasure aggregateMeasure, Dimension dimension) {
+        return (aggregateMeasure != null && aggregateMeasure.getMeasure() != null
+                && Measure.buildMeasure(aggregateMeasure.getMeasure()).getCompatibleDimensions().contains(dimension));
     }
 
     /**
