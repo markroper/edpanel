@@ -22,6 +22,18 @@ public class StaffDimension implements IDimension {
     public static final Set<Dimension> PARENT_DIMENSIONS =
             ImmutableSet.of(Dimension.SCHOOL);
 
+    public static final StaffType DEFAULT_STAFF_TYPE = StaffType.TEACHER;
+    
+    public final StaffType staffType;
+    
+    public enum StaffType { TEACHER, ADMINISTRATOR }
+
+    public StaffDimension() { this(DEFAULT_STAFF_TYPE); }
+    
+    public StaffDimension(StaffType staffType) { 
+        this.staffType = staffType;
+    }
+    
     @Override
     public Dimension getType() {
         return Dimension.STAFF;

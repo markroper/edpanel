@@ -223,6 +223,8 @@ public abstract class QuerySqlGenerator {
         }
         List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
         
+        boolean queryHasPath = QuerySqlPathHelper.queryHasCompletePath(q);
+        
         //Use the first dimension in the sorted columns as the FROM table
         if(null != orderedTables && !orderedTables.isEmpty()) {
             //Use the first dimension in the sorted columns as the FROM table
