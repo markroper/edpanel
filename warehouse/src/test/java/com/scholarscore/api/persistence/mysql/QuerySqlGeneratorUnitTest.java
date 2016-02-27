@@ -582,7 +582,8 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT student.student_user_fk, SUM(if(behavior.category = 'MERIT', 1, 0)) as sum_merit_agg \n" +
-                        "FROM student LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk \n" +
+                        "FROM student " + 
+                        "LEFT OUTER JOIN behavior ON student.student_user_fk = behavior.student_fk \n" +
                         "WHERE  ( ( behavior.date  >  '2014-09-01 00:00:00.0' )  AND  ( student.student_user_fk  =  1 ) ) \n" +
                         "GROUP BY student.student_user_fk";
             }
@@ -607,7 +608,8 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT staff.staff_user_fk, SUM(if(behavior.category = 'DEMERIT', 1, 0)) as sum_demerit_agg \n" +
-                        "FROM staff LEFT OUTER JOIN behavior ON staff.staff_user_fk = behavior.staff_fk \n" +
+                        "FROM staff " + 
+                        "LEFT OUTER JOIN behavior ON staff.staff_user_fk = behavior.staff_fk \n" +
                         "GROUP BY staff.staff_user_fk";
             }
         };
@@ -819,7 +821,34 @@ public class QuerySqlGeneratorUnitTest {
                         "GROUP BY school.school_name";
             }
         };
-        
+
+        TestQuery queryIncludingMultipleTablesPathFinder = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Intermediate Tables with Hints query";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query query = new Query();
+                ArrayList<AggregateMeasure> aggregateMeasures = new ArrayList<>();
+                aggregateMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
+                query.setAggregateMeasures(aggregateMeasures);
+                query.addField(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME));
+                return query;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT school.school_name, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg \n" +
+                        "FROM section " +
+                        "LEFT OUTER JOIN assignment ON section.section_id = assignment.section_fk " +
+                        "LEFT OUTER JOIN student_assignment ON assignment.assignment_id = student_assignment.assignment_fk \n" +
+                        "LEFT OUTER JOIN course ON course.course_id = section.course_fk \n" +
+                        "LEFT OUTER JOIN school ON school.school_id = course.school_fk \n" +
+                        "GROUP BY school.school_name";
+            }
+        };
         
         /*
             select count(*), num_grades
@@ -913,7 +942,8 @@ public class QuerySqlGeneratorUnitTest {
                 { courseGradesBucketedTestQuery },
                 { requiresMultipleJoinsTestQuery },
                 { queryIncludingMultipleTablesUsingHints },
-                { referralTestQuery }
+                { referralTestQuery },
+                { queryIncludingMultipleTablesPathFinder }
         };
     }
     

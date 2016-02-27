@@ -60,7 +60,7 @@ public enum Dimension {
             case STAFF:
                 return new StaffDimension();
             case TEACHER:
-                return new TeacherDimension();
+                return new StaffDimension();
             case STUDENT:
                 return new StudentDimension();
             case ADMINISTRATOR:

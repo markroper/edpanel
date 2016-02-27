@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
@@ -24,6 +25,22 @@ import java.util.Set;
  * Time: 12:37 PM
  */
 public class QuerySqlPathHelper {
+
+    // -- TODO ideas:
+    // -- relationship between two tables: tell the FK direction (and thus column names?) (this could simplify SQL serializers)
+    // 
+    
+    // This layer of abstraction is required as long as we have "user-visible dimensions" 
+    // (of which *more* than one can be mapped to a specific table) that are different 
+    // from our actual tables (e.g. teacher and admin are dimensions, but don't have corresponding tables)
+    private static final Map<Dimension, Dimension> PSEUDO_DIMENSION_CONVERSION_TABLE =
+            new HashMap<Dimension, Dimension>() {
+                {
+                    put(Dimension.TEACHER, Dimension.STAFF);
+                    put(Dimension.ADMINISTRATOR, Dimension.STAFF);
+                }
+            };
+
     
     public static Boolean queryHasCompletePath(Query q) {
 
@@ -46,30 +63,32 @@ public class QuerySqlPathHelper {
             selectedDims.addAll(filterDims);
         }
         List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
-
-        // TODO Jordan: this is a work in progress and
-        List<Dimension> copyOfOrderedTables = new ArrayList<>();
-        copyOfOrderedTables.addAll(orderedTables);
-
-        // I was hoping to get the other table (from the measure) here as well...
-        // well, let's try hacky to start and maybe later work our way up to elegant
-//        String measureTableName = null;
-//        Dimension measureDimension = null;
+        
         if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
             AggregateMeasure aggregateMeasure = q.getAggregateMeasures().get(0);
             MeasureSqlSerializer serializer = MeasureSqlSerializerFactory.get(aggregateMeasure.getMeasure());
             Dimension table = DbMappings.TABLE_NAME_TO_DIMENSION.get(serializer.toTableName());
             Dimension optionalTable = DbMappings.TABLE_NAME_TO_DIMENSION.get(serializer.optionalJoinedTable());
 
-            copyOfOrderedTables.add(table);
+            orderedTables.add(table);
             if (optionalTable != null) {
-                copyOfOrderedTables.add(optionalTable);
+                orderedTables.add(optionalTable);
             }
 
         }
 
-        // errg. just make it fit.
-        boolean hasCompletePath = hasCompleteJoinPath(copyOfOrderedTables);
+        // replace any pseudo dimensions with their corresponding actual dimensions
+        for (int i = 0 ; i < orderedTables.size() ; i++) {
+            Dimension currentDimension = orderedTables.get(i);
+            Dimension actualDimension = PSEUDO_DIMENSION_CONVERSION_TABLE.get(currentDimension);
+            if (actualDimension != null) {
+                // oops, we're using a pseudo dimension and need to convert it
+                orderedTables.remove(i);
+                orderedTables.add(i, actualDimension);
+            }
+        }
+        
+        boolean hasCompletePath = hasCompleteJoinPath(orderedTables);
         if (hasCompletePath) {
             System.out.println("Query has COMPLETE join path!");
         } else {
@@ -149,12 +168,12 @@ public class QuerySqlPathHelper {
         }
 
         // take the first table and scan its neighbors, which will then lead to all connected tables being scanned.
-        HashMap<Node, Integer> tableGraph = new HashMap<>();
+//        HashMap<Node, Integer> tableGraph = new HashMap<>();
         Node firstNode = unmatchedTables.iterator().next();
         Set<Node> neighborNodes = findImmediateNeighbors(firstNode);
         unmatchedTables.remove(firstNode);
 
-        // yeah, okay, a table hasn't been matched yet. more readable would be a separate 'isFirst' var maybe
+        // yeah, okay, a table hasn't been connected to the connected-table-graph yet...
         // we may need to loop through this a number of times depending on the order of the tables.
         // as long as any new table is matched, loop again.
         boolean tableMatchedThisRound = true;
@@ -164,11 +183,13 @@ public class QuerySqlPathHelper {
             // check all unmatched tables against these neighbor nodes. 
             for (Iterator<Node> unmatchedTableIterator = unmatchedTables.iterator(); unmatchedTableIterator.hasNext(); ) {
                 Node unmatchedTable = unmatchedTableIterator.next();
-//            for (Node unmatchedTable : unmatchedTables) {
+                // one of the joined tables has this node as a neighbor - consider it linked
                 if (neighborNodes.contains(unmatchedTable)) {
-                    Set<Node> moreNeighborNodes = findImmediateNeighbors(unmatchedTable);
+                    // remove the node from the list of unmatched tables
                     unmatchedTableIterator.remove();
-                    neighborNodes.addAll(moreNeighborNodes);
+                    // add the new table's immediate neighbor nodes to the list of one-hop neighbors
+                    neighborNodes.addAll(findImmediateNeighbors(unmatchedTable));
+                    // since we've added new neighbors, loop again in case any previous tables missed a connection through this new table
                     tableMatchedThisRound = true;
                 }
 //            }
@@ -185,7 +206,9 @@ public class QuerySqlPathHelper {
                     System.out.print(table.name() + " ");
                 }
             }
-            System.out.println(")");
+            System.out.print(")");
+            System.out.print(" and started from " + firstNode);
+            System.out.println();
             for (Node unmatchedTable : unmatchedTables) {
                 System.out.println("NO MATCH FOR TABLE " + unmatchedTable);
             }
