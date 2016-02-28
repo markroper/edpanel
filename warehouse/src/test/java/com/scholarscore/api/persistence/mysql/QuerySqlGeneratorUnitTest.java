@@ -39,8 +39,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Test(groups = { "unit" })
 public class QuerySqlGeneratorUnitTest {
@@ -52,8 +54,9 @@ public class QuerySqlGeneratorUnitTest {
         default Integer levDistance() { return null; }
     }
 
+    // all VALID queries must produce executable SQL which will be tested against an instance of the database (parameters are OK)
     @DataProvider
-    public static Object[][] queriesProvider() {
+    public static Object[][] validQueriesProvider() {
 
         // initialize shared objects here -- anything used by multiple queries
         final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -86,11 +89,6 @@ public class QuerySqlGeneratorUnitTest {
         sections.add(3);
         sectionList.setValue(sections);
 
-        List<AggregationBucket> buckets = new ArrayList<>();
-        buckets.add(new NumericBucket(0D, 1D, "0-1"));
-        buckets.add(new NumericBucket(1D, 2D, "1-2"));
-        buckets.add(new NumericBucket(2D, 3D, "2-3"));
-        buckets.add(new NumericBucket(3D, null, "4+"));
         // done shared object initialization
 
         TestQuery courseGradeTestQuery = new TestQuery() {
@@ -677,36 +675,7 @@ public class QuerySqlGeneratorUnitTest {
                         "GROUP BY count_gpa_group";
             }
         };
-        TestQuery currGpaTestQuery = new TestQuery() {
-            @Override
-            public String queryName() {
-                return "Current GPA with buckets";
-            }
-
-            @Override
-            public Query buildQuery() {
-                Query currGpaQuery = new Query();
-                AggregateMeasure currGpaMeasure = new AggregateMeasure(Measure.CURRENT_GPA, AggregateFunction.COUNT);
-                currGpaMeasure.setBuckets(buckets);
-                ArrayList<AggregateMeasure> currGpaMeasures = new ArrayList<>();
-                currGpaMeasures.add(currGpaMeasure);
-                currGpaQuery.setAggregateMeasures(currGpaMeasures);
-                return currGpaQuery;
-            }
-
-            @Override
-            public String buildSQL() {
-                return "SELECT COUNT(gpa.gpa_score) as count_current_gpa_agg, CASE \n" +
-                        "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
-                        "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
-                        "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
-                        "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
-                        "ELSE NULL \n" +
-                        "END as count_current_gpa_group \n" +
-                        "FROM current_gpa INNER JOIN current_gpa ON gpa.gpa_id = current_gpa.gpa_fk \n" +
-                        "GROUP BY count_current_gpa_group";
-            }
-        };
+        
         TestQuery courseGradesBucketedTestQuery = new TestQuery() {
             @Override
             public String queryName() {
@@ -888,7 +857,45 @@ public class QuerySqlGeneratorUnitTest {
                         " GROUP BY subq_1.sum_referral_agg";
             }
         };
-        
+
+        TestQuery currGpaTestQuery = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Current GPA with buckets";
+            }
+
+            @Override
+            public Query buildQuery() {
+                List<AggregationBucket> buckets = new ArrayList<>();
+                buckets.add(new NumericBucket(0D, 1D, "0-1"));
+                buckets.add(new NumericBucket(1D, 2D, "1-2"));
+                buckets.add(new NumericBucket(2D, 3D, "2-3"));
+                buckets.add(new NumericBucket(3D, null, "4+"));
+
+                Query currGpaQuery = new Query();
+                AggregateMeasure currGpaMeasure = new AggregateMeasure(Measure.CURRENT_GPA, AggregateFunction.COUNT);
+                currGpaMeasure.setBuckets(buckets);
+                ArrayList<AggregateMeasure> currGpaMeasures = new ArrayList<>();
+                currGpaMeasures.add(currGpaMeasure);
+                currGpaQuery.setAggregateMeasures(currGpaMeasures);
+                return currGpaQuery;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT COUNT(gpa.gpa_score) as count_current_gpa_agg, CASE \n" +
+                        "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
+                        "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
+                        "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
+                        "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
+                        "ELSE NULL \n" +
+                        "END as count_current_gpa_group \n" +
+                        "FROM current_gpa INNER JOIN current_gpa ON gpa.gpa_id = current_gpa.gpa_fk \n" +
+                        "GROUP BY count_current_gpa_group";
+            }
+        };
+
+
         return new Object[][] {
                 { courseGradeTestQuery },
                 { assignmentGradesTestQuery },
@@ -909,15 +916,73 @@ public class QuerySqlGeneratorUnitTest {
                 { detentionWithoutDimensionTestQuery },
                 { schoolNameTestQuery }, 
                 { gpaBucketTestQuery },
-                { currGpaTestQuery },
                 { courseGradesBucketedTestQuery },
                 { requiresMultipleJoinsTestQuery },
                 { queryIncludingMultipleTablesUsingHints },
-                { referralTestQuery }
+                { referralTestQuery },
+                { currGpaTestQuery }
         };
     }
     
-   @Test(dataProvider = "queriesProvider")
+    @DataProvider
+    public static Object[][] invalidQueriesProvider() {
+        
+        // the following query configuration generates invalid SQL
+        // the error returned by mySQL if execution is attempted on this query is:
+        
+        // ERROR 1066 (42000): Not unique table/alias: 'current_gpa'
+        
+        TestQuery currGpaTestQuery = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Current GPA with buckets";
+            }
+
+            @Override
+            public Query buildQuery() {
+                List<AggregationBucket> buckets = new ArrayList<>();
+                buckets.add(new NumericBucket(0D, 1D, "0-1"));
+                buckets.add(new NumericBucket(1D, 2D, "1-2"));
+                buckets.add(new NumericBucket(2D, 3D, "2-3"));
+                buckets.add(new NumericBucket(3D, null, "4+"));
+
+                Query currGpaQuery = new Query();
+                AggregateMeasure currGpaMeasure = new AggregateMeasure(Measure.CURRENT_GPA, AggregateFunction.COUNT);
+                currGpaMeasure.setBuckets(buckets);
+                ArrayList<AggregateMeasure> currGpaMeasures = new ArrayList<>();
+                currGpaMeasures.add(currGpaMeasure);
+                currGpaQuery.setAggregateMeasures(currGpaMeasures);
+                return currGpaQuery;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT COUNT(gpa.gpa_score) as count_current_gpa_agg, CASE \n" +
+                        "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
+                        "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
+                        "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
+                        "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
+                        "ELSE NULL \n" +
+                        "END as count_current_gpa_group \n" +
+                        "FROM current_gpa INNER JOIN current_gpa ON gpa.gpa_id = current_gpa.gpa_fk \n" +
+                        "GROUP BY count_current_gpa_group";
+            }
+        };
+
+        return new Object[][] {
+                { currGpaTestQuery }
+        };
+    }
+
+    @DataProvider
+    public static Object[][] allQueriesProvider() {
+        List<Object[]> allQueries = new ArrayList<>();
+        allQueries.addAll(Arrays.asList(validQueriesProvider()));
+        allQueries.addAll(Arrays.asList(invalidQueriesProvider()));
+        return allQueries.toArray(new Object[allQueries.size()][]);
+    }
+        
+   @Test(dataProvider = "allQueriesProvider")
    public void toSqlTest(TestQuery testQuery) {
        String msg = testQuery.queryName();
        Query q = testQuery.buildQuery();
