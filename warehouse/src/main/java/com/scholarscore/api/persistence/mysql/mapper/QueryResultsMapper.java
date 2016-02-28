@@ -44,6 +44,7 @@ public class QueryResultsMapper implements RowMapper<Record>{
                 record.add(new Double(rs.getDouble(i)));
                 break;
             case Types.BOOLEAN:
+            case Types.BIT:
                 record.add(new Boolean(rs.getBoolean(i)));
                 break;
             default:
