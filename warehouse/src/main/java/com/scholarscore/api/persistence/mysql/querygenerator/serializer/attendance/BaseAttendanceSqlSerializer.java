@@ -6,6 +6,7 @@ import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.AttendanceType;
 import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.query.QueryException;
 
 /**
  * User: jordan
@@ -44,8 +45,7 @@ public abstract class BaseAttendanceSqlSerializer extends BaseSqlSerializer {
                                 QuerySqlGenerator.resolvePrimaryKeyField(HibernateConsts.SCHOOL_DAY_TABLE)) // table FROM col 
                     ;
         }
-        // TODO: throw new SqlGenerationException("AttendanceSqlSerializer does not support Dimension " + dimToJoinUpon + "!");
-        return null;
+        throw new QueryException("AttendanceSqlSerializer does not support Dimension " + dimToJoinUpon + "!");
     }
 
 
