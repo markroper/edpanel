@@ -14,7 +14,7 @@ import java.util.Set;
 public class BehaviorDimension implements IDimension {
 
     public static final Set<Dimension> PARENT_DIMENSIONS =
-            ImmutableSet.of(Dimension.STUDENT, Dimension.USER);
+            ImmutableSet.of(Dimension.STUDENT, Dimension.STAFF);
 
     @Override
     public Dimension getType() {

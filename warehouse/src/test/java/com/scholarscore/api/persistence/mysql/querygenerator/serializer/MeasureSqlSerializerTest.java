@@ -1,8 +1,13 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
 
+import com.scholarscore.api.persistence.DbMappings;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance.AttendanceSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.attendance.BaseAttendanceSqlSerializer;
+import com.scholarscore.api.persistence.mysql.querygenerator.serializer.behavior.BehaviorSqlSerializer;
+import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.Measure;
-import com.scholarscore.models.query.measure.IMeasure;
 import org.testng.annotations.Test;
+import org.testng.internal.Nullable;
 
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -43,8 +48,32 @@ public class MeasureSqlSerializerTest {
     public void testMeasureSerializerJoinClause() {
         for (Measure measure : Measure.values()) {
             MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(measure);
-            // TODO Jordan: in progress (on branch)
+            
+            Dimension testDimension = pickJoinDimension(mss);
+            String joinClause = mss.toJoinClause(testDimension);
+            assertNotNull(joinClause, "Expected join clause not to be null from serializer " + mss.getClass().getSimpleName());
         }
+    }
+    
+    private Dimension pickJoinDimension(MeasureSqlSerializer mss) {
+        Dimension validDimension = null;
+
+        if (mss instanceof BaseAttendanceSqlSerializer) { 
+            // these serializers only work with certain dimensions 
+            return Dimension.SCHOOL;
+        }
+        
+        String primaryTable = mss.toTableName(); 
+        String secondaryTable = mss.optionalJoinedTable();
+        Dimension firstTable = DbMappings.TABLE_NAME_TO_DIMENSION.get(primaryTable);
+        Dimension secondTable = DbMappings.TABLE_NAME_TO_DIMENSION.get(secondaryTable);
+        for (Dimension trialDimension : Dimension.values()) {
+            if (firstTable != null && firstTable.equals(trialDimension)) { continue; }
+            if (secondTable != null && secondTable.equals(trialDimension)) { continue; } 
+            validDimension = trialDimension;
+            break;
+        }
+        return validDimension;
     }
 
 }

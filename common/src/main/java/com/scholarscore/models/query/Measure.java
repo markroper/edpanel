@@ -1,6 +1,12 @@
 package com.scholarscore.models.query;
 
 import com.scholarscore.models.query.measure.*;
+import com.scholarscore.models.query.measure.behavior.DemeritMeasure;
+import com.scholarscore.models.query.measure.behavior.DetentionMeasure;
+import com.scholarscore.models.query.measure.behavior.InSchoolSuspensionMeasure;
+import com.scholarscore.models.query.measure.behavior.MeritMeasure;
+import com.scholarscore.models.query.measure.behavior.OutOfSchoolSuspensionMeasure;
+import com.scholarscore.models.query.measure.behavior.ReferralMeasure;
 
 /**
  * Enumerates the supported measures, or scalar values, supported within the 
