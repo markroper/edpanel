@@ -805,8 +805,9 @@ public class QuerySqlGeneratorUnitTest {
                 aggregateMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
                 query.setAggregateMeasures(aggregateMeasures);
                 query.addField(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME));
-                query.addJoinTable(Dimension.SECTION);
-                query.addJoinTable(Dimension.COURSE);
+//                query.addJoinTable(Dimension.SECTION);
+//                query.addJoinTable(Dimension.COURSE);
+                query.addJoinTable(Dimension.STUDENT);
                 return query;
             }
 
@@ -918,7 +919,7 @@ public class QuerySqlGeneratorUnitTest {
             }
         };
         
-        return new Object[][] {
+        Object[][] allTests = new Object[][] {
                 { courseGradeTestQuery },
                 { assignmentGradesTestQuery },
                 { assignmentGradesNoDimensionsTestQuery },
@@ -945,6 +946,12 @@ public class QuerySqlGeneratorUnitTest {
                 { referralTestQuery },
                 { queryIncludingMultipleTablesPathFinder }
         };
+        
+        Object[][] justPathfinderTest = new Object[][] { 
+                { queryIncludingMultipleTablesPathFinder },
+                { queryIncludingMultipleTablesUsingHints }
+        };
+        return justPathfinderTest;
     }
     
    @Test(dataProvider = "queriesProvider")

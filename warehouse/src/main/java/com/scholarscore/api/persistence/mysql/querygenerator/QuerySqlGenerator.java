@@ -224,6 +224,16 @@ public abstract class QuerySqlGenerator {
         List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
         
         boolean queryHasPath = QuerySqlPathHelper.queryHasCompletePath(q);
+        if (!queryHasPath) {
+            Set<Dimension> additionalDimensions = QuerySqlPathHelper.calculateAdditionalNeededDimensions(q);
+            if (additionalDimensions != null) {
+                for (Dimension dim : additionalDimensions) {
+                    System.out.println("Pathfinder suggested additional dimension " + dim);
+                }   
+            } else {
+                System.out.println("Got additional dimensions back in SQL generator but they are null!");
+            }   
+        }
         
         //Use the first dimension in the sorted columns as the FROM table
         if(null != orderedTables && !orderedTables.isEmpty()) {
@@ -252,7 +262,6 @@ public abstract class QuerySqlGenerator {
                         if (measureIsCompatible(am, joinDim)){
                             currentTableName = mss.toTableName();
                         } else {
-                            ;
                             currentTableName = getDimensionJoinOrThrowException(orderedTables.subList(0, i-1), currTable, joinDim);
                         }
                     }
@@ -289,7 +298,6 @@ public abstract class QuerySqlGenerator {
 
     private static String getDimensionJoinOrThrowException(List<Dimension> orderedTables, Dimension dimDesc, Dimension joinDim) throws SqlGenerationException {
         //Start with the previous dimension since we're already dealing with i and i-1...
-//        int descIndex = i - 2;
         int descIndex = orderedTables.size()-1;
         while(descIndex >= 0 && !Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
             dimDesc = orderedTables.get(descIndex);
