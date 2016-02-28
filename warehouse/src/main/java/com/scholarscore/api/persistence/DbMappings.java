@@ -11,6 +11,7 @@ import com.scholarscore.models.query.measure.behavior.BehaviorMeasure;
 import com.scholarscore.models.query.measure.CourseGradeMeasure;
 import com.scholarscore.models.query.measure.CurrentGpaMeasure;
 import com.scholarscore.models.query.measure.GpaMeasure;
+import com.scholarscore.util.MapUtil;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -115,8 +116,27 @@ public class DbMappings {
                 put(Dimension.SCHOOL_DAY, HibernateConsts.SCHOOL_DAY_TABLE);
                 put(Dimension.ATTENDANCE, HibernateConsts.ATTENDANCE_TABLE);
             }};
-    
-    public static final Map<String, Dimension> TABLE_NAME_TO_DIMENSION = buildReverseMap(DIMENSION_TO_TABLE_NAME);
+
+    // NOT just the reverse of the above -- multiple dimensions can map to one table, but each table name has only one TRUE dimension
+    // TODO Jordan: write a test -- all of the above table names must produce a dimension when given to this method
+    public static final Map<String, Dimension> TABLE_NAME_TO_DIMENSION =
+            new HashMap<String, Dimension>() {{
+                put(HibernateConsts.SCHOOL_TABLE, Dimension.SCHOOL);
+                put(HibernateConsts.COURSE_TABLE, Dimension.COURSE);
+                put(HibernateConsts.SECTION_TABLE, Dimension.SECTION);
+                put(HibernateConsts.TERM_TABLE, Dimension.TERM);
+                put(HibernateConsts.STUDENT_TABLE, Dimension.STUDENT);
+                put(HibernateConsts.STAFF_TABLE, Dimension.STAFF);
+                put(HibernateConsts.SCHOOL_YEAR_TABLE, Dimension.YEAR);
+                put(HibernateConsts.ASSIGNMENT_TABLE, Dimension.ASSIGNMENT);
+                put(HibernateConsts.USERS_TABLE, Dimension.USER);
+                put(HibernateConsts.BEHAVIOR_TABLE, Dimension.BEHAVIOR);
+                put(HibernateConsts.STUDENT_ASSIGNMENT_TABLE, Dimension.STUDENT_ASSIGNMENT);
+                put(HibernateConsts.STUDENT_SECTION_GRADE_TABLE, Dimension.STUDENT_SECTION_GRADE);
+                put(HibernateConsts.SECTION_GRADE_TABLE, Dimension.SECTION_GRADE);
+                put(HibernateConsts.SCHOOL_DAY_TABLE, Dimension.SCHOOL_DAY);
+                put(HibernateConsts.ATTENDANCE_TABLE, Dimension.ATTENDANCE);
+            }};
     
     public static final Map<DimensionField, String> DIMENSION_TO_COL_NAME = 
             new HashMap<DimensionField, String>(){{
@@ -200,15 +220,4 @@ public class DbMappings {
         }
         return returnVal;
     }
-
-    // starting with an existing map, return a new map where the keys in the returned map are the values from the existing map,
-    // and the values in the returned map are the keys from the existing map.
-    private static <T,V> Map<T, V> buildReverseMap(Map<V, T> originalMap) {
-        HashMap<T,V> toReturn = new HashMap<>();
-        for (V key : originalMap.keySet()) {
-            toReturn.put(originalMap.get(key), key);
-        }
-        return toReturn;
-    }
-
 }
