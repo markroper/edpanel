@@ -48,17 +48,24 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     private Staff staff;
     private Double desiredValue;
     private Double calculatedValue;
+    //DAte goal was approved
     private LocalDate approved;
     private GoalType goalType;
     private LocalDate startDate;
     private LocalDate endDate;
 
+    //If the goal is in progress, met or unmet
     private GoalProgress goalProgress;
     private Boolean autocomplete;
     private String plan;
     private String outcome;
     private String obstacles;
+    //Date a followup with the teacher happened.
     private LocalDate teacherFollowup;
+    /**
+     * When goals are completed, set this to the calculatedValue, that way we don't have to recalculate
+     * each time we call up a completed goal.
+     */
     private transient Double finalValue;
 
     public Goal() {

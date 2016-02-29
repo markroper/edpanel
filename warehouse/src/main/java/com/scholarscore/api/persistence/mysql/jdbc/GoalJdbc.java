@@ -122,7 +122,7 @@ public class GoalJdbc implements GoalPersistence {
     }
 
     private Goal addCalculatedValue(Goal goal) {
-        if (null != goal.getFinalValue()) {
+        if (null == goal.getFinalValue()) {
             switch (goal.getGoalType()) {
                 case BEHAVIOR:
                     if (goal instanceof BehaviorGoal) {
