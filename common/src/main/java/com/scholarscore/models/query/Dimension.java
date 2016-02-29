@@ -109,6 +109,8 @@ public enum Dimension {
         add(Dimension.SECTION_GRADE);
         add(Dimension.ATTENDANCE);
         add(Dimension.BEHAVIOR);
+        add(Dimension.CURRENT_GPA);
+        add(Dimension.GPA);
         add(Dimension.STUDENT);
         add(Dimension.STAFF);
         add(Dimension.TEACHER);
