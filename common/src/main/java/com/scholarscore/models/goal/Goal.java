@@ -59,7 +59,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     private String outcome;
     private String obstacles;
     private LocalDate teacherFollowup;
-    private Double finalValue;
+    private transient Double finalValue;
 
     public Goal() {
         super();
