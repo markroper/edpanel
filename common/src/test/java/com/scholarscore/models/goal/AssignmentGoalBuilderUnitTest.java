@@ -9,6 +9,9 @@ import org.apache.commons.lang3.RandomUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 /**
  * AssignmentGoalBuilderUnitTest tests out the AssignmentGoal object's Builder to ensure that constructing an object with the builder
  * Created by cschneider on 10/11/15.
@@ -19,6 +22,8 @@ public class AssignmentGoalBuilderUnitTest extends AbstractBuilderUnitTest<Assig
     @DataProvider
     @Override
     public Object[][] builderProvider() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+        LocalDate date = LocalDate.parse("2005-nov-12", formatter);
         AssignmentGoal emptyAssignmentGoal = new AssignmentGoal();
         AssignmentGoal emptyAssignmentGoalByBuilder = new AssignmentGoal.AssignmentGoalBuilder().build();
 
@@ -36,7 +41,7 @@ public class AssignmentGoalBuilderUnitTest extends AbstractBuilderUnitTest<Assig
         fullAssignmentGoal.setId(id);
         fullAssignmentGoal.setStudentAssignment(studAss);
         fullAssignmentGoal.setStudent(student);
-        fullAssignmentGoal.setApproved(Boolean.TRUE);
+        fullAssignmentGoal.setApproved(date);
         fullAssignmentGoal.setCalculatedValue(calculatedValue);
         fullAssignmentGoal.setDesiredValue(desiredValue);
         fullAssignmentGoal.setGoalType(goalType);
@@ -47,7 +52,7 @@ public class AssignmentGoalBuilderUnitTest extends AbstractBuilderUnitTest<Assig
                 withId(id).
                 withStudentAsssignment(studAss).
                 withStudent(student).
-                withApproved(Boolean.TRUE).
+                withApproved(date).
                 withCalculatedValue(calculatedValue).
                 withDesiredValue(desiredValue).
                 withGoalType(goalType).
