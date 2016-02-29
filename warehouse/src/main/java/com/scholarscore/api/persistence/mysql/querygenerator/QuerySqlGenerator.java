@@ -187,6 +187,8 @@ public abstract class QuerySqlGenerator {
                 //If there are buckets involved in the aggregate query, inject the bucket pseudo column
                 if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
                     sqlBuilder.append(DELIM);
+                    //If the buckets have not aggregate function applied, just reference the psuedo column by name
+                    //Otherwise, enumerate the entire bucket definition and wrap it in a aggregate function
                     if(null == am.getBucketAggregation()) {
                         sqlBuilder.append(mss.toSelectBucketPseudoColumn(am.getBuckets()));
                         sqlBuilder.append(" as ");
@@ -200,6 +202,15 @@ public abstract class QuerySqlGenerator {
         sqlBuilder.append(" ");
     }
 
+    /**
+     * Generates the SQL CASE statement for a bucketed column definition and optionally wraps it in an aggregate function
+     * @param buckets
+     * @param agg
+     * @param m
+     * @param includeAlias
+     * @return
+     * @throws SqlGenerationException
+     */
     protected static String generateBucketedColumn(List<AggregationBucket> buckets, AggregateFunction agg, Measure m, boolean includeAlias)
             throws SqlGenerationException {
         String fieldSql = "";
@@ -375,6 +386,9 @@ public abstract class QuerySqlGenerator {
             case MEASURE:
                 MeasureOperand mo = (MeasureOperand)operand;
                 try {
+                    //If there is no field referenced on the measure, use the bucket field definition.  If there is a
+                    //field on the aggregate measure, parse it as an aggregate function.  If the field fails to parse
+                    //as an aggregate function, reference the field by field name.
                     if(null == mo.getValue().getField() && null != mo.getValue().getBuckets()) {
                         sqlBuilder.append(generateBucketedColumn(
                                 mo.getValue().getBuckets(),
