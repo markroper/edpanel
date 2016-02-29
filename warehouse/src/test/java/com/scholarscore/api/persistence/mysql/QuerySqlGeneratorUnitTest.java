@@ -39,7 +39,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -168,6 +167,39 @@ public class QuerySqlGeneratorUnitTest {
                         "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
                         "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk \n" +
                         "WHERE  ( section.section_id  =  4 ) \n" +
+                        "GROUP BY student.student_name";
+            }
+        };
+
+        TestQuery assignmentGradesIsNullTestQuery = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Assignment Grades query";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query assignmentGradesQuery  = new Query();
+                ArrayList<AggregateMeasure> assignmentMeasures = new ArrayList<>();
+                assignmentMeasures.add(new AggregateMeasure(Measure.ASSIGNMENT_GRADE, AggregateFunction.AVG));
+                assignmentGradesQuery.setAggregateMeasures(assignmentMeasures);
+                assignmentGradesQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
+                Expression assignmentWhereClause = new Expression(
+                        new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)),
+                        ComparisonOperator.IS_NULL,
+                        new NumericOperand(4));
+                assignmentGradesQuery.setFilter(assignmentWhereClause);
+                return assignmentGradesQuery;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT student.student_name, AVG(student_assignment.awarded_points / assignment.available_points) as avg_assignment_grade_agg \n" +
+                        "FROM student " +
+                        "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " +
+                        "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
+                        "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk \n" +
+                        "WHERE  ( section.section_id  IS NULL ) \n" +
                         "GROUP BY student.student_name";
             }
         };
@@ -915,7 +947,8 @@ public class QuerySqlGeneratorUnitTest {
                 { courseGradesBucketedTestQuery },
                 { requiresMultipleJoinsTestQuery },
                 { queryIncludingMultipleTablesUsingHints },
-                { referralTestQuery }
+                { referralTestQuery },
+                {assignmentGradesIsNullTestQuery}
         };
     }
     

@@ -13,7 +13,6 @@ import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.SubqueryColumnRef;
 import com.scholarscore.models.query.SubqueryExpression;
-import com.scholarscore.models.query.dimension.IDimension;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
@@ -26,14 +25,10 @@ import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Set;
 
 /**
@@ -52,6 +47,7 @@ public abstract class QuerySqlGenerator {
     private static final String OR = "OR";
     private static final String AND = "AND";
     private static final String ON = "ON";
+    private static final String IS_NULL = "IS_NULL";
     private static final String GREATER_THAN = "GREATER_THAN";
     private static final String GREATER_THAN_OR_EQUAL = "GREATER_THAN_OR_EQUAL";
     private static final String LESS_THAN = "LESS_THAN";
@@ -334,13 +330,15 @@ public abstract class QuerySqlGenerator {
         //Serialize the operator
         String operator = resolveOperatorSql(exp.getOperator());
         sqlBuilder.append(" " + operator + " ");
-        if (exp.getOperator().equals((ComparisonOperator.IN))) {
-            sqlBuilder.append(" (");
-        }
-        //Serialize the right hand side
-        operandToSql(exp.getRightHandSide(), params, sqlBuilder, tableAlias);
-        if(exp.getOperator().equals(ComparisonOperator.IN)) {
-            sqlBuilder.append(") ");
+        if (!exp.getOperator().equals(ComparisonOperator.IS_NULL)) {
+            if (exp.getOperator().equals((ComparisonOperator.IN))) {
+                sqlBuilder.append(" (");
+            }
+            //Serialize the right hand side
+            operandToSql(exp.getRightHandSide(), params, sqlBuilder, tableAlias);
+            if(exp.getOperator().equals(ComparisonOperator.IN)) {
+                sqlBuilder.append(") ");
+            }
         }
         sqlBuilder.append(") ");
     }
@@ -488,6 +486,9 @@ public abstract class QuerySqlGenerator {
                 break;
             case LIKE:
                 operator = LIKE;
+                break;
+            case IS_NULL:
+                operator = "IS NULL";
                 break;
             default:
                 throw new SqlGenerationException("Operator not supported: " + op.name());
