@@ -8,6 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.exception.SQLGrammarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -54,14 +55,15 @@ public class QueryGeneratorJdbcTest extends BaseJdbcTest {
             }
         }
 
-        SQLQuery constructedQuery = session.createSQLQuery(querySql);
+        SQLQuery constructedQuery = session.createSQLQuery(querySql) ;
         List result = null;
         try {
             result = constructedQuery.list();
         } catch (SQLGrammarException sqlge) {
             throw new RuntimeException("Query " + testQuery.queryName() + " failed to execute with grammar exception. Query: " + querySql, sqlge);
+        } finally {
+            session.close();            
         }
         assertNotNull(result, "Query failed to execute: " + querySql);
-        session.close();
     }
 }

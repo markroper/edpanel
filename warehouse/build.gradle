@@ -96,6 +96,22 @@ task appRunDebug(type: com.bmuschko.gradle.cargo.tasks.local.CargoRunLocal, depe
     }
 }
 
+task functionalLocal(type: Test) { 
+    group 'Verification'
+    description 'runs the functional tests against a locally-installed database'
+
+    useTestNG() {
+        useDefaultListeners = true
+        def suiteFile = getFileByPattern(new File("$projectDir/src/test/resources/"), ".*-functional.xml", "$projectDir")
+        if (suiteFile) options.suites(suiteFile)
+    }
+    testLogging.showStandardStreams = true
+    beforeTest { descriptor ->
+        logger.lifecycle("RUNNING INTEGRATION TEST LOCALLY: " + descriptor)
+    }
+
+}
+
 task integrationLocal(type: Test) {
     group 'Verification'
     description 'runs the integration tests against a local container'
