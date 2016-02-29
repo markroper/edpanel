@@ -24,7 +24,7 @@ public class QueryGeneratorJdbcTest extends BaseJdbcTest {
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     
-    @Test(dataProvider = "validQueriesProvider", dataProviderClass = QuerySqlGeneratorUnitTest.class)
+    @Test(dataProvider = "queriesProvider", dataProviderClass = QuerySqlGeneratorUnitTest.class)
     public void testSqlGeneratorOutputAgainstDatabase(QuerySqlGeneratorUnitTest.TestQuery testQuery) throws SqlGenerationException {
         testQuery(testQuery);
     }
