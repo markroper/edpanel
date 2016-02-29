@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class GpaMeasure implements IMeasure {
+public class GpaMeasure extends BaseMeasure implements IMeasure {
     public static final String DATE = "Date";
     public static final String TYPE = "Type";
     public static final String STUDENT = "Student";

@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * Created by markroper on 2/9/16.
  */
-public class CurrentGpaMeasure implements IMeasure {
+public class CurrentGpaMeasure extends BaseMeasure implements IMeasure {
     public static final String GPA = "GPA";
     public static final String STUDENT = "Student";
     private static final Set<String> FIELDS =

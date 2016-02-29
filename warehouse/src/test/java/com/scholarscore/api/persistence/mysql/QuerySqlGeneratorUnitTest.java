@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Test(groups = { "unit" })
+    @Test(groups = { "unit" })
 public class QuerySqlGeneratorUnitTest {
 
     public interface TestQuery {
