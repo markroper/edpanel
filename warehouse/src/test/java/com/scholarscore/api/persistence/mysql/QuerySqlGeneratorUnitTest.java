@@ -807,9 +807,8 @@ public class QuerySqlGeneratorUnitTest {
                 aggregateMeasures.add(new AggregateMeasure(Measure.HW_COMPLETION, AggregateFunction.AVG));
                 query.setAggregateMeasures(aggregateMeasures);
                 query.addField(new DimensionField(Dimension.SCHOOL, SchoolDimension.NAME));
-//                query.addJoinTable(Dimension.SECTION);
-//                query.addJoinTable(Dimension.COURSE);
-                query.addJoinTable(Dimension.STUDENT);
+                query.addJoinTable(Dimension.SECTION);
+                query.addJoinTable(Dimension.COURSE);
                 return query;
             }
 
@@ -828,7 +827,7 @@ public class QuerySqlGeneratorUnitTest {
         TestQuery queryIncludingMultipleTablesPathFinder = new TestQuery() {
             @Override
             public String queryName() {
-                return "Intermediate Tables with Hints query";
+                return "Intermediate Tables without hints (automatic pathfinding) query";
             }
 
             @Override
@@ -844,11 +843,8 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT school.school_name, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg \n" +
-                        "FROM section " +
-                        "LEFT OUTER JOIN assignment ON section.section_id = assignment.section_fk " +
-                        "LEFT OUTER JOIN student_assignment ON assignment.assignment_id = student_assignment.assignment_fk \n" +
-                        "LEFT OUTER JOIN course ON course.course_id = section.course_fk \n" +
-                        "LEFT OUTER JOIN school ON school.school_id = course.school_fk \n" +
+                        "FROM student LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
+                        "LEFT OUTER JOIN school ON school.school_id = student.school_fk \n" +
                         "GROUP BY school.school_name";
             }
         };
