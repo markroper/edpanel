@@ -12,8 +12,7 @@ import java.util.Set;
  * Date: 2/16/16
  * Time: 5:15 PM
  */
-public class CurrentGpaDimension implements IDimension {
-
+public class CurrentGpaDimension extends BaseDimension implements IDimension {
     public static final Set<Dimension> PARENT_DIMENSIONS =
             ImmutableSet.of(Dimension.STUDENT, Dimension.GPA);
 

@@ -8,9 +8,7 @@ import com.scholarscore.models.user.Student;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class StudentDimension implements IDimension {
-    public static final String ID = "ID";
-    public static final String NAME = "Name";
+public class StudentDimension extends BaseDimension implements IDimension {
     public static final String GENDER = "Gender";
     public static final String AGE = "Age";
     public static final String ETHNICITY = "Ethnicity";

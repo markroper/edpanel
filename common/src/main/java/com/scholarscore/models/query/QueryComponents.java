@@ -1,18 +1,6 @@
 package com.scholarscore.models.query;
 
-import com.google.common.collect.ImmutableSet;
-import com.scholarscore.models.query.dimension.CourseDimension;
 import com.scholarscore.models.query.dimension.IDimension;
-import com.scholarscore.models.query.dimension.SchoolDimension;
-import com.scholarscore.models.query.dimension.SchoolYearDimension;
-import com.scholarscore.models.query.dimension.SectionDimension;
-import com.scholarscore.models.query.dimension.StudentDimension;
-import com.scholarscore.models.query.dimension.TeacherDimension;
-import com.scholarscore.models.query.dimension.TermDimension;
-import com.scholarscore.models.query.measure.AssignmentGradeMeasure;
-import com.scholarscore.models.query.measure.CourseGradeMeasure;
-import com.scholarscore.models.query.measure.GpaMeasure;
-import com.scholarscore.models.query.measure.HomeworkCompletionMeasure;
 import com.scholarscore.models.query.measure.IMeasure;
 
 import java.io.Serializable;
@@ -36,16 +24,20 @@ public class QueryComponents implements Serializable {
 
     
     protected final Set<IDimension> availableDimensions = buildAvailableDimensions();
-    protected final Set<IMeasure> availableMeasures = ImmutableSet.of(
-            new AssignmentGradeMeasure(), 
-            new CourseGradeMeasure(), 
-            new GpaMeasure(), 
-            new HomeworkCompletionMeasure());
+    protected final Set<IMeasure> availableMeasures = buildAvailableMeasures();
     
     public Set<IDimension> buildAvailableDimensions() { 
         HashSet<IDimension> toReturn = new HashSet<>();
         for (Dimension dimension : Dimension.values()) {
             toReturn.add(Dimension.buildDimension(dimension));
+        }
+        return toReturn;
+    }
+    
+    public Set<IMeasure> buildAvailableMeasures()  {
+        HashSet<IMeasure> toReturn = new HashSet<>();
+        for (Measure measure : Measure.values()) {
+            toReturn.add(Measure.buildMeasure(measure));
         }
         return toReturn;
     }
