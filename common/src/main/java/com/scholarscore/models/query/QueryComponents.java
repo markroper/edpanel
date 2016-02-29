@@ -7,7 +7,6 @@ import com.scholarscore.models.query.dimension.SchoolDimension;
 import com.scholarscore.models.query.dimension.SchoolYearDimension;
 import com.scholarscore.models.query.dimension.SectionDimension;
 import com.scholarscore.models.query.dimension.StudentDimension;
-import com.scholarscore.models.query.dimension.SubjectAreaDimension;
 import com.scholarscore.models.query.dimension.TeacherDimension;
 import com.scholarscore.models.query.dimension.TermDimension;
 import com.scholarscore.models.query.measure.AssignmentGradeMeasure;
@@ -35,7 +34,7 @@ import java.util.Set;
 public class QueryComponents implements Serializable {
 
     protected final Set<IDimension> availableDimensions = ImmutableSet.of(new CourseDimension(), new SchoolDimension(),
-            new SchoolYearDimension(), new SectionDimension(), new StudentDimension(), new SubjectAreaDimension(), new TeacherDimension(),
+            new SchoolYearDimension(), new SectionDimension(), new StudentDimension(), new TeacherDimension(),
             new TermDimension());
     protected final Set<IMeasure> availableMeasures = ImmutableSet.of(
             new AssignmentGradeMeasure(), new CourseGradeMeasure(), new GpaMeasure(), new HomeworkCompletionMeasure());

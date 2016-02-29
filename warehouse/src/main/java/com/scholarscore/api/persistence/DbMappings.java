@@ -11,6 +11,7 @@ import com.scholarscore.models.query.measure.behavior.BehaviorMeasure;
 import com.scholarscore.models.query.measure.CourseGradeMeasure;
 import com.scholarscore.models.query.measure.CurrentGpaMeasure;
 import com.scholarscore.models.query.measure.GpaMeasure;
+import org.hibernate.Hibernate;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -95,7 +96,7 @@ public class DbMappings {
         }
     }
 
-    public static final Map<Dimension, String> DIMENSION_TO_TABLE_NAME = 
+    public static final Map<Dimension, String> DIMENSION_TO_TABLE_NAME =
             new HashMap<Dimension, String>() {{
                 put(Dimension.SCHOOL, HibernateConsts.SCHOOL_TABLE);
                 put(Dimension.COURSE, HibernateConsts.COURSE_TABLE);
@@ -114,9 +115,31 @@ public class DbMappings {
                 put(Dimension.SECTION_GRADE, HibernateConsts.SECTION_GRADE_TABLE);
                 put(Dimension.SCHOOL_DAY, HibernateConsts.SCHOOL_DAY_TABLE);
                 put(Dimension.ATTENDANCE, HibernateConsts.ATTENDANCE_TABLE);
+                put(Dimension.GPA, HibernateConsts.GPA_TABLE);
+                put(Dimension.CURRENT_GPA, HibernateConsts.CURRENT_GPA_TABLE);
             }};
-    
-    public static final Map<String, Dimension> TABLE_NAME_TO_DIMENSION = buildReverseMap(DIMENSION_TO_TABLE_NAME);
+
+    // NOT just the reverse of the above -- multiple dimensions can map to one table, but each table name can only return one TRUE dimension
+    public static final Map<String, Dimension> TABLE_NAME_TO_DIMENSION =
+            new HashMap<String, Dimension>() {{
+                put(HibernateConsts.SCHOOL_TABLE, Dimension.SCHOOL);
+                put(HibernateConsts.COURSE_TABLE, Dimension.COURSE);
+                put(HibernateConsts.SECTION_TABLE, Dimension.SECTION);
+                put(HibernateConsts.TERM_TABLE, Dimension.TERM);
+                put(HibernateConsts.STUDENT_TABLE, Dimension.STUDENT);
+                put(HibernateConsts.STAFF_TABLE, Dimension.STAFF);
+                put(HibernateConsts.SCHOOL_YEAR_TABLE, Dimension.YEAR);
+                put(HibernateConsts.ASSIGNMENT_TABLE, Dimension.ASSIGNMENT);
+                put(HibernateConsts.USERS_TABLE, Dimension.USER);
+                put(HibernateConsts.BEHAVIOR_TABLE, Dimension.BEHAVIOR);
+                put(HibernateConsts.STUDENT_ASSIGNMENT_TABLE, Dimension.STUDENT_ASSIGNMENT);
+                put(HibernateConsts.STUDENT_SECTION_GRADE_TABLE, Dimension.STUDENT_SECTION_GRADE);
+                put(HibernateConsts.SECTION_GRADE_TABLE, Dimension.SECTION_GRADE);
+                put(HibernateConsts.SCHOOL_DAY_TABLE, Dimension.SCHOOL_DAY);
+                put(HibernateConsts.ATTENDANCE_TABLE, Dimension.ATTENDANCE);
+                put(HibernateConsts.GPA_TABLE, Dimension.GPA);
+                put(HibernateConsts.CURRENT_GPA_TABLE, Dimension.CURRENT_GPA);
+            }};
     
     public static final Map<DimensionField, String> DIMENSION_TO_COL_NAME = 
             new HashMap<DimensionField, String>(){{
