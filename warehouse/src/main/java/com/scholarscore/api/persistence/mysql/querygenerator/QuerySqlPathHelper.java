@@ -77,14 +77,12 @@ public class QuerySqlPathHelper {
             Dimension firstTable = orderedTables.get(0);
             LOGGER.debug("OK, now we have table " + firstTable + " and we're trying to find links to...");
             for (Dimension dim : unmatchedDimensions) {
-                LOGGER.debug("... Unmatch dimension " + dim);
+                LOGGER.debug("... Unmatched dimension " + dim);
                 breadthFirstSearch(firstTable, unmatchedDimensions);
             }
-//            Set<Dimension> bridgeDimensions = breadthFirstSearch(firstTable, );
         } else {
-            // TODO: handle the case of cannot join but NO dimensions? what is needed? is this possible?)
+            LOGGER.warn("Unexpected situation: attempting to calculateAdditionalNeededDimensions but no tables.");
         }
-        // note: haven't added in agg tables yet... we want those to be the target, I think (because the query gen will always select from dimensions if they are present)
         return null;
     }
     
@@ -249,7 +247,6 @@ public class QuerySqlPathHelper {
                     // since we've added new neighbors, loop again in case any previous tables missed a connection through this new table
                     tableMatchedThisRound = true;
                 }
-//            }
             }
         }
 

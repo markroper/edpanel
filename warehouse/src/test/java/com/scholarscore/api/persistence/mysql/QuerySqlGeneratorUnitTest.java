@@ -920,6 +920,49 @@ public class QuerySqlGeneratorUnitTest {
                         " GROUP BY subq_1.sum_referral_agg";
             }
         };
+
+        TestQuery currGpaBySchoolTestQuery = new TestQuery() {
+            @Override
+            public String queryName() {
+                return "Current GPA with buckets - One School";
+            }
+
+            @Override
+            public Query buildQuery() {
+                List<AggregationBucket> buckets = new ArrayList<>();
+                buckets.add(new NumericBucket(0D, 1D, "0-1"));
+                buckets.add(new NumericBucket(1D, 2D, "1-2"));
+                buckets.add(new NumericBucket(2D, 3D, "2-3"));
+                buckets.add(new NumericBucket(3D, null, "4+"));
+
+                Query currGpaQuery = new Query();
+                AggregateMeasure currGpaMeasure = new AggregateMeasure(Measure.CURRENT_GPA, AggregateFunction.COUNT);
+                currGpaMeasure.setBuckets(buckets);
+                ArrayList<AggregateMeasure> currGpaMeasures = new ArrayList<>();
+                currGpaMeasures.add(currGpaMeasure);
+                currGpaQuery.setAggregateMeasures(currGpaMeasures);
+                currGpaQuery.addField(new DimensionField(Dimension.SCHOOL, SectionDimension.ID));
+                return currGpaQuery;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT COUNT(gpa.gpa_score) as count_current_gpa_agg, CASE \n" +
+                        "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
+                        "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
+                        "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
+                        "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
+                        "ELSE NULL \n" +
+                        "END as count_current_gpa_group \n" +
+                        "FROM current_gpa INNER JOIN current_gpa ON gpa.gpa_id = current_gpa.gpa_fk \n" +
+                        "GROUP BY count_current_gpa_group";
+            }
+
+//            @Override
+//            public Integer levDistance() {
+//                return 10000;
+//            }
+        };
         
         Object[][] allTests = new Object[][] {
                 { courseGradeTestQuery },
@@ -950,8 +993,10 @@ public class QuerySqlGeneratorUnitTest {
         };
         
         Object[][] justPathfinderTest = new Object[][] { 
-                { queryIncludingMultipleTablesPathFinder },
-                { queryIncludingMultipleTablesUsingHints }
+//                { queryIncludingMultipleTablesPathFinder },
+//                { queryIncludingMultipleTablesUsingHints }, 
+                { currGpaBySchoolTestQuery }
+                
         };
         return justPathfinderTest;
     }

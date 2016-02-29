@@ -119,6 +119,7 @@ public class DbMappings {
 
     // NOT just the reverse of the above -- multiple dimensions can map to one table, but each table name has only one TRUE dimension
     // TODO Jordan: write a test -- all of the above table names must produce a dimension when given to this method
+    // also, a test where every defined dimension returns a string above
     public static final Map<String, Dimension> TABLE_NAME_TO_DIMENSION =
             new HashMap<String, Dimension>() {{
                 put(HibernateConsts.SCHOOL_TABLE, Dimension.SCHOOL);
@@ -136,6 +137,7 @@ public class DbMappings {
                 put(HibernateConsts.SECTION_GRADE_TABLE, Dimension.SECTION_GRADE);
                 put(HibernateConsts.SCHOOL_DAY_TABLE, Dimension.SCHOOL_DAY);
                 put(HibernateConsts.ATTENDANCE_TABLE, Dimension.ATTENDANCE);
+                put(HibernateConsts.CURRENT_GPA_TABLE, Dimension.CURRENT_GPA);
             }};
     
     public static final Map<DimensionField, String> DIMENSION_TO_COL_NAME = 

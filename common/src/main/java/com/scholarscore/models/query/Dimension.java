@@ -36,7 +36,9 @@ public enum Dimension {
     SECTION_GRADE,
     SCHOOL_DAY,
     ATTENDANCE,
-    BEHAVIOR;
+    BEHAVIOR,
+    GPA,
+    CURRENT_GPA;
     
     /**
      * Factory method for constructing an IDimension of time Dimension.
@@ -81,6 +83,10 @@ public enum Dimension {
                 return new AttendanceDimension();
             case BEHAVIOR:
                 return new BehaviorDimension();
+            case GPA:
+                return new GpaDimension();
+            case CURRENT_GPA:
+                return new CurrentGpaDimension();
             default:
                 throw new QueryException("Unsupported Dimension " + d + "!");
         }
