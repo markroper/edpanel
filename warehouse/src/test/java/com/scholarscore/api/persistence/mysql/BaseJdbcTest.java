@@ -27,6 +27,7 @@ import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.User;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.testng.annotations.Test;
 
 import java.time.LocalDate;
@@ -64,6 +65,8 @@ public class BaseJdbcTest {
     protected final StudentSectionGradePersistence studentSectionGradeDao;
     protected final GoalPersistence goalDao;
 
+    protected final HibernateTemplate hibernateTemplate;
+    
     private School createdSchool;
     private SchoolYear createdSchoolYear;
     private Term createdTerm;
@@ -94,7 +97,8 @@ public class BaseJdbcTest {
         assignmentDao = (EntityPersistence<Assignment>)ctx.getBean("assignmentPersistence");
         studentSectionGradeDao = (StudentSectionGradePersistence)ctx.getBean("studentSectionGradePersistence");
         goalDao = (GoalPersistence)ctx.getBean("goalPersistence");
-
+        
+        hibernateTemplate = (HibernateTemplate) ctx.getBean("hibernateTemplate");
 
         // Shared domain model objects
         address.setStreet("51 Round Hill Rd.");
