@@ -110,7 +110,6 @@ public class BaseJdbcTest {
         school.setAddress(address);
         school.setPrincipalName("Principal Name");
         school.setPrincipalEmail("principal@school.com");
-        school.setSourceSystemId("1");
         school.setMainPhone("555-555-1212");
 
         Staff adminUser = new Staff();
@@ -118,7 +117,6 @@ public class BaseJdbcTest {
         adminUser.setIsAdmin(true);
         admin.setHomePhone("555-1212");
         admin.setName("Matt Greenwood");
-        admin.setSourceSystemId("1");
         admin.setHomeAddress(address);
         admin.setIsAdmin(true);
 
