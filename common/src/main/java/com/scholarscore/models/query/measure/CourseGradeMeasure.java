@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class CourseGradeMeasure implements IMeasure {
+public class CourseGradeMeasure extends BaseMeasure implements IMeasure {
     public static final String GRADE = "Grade";
     private static final Set<String> FIELDS =
             ImmutableSet.of(GRADE);

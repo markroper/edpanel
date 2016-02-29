@@ -9,9 +9,7 @@ import java.util.Set;
 /**
  * Created by markroper on 11/17/15.
  */
-public class AssignmentDimension implements IDimension {
-    public static final String ID = "ID";
-    public static final String NAME = "Name";
+public class AssignmentDimension extends BaseDimension implements IDimension {
     public static final String DUE_DATE = "Due Date";
     public static final String AVAILABLE_POINTS = "Available Points";
     public static final Set<String> DIMENSION_FIELDS =

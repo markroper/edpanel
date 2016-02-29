@@ -2,10 +2,11 @@ package com.scholarscore.models.query.measure.behavior;
 
 import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.query.measure.BaseMeasure;
 
 import java.util.Set;
 
-public abstract class BehaviorMeasure {
+public abstract class BehaviorMeasure extends BaseMeasure {
 
     final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.TERM, Dimension.YEAR,
             Dimension.STUDENT, Dimension.TEACHER, Dimension.SCHOOL, Dimension.STAFF);

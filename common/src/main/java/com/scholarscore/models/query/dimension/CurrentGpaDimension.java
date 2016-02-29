@@ -1,11 +1,10 @@
 package com.scholarscore.models.query.dimension;
 
 import com.google.common.collect.ImmutableSet;
-import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.attendance.Attendance;
+import com.scholarscore.models.gpa.CurrentGpa;
 import com.scholarscore.models.query.Dimension;
 
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -13,18 +12,18 @@ import java.util.Set;
  * Date: 2/16/16
  * Time: 5:15 PM
  */
-public class AttendanceDimension extends BaseDimension implements IDimension {
+public class CurrentGpaDimension extends BaseDimension implements IDimension {
     public static final Set<Dimension> PARENT_DIMENSIONS =
-            ImmutableSet.of(Dimension.SCHOOL_DAY, Dimension.STUDENT, Dimension.SECTION);
+            ImmutableSet.of(Dimension.STUDENT, Dimension.GPA);
 
     @Override
     public Dimension getType() {
-        return Dimension.ATTENDANCE;
+        return Dimension.CURRENT_GPA;
     }
 
     @Override
     public Class<?> getAssociatedClass() {
-        return Attendance.class;
+        return CurrentGpa.class;
     }
 
     @Override
@@ -41,5 +40,4 @@ public class AttendanceDimension extends BaseDimension implements IDimension {
     public String getName() {
         return getClass().getSimpleName();
     }
-
 }
