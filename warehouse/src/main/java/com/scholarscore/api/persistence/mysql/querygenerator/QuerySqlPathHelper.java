@@ -43,8 +43,8 @@ public class QuerySqlPathHelper {
                 }
             };
 
-    public static Set<Dimension> calculateAdditionalNeededDimensions(Query q) {
-        if (queryHasCompletePath(q)) { return new HashSet<>(); }
+    public static void calculateAndAddAdditionalNeededDimensions(Query q) {
+        if (queryHasCompletePath(q)) { return; /*new HashSet<>();*/ }
         LOGGER.debug("Determined that additional dimensions are needed...");
         
         //Get the dimensions in the correct order for joining:
@@ -70,7 +70,7 @@ public class QuerySqlPathHelper {
         Set<Dimension> unmatchedDimensions = returnUnmatchedTables(buildExtendedTablesFromQuery(q));
         if (unmatchedDimensions == null || unmatchedDimensions.size() <= 0) {
             LOGGER.warn("Bug likely -- returnUnmatchedTables should not return empty/null when queryHasCompletePath returns false");
-            return new HashSet<>();
+            /*return new HashSet<>();*/
         }
         
         if (orderedTables.size() > 0) {
@@ -78,21 +78,44 @@ public class QuerySqlPathHelper {
             LOGGER.debug("OK, now we have table " + firstTable + " and we're trying to find links to...");
             for (Dimension dim : unmatchedDimensions) {
                 LOGGER.debug("... Unmatched dimension " + dim);
-                breadthFirstSearch(firstTable, unmatchedDimensions);
+                // okay, now we matched at least one, but there may be more
+                Set<Dimension> neededDimensions = breadthFirstSearch(firstTable, unmatchedDimensions);
+
+                // not sure about this, but seems reasonable as these tables are already included
+                neededDimensions.remove(firstTable);
+                for (Dimension unmatchedDimension : unmatchedDimensions) {
+                    neededDimensions.remove(unmatchedDimension);
+                }
+
+                // TODO Jordan: Below here begins modifying the query which may not be expected. hrm. change before final version?
+
+                // add any remaining found tables as hints
+                for (Dimension neededDimension: neededDimensions) {
+                    q.addJoinTable(neededDimension);
+                }
+                
+                Set<Dimension> unmatchedDimensionsAfterAdding = returnUnmatchedTables(buildExtendedTablesFromQuery(q));
+                if (unmatchedDimensionsAfterAdding == null || unmatchedDimensionsAfterAdding.size() == 0) {
+                    // we're done!
+                    return;
+                } else {
+                    // after we added our new hint tables, see if there are fewer unmatched dimensions. if not, give up.
+                    if (unmatchedDimensionsAfterAdding.size() >= unmatchedDimensions.size()) {
+                        throw new RuntimeException("Unable to find join path through tables!");
+                    } else {
+                        // okay, we're making progress. keep going.
+                        calculateAndAddAdditionalNeededDimensions(q);
+                    }
+                }
             }
         } else {
-            LOGGER.warn("Unexpected situation: attempting to calculateAdditionalNeededDimensions but no tables.");
+            LOGGER.warn("Unexpected situation: attempting to calculateAndAddAdditionalNeededDimensions but no tables.");
         }
-        return null;
     }
     
     public static Boolean queryHasCompletePath(Query q) {
-
         List<Dimension> orderedTables = buildExtendedTablesFromQuery(q);
-        
-        boolean hasCompletePath = hasCompleteJoinPath(orderedTables);
-//        System.out.println(hasCompletePath ? "Query has COMPLETE join path!" : "Query has -incomplete- join path!");
-        return hasCompletePath;
+        return hasCompleteJoinPath(orderedTables);
     }
     
     // this list of ordered tables includes aggregate measures and a pseudo-dimension conversion step
@@ -378,15 +401,15 @@ public class QuerySqlPathHelper {
             while (currentRoundUnvisitedNodes.size() > 0) { // as long as the current round has any candidate node to search, search them!
                 nextHopUnvisitedNodes = new HashSet<>();
                 // visit all the notes in this step
-                System.out.println("Now " + step++ + " steps away from root node.");
+                LOGGER.debug("Now " + step++ + " steps away from root node.");
                 for (Node nodeBeingVisited : currentRoundUnvisitedNodes) {
-                    System.out.println("Visiting formerly-unvisited node " + nodeBeingVisited.dimension);
+                    LOGGER.trace("Visiting formerly-unvisited node " + nodeBeingVisited.dimension);
                     // "visit" the node by checking all its pointed-to neighbors
                     // (AND the nodes that point at it, if bidirectional is enabled)
 
                     // This is either the target dimension, or one of many
                     if (targetDimensions.contains(nodeBeingVisited.dimension)) {
-                        System.out.println("!! MATCH FOUND!");
+                        LOGGER.debug("Found targetDimension " + nodeBeingVisited.dimension);
                         // we're "done" - we only need one match
                         
                         // (this path will be from the last table to the first... reverse?) 
@@ -431,7 +454,7 @@ public class QuerySqlPathHelper {
 
         private void addNodeIfUnseen(Node nodeToAdd, Node parentNode) {
             if (!allSeenNodes.contains(nodeToAdd)) {
-                System.out.println("Found node " + nodeToAdd + " that hasn't been seen before -- adding to unvisited node list");
+                LOGGER.trace("Found node " + nodeToAdd + " that hasn't been seen before -- adding to unvisited node list");
                 allSeenNodes.add(nodeToAdd);
                 nextHopUnvisitedNodes.add(nodeToAdd);
                 // record a breadcrumb path so (if this path turns out to be fruitful, ) we can reconstruct the path we took
