@@ -10,6 +10,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * BehaviorGoalBuilderUnitTest tests that we can build equivalent objects with setters and a builder
@@ -21,6 +22,8 @@ public class BehaviorGoalBuilderUnitTest extends AbstractBuilderUnitTest<Behavio
     @DataProvider
     @Override
     public Object[][] builderProvider() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+        LocalDate date = LocalDate.parse("2005-nov-12", formatter);
         BehaviorGoal emptyBehaviorGoal = new BehaviorGoal();
         BehaviorGoal emptyBehaviorGoalByBuilder = new BehaviorGoal.BehaviorGoalBuilder().build();
 
@@ -41,7 +44,7 @@ public class BehaviorGoalBuilderUnitTest extends AbstractBuilderUnitTest<Behavio
         fullBehaviorGoal.setEndDate(endDate);
         fullBehaviorGoal.setBehaviorCategory(behaviorCategory);
         fullBehaviorGoal.setStudent(student);
-        fullBehaviorGoal.setApproved(Boolean.TRUE);
+        fullBehaviorGoal.setApproved(date);
         fullBehaviorGoal.setCalculatedValue(calculatedValue);
         fullBehaviorGoal.setDesiredValue(desiredValue);
         fullBehaviorGoal.setGoalType(goalType);
@@ -54,7 +57,7 @@ public class BehaviorGoalBuilderUnitTest extends AbstractBuilderUnitTest<Behavio
                 withEndDate(endDate).
                 withBehaviorCategory(behaviorCategory).
                 withStudent(student).
-                withApproved(Boolean.TRUE).
+                withApproved(date).
                 withCalculatedValue(calculatedValue).
                 withDesiredValue(desiredValue).
                 withGoalType(goalType).
