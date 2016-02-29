@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * Created by cwallace on 1/5/16.
  */
-public class SectionTardyMeasure implements IMeasure {
+public class SectionTardyMeasure extends BaseMeasure implements IMeasure {
     final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(
             new HashSet<Measure>(){{ add(Measure.ATTENDANCE); add(Measure.SECTION_ABSENCE); }});
     final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SECTION);

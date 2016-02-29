@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class AttendanceMeasure implements IMeasure {
+public class AttendanceMeasure extends BaseMeasure implements IMeasure {
     final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(new HashSet<Measure>() {{
         add(Measure.TARDY);
         add(Measure.ABSENCE);

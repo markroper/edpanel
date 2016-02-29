@@ -12,7 +12,7 @@ import java.util.Set;
  * Date: 2/16/16
  * Time: 5:15 PM
  */
-public class SchoolDayDimension implements IDimension {
+public class SchoolDayDimension extends BaseDimension implements IDimension {
 
     public static final Set<Dimension> PARENT_DIMENSIONS =
             ImmutableSet.of(Dimension.SCHOOL);
