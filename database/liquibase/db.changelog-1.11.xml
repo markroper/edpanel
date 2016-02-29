@@ -18,7 +18,10 @@
             <column name="followup"
                     type="date" />
         </addColumn>
-
+        <addColumn tableName="goal">
+            <column name="final_value"
+                    type="double" />
+        </addColumn>
 
     </changeSet>
 </databaseChangeLog>
