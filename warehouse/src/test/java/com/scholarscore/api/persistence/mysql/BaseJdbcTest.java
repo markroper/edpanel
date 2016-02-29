@@ -151,7 +151,6 @@ public class BaseJdbcTest {
         term.setEndDate(LocalDate.now());
         term.setSchoolYear(schoolYear);
 
-        behaviorGoal.setApproved(false);
         behaviorGoal.setStaff(teacher);
         behaviorGoal.setStudent(student);
         behaviorGoal.setDesiredValue(5d);
@@ -160,7 +159,7 @@ public class BaseJdbcTest {
         behaviorGoal.setStartDate(LocalDate.now());
         behaviorGoal.setEndDate(LocalDate.now());
 
-        assignmentGoal.setApproved(false);
+        assignmentGoal.setApproved(LocalDate.now());
         assignmentGoal.setStaff(teacher);
         assignmentGoal.setStudent(student);
         assignmentGoal.setDesiredValue(5d);
@@ -289,7 +288,6 @@ public class BaseJdbcTest {
             createdBehaviorGoal.setStudent(createStudent());
             createdBehaviorGoal.setStaff(createTeacher());
             createdBehaviorGoal.setBehaviorCategory(BehaviorCategory.DEMERIT);
-            createdBehaviorGoal.setApproved(false);
             createdBehaviorGoal.setDesiredValue(5d);
         }
         return createdBehaviorGoal;
@@ -302,7 +300,7 @@ public class BaseJdbcTest {
             createdAssignmentGoal.setStudent(createStudent());
             createdAssignmentGoal.setStaff(createTeacher());
             createdAssignmentGoal.setStudentAssignment(studentAssignment);
-            createdAssignmentGoal.setApproved(false);
+            createdAssignmentGoal.setApproved(LocalDate.now());
             createdAssignmentGoal.setDesiredValue(5d);
         }
         return createdAssignmentGoal;

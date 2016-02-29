@@ -143,7 +143,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         behaviorGoal.setEndDate(nextYear);
         behaviorGoal.setDesiredValue(41.5d);
         behaviorGoal.setName("To win them all");
-        behaviorGoal.setApproved(false);
+        behaviorGoal.setApproved(today);
         behaviorGoal.setAutocomplete(false);
         behaviorGoal.setPlan("WE WILL MAKE THE GAOL");
 
@@ -151,7 +151,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         assGoal.setStudent(student);
         assGoal.setStaff(teacher);
         assGoal.setName("The final final");
-        assGoal.setApproved(false);
+        assGoal.setApproved(today);
         assGoal.setStudentAssignment(studentAssignment);
         assGoal.setDesiredValue(95d);
         assGoal.setAutocomplete(false);
@@ -165,7 +165,7 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         sectionGradeGoal.setStudent(student);
         sectionGradeGoal.setStaff(teacher);
         sectionGradeGoal.setName("ALL OF THE As");
-        sectionGradeGoal.setApproved(false);
+        sectionGradeGoal.setApproved(today);
         sectionGradeGoal.setSection(goalSection);
         sectionGradeGoal.setDesiredValue(6d);
         sectionGradeGoal.setAutocomplete(false);
@@ -175,17 +175,14 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         attendanceGoal.setStudent(student);
         attendanceGoal.setStaff(teacher);
         attendanceGoal.setName("Weekly attendance goal");
-        attendanceGoal.setApproved(false);
         attendanceGoal.setSection(goalSection);
         attendanceGoal.setDesiredValue(5D);
         attendanceGoal.setStartDate(today);
         attendanceGoal.setEndDate(nextYear);
         attendanceGoal.setAutocomplete(false);
         attendanceGoal.setPlan("WE WILL MAKE THE GAOL");
-
-
-
-
+        attendanceGoal.setOutcome("SOMETHING SOMETHING");
+        attendanceGoal.setObstacles("STRONGLY TYPED LANGUAGES");
 
         return new Object[][] {
                 {behaviorGoal, "Test failed with a behavior goal"},
@@ -235,15 +232,28 @@ public class GoalControllerIntegrationTest extends IntegrationBase {
         behaviorGoal.setEndDate(today);
         behaviorGoal.setDesiredValue(41d);
         behaviorGoal.setName("To win them all");
-        behaviorGoal.setApproved(false);
         behaviorGoal.setCalculatedValue(EXPECTED_VALUE);
         behaviorGoal.setAutocomplete(false);
         behaviorGoal.setPlan("WE WILL MAKE THE GAOL");
 
+        //Testing to make sure if we ahve a finalized value, we don't actually calculate the goa
+        BehaviorGoal finalizedBehavior = new BehaviorGoal();
+        finalizedBehavior.setStudent(student);
+        finalizedBehavior.setBehaviorCategory(BehaviorCategory.DEMERIT);
+        finalizedBehavior.setStartDate(lastYear);
+        finalizedBehavior.setEndDate(today);
+        finalizedBehavior.setDesiredValue(41d);
+        finalizedBehavior.setName("To win them all");
+        finalizedBehavior.setCalculatedValue(35D);
+        finalizedBehavior.setAutocomplete(false);
+        finalizedBehavior.setPlan("WE WILL MAKE THE GAOL");
+        finalizedBehavior.setFinalValue(35D);
+
 
 
         return new Object[][]{
-                {behaviorGoal, "We did not receive teh expected value from your goal"}
+                {behaviorGoal, "We did not receive teh expected value from your goal"},
+                {finalizedBehavior, "We did not bypass the calculators"}
         };
 
     }
