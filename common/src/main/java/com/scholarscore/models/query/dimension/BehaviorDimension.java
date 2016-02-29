@@ -11,8 +11,7 @@ import java.util.Set;
  * Date: 2/16/16
  * Time: 5:15 PM
  */
-public class BehaviorDimension implements IDimension {
-
+public class BehaviorDimension extends BaseDimension implements IDimension {
     public static final Set<Dimension> PARENT_DIMENSIONS =
             ImmutableSet.of(Dimension.STUDENT, Dimension.STAFF);
 
