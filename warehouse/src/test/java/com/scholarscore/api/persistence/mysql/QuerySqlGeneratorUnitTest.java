@@ -957,11 +957,6 @@ public class QuerySqlGeneratorUnitTest {
                         "FROM current_gpa INNER JOIN current_gpa ON gpa.gpa_id = current_gpa.gpa_fk \n" +
                         "GROUP BY count_current_gpa_group";
             }
-
-//            @Override
-//            public Integer levDistance() {
-//                return 10000;
-//            }
         };
         
         Object[][] allTests = new Object[][] {
@@ -989,16 +984,11 @@ public class QuerySqlGeneratorUnitTest {
                 { requiresMultipleJoinsTestQuery },
                 { queryIncludingMultipleTablesUsingHints },
                 { referralTestQuery },
-                { queryIncludingMultipleTablesPathFinder }
+                { queryIncludingMultipleTablesPathFinder },
+                { currGpaBySchoolTestQuery }
         };
         
-        Object[][] justPathfinderTest = new Object[][] { 
-//                { queryIncludingMultipleTablesPathFinder },
-//                { queryIncludingMultipleTablesUsingHints }, 
-                { currGpaBySchoolTestQuery }
-                
-        };
-        return justPathfinderTest;
+        return allTests;
     }
     
    @Test(dataProvider = "queriesProvider")

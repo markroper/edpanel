@@ -13,7 +13,6 @@ import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.SubqueryColumnRef;
 import com.scholarscore.models.query.SubqueryExpression;
-import com.scholarscore.models.query.dimension.IDimension;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
@@ -26,14 +25,10 @@ import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Set;
 
 /**
@@ -66,6 +61,7 @@ public abstract class QuerySqlGenerator {
     private static final String DOT = ".";
     
     public static SqlWithParameters generate(Query q) throws SqlGenerationException {
+        addAnyNecessaryJoinTables(q);
         Map<String, Object> params = new HashMap<>();
         StringBuilder sqlBuilder = new StringBuilder();
         populateSelectClause(sqlBuilder, params, q);
@@ -77,6 +73,14 @@ public abstract class QuerySqlGenerator {
             return generateQueryOfSubquery(q, sql);
         }
         return sql;
+    }
+    
+    private static void addAnyNecessaryJoinTables(Query q) {
+        boolean queryHasPath = QuerySqlPathHelper.queryHasCompletePath(q);
+        if (!queryHasPath) {
+            System.out.println("Detected Query w/o path! Attempting to automatically find join path.");
+            QuerySqlPathHelper.calculateAndAddAdditionalNeededDimensions(q);
+        }
     }
 
     /**
@@ -222,18 +226,6 @@ public abstract class QuerySqlGenerator {
             selectedDims.addAll(filterDims);
         }
         List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
-        
-        boolean queryHasPath = QuerySqlPathHelper.queryHasCompletePath(q);
-        if (!queryHasPath) {
-            Set<Dimension> additionalDimensions = QuerySqlPathHelper.calculateAdditionalNeededDimensions(q);
-            if (additionalDimensions != null) {
-                for (Dimension dim : additionalDimensions) {
-                    System.out.println("Pathfinder suggested additional dimension " + dim);
-                }   
-            } else {
-                System.out.println("Got additional dimensions back in SQL generator but they are null!");
-            }   
-        }
         
         //Use the first dimension in the sorted columns as the FROM table
         if(null != orderedTables && !orderedTables.isEmpty()) {
