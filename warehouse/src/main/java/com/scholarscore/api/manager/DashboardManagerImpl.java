@@ -302,7 +302,7 @@ public class DashboardManagerImpl implements DashboardManager {
         meritDemerits.add(meritMeasure);
         meritDemerits.add(demeritMeasure);
         meritDemeritQ.setAggregateMeasures(meritDemerits);
-        meritDemeritQ.addField(new DimensionField(Dimension.TEACHER, TeacherDimension.NAME));
+        meritDemeritQ.addField(new DimensionField(Dimension.STAFF, TeacherDimension.NAME));
         meritDemeritQ.setFilter(whereClause);
         row2.setReports(new ArrayList<>());
         meritDemerit.setChartQuery(meritDemeritQ);
