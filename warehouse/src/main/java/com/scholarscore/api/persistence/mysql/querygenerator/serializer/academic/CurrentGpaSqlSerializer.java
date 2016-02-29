@@ -23,11 +23,14 @@ public class CurrentGpaSqlSerializer extends BaseSqlSerializer implements Measur
         String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
         return LEFT_OUTER_JOIN + optionalJoinedTable() + ON +
                 tableNameDotPrimaryKey(dimTableName) + EQUALS +
-                optionalJoinedTable() + DOT + dimTableName + FK_COL_SUFFIX + " " + gpaCurrGpaJoin();
+                optionalJoinedTable() + DOT + dimTableName + FK_COL_SUFFIX + " " + 
+                INNER_JOIN + HibernateConsts.CURRENT_GPA_TABLE + ON +
+                tableNameDotPrimaryKey(optionalJoinedTable()) + EQUALS +
+                toTableName() + DOT + HibernateConsts.GPA_FK;
     }
 
     private String gpaCurrGpaJoin() {
-        return INNER_JOIN + HibernateConsts.CURRENT_GPA_TABLE + ON +
+        return INNER_JOIN + optionalJoinedTable() + ON +
                 tableNameDotPrimaryKey(optionalJoinedTable()) + EQUALS +
                 toTableName() + DOT + HibernateConsts.GPA_FK;
     }

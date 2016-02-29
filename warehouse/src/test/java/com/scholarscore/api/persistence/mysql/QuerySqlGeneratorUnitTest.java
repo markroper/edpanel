@@ -39,6 +39,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -52,6 +53,7 @@ public class QuerySqlGeneratorUnitTest {
         default Integer levDistance() { return null; }
     }
 
+    // all queries must produce executable SQL which will be tested against an instance of the database (parameters are OK)
     @DataProvider
     public static Object[][] queriesProvider() {
 
@@ -703,7 +705,7 @@ public class QuerySqlGeneratorUnitTest {
                         "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
                         "ELSE NULL \n" +
                         "END as count_current_gpa_group \n" +
-                        "FROM current_gpa INNER JOIN current_gpa ON gpa.gpa_id = current_gpa.gpa_fk \n" +
+                        "FROM current_gpa INNER JOIN gpa ON gpa.gpa_id = current_gpa.gpa_fk \n" +
                         "GROUP BY count_current_gpa_group";
             }
         };
