@@ -16,6 +16,7 @@ import com.scholarscore.models.query.measure.HomeworkCompletionMeasure;
 import com.scholarscore.models.query.measure.IMeasure;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -33,11 +34,21 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class QueryComponents implements Serializable {
 
-    protected final Set<IDimension> availableDimensions = ImmutableSet.of(new CourseDimension(), new SchoolDimension(),
-            new SchoolYearDimension(), new SectionDimension(), new StudentDimension(), new TeacherDimension(),
-            new TermDimension());
+    
+    protected final Set<IDimension> availableDimensions = buildAvailableDimensions();
     protected final Set<IMeasure> availableMeasures = ImmutableSet.of(
-            new AssignmentGradeMeasure(), new CourseGradeMeasure(), new GpaMeasure(), new HomeworkCompletionMeasure());
+            new AssignmentGradeMeasure(), 
+            new CourseGradeMeasure(), 
+            new GpaMeasure(), 
+            new HomeworkCompletionMeasure());
+    
+    public Set<IDimension> buildAvailableDimensions() { 
+        HashSet<IDimension> toReturn = new HashSet<>();
+        for (Dimension dimension : Dimension.values()) {
+            toReturn.add(Dimension.buildDimension(dimension));
+        }
+        return toReturn;
+    }
     
     public Set<IDimension> getAvailableDimensions() {
         return availableDimensions;
