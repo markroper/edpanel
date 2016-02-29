@@ -13,7 +13,7 @@ import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.SubqueryColumnRef;
 import com.scholarscore.models.query.SubqueryExpression;
-import com.scholarscore.models.query.dimension.IDimension;
+import com.scholarscore.models.query.bucket.AggregationBucket;
 import com.scholarscore.models.query.expressions.Expression;
 import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
@@ -26,14 +26,10 @@ import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Set;
 
 /**
@@ -139,7 +135,7 @@ public abstract class QuerySqlGenerator {
                         counter++;
                         if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
                             if(counter == pos) {
-                                sqlBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
+                                sqlBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am.getAggregation(), am.getMeasure()));
                                 sqlBuilder.append(" ");
                                 sqlBuilder.append(resolveOperatorSql(operator));
                                 sqlBuilder.append(" ");
@@ -191,13 +187,46 @@ public abstract class QuerySqlGenerator {
                 //If there are buckets involved in the aggregate query, inject the bucket pseudo column
                 if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
                     sqlBuilder.append(DELIM);
-                    sqlBuilder.append(mss.toSelectBucketPseudoColumn(am.getBuckets()));
-                    sqlBuilder.append(" as ");
-                    sqlBuilder.append(generateBucketPseudoColumnName(am));
+                    //If the buckets have not aggregate function applied, just reference the psuedo column by name
+                    //Otherwise, enumerate the entire bucket definition and wrap it in a aggregate function
+                    if(null == am.getBucketAggregation()) {
+                        sqlBuilder.append(mss.toSelectBucketPseudoColumn(am.getBuckets()));
+                        sqlBuilder.append(" as ");
+                        sqlBuilder.append(generateBucketPseudoColumnName(am.getAggregation(), am.getMeasure()));
+                    } else {
+                        sqlBuilder.append(generateBucketedColumn(am.getBuckets(), am.getBucketAggregation(), am.getMeasure(), true));
+                    }
                 }
             }
         }
         sqlBuilder.append(" ");
+    }
+
+    /**
+     * Generates the SQL CASE statement for a bucketed column definition and optionally wraps it in an aggregate function
+     * @param buckets
+     * @param agg
+     * @param m
+     * @param includeAlias
+     * @return
+     * @throws SqlGenerationException
+     */
+    protected static String generateBucketedColumn(List<AggregationBucket> buckets, AggregateFunction agg, Measure m, boolean includeAlias)
+            throws SqlGenerationException {
+        String fieldSql = "";
+        MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(m);
+        if(null != agg) {
+            fieldSql += agg.name() + "(";
+        }
+        fieldSql += mss.toSelectBucketPseudoColumn(buckets);
+        if(null != agg) {
+            fieldSql += ")";
+        }
+        if(includeAlias) {
+            fieldSql += " as ";
+            fieldSql += generateBucketPseudoColumnName(agg, m);
+        }
+        return fieldSql;
     }
 
     protected static void populateFromClause(StringBuilder sqlBuilder, Query q) throws SqlGenerationException {
@@ -357,14 +386,26 @@ public abstract class QuerySqlGenerator {
             case MEASURE:
                 MeasureOperand mo = (MeasureOperand)operand;
                 try {
-                    //This will throw an exception if the where clause field is not an agg function.
-                    //We catch that exception and look for a field on the measure table with the name in that case.
-                    AggregateFunction func = AggregateFunction.valueOf(mo.getValue().getField());
-                    MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(mo.getValue().getMeasure());
-                    sqlBuilder.append(mss.toSelectClause(func));
+                    //If there is no field referenced on the measure, use the bucket field definition.  If there is a
+                    //field on the aggregate measure, parse it as an aggregate function.  If the field fails to parse
+                    //as an aggregate function, reference the field by field name.
+                    if(null == mo.getValue().getField() && null != mo.getValue().getBuckets()) {
+                        sqlBuilder.append(generateBucketedColumn(
+                                mo.getValue().getBuckets(),
+                                mo.getValue().getBucketAggregation(),
+                                mo.getValue().getMeasure(),
+                                false));
+                    } else {
+                        //This will throw an exception if the where clause field is not an agg function.
+                        //We catch that exception and look for a field on the measure table with the name in that case.
+                        AggregateFunction func = AggregateFunction.valueOf(mo.getValue().getField());
+                        MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(mo.getValue().getMeasure());
+                        sqlBuilder.append(mss.toSelectClause(func));
+                    }
                 } catch(RuntimeException e) {
-                    MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(((MeasureOperand)operand).getValue().getMeasure());
-                    sqlBuilder.append(" " + generateMeasureFieldSql(((MeasureOperand)operand).getValue(), tableAlias) + " ");
+                    //Reference the column from a subquery
+                    MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(((MeasureOperand) operand).getValue().getMeasure());
+                    sqlBuilder.append(" " + generateMeasureFieldSql(((MeasureOperand) operand).getValue(), tableAlias) + " ");
                 }
                 break;
             case NUMERIC:
@@ -409,8 +450,8 @@ public abstract class QuerySqlGenerator {
         //If there are buckets involved in the aggregate query, inject the bucket pseudo column
         if(null != q.getAggregateMeasures()) {
             for (AggregateMeasure m : q.getAggregateMeasures()) {
-                if(null != m.getBuckets() && !m.getBuckets().isEmpty()) {
-                    String bucketFieldName = generateBucketPseudoColumnName(m);
+                if(null != m.getBuckets() && !m.getBuckets().isEmpty() && null == m.getBucketAggregation()) {
+                    String bucketFieldName = generateBucketPseudoColumnName(m.getAggregation(), m.getMeasure());
                     if (isFirst) {
                         groupBySqlBuilder.append(bucketFieldName);
                         isFirst = false;
@@ -420,7 +461,6 @@ public abstract class QuerySqlGenerator {
                 }
             }
         }
-        
         // "GROUP BY" may not be present -- only append "GROUP BY" if the rest of the string exists
         if (groupBySqlBuilder.length() > 0) {
             parentSqlBuilder.append(GROUP_BY);
@@ -432,8 +472,8 @@ public abstract class QuerySqlGenerator {
         }
     }
 
-    public static String generateBucketPseudoColumnName(AggregateMeasure m) {
-        return m.getAggregation().name().toLowerCase() + "_" + m.getMeasure().name().toLowerCase() + "_group";
+    public static String generateBucketPseudoColumnName(AggregateFunction agg, Measure m) {
+        return agg.name().toLowerCase() + "_" + m.name().toLowerCase() + "_group";
     }
     public static String generateAggColumnName(AggregateMeasure m) {
         return m.getAggregation().name().toLowerCase() + "_" + m.getMeasure().name().toLowerCase() + "_agg";
@@ -531,12 +571,14 @@ public abstract class QuerySqlGenerator {
                                 if(null != function) {
                                     innerSqlBuilder.append(function.name() + "(");
                                 }
-                                innerSqlBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
+                                innerSqlBuilder.append(tableAlias + DOT +
+                                        generateBucketPseudoColumnName(am.getAggregation(), am.getMeasure()));
                                 if(null != function) {
                                     innerSqlBuilder.append(function.name() + ")");
                                 } else {
                                     innerGroupByBuilder.markNotFirstOrAppend(DELIM);
-                                    innerGroupByBuilder.append(tableAlias + DOT + generateBucketPseudoColumnName(am));
+                                    innerGroupByBuilder.append(tableAlias + DOT +
+                                            generateBucketPseudoColumnName(am.getAggregation(), am.getMeasure()));
                                 }
                             }
                             counter++;

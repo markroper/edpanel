@@ -35,6 +35,7 @@ public abstract class QueryField implements Serializable {
     //than or equal to' respectively. If 'start' and 'end' are both null, the bucket is assumed to contain the
     //default value and for this reason, should be last in the list.
     List<AggregationBucket> buckets;
+    AggregateFunction bucketAggregation;
 
     public List<AggregationBucket> getBuckets() {
         return buckets;
@@ -44,9 +45,17 @@ public abstract class QueryField implements Serializable {
         this.buckets = buckets;
     }
 
+    public AggregateFunction getBucketAggregation() {
+        return bucketAggregation;
+    }
+
+    public void setBucketAggregation(AggregateFunction aggregateFunction) {
+        this.bucketAggregation = aggregateFunction;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(buckets);
+        return Objects.hash(buckets, bucketAggregation);
     }
 
     @Override
@@ -58,6 +67,7 @@ public abstract class QueryField implements Serializable {
             return false;
         }
         final QueryField other = (QueryField) obj;
-        return Objects.equals(this.buckets, other.buckets);
+        return Objects.equals(this.buckets, other.buckets) &&
+                Objects.equals(this.bucketAggregation, other.bucketAggregation);
     }
 }
