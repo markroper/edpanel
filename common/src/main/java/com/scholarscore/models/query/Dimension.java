@@ -24,7 +24,6 @@ public enum Dimension {
     ASSIGNMENT,
     TERM,
     YEAR,
-    SUBJECT_AREA,
     SCHOOL,
     TEACHER,
     STUDENT,
@@ -36,7 +35,9 @@ public enum Dimension {
     SECTION_GRADE,
     SCHOOL_DAY,
     ATTENDANCE,
-    BEHAVIOR;
+    BEHAVIOR,
+    GPA,
+    CURRENT_GPA;
     
     /**
      * Factory method for constructing an IDimension of time Dimension.
@@ -53,8 +54,6 @@ public enum Dimension {
                 return new TermDimension();
             case YEAR:
                 return new SchoolYearDimension();
-            case SUBJECT_AREA:
-                return new SubjectAreaDimension();
             case SCHOOL:
                 return new SchoolDimension();
             case STAFF:
@@ -81,6 +80,10 @@ public enum Dimension {
                 return new AttendanceDimension();
             case BEHAVIOR:
                 return new BehaviorDimension();
+            case GPA:
+                return new GpaDimension();
+            case CURRENT_GPA:
+                return new CurrentGpaDimension();
             default:
                 throw new QueryException("Unsupported Dimension " + d + "!");
         }
@@ -103,6 +106,8 @@ public enum Dimension {
         add(Dimension.SECTION_GRADE);
         add(Dimension.ATTENDANCE);
         add(Dimension.BEHAVIOR);
+        add(Dimension.CURRENT_GPA);
+        add(Dimension.GPA);
         add(Dimension.STUDENT);
         add(Dimension.STAFF);
         add(Dimension.TEACHER);
@@ -113,7 +118,6 @@ public enum Dimension {
         add(Dimension.TERM);
         add(Dimension.YEAR);
         add(Dimension.COURSE);
-        add(Dimension.SUBJECT_AREA);
         add(Dimension.SCHOOL_DAY);
         add(Dimension.SCHOOL);
         add(Dimension.USER);
