@@ -48,7 +48,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     private Staff staff;
     private Double desiredValue;
     private Double calculatedValue;
-    private Boolean approved;
+    private LocalDate approved;
     private GoalType goalType;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -58,13 +58,13 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     private String plan;
     private String outcome;
     private String obstacles;
-    private Boolean teacherFollowup;
+    private LocalDate teacherFollowup;
+    private Double finalValue;
 
     public Goal() {
         super();
         //THis is maybe controversial. Goals should not be completed upon creation and a teacher followup
         //Should not have already happened. So we will set them to initial conditions
-        this.teacherFollowup = Boolean.FALSE;
         this.goalProgress = GoalProgress.IN_PROGRESS;
 
     }
@@ -85,6 +85,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         this.outcome = goal.outcome;
         this.obstacles = goal.obstacles;
         this.teacherFollowup = goal.teacherFollowup;
+        this.finalValue = goal.finalValue;
     }
 
     @Id
@@ -160,12 +161,11 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     }
 
     @Column(name = HibernateConsts.GOAL_FOLLOWUP)
-    @Type(type = "org.hibernate.type.NumericBooleanType")
-    public Boolean getTeacherFollowup() {
+    public LocalDate getTeacherFollowup() {
         return teacherFollowup;
     }
 
-    public void setTeacherFollowup(Boolean teacherFollowup) {
+    public void setTeacherFollowup(LocalDate teacherFollowup) {
         this.teacherFollowup = teacherFollowup;
     }
 
@@ -175,16 +175,21 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         return super.getName();
     }
 
+    @Column(name = HibernateConsts.GOAL_FINAL)
+    public Double getFinalValue() {
+        return finalValue;
+    }
 
-
+    public void setFinalValue(Double finalValue) {
+        this.finalValue = finalValue;
+    }
 
     @Column(name = HibernateConsts.GOAL_APPROVED)
-    @Type(type = "org.hibernate.type.NumericBooleanType")
-    public Boolean getApproved() {
+    public LocalDate getApproved() {
         return approved;
     }
 
-    public void setApproved(Boolean approved) {
+    public void setApproved(LocalDate approved) {
         this.approved = approved;
     }
 
@@ -288,11 +293,15 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         if (null == endDate) {
             this.endDate = mergeFrom.endDate;
         }
+        if (null == finalValue) {
+            this.finalValue = mergeFrom.finalValue;
+        }
     }
 
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(student, staff, desiredValue, calculatedValue, approved, goalType, startDate, endDate, goalProgress, autocomplete, plan, teacherFollowup, obstacles, outcome);
+        return 31 * super.hashCode() + Objects.hash(student, staff, desiredValue, calculatedValue, approved, goalType, startDate, endDate,
+                goalProgress, autocomplete, plan, teacherFollowup, obstacles, outcome, finalValue);
     }
 
     @Override
@@ -320,7 +329,8 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
                 && Objects.equals(this.plan, other.plan)
                 && Objects.equals(this.obstacles, other.obstacles)
                 && Objects.equals(this.outcome, other.outcome)
-                && Objects.equals(this.teacherFollowup, other.teacherFollowup);
+                && Objects.equals(this.teacherFollowup, other.teacherFollowup)
+                && Objects.equals(this.finalValue, other.finalValue);
     }
 
     @Override
@@ -342,7 +352,8 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
                         + "Plan: " + getPlan() + "\n"
                         + "Outcome: " + getOutcome() + "\n"
                         + "Obstacles: " + getObstacles() + "\n"
-                        + "TeacherFollowup: " + getTeacherFollowup() + "\n";
+                        + "TeacherFollowup: " + getTeacherFollowup() + "\n"
+                        + "FinalValue: " + getFinalValue() + "\n";
     }
 
     /**
@@ -356,7 +367,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         private Staff staff;
         private Double desiredValue;
         private Double calculatedValue;
-        private Boolean approved;
+        private LocalDate approved;
         private GoalType goalType;
         private Boolean autocomplete;
         private String plan;
@@ -403,7 +414,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
             return me();
         }
 
-        public U withApproved(final Boolean approved){
+        public U withApproved(final LocalDate approved){
             this.approved = approved;
             return me();
         }
