@@ -35,9 +35,8 @@ import com.scholarscore.models.query.expressions.operands.StringOperand;
 import com.scholarscore.models.query.expressions.operators.BinaryOperator;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
-import com.scholarscore.models.query.measure.behavior.BehaviorMeasure;
-import com.scholarscore.models.query.measure.CourseGradeMeasure;
 import com.scholarscore.models.query.measure.CurrentGpaMeasure;
+import com.scholarscore.models.query.measure.behavior.BehaviorMeasure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -247,18 +246,18 @@ public class DashboardManagerImpl implements DashboardManager {
         failingClasses.setName("Count of Students Failing Classes");
         ArrayList<AggregateMeasure> failingMeasures = new ArrayList<>();
         failingQ.setAggregateMeasures(failingMeasures);
-        AggregateMeasure failingMeasure = new AggregateMeasure(Measure.COURSE_GRADE, AggregateFunction.COUNT);
+        AggregateMeasure failingMeasure = new AggregateMeasure(Measure.COURSE_GRADE, AggregateFunction.SUM);
+        List<AggregationBucket> failingBuckets = new ArrayList<>();
+        failingBuckets.add(new NumericBucket(0D, 70D, "1"));
+        failingBuckets.add(new NumericBucket(70D, null, "0"));
+        failingMeasure.setBuckets(failingBuckets);
+        failingMeasure.setBucketAggregation(AggregateFunction.SUM);
         failingMeasures.add(failingMeasure);
         failingQ.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
         List<SubqueryColumnRef> failingWrappers = new ArrayList<>();
         failingWrappers.add(new SubqueryColumnRef(-1, AggregateFunction.COUNT));
-        failingWrappers.add(new SubqueryColumnRef(1, null));
+        failingWrappers.add(new SubqueryColumnRef(2, null));
         failingQ.setSubqueryColumnsByPosition(failingWrappers);
-        Expression sc = new Expression(
-                new MeasureOperand(new MeasureField(Measure.COURSE_GRADE, CourseGradeMeasure.GRADE)),
-                ComparisonOperator.LESS_THAN_OR_EQUAL,
-                new NumericOperand(70D)
-        );
         Expression startDate = new Expression(
                 new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.START_DATE)),
                 ComparisonOperator.GREATER_THAN_OR_EQUAL,
@@ -270,8 +269,7 @@ public class DashboardManagerImpl implements DashboardManager {
                 new DatePlaceholder("${endDate}")
         );
         Expression dateRange = new Expression(startDate, BinaryOperator.AND, endDate);
-        Expression scoreAndDate = new Expression(dateRange, BinaryOperator.AND, sc);
-        failingQ.setFilter(new Expression(whereClause, BinaryOperator.AND, scoreAndDate));
+        failingQ.setFilter(new Expression(whereClause, BinaryOperator.AND, dateRange));
         failingClasses.setChartQuery(failingQ);
         row1.getReports().add(failingClasses);
 
@@ -279,15 +277,18 @@ public class DashboardManagerImpl implements DashboardManager {
         failingClick.setAggregateMeasures(failingMeasures);
         failingClick.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
         failingClick.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
+        MeasureField mf = new MeasureField(Measure.COURSE_GRADE, null);
+        mf.setBucketAggregation(AggregateFunction.SUM);
+        mf.setBuckets(failingBuckets);
         Expression failingHaving = new Expression(
-                new MeasureOperand(new MeasureField(Measure.COURSE_GRADE, AggregateFunction.COUNT.name())),
+                new MeasureOperand(mf),
                 ComparisonOperator.EQUAL,
                 new NumericPlaceholder("${clickValue}"));
-        failingClick.setFilter(new Expression(whereClause, BinaryOperator.AND, scoreAndDate));
+        failingClick.setFilter(new Expression(whereClause, BinaryOperator.AND, dateRange));
         failingClick.setHaving(failingHaving);
         List<ColumnDef> failingDefs = new ArrayList<>();
         failingDefs.add(new ColumnDef("values[1]", "Name"));
-        failingDefs.add(new ColumnDef("values[2]", "Failing Classes"));
+        failingDefs.add(new ColumnDef("values[3]", "Failing Classes"));
         failingClasses.setColumnDefs(failingDefs);
         failingClasses.setClickTableQuery(failingClick);
 
