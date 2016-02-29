@@ -947,15 +947,16 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT COUNT(gpa.gpa_score) as count_current_gpa_agg, CASE \n" +
+                return "SELECT school.school_id, COUNT(gpa.gpa_score) as count_current_gpa_agg, CASE \n" +
                         "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
                         "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
                         "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
                         "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
                         "ELSE NULL \n" +
                         "END as count_current_gpa_group \n" +
-                        "FROM current_gpa INNER JOIN current_gpa ON gpa.gpa_id = current_gpa.gpa_fk \n" +
-                        "GROUP BY count_current_gpa_group";
+                        "FROM student LEFT OUTER JOIN gpa ON student.student_user_fk = gpa.student_fk INNER JOIN current_gpa ON gpa.gpa_id = current_gpa.gpa_fk\n" +
+                        "LEFT OUTER JOIN school ON school.school_id = student.school_fk \n" +
+                        "GROUP BY school.school_id, count_current_gpa_group";
             }
         };
         
