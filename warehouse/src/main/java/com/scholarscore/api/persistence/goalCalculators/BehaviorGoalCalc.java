@@ -26,9 +26,18 @@ public class BehaviorGoalCalc implements GoalCalc<CalculatableBehavior> {
     public Double calculateGoal(CalculatableBehavior goal) {
         Collection<Behavior> studentBehaviors = behaviorPersistence.selectAll(goal.getStudent().getId());
         //Make sure behavior category matches and it is within the dates specified.
-        Collection<Behavior> relevantBehaviors = studentBehaviors.stream().filter(bg -> bg.getBehaviorCategory().equals(goal.getBehaviorCategory()))
-                .filter(bg -> bg.getBehaviorDate().isAfter(goal.getStartDate()) && bg.getBehaviorDate().isBefore(goal.getEndDate()))
-                .collect(Collectors.toList());
+        Collection<Behavior> relevantBehaviors;
+        if (null == goal.getEndDate()) {
+            //IF we haven't given an end date to this goal, that's fine but we need to prevent the NPE
+            relevantBehaviors = studentBehaviors.stream().filter(bg -> bg.getBehaviorCategory().equals(goal.getBehaviorCategory()))
+                    .filter(bg -> bg.getBehaviorDate().isAfter(goal.getStartDate().minusDays(1L)))
+                    .collect(Collectors.toList());
+        } else {
+            relevantBehaviors = studentBehaviors.stream().filter(bg -> bg.getBehaviorCategory().equals(goal.getBehaviorCategory()))
+                    .filter(bg -> bg.getBehaviorDate().isAfter(goal.getStartDate().minusDays(1L)) && bg.getBehaviorDate().isBefore(goal.getEndDate().plusDays(1L)))
+                    .collect(Collectors.toList());
+        }
+
 
         return new Double(relevantBehaviors.size());
     }
