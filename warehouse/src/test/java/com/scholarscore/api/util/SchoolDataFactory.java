@@ -966,7 +966,6 @@ public class SchoolDataFactory {
 
             sectionGradeGoal.setStudent(s);
             sectionGradeGoal.setStaff(teacher);
-            sectionGradeGoal.setApproved(false);
             sectionGradeGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(75, 100)));
             sectionGradeGoal.setName("Section Grade Goal");
             studentGoalList.add(sectionGradeGoal);
@@ -974,7 +973,6 @@ public class SchoolDataFactory {
             BehaviorGoal behaviorGoal = new BehaviorGoal();
             behaviorGoal.setStudent(s);
             behaviorGoal.setStaff(teacher);
-            behaviorGoal.setApproved(false);
             behaviorGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(0, 60)));
             behaviorGoal.setName("Weekly Demerit Goal");
             behaviorGoal.setEndDate(endDate);
@@ -992,7 +990,6 @@ public class SchoolDataFactory {
 
             assignmentGoal.setStudent(s);
             assignmentGoal.setStaff(teacher);
-            assignmentGoal.setApproved(false);
             assignmentGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(75, 100)));
             assignmentGoal.setName("Bio Final Goal");
             studentGoalList.add(assignmentGoal);
@@ -1008,7 +1005,6 @@ public class SchoolDataFactory {
 
             attendanceGoal.setStudent(s);
             attendanceGoal.setStaff(teacher);
-            attendanceGoal.setApproved(false);
             attendanceGoal.setDesiredValue(Double.valueOf(ThreadLocalRandom.current().nextInt(0, 4)));
             attendanceGoal.setName("Weekly Attendance Goal");
             attendanceGoal.setEndDate(endDate);
