@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.Measure;
 import com.scholarscore.models.query.measure.IMeasure;
-import com.scholarscore.models.query.measure.behavior.BehaviorMeasure;
 
 import java.util.Set;
 
