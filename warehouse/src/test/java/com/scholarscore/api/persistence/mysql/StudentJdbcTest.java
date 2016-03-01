@@ -12,6 +12,7 @@ import static org.testng.Assert.*;
  */
 @Test(groups = {"functional"})
 public class StudentJdbcTest extends BaseJdbcTest {
+    
     public void testStudentCRUD() {
         ApplicationContext ctx = new ClassPathXmlApplicationContext("persistence.xml");
         Student createStudent = createStudent();
