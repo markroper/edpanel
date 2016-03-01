@@ -4,6 +4,7 @@ import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.EntityPersistence;
 import com.scholarscore.api.persistence.GoalPersistence;
 import com.scholarscore.api.persistence.SchoolPersistence;
+import com.scholarscore.api.persistence.StudentAssignmentPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.StudentSectionGradePersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
@@ -14,6 +15,8 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
+import com.scholarscore.models.assignment.AssignmentType;
+import com.scholarscore.models.assignment.GradedAssignment;
 import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.grade.SectionGrade;
 import com.scholarscore.models.grade.StudentSectionGrade;
@@ -28,9 +31,12 @@ import com.scholarscore.models.user.User;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by mattg on 8/29/15.
@@ -48,6 +54,7 @@ public class BaseJdbcTest {
     protected final BehaviorGoal behaviorGoal = new BehaviorGoal();
     protected final AssignmentGoal assignmentGoal = new AssignmentGoal();
     protected final StudentAssignment studentAssignment = new StudentAssignment();
+    protected final GradedAssignment gradedAssignment = new GradedAssignment();
 
     protected final Staff admin = new Staff();
     protected final ApplicationContext ctx;
@@ -62,6 +69,7 @@ public class BaseJdbcTest {
     protected final EntityPersistence<SchoolYear> schoolYearDao;
     protected final EntityPersistence<Term> termDao;
     protected final EntityPersistence<Assignment> assignmentDao;
+    protected final StudentAssignmentPersistence studentAssignmentDao;
     protected final StudentSectionGradePersistence studentSectionGradeDao;
     protected final GoalPersistence goalDao;
 
@@ -74,11 +82,23 @@ public class BaseJdbcTest {
     private Section createdSection;
     private User createdUser;
     private Student createdStudent;
+    private StudentAssignment createdStudentAssignment;
     private StudentSectionGrade createdStudentSectionGrade;
     private Staff createdTeacher;
     private BehaviorGoal createdBehaviorGoal;
     private AssignmentGoal createdAssignmentGoal;
+    private Assignment createdGradedAssignment;
 
+    String staffName = "Random McDudeFace";
+    String staffUsername = "rmcdudeface";
+
+    String teacherName = "Random McTeacherFace";
+    String teacherUsername = "rmcteacherface";
+
+    String studentName = "Random McStudentFace";
+    String studentUsername = "rmcstudentface";
+    
+    
     public BaseJdbcTest() {
 
         // Spring context
@@ -97,6 +117,7 @@ public class BaseJdbcTest {
         assignmentDao = (EntityPersistence<Assignment>)ctx.getBean("assignmentPersistence");
         studentSectionGradeDao = (StudentSectionGradePersistence)ctx.getBean("studentSectionGradePersistence");
         goalDao = (GoalPersistence)ctx.getBean("goalPersistence");
+        studentAssignmentDao = (StudentAssignmentPersistence)ctx.getBean("studentAssignmentPersistence");
         
         hibernateTemplate = (HibernateTemplate) ctx.getBean("hibernateTemplate");
 
@@ -111,23 +132,24 @@ public class BaseJdbcTest {
         school.setPrincipalName("Principal Name");
         school.setPrincipalEmail("principal@school.com");
         school.setMainPhone("555-555-1212");
-
+        
         Staff adminUser = new Staff();
-        adminUser.setUsername("mattg");
+        adminUser.setUsername(staffUsername);
         adminUser.setIsAdmin(true);
         admin.setHomePhone("555-1212");
-        admin.setName("Matt Greenwood");
+        admin.setName(staffName);
         admin.setHomeAddress(address);
         admin.setIsAdmin(true);
 
         Student studentUser = new Student();
-        studentUser.setUsername("mattg");
-        student.setName("Matt Greenwood");
+        student.setUsername(studentUsername);
+        student.setName(studentName);
         student.setSourceSystemId("1234");
         student.setHomeAddress(address);
 
         Staff teacherUser = new Staff();
-        teacherUser.setUsername("mattg");
+        teacher.setUsername(teacherUsername);
+        teacher.setName(teacherName);
         teacher.setHomePhone("555-1212");
         teacher.setSourceSystemId("abc");
         teacher.setHomeAddress(address);
@@ -153,6 +175,9 @@ public class BaseJdbcTest {
         term.setEndDate(LocalDate.now());
         term.setSchoolYear(schoolYear);
 
+        gradedAssignment.setName("Graded Assignment");
+        gradedAssignment.setType(AssignmentType.CLASSWORK);
+        
         behaviorGoal.setStaff(teacher);
         behaviorGoal.setStudent(student);
         behaviorGoal.setDesiredValue(5d);
@@ -253,17 +278,40 @@ public class BaseJdbcTest {
         }
         return createdStudent;
     }
+    
+    public Assignment createAssignment() { 
+        if (null == gradedAssignment) {
+            createdGradedAssignment = new GradedAssignment(gradedAssignment);
+            
+            Long assignmentId = assignmentDao.insert(createdGradedAssignment.getSectionFK(), createdGradedAssignment);
+            createdGradedAssignment = assignmentDao.select(createdGradedAssignment.getSectionFK(), assignmentId);
+        }
+        return createdGradedAssignment;
+    }
+    
+    public StudentAssignment createStudentAssignment() { 
+        if (null == createdStudentAssignment) {
+            createdStudentAssignment = new StudentAssignment(studentAssignment);
+            createdStudentAssignment.setAssignment(createAssignment());
+            
+            studentAssignmentDao.insert(createdStudentAssignment.getAssignment().getId(), createdStudentAssignment);
+        }
+        return createdStudentAssignment;
+    }
 
     public StudentSectionGrade createStudentSectionGrade() {
         if (null == createdStudentSectionGrade) {
             createdStudentSectionGrade = new StudentSectionGrade();
-            createdStudentSectionGrade.setSection(createSection());
+            Section createdSection = createSection();
+            createdStudentSectionGrade.setSection(createdSection);
+            Student createdStudent = createStudent();
+            createdStudentSectionGrade.setStudent(createdStudent);
             createdStudentSectionGrade.setComplete(true);
             SectionGrade sg = new SectionGrade();
             sg.setDate(LocalDate.now());
             sg.setScore(5D);
-            sg.setSectionFk(section.getId());
-            sg.setStudentFk(createdStudentSectionGrade.getStudent().getId());
+            sg.setSectionFk(createdSection.getId());
+            sg.setStudentFk(createdStudent.getId());
             createdStudentSectionGrade.setOverallGrade(sg);
             createdStudentSectionGrade.setStudent(createStudent());
             studentSectionGradeDao.insert(createdStudentSectionGrade.getSection().getId(), createdStudentSectionGrade.getStudent().getId(), createdStudentSectionGrade);
@@ -301,11 +349,33 @@ public class BaseJdbcTest {
             createdAssignmentGoal.setName("Behaves nicely when created");
             createdAssignmentGoal.setStudent(createStudent());
             createdAssignmentGoal.setStaff(createTeacher());
-            createdAssignmentGoal.setStudentAssignment(studentAssignment);
+            
+            if (null == createdStudentAssignment) {
+                createdStudentAssignment = createStudentAssignment();
+            }
+            
+            createdAssignmentGoal.setStudentAssignment(createdStudentAssignment);
             createdAssignmentGoal.setApproved(LocalDate.now());
             createdAssignmentGoal.setDesiredValue(5d);
         }
         return createdAssignmentGoal;
+    }
+    
+    @BeforeMethod
+    public void initialize() {
+        // many tests rely on this user not existing so they can create it -- so delete it if it exists
+        User existingStaff = userDao.selectUserByName(staffUsername);
+        if (existingStaff != null) {
+            userDao.deleteUser(existingStaff.getId());
+        }
+        User existingTeacher = userDao.selectUserByName(teacherUsername);
+        if (existingTeacher != null) {
+            userDao.deleteUser(existingTeacher.getId());
+        }
+        User existingStudent = userDao.selectUserByName(studentUsername);
+        if (existingStudent != null) {
+            userDao.deleteUser(existingStudent.getId());
+        }
     }
 
 }

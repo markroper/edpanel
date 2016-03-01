@@ -201,7 +201,7 @@ public class ContactMethod implements Serializable, IApiModel<ContactMethod> {
             if (newContactMethods == null && existingContactMethods == null) {
                 return null; 
             } else {
-                return new HashSet<ContactMethod>();
+                return new HashSet<>();
             }
         }
 
