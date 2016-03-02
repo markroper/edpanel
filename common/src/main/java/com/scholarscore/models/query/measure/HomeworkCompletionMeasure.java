@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class HomeworkCompletionMeasure implements IMeasure {
+public class HomeworkCompletionMeasure extends BaseMeasure implements IMeasure {
     final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(new HashSet<>());
     final Set<Dimension> compatibleDimensions = ImmutableSet.of(
             Dimension.TERM, Dimension.STUDENT, Dimension.SCHOOL, Dimension.SECTION, 

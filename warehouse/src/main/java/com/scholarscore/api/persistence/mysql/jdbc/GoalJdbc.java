@@ -122,32 +122,38 @@ public class GoalJdbc implements GoalPersistence {
     }
 
     private Goal addCalculatedValue(Goal goal) {
-        switch (goal.getGoalType()) {
-            case BEHAVIOR:
-                if (goal instanceof BehaviorGoal) {
-                    BehaviorGoal behaviorGoal = (BehaviorGoal)goal;
-                    goal.setCalculatedValue(behaviorGoalCalc.calculateGoal(behaviorGoal));
-                }
-                break;
-            case ASSIGNMENT:
-                if (goal instanceof AssignmentGoal) {
-                    AssignmentGoal assignmentGoal = (AssignmentGoal)goal;
-                    goal.setCalculatedValue(assignmentGoalCalc.calculateGoal(assignmentGoal));
-                }
-                break;
-            case SECTION_GRADE:
-                if (goal instanceof SectionGradeGoal) {
-                    SectionGradeGoal sectionGradeGoal = (SectionGradeGoal)goal;
-                    goal.setCalculatedValue(sectionGoalCalc.calculateGoal(sectionGradeGoal));
-                }
-                break;
-            case ATTENDANCE:
-                if (goal instanceof AttendanceGoal) {
-                    AttendanceGoal attendanceGoal = (AttendanceGoal)goal;
-                    goal.setCalculatedValue(attendanceGoalCalc.calculateGoal(attendanceGoal));
-                }
-                break;
+        if (null == goal.getFinalValue()) {
+            switch (goal.getGoalType()) {
+                case BEHAVIOR:
+                    if (goal instanceof BehaviorGoal) {
+                        BehaviorGoal behaviorGoal = (BehaviorGoal)goal;
+                        goal.setCalculatedValue(behaviorGoalCalc.calculateGoal(behaviorGoal));
+                    }
+                    break;
+                case ASSIGNMENT:
+                    if (goal instanceof AssignmentGoal) {
+                        AssignmentGoal assignmentGoal = (AssignmentGoal)goal;
+                        goal.setCalculatedValue(assignmentGoalCalc.calculateGoal(assignmentGoal));
+                    }
+                    break;
+                case SECTION_GRADE:
+                    if (goal instanceof SectionGradeGoal) {
+                        SectionGradeGoal sectionGradeGoal = (SectionGradeGoal)goal;
+                        goal.setCalculatedValue(sectionGoalCalc.calculateGoal(sectionGradeGoal));
+                    }
+                    break;
+                case ATTENDANCE:
+                    if (goal instanceof AttendanceGoal) {
+                        AttendanceGoal attendanceGoal = (AttendanceGoal)goal;
+                        goal.setCalculatedValue(attendanceGoalCalc.calculateGoal(attendanceGoal));
+                    }
+                    break;
+            }
+        } else {
+            //If the goal has a final value, we know that it is complete and we can skip calculating and set to final
+            goal.setCalculatedValue(goal.getFinalValue());
         }
+
         return goal;
     }
 

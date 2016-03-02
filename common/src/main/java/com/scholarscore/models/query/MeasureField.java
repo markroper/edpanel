@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @SuppressWarnings("serial")
-public class MeasureField implements Serializable {
+public class MeasureField extends QueryField implements Serializable {
     Measure measure;
     String field;
     
     public MeasureField() {
-        
+        super();
     }
     
     public MeasureField(Measure m, String s) {
@@ -35,6 +35,9 @@ public class MeasureField implements Serializable {
     
     @Override
     public boolean equals(Object obj) {
+        if(!super.equals(obj)) {
+           return false;
+        }
         if (this == obj) {
             return true;
         }
@@ -48,6 +51,6 @@ public class MeasureField implements Serializable {
     
     @Override
     public int hashCode() {
-        return 31 * Objects.hash(measure, field);
+        return super.hashCode() + 31 * Objects.hash(measure, field);
     }
 }

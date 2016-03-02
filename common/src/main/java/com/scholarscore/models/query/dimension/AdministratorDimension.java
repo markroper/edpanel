@@ -8,9 +8,7 @@ import com.scholarscore.models.user.Staff;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class AdministratorDimension implements IDimension {
-    public static final String ID = "ID";
-    public static final String NAME = "Name";
+public class AdministratorDimension extends BaseDimension {
     public static final String EMAIL = "Email";
     public static final String SCHOOL = "School";
     public static final Set<String> DIMENSION_FIELDS = 

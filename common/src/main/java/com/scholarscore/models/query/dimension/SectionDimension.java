@@ -8,11 +8,7 @@ import com.scholarscore.models.query.Dimension;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class SectionDimension implements IDimension {
-    public static final String ID = "ID";
-    public static final String NAME = "Name";
-    public static final String START_DATE = "Start Date";
-    public static final String END_DATE = "End Date";
+public class SectionDimension extends BaseDimension implements IDimension {
     public static final String TEACHER = "Teacher";
     public static final String GRADE_FORMULA = "Grade Formula";
     public static final String ROOM = "Room";
