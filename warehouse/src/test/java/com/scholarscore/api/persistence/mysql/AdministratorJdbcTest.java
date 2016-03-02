@@ -13,7 +13,7 @@ public class AdministratorJdbcTest extends BaseJdbcTest {
         Long adminId = adminDao.createAdministrator(admin);
         assertNotNull(adminId,
                 "Expected non-null identifier to be returned");
-        assertTrue(adminDao.select(adminId).equals(admin),
+        assertEquals(adminDao.select(adminId), admin,
                 "Expected administrator from database to equal created administrator");
         adminDao.delete(adminId);
         assertNull(adminDao.select(adminId),
