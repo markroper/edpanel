@@ -53,7 +53,7 @@ public class UserJdbc extends UserBaseJdbc implements UserPersistence {
                     "from user u where u.enabled = :enabled and u.password is not null", "enabled", enabled);
         } else {
             values = (List<User>) hibernateTemplate.find(
-                    "from user u where u.oneTimePass is not null and u.password is null");
+                    "from user u where u.oneTimePass is not null");
         }
         return filterUsersBySchool(values, schoolId);
     }
