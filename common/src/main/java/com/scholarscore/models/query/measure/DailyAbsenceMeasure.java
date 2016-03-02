@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * Created by markroper on 11/29/15.
  */
-public class DailyAbsenceMeasure implements IMeasure {
+public class DailyAbsenceMeasure extends BaseMeasure implements IMeasure {
     final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(
             new HashSet<Measure>(){{ add(Measure.ATTENDANCE); add(Measure.TARDY); }});
     final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT);

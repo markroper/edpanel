@@ -13,12 +13,13 @@ import java.util.Set;
  * done on behavior events in the query generator
  * Created by cwallace on 12/17/15.
  */
-public class UserDimension implements IDimension {
-    public static final String ID = "ID";
+public class UserDimension extends BaseDimension implements IDimension {
+    public static final String EMAIL = "Email";
+    public static final String SCHOOL = "School";
     public static final Set<String> DIMENSION_FIELDS =
-            ImmutableSet.of(ID);
+            ImmutableSet.of(ID, NAME, EMAIL, SCHOOL);
     public static final Set<Dimension> PARENT_DIMENSIONS =
-            ImmutableSet.of();
+            ImmutableSet.of(Dimension.SCHOOL);
 
     @Override
     public Dimension getType() {
@@ -32,12 +33,12 @@ public class UserDimension implements IDimension {
 
     @Override
     public Set<Dimension> getParentDimensions() {
-        return AdministratorDimension.PARENT_DIMENSIONS;
+        return PARENT_DIMENSIONS;
     }
 
     @Override
     public Set<String> getFields() {
-        return AdministratorDimension.DIMENSION_FIELDS;
+        return DIMENSION_FIELDS;
     }
 
     @Override

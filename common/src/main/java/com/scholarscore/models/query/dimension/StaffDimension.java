@@ -12,9 +12,7 @@ import java.util.Set;
  * Date: 2/25/16
  * Time: 9:18 PM
  */
-public class StaffDimension implements IDimension {
-    public static final String ID = "ID";
-    public static final String NAME = "Name";
+public class StaffDimension extends BaseDimension implements IDimension {
     public static final String EMAIL = "Email";
     public static final String SCHOOL = "School";
     public static final Set<String> DIMENSION_FIELDS =

@@ -8,13 +8,11 @@ import com.scholarscore.models.query.Dimension;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class CourseDimension implements IDimension {
-    public static final String ID = "ID";
-    public static final String NAME = "Name";
+public class CourseDimension extends BaseDimension implements IDimension {
     public static final Set<String> DIMENSION_FIELDS = 
             ImmutableSet.of(ID, NAME);
     public static final Set<Dimension> PARENT_DIMENSIONS = 
-            ImmutableSet.of(Dimension.SCHOOL, Dimension.SUBJECT_AREA);
+            ImmutableSet.of(Dimension.SCHOOL);
     
     @Override
     public Dimension getType() {

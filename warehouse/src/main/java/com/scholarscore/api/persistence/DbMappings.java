@@ -12,6 +12,7 @@ import com.scholarscore.models.query.measure.CourseGradeMeasure;
 import com.scholarscore.models.query.measure.CurrentGpaMeasure;
 import com.scholarscore.models.query.measure.GpaMeasure;
 import com.scholarscore.util.MapUtil;
+import org.hibernate.Hibernate;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -96,7 +97,7 @@ public class DbMappings {
         }
     }
 
-    public static final Map<Dimension, String> DIMENSION_TO_TABLE_NAME = 
+    public static final Map<Dimension, String> DIMENSION_TO_TABLE_NAME =
             new HashMap<Dimension, String>() {{
                 put(Dimension.SCHOOL, HibernateConsts.SCHOOL_TABLE);
                 put(Dimension.COURSE, HibernateConsts.COURSE_TABLE);
@@ -115,11 +116,11 @@ public class DbMappings {
                 put(Dimension.SECTION_GRADE, HibernateConsts.SECTION_GRADE_TABLE);
                 put(Dimension.SCHOOL_DAY, HibernateConsts.SCHOOL_DAY_TABLE);
                 put(Dimension.ATTENDANCE, HibernateConsts.ATTENDANCE_TABLE);
+                put(Dimension.GPA, HibernateConsts.GPA_TABLE);
+                put(Dimension.CURRENT_GPA, HibernateConsts.CURRENT_GPA_TABLE);
             }};
 
-    // NOT just the reverse of the above -- multiple dimensions can map to one table, but each table name has only one TRUE dimension
-    // TODO Jordan: write a test -- all of the above table names must produce a dimension when given to this method
-    // also, a test where every defined dimension returns a string above
+    // NOT just the reverse of the above -- multiple dimensions can map to one table, but each table name can only return one TRUE dimension
     public static final Map<String, Dimension> TABLE_NAME_TO_DIMENSION =
             new HashMap<String, Dimension>() {{
                 put(HibernateConsts.SCHOOL_TABLE, Dimension.SCHOOL);
@@ -137,6 +138,7 @@ public class DbMappings {
                 put(HibernateConsts.SECTION_GRADE_TABLE, Dimension.SECTION_GRADE);
                 put(HibernateConsts.SCHOOL_DAY_TABLE, Dimension.SCHOOL_DAY);
                 put(HibernateConsts.ATTENDANCE_TABLE, Dimension.ATTENDANCE);
+                put(HibernateConsts.GPA_TABLE, Dimension.GPA);
                 put(HibernateConsts.CURRENT_GPA_TABLE, Dimension.CURRENT_GPA);
             }};
     
@@ -222,4 +224,15 @@ public class DbMappings {
         }
         return returnVal;
     }
+
+    // starting with an existing map, return a new map where the keys in the returned map are the values from the existing map,
+    // and the values in the returned map are the keys from the existing map.
+    private static <T,V> Map<T, V> buildReverseMap(Map<V, T> originalMap) {
+        HashMap<T,V> toReturn = new HashMap<>();
+        for (V key : originalMap.keySet()) {
+            toReturn.put(originalMap.get(key), key);
+        }
+        return toReturn;
+    }
+
 }
