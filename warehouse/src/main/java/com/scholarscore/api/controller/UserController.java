@@ -193,7 +193,7 @@ public class UserController extends BaseController {
 			value = "Start password reset",
 			response = Void.class)
 	@RequestMapping(
-			value = "/requestPasswordReset/{username}",
+			value = "/requestPasswordReset/{username:.+}",
 			// This is made a GET so that it can be accessed directly as a link
 			// from the user's email
 			method = RequestMethod.GET,

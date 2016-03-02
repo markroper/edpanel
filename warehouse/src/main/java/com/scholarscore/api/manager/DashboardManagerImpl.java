@@ -240,8 +240,8 @@ public class DashboardManagerImpl implements DashboardManager {
 
         //FAILING COURSES QUERY
         Report failingClasses = new Report();
+        failingClasses.setSupportDateFilter(false);
         failingClasses.setSupportDemographicFilter(true);
-        failingClasses.setSupportDateFilter(true);
         Query failingQ = new Query();
         failingClasses.setName("Count of Students Failing Classes");
         ArrayList<AggregateMeasure> failingMeasures = new ArrayList<>();
