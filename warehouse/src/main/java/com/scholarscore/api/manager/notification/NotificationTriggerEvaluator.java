@@ -3,6 +3,7 @@ package com.scholarscore.api.manager.notification;
 import com.scholarscore.api.manager.OrchestrationManager;
 import com.scholarscore.api.manager.notification.calc.AssignmentGradeCalc;
 import com.scholarscore.api.manager.notification.calc.BehaviorScoreCalc;
+import com.scholarscore.api.manager.notification.calc.GoalApprovedCalc;
 import com.scholarscore.api.manager.notification.calc.GpaCalc;
 import com.scholarscore.api.manager.notification.calc.HwCompletionCalc;
 import com.scholarscore.api.manager.notification.calc.NotificationCalculator;
@@ -73,6 +74,9 @@ public class NotificationTriggerEvaluator {
                 break;
             case SECTION_TARDY:
                 calculator = new SectionTardyCalc();
+                break;
+            case GOAL_CREATED:
+                calculator = new GoalApprovedCalc();
                 break;
             default:
                 LOGGER.warn("A notification with ID: " + notification.getId() + " has an an unsupported type: " +
