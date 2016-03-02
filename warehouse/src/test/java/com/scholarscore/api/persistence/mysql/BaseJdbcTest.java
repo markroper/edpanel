@@ -83,6 +83,7 @@ public class BaseJdbcTest {
     private StudentAssignment createdStudentAssignment;
     private StudentSectionGrade createdStudentSectionGrade;
     private Staff createdTeacher;
+    private Staff createdAdmin;
     private BehaviorGoal createdBehaviorGoal;
     private AssignmentGoal createdAssignmentGoal;
     private Assignment createdGradedAssignment;
@@ -254,8 +255,8 @@ public class BaseJdbcTest {
             user.setUsername("foobar" + System.currentTimeMillis());
             user.setPassword("testPassword");
             user.setEnabled(true);
-            userDao.createUser(user);
-            createdUser = user;
+            Long userId = userDao.createUser(user);
+            createdUser = userDao.selectUser(userId);
         }
         return createdUser;
     }
@@ -334,6 +335,15 @@ public class BaseJdbcTest {
         }
 
         return createdTeacher;
+    }
+    
+    public Staff createAdmin() { 
+        if (null == createdAdmin) {
+            Long id = adminDao.createAdministrator(admin);
+            createdAdmin = adminDao.select(id);
+            createdAdmin.setId(id);
+        }
+        return createdAdmin;
     }
 
     public Goal createBehaviorGoal() {
