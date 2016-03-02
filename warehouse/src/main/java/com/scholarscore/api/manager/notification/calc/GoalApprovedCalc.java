@@ -29,7 +29,7 @@ public class GoalApprovedCalc implements NotificationCalculator {
             }
         }
         //These should only activate once, so when we make teh triggered notification kill the real one
-        manager.getNotificationManager().deleteNotification(notification.getId());
+        //manager.getNotificationManager().deleteNotification(notification.getId());
 
         if (triggered.isEmpty()) {
             return null;
