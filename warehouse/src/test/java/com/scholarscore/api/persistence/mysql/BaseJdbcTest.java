@@ -35,8 +35,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by mattg on 8/29/15.
@@ -89,8 +87,8 @@ public class BaseJdbcTest {
     private AssignmentGoal createdAssignmentGoal;
     private Assignment createdGradedAssignment;
 
-    String staffName = "Random McDudeFace";
-    String staffUsername = "rmcdudeface";
+    String adminName = "Random McDudeFace";
+    String adminUsername = "rmcdudeface";
 
     String teacherName = "Random McTeacherFace";
     String teacherUsername = "rmcteacherface";
@@ -134,10 +132,10 @@ public class BaseJdbcTest {
         school.setMainPhone("555-555-1212");
         
         Staff adminUser = new Staff();
-        adminUser.setUsername(staffUsername);
+        adminUser.setUsername(adminUsername);
         adminUser.setIsAdmin(true);
         admin.setHomePhone("555-1212");
-        admin.setName(staffName);
+        admin.setName(adminName);
         admin.setHomeAddress(address);
         admin.setIsAdmin(true);
 
@@ -280,8 +278,13 @@ public class BaseJdbcTest {
     }
     
     public Assignment createAssignment() { 
-        if (null == gradedAssignment) {
+        if (null == createdGradedAssignment) {
             createdGradedAssignment = new GradedAssignment(gradedAssignment);
+
+            // must have section, sectionID, and we don't know if these are created yet
+            Section section = createSection();
+            createdGradedAssignment.setSection(section);
+            createdGradedAssignment.setSectionFK(section.getId());
             
             Long assignmentId = assignmentDao.insert(createdGradedAssignment.getSectionFK(), createdGradedAssignment);
             createdGradedAssignment = assignmentDao.select(createdGradedAssignment.getSectionFK(), assignmentId);
@@ -293,7 +296,11 @@ public class BaseJdbcTest {
         if (null == createdStudentAssignment) {
             createdStudentAssignment = new StudentAssignment(studentAssignment);
             createdStudentAssignment.setAssignment(createAssignment());
-            
+
+            // must have saved student (i.e. with studentID) in order to save this one
+            Student student = createStudent();
+            createdStudentAssignment.setStudent(student);
+
             studentAssignmentDao.insert(createdStudentAssignment.getAssignment().getId(), createdStudentAssignment);
         }
         return createdStudentAssignment;
@@ -364,18 +371,23 @@ public class BaseJdbcTest {
     @BeforeMethod
     public void initialize() {
         // many tests rely on this user not existing so they can create it -- so delete it if it exists
-        User existingStaff = userDao.selectUserByName(staffUsername);
-        if (existingStaff != null) {
-            userDao.deleteUser(existingStaff.getId());
+        
+        User existingAdminUser = userDao.selectUserByName(adminUsername);
+        if (existingAdminUser != null) {
+            userDao.deleteUser(existingAdminUser.getId());
+            // createdAdmin = null (I guess we never use this admin?)
         }
         User existingTeacher = userDao.selectUserByName(teacherUsername);
         if (existingTeacher != null) {
             userDao.deleteUser(existingTeacher.getId());
+            createdTeacher = null;
         }
         User existingStudent = userDao.selectUserByName(studentUsername);
         if (existingStudent != null) {
             userDao.deleteUser(existingStudent.getId());
+            createdStudent = null;
         }
+        
     }
 
 }
