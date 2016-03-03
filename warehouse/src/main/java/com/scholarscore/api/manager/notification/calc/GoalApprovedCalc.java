@@ -20,6 +20,10 @@ public class GoalApprovedCalc implements NotificationCalculator {
     public List<TriggeredNotification> calculate(
             List<? extends Person> subjects, Notification notification, OrchestrationManager manager) {
         List<TriggeredNotification> triggered = new ArrayList<>();
+        //If this is a one time goal (probably yes) and already triggered we don't want to create more triggered noti
+        if (notification.getOneTime() && notification.getTriggered()) {
+            return null;
+        }
         for(Person p : subjects) {
             List<TriggeredNotification> t =
                     NotificationCalculator.createTriggeredNotifications(
