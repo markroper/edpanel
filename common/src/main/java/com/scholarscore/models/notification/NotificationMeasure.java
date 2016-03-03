@@ -19,5 +19,8 @@ public enum NotificationMeasure {
     SCHOOL_TARDY,
     SECTION_ABSENCE,
     SECTION_TARDY,
-    GOAL_CREATED
+    GOAL_CREATED,
+    GOAL_APPROVED
+    //GOAL_MET
+    //GOAL_UNMET
 }

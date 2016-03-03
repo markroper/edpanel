@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.notification.group.NotificationGroup;
 import com.scholarscore.models.notification.window.NotificationWindow;
 import com.scholarscore.models.query.AggregateFunction;
@@ -47,6 +48,8 @@ public class Notification {
     private Section section;
     //Can be null if the notification is not assignment related
     private Assignment assignment;
+    //Can be null if the notification is not goal related
+    private Goal goal;
     @NotNull
     //The creating user of the notification
     private User owner;
@@ -260,11 +263,23 @@ public class Notification {
         this.triggered = triggered;
     }
 
+    @OneToOne
+    @JoinColumn(name=HibernateConsts.GOAL_FK)
+    @Fetch(FetchMode.JOIN)
+    @Cascade({ CascadeType.ALL })
+    public Goal getGoal() {
+        return goal;
+    }
+
+    public void setGoal(Goal goal) {
+        this.goal = goal;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(id, name, schoolId, section, assignment, owner, subscribers,
                 subjects, triggerValue, triggerWhenGreaterThan, aggregateFunction, window,
-                measure, createdDate, expiryDate, isOneTime, triggered);
+                measure, createdDate, expiryDate, isOneTime, triggered, goal);
     }
 
     @Override
@@ -292,6 +307,7 @@ public class Notification {
                 && Objects.equals(this.createdDate, other.createdDate)
                 && Objects.equals(this.expiryDate, other.expiryDate)
                 && Objects.equals(this.isOneTime, other.isOneTime)
-                && Objects.equals(this.triggered, other.triggered);
+                && Objects.equals(this.triggered, other.triggered)
+                && Objects.equals(this.goal, other.goal);
     }
 }

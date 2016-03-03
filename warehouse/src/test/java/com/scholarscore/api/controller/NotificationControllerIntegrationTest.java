@@ -11,6 +11,8 @@ import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.AttendanceType;
 import com.scholarscore.models.attendance.SchoolDay;
+import com.scholarscore.models.goal.Goal;
+import com.scholarscore.models.goal.OpenGoal;
 import com.scholarscore.models.gpa.AddedValueGpa;
 import com.scholarscore.models.grade.SectionGrade;
 import com.scholarscore.models.grade.StudentSectionGrade;
@@ -54,6 +56,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
     private Student student4;
     private Staff teacher;
     private List<SchoolDay> days;
+    private Goal goal;
 
     private static final double STUDENT_3_ABSENCE_THRESHOLD = 4;
     
@@ -203,6 +206,19 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
             a2.setSchoolDay(day);
             attendanceValidatingExecutor.create(school.getId(), student3.getId(), a2, "Daily absence for student3");
         }
+
+        //Make an unapproved goal!
+        goal = new OpenGoal();
+        goal.setStudent(student1);
+        goal.setStaff(teacher);
+        goal.setPlan("Testing makes better code and I don't want to do my discrete exam");
+        goal.setOutcome("Make money man, Ill do discrete later");
+        goal.setObstacles("I recently ran out of coffee");
+        goal.setAutocomplete(false);
+        goal.setDesiredValue(-1D);
+        goal.setName("THe goal to end all goals");
+        goal = goalValidatingExecutor.create(student1.getId(),goal,"Create an unapprovedGoal");
+
     }
 
     @DataProvider
@@ -319,20 +335,37 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         s3.setStudent(student3);
         dailyAbsence.setSubscribers(s3);
 
+        Notification goalCreated = new Notification();
+        goalCreated.setGoal(goal);
+        goalCreated.setCreatedDate(LocalDate.now());
+        goalCreated.setTriggerWhenGreaterThan(true);
+        goalCreated.setExpiryDate(LocalDate.now());
+        goalCreated.setMeasure(NotificationMeasure.GOAL_CREATED);
+        goalCreated.setName("Goal Created");
+        SingleStudent stud2 = new SingleStudent();
+        stud2.setStudent(student2);
+        goalCreated.setOwner(student2);
+        goalCreated.setTriggerValue(-1D);
+        goalCreated.setSubjects(stud2);
+        goalCreated.setSchoolId(school.getId());
+        goalCreated.setSubscribers(teach);
+        goalCreated.setOneTime(true);
+
         Notification goalApproved = new Notification();
+        goalApproved.setGoal(goal);
         goalApproved.setCreatedDate(LocalDate.now());
         goalApproved.setTriggerWhenGreaterThan(true);
         goalApproved.setExpiryDate(LocalDate.now());
-        goalApproved.setMeasure(NotificationMeasure.GOAL_CREATED);
+        goalApproved.setMeasure(NotificationMeasure.GOAL_APPROVED);
         goalApproved.setName("Goal Approved");
-        SingleStudent stud2 = new SingleStudent();
-        stud2.setStudent(student2);
         goalApproved.setOwner(student2);
         goalApproved.setTriggerValue(-1D);
         goalApproved.setSubjects(stud2);
         goalApproved.setSchoolId(school.getId());
         goalApproved.setSubscribers(teach);
         goalApproved.setOneTime(true);
+
+
 
         return new Object[][] {
                 { "Notify on the GPA of students within a section", teacherStudentGpa },
@@ -341,7 +374,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
                 { "Notify on section homework completion rate change of 5% in a week", hwCompletion },
                 { "Notify 5 tardies for a single section within a year", sectionTardy },
                 { "Notify 4 school absences for a single student within a year", dailyAbsence },
-                { "Notify teacher whena  student creates a goal", goalApproved}
+                { "Notify teacher when a  student creates a goal", goalCreated}
         };
     }
 
@@ -362,8 +395,9 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
     @Test
     public void checkOneTimeNotifications() {
         Object[][] inputs = createNotificationsProvider();
+        ArrayList<Notification> nots = new ArrayList<>();
         for(int i = 0; i < inputs.length; i++) {
-            notificationValidatingExecutor.create((Notification)inputs[i][1], (String)inputs[i][0]);
+            nots.add(notificationValidatingExecutor.create((Notification)inputs[i][1], (String)inputs[i][0]));
         }
 
         // evaluate all notifications
@@ -383,6 +417,11 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         List<TriggeredNotification> finalTriggeredNotifications =
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(teacher.getId(), "Teacher triggered notifications");
         Assert.assertEquals(finalTriggeredNotifications.size(), 2, "Unexpected number of teacher triggered notifications returned");
+
+        for (Notification n : nots) {
+            notificationValidatingExecutor.delete(n.getId(), "Cleaning up from this partial test");
+        }
+
     }
 
     @Test
