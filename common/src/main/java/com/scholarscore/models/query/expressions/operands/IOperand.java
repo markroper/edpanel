@@ -22,7 +22,8 @@ import com.scholarscore.models.query.expressions.Expression;
     @JsonSubTypes.Type(value = StringPlaceholder.class, name = "PLACEHOLDER_STRING"),
     @JsonSubTypes.Type(value = DatePlaceholder.class, name = "PLACEHOLDER_DATE"),
     @JsonSubTypes.Type(value = NumericPlaceholder.class, name = "PLACEHOLDER_NUMERIC"),
-    @JsonSubTypes.Type(value = NumericListPlaceholder.class, name = "PLACEHOLDER_LIST_NUMERIC")
+    @JsonSubTypes.Type(value = NumericListPlaceholder.class, name = "PLACEHOLDER_LIST_NUMERIC"),
+    @JsonSubTypes.Type(value = NullOperand.class, name = "NULL")
 })
 public interface IOperand {
     /**

@@ -48,7 +48,8 @@ public abstract class QuerySqlGenerator {
     private static final String OR = "OR";
     private static final String AND = "AND";
     private static final String ON = "ON";
-    private static final String IS_NULL = "IS_NULL";
+    private static final String IS = "IS";
+    private static final String IS_NOT = "IS_NOT";
     private static final String GREATER_THAN = "GREATER_THAN";
     private static final String GREATER_THAN_OR_EQUAL = "GREATER_THAN_OR_EQUAL";
     private static final String LESS_THAN = "LESS_THAN";
@@ -364,7 +365,6 @@ public abstract class QuerySqlGenerator {
         //Serialize the operator
         String operator = resolveOperatorSql(exp.getOperator());
         sqlBuilder.append(" " + operator + " ");
-        if (!exp.getOperator().equals(ComparisonOperator.IS_NULL)) {
             if (exp.getOperator().equals((ComparisonOperator.IN))) {
                 sqlBuilder.append(" (");
             }
@@ -373,7 +373,6 @@ public abstract class QuerySqlGenerator {
             if(exp.getOperator().equals(ComparisonOperator.IN)) {
                 sqlBuilder.append(") ");
             }
-        }
         sqlBuilder.append(") ");
     }
 
@@ -413,6 +412,9 @@ public abstract class QuerySqlGenerator {
                 break;
             case NUMERIC:
                 sqlBuilder.append(" " + ((NumericOperand)operand).getValue() + " ");
+                break;
+            case NULL:
+                sqlBuilder.append(" " + "NULL" + " ");
                 break;
             case EXPRESSION:
                 expressionToSql((Expression) operand, params, sqlBuilder, tableAlias);
@@ -532,8 +534,11 @@ public abstract class QuerySqlGenerator {
             case LIKE:
                 operator = LIKE;
                 break;
-            case IS_NULL:
-                operator = "IS NULL";
+            case IS:
+                operator = IS;
+                break;
+            case IS_NOT:
+                operator = "IS NOT";
                 break;
             default:
                 throw new SqlGenerationException("Operator not supported: " + op.name());
