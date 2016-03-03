@@ -7,6 +7,7 @@ import com.scholarscore.models.goal.AssignmentGoal;
 import com.scholarscore.models.goal.AttendanceGoal;
 import com.scholarscore.models.goal.BehaviorGoal;
 import com.scholarscore.models.goal.Goal;
+import com.scholarscore.models.goal.OpenGoal;
 import com.scholarscore.models.goal.SectionGradeGoal;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -107,6 +108,9 @@ public class GoalValidatingExecutor {
                     break;
                 case ATTENDANCE:
                     returnGoal = new AttendanceGoal((AttendanceGoal)submitted);
+                    break;
+                case OPEN:
+                    returnGoal = new OpenGoal((OpenGoal)submitted);
                     break;
                 default:
                     returnGoal = null;

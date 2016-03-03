@@ -209,6 +209,7 @@ public class HibernateConsts {
     //IGoal constants
     public static final String GOAL_TABLE = "goal";
     public static final String GOAL_ID = "goal_id";
+    public static final String GOAL_FK = "goal_fk";
     public static final String GOAL_APPROVED = "approved";
     public static final String GOAL_AUTOCOMPLETE = "autocomplete";
     public static final String GOAL_FOLLOWUP = "followup";

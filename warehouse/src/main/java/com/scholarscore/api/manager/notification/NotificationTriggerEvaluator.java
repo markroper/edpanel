@@ -4,6 +4,7 @@ import com.scholarscore.api.manager.OrchestrationManager;
 import com.scholarscore.api.manager.notification.calc.AssignmentGradeCalc;
 import com.scholarscore.api.manager.notification.calc.BehaviorScoreCalc;
 import com.scholarscore.api.manager.notification.calc.GoalApprovedCalc;
+import com.scholarscore.api.manager.notification.calc.GoalCreatedCalc;
 import com.scholarscore.api.manager.notification.calc.GpaCalc;
 import com.scholarscore.api.manager.notification.calc.HwCompletionCalc;
 import com.scholarscore.api.manager.notification.calc.NotificationCalculator;
@@ -76,6 +77,9 @@ public class NotificationTriggerEvaluator {
                 calculator = new SectionTardyCalc();
                 break;
             case GOAL_CREATED:
+                calculator = new GoalCreatedCalc();
+                break;
+            case GOAL_APPROVED:
                 calculator = new GoalApprovedCalc();
                 break;
             default:
@@ -83,6 +87,10 @@ public class NotificationTriggerEvaluator {
                         notification.getMeasure() + " and could not be evaluated for this reason");
                 calculator = null;
                 break;
+        }
+        //If its a one time notification and it was already triggered, don't trigger it again
+        if (notification.getOneTime() && notification.getTriggered()) {
+            return null;
         }
         if(null != calculator) {
             return calculator.calculate(subjects, notification, manager);

@@ -11,28 +11,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by cwallace on 3/3/16.
+ * Created by cwallace on 3/1/16.
  */
-public class GoalApprovedCalc implements NotificationCalculator {
-    private final static Logger LOGGER = LoggerFactory.getLogger(GoalApprovedCalc.class);
+public class GoalCreatedCalc implements NotificationCalculator {
+    private final static Logger LOGGER = LoggerFactory.getLogger(GpaCalc.class);
 
     @Override
     public List<TriggeredNotification> calculate(
             List<? extends Person> subjects, Notification notification, OrchestrationManager manager) {
         List<TriggeredNotification> triggered = new ArrayList<>();
 
-        //Ayy, we got an approved goal trigger that notification
-        if (null != notification.getGoal().getApproved()) {
-            for(Person p : subjects) {
-                List<TriggeredNotification> t =
-                        NotificationCalculator.createTriggeredNotifications(
-                                notification, 0D, manager, p.getId());
-                if (null != t) {
-                    triggered.addAll(t);
-                }
+        for(Person p : subjects) {
+            List<TriggeredNotification> t =
+                    NotificationCalculator.createTriggeredNotifications(
+                            notification, 0D, manager, p.getId());
+            if (null != t) {
+                triggered.addAll(t);
             }
         }
-
 
         if (triggered.isEmpty()) {
             return null;
