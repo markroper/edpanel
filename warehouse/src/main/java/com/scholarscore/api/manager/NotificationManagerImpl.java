@@ -166,7 +166,15 @@ public class NotificationManagerImpl implements NotificationManager {
                             LOGGER.info("Triggered notification not inserted due to: " + e.getMessage());
                         }
                     }
+
+                    //If they are one time we need to delete these things once they are evaluated
+
                 }
+                    if (null != n.getOneTime() && n.getOneTime()) {
+                        notificationPersistence.deleteNotification(n.getId());
+                    }
+
+
             }
         } else {
             return new ServiceResponse<>(notificationResponse.getCode());

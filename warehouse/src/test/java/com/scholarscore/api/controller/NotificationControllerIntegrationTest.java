@@ -332,6 +332,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         goalApproved.setSubjects(stud2);
         goalApproved.setSchoolId(school.getId());
         goalApproved.setSubscribers(teach);
+        goalApproved.setOneTime(true);
 
         return new Object[][] {
                 { "Notify on the GPA of students within a section", teacherStudentGpa },

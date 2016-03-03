@@ -83,6 +83,7 @@ public class Notification {
     private LocalDate createdDate;
     @NotNull
     private LocalDate expiryDate;
+    private Boolean isOneTime;
 
     @Column(name = HibernateConsts.SCHOOL_FK)
     public Long getSchoolId() {
@@ -235,9 +236,20 @@ public class Notification {
         this.expiryDate = expiryDate;
     }
 
+    @Column(name = HibernateConsts.NOTIFICATION_ONE_TIME)
+    public Boolean getOneTime() {
+        return isOneTime;
+    }
+
+    public void setOneTime(Boolean oneTime) {
+        isOneTime = oneTime;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, schoolId, section, assignment, owner, subscribers, subjects, triggerValue, triggerWhenGreaterThan, aggregateFunction, window, measure, createdDate, expiryDate);
+        return Objects.hash(id, name, schoolId, section, assignment, owner, subscribers,
+                subjects, triggerValue, triggerWhenGreaterThan, aggregateFunction, window,
+                measure, createdDate, expiryDate, isOneTime);
     }
 
     @Override
@@ -263,6 +275,7 @@ public class Notification {
                 && Objects.equals(this.window, other.window)
                 && Objects.equals(this.measure, other.measure)
                 && Objects.equals(this.createdDate, other.createdDate)
-                && Objects.equals(this.expiryDate, other.expiryDate);
+                && Objects.equals(this.expiryDate, other.expiryDate)
+                && Objects.equals(this.isOneTime, other.isOneTime);
     }
 }
