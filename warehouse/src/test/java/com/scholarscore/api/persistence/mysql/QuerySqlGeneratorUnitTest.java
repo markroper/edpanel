@@ -24,6 +24,7 @@ import com.scholarscore.models.query.expressions.operands.DateOperand;
 import com.scholarscore.models.query.expressions.operands.DimensionOperand;
 import com.scholarscore.models.query.expressions.operands.ListNumericOperand;
 import com.scholarscore.models.query.expressions.operands.MeasureOperand;
+import com.scholarscore.models.query.expressions.operands.NullOperand;
 import com.scholarscore.models.query.expressions.operands.NumericOperand;
 import com.scholarscore.models.query.expressions.operands.StringOperand;
 import com.scholarscore.models.query.expressions.operators.BinaryOperator;
@@ -187,7 +188,7 @@ public class QuerySqlGeneratorUnitTest {
                 Expression assignmentWhereClause = new Expression(
                         new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)),
                         ComparisonOperator.IS,
-                        new NumericOperand(null));
+                        new NullOperand());
                 assignmentGradesQuery.setFilter(assignmentWhereClause);
                 return assignmentGradesQuery;
             }
@@ -199,7 +200,7 @@ public class QuerySqlGeneratorUnitTest {
                         "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " +
                         "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
                         "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk \n" +
-                        "WHERE  ( section.section_id  IS  null ) \n" +
+                        "WHERE  ( section.section_id  IS  NULL ) \n" +
                         "GROUP BY student.student_name";
             }
         };
@@ -220,7 +221,7 @@ public class QuerySqlGeneratorUnitTest {
                 Expression assignmentWhereClause = new Expression(
                         new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.ID)),
                         ComparisonOperator.IS_NOT,
-                        new NumericOperand(null));
+                        new NullOperand());
                 assignmentGradesQuery.setFilter(assignmentWhereClause);
                 return assignmentGradesQuery;
             }
@@ -232,7 +233,7 @@ public class QuerySqlGeneratorUnitTest {
                         "LEFT OUTER JOIN student_assignment ON student.student_user_fk = student_assignment.student_fk " +
                         "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
                         "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk \n" +
-                        "WHERE  ( section.section_id  IS NOT  null ) \n" +
+                        "WHERE  ( section.section_id  IS NOT  NULL ) \n" +
                         "GROUP BY student.student_name";
             }
         };
