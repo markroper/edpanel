@@ -360,6 +360,32 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
     }
 
     @Test
+    public void checkOneTimeNotifications() {
+        Object[][] inputs = createNotificationsProvider();
+        for(int i = 0; i < inputs.length; i++) {
+            notificationValidatingExecutor.create((Notification)inputs[i][1], (String)inputs[i][0]);
+        }
+
+        // evaluate all notifications
+        notificationValidatingExecutor.evaluateNotifications(school.getId());
+
+        List<TriggeredNotification> teacherTriggeredNotifications =
+                notificationValidatingExecutor.getTriggeredNotificationsForUser(teacher.getId(), "Teacher triggered notifications");
+
+        for (TriggeredNotification trigger : teacherTriggeredNotifications) {
+            notificationValidatingExecutor.disableTriggeredNotification(trigger.getNotification().getId(), trigger.getId(), teacher.getUserId(), "TEST");
+        }
+
+        // evaluate all notifications
+        notificationValidatingExecutor.evaluateNotifications(school.getId());
+
+        // check that teacher has 2 triggered notifications, because the goal shoudl not trigger again
+        List<TriggeredNotification> finalTriggeredNotifications =
+                notificationValidatingExecutor.getTriggeredNotificationsForUser(teacher.getId(), "Teacher triggered notifications");
+        Assert.assertEquals(finalTriggeredNotifications.size(), 2, "Unexpected number of teacher triggered notifications returned");
+    }
+
+    @Test
     @SuppressWarnings("unchecked")
     public void createAndEvaluateAll() {
         Object[][] inputs = createNotificationsProvider();

@@ -292,6 +292,7 @@ public class HibernateConsts {
     public static final String NOTIFICATION_EXPIRY_DATE = "notification_expiry_date";
     public static final String NOTIFICATION_TRIGGER_GREATER_THAN = "notification_trigger_greater_than";
     public static final String NOTIFICATION_ONE_TIME = "one_time";
+    public static final String NOTIFICATION_TRIGGERED = "triggered";
 
     public static final String NOTIFICATION_GROUP = "notification_group";
     public static final String NOTIFICATION_GROUP_ID = "notification_group_id";

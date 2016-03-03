@@ -121,6 +121,9 @@ public class NotificationManagerImpl implements NotificationManager {
             for(Notification n: notifications) {
                 List<TriggeredNotification> triggeredNotifications = factory.evaluate(n);
                 if(null != triggeredNotifications) {
+                    //If its not null it was triggered. Set that bad boy to be triggered
+                    n.setTriggered(true);
+                    replaceNotification(n.getId(),n);
                     //Resolve existing triggered notification for this notifiaiton and store in a map for 0(1) access
                     List<TriggeredNotification> active = notificationPersistence.selectTriggeredActive(n.getId());
                     HashMap<Long, HashMap<Long, TriggeredNotification>> activeMap = new HashMap<>();
@@ -170,10 +173,6 @@ public class NotificationManagerImpl implements NotificationManager {
                     //If they are one time we need to delete these things once they are evaluated
 
                 }
-                    if (null != n.getOneTime() && n.getOneTime()) {
-                        notificationPersistence.deleteNotification(n.getId());
-                    }
-
 
             }
         } else {
