@@ -413,6 +413,9 @@ public abstract class QuerySqlGenerator {
             case NUMERIC:
                 sqlBuilder.append(" " + ((NumericOperand)operand).getValue() + " ");
                 break;
+            case NULL:
+                sqlBuilder.append(" " + "NULL" + " ");
+                break;
             case EXPRESSION:
                 expressionToSql((Expression) operand, params, sqlBuilder, tableAlias);
                 break;
