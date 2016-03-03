@@ -266,7 +266,6 @@ public class Notification {
     @OneToOne
     @JoinColumn(name=HibernateConsts.GOAL_FK)
     @Fetch(FetchMode.JOIN)
-    @Cascade({ CascadeType.ALL })
     public Goal getGoal() {
         return goal;
     }
