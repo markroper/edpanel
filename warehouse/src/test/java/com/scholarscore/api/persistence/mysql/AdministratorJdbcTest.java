@@ -1,5 +1,6 @@
 package com.scholarscore.api.persistence.mysql;
 
+import com.scholarscore.models.user.Staff;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.*;
@@ -10,13 +11,12 @@ import static org.testng.Assert.*;
 @Test(groups = {"functional"})
 public class AdministratorJdbcTest extends BaseJdbcTest {
     public void testAdminCrud() {
-        Long adminId = adminDao.createAdministrator(admin);
-        assertNotNull(adminId,
-                "Expected non-null identifier to be returned");
-        assertTrue(adminDao.select(adminId).equals(admin),
+        Staff administrator = createAdmin();
+        Long id = administrator.getId();
+        assertEquals(adminDao.select(id), administrator,
                 "Expected administrator from database to equal created administrator");
-        adminDao.delete(adminId);
-        assertNull(adminDao.select(adminId),
+        adminDao.delete(id);
+        assertNull(adminDao.select(id),
                 "Expected admin to be removed");
     }
     

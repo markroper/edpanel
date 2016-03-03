@@ -12,10 +12,14 @@ import static org.testng.Assert.assertNull;
  */
 @Test(groups = { "functional"})
 public class GoalJdbcTest extends BaseJdbcTest {
+    
+    @Test
     public void testBehaviorGoalCrud() {
         BehaviorGoal goalToCreate = new BehaviorGoal(behaviorGoal);
         goalToCreate.setStudent(createStudent());
         goalToCreate.setStaff(createTeacher());
+        goalToCreate.setAutocomplete(true);
+        goalToCreate.setPlan("some plan");
         Long goalId = goalDao.createGoal(goalToCreate.getStudent().getId(), goalToCreate);
         assertNotNull(goalId, "Expected non-null sectionId from create of section");
 
@@ -23,10 +27,14 @@ public class GoalJdbcTest extends BaseJdbcTest {
         assertNull(goalDao.select(goalToCreate.getStudent().getId(), goalId), "Expected section to be null after delete operation");
     }
 
+    @Test
     public void testAssignmentGoalCrud() {
         AssignmentGoal goalToCreate = new AssignmentGoal(assignmentGoal);
         goalToCreate.setStudent(createStudent());
         goalToCreate.setStaff(createTeacher());
+        goalToCreate.setAutocomplete(true);
+        goalToCreate.setPlan("some other plan");
+        goalToCreate.setStudentAssignment(createStudentAssignment());
         Long goalId = goalDao.createGoal(goalToCreate.getStudent().getId(), goalToCreate);
         assertNotNull(goalId, "Expected non-null sectionId from create of section");
 
