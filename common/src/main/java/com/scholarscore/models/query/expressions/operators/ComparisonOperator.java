@@ -18,5 +18,6 @@ public enum ComparisonOperator implements IOperator, Serializable {
     LESS_THAN_OR_EQUAL,
     IN,
     LIKE,
-    IS_NULL
+    IS,
+    IS_NOT
 }
