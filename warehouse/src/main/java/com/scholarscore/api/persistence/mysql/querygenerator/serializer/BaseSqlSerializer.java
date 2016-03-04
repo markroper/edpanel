@@ -33,7 +33,6 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
         return toTableName() + " " + optClause;
     }
     
-    @Override
     public final String toTableName() { 
         Dimension tableDimension = toTableDimension();
         return DbMappings.DIMENSION_TO_TABLE_NAME.get(tableDimension);
@@ -44,7 +43,6 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
     public abstract Dimension toTableDimension();
 
     // if serializers return something other than null, it shall be joined upon
-    @Override
     public final String optionalJoinedTable() {
         Dimension tableDimension = toSecondTableDimension();
         if (tableDimension != null) {

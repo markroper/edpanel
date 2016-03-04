@@ -63,10 +63,8 @@ public class MeasureSqlSerializerTest {
             return Dimension.SCHOOL;
         }
         
-        String primaryTable = mss.toTableName(); 
-        String secondaryTable = mss.optionalJoinedTable();
-        Dimension firstTable = DbMappings.TABLE_NAME_TO_DIMENSION.get(primaryTable);
-        Dimension secondTable = DbMappings.TABLE_NAME_TO_DIMENSION.get(secondaryTable);
+        Dimension firstTable = mss.toTableDimension();
+        Dimension secondTable = mss.toSecondTableDimension();
         for (Dimension trialDimension : Dimension.values()) {
             if (firstTable != null && firstTable.equals(trialDimension)) { continue; }
             if (secondTable != null && secondTable.equals(trialDimension)) { continue; } 
