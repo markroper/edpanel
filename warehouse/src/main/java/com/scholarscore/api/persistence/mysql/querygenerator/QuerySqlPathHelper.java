@@ -11,7 +11,9 @@ import com.scholarscore.models.query.dimension.IDimension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -73,7 +75,7 @@ public class QuerySqlPathHelper {
         */
 //        List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
 
-        Set<Dimension> unmatchedDimensions = returnUnmatchedTables(orderedTables);
+        List<Dimension> unmatchedDimensions = returnUnmatchedTables(orderedTables);
         LOGGER.warn("UNMATCHED TABLES: " + unmatchedDimensions);
         if (unmatchedDimensions == null || unmatchedDimensions.size() <= 0) {
             LOGGER.warn("Bug likely -- returnUnmatchedTables should not return empty/null when queryHasCompletePath returns false");
@@ -88,7 +90,7 @@ public class QuerySqlPathHelper {
                 // okay, now we matched at least one, but there may be more
                 Set<Dimension> neededDimensions = breadthFirstSearch(firstTable, unmatchedDimensions);
 
-                // not sure about this, but seems reasonable as these tables are already included
+                // not sure about this, but seems reasonable to do here as these tables are already included in the query
                 neededDimensions.remove(firstTable);
                 for (Dimension unmatchedDimension : unmatchedDimensions) {
                     neededDimensions.remove(unmatchedDimension);
@@ -99,7 +101,7 @@ public class QuerySqlPathHelper {
                     q.addJoinTable(neededDimension);
                 }
                 
-                Set<Dimension> unmatchedDimensionsAfterAdding = returnUnmatchedTables(buildExtendedTablesFromQuery(q));
+                List<Dimension> unmatchedDimensionsAfterAdding = returnUnmatchedTables(buildExtendedTablesFromQuery(q));
                 if (unmatchedDimensionsAfterAdding == null || unmatchedDimensionsAfterAdding.size() == 0) {
                     // we're done!
                     return;
@@ -241,22 +243,24 @@ public class QuerySqlPathHelper {
 
     // doesn't actually tell us a path, but rather if a given list of dimensions can be joined together w/o additional tables
     private static boolean hasCompleteJoinPath(List<Dimension> orderedTables) {
-        Set<Dimension> unmatchedTables = returnUnmatchedTables(orderedTables);
+        Collection<Dimension> unmatchedTables = returnUnmatchedTables(orderedTables);
         return unmatchedTables == null;
     }
     
     // given a set of tables, return any tables that do not form a connected graph (starting from the first table)
-    private static Set<Dimension> returnUnmatchedTables(List<Dimension> orderedTables) {
+    private static List<Dimension> returnUnmatchedTables(List<Dimension> orderedTables) {
         if (orderedTables.size() <= 1) { return null; }
 
-        Set<Node> unmatchedTables = new HashSet<>();
+        List<Node> unmatchedTables = new ArrayList<>();
         for (Dimension dimension : orderedTables) {
             unmatchedTables.add(allDimensionsGraph.get(dimension));
         }
 
         // take the first table and scan its neighbors, which will then lead to all connected tables being scanned.
 //        HashMap<Node, Integer> tableGraph = new HashMap<>();
+        // this is the problem -- we are not sorting them consistently so the firstNode here is different.
         Node firstNode = unmatchedTables.iterator().next();
+        LOGGER.warn("FirstNode: " + firstNode.dimension);
         Set<Node> neighborNodes = findImmediateNeighbors(firstNode);
         unmatchedTables.remove(firstNode);
 
@@ -282,22 +286,11 @@ public class QuerySqlPathHelper {
 
         // okay, now all the tables are matched or they *will never* be matched.
         // if there's any unmatched tables, the join path is incomplete.
-        Set<Dimension> unmatchedDimensions = new HashSet<>();
+        List<Dimension> unmatchedDimensions = new ArrayList<>();
         if (unmatchedTables.size() > 0) {
-            StringBuilder unmatchedTableWarning = new StringBuilder();
-//            unmatchedTableWarning.append("Unmatched Table found! ");
-//            unmatchedTableWarning.append("ALL TABLES: ( ");
-            for (Dimension table : orderedTables) {
-                if (table != null) {
-//                    unmatchedTableWarning.append(table.name() + " ");
-                }
-            }
-//            unmatchedTableWarning.append(") started from " + firstNode.dimension + ", ");
             for (Node unmatchedTable : unmatchedTables) {
-//                unmatchedTableWarning.append("(UNMATCHED TABLE: " + unmatchedTable.dimension + ") ");
                 unmatchedDimensions.add(unmatchedTable.dimension);
             }
-//            LOGGER.warn(unmatchedTableWarning.toString());
             if (unmatchedDimensions.size() == 0) { return null; }
             return unmatchedDimensions;
         }
@@ -320,7 +313,7 @@ public class QuerySqlPathHelper {
     }
     
     private static HashMap<Node, Set<Node>> buildReverseNodeMapping() { 
-        HashMap<Node, Set<Node>> toReturn = new HashMap<Node, Set<Node>>();
+        HashMap<Node, Set<Node>> toReturn = new HashMap<>();
         for (Node node : allDimensionsGraph.values()) {
             Set<Node> pointingAtThisNode = getAllNodesPointingAt(node);
             toReturn.put(node, pointingAtThisNode);
@@ -329,12 +322,10 @@ public class QuerySqlPathHelper {
     }
     
     // find the shortest path from specified rootDimension to ANY of the specified target dimensions
-    private static Set<Dimension> breadthFirstSearch(Dimension rootDimension, Set<Dimension> targetDimensions) {
-
-        
-        BreadthFirstSearcher bfs = new BreadthFirstSearcher(rootDimension, targetDimensions);
-        Set<Dimension> results = bfs.search();
-        return results;
+    private static Set<Dimension> breadthFirstSearch(Dimension rootDimension, List<Dimension> targetDimensions) {
+        // it's okay to 'lose' the order of the list here -- the order of target dimensions is meaningless at this point
+        BreadthFirstSearcher bfs = new BreadthFirstSearcher(rootDimension, new HashSet<>(targetDimensions));
+        return bfs.search();
     }
 
     private static class BreadthFirstSearcher {
