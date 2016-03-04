@@ -13,5 +13,6 @@ public enum OperandType implements Serializable {
     PLACEHOLDER_DATE,
     PLACEHOLDER_NUMERIC,
     PLACEHOLDER_STRING,
-    PLACEHOLDER_LIST_NUMERIC;
+    PLACEHOLDER_LIST_NUMERIC,
+    NULL;
 }

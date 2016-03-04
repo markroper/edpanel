@@ -79,6 +79,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String UNVERIFIED_USER_GET = ApiConsts.API_V1_ENDPOINT + "/users/unverified";
     private static final String CONFIRM_EMAIL_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/users/*/validation/email/*";
     private static final String CONFIRM_PHONE_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/users/*/validation/phone/*";
+    private static final String GOALS_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/students/*/goals";
+    private static final String PATCH_GOALS_ENDPOINT = GOALS_ENDPOINT + "/*";
     private static final String INITIATE_CHANGE_PASSWORD_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/users/requestPasswordReset/*";
     private static final String CHANGE_PASSWORD_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/users/passwordReset/*";
     private static final String DISMISS_NOTIFICATIONS_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/notifications/*/triggerednotifications/*/users/*";
@@ -241,6 +243,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             antMatchers(HttpMethod.POST, SURVEY_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.PUT, SURVEY_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.POST, SURVEY_RESPONSES).hasAnyRole(AUTHENTICATED).
+            antMatchers(HttpMethod.POST, GOALS_ENDPOINT).hasAnyRole(AUTHENTICATED).
+            antMatchers(HttpMethod.PATCH, PATCH_GOALS_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.PUT, SURVEY_RESPONSES).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.POST, MESSAGE_THREADS_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.DELETE, MESSAGE_THREADS_ENDPOINT + "/*").hasAnyRole(AUTHENTICATED).
