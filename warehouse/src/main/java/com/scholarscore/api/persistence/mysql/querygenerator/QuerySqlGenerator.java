@@ -359,6 +359,7 @@ public abstract class QuerySqlGenerator {
      */
     public static String resolvePrimaryKeyField(String tableName) {
         String primaryKeyFieldReference = tableName + ID_SUFFIX;
+        
         if(tableName.equals(HibernateConsts.STUDENT_TABLE) ||
                 tableName.equals(HibernateConsts.STAFF_TABLE)) {
             primaryKeyFieldReference = tableName + "_user_fk";

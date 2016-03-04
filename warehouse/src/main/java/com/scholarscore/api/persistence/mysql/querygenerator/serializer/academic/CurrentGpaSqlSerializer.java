@@ -49,4 +49,8 @@ public class CurrentGpaSqlSerializer extends BaseSqlSerializer implements Measur
     public String optionalJoinedTable() {
         return HibernateConsts.GPA_TABLE;
     }
+
+    protected static String tableNameDotPrimaryKey(String tableName) {
+        return tableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(tableName);
+    }
 }
