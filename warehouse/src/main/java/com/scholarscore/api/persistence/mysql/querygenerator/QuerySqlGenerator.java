@@ -292,7 +292,7 @@ public abstract class QuerySqlGenerator {
                     if (Dimension.buildDimension(currTable).getParentDimensions() != null &&
                             !Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
                         if (measureIsCompatible(am, joinDim)){
-                            currentTableName = mss.toTableName();
+                            currentTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(mss.toTableDimension());
                         } else {
                             currentTableName = getDimensionJoinOrThrowException(orderedTables.subList(0, i-1), currTable, joinDim);
                         }

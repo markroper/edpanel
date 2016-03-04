@@ -122,8 +122,8 @@ public class QuerySqlPathHelper {
         if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
             AggregateMeasure aggregateMeasure = q.getAggregateMeasures().get(0);
             MeasureSqlSerializer serializer = MeasureSqlSerializerFactory.get(aggregateMeasure.getMeasure());
-            Dimension table = DbMappings.TABLE_NAME_TO_DIMENSION.get(serializer.toTableName());
-            Dimension optionalTable = DbMappings.TABLE_NAME_TO_DIMENSION.get(serializer.optionalJoinedTable());
+            Dimension table = serializer.toTableDimension();
+            Dimension optionalTable = serializer.toSecondTableDimension();
 
             orderedTables.add(table);
             if (optionalTable != null) {
@@ -132,7 +132,7 @@ public class QuerySqlPathHelper {
         }
 
         // replace any pseudo dimensions with their corresponding actual dimensions
-        // (do this by converting from dimensions to tablenames and then back to dimensions again)
+        // (a bit hacky -- we can achieve this by converting from dimensions to tablenames and then back to dimensions again)
         for (int i = 0 ; i < orderedTables.size() ; i++) {
             Dimension originalDimension = orderedTables.get(i);
             Dimension resolvedDimension = DbMappings.TABLE_NAME_TO_DIMENSION.get(DbMappings.DIMENSION_TO_TABLE_NAME.get(originalDimension));
