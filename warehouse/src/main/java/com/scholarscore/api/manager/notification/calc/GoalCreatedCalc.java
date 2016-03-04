@@ -14,7 +14,7 @@ import java.util.List;
  * Created by cwallace on 3/1/16.
  */
 public class GoalCreatedCalc implements NotificationCalculator {
-    private final static Logger LOGGER = LoggerFactory.getLogger(GpaCalc.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(GoalCreatedCalc.class);
 
     @Override
     public List<TriggeredNotification> calculate(

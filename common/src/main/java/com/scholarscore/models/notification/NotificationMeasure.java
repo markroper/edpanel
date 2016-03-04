@@ -20,7 +20,7 @@ public enum NotificationMeasure {
     SECTION_ABSENCE,
     SECTION_TARDY,
     GOAL_CREATED,
-    GOAL_APPROVED
-    //GOAL_MET
-    //GOAL_UNMET
+    GOAL_APPROVED,
+    GOAL_MET,
+    GOAL_UNMET
 }
