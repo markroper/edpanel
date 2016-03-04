@@ -13,12 +13,11 @@ import com.scholarscore.models.query.Dimension;
 public class GpaSqlSerializer extends BaseSqlSerializer implements MeasureSqlSerializer {
     @Override
     public String toSelectInner() {
-        return HibernateConsts.GPA_TABLE +
-                "." + HibernateConsts.GPA_SCORE;
+        return toTableName() + "." + HibernateConsts.GPA_SCORE;
     }
-
+    
     @Override
-    public String toTableName() {
-        return HibernateConsts.GPA_TABLE;
+    public Dimension toTableDimension() {
+        return Dimension.GPA;
     }
 }

@@ -36,54 +36,18 @@ public class QuerySqlPathHelper {
 
     // this is a reverse mapping that allows us to quickly figure out what nodes are pointing AT a given node
     private static HashMap<Node, Set<Node>> reverseNeighborMapping = buildReverseNodeMapping();
-
-    // This layer of abstraction is required as long as we have "user-visible dimensions" 
-    // (of which *more* than one can be mapped to a specific table) that are different 
-    // from our actual tables (e.g. teacher and admin are dimensions, but don't have corresponding tables)
-    private static final Map<Dimension, Dimension> PSEUDO_DIMENSION_CONVERSION_TABLE =
-            new HashMap<Dimension, Dimension>() {
-                {
-                    put(Dimension.TEACHER, Dimension.STAFF);
-                    put(Dimension.ADMINISTRATOR, Dimension.STAFF);
-                }
-            };
-
+    
     public static void calculateAndAddAdditionalNeededDimensions(Query q) throws SqlGenerationException {
         if (queryHasCompletePath(q)) { return; }
         LOGGER.debug("Determined that additional dimensions are needed...");
 
         List<Dimension> orderedTables = buildExtendedTablesFromQuery(q);
-        /*
-        //Get the dimensions in the correct order for joining:
-        HashSet<Dimension> selectedDims = new HashSet<>();
-        if(null != q.getFields()) {
-            for (DimensionField f : q.getFields()) {
-                selectedDims.add(f.getDimension());
-            }
-        }
-        // if any hints are included, use them 
-        if (null != q.getJoinTables()) {
-            for (Dimension d : q.getJoinTables()) {
-                selectedDims.add(d);
-            }
-        }
-        //Add any dimensions to join that may be referenced only in the WHERE clause
-        Set<Dimension> filterDims = q.resolveFilterDimensions();
-        if(null != filterDims) {
-            selectedDims.addAll(filterDims);
-        }
-        */
-//        List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
-
         List<Dimension> unmatchedDimensions = returnUnmatchedTables(orderedTables);
-        LOGGER.warn("UNMATCHED TABLES: " + unmatchedDimensions);
-        if (unmatchedDimensions == null || unmatchedDimensions.size() <= 0) {
-            LOGGER.warn("Bug likely -- returnUnmatchedTables should not return empty/null when queryHasCompletePath returns false");
-        }
+        LOGGER.debug("UNMATCHED TABLES: " + unmatchedDimensions);
         
-        if (orderedTables.size() > 0) {
+        if (orderedTables.size() > 0 && (unmatchedDimensions != null && unmatchedDimensions.size() > 0)) {
             Dimension firstTable = orderedTables.get(0);
-            LOGGER.warn("FIRST TABLE: " + firstTable);
+            LOGGER.trace("FIRST TABLE: " + firstTable);
             LOGGER.debug("OK, now we have table " + firstTable + " and we're trying to find links to...");
             for (Dimension dim : unmatchedDimensions) {
                 LOGGER.debug("... Unmatched dimension " + dim);
@@ -118,7 +82,13 @@ public class QuerySqlPathHelper {
                 }
             }
         } else {
-            throw new SqlGenerationException("Unexpected situation: attempting to calculateAndAddAdditionalNeededDimensions with no tables.");
+            String exceptionMsg;
+            if (unmatchedDimensions == null || unmatchedDimensions.size() <= 0) {
+                exceptionMsg = "Bug likely -- returnUnmatchedTables should not return empty/null when queryHasCompletePath returns false";
+            } else {
+                exceptionMsg = "Unexpected situation: attempting to calculateAndAddAdditionalNeededDimensions with no tables.";
+            }
+            throw new SqlGenerationException(exceptionMsg);
         }
     }
     
@@ -148,8 +118,7 @@ public class QuerySqlPathHelper {
             selectedDims.addAll(filterDims);
         }
         List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
-
-        // TODO Jordan: add these agg measure tables in BEFORE doing a resolveOreredDimensions?
+        
         if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
             AggregateMeasure aggregateMeasure = q.getAggregateMeasures().get(0);
             MeasureSqlSerializer serializer = MeasureSqlSerializerFactory.get(aggregateMeasure.getMeasure());
@@ -163,13 +132,14 @@ public class QuerySqlPathHelper {
         }
 
         // replace any pseudo dimensions with their corresponding actual dimensions
+        // (do this by converting from dimensions to tablenames and then back to dimensions again)
         for (int i = 0 ; i < orderedTables.size() ; i++) {
-            Dimension currentDimension = orderedTables.get(i);
-            Dimension actualDimension = PSEUDO_DIMENSION_CONVERSION_TABLE.get(currentDimension);
-            if (actualDimension != null) {
+            Dimension originalDimension = orderedTables.get(i);
+            Dimension resolvedDimension = DbMappings.TABLE_NAME_TO_DIMENSION.get(DbMappings.DIMENSION_TO_TABLE_NAME.get(originalDimension));
+            if (resolvedDimension != originalDimension) {
                 // oops, we're using a pseudo dimension and need to convert it
                 orderedTables.remove(i);
-                orderedTables.add(i, actualDimension);
+                orderedTables.add(i, resolvedDimension);
             }
         }
         return orderedTables;
@@ -178,7 +148,7 @@ public class QuerySqlPathHelper {
     private static class Node {
         Edge[] edges;
         Dimension dimension;
-
+        
         @Override
         public String toString() {
             return "Node (d:" + dimension +") (edges: [" + edges.length + "])";

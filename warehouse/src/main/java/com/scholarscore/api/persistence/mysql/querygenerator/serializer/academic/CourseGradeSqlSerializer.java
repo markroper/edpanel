@@ -10,18 +10,16 @@ import com.scholarscore.models.query.Dimension;
 public class CourseGradeSqlSerializer extends BaseSqlSerializer implements MeasureSqlSerializer {
     @Override
     public String toSelectInner() {
-        return HibernateConsts.SECTION_GRADE_TABLE + "." + HibernateConsts.STUDENT_SECTION_GRADE_GRADE;
+        return optionalJoinedTable() + "." + HibernateConsts.STUDENT_SECTION_GRADE_GRADE;
     }
 
     @Override
-    public String toTableName() {
-        return HibernateConsts.STUDENT_SECTION_GRADE_TABLE;
+    public Dimension toTableDimension() {
+        return Dimension.STUDENT_SECTION_GRADE;
     }
 
     @Override
-    public String optionalJoinedTable() {
-        return HibernateConsts.SECTION_GRADE_TABLE;
+    public Dimension toSecondTableDimension() {
+        return Dimension.SECTION_GRADE;
     }
-    
-    
 }

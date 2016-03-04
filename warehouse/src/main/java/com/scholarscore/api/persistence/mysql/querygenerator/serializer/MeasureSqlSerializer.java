@@ -66,6 +66,8 @@ public interface MeasureSqlSerializer {
     String toFromClause();
     
     String toTableName();
+    
+    Dimension toTableDimension();
 
     default String optionalJoinedTable() { return null; }
     

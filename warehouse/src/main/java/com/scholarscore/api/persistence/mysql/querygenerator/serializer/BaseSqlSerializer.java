@@ -4,6 +4,8 @@ import com.scholarscore.api.persistence.DbMappings;
 import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.models.query.Dimension;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * User: jordan
  * Date: 2/17/16
@@ -11,8 +13,6 @@ import com.scholarscore.models.query.Dimension;
  */
 public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
     
-    // TODO Jordan: it may be more error-proof if all of these methods only accept dimensions
-
     @Override
     // Note: non-standard relationships (not using conventional _id / _fk) will BREAK this method. override if needed
     public String toJoinClause(Dimension dimToJoinUpon) {
@@ -23,8 +23,8 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
     private String buildJoinClause(Dimension dimTableName) {
         String stringTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimTableName);
         return LEFT_OUTER_JOIN + toTableName() + ON +
-                dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(stringTableName) + EQUALS +
-                toTableName() + DOT + dimTableName + FK_COL_SUFFIX + " ";
+                stringTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(stringTableName) + EQUALS +
+                toTableName() + DOT + stringTableName + FK_COL_SUFFIX + " ";
     }
     
     @Override
@@ -32,9 +32,29 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
         String optClause = optionalJoinOrEmptyString();
         return toTableName() + " " + optClause;
     }
+    
+    @Override
+    public final String toTableName() { 
+        Dimension tableDimension = toTableDimension();
+        return DbMappings.DIMENSION_TO_TABLE_NAME.get(tableDimension);
+    }
+    
+    @Override
+    @NotNull
+    public abstract Dimension toTableDimension();
 
     // if serializers return something other than null, it shall be joined upon
-    public String optionalJoinedTable() { return null; } 
+    @Override
+    public final String optionalJoinedTable() {
+        Dimension tableDimension = toSecondTableDimension();
+        if (tableDimension != null) {
+            return DbMappings.DIMENSION_TO_TABLE_NAME.get(tableDimension);
+        } else return null;
+    } 
+    
+    // some serializers utilize two tables/dimensions to do their business -- override this if a second table should be used 
+    // when calculacating joing paths
+    public Dimension toSecondTableDimension() { return null; }
     
     /* 
     * Generic method to join to a table
@@ -63,7 +83,7 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
     * This method should be avoided if possible and more straightforward serializers should not need to use it.
     * Some of the more complicated existing serializers require this method (for the time being)
     * */
-    protected String joinTable(String tableToJoinTo, String tableToJoinFrom, String joinToColName, String joinFromColName) {
+    protected static String joinTable(String tableToJoinTo, String tableToJoinFrom, String joinToColName, String joinFromColName) {
         return LEFT_OUTER_JOIN + tableToJoinTo + ON +
                 tableToJoinFrom + DOT + joinFromColName +
                 EQUALS + tableToJoinTo + DOT + joinToColName + " ";
