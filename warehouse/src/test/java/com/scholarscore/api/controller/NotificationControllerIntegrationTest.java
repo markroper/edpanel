@@ -12,6 +12,7 @@ import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.AttendanceType;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.goal.Goal;
+import com.scholarscore.models.goal.GoalProgress;
 import com.scholarscore.models.goal.OpenGoal;
 import com.scholarscore.models.gpa.AddedValueGpa;
 import com.scholarscore.models.grade.SectionGrade;
@@ -59,7 +60,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
     private Goal goal;
 
     private static final double STUDENT_3_ABSENCE_THRESHOLD = 4;
-    private static final long STUDENT_2_EXPECTED = 2;
+    private static final long STUDENT_2_EXPECTED = 3;
     private static final long TEACHER_EXPECTED = 3;
     
     @BeforeClass
@@ -220,7 +221,10 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         goal.setDesiredValue(-1D);
         goal.setName("THe goal to end all goals");
         goal.setApproved(LocalDate.now());
+        goal.setGoalProgress(GoalProgress.MET);
         goal = goalValidatingExecutor.create(student1.getId(),goal,"Create an unapprovedGoal");
+
+
 
     }
 
@@ -368,6 +372,36 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         goalApproved.setSubscribers(stud2);
         goalApproved.setOneTime(true);
 
+        Notification goalMet = new Notification();
+        goalMet.setGoal(goal);
+        goalMet.setCreatedDate(LocalDate.now());
+        goalMet.setTriggerWhenGreaterThan(true);
+        goalMet.setExpiryDate(LocalDate.now());
+        goalMet.setMeasure(NotificationMeasure.GOAL_MET);
+        goalMet.setName("Goal Met");
+        goalMet.setOwner(student2);
+        goalMet.setTriggerValue(-1D);
+        goalMet.setSubjects(stud2);
+        goalMet.setSchoolId(school.getId());
+        SingleStudent altStud2 = new SingleStudent();
+        altStud2.setStudent(student2);
+        goalMet.setSubscribers(altStud2);
+        goalMet.setOneTime(true);
+
+        Notification goalUnMet = new Notification();
+        goalUnMet.setGoal(goal);
+        goalUnMet.setCreatedDate(LocalDate.now());
+        goalUnMet.setTriggerWhenGreaterThan(true);
+        goalUnMet.setExpiryDate(LocalDate.now());
+        goalUnMet.setMeasure(NotificationMeasure.GOAL_UNMET);
+        goalUnMet.setName("Goal Met");
+        goalUnMet.setOwner(student2);
+        goalUnMet.setTriggerValue(-1D);
+        goalUnMet.setSubjects(stud2);
+        goalUnMet.setSchoolId(school.getId());
+        goalUnMet.setSubscribers(altStud2);
+        goalUnMet.setOneTime(true);
+
 
 
         return new Object[][] {
@@ -378,7 +412,9 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
                 { "Notify 5 tardies for a single section within a year", sectionTardy },
                 { "Notify 4 school absences for a single student within a year", dailyAbsence },
                 { "Notify teacher when a  student creates a goal", goalCreated},
-                { "Notify student when a teacher approves a goal", goalApproved}
+                { "Notify student when a teacher approves a goal", goalApproved},
+                { "Notify a student when a student has met a goal", goalMet},
+                { "Notify a student when a student did not meet a goal", goalUnMet}
         };
     }
 
@@ -447,7 +483,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         // check that teacher has 3 triggered notifications
         List<TriggeredNotification> teacherTriggeredNotifications =
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(teacher.getId(), "Teacher triggered notifications");
-        Assert.assertEquals(teacherTriggeredNotifications.size(), TEACHER_EXPECTED, "Unexpected number of teacher triggered notifications returned");
+        Assert.assertEquals(teacherTriggeredNotifications.size(), TEACHER_EXPECTED - 1, "Unexpected number of teacher triggered notifications returned");
 
         // check that student 2 has 2 triggered notification
         List<TriggeredNotification> student2TriggeredNotifications =
@@ -466,11 +502,13 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         student2TriggeredNotifications =
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(student2.getId(), "Student 2 triggered notifications");
         Assert.assertEquals(student2TriggeredNotifications.size(), STUDENT_2_EXPECTED - 1, "Unexpected number of Student 2 triggered notifications after acknowledgement");
-        
+
+
         // check that student 3 has 0 triggered notifications 
         List<TriggeredNotification> student3TriggeredNotifications =
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(student3.getId(), "Student 3 triggered notifications");
-        
+
+
         // if there are the same number or more absences than the trigger threshold, expect the alert to be triggered
         int triggeredNotifications = (AttendanceStatus.values().length >= STUDENT_3_ABSENCE_THRESHOLD) ? 1 : 0;
         Assert.assertEquals(student3TriggeredNotifications.size(), triggeredNotifications, "Unexpected number of Student 3 triggered notifications returned");
