@@ -3,6 +3,7 @@ package com.scholarscore.api.persistence.mysql;
 import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.api.persistence.mysql.querygenerator.SqlGenerationException;
 import com.scholarscore.api.persistence.mysql.querygenerator.SqlWithParameters;
+import com.scholarscore.models.goal.GoalProgress;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.AggregateMeasure;
 import com.scholarscore.models.query.Dimension;
@@ -15,6 +16,7 @@ import com.scholarscore.models.query.SubqueryExpression;
 import com.scholarscore.models.query.bucket.AggregationBucket;
 import com.scholarscore.models.query.bucket.NumericBucket;
 import com.scholarscore.models.query.dimension.CourseDimension;
+import com.scholarscore.models.query.dimension.GoalDimension;
 import com.scholarscore.models.query.dimension.SchoolDimension;
 import com.scholarscore.models.query.dimension.SectionDimension;
 import com.scholarscore.models.query.dimension.StudentDimension;
@@ -139,6 +141,7 @@ public class QuerySqlGeneratorUnitTest {
                         "GROUP BY student.birth_date, student.federal_ethnicity, school.school_name";
             }
         };
+
         TestQuery assignmentGradesTestQuery = new TestQuery() {
             @Override
             public String queryName() {
@@ -956,6 +959,44 @@ public class QuerySqlGeneratorUnitTest {
                         " GROUP BY subq_1.sum_referral_agg";
             }
         };
+
+        TestQuery goalTest = new TestQuery() {
+
+            @Override
+            public String queryName() {
+                return "Count of achieved goals bucketed by week";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query goalQuery = new Query();
+                AggregateMeasure goalMeasure = new AggregateMeasure(Measure.GOAL, AggregateFunction.COUNT);
+                List<AggregateMeasure> goals = new ArrayList<>();
+                goals.add(goalMeasure);
+                goalQuery.setAggregateMeasures(goals);
+                goalQuery.addField(new DimensionField(Dimension.GOAL, GoalDimension.TYPE));
+                DimensionField df = new DimensionField(Dimension.GOAL, GoalDimension.START_DATE);
+                df.setBucketAggregation(AggregateFunction.YEARWEEK);
+                goalQuery.addField(df);
+                Expression ex = new Expression(new DimensionOperand(
+                        new DimensionField(Dimension.GOAL, GoalDimension.PROGRESS)),
+                        ComparisonOperator.EQUAL,
+                        new StringOperand(GoalProgress.UNMET.name()));
+                goalQuery.setFilter(ex);
+                return goalQuery;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT goal.goal_type, YEARWEEK(goal.start_date) as start_date_YEARWEEK, COUNT(*) as count_goal_agg \n" +
+                        "FROM goal \n" +
+                        "WHERE  ( goal.progress  =  :mTdBTBVgGZSeVuvPixrNzDUlnNAqOBTq ) \n" +
+                        "GROUP BY goal.goal_type, YEARWEEK(goal.start_date)";
+            }
+
+            @Override
+            public Integer levDistance() { return 32; }
+        };
         
         return new Object[][] {
                 { courseGradeTestQuery },
@@ -975,15 +1016,16 @@ public class QuerySqlGeneratorUnitTest {
                 { demeritWithStaffTestQuery },
                 { demeritWithoutDimensionTestQuery },
                 { detentionWithoutDimensionTestQuery },
-                { schoolNameTestQuery }, 
+                { schoolNameTestQuery },
                 { gpaBucketTestQuery },
                 { currGpaTestQuery },
                 { courseGradesBucketedTestQuery },
                 { requiresMultipleJoinsTestQuery },
                 { queryIncludingMultipleTablesUsingHints },
                 { referralTestQuery },
-                {assignmentGradesIsNullTestQuery},
-                {assignmentGradesIsNotNullTestQuery}
+                { assignmentGradesIsNullTestQuery },
+                { assignmentGradesIsNotNullTestQuery },
+                { goalTest }
         };
     }
     
