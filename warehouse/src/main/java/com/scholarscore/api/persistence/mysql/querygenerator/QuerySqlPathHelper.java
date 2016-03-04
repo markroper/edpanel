@@ -28,10 +28,13 @@ public class QuerySqlPathHelper {
 
     final static Logger LOGGER = LoggerFactory.getLogger(QuerySqlPathHelper.class);
     
-    // -- TODO ideas:
-    // -- relationship between two tables: tell the FK direction (and thus column names?) (this could simplify SQL serializers)
-    // 
-    
+    // this holds all Nodes, which wrap around dimensions and manage the graph connections 
+    // this graph contains ALL connected tables that exist, not just the ones relevant to this query
+    private static final HashMap<Dimension, Node> allDimensionsGraph = buildGraph(Arrays.asList(Dimension.values()));
+
+    // this is a reverse mapping that allows us to quickly figure out what nodes are pointing AT a given node
+    private static HashMap<Node, Set<Node>> reverseNeighborMapping = buildReverseNodeMapping();
+
     // This layer of abstraction is required as long as we have "user-visible dimensions" 
     // (of which *more* than one can be mapped to a specific table) that are different 
     // from our actual tables (e.g. teacher and admin are dimensions, but don't have corresponding tables)
@@ -43,10 +46,12 @@ public class QuerySqlPathHelper {
                 }
             };
 
-    public static void calculateAndAddAdditionalNeededDimensions(Query q) {
-        if (queryHasCompletePath(q)) { return; /*new HashSet<>();*/ }
+    public static void calculateAndAddAdditionalNeededDimensions(Query q) throws SqlGenerationException {
+        if (queryHasCompletePath(q)) { return; }
         LOGGER.debug("Determined that additional dimensions are needed...");
-        
+
+        List<Dimension> orderedTables = buildExtendedTablesFromQuery(q);
+        /*
         //Get the dimensions in the correct order for joining:
         HashSet<Dimension> selectedDims = new HashSet<>();
         if(null != q.getFields()) {
@@ -65,16 +70,18 @@ public class QuerySqlPathHelper {
         if(null != filterDims) {
             selectedDims.addAll(filterDims);
         }
-        List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
+        */
+//        List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
 
-        Set<Dimension> unmatchedDimensions = returnUnmatchedTables(buildExtendedTablesFromQuery(q));
+        Set<Dimension> unmatchedDimensions = returnUnmatchedTables(orderedTables);
+        LOGGER.warn("UNMATCHED TABLES: " + unmatchedDimensions);
         if (unmatchedDimensions == null || unmatchedDimensions.size() <= 0) {
             LOGGER.warn("Bug likely -- returnUnmatchedTables should not return empty/null when queryHasCompletePath returns false");
-            /*return new HashSet<>();*/
         }
         
         if (orderedTables.size() > 0) {
             Dimension firstTable = orderedTables.get(0);
+            LOGGER.warn("FIRST TABLE: " + firstTable);
             LOGGER.debug("OK, now we have table " + firstTable + " and we're trying to find links to...");
             for (Dimension dim : unmatchedDimensions) {
                 LOGGER.debug("... Unmatched dimension " + dim);
@@ -86,8 +93,6 @@ public class QuerySqlPathHelper {
                 for (Dimension unmatchedDimension : unmatchedDimensions) {
                     neededDimensions.remove(unmatchedDimension);
                 }
-
-                // TODO Jordan: Below here begins modifying the query which may not be expected. hrm. change before final version?
 
                 // add any remaining found tables as hints
                 for (Dimension neededDimension: neededDimensions) {
@@ -101,7 +106,9 @@ public class QuerySqlPathHelper {
                 } else {
                     // after we added our new hint tables, see if there are fewer unmatched dimensions. if not, give up.
                     if (unmatchedDimensionsAfterAdding.size() >= unmatchedDimensions.size()) {
-                        throw new RuntimeException("Unable to find join path through tables!");
+                        LOGGER.warn("UNABLE TO FIND JOIN PATH! Unmatched Dimensions after adding: " + unmatchedDimensionsAfterAdding
+                        + "\n" + "Unmatched Before: " + unmatchedDimensions);
+                        throw new SqlGenerationException("Unable to find join path through tables!");
                     } else {
                         // okay, we're making progress. keep going.
                         calculateAndAddAdditionalNeededDimensions(q);
@@ -109,7 +116,7 @@ public class QuerySqlPathHelper {
                 }
             }
         } else {
-            LOGGER.warn("Unexpected situation: attempting to calculateAndAddAdditionalNeededDimensions but no tables.");
+            throw new SqlGenerationException("Unexpected situation: attempting to calculateAndAddAdditionalNeededDimensions with no tables.");
         }
     }
     
@@ -140,6 +147,7 @@ public class QuerySqlPathHelper {
         }
         List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
 
+        // TODO Jordan: add these agg measure tables in BEFORE doing a resolveOreredDimensions?
         if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
             AggregateMeasure aggregateMeasure = q.getAggregateMeasures().get(0);
             MeasureSqlSerializer serializer = MeasureSqlSerializerFactory.get(aggregateMeasure.getMeasure());
@@ -180,7 +188,6 @@ public class QuerySqlPathHelper {
         Node pointedAt;
     }
 
-    // should probably take all dimensions and build the full graph once?
     private static HashMap<Dimension, Node> buildGraph(List<Dimension> dimensions) {
         HashMap<Dimension, Node> nodesSoFar = new HashMap<>();
         // first just build the nodes
@@ -211,23 +218,24 @@ public class QuerySqlPathHelper {
         return nodesSoFar;
     }
 
-    // this holds all Nodes, which wrap around dimensions and manage the graph connections 
-    // this graph contains ALL connected tables that exist, not just the ones relevant to this query
-    private static final HashMap<Dimension, Node> allDimensionsGraph = buildGraph(Arrays.asList(Dimension.values()));
-    
-    // this is a reverse mapping that allows us to quickly figure out what nodes are pointing AT a given node
-    private static HashMap<Node, Set<Node>> reverseNeighborMapping = buildReverseNodeMapping();
-
-    // right now this only checks the neighbors a node points to and all nodes pointing at a node
+    // return all direct (1-hop) neighbor nodes to a provided node. Includes ALL neighbors - pointed at, and pointed from
     private static Set<Node> findImmediateNeighbors(Node dimensionNode) {
+        return findImmediateNeighbors(dimensionNode, true);
+    }
+
+    // return all direct (1-hop) neighbor nodes to a provided node
+    // pass in bidirectional=false to receive only the nodes pointed AT from this node
+    private static Set<Node> findImmediateNeighbors(Node dimensionNode, boolean bidirectional) {
         if (dimensionNode == null) { return new HashSet<>(); }
         Set<Node> allNodes = new HashSet<>();
         // all nodes this node points at
         for (Edge edge : dimensionNode.edges) {
             allNodes.add(edge.pointedAt);
         }
-        // all nodes that are pointing at this node
-        allNodes.addAll(reverseNeighborMapping.get(dimensionNode));
+        if (bidirectional) {
+            // all nodes that are pointing at this node
+            allNodes.addAll(reverseNeighborMapping.get(dimensionNode));
+        }
         return allNodes;
     }
 
@@ -237,6 +245,7 @@ public class QuerySqlPathHelper {
         return unmatchedTables == null;
     }
     
+    // given a set of tables, return any tables that do not form a connected graph (starting from the first table)
     private static Set<Dimension> returnUnmatchedTables(List<Dimension> orderedTables) {
         if (orderedTables.size() <= 1) { return null; }
 
@@ -251,11 +260,9 @@ public class QuerySqlPathHelper {
         Set<Node> neighborNodes = findImmediateNeighbors(firstNode);
         unmatchedTables.remove(firstNode);
 
-        // yeah, okay, a table hasn't been connected to the connected-table-graph yet...
-        // we may need to loop through this a number of times depending on the order of the tables.
-        // as long as any new table is matched, loop again.
+        // at the start, only the initial table (the first one in the provided list) is considered 'connected'.
+        // go through the list of UNconnected tables and see if any of them connect to any of the 
         boolean tableMatchedThisRound = true;
-
         while (tableMatchedThisRound) {
             tableMatchedThisRound = false;
             // check all unmatched tables against these neighbor nodes. 
@@ -278,19 +285,19 @@ public class QuerySqlPathHelper {
         Set<Dimension> unmatchedDimensions = new HashSet<>();
         if (unmatchedTables.size() > 0) {
             StringBuilder unmatchedTableWarning = new StringBuilder();
-            unmatchedTableWarning.append("Unmatched Table found! ");
-            unmatchedTableWarning.append("ALL TABLES: ( ");
+//            unmatchedTableWarning.append("Unmatched Table found! ");
+//            unmatchedTableWarning.append("ALL TABLES: ( ");
             for (Dimension table : orderedTables) {
                 if (table != null) {
-                    unmatchedTableWarning.append(table.name() + " ");
+//                    unmatchedTableWarning.append(table.name() + " ");
                 }
             }
-            unmatchedTableWarning.append(") started from " + firstNode.dimension + ", ");
+//            unmatchedTableWarning.append(") started from " + firstNode.dimension + ", ");
             for (Node unmatchedTable : unmatchedTables) {
-                unmatchedTableWarning.append("(UNMATCHED TABLE: " + unmatchedTable.dimension + ") ");
+//                unmatchedTableWarning.append("(UNMATCHED TABLE: " + unmatchedTable.dimension + ") ");
                 unmatchedDimensions.add(unmatchedTable.dimension);
             }
-            LOGGER.warn(unmatchedTableWarning.toString());
+//            LOGGER.warn(unmatchedTableWarning.toString());
             if (unmatchedDimensions.size() == 0) { return null; }
             return unmatchedDimensions;
         }
@@ -328,46 +335,6 @@ public class QuerySqlPathHelper {
         BreadthFirstSearcher bfs = new BreadthFirstSearcher(rootDimension, targetDimensions);
         Set<Dimension> results = bfs.search();
         return results;
-        
-//        HashMap<Node, Integer> nodeDistances = new HashMap<>();
-//        HashMap<Node, Node> visitedNodes = new HashMap<>();
-//        Set<Node> willVisitNextHop = new HashSet<>();
-
-        
-        
-        
-//        allSeenNodes.add(rootNode);
-//        nextHopUnvisitedNodes.add(rootNode);
-        
-        /*
-        nodeParents.put(rootNode, null);
-        nodeDistances.put(rootNode, 0);
-//        visitedNodes.add(rootNode);
-                
-        Node currentNode = rootNode;
-        int currentDistance = 0;
-        
-        // loop through all nodes at this distance 
-        // loop through all neighbors pointed to by this node
-        for (Edge edge : rootNode.edges) {
-            Node neighbor = edge.pointedAt;
-            if (targetDimensions.contains(neighbor.dimension)) {
-                // yes! we found a connection.
-                // return this chain of parents, it's the dimensions to return.
-                if (nodeDistances.get(currentNode) > 0) {
-                    Node parentNode = nodeParents.get(currentNode);
-                }
-            } else {
-                
-            }
-//            if (!visitedNodes.contains(neighbor)) {
-//                willVisitNextHop.add(neighbor);
-//            }
-        }   
-        */
-        
-        // also (if setting enabled) loop through all neighbors one direction away, POINTING at this node
-//        if (!bidirectionalSearch) { }
     }
 
     private static class BreadthFirstSearcher {

@@ -1024,6 +1024,7 @@ public class QuerySqlGeneratorUnitTest {
         };
         
         Object[][] allTests = new Object[][] {
+                /*
                 { courseGradeTestQuery },
                 { assignmentGradesTestQuery },
                 { assignmentGradesNoDimensionsTestQuery },
@@ -1052,6 +1053,8 @@ public class QuerySqlGeneratorUnitTest {
                 { currGpaBySchoolTestQuery },
                 {assignmentGradesIsNullTestQuery},
                 {assignmentGradesIsNotNullTestQuery}
+                */
+                { queryIncludingMultipleTablesPathFinder }
         };
         
         return allTests;
@@ -1072,7 +1075,7 @@ public class QuerySqlGeneratorUnitTest {
         }
         Assert.assertNotNull(sql, msg);
        if(null == levValue) {
-           Assert.assertEquals(sql.getSql(), expectedSql, msg);
+           Assert.assertEquals(sql.getSql(), expectedSql, msg + " for test case " + testQuery.queryName());
        } else {
            Assert.assertTrue(StringUtils.getLevenshteinDistance(sql.getSql(), expectedSql) <= levValue);
        }
