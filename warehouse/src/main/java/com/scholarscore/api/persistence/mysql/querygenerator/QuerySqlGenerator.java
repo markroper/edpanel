@@ -78,6 +78,10 @@ public abstract class QuerySqlGenerator {
         return sql;
     }
     
+    // check if the supplied measures/dimensions/hints contained within this query
+    // (or really, the DB tables they roughly translate to) are 'compatible' in terms of producing
+    // a SQL statement with a coherent chain of JOIN statements across all tables.
+    // If the query isn't valid, add join tables (hints) to the query.
     private static void addAnyNecessaryJoinTables(Query q) throws SqlGenerationException {
         boolean queryHasPath = QuerySqlPathHelper.queryHasCompletePath(q);
         if (!queryHasPath) {

@@ -1024,7 +1024,6 @@ public class QuerySqlGeneratorUnitTest {
         };
         
         Object[][] allTests = new Object[][] {
-                /*
                 { courseGradeTestQuery },
                 { assignmentGradesTestQuery },
                 { assignmentGradesNoDimensionsTestQuery },
@@ -1053,8 +1052,6 @@ public class QuerySqlGeneratorUnitTest {
                 { currGpaBySchoolTestQuery },
                 {assignmentGradesIsNullTestQuery},
                 {assignmentGradesIsNotNullTestQuery}
-                */
-                { queryIncludingMultipleTablesPathFinder }
         };
         
         return allTests;
