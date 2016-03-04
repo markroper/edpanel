@@ -18,12 +18,12 @@ public class AssignmentGradeSqlSerializer extends BaseSqlSerializer implements M
     }
     
     @Override
-    public String toTableName() {
-        return HibernateConsts.STUDENT_ASSIGNMENT_TABLE;
+    public Dimension toTableDimension() {
+        return Dimension.STUDENT_ASSIGNMENT;
     }
 
     @Override
-    public String optionalJoinedTable() {
-        return HibernateConsts.ASSIGNMENT_TABLE;
+    public Dimension toSecondTableDimension() {
+        return Dimension.ASSIGNMENT;
     }
 }
