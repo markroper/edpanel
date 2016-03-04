@@ -16,18 +16,14 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
     @Override
     // Note: non-standard relationships (not using conventional _id / _fk) will BREAK this method. override if needed
     public String toJoinClause(Dimension dimToJoinUpon) {
-        String dimTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimToJoinUpon);
-        return toJoinClause(dimTableName);
-    }
-    
-    protected String toJoinClause(String dimTableName) {
         String optClause = optionalJoinOrEmptyString();
-        return buildJoinClause(dimTableName) + optClause; 
+        return buildJoinClause(dimToJoinUpon) + optClause;
     }
     
-    private String buildJoinClause(String dimTableName) {
+    private String buildJoinClause(Dimension dimTableName) {
+        String stringTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimTableName);
         return LEFT_OUTER_JOIN + toTableName() + ON +
-                dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(dimTableName) + EQUALS +
+                dimTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(stringTableName) + EQUALS +
                 toTableName() + DOT + dimTableName + FK_COL_SUFFIX + " ";
     }
     
@@ -86,7 +82,4 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
     // but haven't gotten to the bottom of it yet)
     protected String valueForFalse() { return "0"; }
 
-    protected static String tableNameDotPrimaryKey(String tableName) {
-        return tableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(tableName);
-    }
 }
