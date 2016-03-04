@@ -54,6 +54,8 @@ public class MeasureSqlSerializerFactory {
                 return new InSchoolSuspensionSqlSerializer();
             case OUT_OF_SCHOOL_SUSPENSION:
                 return new OutOfSchoolSuspensionSqlSerializer();
+            case GOAL:
+                return new GoalSqlSerializer();
             default:
                 throw new QueryException("Unsupported Measure " + measure + ": no serializer defined");
 

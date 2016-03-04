@@ -5,13 +5,22 @@ import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
 import com.scholarscore.models.query.Measure;
 import com.scholarscore.models.query.MeasureField;
-import com.scholarscore.models.query.dimension.*;
+import com.scholarscore.models.query.dimension.AssignmentDimension;
+import com.scholarscore.models.query.dimension.CourseDimension;
+import com.scholarscore.models.query.dimension.GoalDimension;
+import com.scholarscore.models.query.dimension.SchoolDimension;
+import com.scholarscore.models.query.dimension.SchoolYearDimension;
+import com.scholarscore.models.query.dimension.SectionDimension;
+import com.scholarscore.models.query.dimension.StaffDimension;
+import com.scholarscore.models.query.dimension.StudentDimension;
+import com.scholarscore.models.query.dimension.TeacherDimension;
+import com.scholarscore.models.query.dimension.TermDimension;
+import com.scholarscore.models.query.dimension.UserDimension;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
-import com.scholarscore.models.query.measure.behavior.BehaviorMeasure;
 import com.scholarscore.models.query.measure.CourseGradeMeasure;
 import com.scholarscore.models.query.measure.CurrentGpaMeasure;
 import com.scholarscore.models.query.measure.GpaMeasure;
-import org.hibernate.Hibernate;
+import com.scholarscore.models.query.measure.behavior.BehaviorMeasure;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -37,6 +46,7 @@ public class DbMappings {
                put(Measure.TARDY, HibernateConsts.ATTENDANCE_TABLE);
                put(Measure.GPA, HibernateConsts.GPA_TABLE);
                put(Measure.CURRENT_GPA, HibernateConsts.GPA_TABLE);
+               put(Measure.GOAL, HibernateConsts.GOAL_TABLE);
            }};
    public static final Map<Measure, String> MEASURE_TO_COL_NAME = 
            new HashMap<Measure, String>() {{
@@ -55,6 +65,15 @@ public class DbMappings {
                put(new MeasureField(Measure.CURRENT_GPA, GpaMeasure.STUDENT), HibernateConsts.STUDENT_FK);
                put(new MeasureField(Measure.CURRENT_GPA, GpaMeasure.TYPE), HibernateConsts.GPA_TYPE);
                put(new MeasureField(Measure.CURRENT_GPA, CurrentGpaMeasure.GPA), HibernateConsts.GPA_SCORE);
+
+               put(new MeasureField(Measure.GOAL, GoalDimension.TYPE), HibernateConsts.GOAL_TYPE);
+               put(new MeasureField(Measure.GOAL, GoalDimension.APPROVED), HibernateConsts.GOAL_APPROVED);
+               put(new MeasureField(Measure.GOAL, GoalDimension.START_DATE), HibernateConsts.GOAL_START_DATE);
+               put(new MeasureField(Measure.GOAL, GoalDimension.STUDENT), HibernateConsts.STUDENT_FK);
+               put(new MeasureField(Measure.GOAL, GoalDimension.END_DATE), HibernateConsts.GOAL_END_DATE);
+               put(new MeasureField(Measure.GOAL, GoalDimension.SECTION), HibernateConsts.SECTION_FK);
+               put(new MeasureField(Measure.GOAL, GoalDimension.PROGRESS), HibernateConsts.GOAL_PROGRESS);
+               put(new MeasureField(Measure.GOAL, GoalDimension.TEACHER_FOLLOWUP), HibernateConsts.GOAL_FOLLOWUP);
 
                put(new MeasureField(Measure.COURSE_GRADE, CourseGradeMeasure.GRADE), HibernateConsts.SECTION_GRADE_GRADE);
                // attendance (true/false for if section should be included)
@@ -117,6 +136,7 @@ public class DbMappings {
                 put(Dimension.ATTENDANCE, HibernateConsts.ATTENDANCE_TABLE);
                 put(Dimension.GPA, HibernateConsts.GPA_TABLE);
                 put(Dimension.CURRENT_GPA, HibernateConsts.CURRENT_GPA_TABLE);
+                put(Dimension.GOAL, HibernateConsts.GOAL_TABLE);
             }};
 
     // NOT just the reverse of the above -- multiple dimensions can map to one table, but each table name can only return one TRUE dimension
@@ -139,6 +159,7 @@ public class DbMappings {
                 put(HibernateConsts.ATTENDANCE_TABLE, Dimension.ATTENDANCE);
                 put(HibernateConsts.GPA_TABLE, Dimension.GPA);
                 put(HibernateConsts.CURRENT_GPA_TABLE, Dimension.CURRENT_GPA);
+                put(HibernateConsts.GOAL_TABLE, Dimension.GOAL);
             }};
     
     public static final Map<DimensionField, String> DIMENSION_TO_COL_NAME = 
@@ -198,6 +219,16 @@ public class DbMappings {
         put(new DimensionField(Dimension.ASSIGNMENT, AssignmentDimension.DUE_DATE), HibernateConsts.ASSIGNMENT_DUE_DATE);
         put(new DimensionField(Dimension.ASSIGNMENT, AssignmentDimension.NAME), HibernateConsts.ASSIGNMENT_NAME);
         put(new DimensionField(Dimension.ASSIGNMENT, AssignmentDimension.ID), HibernateConsts.ASSIGNMENT_ID);
+
+        put(new DimensionField(Dimension.GOAL, GoalDimension.TYPE), HibernateConsts.GOAL_TYPE);
+        put(new DimensionField(Dimension.GOAL, GoalDimension.APPROVED), HibernateConsts.GOAL_APPROVED);
+        put(new DimensionField(Dimension.GOAL, GoalDimension.START_DATE), HibernateConsts.GOAL_START_DATE);
+        put(new DimensionField(Dimension.GOAL, GoalDimension.STUDENT), HibernateConsts.STUDENT_FK);
+        put(new DimensionField(Dimension.GOAL, GoalDimension.TEACHER), HibernateConsts.STAFF_FK);
+        put(new DimensionField(Dimension.GOAL, GoalDimension.END_DATE), HibernateConsts.GOAL_END_DATE);
+        put(new DimensionField(Dimension.GOAL, GoalDimension.SECTION), HibernateConsts.SECTION_FK);
+        put(new DimensionField(Dimension.GOAL, GoalDimension.PROGRESS), HibernateConsts.GOAL_PROGRESS);
+        put(new DimensionField(Dimension.GOAL, GoalDimension.TEACHER_FOLLOWUP), HibernateConsts.GOAL_FOLLOWUP);
     }};
 
     //TODO: straggler values here should be moved to ColumnConsts or removed altogether...
