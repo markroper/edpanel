@@ -68,8 +68,6 @@ public interface MeasureSqlSerializer {
     Dimension toTableDimension();
 
     Dimension toSecondTableDimension();
-
-//    default String optionalJoinedTable() { return null; }
     
     default String generateMeasureFieldSql(MeasureField f, String tableAlias) throws SqlGenerationException {
         String tableName = DbMappings.MEASURE_TO_TABLE_NAME.get(f.getMeasure());

@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -146,19 +145,22 @@ public class QuerySqlPathHelper {
     }
 
     private static class Node {
-        Edge[] edges;
+//        Edge[] edges;
         Dimension dimension;
+        
+        // this node has connections to the following nodes
+        Node[] neighbors;
         
         @Override
         public String toString() {
-            return "Node (d:" + dimension +") (edges: [" + edges.length + "])";
+            return "Node (d:" + dimension +") (neighbor count: [" + neighbors.length + "])";
         }
     }
 
-    private static class Edge {
-        Node pointedFrom;
-        Node pointedAt;
-    }
+//    private static class Edge {
+//        Node pointedFrom;
+//        Node pointedAt;
+//    }
 
     private static HashMap<Dimension, Node> buildGraph(List<Dimension> dimensions) {
         HashMap<Dimension, Node> nodesSoFar = new HashMap<>();
@@ -174,17 +176,21 @@ public class QuerySqlPathHelper {
             IDimension dimensionClass = Dimension.buildDimension(dimension);
             Set<Dimension> parentDimensions = dimensionClass.getParentDimensions();
             if (parentDimensions != null && parentDimensions.size() > 0) {
-                Edge[] edges = new Edge[parentDimensions.size()];
+                Node[] neighbors = new Node[parentDimensions.size()];
+//                Edge[] edges = new Edge[parentDimensions.size()];
                 int arrayPos = 0;
                 for (Dimension parentDimension : parentDimensions) {
-                    Edge edge = new Edge();
-                    edge.pointedAt = nodesSoFar.get(parentDimension);
-                    edge.pointedFrom = nodesSoFar.get(dimension);
-                    edges[arrayPos++] = edge;
+//                    Edge edge = new Edge();
+                    neighbors[arrayPos++] = nodesSoFar.get(parentDimension);
+//                    edge.pointedAt = nodesSoFar.get(parentDimension);
+//                    edge.pointedFrom = nodesSoFar.get(dimension);
+//                    edges[arrayPos++] = edge;
                 }
-                node.edges = edges;
+                node.neighbors = neighbors;
+//                node.edges = edges;
             } else {
-                node.edges = new Edge[0];
+//                node.edges = new Edge[0];
+                node.neighbors = new Node[0];
             }
         }
         return nodesSoFar;
@@ -199,11 +205,7 @@ public class QuerySqlPathHelper {
     // pass in bidirectional=false to receive only the nodes pointed AT from this node
     private static Set<Node> findImmediateNeighbors(Node dimensionNode, boolean bidirectional) {
         if (dimensionNode == null) { return new HashSet<>(); }
-        Set<Node> allNodes = new HashSet<>();
-        // all nodes this node points at
-        for (Edge edge : dimensionNode.edges) {
-            allNodes.add(edge.pointedAt);
-        }
+        Set<Node> allNodes = new HashSet<>(Arrays.asList(dimensionNode.neighbors));
         if (bidirectional) {
             // all nodes that are pointing at this node
             allNodes.addAll(reverseNeighborMapping.get(dimensionNode));
@@ -271,9 +273,9 @@ public class QuerySqlPathHelper {
         HashSet<Node> allNodesPointingAtRoot = new HashSet<>();
         for (Dimension dimension : allDimensionsGraph.keySet()) {
             Node currentNode = allDimensionsGraph.get(dimension);
-            if (currentNode.edges != null) {
-                for (Edge edge : currentNode.edges) {
-                    if (edge.pointedAt != null && edge.pointedAt.equals(root)) {
+            if (currentNode.neighbors != null) { 
+                for (Node neighbor : currentNode.neighbors) { 
+                    if (neighbor != null && neighbor.equals(root)) { 
                         allNodesPointingAtRoot.add(currentNode);
                     }
                 }
@@ -355,10 +357,10 @@ public class QuerySqlPathHelper {
                     }
 
                     // any pointed-to neighbors? add them to next round's 'visit-list' if unvisited
-                    if (nodeBeingVisited.edges != null && nodeBeingVisited.edges.length > 0) {
-                        for (Edge edge : nodeBeingVisited.edges) {
+                    if (nodeBeingVisited.neighbors != null && nodeBeingVisited.neighbors.length > 0) {
+                        for (Node neighbor : nodeBeingVisited.neighbors) {
                             // cache this neighbor (IF it hasn't been seen before) so that we can visit it next round
-                            addNodeIfUnseen(edge.pointedAt, nodeBeingVisited);
+                            addNodeIfUnseen(neighbor, nodeBeingVisited);
                         }
                     }
 
