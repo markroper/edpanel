@@ -142,9 +142,9 @@ task integrationLocal(type: Test) {
     }
 }
 
-integrationLocal << { 
-    functionalLocal.execute()
-}
+//integrationLocal << { 
+//    functionalLocal.execute()
+//}
 
 task integrationLocalWithContainer(type: Test, dependsOn: 'war') {
     group 'Verification'
