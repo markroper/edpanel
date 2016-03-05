@@ -27,6 +27,7 @@ public class DimensionUnitTest {
         }
     }
     
+    @Test
     public void testDimensionHasOrdering() {
         for (Dimension dimension : Dimension.values()) {
             HashSet<Dimension> dimensionSet = new HashSet<>();

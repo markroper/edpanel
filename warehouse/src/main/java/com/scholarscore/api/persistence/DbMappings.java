@@ -11,7 +11,6 @@ import com.scholarscore.models.query.measure.behavior.BehaviorMeasure;
 import com.scholarscore.models.query.measure.CourseGradeMeasure;
 import com.scholarscore.models.query.measure.CurrentGpaMeasure;
 import com.scholarscore.models.query.measure.GpaMeasure;
-import org.hibernate.Hibernate;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -119,6 +118,9 @@ public class DbMappings {
                 put(Dimension.CURRENT_GPA, HibernateConsts.CURRENT_GPA_TABLE);
             }};
 
+    // The below layer of abstraction, or some version of it, is required as long as we have "user-visible dimensions" 
+    // (of which *more* than one can be mapped to a specific table) that are different 
+    // from our actual tables (e.g. teacher and admin are dimensions, but don't have corresponding tables)
     // NOT just the reverse of the above -- multiple dimensions can map to one table, but each table name can only return one TRUE dimension
     public static final Map<String, Dimension> TABLE_NAME_TO_DIMENSION =
             new HashMap<String, Dimension>() {{

@@ -15,11 +15,11 @@ import java.util.Set;
 public interface IDimension extends Serializable {
     public Dimension getType();
     
-    public Class<?> getAssociatedClass();
+    Class<?> getAssociatedClass();
     
-    public Set<Dimension> getParentDimensions();
+    Set<Dimension> getParentDimensions();
     
-    public Set<String> getFields();
+    Set<String> getFields();
     
-    public String getName();
+    String getName();
 }
