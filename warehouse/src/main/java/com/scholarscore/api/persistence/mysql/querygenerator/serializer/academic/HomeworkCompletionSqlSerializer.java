@@ -56,15 +56,15 @@ public class HomeworkCompletionSqlSerializer extends BaseSqlSerializer implement
     }
 
     @Override
-    public String toTableName() {
-        return HibernateConsts.ASSIGNMENT_TABLE;
+    public Dimension toTableDimension() {
+        return Dimension.ASSIGNMENT;
     }
 
     @Override
-    public String optionalJoinedTable() {
-        return HibernateConsts.STUDENT_ASSIGNMENT_TABLE;
+    public Dimension toSecondTableDimension() {
+        return Dimension.STUDENT_ASSIGNMENT;
     }
-    
+
     @Override
     public boolean optionalJoinTableStoresFk() { 
         return true;
