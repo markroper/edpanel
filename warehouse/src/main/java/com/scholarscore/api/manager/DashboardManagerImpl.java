@@ -372,7 +372,7 @@ public class DashboardManagerImpl implements DashboardManager {
         goal.setType(ReportType.SPLINE);
         goal.setSupportDemographicFilter(false);
         goal.setSupportDateFilter(true);
-        goal.setName("Goal Status by Creation Date");
+        goal.setName("Goal Status by Week");
         Query goalQuery = new Query();
         AggregateMeasure goalMeasure = new AggregateMeasure(Measure.GOAL, AggregateFunction.COUNT);
         List<AggregateMeasure> goals = new ArrayList<>();
