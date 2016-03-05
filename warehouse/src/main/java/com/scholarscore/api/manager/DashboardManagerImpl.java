@@ -204,8 +204,8 @@ public class DashboardManagerImpl implements DashboardManager {
         attendanceMeasures.add(attendanceMeasure);
         attendanceQ.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
         List<SubqueryColumnRef> attWrappers = new ArrayList<>();
-        attWrappers.add(new SubqueryColumnRef(-1, AggregateFunction.COUNT));
         attWrappers.add(new SubqueryColumnRef(1, null));
+        attWrappers.add(new SubqueryColumnRef(-1, AggregateFunction.COUNT));
         attendanceQ.setSubqueryColumnsByPosition(attWrappers);
         Expression attType = new Expression(
                 new MeasureOperand(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.TYPE)),
@@ -263,8 +263,8 @@ public class DashboardManagerImpl implements DashboardManager {
         failingMeasures.add(failingMeasure);
         failingQ.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
         List<SubqueryColumnRef> failingWrappers = new ArrayList<>();
-        failingWrappers.add(new SubqueryColumnRef(-1, AggregateFunction.COUNT));
         failingWrappers.add(new SubqueryColumnRef(2, null));
+        failingWrappers.add(new SubqueryColumnRef(-1, AggregateFunction.COUNT));
         failingQ.setSubqueryColumnsByPosition(failingWrappers);
         Expression startDate = new Expression(
                 new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.START_DATE)),
@@ -291,12 +291,12 @@ public class DashboardManagerImpl implements DashboardManager {
         Expression failingHaving = new Expression(
                 new MeasureOperand(mf),
                 ComparisonOperator.EQUAL,
-                new NumericPlaceholder(QueryPlaceholders.END_DATE));
+                new NumericPlaceholder(QueryPlaceholders.CLICK_VALUE));
         failingClick.setFilter(new Expression(whereClause, BinaryOperator.AND, dateRange));
         failingClick.setHaving(failingHaving);
         List<ColumnDef> failingDefs = new ArrayList<>();
         failingDefs.add(new ColumnDef("values[1]", "Name"));
-        failingDefs.add(new ColumnDef("values[3]", "Failing Classes"));
+        failingDefs.add(new ColumnDef("values[2]", "Failing Classes"));
         failingClasses.setColumnDefs(failingDefs);
         failingClasses.setClickTableQuery(failingClick);
 
@@ -330,8 +330,8 @@ public class DashboardManagerImpl implements DashboardManager {
         referralQuery.setAggregateMeasures(referrals);
         referralQuery.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
         List<SubqueryColumnRef> referralWrappers = new ArrayList<>();
-        referralWrappers.add(new SubqueryColumnRef(-1, AggregateFunction.COUNT));
         referralWrappers.add(new SubqueryColumnRef(1, null));
+        referralWrappers.add(new SubqueryColumnRef(-1, AggregateFunction.COUNT));
         referralQuery.setSubqueryColumnsByPosition(referralWrappers);
         Expression refStart = new Expression(
                 new MeasureOperand(new MeasureField(Measure.REFERRAL, BehaviorMeasure.DATE)),
@@ -370,18 +370,18 @@ public class DashboardManagerImpl implements DashboardManager {
         //Goal
         Report goal = new Report();
         goal.setType(ReportType.SPLINE);
-        goal.setSupportDemographicFilter(true);
+        goal.setSupportDemographicFilter(false);
         goal.setSupportDateFilter(true);
-
+        goal.setName("Goal Status by Creation Date");
         Query goalQuery = new Query();
         AggregateMeasure goalMeasure = new AggregateMeasure(Measure.GOAL, AggregateFunction.COUNT);
         List<AggregateMeasure> goals = new ArrayList<>();
         goals.add(goalMeasure);
         goalQuery.setAggregateMeasures(goals);
-        goalQuery.addField(new DimensionField(Dimension.GOAL, GoalDimension.PROGRESS));
         DimensionField df = new DimensionField(Dimension.GOAL, GoalDimension.START_DATE);
         df.setBucketAggregation(AggregateFunction.YEARWEEK);
         goalQuery.addField(df);
+        goalQuery.addField(new DimensionField(Dimension.GOAL, GoalDimension.PROGRESS));
         Expression goalDateMin = new Expression(
                 new MeasureOperand(new MeasureField(Measure.GOAL, GoalDimension.START_DATE)),
                 ComparisonOperator.GREATER_THAN_OR_EQUAL,

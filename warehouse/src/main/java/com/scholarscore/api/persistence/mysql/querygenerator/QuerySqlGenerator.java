@@ -181,14 +181,13 @@ public abstract class QuerySqlGenerator {
         if (q.getAggregateMeasures() != null) {
             for (AggregateMeasure am : q.getAggregateMeasures()) {
                 MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
-                if(!isFirst) {
-                    sqlBuilder.append(DELIM);
-                    isFirst = false;
-                }
-                sqlBuilder.append(mss.toSelectClause(am.getAggregation()) + " as " + generateAggColumnName(am));
                 //If there are buckets involved in the aggregate query, inject the bucket pseudo column
                 if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
-                    sqlBuilder.append(DELIM);
+                    if(!isFirst) {
+                        sqlBuilder.append(DELIM);
+                    } else {
+                        isFirst = false;
+                    }
                     //If the buckets have not aggregate function applied, just reference the psuedo column by name
                     //Otherwise, enumerate the entire bucket definition and wrap it in a aggregate function
                     if(null == am.getBucketAggregation()) {
@@ -199,6 +198,12 @@ public abstract class QuerySqlGenerator {
                         sqlBuilder.append(generateBucketedColumn(am.getBuckets(), am.getBucketAggregation(), am.getMeasure(), true));
                     }
                 }
+                if(!isFirst) {
+                    sqlBuilder.append(DELIM);
+                } else {
+                    isFirst = false;
+                }
+                sqlBuilder.append(mss.toSelectClause(am.getAggregation()) + " as " + generateAggColumnName(am));
             }
         }
         sqlBuilder.append(" ");
