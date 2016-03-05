@@ -14,6 +14,8 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -43,6 +45,7 @@ public class Report extends ApiModel {
     protected Long rowFk;
     protected Boolean supportDateFilter;
     protected Boolean supportDemographicFilter;
+    protected ReportType type;
 
     public Report() {
 
@@ -61,6 +64,17 @@ public class Report extends ApiModel {
         this.position = r.getPosition();
         this.supportDateFilter = r.getSupportDateFilter();
         this.supportDemographicFilter = r.getSupportDemographicFilter();
+        this.type = r.getType();
+    }
+
+    @Column(name = HibernateConsts.DASHBOARD_REPORT_TYPE)
+    @Enumerated(EnumType.STRING)
+    public ReportType getType() {
+        return type;
+    }
+
+    public void setType(ReportType type) {
+        this.type = type;
     }
 
     @Column(name = HibernateConsts.DASHBOARD_REPORT_SUPPORT_DATE_FILTER)
@@ -169,7 +183,7 @@ public class Report extends ApiModel {
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + Objects.hash(chartQuery, clickTableQuery, columnDefs,
-                position, rowFk, supportDateFilter, supportDemographicFilter);
+                position, rowFk, supportDateFilter, supportDemographicFilter, type);
     }
 
     @Override
@@ -193,6 +207,7 @@ public class Report extends ApiModel {
                 && Objects.equals(this.rowFk, other.rowFk)
                 && Objects.equals(this.supportDateFilter, other.supportDateFilter)
                 && Objects.equals(this.supportDemographicFilter, other.supportDemographicFilter)
-                && Objects.equals(this.position, other.position);
+                && Objects.equals(this.position, other.position)
+                && Objects.equals(this.type, other.type);
     }
 }

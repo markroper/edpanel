@@ -343,6 +343,7 @@ public class HibernateConsts {
 
     public static final String DASHBOARD_REPORT_TABLE = "dashboard_report";
     public static final String DASHBOARD_REPORT_NAME = "dashboard_report_name";
+    public static final String DASHBOARD_REPORT_TYPE = "dashboard_report_type";
     public static final String DASHBOARD_REPORT_ID = "dashboard_report_id";
     public static final String DASHBOARD_REPORT_SUPPORT_DEMOGRAPHIC_FILTER = "dashboard_report_support_demographic_filter";
     public static final String DASHBOARD_REPORT_SUPPORT_DATE_FILTER = "dashboard_report_support_date_filter";

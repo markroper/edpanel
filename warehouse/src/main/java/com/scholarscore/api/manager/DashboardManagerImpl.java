@@ -2,6 +2,7 @@ package com.scholarscore.api.manager;
 
 import com.scholarscore.api.persistence.DashboardPersistence;
 import com.scholarscore.api.security.config.UserDetailsProxy;
+import com.scholarscore.api.util.QueryPlaceholders;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
@@ -11,6 +12,7 @@ import com.scholarscore.models.dashboard.ColumnDef;
 import com.scholarscore.models.dashboard.Dashboard;
 import com.scholarscore.models.dashboard.DashboardRow;
 import com.scholarscore.models.dashboard.Report;
+import com.scholarscore.models.dashboard.ReportType;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.AggregateMeasure;
 import com.scholarscore.models.query.Dimension;
@@ -21,6 +23,7 @@ import com.scholarscore.models.query.Query;
 import com.scholarscore.models.query.SubqueryColumnRef;
 import com.scholarscore.models.query.bucket.AggregationBucket;
 import com.scholarscore.models.query.bucket.NumericBucket;
+import com.scholarscore.models.query.dimension.GoalDimension;
 import com.scholarscore.models.query.dimension.SchoolDimension;
 import com.scholarscore.models.query.dimension.SectionDimension;
 import com.scholarscore.models.query.dimension.StudentDimension;
@@ -124,13 +127,16 @@ public class DashboardManagerImpl implements DashboardManager {
         DashboardRow row1 = new DashboardRow();
         DashboardRow row2 = new DashboardRow();
         DashboardRow row3 = new DashboardRow();
+        DashboardRow row4 = new DashboardRow();
         DEFAULT_DASH.setRows(new ArrayList<>());
         DEFAULT_DASH.getRows().add(row1);
         DEFAULT_DASH.getRows().add(row2);
         DEFAULT_DASH.getRows().add(row3);
+        DEFAULT_DASH.getRows().add(row4);
 
         //Fill up row 1 with 3 reports
         Report gpa = new Report();
+        gpa.setType(ReportType.BAR);
         gpa.setSupportDemographicFilter(true);
         gpa.setName("Students by GPA Range");
         Query gpaBucketQuery = new Query();
@@ -166,12 +172,12 @@ public class DashboardManagerImpl implements DashboardManager {
         gpaClick.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
         gpaClick.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
         Expression clickWhereMin = new Expression(
-                new NumericPlaceholder("${clickValueMin}"),
+                new NumericPlaceholder(QueryPlaceholders.CLICK_VALUE_MIN),
                 ComparisonOperator.LESS_THAN_OR_EQUAL,
                 new MeasureOperand(new MeasureField(Measure.CURRENT_GPA, CurrentGpaMeasure.GPA))
         );
         Expression clickWhereMax = new Expression(
-                new NumericPlaceholder("${clickValueMax}"),
+                new NumericPlaceholder(QueryPlaceholders.CLICK_VALUE_MAX),
                 ComparisonOperator.GREATER_THAN,
                 new MeasureOperand(new MeasureField(Measure.CURRENT_GPA, CurrentGpaMeasure.GPA))
         );
@@ -187,6 +193,7 @@ public class DashboardManagerImpl implements DashboardManager {
         row1.getReports().add(gpa);
         //ATTENDANCE QUERY
         Report attendance = new Report();
+        attendance.setType(ReportType.BAR);
         attendance.setSupportDemographicFilter(true);
         attendance.setSupportDateFilter(true);
         Query attendanceQ = new Query();
@@ -208,12 +215,12 @@ public class DashboardManagerImpl implements DashboardManager {
         Expression dateMin = new Expression(
                 new MeasureOperand(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.DATE)),
                 ComparisonOperator.GREATER_THAN_OR_EQUAL,
-                new DatePlaceholder("${startDate}")
+                new DatePlaceholder(QueryPlaceholders.START_DATE)
         );
         Expression dateMax = new Expression(
                 new MeasureOperand(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.DATE)),
                 ComparisonOperator.LESS_THAN_OR_EQUAL,
-                new DatePlaceholder("${endDate}")
+                new DatePlaceholder(QueryPlaceholders.END_DATE)
         );
         Expression dateExp = new Expression(dateMin, BinaryOperator.AND, dateMax);
         Expression dateAndAtt = new Expression(dateExp, BinaryOperator.AND, attType);
@@ -228,7 +235,7 @@ public class DashboardManagerImpl implements DashboardManager {
         Expression attHaving = new Expression(
                 new MeasureOperand(new MeasureField(Measure.ATTENDANCE, AggregateFunction.SUM.name())),
                 ComparisonOperator.EQUAL,
-                new NumericPlaceholder("${clickValue}")
+                new NumericPlaceholder(QueryPlaceholders.CLICK_VALUE)
         );
         attendanceClick.setHaving(attHaving);
         attendance.setClickTableQuery(attendanceClick);
@@ -240,6 +247,7 @@ public class DashboardManagerImpl implements DashboardManager {
 
         //FAILING COURSES QUERY
         Report failingClasses = new Report();
+        failingClasses.setType(ReportType.BAR);
         failingClasses.setSupportDateFilter(false);
         failingClasses.setSupportDemographicFilter(true);
         Query failingQ = new Query();
@@ -261,12 +269,12 @@ public class DashboardManagerImpl implements DashboardManager {
         Expression startDate = new Expression(
                 new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.START_DATE)),
                 ComparisonOperator.GREATER_THAN_OR_EQUAL,
-                new DatePlaceholder("${startDate}")
+                new DatePlaceholder(QueryPlaceholders.START_DATE)
         );
         Expression endDate = new Expression(
                 new DimensionOperand(new DimensionField(Dimension.SECTION, SectionDimension.START_DATE)),
                 ComparisonOperator.LESS_THAN_OR_EQUAL,
-                new DatePlaceholder("${endDate}")
+                new DatePlaceholder(QueryPlaceholders.END_DATE)
         );
         Expression dateRange = new Expression(startDate, BinaryOperator.AND, endDate);
         failingQ.setFilter(new Expression(whereClause, BinaryOperator.AND, dateRange));
@@ -283,7 +291,7 @@ public class DashboardManagerImpl implements DashboardManager {
         Expression failingHaving = new Expression(
                 new MeasureOperand(mf),
                 ComparisonOperator.EQUAL,
-                new NumericPlaceholder("${clickValue}"));
+                new NumericPlaceholder(QueryPlaceholders.END_DATE));
         failingClick.setFilter(new Expression(whereClause, BinaryOperator.AND, dateRange));
         failingClick.setHaving(failingHaving);
         List<ColumnDef> failingDefs = new ArrayList<>();
@@ -294,6 +302,7 @@ public class DashboardManagerImpl implements DashboardManager {
 
         //Fill up row 2 with 1 report
         Report meritDemerit = new Report();
+        meritDemerit.setType(ReportType.BAR);
         meritDemerit.setName("Demerit & Merit Counts by Staff");
         Query meritDemeritQ = new Query();
         AggregateMeasure meritMeasure = new AggregateMeasure(Measure.MERIT, AggregateFunction.SUM);
@@ -310,6 +319,7 @@ public class DashboardManagerImpl implements DashboardManager {
 
         //Row 3 with one report
         Report ref = new Report();
+        ref.setType(ReportType.BAR);
         ref.setSupportDemographicFilter(true);
         ref.setSupportDateFilter(true);
         ref.setName("Number of Students by Referral Count");
@@ -326,12 +336,12 @@ public class DashboardManagerImpl implements DashboardManager {
         Expression refStart = new Expression(
                 new MeasureOperand(new MeasureField(Measure.REFERRAL, BehaviorMeasure.DATE)),
                 ComparisonOperator.GREATER_THAN_OR_EQUAL,
-                new DatePlaceholder("${startDate}")
+                new DatePlaceholder(QueryPlaceholders.START_DATE)
         );
         Expression refEnd = new Expression(
                 new MeasureOperand(new MeasureField(Measure.REFERRAL, BehaviorMeasure.DATE)),
                 ComparisonOperator.LESS_THAN_OR_EQUAL,
-                new DatePlaceholder("${endDate}")
+                new DatePlaceholder(QueryPlaceholders.END_DATE)
         );
         Expression refRange = new Expression(refStart, BinaryOperator.AND, refEnd);
         Expression refExp = new Expression(whereClause, BinaryOperator.AND, refRange);
@@ -345,7 +355,7 @@ public class DashboardManagerImpl implements DashboardManager {
         Expression having = new Expression(
                 new MeasureOperand(new MeasureField(Measure.REFERRAL, AggregateFunction.SUM.name())),
                 ComparisonOperator.EQUAL,
-                new NumericPlaceholder("${clickValue}"));
+                new NumericPlaceholder(QueryPlaceholders.CLICK_VALUE));
         refClick.setFilter(refExp);
         refClick.setHaving(having);
         ref.setClickTableQuery(refClick);
@@ -356,5 +366,35 @@ public class DashboardManagerImpl implements DashboardManager {
         ref.setColumnDefs(refDefs);
         row3.setReports(new ArrayList<>());
         row3.getReports().add(ref);
+
+        //Goal
+        Report goal = new Report();
+        goal.setType(ReportType.SPLINE);
+        goal.setSupportDemographicFilter(true);
+        goal.setSupportDateFilter(true);
+
+        Query goalQuery = new Query();
+        AggregateMeasure goalMeasure = new AggregateMeasure(Measure.GOAL, AggregateFunction.COUNT);
+        List<AggregateMeasure> goals = new ArrayList<>();
+        goals.add(goalMeasure);
+        goalQuery.setAggregateMeasures(goals);
+        goalQuery.addField(new DimensionField(Dimension.GOAL, GoalDimension.PROGRESS));
+        DimensionField df = new DimensionField(Dimension.GOAL, GoalDimension.START_DATE);
+        df.setBucketAggregation(AggregateFunction.YEARWEEK);
+        goalQuery.addField(df);
+        Expression goalDateMin = new Expression(
+                new MeasureOperand(new MeasureField(Measure.GOAL, GoalDimension.START_DATE)),
+                ComparisonOperator.GREATER_THAN_OR_EQUAL,
+                new DatePlaceholder(QueryPlaceholders.START_DATE)
+        );
+        Expression goalDateMax = new Expression(
+                new MeasureOperand(new MeasureField(Measure.GOAL, GoalDimension.START_DATE)),
+                ComparisonOperator.LESS_THAN_OR_EQUAL,
+                new DatePlaceholder(QueryPlaceholders.END_DATE)
+        );
+        goalQuery.setFilter(new Expression(goalDateMin, BinaryOperator.AND, goalDateMax));
+        goal.setChartQuery(goalQuery);
+        row4.setReports(new ArrayList<>());
+        row4.getReports().add(goal);
     }
 }
