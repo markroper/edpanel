@@ -63,12 +63,12 @@ public abstract class BaseAttendanceSqlSerializer extends BaseSqlSerializer {
     }
 
     @Override
-    public String optionalJoinedTable() {
-        return HibernateConsts.SCHOOL_DAY_TABLE;
+    public Dimension toSecondTableDimension() {
+        return Dimension.SCHOOL_DAY;
     }
 
     @Override
-    public String toTableName() {
-        return HibernateConsts.ATTENDANCE_TABLE;
+    public Dimension toTableDimension() {
+        return Dimension.ATTENDANCE;
     }
 }
