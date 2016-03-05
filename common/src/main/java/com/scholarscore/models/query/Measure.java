@@ -98,6 +98,8 @@ public enum Measure {
                 return new SectionTardyMeasure();
             case CURRENT_GPA:
                 return new CurrentGpaMeasure();
+            case GOAL:
+                return new GoalMeasure();
             default:
                 throw new QueryException("Unsupported measure " + measure + "!");
         }
