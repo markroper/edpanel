@@ -163,7 +163,7 @@ public abstract class QuerySqlGenerator {
                 } else {
                     innerSqlBuilder.markNotFirstOrAppend(DELIM);
                     //look for the dimension
-                    sqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
+                    sqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias, false));
                     sqlBuilder.append(" ");
                     sqlBuilder.append(resolveOperatorSql(operator));
                     sqlBuilder.append(" ");
@@ -188,20 +188,19 @@ public abstract class QuerySqlGenerator {
                 } else {
                     sqlBuilder.append(DELIM);
                 }
-                sqlBuilder.append(generateDimensionFieldSql(f, null));
+                sqlBuilder.append(generateDimensionFieldSql(f, null, false));
             }
         }
         if (q.getAggregateMeasures() != null) {
             for (AggregateMeasure am : q.getAggregateMeasures()) {
                 MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
-                if(!isFirst) {
-                    sqlBuilder.append(DELIM);
-                    isFirst = false;
-                }
-                sqlBuilder.append(mss.toSelectClause(am.getAggregation()) + " as " + generateAggColumnName(am));
                 //If there are buckets involved in the aggregate query, inject the bucket pseudo column
                 if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
-                    sqlBuilder.append(DELIM);
+                    if(!isFirst) {
+                        sqlBuilder.append(DELIM);
+                    } else {
+                        isFirst = false;
+                    }
                     //If the buckets have not aggregate function applied, just reference the psuedo column by name
                     //Otherwise, enumerate the entire bucket definition and wrap it in a aggregate function
                     if(null == am.getBucketAggregation()) {
@@ -212,6 +211,12 @@ public abstract class QuerySqlGenerator {
                         sqlBuilder.append(generateBucketedColumn(am.getBuckets(), am.getBucketAggregation(), am.getMeasure(), true));
                     }
                 }
+                if(!isFirst) {
+                    sqlBuilder.append(DELIM);
+                } else {
+                    isFirst = false;
+                }
+                sqlBuilder.append(mss.toSelectClause(am.getAggregation()) + " as " + generateAggColumnName(am));
             }
         }
         sqlBuilder.append(" ");
@@ -277,8 +282,10 @@ public abstract class QuerySqlGenerator {
             MeasureSqlSerializer mss = null;
             if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
                 am = q.getAggregateMeasures().get(0);
-                mss = MeasureSqlSerializerFactory.get(am.getMeasure());
-                sqlBuilder.append(mss.toJoinClause(currTable));
+                if(!currTable.equals(am.getMeasure().getDimension())) {
+                    mss = MeasureSqlSerializerFactory.get(am.getMeasure());
+                    sqlBuilder.append(mss.toJoinClause(currTable));
+                }
             }
             //Join in the remaining dimensions tables, if any
             if(orderedTables.size() > 1) {
@@ -411,7 +418,7 @@ public abstract class QuerySqlGenerator {
                 sqlBuilder.append(" '" + DbMappings.resolveTimestamp(((DateOperand)operand).getValue()) + "' ");
                 break;
             case DIMENSION:
-                sqlBuilder.append(" " + generateDimensionFieldSql( ((DimensionOperand)operand).getValue(), tableAlias) + " ");
+                sqlBuilder.append(" " + generateDimensionFieldSql( ((DimensionOperand)operand).getValue(), tableAlias, false) + " ");
                 break;
             case MEASURE:
                 MeasureOperand mo = (MeasureOperand)operand;
@@ -473,10 +480,10 @@ public abstract class QuerySqlGenerator {
         if(null != q.getFields()) {
             for (DimensionField f : q.getFields()) {
                 if (isFirst) {
-                    groupBySqlBuilder.append(generateDimensionFieldSql(f, null));
+                    groupBySqlBuilder.append(generateDimensionFieldSql(f, null, true));
                     isFirst = false;
                 } else {
-                    groupBySqlBuilder.append(DELIM + generateDimensionFieldSql(f, null));
+                    groupBySqlBuilder.append(DELIM + generateDimensionFieldSql(f, null, true));
                 }
             }
         }
@@ -511,18 +518,34 @@ public abstract class QuerySqlGenerator {
     public static String generateAggColumnName(AggregateMeasure m) {
         return m.getAggregation().name().toLowerCase() + "_" + m.getMeasure().name().toLowerCase() + "_agg";
     }
-    protected static String generateDimensionFieldSql(DimensionField f, String tableAlias) throws SqlGenerationException {
+    protected static String generateDimensionFieldSql(DimensionField f, String tableAlias, boolean isGroupBy)
+            throws SqlGenerationException {
         String tableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(f.getDimension());
         if(null != tableAlias) {
             tableName = tableAlias;
         }
-        String columnName = DbMappings.DIMENSION_TO_COL_NAME.get(f);
+        DimensionField compField = new DimensionField(f.getDimension(), f.getField());
+        String columnName = DbMappings.DIMENSION_TO_COL_NAME.get(compField);
         if(null == tableName || null == columnName) {
-            throw new SqlGenerationException("Invalid dimension, tableName (" + 
-                    tableName + ") and columnName (" + 
+            throw new SqlGenerationException("Invalid dimension, tableName (" +
+                    tableName + ") and columnName (" +
                     columnName + ") must both be non-null");
         }
-        return tableName + DOT + columnName;
+
+        String rawColumnName = tableName + DOT + columnName;
+        if(null != f.getBucketAggregation()) {
+            String bucket = f.getBucketAggregation().name();
+            if(null != tableAlias) {
+                return rawColumnName + "_" + bucket;
+            } else {
+                String aggFunc = bucket + "(" + rawColumnName + ")";
+                if(!isGroupBy) {
+                    return aggFunc + " as " + columnName + "_" + bucket;
+                }
+                return aggFunc;
+            }
+        }
+        return rawColumnName;
     }
     
     protected static String generateMeasureFieldSql(MeasureField f, String tableAlias) throws SqlGenerationException {
@@ -628,9 +651,9 @@ public abstract class QuerySqlGenerator {
                 //find the right dimension
                 innerSqlBuilder.markNotFirstOrAppend(DELIM);
                 //look for the dimension
-                innerSqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
+                innerSqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias, false));
                 innerGroupByBuilder.markNotFirstOrAppend(DELIM);
-                innerGroupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
+                innerGroupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias, true));
             }
         }
     }

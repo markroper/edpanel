@@ -3,6 +3,7 @@ package com.scholarscore.api.persistence.mysql;
 import com.scholarscore.api.persistence.mysql.querygenerator.QuerySqlGenerator;
 import com.scholarscore.api.persistence.mysql.querygenerator.SqlGenerationException;
 import com.scholarscore.api.persistence.mysql.querygenerator.SqlWithParameters;
+import com.scholarscore.models.goal.GoalProgress;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.AggregateMeasure;
 import com.scholarscore.models.query.Dimension;
@@ -15,6 +16,7 @@ import com.scholarscore.models.query.SubqueryExpression;
 import com.scholarscore.models.query.bucket.AggregationBucket;
 import com.scholarscore.models.query.bucket.NumericBucket;
 import com.scholarscore.models.query.dimension.CourseDimension;
+import com.scholarscore.models.query.dimension.GoalDimension;
 import com.scholarscore.models.query.dimension.SchoolDimension;
 import com.scholarscore.models.query.dimension.SectionDimension;
 import com.scholarscore.models.query.dimension.StudentDimension;
@@ -40,7 +42,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -140,6 +141,7 @@ public class QuerySqlGeneratorUnitTest {
                         "GROUP BY student.birth_date, student.federal_ethnicity, school.school_name";
             }
         };
+
         TestQuery assignmentGradesTestQuery = new TestQuery() {
             @Override
             public String queryName() {
@@ -737,13 +739,13 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT COUNT(gpa.gpa_score) as count_gpa_agg, CASE \n" +
+                return "SELECT CASE \n" +
                         "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
                         "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
                         "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
                         "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
                         "ELSE NULL \n" +
-                        "END as count_gpa_group \n" +
+                        "END as count_gpa_group, COUNT(gpa.gpa_score) as count_gpa_agg \n" +
                         "FROM gpa \n" +
                         "GROUP BY count_gpa_group";
             }
@@ -767,13 +769,13 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT COUNT(gpa.gpa_score) as count_current_gpa_agg, CASE \n" +
+                return "SELECT CASE \n" +
                         "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
                         "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
                         "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
                         "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
                         "ELSE NULL \n" +
-                        "END as count_current_gpa_group \n" +
+                        "END as count_current_gpa_group, COUNT(gpa.gpa_score) as count_current_gpa_agg \n" +
                         "FROM current_gpa INNER JOIN gpa ON gpa.gpa_id = current_gpa.gpa_fk \n" +
                         "GROUP BY count_current_gpa_group";
             }
@@ -813,16 +815,16 @@ public class QuerySqlGeneratorUnitTest {
             public String buildSQL() {
                 return "SELECT COUNT(*), subq_1.count_course_grade_agg \n" +
                         "FROM (\n" +
-                        "SELECT student.student_user_fk, COUNT(section_grade.grade) as count_course_grade_agg, CASE \n" +
+                        "SELECT student.student_user_fk, CASE \n" +
                         "WHEN section_grade.grade >= 70.0 THEN 'pass'\n" +
                         "WHEN section_grade.grade < 70.0 THEN 'fail'\n" +
                         "ELSE NULL \n" +
-                        "END as count_course_grade_group \n" +
+                        "END as count_course_grade_group, COUNT(section_grade.grade) as count_course_grade_agg \n" +
                         "FROM student LEFT OUTER JOIN student_section_grade ON student.student_user_fk = student_section_grade.student_fk LEFT OUTER JOIN section_grade ON student_section_grade.section_grade_fk = section_grade.section_grade_id \n" +
                         "GROUP BY student.student_user_fk, count_course_grade_group\n" +
                         ") as subq_1 \n" +
                         "\n" +
-                        "WHERE subq_1.count_course_grade_group =  :hneLrBgisJynCgMxTjQZLEAyxSpoHDEn  GROUP BY subq_1.count_course_grade_agg";
+                        "WHERE subq_1.count_course_grade_group =  :FVLBcXKzeTrTqeiNuWDQbhrIGPuGQkNu  GROUP BY subq_1.count_course_grade_agg";
             }
             
             @Override
@@ -1010,19 +1012,57 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                return "SELECT school.school_id, COUNT(gpa.gpa_score) as count_current_gpa_agg, CASE \n" +
+                return "SELECT school.school_id, CASE \n" +
                         "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
                         "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
                         "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
                         "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
                         "ELSE NULL \n" +
-                        "END as count_current_gpa_group \n" +
+                        "END as count_current_gpa_group, COUNT(gpa.gpa_score) as count_current_gpa_agg \n" +
                         "FROM student LEFT OUTER JOIN gpa ON student.student_user_fk = gpa.student_fk INNER JOIN current_gpa ON gpa.gpa_id = current_gpa.gpa_fk\n" +
                         "LEFT OUTER JOIN school ON school.school_id = student.school_fk \n" +
                         "GROUP BY school.school_id, count_current_gpa_group";
             }
         };
         
+ TestQuery goalTest = new TestQuery() {
+
+            @Override
+            public String queryName() {
+                return "Count of achieved goals bucketed by week";
+            }
+
+            @Override
+            public Query buildQuery() {
+                Query goalQuery = new Query();
+                AggregateMeasure goalMeasure = new AggregateMeasure(Measure.GOAL, AggregateFunction.COUNT);
+                List<AggregateMeasure> goals = new ArrayList<>();
+                goals.add(goalMeasure);
+                goalQuery.setAggregateMeasures(goals);
+                goalQuery.addField(new DimensionField(Dimension.GOAL, GoalDimension.TYPE));
+                DimensionField df = new DimensionField(Dimension.GOAL, GoalDimension.START_DATE);
+                df.setBucketAggregation(AggregateFunction.YEARWEEK);
+                goalQuery.addField(df);
+                Expression ex = new Expression(new DimensionOperand(
+                        new DimensionField(Dimension.GOAL, GoalDimension.PROGRESS)),
+                        ComparisonOperator.EQUAL,
+                        new StringOperand(GoalProgress.UNMET.name()));
+                goalQuery.setFilter(ex);
+                return goalQuery;
+            }
+
+            @Override
+            public String buildSQL() {
+                return "SELECT goal.goal_type, YEARWEEK(goal.start_date) as start_date_YEARWEEK, COUNT(*) as count_goal_agg \n" +
+                        "FROM goal \n" +
+                        "WHERE  ( goal.progress  =  :mTdBTBVgGZSeVuvPixrNzDUlnNAqOBTq ) \n" +
+                        "GROUP BY goal.goal_type, YEARWEEK(goal.start_date)";
+            }
+
+            @Override
+            public Integer levDistance() { return 32; }
+        };
+
         Object[][] allTests = new Object[][] {
                 { courseGradeTestQuery },
                 { assignmentGradesTestQuery },
@@ -1041,7 +1081,7 @@ public class QuerySqlGeneratorUnitTest {
                 { demeritWithStaffTestQuery },
                 { demeritWithoutDimensionTestQuery },
                 { detentionWithoutDimensionTestQuery },
-                { schoolNameTestQuery }, 
+                { schoolNameTestQuery },
                 { gpaBucketTestQuery },
                 { currGpaTestQuery },
                 { courseGradesBucketedTestQuery },
@@ -1050,8 +1090,9 @@ public class QuerySqlGeneratorUnitTest {
                 { referralTestQuery },
                 { queryIncludingMultipleTablesPathFinder },
                 { currGpaBySchoolTestQuery },
-                {assignmentGradesIsNullTestQuery},
-                {assignmentGradesIsNotNullTestQuery}
+                { assignmentGradesIsNullTestQuery },
+                { assignmentGradesIsNotNullTestQuery },
+				{ goalTest }
         };
         
         return allTests;

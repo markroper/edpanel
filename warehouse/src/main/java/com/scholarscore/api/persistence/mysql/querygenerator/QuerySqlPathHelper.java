@@ -123,9 +123,10 @@ public class QuerySqlPathHelper {
             MeasureSqlSerializer serializer = MeasureSqlSerializerFactory.get(aggregateMeasure.getMeasure());
             Dimension table = serializer.toTableDimension();
             Dimension optionalTable = serializer.toSecondTableDimension();
-
-            orderedTables.add(table);
-            if (optionalTable != null) {
+            if(!orderedTables.contains(table)) {
+                orderedTables.add(table);
+            }
+            if (optionalTable != null && !orderedTables.contains(optionalTable)) {
                 orderedTables.add(optionalTable);
             }
         }

@@ -10,5 +10,8 @@ public enum AggregateFunction {
     SUM,
     AVG,
     STD_DEV,
-    COUNT;
+    COUNT,
+    YEARWEEK,
+    MONTH,
+    YEAR;
 }
