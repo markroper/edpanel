@@ -233,7 +233,6 @@ public class QuerySqlPathHelper {
 //        HashMap<Node, Integer> tableGraph = new HashMap<>();
         // this is the problem -- we are not sorting them consistently so the firstNode here is different.
         Node firstNode = unmatchedTables.iterator().next();
-        LOGGER.warn("FirstNode: " + firstNode.dimension);
         Set<Node> neighborNodes = findImmediateNeighbors(firstNode);
         unmatchedTables.remove(firstNode);
 
