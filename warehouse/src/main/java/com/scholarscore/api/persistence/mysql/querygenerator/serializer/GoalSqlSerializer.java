@@ -1,6 +1,6 @@
 package com.scholarscore.api.persistence.mysql.querygenerator.serializer;
 
-import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.query.Dimension;
 
 /**
  * Created by markroper on 3/4/16.
@@ -12,7 +12,7 @@ public class GoalSqlSerializer extends BaseSqlSerializer {
     }
 
     @Override
-    public String toTableName() {
-        return HibernateConsts.GOAL_TABLE;
+    public Dimension toTableDimension() {
+        return Dimension.GOAL;
     }
 }

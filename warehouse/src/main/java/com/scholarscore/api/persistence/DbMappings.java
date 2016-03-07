@@ -20,6 +20,7 @@ import com.scholarscore.models.query.measure.AttendanceMeasure;
 import com.scholarscore.models.query.measure.CourseGradeMeasure;
 import com.scholarscore.models.query.measure.CurrentGpaMeasure;
 import com.scholarscore.models.query.measure.GpaMeasure;
+import com.scholarscore.models.query.measure.behavior.BehaviorMeasure;
 
 import java.sql.Timestamp;
 import java.util.Date;
