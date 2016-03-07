@@ -28,27 +28,37 @@ import com.scholarscore.models.query.measure.behavior.ReferralMeasure;
  */
 public enum Measure {
     //Section Attendance
-    SECTION_ABSENCE,
-    SECTION_TARDY,
+    SECTION_ABSENCE(Dimension.ATTENDANCE),
+    SECTION_TARDY(Dimension.ATTENDANCE),
     //Daily Attendance
-    ATTENDANCE,
-    ABSENCE,
-    TARDY,
+    ATTENDANCE(Dimension.ATTENDANCE),
+    ABSENCE(Dimension.ATTENDANCE),
+    TARDY(Dimension.ATTENDANCE),
     //Behavioral measures
-    DEMERIT,
-    MERIT,
-    DETENTION,
+    DEMERIT(Dimension.BEHAVIOR),
+    MERIT(Dimension.BEHAVIOR),
+    DETENTION(Dimension.BEHAVIOR),
 //    PRIDE_SCORE,  // TODO: need IMeasure class and SqlSerializer for pride-score before it can be used
-    REFERRAL,
-    IN_SCHOOL_SUSPENSION,
-    OUT_OF_SCHOOL_SUSPENSION,
+    REFERRAL(Dimension.BEHAVIOR),
+    IN_SCHOOL_SUSPENSION(Dimension.BEHAVIOR),
+    OUT_OF_SCHOOL_SUSPENSION(Dimension.BEHAVIOR),
     //Academic measures
-    GPA,
-    CURRENT_GPA,
-    COURSE_GRADE,
-    ASSIGNMENT_GRADE,
-    HW_COMPLETION;
-    
+    GPA(Dimension.GPA),
+    CURRENT_GPA(Dimension.CURRENT_GPA),
+    COURSE_GRADE(Dimension.STUDENT_SECTION_GRADE),
+    ASSIGNMENT_GRADE(Dimension.STUDENT_ASSIGNMENT),
+    HW_COMPLETION(Dimension.STUDENT_ASSIGNMENT),
+    GOAL(Dimension.GOAL);
+
+    private Dimension dimension;
+
+    Measure(Dimension d) {
+        this.dimension = d;
+    }
+
+    public Dimension getDimension() {
+        return dimension;
+    }
     /**
      * Factory method for constructing an IMeasure instance of type measure.
      * @param measure
@@ -88,6 +98,8 @@ public enum Measure {
                 return new SectionTardyMeasure();
             case CURRENT_GPA:
                 return new CurrentGpaMeasure();
+            case GOAL:
+                return new GoalMeasure();
             default:
                 throw new QueryException("Unsupported measure " + measure + "!");
         }

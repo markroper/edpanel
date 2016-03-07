@@ -64,6 +64,7 @@ public abstract class QuerySqlGenerator {
     private static final String DOT = ".";
     
     public static SqlWithParameters generate(Query q) throws SqlGenerationException {
+        addAnyNecessaryJoinTables(q);
         Map<String, Object> params = new HashMap<>();
         StringBuilder sqlBuilder = new StringBuilder();
         populateSelectClause(sqlBuilder, params, q);
@@ -75,6 +76,18 @@ public abstract class QuerySqlGenerator {
             return generateQueryOfSubquery(q, sql);
         }
         return sql;
+    }
+    
+    // check if the supplied measures/dimensions/hints contained within this query
+    // (or really, the DB tables they roughly translate to) are 'compatible' in terms of producing
+    // a SQL statement with a coherent chain of JOIN statements across all tables.
+    // If the query isn't valid, add join tables (hints) to the query.
+    private static void addAnyNecessaryJoinTables(Query q) throws SqlGenerationException {
+        boolean queryHasPath = QuerySqlPathHelper.queryHasCompletePath(q);
+        if (!queryHasPath) {
+            System.out.println("Detected Query w/o path! Attempting to automatically find join path.");
+            QuerySqlPathHelper.calculateAndAddAdditionalNeededDimensions(q);
+        }
     }
 
     /**
@@ -150,7 +163,7 @@ public abstract class QuerySqlGenerator {
                 } else {
                     innerSqlBuilder.markNotFirstOrAppend(DELIM);
                     //look for the dimension
-                    sqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
+                    sqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias, false));
                     sqlBuilder.append(" ");
                     sqlBuilder.append(resolveOperatorSql(operator));
                     sqlBuilder.append(" ");
@@ -175,20 +188,19 @@ public abstract class QuerySqlGenerator {
                 } else {
                     sqlBuilder.append(DELIM);
                 }
-                sqlBuilder.append(generateDimensionFieldSql(f, null));
+                sqlBuilder.append(generateDimensionFieldSql(f, null, false));
             }
         }
         if (q.getAggregateMeasures() != null) {
             for (AggregateMeasure am : q.getAggregateMeasures()) {
                 MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
-                if(!isFirst) {
-                    sqlBuilder.append(DELIM);
-                    isFirst = false;
-                }
-                sqlBuilder.append(mss.toSelectClause(am.getAggregation()) + " as " + generateAggColumnName(am));
                 //If there are buckets involved in the aggregate query, inject the bucket pseudo column
                 if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
-                    sqlBuilder.append(DELIM);
+                    if(!isFirst) {
+                        sqlBuilder.append(DELIM);
+                    } else {
+                        isFirst = false;
+                    }
                     //If the buckets have not aggregate function applied, just reference the psuedo column by name
                     //Otherwise, enumerate the entire bucket definition and wrap it in a aggregate function
                     if(null == am.getBucketAggregation()) {
@@ -199,6 +211,12 @@ public abstract class QuerySqlGenerator {
                         sqlBuilder.append(generateBucketedColumn(am.getBuckets(), am.getBucketAggregation(), am.getMeasure(), true));
                     }
                 }
+                if(!isFirst) {
+                    sqlBuilder.append(DELIM);
+                } else {
+                    isFirst = false;
+                }
+                sqlBuilder.append(mss.toSelectClause(am.getAggregation()) + " as " + generateAggColumnName(am));
             }
         }
         sqlBuilder.append(" ");
@@ -264,70 +282,86 @@ public abstract class QuerySqlGenerator {
             MeasureSqlSerializer mss = null;
             if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
                 am = q.getAggregateMeasures().get(0);
-                mss = MeasureSqlSerializerFactory.get(am.getMeasure());
-                sqlBuilder.append(mss.toJoinClause(currTable));
+                if(!currTable.equals(am.getMeasure().getDimension())) {
+                    mss = MeasureSqlSerializerFactory.get(am.getMeasure());
+                    sqlBuilder.append(mss.toJoinClause(currTable));
+                }
             }
             //Join in the remaining dimensions tables, if any
             if(orderedTables.size() > 1) {
-                for(int i = 1; i < orderedTables.size(); i++) {
-                    Dimension joinDim = orderedTables.get(i);
-                    String currentTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(currTable);
-                    //If the next dimension is not compatible with the previous table for joining, that is, there is no
-                    //PK/FK relationship between the two, try to join on the measure table directly. If the measure is
-                    //not compatible with the dimension for joining, try joining on the previous dimension in the hierarchy.
-                    //If that doesn't match, check the dimension before that.
-                    if (Dimension.buildDimension(currTable).getParentDimensions() != null &&
-                            !Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
-                        if(am != null 
-                                && mss != null
-                                && am.getMeasure() != null 
-                                && Measure.buildMeasure(am.getMeasure()).getCompatibleDimensions().contains(joinDim)){
-                            currentTableName = mss.toTableName();
-                        } else {
-                            Dimension dimDesc = currTable;
-                            //Start with the previous dimension since we're already dealing with i and i-1...
-                            int descIndex = i - 2;
-                            while(descIndex >= 0 && !Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
-                                dimDesc = orderedTables.get(descIndex);
-                                descIndex--;
-                            }
-                            if(Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
-                                currentTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimDesc);
-                            } else {
-                                throw new SqlGenerationException(
-                                        "Cannot join dimension to either previous dimension or measure: " + joinDim);
-                            }
-                        }
-                    }
-                    String joinTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(joinDim);
-                    if(null == currentTableName || null == joinTableName) {
-                        throw new SqlGenerationException("Unable to generate JOIN clause due to null table name");
-                    }
-                    sqlBuilder.append(LEFT_OUTER_JOIN + joinTableName + " " + ON + " ");
-                    sqlBuilder.append(joinTableName + DOT + resolvePrimaryKeyField(joinTableName) + " = ");
-                    //Assignment is simplified to the user which means it can be ambiguous which dimension to actually join on
-                    //So we join on assignment if we're dealing with anything up a student or an assignment table directly
-                    if(currentTableName.equals(HibernateConsts.STUDENT_ASSIGNMENT_TABLE) &&
-                            !joinTableName.equals(HibernateConsts.STUDENT_TABLE) &&
-                            !joinTableName.equals(HibernateConsts.ASSIGNMENT_TABLE)) {
-                        currentTableName = HibernateConsts.ASSIGNMENT_TABLE;
-                    }
-                    sqlBuilder.append(currentTableName + DOT + joinTableName + FK_SUFFIX + " ");
-                    currTable = joinDim;
-                }
+                sqlBuilder.append(joinRemainingDimensions(orderedTables, currTable, am/*, mss*/));
             }
         } else if (null != q.getAggregateMeasures() && q.getAggregateMeasures().size() > 0) {
             //There are no dimensions, query off the measure table directly.
-            if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
-                AggregateMeasure am = q.getAggregateMeasures().get(0);
-                MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
-                sqlBuilder.append(mss.toFromClause());
-            }
+            AggregateMeasure am = q.getAggregateMeasures().get(0);
+            MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
+            sqlBuilder.append(mss.toFromClause());
         } else {
             throw new SqlGenerationException("No tables were resolved to query in the FROM clause");
         }
 
 
+    }
+    
+    private static String joinRemainingDimensions(List<Dimension> orderedTables, 
+                                                  Dimension currTable, 
+                                                  AggregateMeasure am) throws SqlGenerationException {
+        if (am == null) { throw new SqlGenerationException("AM must not be null!"); }
+        MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
+        
+        StringBuilder toReturn = new StringBuilder();
+        for(int i = 1; i < orderedTables.size(); i++) {
+            Dimension joinDim = orderedTables.get(i);
+            String currentTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(currTable);
+            //If the next dimension is not compatible with the previous table for joining, that is, there is no
+            //PK/FK relationship between the two, try to join on the measure table directly. If the measure is
+            //not compatible with the dimension for joining, try joining on the previous dimension in the hierarchy.
+            //If that doesn't match, check the dimension before that.
+            if (Dimension.buildDimension(currTable).getParentDimensions() != null &&
+                    !Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
+                if (measureIsCompatible(am, joinDim)){
+                    currentTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(mss.toTableDimension());
+                } else {
+                    currentTableName = getDimensionJoinOrThrowException(orderedTables.subList(0, i-1), currTable, joinDim);
+                }
+            }
+            String joinTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(joinDim);
+            if(null == currentTableName || null == joinTableName) {
+                throw new SqlGenerationException("Unable to generate JOIN clause due to null table name");
+            }
+            toReturn.append(LEFT_OUTER_JOIN + joinTableName + " " + ON + " ");
+            toReturn.append(joinTableName + DOT + resolvePrimaryKeyField(joinTableName) + " = ");
+            //Assignment is simplified to the user which means it can be ambiguous which dimension to actually join on
+            //So we join on assignment if we're dealing with anything up a student or an assignment table directly
+            if(currentTableName.equals(HibernateConsts.STUDENT_ASSIGNMENT_TABLE) &&
+                    !joinTableName.equals(HibernateConsts.STUDENT_TABLE) &&
+                    !joinTableName.equals(HibernateConsts.ASSIGNMENT_TABLE)) {
+                currentTableName = HibernateConsts.ASSIGNMENT_TABLE;
+            }
+            toReturn.append(currentTableName + DOT + joinTableName + FK_SUFFIX + " ");
+            currTable = joinDim;
+        }
+        return toReturn.toString();
+    }
+
+    private static String getDimensionJoinOrThrowException(List<Dimension> orderedTables, Dimension dimDesc, Dimension joinDim) throws SqlGenerationException {
+        //Start with the previous dimension since we're already dealing with i and i-1...
+        int descIndex = orderedTables.size()-1;
+        while(descIndex >= 0 && !Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
+            dimDesc = orderedTables.get(descIndex);
+            descIndex--;
+        }
+        if(Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
+            return DbMappings.DIMENSION_TO_TABLE_NAME.get(dimDesc);
+        } else {
+            throw new SqlGenerationException(
+                    "Cannot join dimension to either previous dimension or measure: " + joinDim);
+        }
+    }
+
+    private static boolean measureIsCompatible(AggregateMeasure aggregateMeasure, Dimension dimension) {
+        return (aggregateMeasure != null && aggregateMeasure.getMeasure() != null
+                && Measure.buildMeasure(aggregateMeasure.getMeasure()).getCompatibleDimensions().contains(dimension));
     }
 
     /**
@@ -341,6 +375,7 @@ public abstract class QuerySqlGenerator {
      */
     public static String resolvePrimaryKeyField(String tableName) {
         String primaryKeyFieldReference = tableName + ID_SUFFIX;
+        
         if(tableName.equals(HibernateConsts.STUDENT_TABLE) ||
                 tableName.equals(HibernateConsts.STAFF_TABLE)) {
             primaryKeyFieldReference = tableName + "_user_fk";
@@ -383,7 +418,7 @@ public abstract class QuerySqlGenerator {
                 sqlBuilder.append(" '" + DbMappings.resolveTimestamp(((DateOperand)operand).getValue()) + "' ");
                 break;
             case DIMENSION:
-                sqlBuilder.append(" " + generateDimensionFieldSql( ((DimensionOperand)operand).getValue(), tableAlias) + " ");
+                sqlBuilder.append(" " + generateDimensionFieldSql( ((DimensionOperand)operand).getValue(), tableAlias, false) + " ");
                 break;
             case MEASURE:
                 MeasureOperand mo = (MeasureOperand)operand;
@@ -445,10 +480,10 @@ public abstract class QuerySqlGenerator {
         if(null != q.getFields()) {
             for (DimensionField f : q.getFields()) {
                 if (isFirst) {
-                    groupBySqlBuilder.append(generateDimensionFieldSql(f, null));
+                    groupBySqlBuilder.append(generateDimensionFieldSql(f, null, true));
                     isFirst = false;
                 } else {
-                    groupBySqlBuilder.append(DELIM + generateDimensionFieldSql(f, null));
+                    groupBySqlBuilder.append(DELIM + generateDimensionFieldSql(f, null, true));
                 }
             }
         }
@@ -483,18 +518,34 @@ public abstract class QuerySqlGenerator {
     public static String generateAggColumnName(AggregateMeasure m) {
         return m.getAggregation().name().toLowerCase() + "_" + m.getMeasure().name().toLowerCase() + "_agg";
     }
-    protected static String generateDimensionFieldSql(DimensionField f, String tableAlias) throws SqlGenerationException {
+    protected static String generateDimensionFieldSql(DimensionField f, String tableAlias, boolean isGroupBy)
+            throws SqlGenerationException {
         String tableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(f.getDimension());
         if(null != tableAlias) {
             tableName = tableAlias;
         }
-        String columnName = DbMappings.DIMENSION_TO_COL_NAME.get(f);
+        DimensionField compField = new DimensionField(f.getDimension(), f.getField());
+        String columnName = DbMappings.DIMENSION_TO_COL_NAME.get(compField);
         if(null == tableName || null == columnName) {
-            throw new SqlGenerationException("Invalid dimension, tableName (" + 
-                    tableName + ") and columnName (" + 
+            throw new SqlGenerationException("Invalid dimension, tableName (" +
+                    tableName + ") and columnName (" +
                     columnName + ") must both be non-null");
         }
-        return tableName + DOT + columnName;
+
+        String rawColumnName = tableName + DOT + columnName;
+        if(null != f.getBucketAggregation()) {
+            String bucket = f.getBucketAggregation().name();
+            if(null != tableAlias) {
+                return rawColumnName + "_" + bucket;
+            } else {
+                String aggFunc = bucket + "(" + rawColumnName + ")";
+                if(!isGroupBy) {
+                    return aggFunc + " as " + columnName + "_" + bucket;
+                }
+                return aggFunc;
+            }
+        }
+        return rawColumnName;
     }
     
     protected static String generateMeasureFieldSql(MeasureField f, String tableAlias) throws SqlGenerationException {
@@ -600,9 +651,9 @@ public abstract class QuerySqlGenerator {
                 //find the right dimension
                 innerSqlBuilder.markNotFirstOrAppend(DELIM);
                 //look for the dimension
-                innerSqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
+                innerSqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias, false));
                 innerGroupByBuilder.markNotFirstOrAppend(DELIM);
-                innerGroupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias));
+                innerGroupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias, true));
             }
         }
     }

@@ -10,15 +10,6 @@ public class HibernateConsts {
     public static final String ADDRESS_POSTAL_CODE = "address_postal_code";
     public static final String ADDRESS_ID = "address_id";
     
-    //Administrator consts
-    public static final String ADMIN_TABLE = "administrator";
-    public static final String ADMIN_NAME = "administrator_name";
-    public static final String ADMIN_ADDRESS_FK = "administrator_homeAddress_fk";
-    public static final String ADMIN_HOME_PHONE = "administrator_home_phone";
-    public static final String ADMIN_SOURCE_SYSTEM_ID = "administrator_source_system_id";
-    public static final String ADMIN_SOURCE_SYSTEM_USER_ID = "administrator_source_system_user_id";
-    public static final String ADMIN_USER_FK = "administrator_user_fk";
-    
     //Assignment constants
     public static final String ASSIGNMENT_TABLE = "assignment";
     public static final String ASSIGNMENT_CLASS = "assignment_class";
@@ -154,13 +145,7 @@ public class HibernateConsts {
     public static final String SECTION_GRADE_LETTER_GRADE = "letter_grade";
 
     //Teacher constants
-    public static final String TEACHER_TABLE = "teacher";
     public static final String TEACHER_NAME = "teacher_name";
-    public static final String TEACHER_ADDRESS_FK = "teacher_homeAddress_fk";
-    public static final String TEACHER_HOME_PHONE = "teacher_home_phone";
-    public static final String TEACHER_SOURCE_SYSTEM_ID = "teacher_source_system_id";
-    public static final String TEACHER_SOURCE_SYSTEM_USER_ID = "teacher_source_system_user_id";
-    public static final String TEACHER_USER_FK = "teacher_user_fk";
 
     //Teacher constants
     public static final String STAFF_TABLE = "staff";
@@ -346,6 +331,7 @@ public class HibernateConsts {
 
     public static final String DASHBOARD_REPORT_TABLE = "dashboard_report";
     public static final String DASHBOARD_REPORT_NAME = "dashboard_report_name";
+    public static final String DASHBOARD_REPORT_TYPE = "dashboard_report_type";
     public static final String DASHBOARD_REPORT_ID = "dashboard_report_id";
     public static final String DASHBOARD_REPORT_SUPPORT_DEMOGRAPHIC_FILTER = "dashboard_report_support_demographic_filter";
     public static final String DASHBOARD_REPORT_SUPPORT_DATE_FILTER = "dashboard_report_support_date_filter";
