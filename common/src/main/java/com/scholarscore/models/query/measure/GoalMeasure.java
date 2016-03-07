@@ -3,16 +3,18 @@ package com.scholarscore.models.query.measure;
 import com.google.common.collect.ImmutableSet;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.Measure;
+import com.scholarscore.models.query.dimension.GoalDimension;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-@SuppressWarnings("serial")
-public class AssignmentGradeMeasure extends BaseMeasure implements IMeasure {
+/**
+ * Created by markroper on 3/4/16.
+ */
+public class GoalMeasure extends BaseMeasure {
     final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(new HashSet<Measure>());
-    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.SECTION);
-    
+    final Set<Dimension> compatibleDimensions = ImmutableSet.of(Dimension.STUDENT, Dimension.STAFF, Dimension.SECTION);
     @Override
     public Set<Dimension> getCompatibleDimensions() {
         return compatibleDimensions;
@@ -25,16 +27,17 @@ public class AssignmentGradeMeasure extends BaseMeasure implements IMeasure {
 
     @Override
     public Measure getMeasure() {
-        return Measure.ASSIGNMENT_GRADE;
+        return Measure.GOAL;
     }
 
     @Override
     public String getName() {
-        return "Assignment Grade";
+        return "Goal";
     }
 
     @Override
     public Set<String> getFields() {
-        return new HashSet<String>();
+        return GoalDimension.DIMENSION_FIELDS;
     }
+
 }

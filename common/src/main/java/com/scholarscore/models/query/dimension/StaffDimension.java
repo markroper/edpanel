@@ -19,7 +19,8 @@ public class StaffDimension extends BaseDimension implements IDimension {
             ImmutableSet.of(ID, NAME, EMAIL, SCHOOL);
     public static final Set<Dimension> PARENT_DIMENSIONS =
             ImmutableSet.of(Dimension.SCHOOL);
-
+    
+    
     @Override
     public Dimension getType() {
         return Dimension.STAFF;

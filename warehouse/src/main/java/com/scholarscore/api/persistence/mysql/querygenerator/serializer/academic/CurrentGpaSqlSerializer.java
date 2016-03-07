@@ -37,16 +37,20 @@ public class CurrentGpaSqlSerializer extends BaseSqlSerializer implements Measur
     
     @Override
     public String toFromClause() {
-        return HibernateConsts.CURRENT_GPA_TABLE + " " + gpaCurrGpaJoin() + " ";
+        return toTableName() + " " + gpaCurrGpaJoin() + " ";
     }
 
     @Override
-    public String toTableName() {
-        return HibernateConsts.CURRENT_GPA_TABLE;
+    public Dimension toTableDimension() {
+        return Dimension.CURRENT_GPA;
+    }
+
+    @Override
+    public Dimension toSecondTableDimension() {
+        return Dimension.GPA;
     }
     
-    @Override
-    public String optionalJoinedTable() {
-        return HibernateConsts.GPA_TABLE;
+    protected static String tableNameDotPrimaryKey(String tableName) {
+        return tableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(tableName);
     }
 }
