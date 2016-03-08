@@ -236,6 +236,7 @@ public class DbMappings {
 
     //TODO: straggler values here should be moved to ColumnConsts or removed altogether...
     public static final String DATABASE = "scholar_warehouse";
+    
     public static final String SCHOOL_ADDRESS_COL = "school_address";
     public static final String STUDENT_HOME_CITY_COL = "home_city";
     public static final String STUDENT_HOME_STREET_COL = "home_street";	
