@@ -171,6 +171,10 @@ def dbConfigure = {
 populateDatabaseWithDummyData dbConfigure
 refillDatabase dbConfigure
 
+refillDatabase << {
+    project.liquibaseUpdate.execute()
+}
+
 def getDate()  {
     def date = new Date()
     def formattedDate = date.format("yyyy-MM-dd'T'HH:mm:ss")
