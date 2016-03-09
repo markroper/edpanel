@@ -221,7 +221,6 @@
     <bean id="authInfoPersistence"
             class="com.scholarscore.api.persistence.mysql.jdbc.user.AuthInfoJdbc">
         <property name="dataSource" ref="dataSource"/>
-  <!--      <property name="passwordEncoder" ref="passwordEncoder" /> -->
     </bean>
     
 </beans>
