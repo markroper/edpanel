@@ -159,11 +159,11 @@ def dbConfigure = {
     def database_name = loadProperty(dbPropsFilePath, "database.name");
     def database_ssl  = loadProperty(dbPropsFilePath, "database.ssl");
     
-    def args = [ './database/db.sh', ext.command, database_user, database_pass, database_port, database_host]
+    def args = [ './database/db.sh', ext.command, database_user, database_pass, database_port, database_host, database_name]
 
     if (database_ssl?.equalsIgnoreCase("true")) { 
         println 'app configured to use SSL...'
-        args.add 'anything-in-6th-variable-enables-ssl'
+        args.add 'anything-in-7th-variable-enables-ssl'
     }
     commandLine args
 }
