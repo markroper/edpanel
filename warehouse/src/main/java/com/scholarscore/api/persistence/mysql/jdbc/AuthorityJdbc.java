@@ -29,7 +29,7 @@ public class AuthorityJdbc extends BaseJdbc implements AuthorityPersistence {
             "WHERE `" + DbMappings.AUTHORITY_USER_ID_COL + "`= :" + DbMappings.AUTHORITY_USER_ID_COL + "";
     private static String SELECT_ALL_AUTHORITIES_JOIN_USER_SQL = "SELECT * FROM `"+
             DbMappings.AUTHORITY_TABLE + "`" +
-            HibernateConsts.USERS_TABLE + "` ON " +
+            " JOIN `" + HibernateConsts.USERS_TABLE + "` ON " +
             "`" + HibernateConsts.USERS_TABLE + "`.`" + HibernateConsts.USER_ID + "`=`" +
             DbMappings.AUTHORITY_TABLE + "`.`" + DbMappings.AUTHORITY_USER_ID_COL + "` " +
              "WHERE `" + HibernateConsts.USERS_TABLE + "`.`" + HibernateConsts.USER_NAME + "`= :" + HibernateConsts.USER_NAME;
