@@ -51,11 +51,6 @@ MYSQL_COMMAND_WITH_DB="$MYSQL_COMMAND --database=$DATABASE_NAME"
 
 ## ## ## DONE ARG CHECKING
 
-##DATABASE_NAME=scriptTest2
-##temp_function() {
-##    echo "$(echo "set @databasename='$DATABASE_NAME';")" "$(echo "SET @query = CONCAT('CREATE DATABASE ', @databasename);PREPARE stmt FROM @query;EXECUTE stmt;DEALLOCATE PREPARE stmt;")" | mysql -u root;
-##}
-
 ## create the DB schema from scratch (via a script that does this)
 create_db() { 
     ## the only effective way I found to dynamically specify a DB name to "use" is to specify it as a command-line arg
@@ -75,8 +70,8 @@ populate_db() {
         exit 1
     fi
     
-##    echo "drop database if exists $DATABASE_NAME;" | ${MYSQL_COMMAND}
-    echo "$SET_DATABASE_NAME_COMMAND" "$(cat $SCRIPT_DIR/dropAndRecreateDatabase.sql)" | ${MYSQL_COMMAND}
+    echo "drop database if exists $DATABASE_NAME;" | ${MYSQL_COMMAND}
+##    echo "$SET_DATABASE_NAME_COMMAND" "$(cat $SCRIPT_DIR/dropAndRecreateDatabase.sql)" | ${MYSQL_COMMAND}
     
     if [ $? -ne 0 ]; then
         printf "Error attempting to connect to DB instance at $4:$3\n"
@@ -85,9 +80,9 @@ populate_db() {
     
     ## we rely on this being a standard mySQL dump file, which reports the name of the DB in a consistent way
     # we can grab that name from the script, then  use sed to replace it with the name we want when piping to mySQL
-    DUMP_SCRIPT_DB_NAME=$(cat "$SCRIPT_DIR/$DUMMY_DB_FILENAME" | gsed '/Database: / !d;q' | gsed 's/.*Database: \(.*\)/\1/')
+    DUMP_SCRIPT_DB_NAME=$(cat "$SCRIPT_DIR/$DUMMY_DB_FILENAME" | sed '/Database: / !d;q' | sed 's/.*Database: \(.*\)/\1/')
     
-    cat "$SCRIPT_DIR/$DUMMY_DB_FILENAME" | ${MYSQL_COMMAND_WITH_DB}
+    cat "$SCRIPT_DIR/$DUMMY_DB_FILENAME" | ${MYSQL_COMMAND}
     
     if [ $? -ne 0 ]; then
         printf "Error attempting to connect to DB instance at $4:$3\n"
