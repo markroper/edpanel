@@ -163,7 +163,7 @@ def dbConfigure = {
 
     if (database_ssl?.equalsIgnoreCase("true")) { 
         println 'app configured to use SSL...'
-        args.add 'anything-in-5th-variable-enables-ssl'
+        args.add 'anything-in-6th-variable-enables-ssl'
     }
     commandLine args
 }
