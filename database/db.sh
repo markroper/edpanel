@@ -1,5 +1,5 @@
 #!/bin/bash
-## arguments: this_script.sh database-command username password port host [enableSSL]
+## arguments: this_script.sh database-command username password port host schema_name [enableSSL]
 ##
 ## This script can do either of two things, depending on the (required) first argument passed to it: 
 ## - provision a new, empty database with the correct schema using the 'create' argument
@@ -11,10 +11,7 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 SCRIPT_FILENAME=$(basename $0)
-USAGE_MSG="Usage: $SCRIPT_FILENAME {create | populate} \e[4musername\e[0m \e[4mpassword\e[0m \e[4mport\e[0m \e[4mhost\e[0m [\e[4menable_ssl\e[0m]\n"
-
-DATABASE_NAME=scholar_warehouse
-SET_DATABASE_NAME_COMMAND="set @databasename='$DATABASE_NAME';"
+USAGE_MSG="Usage: $SCRIPT_FILENAME {create | populate} \e[4musername\e[0m \e[4mpassword\e[0m \e[4mport\e[0m \e[4mhost\e[0m \e[4mschema_name\e[0m [\e[4menable_ssl\e[0m]\n"
 
 ## ## ## BEGIN ARG CHECKING
 
@@ -32,16 +29,21 @@ else
     exit 1
 fi
 
-## arguments 2, 3, 4 and 5 are required
-if [[ -z "$2" || -z "$3" || -z "$4" || -z "$5" ]]; then
+## arguments 2, 3, 4, 5 and 6 are required
+if [[ -z "$2" || -z "$3" || -z "$4" || -z "$5" || -z "$6" ]]; then
     printf "ERROR: Required argument is null!\n"
     printf "$USAGE_MSG\n"
     exit 1
 fi
 
 MYSQL_COMMAND="mysql --skip-column-names -u$2 -p$3 --port=$4 --host=$5"
-## the sixth optional argument, if present (any value is fine) enables SSL
-if [ "$6" ]; then 
+
+## sixth arg is used for database name
+DATABASE_NAME=$6
+SET_DATABASE_NAME_COMMAND="set @databasename='$DATABASE_NAME';"
+
+## the seventh optional argument, if present (any value is fine) enables SSL
+if [ "$7" ]; then 
     MYSQL_COMMAND="$MYSQL_COMMAND --ssl-ca=$SCRIPT_DIR/../warehouse/src/main/resources/db-public-key.ca-bundle"
 fi
 
@@ -81,8 +83,14 @@ populate_db() {
     ## we rely on this being a standard mySQL dump file, which reports the name of the DB in a consistent way
     # we can grab that name from the script, then  use sed to replace it with the name we want when piping to mySQL
     DUMP_SCRIPT_DB_NAME=$(cat "$SCRIPT_DIR/$DUMMY_DB_FILENAME" | sed '/Database: / !d;q' | sed 's/.*Database: \(.*\)/\1/')
+
+    SED_COMMAND=""
+    ## MUST check this -- sed considers it an error to replace something with the same thing 
+    if [[ "$DUMP_SCRIPT_DB_NAME" != "$DATABASE_NAME" ]]; then
+        SED_COMMAND="s/$DUMP_SCRIPT_DB_NAME/$DATABASE_NAME/g"
+    fi
     
-    cat "$SCRIPT_DIR/$DUMMY_DB_FILENAME" | ${MYSQL_COMMAND}
+    cat "$SCRIPT_DIR/$DUMMY_DB_FILENAME" | sed "$SED_COMMAND" | ${MYSQL_COMMAND} 
     
     if [ $? -ne 0 ]; then
         printf "Error attempting to connect to DB instance at $4:$3\n"
