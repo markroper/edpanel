@@ -170,8 +170,6 @@ public class NotificationManagerImpl implements NotificationManager {
                         }
                     }
 
-                    //If they are one time we need to delete these things once they are evaluated
-
                 }
 
             }

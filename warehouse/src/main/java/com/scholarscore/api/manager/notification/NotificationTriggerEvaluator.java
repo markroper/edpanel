@@ -45,6 +45,11 @@ public class NotificationTriggerEvaluator {
      * @return
      */
     public List<TriggeredNotification> evaluate(Notification notification) {
+        //If its a one time notification and it was already triggered, don't trigger it again and can skip all this
+        if (notification.getOneTime() && notification.getTriggered()) {
+            return null;
+        }
+
         List<? extends Person> subjects =
                 NotificationCalculator.resolveGroupMembers(
                         notification.getSubjects(), notification.getSchoolId(), manager);
@@ -95,10 +100,6 @@ public class NotificationTriggerEvaluator {
                         notification.getMeasure() + " and could not be evaluated for this reason");
                 calculator = null;
                 break;
-        }
-        //If its a one time notification and it was already triggered, don't trigger it again
-        if (notification.getOneTime() && notification.getTriggered()) {
-            return null;
         }
         if(null != calculator) {
             return calculator.calculate(subjects, notification, manager);

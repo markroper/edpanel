@@ -29,12 +29,7 @@ public class GoalCreatedCalc implements NotificationCalculator {
                 triggered.addAll(t);
             }
         }
-
-        if (triggered.isEmpty()) {
-            return null;
-        } else {
-            return triggered;
-        }
+        return triggered.isEmpty() ? null : triggered;
     }
 
 }
