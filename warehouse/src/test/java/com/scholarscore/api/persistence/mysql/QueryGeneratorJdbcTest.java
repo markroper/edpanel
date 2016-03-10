@@ -38,23 +38,9 @@ public class QueryGeneratorJdbcTest extends BaseJdbcTest {
         assertNotNull(session, "Could not obtain Hibernate session!");
 
         SqlWithParameters query = QuerySqlGenerator.generate(testQuery.buildQuery());
-        
-        // if query has parameters, replace them with the real values
-        String querySql = query.getSql();
-        LOGGER.debug("Checking params...");
-        if (query.getParams() != null) {
-            for (String paramKey: query.getParams().keySet()) {
-                Object value = query.getParams().get(paramKey);
-                if (value instanceof String) {
-                    LOGGER.debug("Query " + testQuery.queryName() + " contains String parameter :" + paramKey + " which will be replaced with '" + value + "'");
-                    if (paramKey != null) {
-                        querySql = querySql.replace(":" + paramKey, "'" + value + "'");
-                    }
-                }
-                // if non-string parameters are added later, they will need to be handled here
-            }
-        }
 
+        String querySql = QuerySqlGeneratorUnitTest.getSQLQueryWithPopulatedParams(query);
+        
         SQLQuery constructedQuery = session.createSQLQuery(querySql) ;
         List result = null;
         try {
