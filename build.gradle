@@ -139,11 +139,19 @@ liquibase {
 }
 
 task populateDatabaseWithDummyData(type: Exec) {
-    group 'Database'
     description 'Clears the database, then fill it with the contents of the dummy database file'
+    ext.command = "populate"
+}
+
+task refillDatabase(type: Exec) {
+    description 'creates everything needed within the database'
+    ext.command = "create"
+}
+
+def dbConfigure = {
+    group 'Database'
 
     def dbPropsFilePath = "/warehouse/src/main/resources/database.properties"
-    
     def database_user = loadProperty(dbPropsFilePath, "database.user");
     def database_pass = loadProperty(dbPropsFilePath, "database.pass");
     def database_host = loadProperty(dbPropsFilePath, "database.host");
@@ -151,39 +159,20 @@ task populateDatabaseWithDummyData(type: Exec) {
     def database_name = loadProperty(dbPropsFilePath, "database.name");
     def database_ssl  = loadProperty(dbPropsFilePath, "database.ssl");
     
-    def args = [ './database/populate_db.sh', database_user, database_pass, database_port, database_host]
+    def args = [ './database/db.sh', ext.command, database_user, database_pass, database_port, database_host, database_name]
 
     if (database_ssl?.equalsIgnoreCase("true")) { 
-        println 'app configured to use SSL. Refilling DB over SSL...'
-        args.add 'anything-in-5th-variable-enables-ssl'
+        println 'app configured to use SSL...'
+        args.add 'anything-in-7th-variable-enables-ssl'
     }
     commandLine args
 }
 
-task refillDatabase(type: Exec) {
-    group 'Database'
-    description 'creates everything needed within the database'
+populateDatabaseWithDummyData dbConfigure
+refillDatabase dbConfigure
 
-    def dbPropsFilePath = "/warehouse/src/main/resources/database.properties"
-    
-    def database_user = loadProperty(dbPropsFilePath, "database.user");
-    def database_pass = loadProperty(dbPropsFilePath, "database.pass");
-    def database_host = loadProperty(dbPropsFilePath, "database.host");
-    def database_port = loadProperty(dbPropsFilePath, "database.port");
-    def database_name = loadProperty(dbPropsFilePath, "database.name");
-    def database_ssl  = loadProperty(dbPropsFilePath, "database.ssl");
-    
-    def args = [ './database/createdb.sh', database_user, database_pass, database_port, database_host]
-
-    if (database_ssl?.equalsIgnoreCase("true")) { 
-        println 'app configured to use SSL. Refilling DB over SSL...'
-        args.add 'anything-in-5th-variable-enables-ssl'
-    }
-    commandLine args
-
-    doLast {
-        project.liquibaseUpdate.execute()
-    }
+refillDatabase << {
+    project.liquibaseUpdate.execute()
 }
 
 def getDate()  {

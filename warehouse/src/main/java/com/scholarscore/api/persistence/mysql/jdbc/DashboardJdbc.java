@@ -93,7 +93,7 @@ public class DashboardJdbc extends BaseJdbc implements DashboardPersistence {
         Map<String, Object> params = new HashMap<>();
         params.put("dashboardId", dashboardId);
         jdbcTemplate.update(
-                "DELETE FROM `scholar_warehouse`.`dashboard` WHERE `dashboard_id` = :dashboardId",
+                "DELETE FROM `dashboard` WHERE `dashboard_id` = :dashboardId",
                 new MapSqlParameterSource(params));
     }
 
