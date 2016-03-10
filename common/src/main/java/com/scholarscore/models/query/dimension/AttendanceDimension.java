@@ -1,11 +1,10 @@
 package com.scholarscore.models.query.dimension;
 
 import com.google.common.collect.ImmutableSet;
-import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.query.measure.AttendanceMeasure;
 
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -34,7 +33,7 @@ public class AttendanceDimension extends BaseDimension implements IDimension {
 
     @Override
     public Set<String> getFields() {
-        return null;
+        return AttendanceMeasure.fields;
     }
 
     @Override

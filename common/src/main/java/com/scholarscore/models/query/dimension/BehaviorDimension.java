@@ -1,7 +1,7 @@
 package com.scholarscore.models.query.dimension;
 
 import com.google.common.collect.ImmutableSet;
-import com.scholarscore.models.attendance.Attendance;
+import com.scholarscore.models.Behavior;
 import com.scholarscore.models.query.Dimension;
 
 import java.util.Set;
@@ -17,12 +17,12 @@ public class BehaviorDimension extends BaseDimension implements IDimension {
 
     @Override
     public Dimension getType() {
-        return Dimension.ATTENDANCE;
+        return Dimension.BEHAVIOR;
     }
 
     @Override
     public Class<?> getAssociatedClass() {
-        return Attendance.class;
+        return Behavior.class;
     }
 
     @Override
