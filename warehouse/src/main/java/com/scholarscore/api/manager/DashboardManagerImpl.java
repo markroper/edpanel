@@ -159,9 +159,9 @@ public class DashboardManagerImpl implements DashboardManager {
                 new DimensionOperand(new DimensionField(Dimension.STUDENT, StudentDimension.ID))
         );
         Expression whereClause = new Expression(
-                new NumericPlaceholder("${schoolId}"),
+                new DimensionOperand(new DimensionField(Dimension.SCHOOL, SchoolDimension.ID)),
                 ComparisonOperator.EQUAL,
-                new DimensionOperand(new DimensionField(Dimension.SCHOOL, SchoolDimension.ID)));
+                new NumericPlaceholder("${schoolId}"));
         gpaBucketQuery.setFilter(new Expression(studentClause, BinaryOperator.AND, whereClause));
         gpa.setChartQuery(gpaBucketQuery);
         Query gpaClick = new Query();
