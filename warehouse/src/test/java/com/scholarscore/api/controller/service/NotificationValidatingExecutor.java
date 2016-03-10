@@ -33,6 +33,15 @@ public class NotificationValidatingExecutor {
                 null);
     }
 
+    public void createGoalNotifications(long schoolId, long studentId, long goalId) {
+        ResultActions response = serviceBase.makeRequest(
+                HttpMethod.POST,
+                serviceBase.getNotificationEndpoint() + "/schools/" + schoolId +
+                        "/students/"+ studentId + "/goals/" + goalId,
+                null,
+                null);
+    }
+
     public Notification create(Notification s, String msg) {
         ResultActions response = serviceBase.makeRequest(
                 HttpMethod.POST,

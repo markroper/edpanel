@@ -56,10 +56,12 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
     private Student student3;
     private Student student4;
     private Student student5;
+    private Student student6;
     private Staff teacher2;
     private Staff teacher;
     private List<SchoolDay> days;
-    private Goal goal;
+    private Goal goalForStudent5;
+    private Goal goalForStudent6;
 
     private static final double STUDENT_3_ABSENCE_THRESHOLD = 4;
     private static final long STUDENT_2_EXPECTED = 3;
@@ -144,6 +146,14 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         student5.setFederalRace("I");
         student5 = studentValidatingExecutor.create(student5, "create base student");
 
+        student6 = new Student();
+        student6.setName(localeServiceUtil.generateName());
+        student6.setCurrentSchoolId(school.getId());
+        student6.setFederalEthnicity("false");
+        student6.setGender(Gender.FEMALE);
+        student6.setFederalRace("I");
+        student6 = studentValidatingExecutor.create(student6, "create base student");
+
         schoolYear = new SchoolYear();
         schoolYear.setName(localeServiceUtil.generateName());
         schoolYear.setSchool(school);
@@ -226,19 +236,33 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
             attendanceValidatingExecutor.create(school.getId(), student3.getId(), a2, "Daily absence for student3");
         }
 
-        //Make an unapproved goal!
-        goal = new OpenGoal();
-        goal.setStudent(student5);
-        goal.setStaff(teacher2);
-        goal.setPlan("Testing makes better code and I don't want to do my discrete exam");
-        goal.setOutcome("Make money man, Ill do discrete later");
-        goal.setObstacles("I recently ran out of coffee");
-        goal.setAutocomplete(false);
-        goal.setDesiredValue(-1D);
-        goal.setName("THe goal to end all goals");
-        goal.setApproved(LocalDate.now());
-        goal.setGoalProgress(GoalProgress.MET);
-        goal = goalValidatingExecutor.create(student5.getId(),goal,"Create an unapprovedGoal");
+        //Make an unapproved goalForStudent5!
+        goalForStudent5 = new OpenGoal();
+        goalForStudent5.setStudent(student5);
+        goalForStudent5.setStaff(teacher2);
+        goalForStudent5.setPlan("Testing makes better code and I don't want to do my discrete exam");
+        goalForStudent5.setOutcome("Make money man, Ill do discrete later");
+        goalForStudent5.setObstacles("I recently ran out of coffee");
+        goalForStudent5.setAutocomplete(false);
+        goalForStudent5.setDesiredValue(-1D);
+        goalForStudent5.setName("THe goalForStudent5 to end all goals");
+        goalForStudent5.setApproved(LocalDate.now());
+        goalForStudent5.setGoalProgress(GoalProgress.MET);
+        goalForStudent5 = goalValidatingExecutor.create(student5.getId(), goalForStudent5,"Create an unapprovedGoal");
+
+        //Make an unapproved goalForStudent5!
+        goalForStudent6 = new OpenGoal();
+        goalForStudent6.setStudent(student6);
+        goalForStudent6.setStaff(teacher2);
+        goalForStudent6.setPlan("Testing makes better code and I don't want to do my discrete exam");
+        goalForStudent6.setOutcome("Make money man, Ill do discrete later");
+        goalForStudent6.setObstacles("I recently ran out of coffee");
+        goalForStudent6.setAutocomplete(false);
+        goalForStudent6.setDesiredValue(-1D);
+        goalForStudent6.setName("THe goalForStudent6 to end all goals");
+        goalForStudent6.setApproved(LocalDate.now());
+        goalForStudent6.setGoalProgress(GoalProgress.MET);
+        goalForStudent6 = goalValidatingExecutor.create(student6.getId(), goalForStudent6,"Create an unapprovedGoal");
 
 
 
@@ -268,7 +292,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         studentSectionGrade.setCreatedDate(LocalDate.now());
         studentSectionGrade.setExpiryDate(LocalDate.now().plusMonths(3));
         studentSectionGrade.setMeasure(NotificationMeasure.SECTION_GRADE);
-        studentSectionGrade.setName("Single Student grade goal");
+        studentSectionGrade.setName("Single Student grade goalForStudent5");
         studentSectionGrade.setOwner(student2);
         studentSectionGrade.setSchoolId(school.getId());
         studentSectionGrade.setSection(section);
@@ -285,7 +309,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         behaviorScoreNotification.setCreatedDate(LocalDate.now());
         behaviorScoreNotification.setExpiryDate(LocalDate.now().plusMonths(3));
         behaviorScoreNotification.setMeasure(NotificationMeasure.BEHAVIOR_SCORE);
-        behaviorScoreNotification.setName("School wide boys behavior score grade goal");
+        behaviorScoreNotification.setName("School wide boys behavior score grade goalForStudent5");
         behaviorScoreNotification.setOwner(teacher);
         behaviorScoreNotification.setSchoolId(school.getId());
         behaviorScoreNotification.setAggregateFunction(AggregateFunction.AVG);
@@ -381,7 +405,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
 
 
         Notification goalCreated = new Notification();
-        goalCreated.setGoal(goal);
+        goalCreated.setGoal(goalForStudent5);
         goalCreated.setCreatedDate(LocalDate.now());
         goalCreated.setTriggerWhenGreaterThan(true);
         goalCreated.setExpiryDate(LocalDate.now());
@@ -401,7 +425,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         stud6.setStudent(student5);
 
         Notification goalApproved = new Notification();
-        goalApproved.setGoal(goal);
+        goalApproved.setGoal(goalForStudent5);
         goalApproved.setCreatedDate(LocalDate.now());
         goalApproved.setTriggerWhenGreaterThan(true);
         goalApproved.setExpiryDate(LocalDate.now());
@@ -422,7 +446,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         altStudent.setStudent(student5);
 
         Notification goalMet = new Notification();
-        goalMet.setGoal(goal);
+        goalMet.setGoal(goalForStudent5);
         goalMet.setCreatedDate(LocalDate.now());
         goalMet.setTriggerWhenGreaterThan(true);
         goalMet.setExpiryDate(LocalDate.now());
@@ -443,7 +467,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         stud.setStudent(student5);
 
         Notification goalUnMet = new Notification();
-        goalUnMet.setGoal(goal);
+        goalUnMet.setGoal(goalForStudent5);
         goalUnMet.setCreatedDate(LocalDate.now());
         goalUnMet.setTriggerWhenGreaterThan(true);
         goalUnMet.setExpiryDate(LocalDate.now());
@@ -457,10 +481,10 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         goalUnMet.setOneTime(true);
 
         return new Object[][]{
-                {"Notify teacher when a  student creates a goal", goalCreated},
-                {"Notify student when a teacher approves a goal", goalApproved},
-                {"Notify a student when a student has met a goal", goalMet},
-                {"Notify a student when a student did not meet a goal", goalUnMet}
+                {"Notify teacher when a  student creates a goalForStudent5", goalCreated},
+                {"Notify student when a teacher approves a goalForStudent5", goalApproved},
+                {"Notify a student when a student has met a goalForStudent5", goalMet},
+                {"Notify a student when a student did not meet a goalForStudent5", goalUnMet}
         };
     }
 
@@ -525,28 +549,98 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         // evaluate all notifications, since these are all one time everything after this should return 0.
         notificationValidatingExecutor.evaluateNotifications(school.getId());
 
-        // check that teacher has 2 triggered notifications, because the goal shoudl not trigger again
+        // check that teacher has 2 triggered notifications, because the goalForStudent5 shoudl not trigger again
         List<TriggeredNotification> finalTriggeredNotifications =
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(teacher2.getId(), "Teacher triggered notifications");
         Assert.assertEquals(finalTriggeredNotifications.size(), 0, "Unexpected number of teacher triggered notifications returned");
 
-        // check that teacher has 2 triggered notifications, because the goal shoudl not trigger again
+        // check that teacher has 2 triggered notifications, because the goalForStudent5 shoudl not trigger again
         List<TriggeredNotification> finalStudentNotifications =
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(student5.getId(), "Teacher triggered notifications");
         Assert.assertEquals(finalStudentNotifications.size(), 0, "Unexpected number of student triggered notifications returned");
 
-        //The goal unmet notification should be deleted, so this should not trigger when we change the goal
-        goal.setGoalProgress(GoalProgress.UNMET);
-        goalValidatingExecutor.update(student5.getId(), goal.getId(), goal, "Updating the goal to set it as unmet");
+        //The goalForStudent5 unmet notification should be deleted, so this should not trigger when we change the goalForStudent5
+        goalForStudent5.setGoalProgress(GoalProgress.UNMET);
+        goalValidatingExecutor.update(student6.getId(), goalForStudent5.getId(), goalForStudent5, "Updating the goalForStudent5 to set it as unmet");
 
         //This should be zero since the unmet notification should be deleted.
         finalStudentNotifications =
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(student5.getId(), "Teacher triggered notifications");
         Assert.assertEquals(finalStudentNotifications.size(), 0, "Unexpected number of student triggered notifications returned");
 
+
         for (Notification n : nots) {
             notificationValidatingExecutor.delete(n.getId(), "Cleaning up from this partial test");
         }
+
+    }
+
+    @Test
+    public void checkCreateNotificationsEndpoint() {
+
+        //Create the notifications
+        notificationValidatingExecutor.createGoalNotifications(school.getId(), student6.getId(), goalForStudent6.getId());
+
+
+        // evaluate all notifications
+        notificationValidatingExecutor.evaluateNotifications(school.getId());
+
+        //The teacher should have two notifications active on them, created and met
+        List<TriggeredNotification> teacherTriggeredNotifications =
+                notificationValidatingExecutor.getTriggeredNotificationsForUser(teacher2.getId(), "Teacher triggered notifications");
+
+        Assert.assertEquals(teacherTriggeredNotifications.size(), 2, "Teacher assigned notifications not correct");
+
+        //REgister that we checked them so we can see if they appear again
+        for (TriggeredNotification tNot : teacherTriggeredNotifications) {
+            notificationValidatingExecutor.disableTriggeredNotification(
+                    tNot.getNotification().getId(),
+                    tNot.getId(),
+                    teacher2.getId(),
+                    "Disabling notification");
+        }
+
+        //Student should have two notifcations
+        List<TriggeredNotification> studTriggeredNotifications =
+                notificationValidatingExecutor.getTriggeredNotificationsForUser(student6.getId(), "Student triggered notifications");
+
+        Assert.assertEquals(studTriggeredNotifications.size(), 2, "Student Triggered notifications not correct");
+
+        //Dismiss the student's notifications
+        for (TriggeredNotification tNot : studTriggeredNotifications) {
+            notificationValidatingExecutor.disableTriggeredNotification(
+                    tNot.getNotification().getId(),
+                    tNot.getId(),
+                    student5.getId(),
+                    "Disabling notification");
+        }
+
+
+        // evaluate all notifications, since these are all one time everything after this should return 0.
+        notificationValidatingExecutor.evaluateNotifications(school.getId());
+
+        // check that teacher has 2 triggered notifications, because the goalForStudent5 shoudl not trigger again
+        List<TriggeredNotification> finalTriggeredNotifications =
+                notificationValidatingExecutor.getTriggeredNotificationsForUser(teacher2.getId(), "Teacher triggered notifications");
+        Assert.assertEquals(finalTriggeredNotifications.size(), 0, "Unexpected number of teacher triggered notifications returned");
+
+        // check that teacher has 2 triggered notifications, because the goalForStudent5 shoudl not trigger again
+        List<TriggeredNotification> finalStudentNotifications =
+                notificationValidatingExecutor.getTriggeredNotificationsForUser(student6.getId(), "Teacher triggered notifications");
+        Assert.assertEquals(finalStudentNotifications.size(), 0, "Unexpected number of student triggered notifications returned");
+
+        //The goalForStudent5 unmet notification should be deleted, so this should not trigger when we change the goalForStudent5
+        goalForStudent6.setGoalProgress(GoalProgress.UNMET);
+        goalValidatingExecutor.update(student6.getId(), goalForStudent6.getId(), goalForStudent6, "Updating the goalForStudent5 to set it as unmet");
+
+        //This should be zero since the unmet notification should be deleted.
+        finalStudentNotifications =
+                notificationValidatingExecutor.getTriggeredNotificationsForUser(student6.getId(), "Teacher triggered notifications");
+        Assert.assertEquals(finalStudentNotifications.size(), 0, "Unexpected number of student triggered notifications returned");
+
+       // for (Notification n : nots) {
+       //     notificationValidatingExecutor.delete(n.getId(), "Cleaning up from this partial test");
+       // }
 
     }
 
