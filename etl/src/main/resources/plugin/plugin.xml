@@ -9,7 +9,7 @@
 	<oauth></oauth>
 
 	<publisher name="EdPanel">
-		<contact email="mark@edpanel.com" />
+		<contact email="mark@myedpanel.com" />
 	</publisher>
 
 	<access_request>
