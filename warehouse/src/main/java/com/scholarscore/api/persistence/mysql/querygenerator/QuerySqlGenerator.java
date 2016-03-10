@@ -85,7 +85,6 @@ public abstract class QuerySqlGenerator {
     private static void addAnyNecessaryJoinTables(Query q) throws SqlGenerationException {
         boolean queryHasPath = QuerySqlPathHelper.queryHasCompletePath(q);
         if (!queryHasPath) {
-            System.out.println("Detected Query w/o path! Attempting to automatically find join path.");
             QuerySqlPathHelper.calculateAndAddAdditionalNeededDimensions(q);
         }
     }

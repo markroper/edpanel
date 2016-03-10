@@ -40,7 +40,7 @@ public class QuerySqlPathHelper {
         if (queryHasCompletePath(q)) { return; }
         LOGGER.debug("Determined that additional dimensions are needed...");
 
-        List<Dimension> orderedTables = buildExtendedTablesFromQuery(q);
+        List<Dimension> orderedTables = buildTablesFromQuery(q);
         List<Dimension> unmatchedDimensions = returnUnmatchedTables(orderedTables);
         LOGGER.debug("UNMATCHED TABLES: " + unmatchedDimensions);
         
@@ -64,7 +64,7 @@ public class QuerySqlPathHelper {
                     q.addJoinTable(neededDimension);
                 }
                 
-                List<Dimension> unmatchedDimensionsAfterAdding = returnUnmatchedTables(buildExtendedTablesFromQuery(q));
+                List<Dimension> unmatchedDimensionsAfterAdding = returnUnmatchedTables(buildTablesFromQuery(q));
                 if (unmatchedDimensionsAfterAdding == null || unmatchedDimensionsAfterAdding.size() == 0) {
                     // we're done!
                     return;
@@ -92,15 +92,14 @@ public class QuerySqlPathHelper {
     }
     
     public static Boolean queryHasCompletePath(Query q) {
-        List<Dimension> orderedTables = buildExtendedTablesFromQuery(q);
+        List<Dimension> orderedTables = buildTablesFromQuery(q);
         return hasCompleteJoinPath(orderedTables);
     }
-    
-    // this list of ordered tables includes aggregate measures and a pseudo-dimension conversion step
-    private static List<Dimension> buildExtendedTablesFromQuery(Query q) {
+
+    private static List<Dimension> buildDimensionsFromQuery(Query q) {
         //Get the dimensions in the correct order for joining:
         HashSet<Dimension> selectedDims = new HashSet<>();
-        if(null != q.getFields()) {
+        if (null != q.getFields()) {
             for (DimensionField f : q.getFields()) {
                 selectedDims.add(f.getDimension());
             }
@@ -113,24 +112,31 @@ public class QuerySqlPathHelper {
         }
         //Add any dimensions to join that may be referenced only in the WHERE clause
         Set<Dimension> filterDims = q.resolveFilterDimensions();
-        if(null != filterDims) {
+        if (null != filterDims) {
             selectedDims.addAll(filterDims);
         }
-        List<Dimension> orderedTables = Dimension.resolveOrderedDimensions(selectedDims);
-        
+
         if (q.getAggregateMeasures() != null && q.getAggregateMeasures().size() > 0) {
             AggregateMeasure aggregateMeasure = q.getAggregateMeasures().get(0);
             MeasureSqlSerializer serializer = MeasureSqlSerializerFactory.get(aggregateMeasure.getMeasure());
             Dimension table = serializer.toTableDimension();
             Dimension optionalTable = serializer.toSecondTableDimension();
-            if(!orderedTables.contains(table)) {
-                orderedTables.add(table);
+            if (!selectedDims.contains(table)) {
+                selectedDims.add(table);
             }
-            if (optionalTable != null && !orderedTables.contains(optionalTable)) {
-                orderedTables.add(optionalTable);
+            if (optionalTable != null && !selectedDims.contains(optionalTable)) {
+                selectedDims.add(optionalTable);
             }
         }
 
+        return Dimension.resolveOrderedDimensions(selectedDims);
+    }
+    
+    // invoke buildDimensionsFromQuery() with an a pseudo-dimension conversion step
+    private static List<Dimension> buildTablesFromQuery(Query q) {
+
+        List<Dimension> orderedTables = buildDimensionsFromQuery(q);
+        
         // replace any pseudo dimensions with their corresponding actual dimensions
         // (a bit hacky -- we can achieve this by converting from dimensions to tablenames and then back to dimensions again)
         for (int i = 0 ; i < orderedTables.size() ; i++) {
@@ -146,7 +152,6 @@ public class QuerySqlPathHelper {
     }
 
     private static class Node {
-//        Edge[] edges;
         Dimension dimension;
         
         // this node has connections to the following nodes
@@ -157,11 +162,6 @@ public class QuerySqlPathHelper {
             return "Node (d:" + dimension +") (neighbor count: [" + neighbors.length + "])";
         }
     }
-
-//    private static class Edge {
-//        Node pointedFrom;
-//        Node pointedAt;
-//    }
 
     private static HashMap<Dimension, Node> buildGraph(List<Dimension> dimensions) {
         HashMap<Dimension, Node> nodesSoFar = new HashMap<>();
@@ -178,19 +178,12 @@ public class QuerySqlPathHelper {
             Set<Dimension> parentDimensions = dimensionClass.getParentDimensions();
             if (parentDimensions != null && parentDimensions.size() > 0) {
                 Node[] neighbors = new Node[parentDimensions.size()];
-//                Edge[] edges = new Edge[parentDimensions.size()];
                 int arrayPos = 0;
                 for (Dimension parentDimension : parentDimensions) {
-//                    Edge edge = new Edge();
                     neighbors[arrayPos++] = nodesSoFar.get(parentDimension);
-//                    edge.pointedAt = nodesSoFar.get(parentDimension);
-//                    edge.pointedFrom = nodesSoFar.get(dimension);
-//                    edges[arrayPos++] = edge;
                 }
                 node.neighbors = neighbors;
-//                node.edges = edges;
             } else {
-//                node.edges = new Edge[0];
                 node.neighbors = new Node[0];
             }
         }
@@ -230,8 +223,6 @@ public class QuerySqlPathHelper {
         }
 
         // take the first table and scan its neighbors, which will then lead to all connected tables being scanned.
-//        HashMap<Node, Integer> tableGraph = new HashMap<>();
-        // this is the problem -- we are not sorting them consistently so the firstNode here is different.
         Node firstNode = unmatchedTables.iterator().next();
         Set<Node> neighborNodes = findImmediateNeighbors(firstNode);
         unmatchedTables.remove(firstNode);
@@ -309,7 +300,7 @@ public class QuerySqlPathHelper {
 
         private Set<Node> allSeenNodes = new HashSet<>();
         
-        private boolean bidirectionalSearch = true;
+        private boolean bidirectionalSearch = false; //true;
         
         Node rootNode;
         Set<Dimension> targetDimensions;
