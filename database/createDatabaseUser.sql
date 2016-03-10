@@ -17,3 +17,5 @@ PREPARE stmt FROM @query;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 set @query = NULL;
+
+FLUSH PRIVILEGES;
