@@ -221,7 +221,7 @@ public class EtlEngine implements IEtlEngine {
     }
 
     private void syncGpa(List<File> gpaFiles) {
-        if (null != gpaFiles) {
+        if (null != gpaFiles && gpaFiles.size() > 0) {
             // parse the gpa file from disk assuming the file type is CSV and of a specific format
             GpaSync gpaSync = new GpaSync(gpaFiles, edPanel, powerSchool, studentAssociator, syncCutoff);
             gpaSync.syncCreateUpdateDelete(results);
@@ -343,6 +343,7 @@ public class EtlEngine implements IEtlEngine {
         try {
             if (!executor.awaitTermination(TOTAL_TTL_MINUTES, TimeUnit.MINUTES)) { //optional *
                 executor.shutdownNow(); //optional **/optional **
+                LOGGER.warn("Section Migration did NOT finish within " + TOTAL_TTL_MINUTES + " minutes, so forcing it to shut down immediately");
             }
         } catch(InterruptedException e) {
             LOGGER.error("Executor thread pool interrupted " + e.getMessage());

@@ -58,7 +58,11 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
         super(uri);
         this.username = username;
         this.password = password;
-        authenticate();
+        // If a null URI is passed in, this object is still constructed but won't attempt authentication as part of its construction
+        // (This isn't a solution, just a first step as the orchestration of the ETL becomes more complex)
+        if (uri != null) {
+            authenticate();
+        }
     }
 
     @Override
