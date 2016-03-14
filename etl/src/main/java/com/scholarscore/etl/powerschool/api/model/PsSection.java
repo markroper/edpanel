@@ -1,9 +1,11 @@
 package com.scholarscore.etl.powerschool.api.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -11,6 +13,9 @@ import java.util.Map;
  */
 @XmlRootElement(name = "section")
 public class PsSection {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(PsSection.class);
+     
     protected Long id;
     protected Long school_id;
     protected String course_id;
@@ -78,49 +83,20 @@ public class PsSection {
             ArrayList<Long> periodIds = new ArrayList<>();
             String cycleDays = periodExpression.split("\\(")[1];
 
-            //Check if period has comma or - in it. If not it is done
-            if (period.indexOf('-') >= 0) {
-                Long start = Long.valueOf(period.substring(0,1));
-                Long end = Long.valueOf(period.substring(2,3));
-                for (long i = start; i <= end; i++) {
-                    periodIds.add(i);
-                }
-
-            } else if (period.indexOf(',') >= 0) {
-                String[] periods = period.split(",");
-
-                for (String splitPeriod: periods) {
-                    if (splitPeriod.length() > 1) {
-                        //We have a beautiful thing that looks like this: 3,4-7(A) This is not super likely
-                        Long start = Long.valueOf(splitPeriod.substring(0,1));
-                        Long end = Long.valueOf(splitPeriod.substring(2,3));
-                        for (long i = start; i <= end; i++) {
-                            periodIds.add(i);
-                        }
-                    } else {
-                        periodIds.add(Long.valueOf(splitPeriod));
-                    }
-                }
-            } else {
-                //Our period is finished (muy bueno), we just need that value
-                periodIds.add(Long.valueOf(period));
-            }
+            addPeriodExpression(period, periodIds);
 
             if (cycleDays.indexOf(',') >= 0) {
                 //Add both of these to the map, or if they exist add the periods to the array
                 for (String cycle : cycleDays.split(",")) {
                     if (cycle.length() > 1) {
-                        //THis occurs if we have soemthing like: 3(A-B,D-E)
+                        //This occurs if we have something like: 3(A-B,D-E)
                         PsSection.addDashValues(cycle, periodIds, cyclePeriods);
                     } else {
                         if (null == cyclePeriods.get(cycle)) {
-                            //Add it to there
                             ArrayList<Long> listToAdd = new ArrayList<>();
-                            listToAdd.addAll(periodIds);
                             cyclePeriods.put(cycle, listToAdd);
-                        } else {
-                            cyclePeriods.get(cycle).addAll(periodIds);
                         }
+                        cyclePeriods.get(cycle).addAll(periodIds);
                     }
 
                 }
@@ -130,6 +106,11 @@ public class PsSection {
                 PsSection.addDashValues(cycleDays, periodIds, cyclePeriods);
 
             }  else {
+                if (cycleDays.length() > 1) {
+                    LOGGER.warn("Unexpected Schedule Expression when parsing periods in PsSection! \n" + 
+                            "Expression: " + cycleDays + " - expected length of 1! Using first letter " + 
+                            cycleDays.substring(0,1) + " only");
+                }
                 //Get first character, Stack overflow says its faster than anything else
                 String letter = cycleDays.substring(0,1);
                 if (null == cyclePeriods.get(letter)) {
@@ -140,14 +121,12 @@ public class PsSection {
                     cyclePeriods.get(letter).addAll(periodIds);
                 }
             }
-
-
         }
-
         return cyclePeriods;
     }
 
     private static void addDashValues(String cycleDays, ArrayList<Long> periodIds, Map<String, ArrayList<Long>> cyclePeriods) {
+        if (cycleDays.length() > 3) { LOGGER.warn("Unexpected Schedule Expression seen when trying to parse dash expression in PsSection"); }
         int startingChar = (int) cycleDays.charAt(0);
         int endChar = (int) cycleDays.charAt(2);
         for (int i = startingChar; i <= endChar; i++) {
@@ -158,6 +137,40 @@ public class PsSection {
                 cyclePeriods.put(String.valueOf(c), listToAdd);
             } else {
                 cyclePeriods.get(String.valueOf(c)).addAll(periodIds);
+            }
+        }
+    }
+    
+    // Takes in the first part of a period expression (referred to above as 'period') 
+    // which contains numeric strings representing periodIds. This method handles cases when...
+    // the period Id is a single integer (e.g. 7)
+    // the period Ids contains commas (e.g. 7,10)
+    // the period Ids contain dash notation (e.g. 7-10 will add periodIds 7,8,9,10)
+    // (it's fine if more than one of these exists in a given period string)
+    private static void addPeriodExpression(String periodExpression, ArrayList<Long> periodIds) {
+        // order of operations - first split on commas, then handle ranges
+        if (periodExpression.contains(",")) {
+            String[] periods = periodExpression.split(",");
+            for (String thisPeriod : periods) {
+                addPeriodExpression(thisPeriod, periodIds);
+            }
+        } else {
+            // all commas have been split upon at this point, but we may still have a dash-separated range within
+
+            // check if period string has dash in it
+            int indexOfDashSeparator = periodExpression.indexOf('-');
+            if (indexOfDashSeparator >= 0) {
+                if (indexOfDashSeparator == 0) {
+                    LOGGER.warn("Separator Index of 0 found, which should probably be an error. Expect a problem parsing this value...");
+                }
+                Long start = Long.valueOf(periodExpression.substring(0, indexOfDashSeparator));
+                Long end = Long.valueOf(periodExpression.substring(indexOfDashSeparator + 1, periodExpression.length()));
+                for (long i = start; i <= end; i++) {
+                    periodIds.add(i);
+                }
+            } else {
+                //Our period is finished (muy bueno), we just need that value
+                periodIds.add(Long.valueOf(periodExpression));
             }
         }
     }
