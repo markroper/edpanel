@@ -44,7 +44,6 @@ public class StaffSync implements ISync<Person> {
 
     @Override
     public ConcurrentHashMap<Long, Person> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        Long psSchoolId = new Long(school.getSourceSystemId());
         ConcurrentHashMap<Long, Person> sourceStaff = null;
         try {
             sourceStaff = resolveAllFromSourceSystem();
