@@ -113,7 +113,7 @@ public class DeansListSyncResult extends BaseSyncResult {
             builder.append("Unmatched Students (" + studentsNotMatched.size() + "): ");
             builder.append("\n");
             for (String unmatchedStudentName : studentsNotMatched.keySet()) {
-                builder.append("  " + unmatchedStudentName);
+                builder.append("  " + unmatchedStudentName + " (" + studentsNotMatched.get(unmatchedStudentName) + " unmatched)");
                 builder.append("\n");
             }
             builder.append("--");
