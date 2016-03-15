@@ -156,7 +156,7 @@ public class DashboardManagerImpl implements DashboardManager {
         gpaMeasures.add(gpaMeasure);
         Expression studentClause = new Expression(
                 new DimensionOperand(new DimensionField(Dimension.STUDENT, StudentDimension.ID)),
-                ComparisonOperator.LESS_THAN,
+                ComparisonOperator.GREATER_THAN,
                 new NumericOperand(0L)
         );
         Expression whereClause = new Expression(
