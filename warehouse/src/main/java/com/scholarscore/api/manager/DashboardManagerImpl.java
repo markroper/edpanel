@@ -174,12 +174,12 @@ public class DashboardManagerImpl implements DashboardManager {
         gpaClick.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
         Expression clickWhereMin = new Expression(
                 new MeasureOperand(new MeasureField(Measure.CURRENT_GPA, CurrentGpaMeasure.GPA)),
-                ComparisonOperator.LESS_THAN_OR_EQUAL,
+                ComparisonOperator.GREATER_THAN_OR_EQUAL,
                 new NumericPlaceholder(QueryPlaceholders.CLICK_VALUE_MIN)
         );
         Expression clickWhereMax = new Expression(
                 new MeasureOperand(new MeasureField(Measure.CURRENT_GPA, CurrentGpaMeasure.GPA)),
-                ComparisonOperator.GREATER_THAN,
+                ComparisonOperator.LESS_THAN,
                 new NumericPlaceholder(QueryPlaceholders.CLICK_VALUE_MAX)
         );
         Expression clickWhere = new Expression(clickWhereMin, BinaryOperator.AND, clickWhereMax);
