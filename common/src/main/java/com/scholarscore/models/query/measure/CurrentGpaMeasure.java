@@ -14,7 +14,7 @@ import java.util.Set;
 public class CurrentGpaMeasure extends BaseMeasure implements IMeasure {
     public static final String GPA = "GPA";
     public static final String STUDENT = "Student";
-    private static final Set<String> FIELDS =
+    public static final Set<String> FIELDS =
             ImmutableSet.of(GPA, STUDENT);
 
     final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(new HashSet<Measure>(){{ add(Measure.GPA); }});
@@ -32,7 +32,7 @@ public class CurrentGpaMeasure extends BaseMeasure implements IMeasure {
 
     @Override
     public Measure getMeasure() {
-        return null;
+        return Measure.CURRENT_GPA;
     }
 
     @Override
