@@ -13,7 +13,7 @@ public class GpaMeasure extends BaseMeasure implements IMeasure {
     public static final String DATE = "Date";
     public static final String TYPE = "Type";
     public static final String STUDENT = "Student";
-    private static final Set<String> FIELDS =
+    public static final Set<String> FIELDS =
             ImmutableSet.of(DATE, TYPE, STUDENT);
 
     final Set<Measure> compatibleMeasures = Collections.unmodifiableSet(new HashSet<Measure>());
