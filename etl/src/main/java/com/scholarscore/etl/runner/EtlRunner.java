@@ -18,12 +18,12 @@ public class EtlRunner {
     // Test migrates everything
     public void migrateDistrict(EtlSettings settings) {
         System.out.println("Migration running...");
-        SyncResult psResult = etlEngine.syncDistrict(settings);
-        System.out.println("Done! PS Migration result: " + psResult);
+//        SyncResult psResult = etlEngine.syncDistrict(settings);
+//        System.out.println("Done! PS Migration result: " + psResult);
         SyncResult dlResult = dlEtlEngine.syncDistrict(settings);
         System.out.println("Done! Migration result: " + dlResult);
-        etlEngine.triggerNotificationEvaluation();
-        System.out.println("Notification evaluation complete!");
+//        etlEngine.triggerNotificationEvaluation();
+//        System.out.println("Notification evaluation complete!");
     }
 
     public EtlEngine getEtlEngine() {

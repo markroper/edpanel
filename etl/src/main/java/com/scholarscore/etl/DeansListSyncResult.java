@@ -119,11 +119,7 @@ public class DeansListSyncResult extends BaseSyncResult {
             builder.append("--");
             builder.append("\n");
         }
-
-        builder.append("\n");
-        builder.append("--");
-        builder.append("\n");
-
+        
         if (studentsFuzzyMatched != null && studentsFuzzyMatched.size() > 0) {
             builder.append("WARNING: Needed to fuzzy match student(s):" + "\n");
             builder.append("\n");

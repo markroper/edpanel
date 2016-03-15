@@ -287,14 +287,15 @@ public class DlEtlEngine implements IEtlEngine {
                     try {
                         createdBehavior = scholarScore.createBehavior(studentId, behavior);
                     } catch (HttpClientException e) {
-                        // e.printStackTrace();
+                        LOGGER.info("HttpClientException caught within DLETL Engine trying to create behavior with remote behavior ID " + behavior.getRemoteBehaviorId());
                     }
                     // ... and save in cache
                     if (createdBehavior != null) { 
                         studentBehaviorEvents.put(createdBehavior.getRemoteBehaviorId(), createdBehavior);
                         result.incrementBehaviorAdded();
                     } else {
-                        // TODO Jordan: document failures to create
+                        LOGGER.warn("Unable to create behavior with remote behavior ID " + behavior.getRemoteBehaviorId());
+                        result.incrementBehaviorFailed();
                     }
                 } else {
                     // behavior exists already in scholarscore (with id scholarScoreBehaviorId), update it
@@ -308,7 +309,7 @@ public class DlEtlEngine implements IEtlEngine {
                 }
 
             } else {
-                LOGGER.error("WARN: Unable to match to student specified by deanslist: " + student.getName());
+                LOGGER.info("Unable to match to student specified by deanslist: " + student.getName());
                 result.incrementUnmatchedStudent(student.getName());
             }
         } else {
@@ -412,6 +413,11 @@ public class DlEtlEngine implements IEtlEngine {
 
         String matchableName = null;
         
+        // may need a set of these replace characters. For now, it appears that deanslist has begun stripping this out
+        // of student (last? all?) names, while powerschool does not - leading to a failure to match. 
+        // Since we don't know where the dashes should be in the Deanslist data, just strip them out and see if the dashless
+        // strings match.
+        name = name.replace("-", "");
         String[] nameWords = name.trim().split("\\s+");
         if (nameWords.length == 0) { matchableName = ""; }                   // no name, keytype doesn't matter
         if (nameWords.length >= 1) {
