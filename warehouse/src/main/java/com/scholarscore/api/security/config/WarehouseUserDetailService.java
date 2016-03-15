@@ -29,7 +29,6 @@ public class WarehouseUserDetailService implements UserDetailsService {
 			List<Authority> authorities = authorityPersistence.selectAuthorities(username);
 			UserDetailsProxy proxy = new UserDetailsProxy(identity, authorities);
 			return proxy;
-		}
-		return null;
+		} else throw new UsernameNotFoundException("Username " + username + " not found");
 	}
 }
