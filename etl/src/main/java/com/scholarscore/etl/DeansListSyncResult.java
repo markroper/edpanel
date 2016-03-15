@@ -1,9 +1,8 @@
 package com.scholarscore.etl;
 
-import com.scholarscore.models.user.Student;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -17,7 +16,7 @@ public class DeansListSyncResult extends BaseSyncResult {
     
     private int behaviorEventsWithoutStudents = 0;
     private int behaviorEventsWithUnmatchedStudents = 0;
-    private final HashSet<String> studentsNotMatched = new HashSet<>();
+    private final HashMap<String, Integer> studentsNotMatched = new HashMap<>();
 
     private int behaviorEventsWithoutTeachers = 0;
     private int behaviorEventsWithUnmatchedAssigners = 0;
@@ -25,6 +24,7 @@ public class DeansListSyncResult extends BaseSyncResult {
 
     private int behaviorsAdded = 0;
     private int behaviorsUpdated = 0;
+    private int behaviorsFailed = 0;
 
     private int behaviorsMatchedTeacher = 0;
     private int behaviorsMatchedAdmin = 0;
@@ -70,6 +70,8 @@ public class DeansListSyncResult extends BaseSyncResult {
         builder.append("\n");
         builder.append("Behavior Events Updated: " + behaviorsUpdated);
         builder.append("\n");
+        builder.append("Behavior Events Failed to Add/Update: " + behaviorsFailed);
+        builder.append("\n");
         builder.append("Behavior Events Exactly Matching Teachers: " + behaviorEventsMatchedTeacherLastAndFirst);
         builder.append("\n");
         builder.append("Behavior Events Fuzzy Matching Teachers (Last Name Only): " + behaviorEventsMatchedTeacherLastButNotFirst);
@@ -110,7 +112,7 @@ public class DeansListSyncResult extends BaseSyncResult {
         if (studentsNotMatched.size() > 0) {
             builder.append("Unmatched Students (" + studentsNotMatched.size() + "): ");
             builder.append("\n");
-            for (String unmatchedStudentName : studentsNotMatched) {
+            for (String unmatchedStudentName : studentsNotMatched.keySet()) {
                 builder.append("  " + unmatchedStudentName);
                 builder.append("\n");
             }
@@ -174,7 +176,11 @@ public class DeansListSyncResult extends BaseSyncResult {
     
     public void incrementUnmatchedStudent(String unmatchedStudentName) { 
         behaviorEventsWithUnmatchedStudents++;
-        studentsNotMatched.add(unmatchedStudentName);
+        Integer unmatchedForStudentSoFar = studentsNotMatched.get(unmatchedStudentName);
+        if (unmatchedForStudentSoFar == null) {
+            unmatchedForStudentSoFar = 0;
+        }
+        studentsNotMatched.put(unmatchedStudentName, ++unmatchedForStudentSoFar);
     }
     
     public void incrementUnmatchedAssigner(String unmatchedAssignerName) { 
@@ -185,6 +191,8 @@ public class DeansListSyncResult extends BaseSyncResult {
     public void incrementBehaviorAdded() { behaviorsAdded++; }
     
     public void incrementBehaviorUpdated() { behaviorsUpdated++; }
+    
+    public void incrementBehaviorFailed() { behaviorsFailed++; }
     
     public void incrementBehaviorMatchedTeacher() { behaviorsMatchedTeacher++; }
     
