@@ -400,7 +400,7 @@ public class DlEtlEngine implements IEtlEngine {
         WHOLE_NAME  // key is entire name, whatever may be in it
     }
     
-    // TODO Jordan: temporary hack to get students matching. Today nina's school puts "Nmh" or a middle initial
+    // TODO: hack to get students matching until first/middle/last can be fetched seperately. Today nina's school puts "Nmh" or a middle initial
     // for a student's middle name in a lot of the deanslist behavioral records. This method takes in a raw
     // student name (which can contain first, middle, last, spaces, etc) and returns a lowercased version 
     // with whitespace characters stripped. Depending on the KeyType, the returned string may be further transformed,
