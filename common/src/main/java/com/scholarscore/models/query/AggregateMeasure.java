@@ -1,5 +1,6 @@
 package com.scholarscore.models.query;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.query.bucket.AggregationBucket;
 
 import java.io.Serializable;
@@ -15,6 +16,7 @@ import java.util.Objects;
  *
  */
 @SuppressWarnings("serial")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AggregateMeasure extends QueryField implements Serializable {
     Measure measure;
     AggregateFunction aggregation;
