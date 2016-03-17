@@ -21,38 +21,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class StudentAssociator extends UserAssociator<Student> {
 
-    private ConcurrentHashMap<Long, Long> ssidToLocalIdStudent = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Long, Student> students = new ConcurrentHashMap<>();
-
-    @Override
-    public Student findBySourceSystemId(Long ssid) {
-        Long otherId = ssidToLocalIdStudent.get(ssid);
-        return findByOtherId(otherId);
-    }
-
-    @Override
-    public Student findByOtherId(Long otherId) {
-        if(null == otherId) {
-            return null;
-        }
-        return students.get(otherId);
-    }
-
-    @Override
-    public void associateIds(Long ssid, Long otherId) {
-        ssidToLocalIdStudent.put(ssid, otherId);
-    }
-
-    @Override
-    public void addOtherIdMap(ConcurrentHashMap<Long, Student> entriesToAdd) {
-        students.putAll(entriesToAdd);
-    }
-
     public ConcurrentHashMap<Long, Long> getSsidToLocalIdStudent() {
-        return ssidToLocalIdStudent;
+        return super.getSsidToLocalIdUser();
     }
 
     public ConcurrentHashMap<Long, Student> getStudents() {
-        return students;
+        return super.getUsers();
     }
 }
