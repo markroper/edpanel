@@ -48,7 +48,22 @@ public class PowerSchoolPaths {
             getPageSizeParam() +
             "&" + PAGE_NUM_PARAM +
             "&projection=dcid,date_value,insession,note,membershipvalue,scheduleid,schoolid,type,id,cycle_day_id" +
-            "&q=schoolid=={1};date_value=gt=" + cutoffDate + ";insession==1";
+                // If this query has date_value supplied, we now get this error from Excel powerschool:
+                // 
+                // "At least one column lacks sufficient permission"
+                // "resource": "Calendar_Day"
+                // "field": "Date"
+                // 
+                // ... even though we're requesting date_value, not date, and PS documentation 
+                // doesn't make any mention of a calendar_day.date field. However, this field DOES 
+                // exist and can be added to our whitelisted fields, however this only changes the resulting 
+                // error to: 
+                // 
+                // "message": "org.hibernate.exception.SQLGrammarException: could not extract ResultSet"
+                // 
+                // awesome.
+//            "&q=schoolid=={1};date_value=gt=" + cutoffDate + ";insession==1";
+            "&q=schoolid=={1};insession==1";
     }
 
     public String getAttendancePath() {
