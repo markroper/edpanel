@@ -45,10 +45,10 @@ public class SchoolDaySync {
         ConcurrentHashMap<LocalDate, SchoolDay> source = null;
         ConcurrentHashMap<LocalDate, SchoolDay> ed = null;
         try {
-            source = resolveAllFromSourceSystem(Long.valueOf(school.getSourceSystemId()));
+            source = resolveAllFromSourceSystem();
         } catch (HttpClientException e) {
             try {
-                source = resolveAllFromSourceSystem(Long.valueOf(school.getSourceSystemId()));
+                source = resolveAllFromSourceSystem();
             } catch (HttpClientException ex) {
                 LOGGER.error("Unable to fetch school days from PowerSchool for school " + school.getName() +
                         " with ID: " + school.getId());
@@ -138,7 +138,7 @@ public class SchoolDaySync {
         return source;
     }
 
-    protected ConcurrentHashMap<LocalDate, SchoolDay> resolveAllFromSourceSystem(Long sourceSchoolId) throws HttpClientException {
+    protected ConcurrentHashMap<LocalDate, SchoolDay> resolveAllFromSourceSystem() throws HttpClientException {
         ConcurrentHashMap<LocalDate, SchoolDay> result = new ConcurrentHashMap<>();
         PsResponse<PsCalendarDayWrapper> response = powerSchool.getSchoolCalendarDays(school.getNumber());
         for(PsResponseInner<PsCalendarDayWrapper> wrap : response.record) {

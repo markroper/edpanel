@@ -223,7 +223,7 @@ public class DlEtlEngine implements IEtlEngine {
         Student student = behavior.getStudent();
         User assigner = behavior.getAssigner();
 
-        LOGGER.debug("Got behavior event (" + behavior.getName() + ")"
+        LOGGER.trace("Got behavior event (" + behavior.getName() + ")"
                 + " for student named " + (student == null ? "(student null)" : student.getName())
                 + " and assigner named " + (assigner == null ? "(assigner null)" : assigner.getName())
                 + " with point value " + behavior.getPointValue());
@@ -258,7 +258,7 @@ public class DlEtlEngine implements IEtlEngine {
                     result.incrementBehaviorWithoutTeacher();
                 }
 
-                LOGGER.debug("About to map Behavior " + behavior.getName()
+                LOGGER.trace("About to map Behavior " + behavior.getName()
                         + " to student " + existingStudent.getName());
                 long studentId = existingStudent.getId();
 

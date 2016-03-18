@@ -38,7 +38,7 @@ public class DailyAbsenceMeasure extends BaseMeasure implements IMeasure {
 
     @Override
     public String getName() {
-        return "Absense Count";
+        return "Absence Count";
     }
 
     @Override
