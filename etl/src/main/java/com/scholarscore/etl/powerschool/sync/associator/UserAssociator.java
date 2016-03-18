@@ -1,5 +1,6 @@
 package com.scholarscore.etl.powerschool.sync.associator;
 
+import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.User;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,15 +17,39 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * This class encapsulates the data structures and lookup methods required to handle this mapping.
  *
+ * 
  * Created by markroper on 10/27/15.
  */
 public abstract class UserAssociator<T extends User> {
-    public abstract T findBySourceSystemId(Long ssid);
 
-    public abstract T findByOtherId(Long otherId);
+    private final ConcurrentHashMap<Long, Long> ssidToLocalIdUser = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, T> users = new ConcurrentHashMap<>();
 
-    public abstract void associateIds(Long ssid, Long otherId);
+    public T findBySourceSystemId(Long ssid) {
+        Long otherId = ssidToLocalIdUser.get(ssid);
+        return findByOtherId(otherId);
+    }
 
-    public abstract void addOtherIdMap(ConcurrentHashMap<Long, T> entriesToAdd);
+    public T findByOtherId(Long otherId) {
+        if(null == otherId) {
+            return null;
+        }
+        return users.get(otherId);
+    }
 
+    public void associateIds(Long ssid, Long otherId) {
+        ssidToLocalIdUser.put(ssid, otherId);
+    }
+
+    public void addOtherIdMap(ConcurrentHashMap<Long, T> entriesToAdd) {
+        users.putAll(entriesToAdd);
+    }
+
+    public ConcurrentHashMap<Long, Long> getSsidToLocalIdUser() {
+        return ssidToLocalIdUser;
+    }
+
+    public ConcurrentHashMap<Long, T> getUsers() {
+        return users;
+    }
 }
