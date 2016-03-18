@@ -112,7 +112,9 @@ public abstract class QuerySqlGenerator {
         if(null != q.getAggregateMeasures()) {
             numAggregateMeasures = q.getAggregateMeasures().size();
             for(AggregateMeasure am: q.getAggregateMeasures()) {
-                if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
+                //If there are buckets that are themselves aggregated, an extra column will
+                //have been injected into the inner query, so increment the column count
+                if(injectBucketsIntoSelect(q, am)) {
                     numAggregateMeasures++;
                 }
             }
@@ -193,17 +195,20 @@ public abstract class QuerySqlGenerator {
         if (q.getAggregateMeasures() != null) {
             for (AggregateMeasure am : q.getAggregateMeasures()) {
                 MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
-                //If there are buckets involved in the aggregate query, inject the bucket pseudo column
-                if(null != am.getBuckets() && !am.getBuckets().isEmpty()) {
+                // If there are buckets on the aggregate measure and there is a bucket aggregation,
+                // inject the case statement and alias the column.  If there are buckets, but no aggregate on the buckets,
+                // we will bucket at the super-query level instead.  If there is no subquery/superquery, we will inject
+                // the buckets here also.
+                if(injectBucketsIntoSelect(q, am)) {
                     if(!isFirst) {
                         sqlBuilder.append(DELIM);
                     } else {
                         isFirst = false;
                     }
-                    //If the buckets have not aggregate function applied, just reference the psuedo column by name
+                    //If the buckets have no aggregate function applied, just reference the psuedo column by name
                     //Otherwise, enumerate the entire bucket definition and wrap it in a aggregate function
                     if(null == am.getBucketAggregation()) {
-                        sqlBuilder.append(mss.toSelectBucketPseudoColumn(am.getBuckets()));
+                        sqlBuilder.append(mss.toSelectBucketPseudoColumn(am.getBuckets(), null));
                         sqlBuilder.append(" as ");
                         sqlBuilder.append(generateBucketPseudoColumnName(am.getAggregation(), am.getMeasure()));
                     } else {
@@ -237,7 +242,7 @@ public abstract class QuerySqlGenerator {
         if(null != agg) {
             fieldSql += agg.name() + "(";
         }
-        fieldSql += mss.toSelectBucketPseudoColumn(buckets);
+        fieldSql += mss.toSelectBucketPseudoColumn(buckets, null);
         if(null != agg) {
             fieldSql += ")";
         }
@@ -486,10 +491,12 @@ public abstract class QuerySqlGenerator {
                 }
             }
         }
-        //If there are buckets involved in the aggregate query, inject the bucket pseudo column
+        //If there are buckets involved in the aggregate query that don't have their own aggregate function on them
+        // they need to be grouped by. If the query has a subquery, the buckets do not need to be grouped by
+        // because the case statement is injected at the super query level not the subquery.
         if(null != q.getAggregateMeasures()) {
             for (AggregateMeasure m : q.getAggregateMeasures()) {
-                if(null != m.getBuckets() && !m.getBuckets().isEmpty() && null == m.getBucketAggregation()) {
+                if(injectBucketsIntoSelect(q, m) && null == m.getBucketAggregation()) {
                     String bucketFieldName = generateBucketPseudoColumnName(m.getAggregation(), m.getMeasure());
                     if (isFirst) {
                         groupBySqlBuilder.append(bucketFieldName);
@@ -614,16 +621,28 @@ public abstract class QuerySqlGenerator {
                     innerSqlBuilder.markNotFirstOrAppend(DELIM);
                     int counter = 0;
                     for(AggregateMeasure am: q.getAggregateMeasures()) {
+                        MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
                         if(counter == pos) {
                             if(null != function) {
-                                innerSqlBuilder.append(function.name() + ")");
+                                innerSqlBuilder.append(function.name() + "(");
                             }
-                            innerSqlBuilder.append(tableAlias + DOT + generateAggColumnName(am));
+                            //If there are buckets on the aggregate measure, but the buckets themselves had no
+                            // aggregate function, we inject the bucket case statement here on the super query.
+                            if(null != am.getBuckets() && !am.getBuckets().isEmpty() && !injectBucketsIntoSelect(q, am)) {
+                                sqlBuilder.append(mss.toSelectBucketPseudoColumn(am.getBuckets(), tableAlias + DOT + generateAggColumnName(am)));
+                            } else {
+                                innerSqlBuilder.append(tableAlias + DOT + generateAggColumnName(am));
+                            }
                             if(null != function) {
                                 innerSqlBuilder.append(function.name() + ")");
                             } else {
                                 innerGroupByBuilder.markNotFirstOrAppend(DELIM);
-                                innerGroupByBuilder.append(tableAlias + DOT + generateAggColumnName(am));
+                                if(null != am.getBuckets() && !am.getBuckets().isEmpty() && !injectBucketsIntoSelect(q, am)) {
+                                    innerGroupByBuilder.append(mss.toSelectBucketPseudoColumn(am.getBuckets(),
+                                            tableAlias + DOT + generateAggColumnName(am)));
+                                } else {
+                                    innerGroupByBuilder.append(tableAlias + DOT + generateAggColumnName(am));
+                                }
                             }
                         }
                         counter++;
@@ -649,14 +668,43 @@ public abstract class QuerySqlGenerator {
             } else {
                 //find the right dimension
                 innerSqlBuilder.markNotFirstOrAppend(DELIM);
+                if(null != function) {
+                    innerSqlBuilder.append(function.name() + "(");
+                }
                 //look for the dimension
                 innerSqlBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias, false));
-                innerGroupByBuilder.markNotFirstOrAppend(DELIM);
-                innerGroupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias, true));
+                if(null != function) {
+                    innerSqlBuilder.append(")");
+                } else {
+                    innerGroupByBuilder.markNotFirstOrAppend(DELIM);
+                    innerGroupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias, true));
+                }
             }
         }
     }
-    
+
+    /**
+     * When there is an aggregate measure on a query it may or may not have 'buckets'.  If it does
+     * have buckets, an additional column is  injected into the select clause if there either:
+     *  1) is no super query
+     *  2) there is a super query, but there is an aggregate function on the buckets
+     *
+     * In all other cases, no bucket column is injected into the inner select clause.
+     * 
+     * @param q
+     * @param am
+     * @return
+     */
+    private static boolean injectBucketsIntoSelect(Query q, AggregateMeasure am) {
+        //If there are buckets and they either have an aggregateFuncion on them, or there is no super query,
+        //inject the buckets
+        if (null != am.getBuckets() && !am.getBuckets().isEmpty() &&
+                (null != am.getBucketAggregation() || null == q.getSubqueryColumnsByPosition())) {
+            return true;
+        }
+        return false;
+    }
+
     private static class FirstAwareWrapper { 
         StringBuilder sb;
         boolean first = true;
