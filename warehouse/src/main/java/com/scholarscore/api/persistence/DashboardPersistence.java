@@ -10,5 +10,6 @@ public interface DashboardPersistence {
     Dashboard selectDashboard(Long schoolId, Long dashboardId);
     Dashboard selectDashboardForUser(Long schoolId, Long userId);
     void deleteDashboard(Long dashboardId);
+    void deleteDashboardRows(Long dashboardId);
     void updateDashboard(Long schoolId, Long dashboardId, Dashboard dash);
 }
