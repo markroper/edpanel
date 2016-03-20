@@ -12,7 +12,7 @@ public class PowerSchoolPaths {
     private static final  String PAGE_NUM_PARAM = "page={0}";
     private static final String BASE = "/ws/v1";
     private static final String SCHEMA_BASE = "/ws/schema/table";
-    private Integer pageSize = 1000;
+    private Integer pageSize = PowerSchoolClient.PAGE_SIZE;
     private String cutoffDate = "2015-08-01";
 
     public void setPageSize(Integer size) {

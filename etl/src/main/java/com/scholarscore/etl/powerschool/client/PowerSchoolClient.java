@@ -53,7 +53,7 @@ import java.time.LocalDate;
  */
 public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSchoolClient {
     private PowerSchoolPaths paths = new PowerSchoolPaths();
-    private static final Integer PAGE_SIZE = 250;
+    protected static final Integer PAGE_SIZE = 250;
     private static final String HEADER_AUTH_NAME = "Authorization";
     private static final String PATH_RESOURCE_DISTRICT = "/ws/v1/district";
     private static final String GRANT_TYPE_CREDS = "grant_type=client_credentials";
@@ -124,22 +124,7 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
 
     @Override
     public PsStaffs getStaff(Long schoolId) throws HttpClientException {
-        return getJackson(PsStaffs.class, paths.getStaffPath(), schoolId.toString());
-    }
-
-    protected <T> T getJackson(Class<T> clazz, String path, String ...params) throws HttpClientException {
-
-        path = getPath(path, params);
-
-        try {
-            HttpGet get = new HttpGet();
-            setupCommonHeaders(get);
-            get.setURI(uri.resolve(path));
-            String json = getJSON(get);
-            return MAPPER.readValue(json, clazz);
-        } catch (IOException e) {
-            throw new HttpClientException(e);
-        }
+        return get(PsStaffs.class, paths.getStaffPath(), schoolId.toString());
     }
 
     @Override
@@ -157,7 +142,13 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
     @Override
     public PsCourses getCoursesBySchool(Long schoolId) throws HttpClientException {
-        return getJackson(PsCourses.class, paths.getCoursePath(), schoolId.toString());
+        PsCourses original = get(PsCourses.class, paths.getCoursePath(), schoolId.toString());
+        PsCourses paged = get(
+                new TypeReference<PsCourses>() {},
+                paths.getCoursePath(),
+                PAGE_SIZE, 
+                schoolId.toString());
+        return original;
     }
 
     @Override

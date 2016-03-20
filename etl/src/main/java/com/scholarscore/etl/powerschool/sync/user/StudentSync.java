@@ -83,7 +83,7 @@ public class StudentSync implements ISync<Student> {
             Student edPanelUser = ed.get(entry.getKey());
             //Associate the SSID and source system local id (teacher/admin ID and underlying user ID)
             Long ssid = Long.valueOf(sourceUser.getSourceSystemId());
-            Long underlyingUserId = Long.valueOf(((Person) sourceUser).getSourceSystemUserId());
+            Long underlyingUserId = Long.valueOf(sourceUser.getSourceSystemUserId());
             studentAssociator.associateIds(ssid, underlyingUserId);
             if(null == edPanelUser) {
                 edPanelUser = studentAssociator.findByOtherId(underlyingUserId);
@@ -94,7 +94,12 @@ public class StudentSync implements ISync<Student> {
                 try {
                     created = edPanel.createStudent(sourceUser);
                 } catch (HttpClientException e) {
-                    results.studentUpdateFailed(entry.getKey(), sourceUser.getId());
+                    LOGGER.debug("Encountered exception " + e.getMessage() + " when trying to create student, appending results count accordingly...");
+                    if (sourceUser.getId() != null) {
+                        results.studentUpdateFailed(entry.getKey(), sourceUser.getId());
+                    } else {
+                        results.studentCreateFailed(entry.getKey());
+                    }
                     continue;
                 }
                 sourceUser.setId(created.getId());

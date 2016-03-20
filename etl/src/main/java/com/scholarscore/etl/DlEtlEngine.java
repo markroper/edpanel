@@ -65,6 +65,11 @@ public class DlEtlEngine implements IEtlEngine {
     @Override
     public SyncResult syncDistrict(EtlSettings settings) {
 
+        if (!deansList.isEnabled()) { 
+            LOGGER.info("DeansList Engine disabled in configuration so nothing to do. Returning null result.");
+            return null;
+        }
+        
         // grab behaviors from deanslist
         Collection<Behavior> behaviorsToMerge = getBehaviorData();
 
