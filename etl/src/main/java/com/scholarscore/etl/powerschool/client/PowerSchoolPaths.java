@@ -10,7 +10,6 @@ import java.time.LocalDate;
  */
 public class PowerSchoolPaths {
     protected static final String PAGE_NUM_PARAM_NAME = "page";
-    private static final String PAGE_NUM_PARAM_ZERO = PAGE_NUM_PARAM_NAME + "={0}";
     private static final String BASE = "/ws/v1";
     private static final String SCHEMA_BASE = "/ws/schema/table";
     private Integer pageSize = 1000;
@@ -32,7 +31,7 @@ public class PowerSchoolPaths {
 
     public String getStudentsPath() {
         return BASE +
-            "/school/{1}/student?pagesize=" +
+            "/school/{0}/student?pagesize=" +
             pageSize +
             "&expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup,school_enrollment";
     }
@@ -61,8 +60,8 @@ public class PowerSchoolPaths {
                 // "message": "org.hibernate.exception.SQLGrammarException: could not extract ResultSet"
                 // 
                 // awesome.
-//            "&q=schoolid=={1};date_value=gt=" + cutoffDate + ";insession==1";
-            "&q=schoolid=={1};insession==1";
+//            "&q=schoolid=={0};date_value=gt=" + cutoffDate + ";insession==1";
+            "&q=schoolid=={0};insession==1";
     }
 
     public String getAttendancePath() {
@@ -94,7 +93,7 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
                 "/cycle_day?" +
                 "projection=Abbreviation,Day_Name,Day_Number,ID,DCID,Letter,SchoolId,Year_Id" +
-                "&q=schoolId=={1}";
+                "&q=schoolId=={0}";
     }
 
     public String getTermPath() {
