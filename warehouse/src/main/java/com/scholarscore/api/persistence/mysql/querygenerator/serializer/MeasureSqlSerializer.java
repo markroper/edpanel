@@ -21,10 +21,13 @@ public interface MeasureSqlSerializer {
     public String toSelectInner();
 
     @SuppressWarnings("unchecked")
-    default String toSelectBucketPseudoColumn(List<AggregationBucket> buckets) throws SqlGenerationException {
+    default String toSelectBucketPseudoColumn(List<AggregationBucket> buckets, String tableFieldAlias) throws SqlGenerationException {
         StringBuilder b = new StringBuilder();
         b.append("CASE \n");
         String fieldInner = toSelectInner();
+        if(null != tableFieldAlias) {
+            fieldInner = tableFieldAlias;
+        }
         for(AggregationBucket bucket: buckets) {
             if(null != bucket.getStart() || null != bucket.getEnd()) {
                 if(null != bucket.getStart() && null != bucket.getEnd() &&
