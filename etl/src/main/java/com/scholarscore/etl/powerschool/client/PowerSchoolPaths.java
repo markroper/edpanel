@@ -9,7 +9,8 @@ import java.time.LocalDate;
  * Created by markroper on 11/2/15.
  */
 public class PowerSchoolPaths {
-    private static final  String PAGE_NUM_PARAM = "page={0}";
+    protected static final String PAGE_NUM_PARAM_NAME = "page";
+    private static final String PAGE_NUM_PARAM_ZERO = PAGE_NUM_PARAM_NAME + "={0}";
     private static final String BASE = "/ws/v1";
     private static final String SCHEMA_BASE = "/ws/schema/table";
     private Integer pageSize = 1000;
@@ -33,7 +34,6 @@ public class PowerSchoolPaths {
         return BASE +
             "/school/{1}/student?pagesize=" +
             pageSize +
-            "&" + PAGE_NUM_PARAM +
             "&expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup,school_enrollment";
     }
 
@@ -46,7 +46,6 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
             "/calendar_day?" +
             getPageSizeParam() +
-            "&" + PAGE_NUM_PARAM +
             "&projection=dcid,date_value,insession,note,membershipvalue,scheduleid,schoolid,type,id,cycle_day_id" +
                 // If this query has date_value supplied, we now get this error from Excel powerschool:
                 // 
@@ -70,15 +69,13 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
             "/attendance?" +
             getPageSizeParam() +
-            "&" + PAGE_NUM_PARAM +
-            "&projection=*&q=studentid=={1};att_date=gt="+ cutoffDate;
+            "&projection=*&q=studentid=={0};att_date=gt="+ cutoffDate;
     }
 
     public String getAttendanceCodePath() {
         return SCHEMA_BASE +
             "/attendance_code?" +
             getPageSizeParam() +
-            "&" + PAGE_NUM_PARAM +
             "&projection=*";
     }
 
@@ -111,22 +108,21 @@ public class PowerSchoolPaths {
     public String getPowerTeacherSectionPath(Long sourceSectionId) {
         return SCHEMA_BASE +
             "/SYNC_SectionMap?" +
-            "projection=*&q=SectionsDCID==" + sourceSectionId;
+            "projection=*" + 
+            "&q=SectionsDCID==" + sourceSectionId;
     }
 
     public String getPowerTeacherSectionMappingPath() {
         return SCHEMA_BASE +
                 "/SYNC_SectionMap?" +
                 getPageSizeParam() +
-                "&" + PAGE_NUM_PARAM +
                 "&projection=*";
     }
 
-    public String getPowerTeacherTermnMappingPath() {
+    public String getPowerTeacherTermMappingPath() {
         return SCHEMA_BASE +
                 "/SYNC_TermMap?" +
                 getPageSizeParam() +
-                "&" + PAGE_NUM_PARAM +
                 "&projection=*";
     }
 
@@ -134,7 +130,6 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
                 "/SYNC_ReportingTermMap?" +
                 getPageSizeParam() +
-                "&" + PAGE_NUM_PARAM +
                 "&projection=*";
     }
 
@@ -142,7 +137,6 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
                 "/termbins?" +
                 getPageSizeParam() +
-                "&" + PAGE_NUM_PARAM +
                 "&projection=*";
     }
 
@@ -150,7 +144,6 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
             "/PSM_ReportingTerm?" +
             getPageSizeParam() +
-            "&" + PAGE_NUM_PARAM +
             "&projection=*&q=id==" + termId;
     }
 
@@ -158,16 +151,14 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
             "/period?" +
             getPageSizeParam() +
-            "&" + PAGE_NUM_PARAM +
             "&projection=*" +
-            "&q=schoolId=={1}";
+            "&q=schoolId=={0}";
     }
 
     public String getSectionGradesSetupPath() {
         return SCHEMA_BASE +
             "/PSM_FinalGradeSetup?" +
             getPageSizeParam() +
-            "&" + PAGE_NUM_PARAM +
             "&projection=*";
     }
 
@@ -175,7 +166,6 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
             "/PSM_GradingFormula?" +
             getPageSizeParam() +
-            "&" + PAGE_NUM_PARAM +
             "&projection=*&q=id==" + String.valueOf(formulaId);
     }
 
@@ -183,7 +173,6 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
             "/PSM_GradingFormulaWeighting?" +
             getPageSizeParam() +
-            "&" + PAGE_NUM_PARAM +
             "&projection=*&q=ParentGradingFormulaID==" + String.valueOf(formulaId);
     }
 
@@ -193,68 +182,60 @@ public class PowerSchoolPaths {
 
     public String getSectionAssignmentsPath() {
         return "/ws/schema/table/PGAssignments?" +
-            PAGE_NUM_PARAM +
-            "&" + getPageSizeParam() +
-            "&projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={1}";
+            getPageSizeParam() +
+            "&projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
     }
 
     public String getSectionAssignmentCategories() {
         return SCHEMA_BASE +
-            "/pgcategories?q=SectionID=={1}&"+
-            PAGE_NUM_PARAM +
+            "/pgcategories?q=SectionID=={0}" + 
             "&" + getPageSizeParam() +
             "&projection=Abbreviation,DCID,DefaultPtsPoss,Description,ID,Name,SectionID";
+
     }
 
     public String getPowerTeacherAssignmentCategories() {
         return SCHEMA_BASE +
             "/psm_assignmentcategory?" +
-            PAGE_NUM_PARAM +
-            "&projection=*&" + getPageSizeParam();
+            "projection=*&" + getPageSizeParam();
     }
 
     public String getPowerTeacherFinalScores(Long sectionEnrollmentId) {
         return SCHEMA_BASE +
                 "/psm_finalscore?" +
-                PAGE_NUM_PARAM +
-                "&q=sectionenrollmentid==" + sectionEnrollmentId +
+                "q=sectionenrollmentid==" + sectionEnrollmentId +
                 "&projection=*&" + getPageSizeParam();
     }
 
     public String getPowerTeacherSectionEnrollment(Long powerTeacherSectionId) {
         return SCHEMA_BASE +
                 "/PSM_SectionEnrollment?" +
-                PAGE_NUM_PARAM +
-                "&q=sectionid==" + powerTeacherSectionId +
+                "q=sectionid==" + powerTeacherSectionId +
                 "&projection=*&" + getPageSizeParam();
     }
 
     public String getPowerTeacherStudentMappings() {
         return SCHEMA_BASE +
                 "/sync_studentmap?" +
-                PAGE_NUM_PARAM +
-                "&projection=*&" + getPageSizeParam();
+                "projection=*&" + getPageSizeParam();
     }
 
     public String getSectionScoresPath() {
         return SCHEMA_BASE +
             "/storedgrades?" +
-            PAGE_NUM_PARAM +
-            "&" + getPageSizeParam() +
-            "&q=sectionid=={1}&projection=dcid,grade,datestored,studentid,sectionid,termid";
+                getPageSizeParam() +
+            "&q=sectionid=={0}&projection=dcid,grade,datestored,studentid,sectionid,termid";
     }
     public String getAssignmentScores() {
         return SCHEMA_BASE +
-            "/SectionScoresAssignments?" +
-            PAGE_NUM_PARAM +
-            "&" + getPageSizeParam() +
-            "&q=assignment=={1}&projection=*";
+            "/SectionScoresAssignments?" + 
+                getPageSizeParam() +
+                "&q=assignment=={0}&projection=*";
     }
     public String getSectionScoreIds() {
         return SCHEMA_BASE +
-            "/SectionScoresId?" +
-            PAGE_NUM_PARAM +
-            "&" + getPageSizeParam() +
-            "&q=sectionid=={1}&projection=*";
+            "/SectionScoresId?" + 
+                getPageSizeParam() +
+            "&q=sectionid=={0}&projection=*";
     }
 }

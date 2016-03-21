@@ -9,6 +9,7 @@ import org.apache.http.client.methods.HttpGet;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -78,4 +79,72 @@ public abstract class PowerSchoolHttpClient extends BaseHttpClient {
         }
         return returnVal;
     }
+
+    @SuppressWarnings("unchecked")
+    protected <T> T getWithPages(TypeReference<T> typeRef,  String path, Integer pageSize, String ...params) throws HttpClientException {
+        boolean makeRequest = true;
+        T returnVal = null;
+        Integer currentPage = 1;
+        //No matter the powerschool query, we add a param that is page= to all queries to handle pagination.
+        if(null == params) {
+            params = new String[]{ currentPage.toString() };
+        } else {
+            // make a copy of the array
+            String[] newParams = Arrays.copyOf(params, params.length + 1);
+            // append the additional param - pageNum - to the params at the end
+            newParams[newParams.length - 1] = currentPage.toString();
+            params = newParams;
+        }
+         
+        // some methods already have this, only add it if necessary
+        if (!path.contains(PowerSchoolPaths.PAGE_NUM_PARAM_NAME + "=")) {
+            // if this is the first param, append with '?', else append with '&'
+            String conjunction = (!path.contains("?")) ? "?" : "&";
+            path = path + conjunction + PowerSchoolPaths.PAGE_NUM_PARAM_NAME + "={" + (params.length - 1) + "}";
+        }
+
+        String unadulteredPath = path;
+        while(makeRequest) {
+            makeRequest = false;
+            //No matter the powerschool query, we add a param that is page= to all queries to handle pagination.
+            path = getPath(unadulteredPath, params);
+            try {
+                HttpGet get = new HttpGet();
+                setupCommonHeaders(get);
+                get.setURI(uri.resolve(path));
+                String json = getJSON(get);
+                T tempVal = MAPPER.readValue(json,typeRef);
+                if(null == returnVal) {
+                    returnVal = tempVal;
+                }
+                //If we're dealing with a list, handle pagination...
+                if(tempVal instanceof PsResponse) {
+                    List tempList = ((PsResponse)tempVal).record;
+                    if(!currentPage.equals(1)) {
+                        ((PsResponse) returnVal).record.addAll(tempList);
+                    }
+                    //If we have exactly the page size number of results, try again to see if there is another page!
+                    if(pageSize.equals(tempList.size())) {
+                        makeRequest = true;
+                        currentPage++;
+                        params[0] = currentPage.toString();
+                    }
+                } else if(tempVal instanceof ArrayList) {
+                    List tempList = (List) tempVal;
+                    if(!currentPage.equals(1)) {
+                        ((List) returnVal).addAll(tempList);
+                    }
+                    if(pageSize.equals(tempList.size())) {
+                        makeRequest = true;
+                        currentPage++;
+                        params[0] = currentPage.toString();
+                    }
+                }
+            } catch (IOException e) {
+                throw new HttpClientException(e);
+            }
+        }
+        return returnVal;
+    }
+
 }
