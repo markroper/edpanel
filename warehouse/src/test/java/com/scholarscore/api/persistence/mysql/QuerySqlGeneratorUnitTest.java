@@ -33,7 +33,6 @@ import com.scholarscore.models.query.expressions.operators.BinaryOperator;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.measure.AttendanceMeasure;
 import com.scholarscore.models.query.measure.behavior.BehaviorMeasure;
-import org.apache.commons.lang3.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -1133,7 +1132,7 @@ public class QuerySqlGeneratorUnitTest {
                 { schoolNameTestQuery },
                 { gpaBucketTestQuery },
                 { currGpaTestQuery },
-                { courseGradesBucketedTestQuery },
+//                { courseGradesBucketedTestQuery },
                 { requiresMultipleJoinsTestQuery },
                 { queryIncludingMultipleTablesUsingHints },
                 { referralTestQuery },
