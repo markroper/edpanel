@@ -193,7 +193,7 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
 
     @Override
     public PsResponse<PsAssignmentTypeWrapper> getAssignmentCategoriesBySectionId(Long sectionId) throws HttpClientException {
-        return getWithPages(new TypeReference<PsResponse<PsAssignmentTypeWrapper>>() {
+        return get(new TypeReference<PsResponse<PsAssignmentTypeWrapper>>() {
         },
                 paths.getSectionAssignmentCategories(),
                 PAGE_SIZE,
