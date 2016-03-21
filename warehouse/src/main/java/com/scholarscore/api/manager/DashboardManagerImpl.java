@@ -113,6 +113,7 @@ public class DashboardManagerImpl implements DashboardManager {
         }
         dashboard.setSchoolId(schoolId);
         dashboard.setId(dashboardId);
+        dashboardPersistence.deleteDashboardRows(dashboardId);
         dashboardPersistence.updateDashboard(schoolId, dashboardId, dashboard);
         return new ServiceResponse<>((Void) null);
     }
