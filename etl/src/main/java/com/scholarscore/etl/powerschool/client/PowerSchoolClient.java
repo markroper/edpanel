@@ -44,7 +44,6 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.time.LocalDate;
 
@@ -194,7 +193,8 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
 
     @Override
     public PsResponse<PsAssignmentTypeWrapper> getAssignmentCategoriesBySectionId(Long sectionId) throws HttpClientException {
-        return get(new TypeReference<PsResponse<PsAssignmentTypeWrapper>>(){},
+        return getWithPages(new TypeReference<PsResponse<PsAssignmentTypeWrapper>>() {
+        },
                 paths.getSectionAssignmentCategories(),
                 PAGE_SIZE,
                 sectionId.toString());
@@ -279,7 +279,7 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     @Override
     public PsResponse<PtPsTermMapWrapper> getPowerTeacherTermMappings() throws HttpClientException {
         return get(new TypeReference<PsResponse<PtPsTermMapWrapper>>() {},
-                paths.getPowerTeacherTermnMappingPath(),
+                paths.getPowerTeacherTermMappingPath(),
                 PAGE_SIZE,
                 (String[]) null);
     }
