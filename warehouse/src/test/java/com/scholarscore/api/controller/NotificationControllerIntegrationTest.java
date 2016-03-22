@@ -638,9 +638,6 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
                 notificationValidatingExecutor.getTriggeredNotificationsForUser(student6.getId(), "Teacher triggered notifications");
         Assert.assertEquals(finalStudentNotifications.size(), 0, "Unexpected number of student triggered notifications returned");
 
-       // for (Notification n : nots) {
-       //     notificationValidatingExecutor.delete(n.getId(), "Cleaning up from this partial test");
-       // }
 
     }
 
