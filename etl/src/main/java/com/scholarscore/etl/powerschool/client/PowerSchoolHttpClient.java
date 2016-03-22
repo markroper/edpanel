@@ -80,16 +80,6 @@ public abstract class PowerSchoolHttpClient extends BaseHttpClient {
                         currentPage++;
                         params[pageParamIndex] = currentPage.toString();
                     }
-                } else if(tempVal instanceof ArrayList) {
-                    List tempList = (List) tempVal;
-                    if(!currentPage.equals(1)) {
-                        ((List) returnVal).addAll(tempList);
-                    }
-                    if(pageSize.equals(tempList.size())) {
-                        makeRequest = true;
-                        currentPage++;
-                        params[0] = currentPage.toString();
-                    }
                 }
                 
             } catch (IOException e) {
