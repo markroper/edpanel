@@ -59,7 +59,6 @@ public class PowerSchoolPaths {
                 // "message": "org.hibernate.exception.SQLGrammarException: could not extract ResultSet"
                 // 
                 // awesome.
-//            "&q=schoolid=={0};date_value=gt=" + cutoffDate + ";insession==1";
             "&q=schoolid=={0};insession==1";
     }
 
