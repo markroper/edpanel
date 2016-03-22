@@ -9,7 +9,6 @@ import java.time.LocalDate;
  * Created by markroper on 11/2/15.
  */
 public class PowerSchoolPaths {
-    protected static final String PAGE_NUM_PARAM_NAME = "page";
     private static final String BASE = "/ws/v1";
     private static final String SCHEMA_BASE = "/ws/schema/table";
     private Integer pageSize = 1000;

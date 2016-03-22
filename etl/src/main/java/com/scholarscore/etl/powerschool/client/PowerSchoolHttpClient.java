@@ -7,7 +7,6 @@ import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +16,9 @@ import java.util.List;
  * Created by markroper on 11/1/15.
  */
 public abstract class PowerSchoolHttpClient extends BaseHttpClient {
+
+    private static final String PAGE_NUM_PARAM_NAME = "page";
+
     public PowerSchoolHttpClient(URI uri) {
         super(uri);
     }
@@ -41,7 +43,7 @@ public abstract class PowerSchoolHttpClient extends BaseHttpClient {
 
         // if this is the first param, append with '?', else append with '&'
         String conjunction = (!path.contains("?")) ? "?" : "&";
-        path = path + conjunction + PowerSchoolPaths.PAGE_NUM_PARAM_NAME + "={" + pageParamIndex + "}";
+        path = path + conjunction + PAGE_NUM_PARAM_NAME + "={" + pageParamIndex + "}";
 
         String unadulteratedPath = path;
         while(makeRequest) {
