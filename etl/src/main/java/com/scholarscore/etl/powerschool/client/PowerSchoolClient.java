@@ -141,13 +141,11 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
     @Override
     public PsCourses getCoursesBySchool(Long schoolId) throws HttpClientException {
-        PsCourses original = get(PsCourses.class, paths.getCoursePath(), schoolId.toString());
-        PsCourses paged = get(
+        return get(
                 new TypeReference<PsCourses>() {},
                 paths.getCoursePath(),
                 PAGE_SIZE, 
                 schoolId.toString());
-        return original;
     }
 
     @Override
