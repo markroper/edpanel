@@ -39,7 +39,7 @@ public abstract class PowerSchoolHttpClient extends BaseHttpClient {
         }
         final int pageParamIndex = params.length - 1;
 
-                // if this is the first param, append with '?', else append with '&'
+        // if this is the first param, append with '?', else append with '&'
         String conjunction = (!path.contains("?")) ? "?" : "&";
         path = path + conjunction + PowerSchoolPaths.PAGE_NUM_PARAM_NAME + "={" + pageParamIndex + "}";
 
