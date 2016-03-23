@@ -30,7 +30,7 @@ public abstract class UserAssociator<T extends User> {
         return findByOtherId(otherId);
     }
 
-    public T findByOtherId(Long otherId) {
+    private T findByOtherId(Long otherId) {
         if(null == otherId) {
             return null;
         }

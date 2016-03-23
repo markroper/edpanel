@@ -85,9 +85,6 @@ public class StudentSync implements ISync<Student> {
             Long ssid = Long.valueOf(sourceUser.getSourceSystemId());
             Long underlyingUserId = Long.valueOf(((Person) sourceUser).getSourceSystemUserId());
             studentAssociator.associateIds(ssid, underlyingUserId);
-            if(null == edPanelUser) {
-                edPanelUser = studentAssociator.findByOtherId(underlyingUserId);
-            }
             if(null == edPanelUser){
                 sourceUser.setCurrentSchoolId(school.getId());
                 User created = null;

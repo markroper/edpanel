@@ -85,9 +85,6 @@ public class StaffSync implements ISync<Person> {
             staffAssociator.associateIds(ssid, underlyingUserId);
 
             User edPanelUser = ed.get(entry.getKey());
-            if(null == edPanelUser) {
-                edPanelUser = staffAssociator.findByOtherId(underlyingUserId);
-            }
             if(null == edPanelUser){
                 ((Staff) sourceUser).setCurrentSchoolId(school.getId());
                 final User created;
