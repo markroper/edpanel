@@ -76,10 +76,16 @@ public class DashboardJdbc extends BaseJdbc implements DashboardPersistence {
     @Override
     @SuppressWarnings("unchecked")
     public Dashboard selectDashboardForUser(Long schoolId, Long userId) {
-        String[] params = new String[]{ "userId", "schoolId" };
-        Object[] paramVals = new Object[]{ userId, schoolId };
+        String[] params = new String[]{ "schoolId" };
+        Object[] paramVals = new Object[]{ schoolId };
+        String queryString = " where d.schoolId = :schoolId";
+        if(null != userId){
+            params = new String[]{ "userId", "schoolId" };
+            paramVals = new Object[]{ userId, schoolId };
+            queryString =  " where d.userId = :userId and d.schoolId = :schoolId";
+        }
         List<Dashboard> dashes = (List<Dashboard>)hibernateTemplate.findByNamedParam(
-                DASH_HQL + " where d.userId = :userId and d.schoolId = :schoolId",
+                DASH_HQL + queryString,
                 params,
                 paramVals);
         if(null == dashes || dashes.isEmpty()) {
@@ -93,7 +99,16 @@ public class DashboardJdbc extends BaseJdbc implements DashboardPersistence {
         Map<String, Object> params = new HashMap<>();
         params.put("dashboardId", dashboardId);
         jdbcTemplate.update(
-                "DELETE FROM `scholar_warehouse`.`dashboard` WHERE `dashboard_id` = :dashboardId",
+                "DELETE FROM `dashboard` WHERE `dashboard_id` = :dashboardId",
+                new MapSqlParameterSource(params));
+    }
+
+    @Override
+    public void deleteDashboardRows(Long dashboardId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("dashboardId", dashboardId);
+        jdbcTemplate.update(
+                "DELETE FROM `dashboard_row` WHERE `dashboard_fk` = :dashboardId",
                 new MapSqlParameterSource(params));
     }
 

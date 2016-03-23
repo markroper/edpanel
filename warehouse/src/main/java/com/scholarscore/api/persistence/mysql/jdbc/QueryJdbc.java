@@ -27,17 +27,17 @@ import java.util.Map;
 public class QueryJdbc extends BaseJdbc implements QueryPersistence {
     private final static Logger LOGGER = LoggerFactory.getLogger(QueryJdbc.class);
     private static String INSERT_REPORT_SQL = "INSERT INTO `"+ 
-            DbMappings.DATABASE +"`.`" + DbMappings.REPORT_TABLE + "` " +
+            DbMappings.REPORT_TABLE + "` " +
             "(" + HibernateConsts.SCHOOL_FK + ", " + DbMappings.REPORT_COL + ")" +
             " VALUES (:schoolfk, :report)";   
     
     private static String DELETE_REPORT_SQL = "DELETE FROM `"+ 
-            DbMappings.DATABASE +"`.`" + DbMappings.REPORT_TABLE + "` " +
+            DbMappings.REPORT_TABLE + "` " +
             "WHERE `" + HibernateConsts.SCHOOL_FK + "`= :schoolfk AND " + 
             "`" + DbMappings.REPORT_ID_COL + "`= :reportid";
     
     private static String SELECT_REPORTS_IN_SCHOOL_SQL = "SELECT * FROM `"+ 
-            DbMappings.DATABASE +"`.`" + DbMappings.REPORT_TABLE + "`"
+            DbMappings.REPORT_TABLE + "`"
                     + " WHERE `" + HibernateConsts.SCHOOL_FK + "` = :schoolfk";
     
     private static String SELECT_REPORT_SQL = SELECT_REPORTS_IN_SCHOOL_SQL + 

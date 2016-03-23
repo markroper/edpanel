@@ -223,7 +223,7 @@ public class DlEtlEngine implements IEtlEngine {
         Student student = behavior.getStudent();
         User assigner = behavior.getAssigner();
 
-        LOGGER.debug("Got behavior event (" + behavior.getName() + ")"
+        LOGGER.trace("Got behavior event (" + behavior.getName() + ")"
                 + " for student named " + (student == null ? "(student null)" : student.getName())
                 + " and assigner named " + (assigner == null ? "(assigner null)" : assigner.getName())
                 + " with point value " + behavior.getPointValue());
@@ -258,7 +258,7 @@ public class DlEtlEngine implements IEtlEngine {
                     result.incrementBehaviorWithoutTeacher();
                 }
 
-                LOGGER.debug("About to map Behavior " + behavior.getName()
+                LOGGER.trace("About to map Behavior " + behavior.getName()
                         + " to student " + existingStudent.getName());
                 long studentId = existingStudent.getId();
 
@@ -287,14 +287,15 @@ public class DlEtlEngine implements IEtlEngine {
                     try {
                         createdBehavior = scholarScore.createBehavior(studentId, behavior);
                     } catch (HttpClientException e) {
-                        // e.printStackTrace();
+                        LOGGER.info("HttpClientException caught within DLETL Engine trying to create behavior with remote behavior ID " + behavior.getRemoteBehaviorId());
                     }
                     // ... and save in cache
                     if (createdBehavior != null) { 
                         studentBehaviorEvents.put(createdBehavior.getRemoteBehaviorId(), createdBehavior);
                         result.incrementBehaviorAdded();
                     } else {
-                        // TODO Jordan: document failures to create
+                        LOGGER.warn("Unable to create behavior with remote behavior ID " + behavior.getRemoteBehaviorId());
+                        result.incrementBehaviorFailed();
                     }
                 } else {
                     // behavior exists already in scholarscore (with id scholarScoreBehaviorId), update it
@@ -308,7 +309,7 @@ public class DlEtlEngine implements IEtlEngine {
                 }
 
             } else {
-                LOGGER.error("WARN: Unable to match to student specified by deanslist: " + student.getName());
+                LOGGER.info("Unable to match to student specified by deanslist: " + student.getName());
                 result.incrementUnmatchedStudent(student.getName());
             }
         } else {
@@ -399,7 +400,7 @@ public class DlEtlEngine implements IEtlEngine {
         WHOLE_NAME  // key is entire name, whatever may be in it
     }
     
-    // TODO Jordan: temporary hack to get students matching. Today nina's school puts "Nmh" or a middle initial
+    // TODO: hack to get students matching until first/middle/last can be fetched seperately. Today nina's school puts "Nmh" or a middle initial
     // for a student's middle name in a lot of the deanslist behavioral records. This method takes in a raw
     // student name (which can contain first, middle, last, spaces, etc) and returns a lowercased version 
     // with whitespace characters stripped. Depending on the KeyType, the returned string may be further transformed,
@@ -412,6 +413,11 @@ public class DlEtlEngine implements IEtlEngine {
 
         String matchableName = null;
         
+        // may need a set of these replace characters. For now, it appears that deanslist has begun stripping this out
+        // of student (last? all?) names, while powerschool does not - leading to a failure to match. 
+        // Since we don't know where the dashes should be in the Deanslist data, just strip them out and see if the dashless
+        // strings match.
+        name = name.replace("-", "");
         String[] nameWords = name.trim().split("\\s+");
         if (nameWords.length == 0) { matchableName = ""; }                   // no name, keytype doesn't matter
         if (nameWords.length >= 1) {

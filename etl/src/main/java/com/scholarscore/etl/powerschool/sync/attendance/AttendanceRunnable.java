@@ -40,7 +40,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
     protected Student student;
     protected PowerSchoolSyncResult results;
     protected LocalDate syncCutoff;
-    protected Long dailyAbsenseTrigger;
+    protected Long dailyAbsenceTrigger;
     protected Map<Long, PsCycle> schoolCycles;
     protected ConcurrentHashMap<Long, Set<Section>> studentClasses;
     protected ConcurrentHashMap<Long, PsPeriod> periods;
@@ -52,7 +52,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                               ConcurrentHashMap<LocalDate, SchoolDay> schoolDays,
                               PowerSchoolSyncResult results,
                               LocalDate syncCutoff,
-                              Long dailyAbsenseTrigger,
+                              Long dailyAbsenceTrigger,
                               ConcurrentHashMap<Long, PsCycle> schoolCycles,
                               ConcurrentHashMap<Long, Set<Section>> studentClasses,
                               ConcurrentHashMap<Long, PsPeriod> periods) {
@@ -63,7 +63,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         this.schoolDays = schoolDays;
         this.results = results;
         this.syncCutoff = syncCutoff;
-        this.dailyAbsenseTrigger = dailyAbsenseTrigger;
+        this.dailyAbsenceTrigger = dailyAbsenceTrigger;
         this.schoolCycles = schoolCycles;
         this.studentClasses = studentClasses;
         this.periods = periods;
@@ -186,10 +186,10 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         }
         //Ok, for schools that track only section level attendance and figure out daily attendance from that,
         //we need to see if the student missed every period and then create a daily attendance event if they did...
-        if(null != dailyAbsenseTrigger) {
+        if(null != dailyAbsenceTrigger) {
             for (Map.Entry<SchoolDay, List<Attendance>> entry : schoolDayToAttendances.entrySet()) {
                 boolean hasDaily = false;
-                long absenses = 0;
+                long absences = 0;
                 long tardies = 0;
                 for (Attendance a : entry.getValue()) {
                     if (a.getType().equals(AttendanceType.DAILY)) {
@@ -197,36 +197,36 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                         break;
                     }
                     if (a.getStatus().equals(AttendanceStatus.ABSENT)) {
-                        absenses++;
+                        absences++;
                     }
                     if(a.getStatus().equals(AttendanceStatus.TARDY)) {
                         tardies++;
                     }
                 }
-                //If the number of absenses is equal to the periods in the day minus one for lunch
+                //If the number of absences is equal to the periods in the day minus one for lunch
                 //and there is no daily attendance event already created, create one.
                 if (!hasDaily) {
-                    if (absenses >= dailyAbsenseTrigger) {
+                    if (absences >= dailyAbsenceTrigger) {
                         Attendance a = new Attendance();
                         a.setSchoolDay(entry.getKey());
                         a.setStudent(student);
                         a.setStatus(AttendanceStatus.ABSENT);
                         a.setType(AttendanceType.DAILY);
                         a.setSourceSystemId(String.valueOf(syntheticDcid));
-                        a.setDescription("EdPanel generated due to daily section absenses( " +
-                                absenses +
-                                ") exceeding limit: " + dailyAbsenseTrigger);
+                        a.setDescription("EdPanel generated due to daily section absences( " +
+                                absences +
+                                ") exceeding limit: " + dailyAbsenceTrigger);
                         result.put(syntheticDcid, a);
                         syntheticDcid--;
-                    } else if(absenses > 0 || tardies > 0){
+                    } else if(absences > 0 || tardies > 0){
                         Attendance a = new Attendance();
                         a.setSchoolDay(entry.getKey());
                         a.setStudent(student);
                         a.setStatus(AttendanceStatus.TARDY);
                         a.setType(AttendanceType.DAILY);
                         a.setSourceSystemId(String.valueOf(syntheticDcid));
-                        a.setDescription("EdPanel generated due to daily section absenses( " +
-                                absenses +
+                        a.setDescription("EdPanel generated due to daily section absences( " +
+                                absences +
                                 ") exceeding limit: ");
                         result.put(syntheticDcid, a);
                         syntheticDcid--;

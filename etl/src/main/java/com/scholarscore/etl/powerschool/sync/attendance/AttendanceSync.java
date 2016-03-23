@@ -36,7 +36,7 @@ public class AttendanceSync implements ISync<Attendance> {
     protected StudentAssociator studentAssociator;
     protected ConcurrentHashMap<LocalDate, SchoolDay> schoolDays;
     protected LocalDate syncCutoff;
-    protected Long dailyAbsenseTrigger;
+    protected Long dailyAbsenceTrigger;
     protected ConcurrentHashMap<Long, PsCycle> schoolCycles;
     protected ConcurrentHashMap<Long, Set<Section>> studentClasses;
     ConcurrentHashMap<Long, PsPeriod> periods;
@@ -46,7 +46,7 @@ public class AttendanceSync implements ISync<Attendance> {
                           StudentAssociator studentAssociator,
                           ConcurrentHashMap<LocalDate, SchoolDay> schoolDays,
                           LocalDate syncCutoff,
-                          Long dailyAbsenseTrigger,
+                          Long dailyAbsenceTrigger,
                           ConcurrentHashMap<Long,PsCycle> schoolCycles,
                           ConcurrentHashMap<Long, Set<Section>> studentClasses,
                           ConcurrentHashMap<Long, PsPeriod> periods) {
@@ -56,7 +56,7 @@ public class AttendanceSync implements ISync<Attendance> {
         this.studentAssociator = studentAssociator;
         this.schoolDays = schoolDays;
         this.syncCutoff = syncCutoff;
-        this.dailyAbsenseTrigger = dailyAbsenseTrigger;
+        this.dailyAbsenceTrigger = dailyAbsenceTrigger;
         this.schoolCycles = schoolCycles;
         this.studentClasses = studentClasses;
         this.periods = periods;
@@ -72,7 +72,7 @@ public class AttendanceSync implements ISync<Attendance> {
             if(s.getCurrentSchoolId().equals(school.getId())) {
                 AttendanceRunnable runnable = new AttendanceRunnable(
                         edPanel, powerSchool, school, s, schoolDays, results, syncCutoff,
-                        dailyAbsenseTrigger, schoolCycles, studentClasses, periods);
+                        dailyAbsenceTrigger, schoolCycles, studentClasses, periods);
                 executor.execute(runnable);
             }
         }

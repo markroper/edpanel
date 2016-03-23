@@ -94,7 +94,7 @@ public class StudentSync implements ISync<Student> {
                 try {
                     created = edPanel.createStudent(sourceUser);
                 } catch (HttpClientException e) {
-                    results.studentUpdateFailed(entry.getKey(), sourceUser.getId());
+                    results.studentCreateFailed(entry.getKey());
                     continue;
                 }
                 sourceUser.setId(created.getId());
