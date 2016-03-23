@@ -200,6 +200,9 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                 PsSectionScoreId i = ssid.tables.sectionscoresid;
                 Long ssidId = Long.valueOf(i.getDcid());
                 Student stud = studentAssociator.findBySourceSystemId(Long.valueOf(i.getStudentid()));
+                
+                // here is where we need to query the tab
+                
                 if(null == stud) {
                     stud = MissingStudentMigrator.resolveMissingStudent(
                             school.getId(),
