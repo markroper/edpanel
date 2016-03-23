@@ -310,8 +310,10 @@ public abstract class QuerySqlGenerator {
     private static String joinRemainingDimensions(List<Dimension> orderedTables, 
                                                   Dimension currTable, 
                                                   AggregateMeasure am) throws SqlGenerationException {
-        if (am == null) { throw new SqlGenerationException("AM must not be null!"); }
-        MeasureSqlSerializer mss = MeasureSqlSerializerFactory.get(am.getMeasure());
+        MeasureSqlSerializer mss = null;
+        if(null != am) {
+            mss = MeasureSqlSerializerFactory.get(am.getMeasure());
+        }
         
         StringBuilder toReturn = new StringBuilder();
         for(int i = 1; i < orderedTables.size(); i++) {
