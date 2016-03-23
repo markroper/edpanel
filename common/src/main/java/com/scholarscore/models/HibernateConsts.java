@@ -194,6 +194,7 @@ public class HibernateConsts {
     //IGoal constants
     public static final String GOAL_TABLE = "goal";
     public static final String GOAL_ID = "goal_id";
+    public static final String GOAL_FK = "goal_fk";
     public static final String GOAL_APPROVED = "approved";
     public static final String GOAL_AUTOCOMPLETE = "autocomplete";
     public static final String GOAL_FOLLOWUP = "followup";
@@ -276,6 +277,8 @@ public class HibernateConsts {
     public static final String NOTIFICATION_CREATED_DATE = "notification_created_date";
     public static final String NOTIFICATION_EXPIRY_DATE = "notification_expiry_date";
     public static final String NOTIFICATION_TRIGGER_GREATER_THAN = "notification_trigger_greater_than";
+    public static final String NOTIFICATION_ONE_TIME = "one_time";
+    public static final String NOTIFICATION_TRIGGERED = "triggered";
 
     public static final String NOTIFICATION_GROUP = "notification_group";
     public static final String NOTIFICATION_GROUP_ID = "notification_group_id";

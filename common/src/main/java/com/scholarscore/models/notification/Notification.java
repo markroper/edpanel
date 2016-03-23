@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.assignment.Assignment;
+import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.notification.group.NotificationGroup;
 import com.scholarscore.models.notification.window.NotificationWindow;
 import com.scholarscore.models.query.AggregateFunction;
@@ -47,6 +48,8 @@ public class Notification {
     private Section section;
     //Can be null if the notification is not assignment related
     private Assignment assignment;
+    //Can be null if the notification is not goal related
+    private Goal goal;
     @NotNull
     //The creating user of the notification
     private User owner;
@@ -83,6 +86,13 @@ public class Notification {
     private LocalDate createdDate;
     @NotNull
     private LocalDate expiryDate;
+    private Boolean isOneTime;
+    private Boolean triggered;
+
+    public Notification() {
+        this.isOneTime = false;
+        this.triggered = false;
+    }
 
     @Column(name = HibernateConsts.SCHOOL_FK)
     public Long getSchoolId() {
@@ -235,9 +245,40 @@ public class Notification {
         this.expiryDate = expiryDate;
     }
 
+    @Column(name = HibernateConsts.NOTIFICATION_ONE_TIME)
+    public Boolean getOneTime() {
+        return isOneTime;
+    }
+
+    public void setOneTime(Boolean oneTime) {
+        isOneTime = oneTime;
+    }
+
+    @Column(name = HibernateConsts.NOTIFICATION_TRIGGERED)
+    public Boolean getTriggered() {
+        return triggered;
+    }
+
+    public void setTriggered(Boolean triggered) {
+        this.triggered = triggered;
+    }
+
+    @OneToOne
+    @JoinColumn(name=HibernateConsts.GOAL_FK)
+    @Fetch(FetchMode.JOIN)
+    public Goal getGoal() {
+        return goal;
+    }
+
+    public void setGoal(Goal goal) {
+        this.goal = goal;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, schoolId, section, assignment, owner, subscribers, subjects, triggerValue, triggerWhenGreaterThan, aggregateFunction, window, measure, createdDate, expiryDate);
+        return Objects.hash(id, name, schoolId, section, assignment, owner, subscribers,
+                subjects, triggerValue, triggerWhenGreaterThan, aggregateFunction, window,
+                measure, createdDate, expiryDate, isOneTime, triggered, goal);
     }
 
     @Override
@@ -263,6 +304,9 @@ public class Notification {
                 && Objects.equals(this.window, other.window)
                 && Objects.equals(this.measure, other.measure)
                 && Objects.equals(this.createdDate, other.createdDate)
-                && Objects.equals(this.expiryDate, other.expiryDate);
+                && Objects.equals(this.expiryDate, other.expiryDate)
+                && Objects.equals(this.isOneTime, other.isOneTime)
+                && Objects.equals(this.triggered, other.triggered)
+                && Objects.equals(this.goal, other.goal);
     }
 }

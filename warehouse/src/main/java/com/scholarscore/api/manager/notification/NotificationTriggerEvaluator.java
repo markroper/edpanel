@@ -3,6 +3,10 @@ package com.scholarscore.api.manager.notification;
 import com.scholarscore.api.manager.OrchestrationManager;
 import com.scholarscore.api.manager.notification.calc.AssignmentGradeCalc;
 import com.scholarscore.api.manager.notification.calc.BehaviorScoreCalc;
+import com.scholarscore.api.manager.notification.calc.GoalApprovedCalc;
+import com.scholarscore.api.manager.notification.calc.GoalCreatedCalc;
+import com.scholarscore.api.manager.notification.calc.GoalMetCalc;
+import com.scholarscore.api.manager.notification.calc.GoalUnmetCalc;
 import com.scholarscore.api.manager.notification.calc.GpaCalc;
 import com.scholarscore.api.manager.notification.calc.HwCompletionCalc;
 import com.scholarscore.api.manager.notification.calc.NotificationCalculator;
@@ -41,6 +45,11 @@ public class NotificationTriggerEvaluator {
      * @return
      */
     public List<TriggeredNotification> evaluate(Notification notification) {
+        //If its a one time notification and it was already triggered, don't trigger it again and can skip all this
+        if (notification.getOneTime() && notification.getTriggered()) {
+            return null;
+        }
+
         List<? extends Person> subjects =
                 NotificationCalculator.resolveGroupMembers(
                         notification.getSubjects(), notification.getSchoolId(), manager);
@@ -73,6 +82,18 @@ public class NotificationTriggerEvaluator {
                 break;
             case SECTION_TARDY:
                 calculator = new SectionTardyCalc();
+                break;
+            case GOAL_CREATED:
+                calculator = new GoalCreatedCalc();
+                break;
+            case GOAL_APPROVED:
+                calculator = new GoalApprovedCalc();
+                break;
+            case GOAL_MET:
+                calculator = new GoalMetCalc();
+                break;
+            case GOAL_UNMET:
+                calculator = new GoalUnmetCalc();
                 break;
             default:
                 LOGGER.warn("A notification with ID: " + notification.getId() + " has an an unsupported type: " +

@@ -28,4 +28,6 @@ public interface NotificationManager {
     ServiceResponse<List<TriggeredNotification>> getAllTriggeredNotificationsForUser(Long userId, Boolean includeInactive);
 
     ServiceResponse<Void> dismissTriggeredNotification(Long notificationId, Long triggeredId, Long userId);
+
+    public ServiceResponse<Long> createGoalNotifications(long schoolId, long studentId, long goalId);
 }
