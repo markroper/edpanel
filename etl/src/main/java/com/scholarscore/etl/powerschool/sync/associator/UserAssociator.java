@@ -20,35 +20,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * 
  * Created by markroper on 10/27/15.
  */
-public abstract class UserAssociator<T extends User> {
+public class UserAssociator<T extends User> {
 
-    private final ConcurrentHashMap<Long, Long> ssidToLocalIdUser = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, T> users = new ConcurrentHashMap<>();
 
     public T findBySourceSystemId(Long ssid) {
-        Long otherId = ssidToLocalIdUser.get(ssid);
-        return findByOtherId(otherId);
+        return users.get(ssid);
     }
 
-    public T findByOtherId(Long otherId) {
-        if(null == otherId) {
-            return null;
-        }
-        return users.get(otherId);
+    public void add(Long ssid, T entry) {
+        users.put(ssid, entry);
     }
-
-    public void associateIds(Long ssid, Long otherId) {
-        ssidToLocalIdUser.put(ssid, otherId);
-    }
-
-    public void addOtherIdMap(ConcurrentHashMap<Long, T> entriesToAdd) {
-        users.putAll(entriesToAdd);
-    }
-
-    public ConcurrentHashMap<Long, Long> getSsidToLocalIdUser() {
-        return ssidToLocalIdUser;
-    }
-
+    
     public ConcurrentHashMap<Long, T> getUsers() {
         return users;
     }

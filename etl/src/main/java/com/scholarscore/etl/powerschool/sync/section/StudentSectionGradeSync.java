@@ -223,6 +223,8 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                                 edPanel,
                                 studentAssociator,
                                 results);
+                    } else {
+                        LOGGER.warn("!! !! Student Associator findBySourceSystemId WORKS for student with ssid " + powerSchoolStudentId);
                     }
                     StudentSectionGrade ssg = new StudentSectionGrade();
                     ssg.setStudent(edpanelStudent);
