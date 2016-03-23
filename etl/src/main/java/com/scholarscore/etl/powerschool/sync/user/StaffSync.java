@@ -44,7 +44,6 @@ public class StaffSync implements ISync<Person> {
 
     @Override
     public ConcurrentHashMap<Long, Person> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        Long psSchoolId = new Long(school.getSourceSystemId());
         ConcurrentHashMap<Long, Person> sourceStaff = null;
         try {
             sourceStaff = resolveAllFromSourceSystem();
@@ -91,7 +90,7 @@ public class StaffSync implements ISync<Person> {
             }
             if(null == edPanelUser){
                 ((Staff) sourceUser).setCurrentSchoolId(school.getId());
-                User created = null;
+                final User created;
                 try {
                     if(((Staff) sourceUser).getIsAdmin()) {
                         created = edPanel.createAdministrator((Staff)sourceUser);
@@ -102,7 +101,7 @@ public class StaffSync implements ISync<Person> {
                     else {
                         created = edPanel.createTeacher((Staff)sourceUser);
                     }
-                    sourceUser = created;
+                    staffAssociator.addOtherIdMap(new ConcurrentHashMap<Long, Person>(){{ this.put( underlyingUserId, (Staff)created); }});
                 } catch (HttpClientException e) {
                     results.staffCreateFailed(ssid);
                     continue;

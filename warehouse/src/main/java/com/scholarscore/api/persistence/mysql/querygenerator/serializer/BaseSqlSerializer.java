@@ -20,7 +20,7 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
         return buildJoinClause(dimToJoinUpon) + optClause;
     }
     
-    private String buildJoinClause(Dimension dimTableName) {
+    protected String buildJoinClause(Dimension dimTableName) {
         String stringTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(dimTableName);
         return LEFT_OUTER_JOIN + toTableName() + ON +
                 stringTableName + DOT + QuerySqlGenerator.resolvePrimaryKeyField(stringTableName) + EQUALS +
@@ -87,7 +87,7 @@ public abstract class BaseSqlSerializer implements MeasureSqlSerializer {
                 EQUALS + tableToJoinTo + DOT + joinToColName + " ";
     }
 
-    private String optionalJoinOrEmptyString() {
+    protected String optionalJoinOrEmptyString() {
         return (null == optionalJoinedTable() ? "" : joinTable(optionalJoinedTable()));
     }
 

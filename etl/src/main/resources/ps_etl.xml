@@ -7,16 +7,7 @@
 
     <import resource="powerschool.xml"/>
     <import resource="edpanel.xml"/>
-
-    <bean
-            class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
-            p:ignoreUnresolvablePlaceholders="true">
-        <property name="location">
-            <value>scholarscore.properties</value>
-        </property>
-    </bean>
-
-
+    
     <bean id="etlEngine" class="com.scholarscore.etl.EtlEngine">
         <property name="powerSchool" ref="powerSchoolClient"/>
         <property name="edPanel" ref="edpanelClient"/>

@@ -7,6 +7,7 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.EntityId;
+import com.scholarscore.models.attendance.AttendanceStatus;
 import com.scholarscore.models.attendance.AttendanceType;
 import com.scholarscore.models.dashboard.ColumnDef;
 import com.scholarscore.models.dashboard.Dashboard;
@@ -112,6 +113,7 @@ public class DashboardManagerImpl implements DashboardManager {
         }
         dashboard.setSchoolId(schoolId);
         dashboard.setId(dashboardId);
+        dashboardPersistence.deleteDashboardRows(dashboardId);
         dashboardPersistence.updateDashboard(schoolId, dashboardId, dashboard);
         return new ServiceResponse<>((Void) null);
     }
@@ -154,14 +156,14 @@ public class DashboardManagerImpl implements DashboardManager {
         gpaMeasure.setBuckets(buckets);
         gpaMeasures.add(gpaMeasure);
         Expression studentClause = new Expression(
-                new NumericOperand(0L),
-                ComparisonOperator.LESS_THAN,
-                new DimensionOperand(new DimensionField(Dimension.STUDENT, StudentDimension.ID))
+                new DimensionOperand(new DimensionField(Dimension.STUDENT, StudentDimension.ID)),
+                ComparisonOperator.GREATER_THAN,
+                new NumericOperand(0L)
         );
         Expression whereClause = new Expression(
-                new NumericPlaceholder("${schoolId}"),
+                new DimensionOperand(new DimensionField(Dimension.SCHOOL, SchoolDimension.ID)),
                 ComparisonOperator.EQUAL,
-                new DimensionOperand(new DimensionField(Dimension.SCHOOL, SchoolDimension.ID)));
+                new NumericPlaceholder("${schoolId}"));
         gpaBucketQuery.setFilter(new Expression(studentClause, BinaryOperator.AND, whereClause));
         gpa.setChartQuery(gpaBucketQuery);
         Query gpaClick = new Query();
@@ -172,14 +174,14 @@ public class DashboardManagerImpl implements DashboardManager {
         gpaClick.addField(new DimensionField(Dimension.STUDENT, StudentDimension.ID));
         gpaClick.addField(new DimensionField(Dimension.STUDENT, StudentDimension.NAME));
         Expression clickWhereMin = new Expression(
-                new NumericPlaceholder(QueryPlaceholders.CLICK_VALUE_MIN),
-                ComparisonOperator.LESS_THAN_OR_EQUAL,
-                new MeasureOperand(new MeasureField(Measure.CURRENT_GPA, CurrentGpaMeasure.GPA))
+                new MeasureOperand(new MeasureField(Measure.CURRENT_GPA, CurrentGpaMeasure.GPA)),
+                ComparisonOperator.GREATER_THAN_OR_EQUAL,
+                new NumericPlaceholder(QueryPlaceholders.CLICK_VALUE_MIN)
         );
         Expression clickWhereMax = new Expression(
-                new NumericPlaceholder(QueryPlaceholders.CLICK_VALUE_MAX),
-                ComparisonOperator.GREATER_THAN,
-                new MeasureOperand(new MeasureField(Measure.CURRENT_GPA, CurrentGpaMeasure.GPA))
+                new MeasureOperand(new MeasureField(Measure.CURRENT_GPA, CurrentGpaMeasure.GPA)),
+                ComparisonOperator.LESS_THAN,
+                new NumericPlaceholder(QueryPlaceholders.CLICK_VALUE_MAX)
         );
         Expression clickWhere = new Expression(clickWhereMin, BinaryOperator.AND, clickWhereMax);
         gpaClick.setFilter(new Expression(whereClause, BinaryOperator.AND, clickWhere));
@@ -212,6 +214,11 @@ public class DashboardManagerImpl implements DashboardManager {
                 ComparisonOperator.EQUAL,
                 new StringOperand(AttendanceType.DAILY.name())
         );
+        Expression attStatus = new Expression(
+                new MeasureOperand(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.STATUS)),
+                ComparisonOperator.EQUAL,
+                new StringOperand(AttendanceStatus.ABSENT.name())
+        );
         Expression dateMin = new Expression(
                 new MeasureOperand(new MeasureField(Measure.ATTENDANCE, AttendanceMeasure.DATE)),
                 ComparisonOperator.GREATER_THAN_OR_EQUAL,
@@ -224,7 +231,8 @@ public class DashboardManagerImpl implements DashboardManager {
         );
         Expression dateExp = new Expression(dateMin, BinaryOperator.AND, dateMax);
         Expression dateAndAtt = new Expression(dateExp, BinaryOperator.AND, attType);
-        Expression attendanceFilter = new Expression(whereClause, BinaryOperator.AND, dateAndAtt);
+        Expression dateAndAttAndType = new Expression(dateAndAtt, BinaryOperator.AND, attStatus);
+        Expression attendanceFilter = new Expression(whereClause, BinaryOperator.AND, dateAndAttAndType);
         attendanceQ.setFilter(attendanceFilter);
         attendance.setChartQuery(attendanceQ);
         Query attendanceClick = new Query();

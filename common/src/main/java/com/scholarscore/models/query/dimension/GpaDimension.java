@@ -1,9 +1,9 @@
 package com.scholarscore.models.query.dimension;
 
 import com.google.common.collect.ImmutableSet;
-import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.query.Dimension;
+import com.scholarscore.models.query.measure.GpaMeasure;
 
 import java.util.Set;
 
@@ -34,7 +34,7 @@ public class GpaDimension extends BaseDimension implements IDimension {
 
     @Override
     public Set<String> getFields() {
-        return null;
+        return GpaMeasure.FIELDS;
     }
 
     @Override

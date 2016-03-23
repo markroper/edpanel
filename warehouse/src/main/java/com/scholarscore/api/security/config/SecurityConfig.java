@@ -48,11 +48,7 @@ import java.io.PrintWriter;
  * extends to override the values for the DML, there appears to be a fair bit of rewriting injection required
  * in order to get an extended instance within the stack.
  *
- * There are comments on stack overflow indicating this is a Jira defect and might be revisited.  Regardless, 
- * what this means is if the DB schema name (scholar_warehouse) isn't declared as part of the datasource connection
- * it will expect that the default connection contains the tables (which it won't without specifying the database 
- * name in the connect string).  Additionally it means that the table names and columns must be the same as expected 
- * via JdbcUserDetailsManager
+ * Note: This class relies on the DB schema name being declared in the datasource connection. We do this, so all is well.
  *
  * @see org.springframework.security.provisioning.JdbcUserDetailsManager
  *
