@@ -208,7 +208,10 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                             edPanel,
                             studentAssociator,
                             results);
+                } else {
+                    LOGGER.warn("!! !! Student Associator findBySourceSystemId WORKS for student with ssid " + i.getStudentid());
                 }
+                
                 if(null != stud) {
                     ssidToStudent.put(ssidId, new MutablePair<>(stud, i));
                 } else {

@@ -385,14 +385,14 @@ public class EtlEngine implements IEtlEngine {
 
         for (Map.Entry<Long, School> school : this.schools.entrySet()) {
             StudentSync sync = new StudentSync(edPanel, powerSchool, school.getValue(), studentAssociator, spedEll);
-            studentAssociator.addOtherIdMap(sync.syncCreateUpdateDelete(results));
+            sync.syncCreateUpdateDelete(results);
         }
     }
 
     public void createStaff() {
         for (Map.Entry<Long, School> school : this.schools.entrySet()) {
             StaffSync sync = new StaffSync(edPanel, powerSchool, school.getValue(), staffAssociator);
-            staffAssociator.addOtherIdMap(sync.syncCreateUpdateDelete(results));
+            sync.syncCreateUpdateDelete(results);
         }
     }
 

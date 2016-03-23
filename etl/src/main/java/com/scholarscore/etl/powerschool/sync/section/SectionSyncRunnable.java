@@ -237,6 +237,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 //Resolve the EdPanel Teacher(s) and set on the Section
                 User t = staffAssociator.findBySourceSystemId(powerSection.getStaff_id());
                 if(null != t) {
+                    LOGGER.warn("!! !! Staff Associator findBySourceSystemId WORKS for staff with ssid " + powerSection.getStaff_id());
                     HashSet<Staff> persons = new HashSet<>();
                     persons.add((Staff) t);
                     edpanelSection.setTeachers(persons);

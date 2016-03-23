@@ -65,7 +65,7 @@ public class AttendanceSync implements ISync<Attendance> {
     @Override
     public ConcurrentHashMap<Long, Attendance> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<Long, Attendance> response = new ConcurrentHashMap<>();
-        Iterator<Map.Entry<Long, Student>> studentIterator = studentAssociator.getStudents().entrySet().iterator();
+        Iterator<Map.Entry<Long, Student>> studentIterator = studentAssociator.getUsers().entrySet().iterator();
         ExecutorService executor = Executors.newFixedThreadPool(EtlEngine.THREAD_POOL_SIZE);
         while(studentIterator.hasNext()) {
             Student s = studentIterator.next().getValue();

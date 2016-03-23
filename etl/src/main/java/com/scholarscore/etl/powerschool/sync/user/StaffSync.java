@@ -82,31 +82,25 @@ public class StaffSync implements ISync<Person> {
             //Associate the SSID and source system local id (teacher/admin ID and underlying user ID)
             Long ssid = Long.valueOf(sourceUser.getSourceSystemId());
             Long underlyingUserId = Long.valueOf(((Person) sourceUser).getSourceSystemUserId());
-            staffAssociator.associateIds(ssid, underlyingUserId);
-
             User edPanelUser = ed.get(entry.getKey());
-            if(null == edPanelUser) {
-                edPanelUser = staffAssociator.findByOtherId(underlyingUserId);
-            }
             if(null == edPanelUser){
                 ((Staff) sourceUser).setCurrentSchoolId(school.getId());
-                final User created;
+                final Staff created;
                 try {
                     if(((Staff) sourceUser).getIsAdmin()) {
                         created = edPanel.createAdministrator((Staff)sourceUser);
 
                     } else if (((Staff)sourceUser).getIsTeacher()) {
                         created = edPanel.createTeacher((Staff)sourceUser);
-                    }
-                    else {
+                    } else {
                         created = edPanel.createTeacher((Staff)sourceUser);
                     }
-                    staffAssociator.addOtherIdMap(new ConcurrentHashMap<Long, Person>(){{ this.put( underlyingUserId, (Staff)created); }});
                 } catch (HttpClientException e) {
                     results.staffCreateFailed(ssid);
                     continue;
                 }
                 sourceUser.setId(created.getId());
+                staffAssociator.add(ssid, created);
                 results.staffCreated(entry.getKey(), created.getId());
             } else {
                 sourceUser.setId(edPanelUser.getId());
@@ -115,7 +109,7 @@ public class StaffSync implements ISync<Person> {
                 sourceUser.setUsername(edPanelUser.getUsername());
                 sourceUser.setEnabled(edPanelUser.getEnabled());
                 edPanelUser.setPassword(null);
-                Address add = ((Person)edPanelUser).getHomeAddress();
+                Address add = (edPanelUser).getHomeAddress();
                 if(null != add && null != sourceUser.getHomeAddress()) {
                     sourceUser.getHomeAddress().setId(add.getId());
                 }
@@ -128,6 +122,7 @@ public class StaffSync implements ISync<Person> {
                         }
                         continue;
                     }
+                    staffAssociator.add(ssid, (Staff)sourceUser);
                     results.staffUpdated(entry.getKey(), sourceUser.getId());
                 }
             }
