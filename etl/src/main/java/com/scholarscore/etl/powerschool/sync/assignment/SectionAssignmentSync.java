@@ -15,7 +15,6 @@ import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentTy
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.sync.MissingStudentMigrator;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
@@ -112,7 +111,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                 sourceAssignment.setId(created.getId());
                 results.sectionAssignmentCreated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceAssignment.getId());
             } else {
-                //Massage discrepencies to determine
+                //Massage discrepancies to determine
                 sourceAssignment.setId(edPanelAssignment.getId());
                 if(sourceAssignment.getSectionFK().equals(edPanelAssignment.getSectionFK())) {
                     edPanelAssignment.setSection(sourceAssignment.getSection());
@@ -133,13 +132,13 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                     results.sectionAssignmentUpdated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceAssignment.getId());
                 }
             }
-            //Regardless of wheter or not we're creating, updating or no-op-ing, sync the StudentAssignments
+            //Regardless of whether or not we're creating, updating or no-op-ing, sync the StudentAssignments
             StudentAssignmentSyncRunnable runnable = new StudentAssignmentSyncRunnable(
                         powerSchool,
                         edPanel,
                         school,
                         createdSection,
-                        sourceAssignment,
+                        sourceAssignment,   
                         ssidToStudent,
                         results
             );
@@ -196,23 +195,22 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         PsResponse<PsSectionScoreIdWrapper> ssids = powerSchool.getStudentScoreIdsBySectionId(
                 Long.valueOf(createdSection.getSourceSystemId()));
         if(null != ssids && null != ssids.record) {
-            for(PsResponseInner<PsSectionScoreIdWrapper> ssid: ssids.record) {
-                PsSectionScoreId i = ssid.tables.sectionscoresid;
-                Long ssidId = Long.valueOf(i.getDcid());
-                Student stud = studentAssociator.findBySourceSystemId(Long.valueOf(i.getStudentid()));
-                if(null == stud) {
-                    stud = MissingStudentMigrator.resolveMissingStudent(
-                            school.getId(),
-                            Long.valueOf(i.getStudentid()),
-                            powerSchool,
-                            edPanel,
-                            studentAssociator,
-                            results);
-                }
-                if(null != stud) {
-                    ssidToStudent.put(ssidId, new MutablePair<>(stud, i));
+            for(PsResponseInner<PsSectionScoreIdWrapper> sectionScoreIdWrapper: ssids.record) {
+                PsSectionScoreId i = sectionScoreIdWrapper.tables.sectionscoresid;
+                Long entityTableId = Long.valueOf(i.getStudentid());
+                Long ssid = studentAssociator.findSsidFromTableId(entityTableId);
+                if (null != ssid) {
+                    Student stud = studentAssociator.findByEntityTableId(entityTableId);
+                    if (null != stud) {
+                        ssidToStudent.put(ssid, new MutablePair<>(stud, i));
+                    } else {
+                        // TODO Jordan: if this code path gets hit, need to go back to the high-level student API and ask for this specific student by ssid
+                        // Not critical for the ETL right now as it appears these students have all transferred, and we don't include those students anyway (I don't think?)
+                        LOGGER.warn("Got SSID " + ssid + " from (table)ID " + entityTableId + " but couldn't fetch actual User from hashmap - need network call?");
+                    }
                 } else {
-                    LOGGER.warn("Unable to resolve student with ssid: " + i.getStudentid());
+                    // TODO: no apparent solution here, add a counter for this case in the result object
+                    LOGGER.warn("Can't resolve (DC)ID from student table. Definitely cannot resolve" + " student with tableId " + entityTableId + ".");
                 }
             }
         }

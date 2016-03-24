@@ -185,7 +185,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     studentAssociator,
                     sourceSection
             );
-            LOGGER.debug("Section, including assignments and student section grades created/updated. Section ID: " +
+            LOGGER.trace("Section, including assignments and student section grades created/updated. Section ID: " +
                     sourceSection.getId() + ", school ID: " + school.getId());
             assignmentSync.syncCreateUpdateDelete(results);
         }

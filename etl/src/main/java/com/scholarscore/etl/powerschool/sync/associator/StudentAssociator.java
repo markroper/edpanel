@@ -2,8 +2,6 @@ package com.scholarscore.etl.powerschool.sync.associator;
 
 import com.scholarscore.models.user.Student;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  *
  * In PowerSchool, users appear to be globally unique within a powerschool install, but a single user
@@ -19,13 +17,4 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * Created by markroper on 10/27/15.
  */
-public class StudentAssociator extends UserAssociator<Student> {
-
-    public ConcurrentHashMap<Long, Long> getSsidToLocalIdStudent() {
-        return super.getSsidToLocalIdUser();
-    }
-
-    public ConcurrentHashMap<Long, Student> getStudents() {
-        return super.getUsers();
-    }
-}
+public class StudentAssociator extends UserAssociator<Student> { }

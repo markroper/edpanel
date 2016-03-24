@@ -1,8 +1,8 @@
 package com.scholarscore.etl.powerschool.sync.associator;
 
-import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.User;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -22,31 +22,28 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class UserAssociator<T extends User> {
 
-    private final ConcurrentHashMap<Long, Long> ssidToLocalIdUser = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, Long> tableIdToIdMapping = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, T> users = new ConcurrentHashMap<>();
 
     public T findBySourceSystemId(Long ssid) {
-        Long otherId = ssidToLocalIdUser.get(ssid);
-        return findByOtherId(otherId);
+        return users.get(ssid);
     }
 
-    public T findByOtherId(Long otherId) {
-        if(null == otherId) {
-            return null;
-        }
-        return users.get(otherId);
+    public Long findSsidFromTableId(Long tableId) {
+        return tableIdToIdMapping.get(tableId);
+    }
+    
+    public T findByEntityTableId(Long tableId) { 
+        Long ssid = findSsidFromTableId(tableId);
+        return (ssid != null) ? findBySourceSystemId(ssid) : null;
     }
 
-    public void associateIds(Long ssid, Long otherId) {
-        ssidToLocalIdUser.put(ssid, otherId);
+    public void add(Long ssid, T entry) {
+        users.put(ssid, entry);
     }
-
-    public void addOtherIdMap(ConcurrentHashMap<Long, T> entriesToAdd) {
-        users.putAll(entriesToAdd);
-    }
-
-    public ConcurrentHashMap<Long, Long> getSsidToLocalIdUser() {
-        return ssidToLocalIdUser;
+    
+    public void addIdToTableIdMapping(Map<Long, Long> mapToAdd) { 
+        tableIdToIdMapping.putAll(mapToAdd);
     }
 
     public ConcurrentHashMap<Long, T> getUsers() {
