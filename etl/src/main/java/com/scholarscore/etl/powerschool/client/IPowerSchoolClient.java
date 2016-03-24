@@ -20,6 +20,7 @@ import com.scholarscore.etl.powerschool.api.model.section.PtSectionEnrollmentWra
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMapWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtTermWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
+import com.scholarscore.etl.powerschool.api.model.student.PsTableStudentWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMapWrapper;
 import com.scholarscore.etl.powerschool.api.model.term.PsTermBinWrapper;
 import com.scholarscore.etl.powerschool.api.model.term.PtPsTermBinReportingTermWrapper;
@@ -33,7 +34,6 @@ import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * Created by mattg on 7/2/15.
@@ -50,6 +50,8 @@ public interface IPowerSchoolClient {
     PsStaffs getStaff(Long schoolId) throws HttpClientException;
 
     PsStudents getStudentsBySchool(Long schoolId) throws HttpClientException;
+
+    PsResponse<PsTableStudentWrapper> getTableStudents() throws HttpClientException;
 
     StudentResponse getStudentById(Long studentId) throws HttpClientException;
 
