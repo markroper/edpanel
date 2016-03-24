@@ -10,7 +10,6 @@ import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.user.Student;
 
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Static utility used to ad-hoc migrate a student missed in the initial attempt to migrate all students in a district
@@ -62,12 +61,9 @@ public class MissingStudentMigrator {
                                 Long.valueOf(resolvedStudent.getSourceSystemId()), resolvedStudent.getId());
                     }
                 }
-                ConcurrentHashMap<Long, Student> studMap = new ConcurrentHashMap<>();
                 Long otherId = Long.valueOf(resolvedStudent.getSourceSystemUserId());
                 Long ssid = Long.valueOf(resolvedStudent.getSourceSystemId());
-                studentAssociator.associateIds(ssid, otherId);
-                studMap.put(otherId, resolvedStudent);
-                studentAssociator.addOtherIdMap(studMap);
+                studentAssociator.add(ssid, resolvedStudent);
             } catch(NumberFormatException | HttpClientException | NullPointerException e) {
                 results.studentCreateFailed(Long.valueOf(edpanelStudent.getSourceSystemId()));
             }
