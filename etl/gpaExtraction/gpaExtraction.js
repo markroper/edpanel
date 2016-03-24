@@ -22,26 +22,45 @@ casper.options.viewportSize = {width: 900, height: 600};
 
 var username = "";
 var password = "";
+var domain = "";
+var enabled = "";
 
 for (var i = 0; i < lines.length; i++) { 
     var usernameIndex = lines[i].search("powerschool.username=");
     if (usernameIndex > -1) { 
         username = lines[i].split("=")[1];
-    } else { 
-        var passwordIndex = lines[i].search("powerschool.password=");
-        if (passwordIndex > -1) { 
-            password = lines[i].split("=")[1];
-        }
+        continue;
     }
-    
+    var passwordIndex = lines[i].search("powerschool.password=");
+    if (passwordIndex > -1) { 
+        password = lines[i].split("=")[1];
+        continue;
+    }
+    var domainIndex = lines[i].search("powerschool.client.url=");
+    if (domainIndex > -1) { 
+        domain = lines[i].split("=")[1];
+        continue;
+    }
+    var enabledIndex = lines[i].search("powerschool.screenscraping.enabled=");
+    if (enabledIndex > -1) { 
+        enabled = lines[i].split("=")[1];
+        continue;
+    }
 }
 
-if (username.length == 0 || password.length == 0) {
-	casper.echo("Credentials invalid, did you set the properties file?");
+if (username.length == 0 || password.length == 0 || domain.length == 0 || enabled.length == 0) {
+	casper.echo("Credentials, domain, or enabled properties are invalid, did you set the properties file?");
 	casper.exit();
 }
-var domain = "https://excelacademy.powerschool.com";
 
+if (enabled.toLowerCase() !== "true") { 
+    casper.echo("'enabled' property in file is not set to 'true', so skipping screen scraping.");
+    casper.exit();
+}
+
+if (domain.substring(domain.length-1,domain.length) === "/") { 
+    domain = domain.substring(0, domain.length-1);
+}
 
 function login(casper) {
 	casper.start(domain + '/admin/pw.html', function() {
