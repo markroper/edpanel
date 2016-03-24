@@ -128,7 +128,7 @@ public class PowerSchoolPaths {
                 "&projection=*";
     }
 
-    public String getPowerTeacherTermnBinMappingPath() {
+    public String getPowerTeacherTermBinMappingPath() {
         return SCHEMA_BASE +
                 "/SYNC_ReportingTermMap?" +
                 getPageSizeParam() +
