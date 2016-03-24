@@ -16,12 +16,14 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * Created by mattg on 7/15/15.
@@ -29,7 +31,8 @@ import java.util.Optional;
 public abstract class ListDeserializer<T extends List, E> extends JsonDeserializer<T> {
     private static final DateTimeFormatter LOCAL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ListDeserializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ListDeserializer.class);
+    private static final Pattern INVALID_CHARACTERS = Pattern.compile("[^\\x00-\\x7F]");
     
     abstract String getEntityName();
 
@@ -98,6 +101,8 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
                 name = field.getName();
                 switch (field.getType().getName()) {
                     case "java.lang.String":
+                        // TODO Jordan: enable this to scrub bad match data?
+//                        field.set(out, normalize(asText(node, name)));
                         field.set(out, asText(node, name));
                         break;
                     case "java.lang.Long":
@@ -138,6 +143,13 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
         }
         return null;
     }
+    
+    private String normalize(String value) { 
+        if (value == null) { return null; } 
+        // first attempt to convert characters 
+        String normalizedString = Normalizer.normalize(value, Normalizer.Form.NFD);
+        return INVALID_CHARACTERS.matcher(normalizedString).replaceAll("");
+    }
 
     private Date parseDate(String value) {
         if (null != value) {
@@ -145,6 +157,7 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
             try {
                 return sdf.parse(value);
             } catch (Exception e) {
+                LOGGER.warn("Unable to parse date value from string " + value + ", expecting format " + sdf.toPattern() + ".");
             }
         }
         return null;
