@@ -38,7 +38,6 @@ import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 import org.apache.http.HttpRequest;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
@@ -152,9 +151,10 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     @Override
     public PsCourses getCoursesBySchool(Long schoolId) throws HttpClientException {
         return get(
-                new TypeReference<PsCourses>() {},
+                new TypeReference<PsCourses>() {
+                },
                 paths.getCoursePath(),
-                PAGE_SIZE, 
+                PAGE_SIZE,
                 schoolId.toString());
     }
 
@@ -285,7 +285,7 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     @Override
     public PsResponse<PtPsTermBinReportingTermWrapper> getPowerTeacherTermBinMappings() throws HttpClientException {
         return get(new TypeReference<PsResponse<PtPsTermBinReportingTermWrapper>>() {},
-                paths.getPowerTeacherTermnBinMappingPath(),
+                paths.getPowerTeacherTermBinMappingPath(),
                 PAGE_SIZE,
                 (String[]) null);
     }
