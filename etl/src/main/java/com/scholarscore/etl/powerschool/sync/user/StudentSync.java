@@ -82,7 +82,6 @@ public class StudentSync implements ISync<Student> {
             Student edPanelUser = ed.get(entry.getKey());
             //Associate the SSID and source system local id (teacher/admin ID and underlying user ID)
             Long ssid = Long.valueOf(sourceUser.getSourceSystemId());
-            Long underlyingUserId = Long.valueOf(sourceUser.getSourceSystemUserId());
             if(null == edPanelUser){
                 sourceUser.setCurrentSchoolId(school.getId());
                 User created = null;
