@@ -47,6 +47,7 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
     
     private String username;
     private String password;
+    private boolean enabled;
     
     public static final String PATH_GET_BEHAVIOR_DATA = "/api/beta/export/get-behavior-data.php";
 
@@ -54,13 +55,14 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
     
     // username and password approach works, but should be switched to the APIKey approach once 
     // an APIKey can be obtained from deanslist
-    public DeansListClient(URI uri, String username, String password) {
+    public DeansListClient(URI uri, String username, String password, boolean enabled) {
         super(uri);
         this.username = username;
         this.password = password;
+        this.enabled = enabled;
         // If a null URI is passed in, this object is still constructed but won't attempt authentication as part of its construction
         // (This isn't a solution, just a first step as the orchestration of the ETL becomes more complex)
-        if (uri != null) {
+        if (enabled) {
             authenticate();
         }
     }

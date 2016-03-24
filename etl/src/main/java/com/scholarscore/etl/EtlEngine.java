@@ -352,7 +352,7 @@ public class EtlEngine implements IEtlEngine {
             LOGGER.error("Failed to resolve assignment categories from PowerSchool prior to migrating sections: " +
                     e.getLocalizedMessage());
         }
-        LOGGER.info("Section migration antecendents resolved (grade setups & assignment category mappings)");
+        LOGGER.info("Section migration antecedents resolved (grade setups & assignment category mappings)");
         //Now we have the section resolution antecedent
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
         for(Map.Entry<Long, School> school : this.schools.entrySet()) {
