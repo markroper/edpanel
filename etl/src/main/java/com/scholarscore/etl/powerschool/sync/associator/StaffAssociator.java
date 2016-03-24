@@ -2,8 +2,6 @@ package com.scholarscore.etl.powerschool.sync.associator;
 
 import com.scholarscore.models.user.Person;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * In PowerSchool, users appear to be globally unique within a powerschool install, but a single user
  * have multiple identities. So there may be multiple Teacher rows for a single user if that user has taught at

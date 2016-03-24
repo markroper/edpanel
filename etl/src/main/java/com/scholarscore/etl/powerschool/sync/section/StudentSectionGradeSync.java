@@ -24,6 +24,7 @@ import com.scholarscore.models.user.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -118,6 +119,11 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             StudentSectionGrade sourceSsg = entry.getValue();
             StudentSectionGrade edPanelSsg = edpanelSsgMap.get(entry.getKey());
             ssgs.add(sourceSsg);
+            
+            if (sourceSsg.getStudent() == null) {
+                LOGGER.warn("sourceSsg.getStudent() is Null! Skipping...");
+                continue;
+            }
             //Generate map of studentId to sections they are enrolled in to be used later for attendance
             if (studentClasses.get(sourceSsg.getStudent().getId()) == null) {
                 studentClasses.put(sourceSsg.getStudent().getId(), Sets.newConcurrentHashSet());

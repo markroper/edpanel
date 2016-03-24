@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public class PowerSchoolPaths {
     private static final String BASE = "/ws/v1";
     private static final String SCHEMA_BASE = "/ws/schema/table";
-    private Integer pageSize = 1000;
+    private Integer pageSize = PowerSchoolClient.PAGE_SIZE;
     private String cutoffDate = "2015-08-01";
 
     public void setPageSize(Integer size) {
@@ -38,6 +38,11 @@ public class PowerSchoolPaths {
     public String getStudentPath() {
         return BASE +
             "/student/{0}?expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup";
+    }
+
+    public String getStudentsFromTablePath() {
+        return SCHEMA_BASE +
+                "/students?projection=DCID,ID" + "&" + "pagesize=" + pageSize;
     }
 
     public String getCalendarDayPath() {

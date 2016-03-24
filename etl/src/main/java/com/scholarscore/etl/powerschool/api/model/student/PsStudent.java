@@ -31,7 +31,7 @@ public class PsStudent {
     public Long local_id;
     public PsName name;
     public PsDemographics demographics;
-    public String state_province_d;
+    public String state_province_id;
     public String student_username;
     public StudentAddresses addresses;
 

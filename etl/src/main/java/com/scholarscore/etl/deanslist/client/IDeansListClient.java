@@ -7,5 +7,7 @@ import com.scholarscore.etl.deanslist.api.response.BehaviorResponse;
  */
 public interface IDeansListClient {
     
+    boolean isEnabled();
+    
     BehaviorResponse getBehaviorData();
 }
