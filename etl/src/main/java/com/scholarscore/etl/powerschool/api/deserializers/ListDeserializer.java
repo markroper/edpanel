@@ -101,9 +101,7 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
                 name = field.getName();
                 switch (field.getType().getName()) {
                     case "java.lang.String":
-                        // TODO Jordan: enable this to scrub bad match data?
-//                        field.set(out, normalize(asText(node, name)));
-                        field.set(out, asText(node, name));
+                        field.set(out, normalize(asText(node, name)));
                         break;
                     case "java.lang.Long":
                         field.set(out, asLong(node, name));

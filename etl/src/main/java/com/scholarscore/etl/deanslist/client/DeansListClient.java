@@ -109,6 +109,11 @@ public class DeansListClient extends BaseHttpClient implements IDeansListClient 
     }
 
     @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
     public BehaviorResponse getBehaviorData() {
         BehaviorResponse behaviorResponse = null;
         try {
