@@ -39,12 +39,12 @@ public class PowerSchoolPaths {
         return BASE +
             "/student/{0}?expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup";
     }
-    
+
     public String getStudentsFromTablePath() {
-        return SCHEMA_BASE + 
-                "/students?q=id=={0}&projection=DCID,ID" + "&" + "pagesize=" + pageSize;
+        return SCHEMA_BASE +
+                "/students?projection=DCID,ID" + "&" + "pagesize=" + pageSize;
     }
-    
+
     public String getCalendarDayPath() {
         return SCHEMA_BASE +
             "/calendar_day?" +
@@ -128,7 +128,7 @@ public class PowerSchoolPaths {
                 "&projection=*";
     }
 
-    public String getPowerTeacherTermnBinMappingPath() {
+    public String getPowerTeacherTermBinMappingPath() {
         return SCHEMA_BASE +
                 "/SYNC_ReportingTermMap?" +
                 getPageSizeParam() +
