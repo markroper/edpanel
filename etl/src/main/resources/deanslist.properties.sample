@@ -1,3 +1,4 @@
+deanslist.client.enabled=true
 deanslist.client.url=https://excel.deanslistsoftware.com
 deanslist.client.user=
 deanslist.client.pass=
