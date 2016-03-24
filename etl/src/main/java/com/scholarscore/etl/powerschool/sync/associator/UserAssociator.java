@@ -1,8 +1,10 @@
 package com.scholarscore.etl.powerschool.sync.associator;
 
-import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -20,18 +22,32 @@ import java.util.concurrent.ConcurrentHashMap;
  * 
  * Created by markroper on 10/27/15.
  */
-public class UserAssociator<T extends User> {
+public abstract class UserAssociator<T extends User> {
 
+    private final ConcurrentHashMap<Long, Long> idToTableIdMapping = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, T> users = new ConcurrentHashMap<>();
 
     public T findBySourceSystemId(Long ssid) {
         return users.get(ssid);
     }
 
+    public Long findSsidFromTableId(Long tableId) {
+        return idToTableIdMapping.get(tableId);
+    }
+    
+    public T findByEntityTableId(Long tableId) { 
+        Long ssid = findSsidFromTableId(tableId);
+        return (ssid != null) ? findBySourceSystemId(ssid) : null;
+    }
+
     public void add(Long ssid, T entry) {
         users.put(ssid, entry);
     }
     
+    public void addIdToTableIdMapping(Map<Long, Long> mapToAdd) { 
+        idToTableIdMapping.putAll(mapToAdd);
+    }
+
     public ConcurrentHashMap<Long, T> getUsers() {
         return users;
     }

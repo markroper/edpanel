@@ -12,6 +12,7 @@ import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetup;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMap;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMapWrapper;
+import com.scholarscore.etl.powerschool.api.model.student.PsTableStudentWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMap;
 import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMapWrapper;
 import com.scholarscore.etl.powerschool.api.model.term.PsTermBin;
@@ -141,7 +142,7 @@ public class EtlEngine implements IEtlEngine {
     public SyncResult syncDistrict(EtlSettings settings) {
         this.syncCutoff = LocalDate.now().minusYears(1l);
         this.powerSchool.setSyncCutoff(this.syncCutoff);
-
+        
         long startTime = System.currentTimeMillis();
         createSchools();
         long endTime = System.currentTimeMillis();
@@ -170,6 +171,11 @@ public class EtlEngine implements IEtlEngine {
         endTime = System.currentTimeMillis();
         LOGGER.info("Staff sync complete");
 
+        fetchStudentDcidToIdMappings();
+        long studentTableMappingComplete =  (System.currentTimeMillis() - endTime)/1000;
+        endTime = System.currentTimeMillis();
+        LOGGER.info("Student table-id mapping complete");
+        
         createStudents(settings);
         long studentCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
@@ -206,6 +212,7 @@ public class EtlEngine implements IEtlEngine {
                 " seconds, \nschools: " + schoolCreationTime +
                 " seconds, \nYears + Terms: " + yearsAndTermsComplete +
                 " seconds, \nstaff: " + staffCreationComplete +
+                " seconds, \nstudent table mapping: " + studentTableMappingComplete +
                 " seconds, \nstudents: " + studentCreationComplete +
                 " seconds, \nadvisors: " + advisorSyncCompletion +
                 " seconds, \ndays & attendance: " + schoolDayCreationComplete +
@@ -213,6 +220,36 @@ public class EtlEngine implements IEtlEngine {
                 " seconds, \nsections: " + sectionCreationComplete +
                 " seconds");
         return results;
+    }
+
+    private void fetchStudentDcidToIdMappings() {
+        PsResponse<PsTableStudentWrapper> tableStudents = null;
+        try {
+            tableStudents = powerSchool.getTableStudents();
+        } catch (HttpClientException e) {
+            e.printStackTrace();
+        }
+        if (tableStudents != null) {
+            LOGGER.debug("Got non-null results for Student records from Student table");
+            // TODO Jordan: move this stuff into a sync object
+
+
+            // "private" student ID (called "id" in the student table)
+            // -- mapped to -- 
+            // "public" student ID (accessible from /student rest API, etc - called "id" in that response, although
+            //  the same value is referred to as "DCID" in the student table))
+            // -----
+            // (This is useful because SectionAssignmentGrades ONLY return the "private" student ID
+            // but the "public" ID is required in order to hit the better (REST) endpoint containing richer data
+            HashMap<Long, Long> idsToTableIds = new HashMap<>();
+            List<PsResponseInner<PsTableStudentWrapper>> records = tableStudents.record;
+            for (PsResponseInner<PsTableStudentWrapper> tableStudentWrapper : records) {
+                Long studentRecordId = tableStudentWrapper.tables.students.id;
+                Long studentPublicId = tableStudentWrapper.tables.students.dcid;
+                idsToTableIds.put(studentRecordId, studentPublicId);
+            }
+            studentAssociator.addIdToTableIdMapping(idsToTableIds);
+        }
     }
 
     @Override
