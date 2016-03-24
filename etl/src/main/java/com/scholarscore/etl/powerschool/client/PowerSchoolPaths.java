@@ -39,7 +39,7 @@ public class PowerSchoolPaths {
         return BASE +
             "/student/{0}?expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup";
     }
-
+    
     public String getStudentsFromTablePath() {
         return SCHEMA_BASE + 
                 "/students?q=id=={0}&projection=DCID,ID" + "&" + "pagesize=" + pageSize;

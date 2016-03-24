@@ -48,7 +48,6 @@ public class StudentSync implements ISync<Student> {
 
     @Override
     public ConcurrentHashMap<Long, Student> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        Long psSchoolId = new Long(school.getSourceSystemId());
         ConcurrentHashMap<Long, Student> sourceStudents = null;
         try {
             sourceStudents = resolveAllFromSourceSystem();
@@ -83,8 +82,6 @@ public class StudentSync implements ISync<Student> {
             Student edPanelUser = ed.get(entry.getKey());
             //Associate the SSID and source system local id (teacher/admin ID and underlying user ID)
             Long ssid = Long.valueOf(sourceUser.getSourceSystemId());
-            Long underlyingUserId = Long.valueOf(((Person) sourceUser).getSourceSystemUserId());
-            studentAssociator.associateIds(ssid, underlyingUserId);
             if(null == edPanelUser){
                 sourceUser.setCurrentSchoolId(school.getId());
                 User created = null;
@@ -95,6 +92,7 @@ public class StudentSync implements ISync<Student> {
                     continue;
                 }
                 sourceUser.setId(created.getId());
+                studentAssociator.add(ssid, (Student)created);
                 results.studentCreated(entry.getKey(), created.getId());
             } else {
                 sourceUser.setId(edPanelUser.getId());
@@ -113,11 +111,12 @@ public class StudentSync implements ISync<Student> {
                 }
                 if(!edPanelUser.equals(sourceUser)) {
                     try {
-                        edPanel.replaceUser(sourceUser);
+                        sourceUser = (Student)edPanel.replaceUser(sourceUser);
                     } catch (IOException e) {
                         results.studentUpdateFailed(entry.getKey(), sourceUser.getId());
                         continue;
                     }
+                    studentAssociator.add(ssid, (Student) sourceUser);
                     results.studentUpdated(entry.getKey(), sourceUser.getId());
                 }
             }
