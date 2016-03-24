@@ -93,7 +93,7 @@ public class GoalJdbc implements GoalPersistence {
     @SuppressWarnings("unchecked")
     public Collection<Goal> selectAllTeacher(long teacherId) {
         return addCalculatedValue((Collection<Goal>)hibernateTemplate.findByNamedParam(
-                GOAL_BASE_HQL + " where g.teacher.id = :teacherId", "teacherId", teacherId));
+                GOAL_BASE_HQL + " where g.staff.id = :teacherId", "teacherId", teacherId));
     }
 
     @Override

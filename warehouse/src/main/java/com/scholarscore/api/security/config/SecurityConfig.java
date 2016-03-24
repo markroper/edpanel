@@ -85,6 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String MESSAGE_THREADS_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/messagethreads";
     private static final String MESSAGES_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/messagethreads/*/messages";
     private static final String NOTIFICATION_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/notifications";
+    private static final String GOAL_NOTIFICATIONS_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/notifications/schools/*/students/*/goals/*";
     private static final String ACCESS_DENIED_JSON = "{\"message\":\"You are not privileged to request this resource.\","
             + " \"access-denied\":true,\"cause\":\"AUTHORIZATION_FAILURE\"}";
     private static final String UNAUTHORIZED_JSON = "{\"message\":\"Authentication is required to access this resource.\","
@@ -241,6 +242,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             antMatchers(HttpMethod.POST, SURVEY_RESPONSES).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.POST, GOALS_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.PATCH, PATCH_GOALS_ENDPOINT).hasAnyRole(AUTHENTICATED).
+            antMatchers(HttpMethod.DELETE, PATCH_GOALS_ENDPOINT).hasAnyRole(RoleConstants.TEACHER, RoleConstants.ADMINISTRATOR, RoleConstants.SUPER_ADMINISTRATOR).
             antMatchers(HttpMethod.PUT, SURVEY_RESPONSES).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.POST, MESSAGE_THREADS_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.DELETE, MESSAGE_THREADS_ENDPOINT + "/*").hasAnyRole(AUTHENTICATED).
@@ -251,6 +253,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             antMatchers(HttpMethod.PUT, NOTIFICATIONS_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.PUT, DISMISS_NOTIFICATIONS_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.POST, EVALUATE_NOTIFICATIONS_ENDPOINT).hasRole(RoleConstants.ADMINISTRATOR).
+            antMatchers(HttpMethod.POST, GOAL_NOTIFICATIONS_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.OPTIONS, LOGIN_ENDPOINT).permitAll().
             antMatchers(HttpMethod.OPTIONS, "/**").permitAll().
             antMatchers(HttpMethod.GET, CONFIRM_EMAIL_ENDPOINT).permitAll().
