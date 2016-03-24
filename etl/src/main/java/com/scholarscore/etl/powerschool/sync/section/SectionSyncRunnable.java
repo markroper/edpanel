@@ -228,8 +228,6 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 if(null != c) {
                     edpanelSection.setCourse(c);
                     edpanelSection.setName(c.getName() + " " + powerSection.getExpression());
-                } else {
-                    LOGGER.warn("Unable to resolve course with remote ID " + powerSection.getCourse_id(), ", section save will fail because of this.");
                 }
                 //Resolve the EdPanel Term and set it on the Section
                 Term sectionTerm = this.terms.get(powerSection.getTerm_id());
