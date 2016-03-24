@@ -109,7 +109,7 @@ public class StaffSync implements ISync<Person> {
                 sourceUser.setUsername(edPanelUser.getUsername());
                 sourceUser.setEnabled(edPanelUser.getEnabled());
                 edPanelUser.setPassword(null);
-                Address add = (edPanelUser).getHomeAddress();
+                Address add = edPanelUser.getHomeAddress();
                 if(null != add && null != sourceUser.getHomeAddress()) {
                     sourceUser.getHomeAddress().setId(add.getId());
                 }
