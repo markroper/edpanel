@@ -8,16 +8,21 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.EntityId;
+import com.scholarscore.models.goal.Goal;
 import com.scholarscore.models.notification.Notification;
+import com.scholarscore.models.notification.NotificationMeasure;
 import com.scholarscore.models.notification.TriggeredNotification;
 import com.scholarscore.models.notification.group.NotificationGroup;
 import com.scholarscore.models.notification.group.NotificationGroupType;
 import com.scholarscore.models.notification.group.SingleStudent;
+import com.scholarscore.models.notification.group.SingleTeacher;
+import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -121,6 +126,9 @@ public class NotificationManagerImpl implements NotificationManager {
             for(Notification n: notifications) {
                 List<TriggeredNotification> triggeredNotifications = factory.evaluate(n);
                 if(null != triggeredNotifications) {
+                    //If its not null it was triggered. Set that bad boy to be triggered
+                    n.setTriggered(true);
+                    replaceNotification(n.getId(),n);
                     //Resolve existing triggered notification for this notifiaiton and store in a map for 0(1) access
                     List<TriggeredNotification> active = notificationPersistence.selectTriggeredActive(n.getId());
                     HashMap<Long, HashMap<Long, TriggeredNotification>> activeMap = new HashMap<>();
@@ -166,7 +174,9 @@ public class NotificationManagerImpl implements NotificationManager {
                             LOGGER.info("Triggered notification not inserted due to: " + e.getMessage());
                         }
                     }
+
                 }
+
             }
         } else {
             return new ServiceResponse<>(notificationResponse.getCode());
@@ -240,5 +250,149 @@ public class NotificationManagerImpl implements NotificationManager {
             return new ServiceResponse<>((Void) null);
         }
         return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.FORBIDDEN, null));
+    }
+
+    /**
+     * There is a host of notifications we need to create when a goal is created,
+     * lets generate all of them here.
+     * @param goal
+     */
+    public ServiceResponse<Long> createGoalNotifications(long schoolId, long studentId, long goalId) {
+
+        ServiceResponse<Goal> goalResponse = pm.getGoalManager().getGoal(studentId, goalId);
+        if (null != goalResponse.getCode() && !goalResponse.getCode().isOK()) {
+            return new ServiceResponse<Long>(goalResponse.getCode());
+        }
+        Goal goal = goalResponse.getValue();
+
+        ServiceResponse<Student> studResponse = pm.getStudentManager().getStudent(studentId);
+        if (null != studResponse.getCode() && !studResponse.getCode().isOK()) {
+            return new ServiceResponse<Long>(studResponse.getCode());
+        }
+        Student student = studResponse.getValue();
+
+        //If there is an advisor, create a notification for the goal being created and one for
+        //IF goal is met and not met
+        if (goal.getStaff() != null) {
+            SingleStudent studentSub = new SingleStudent();
+            studentSub.setStudent(student);
+
+            SingleTeacher teacherSub = new SingleTeacher();
+            teacherSub.setTeacherId(goal.getStaff().getId());
+
+            Notification goalCreated = new Notification();
+            goalCreated.setGoal(goal);
+            goalCreated.setCreatedDate(LocalDate.now());
+            goalCreated.setTriggerWhenGreaterThan(true);
+            goalCreated.setExpiryDate(LocalDate.now().plusMonths(3));
+            goalCreated.setMeasure(NotificationMeasure.GOAL_CREATED);
+            goalCreated.setName("Goal Created");
+            goalCreated.setOwner(goal.getStaff());
+            goalCreated.setTriggerValue(-1D);
+            goalCreated.setSubjects(studentSub);
+            goalCreated.setSchoolId(schoolId);
+            goalCreated.setSubscribers(teacherSub);
+            goalCreated.setOneTime(true);
+            createNotification(goalCreated);
+
+            SingleStudent studentMetSub = new SingleStudent();
+            studentMetSub.setStudent(student);
+
+            SingleTeacher teacherMetSub = new SingleTeacher();
+            teacherMetSub.setTeacherId(goal.getStaff().getId());
+
+            Notification goalMetAdvisor = new Notification();
+            goalMetAdvisor.setGoal(goal);
+            goalMetAdvisor.setCreatedDate(LocalDate.now());
+            goalMetAdvisor.setTriggerWhenGreaterThan(true);
+            goalMetAdvisor.setExpiryDate(LocalDate.now().plusMonths(3));
+            goalMetAdvisor.setMeasure(NotificationMeasure.GOAL_MET);
+            goalMetAdvisor.setName("Goal Met");
+            goalMetAdvisor.setOwner(goal.getStaff());
+            goalMetAdvisor.setTriggerValue(-1D);
+            goalMetAdvisor.setSubjects(studentMetSub);
+            goalMetAdvisor.setSchoolId(schoolId);
+            goalMetAdvisor.setSubscribers(teacherMetSub);
+            goalMetAdvisor.setOneTime(true);
+            createNotification(goalMetAdvisor);
+
+            SingleStudent studentUnMetSub = new SingleStudent();
+            studentUnMetSub.setStudent(student);
+
+            SingleTeacher teacherUnMetSub = new SingleTeacher();
+            teacherUnMetSub.setTeacherId(goal.getStaff().getId());
+
+            Notification goalUnMetAdvisor = new Notification();
+            goalUnMetAdvisor.setGoal(goal);
+            goalUnMetAdvisor.setCreatedDate(LocalDate.now());
+            goalUnMetAdvisor.setTriggerWhenGreaterThan(true);
+            goalUnMetAdvisor.setExpiryDate(LocalDate.now().plusMonths(3));
+            goalUnMetAdvisor.setMeasure(NotificationMeasure.GOAL_UNMET);
+            goalUnMetAdvisor.setName("Goal UnMet");
+            goalUnMetAdvisor.setOwner(goal.getStaff());
+            goalUnMetAdvisor.setTriggerValue(-1D);
+            goalUnMetAdvisor.setSubjects(studentUnMetSub);
+            goalUnMetAdvisor.setSchoolId(schoolId);
+            goalUnMetAdvisor.setSubscribers(teacherUnMetSub);
+            goalUnMetAdvisor.setOneTime(true);
+            createNotification(goalUnMetAdvisor);
+        }
+
+        //Goal Approved notification, only notify student that it was approved
+        SingleStudent studentGroup = new SingleStudent();
+        studentGroup.setStudent(student);
+
+        Notification goalApproved = new Notification();
+        goalApproved.setGoal(goal);
+        goalApproved.setCreatedDate(LocalDate.now());
+        goalApproved.setTriggerWhenGreaterThan(true);
+        goalApproved.setExpiryDate(LocalDate.now().plusMonths(3));
+        goalApproved.setMeasure(NotificationMeasure.GOAL_APPROVED);
+        goalApproved.setName("Goal Approved");
+        goalApproved.setOwner(student);
+        goalApproved.setTriggerValue(-1D);
+        goalApproved.setSubjects(studentGroup);
+        goalApproved.setSchoolId(schoolId);
+        goalApproved.setSubscribers(studentGroup);
+        goalApproved.setOneTime(true);
+        createNotification(goalApproved);
+
+        //Goal MEt notification for the student
+        SingleStudent studentSub = new SingleStudent();
+        studentSub.setStudent(student);
+        Notification goalMetStudent = new Notification();
+        goalMetStudent.setGoal(goal);
+        goalMetStudent.setCreatedDate(LocalDate.now());
+        goalMetStudent.setTriggerWhenGreaterThan(true);
+        goalMetStudent.setExpiryDate(LocalDate.now().plusMonths(3));
+        goalMetStudent.setMeasure(NotificationMeasure.GOAL_MET);
+        goalMetStudent.setName("Goal Met");
+        goalMetStudent.setOwner(student);
+        goalMetStudent.setTriggerValue(-1D);
+        goalMetStudent.setSubjects(studentSub);
+        goalMetStudent.setSchoolId(schoolId);
+        goalMetStudent.setSubscribers(studentSub);
+        goalMetStudent.setOneTime(true);
+        createNotification(goalMetStudent);
+
+        //Goal not met notification
+        SingleStudent studentUnMetSub = new SingleStudent();
+        studentUnMetSub.setStudent(student);
+        Notification goalUnMetStudent = new Notification();
+        goalUnMetStudent.setGoal(goal);
+        goalUnMetStudent.setCreatedDate(LocalDate.now());
+        goalUnMetStudent.setTriggerWhenGreaterThan(true);
+        goalUnMetStudent.setExpiryDate(LocalDate.now().plusMonths(3));
+        goalUnMetStudent.setMeasure(NotificationMeasure.GOAL_UNMET);
+        goalUnMetStudent.setName("Goal UnMet");
+        goalUnMetStudent.setOwner(student);
+        goalUnMetStudent.setTriggerValue(-1D);
+        goalUnMetStudent.setSubjects(studentUnMetSub);
+        goalUnMetStudent.setSchoolId(schoolId);
+        goalUnMetStudent.setSubscribers(studentUnMetSub);
+        goalUnMetStudent.setOneTime(true);
+        createNotification(goalUnMetStudent);
+
+        return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.OK));
     }
 }

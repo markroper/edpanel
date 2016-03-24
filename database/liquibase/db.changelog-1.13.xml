@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <changeSet author="chris" id="changelog-1.13-change1">
+        <addColumn tableName="notification">
+            <column name="one_time"
+                    type="bit(1)" />
+        </addColumn>
+        <addColumn tableName="notification">
+            <column name="triggered"
+                    type="bit(1)" />
+        </addColumn>
+        <addColumn tableName="notification">
+            <column name="goal_fk"
+                    type="bigint unsigned" />
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="notification"
+                                 baseColumnNames="goal_fk"
+                                 constraintName="notification$goal_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="goal_id"
+                                 referencedTableName="goal"/>
+    </changeSet>
+</databaseChangeLog>

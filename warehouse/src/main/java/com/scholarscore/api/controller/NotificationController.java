@@ -170,4 +170,24 @@ public class NotificationController extends BaseController {
         return respond(pm.getNotificationManager().
                 dismissTriggeredNotification(notificationId, triggeredId, userId));
     }
+
+    @ApiOperation(
+            value = "Create goal Notifications",
+            notes = "Creates, assigning an ID to, and persists a student goal",
+            response = EntityId.class)
+    @RequestMapping(
+            value = "schools/{schoolId}/students/{studentId}/goals/{goalId}",
+            method = RequestMethod.POST,
+            produces = {JSON_ACCEPT_HEADER})
+    @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
+    public @ResponseBody ResponseEntity createGoalNotifications(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId,
+            @ApiParam(name = "goalId", required = true, value = "Goal ID")
+            @PathVariable(value="goalId") Long goalId) {
+        return respond(pm.getNotificationManager().createGoalNotifications(schoolId, studentId, goalId));
+    }
 }
