@@ -1,8 +1,6 @@
 package com.scholarscore.etl.powerschool.sync.associator;
 
 import com.scholarscore.models.user.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class UserAssociator<T extends User> {
 
-    private final ConcurrentHashMap<Long, Long> idToTableIdMapping = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, Long> tableIdToIdMapping = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, T> users = new ConcurrentHashMap<>();
 
     public T findBySourceSystemId(Long ssid) {
@@ -32,7 +30,7 @@ public abstract class UserAssociator<T extends User> {
     }
 
     public Long findSsidFromTableId(Long tableId) {
-        return idToTableIdMapping.get(tableId);
+        return tableIdToIdMapping.get(tableId);
     }
     
     public T findByEntityTableId(Long tableId) { 
@@ -45,7 +43,7 @@ public abstract class UserAssociator<T extends User> {
     }
     
     public void addIdToTableIdMapping(Map<Long, Long> mapToAdd) { 
-        idToTableIdMapping.putAll(mapToAdd);
+        tableIdToIdMapping.putAll(mapToAdd);
     }
 
     public ConcurrentHashMap<Long, T> getUsers() {
