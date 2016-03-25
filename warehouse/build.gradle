@@ -197,8 +197,11 @@ dependencies {
             "org.springframework.security:spring-security-web:$springSecurityVersion",
             "org.springframework.security:spring-security-core:$springSecurityVersion",
             "org.springframework.security:spring-security-config:$springSecurityVersion",
+            //SQL injection Lib
+            "org.owasp.esapi:esapi:2.1.0.1",
 
-            //Jackson for JSON & XML API serialization
+
+    //Jackson for JSON & XML API serialization
             "com.fasterxml.jackson.module:jackson-module-scala_2.10:$jacksonVersion",
 
             //Swagger for API documentation, & dependent JARs
