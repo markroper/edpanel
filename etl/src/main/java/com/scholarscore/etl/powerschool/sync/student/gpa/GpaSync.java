@@ -100,7 +100,7 @@ public class GpaSync implements ISync<Gpa> {
                     List<RawGpaValue> gpas = parser.parse(new FileInputStream(gpaFile));
                     for (RawGpaValue value : gpas) {
                         Gpa gpa = value.emit();
-                        Student s = studentAssociator.findBySourceSystemId(value.getStudentId());
+                        Student s = studentAssociator.findByUserSourceSystemId(value.getStudentId());
                         if(null != s) {
                             gpa.setStudentId(s.getId());
                             resultValues.put(gpa.getStudentId(), gpa);

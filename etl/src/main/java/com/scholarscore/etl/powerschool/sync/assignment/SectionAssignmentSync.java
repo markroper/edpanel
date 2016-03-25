@@ -196,17 +196,19 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                 Long.valueOf(createdSection.getSourceSystemId()));
         if(null != ssids && null != ssids.record) {
             for(PsResponseInner<PsSectionScoreIdWrapper> sectionScoreIdWrapper: ssids.record) {
-                PsSectionScoreId i = sectionScoreIdWrapper.tables.sectionscoresid;
-                Long entityTableId = Long.valueOf(i.getStudentid());
-                Long ssid = studentAssociator.findSsidFromTableId(entityTableId);
-                if (null != ssid) {
-                    Student stud = studentAssociator.findByEntityTableId(entityTableId);
+                PsSectionScoreId sectionScoreId = sectionScoreIdWrapper.tables.sectionscoresid;
+                Long entityTableId = Long.valueOf(sectionScoreId.getStudentid());
+                Long studentSsid = studentAssociator.findSsidFromTableId(entityTableId);
+                if (null != studentSsid) {
+                    Student stud = studentAssociator.findByUserSourceSystemId(studentSsid);
                     if (null != stud) {
-                        ssidToStudent.put(ssid, new MutablePair<>(stud, i));
+                        // Key is PsSectionScoreId SSID/DCID (which still is specific to one kid), not student SSID
+                        Long sectionScoreDcid = Long.valueOf(sectionScoreId.getDcid());
+                        ssidToStudent.put(sectionScoreDcid, new MutablePair<>(stud, sectionScoreId));
                     } else {
                         // TODO Jordan: if this code path gets hit, need to go back to the high-level student API and ask for this specific student by ssid
                         // Not critical for the ETL right now as it appears these students have all transferred, and we don't include those students anyway (I don't think?)
-                        LOGGER.warn("Got SSID " + ssid + " from (table)ID " + entityTableId + " but couldn't fetch actual User from hashmap - need network call?");
+                        LOGGER.warn("Got SSID " + studentSsid + " from (table)ID " + entityTableId + " but couldn't fetch actual User from hashmap - need network call?");
                     }
                 } else {
                     // TODO: no apparent solution here, add a counter for this case in the result object
