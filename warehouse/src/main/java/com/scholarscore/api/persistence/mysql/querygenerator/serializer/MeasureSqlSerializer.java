@@ -6,6 +6,9 @@ import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.MeasureField;
 import com.scholarscore.models.query.bucket.AggregationBucket;
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.Encoder;
+import org.owasp.esapi.codecs.MySQLCodec;
 
 import java.util.List;
 
@@ -17,6 +20,8 @@ public interface MeasureSqlSerializer {
     public static final String ON = " ON ";
     public static final String DOT = ".";
     public static final String EQUALS = " = ";
+    static final Encoder ENC = ESAPI.encoder();
+    static final MySQLCodec CODEC = new MySQLCodec(MySQLCodec.Mode.STANDARD);
 
     public String toSelectInner();
 
@@ -51,7 +56,7 @@ public interface MeasureSqlSerializer {
                     b.append(bucket.getEnd());
                 }
                 b.append(" THEN '");
-                b.append(bucket.getLabel());
+                b.append(ENC.encodeForSQL(CODEC, bucket.getLabel()));
                 b.append("'");
                 b.append("\n");
             }

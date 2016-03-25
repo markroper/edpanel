@@ -25,6 +25,9 @@ import com.scholarscore.models.query.expressions.operands.StringOperand;
 import com.scholarscore.models.query.expressions.operators.ComparisonOperator;
 import com.scholarscore.models.query.expressions.operators.IOperator;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.Encoder;
+import org.owasp.esapi.codecs.MySQLCodec;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,7 +65,9 @@ public abstract class QuerySqlGenerator {
     private static final String FK_SUFFIX = "_fk";
     private static final String DELIM = ", ";
     private static final String DOT = ".";
-    
+    private static final Encoder ENC = ESAPI.encoder();
+    private static final MySQLCodec CODEC = new MySQLCodec(MySQLCodec.Mode.STANDARD);
+
     public static SqlWithParameters generate(Query q) throws SqlGenerationException {
         addAnyNecessaryJoinTables(q);
         Map<String, Object> params = new HashMap<>();
@@ -609,6 +614,8 @@ public abstract class QuerySqlGenerator {
                                                    Integer numAggregateMeasures) throws SqlGenerationException {
         FirstAwareWrapper innerSqlBuilder = new FirstAwareWrapper(sqlBuilder);
         FirstAwareWrapper innerGroupByBuilder = new FirstAwareWrapper(groupByBuilder);
+        StringBuilder orderByBuilder = new StringBuilder();
+        boolean isFirst = true;
         //For every column, pluck the correct dimension or measure from the subquery
         for(SubqueryColumnRef col: q.getSubqueryColumnsByPosition()) {
             Integer pos = col.getPosition();
@@ -630,8 +637,22 @@ public abstract class QuerySqlGenerator {
                             }
                             //If there are buckets on the aggregate measure, but the buckets themselves had no
                             // aggregate function, we inject the bucket case statement here on the super query.
+                            String bucketSuffix = "_buckets";
                             if(null != am.getBuckets() && !am.getBuckets().isEmpty() && !injectBucketsIntoSelect(q, am)) {
                                 sqlBuilder.append(mss.toSelectBucketPseudoColumn(am.getBuckets(), tableAlias + DOT + generateAggColumnName(am)));
+                                sqlBuilder.append(" as " + generateAggColumnName(am) + bucketSuffix);
+                                if(isFirst) {
+                                    // When we have a case statement on the x-axis column, we want to order the query
+                                    // results by the order that the buckets are enumerated in.  This order by
+                                    // clause accomplishes that.
+                                    orderByBuilder.append(" \nORDER BY field(" + generateAggColumnName(am) + bucketSuffix);
+                                    for (AggregationBucket b : am.getBuckets()) {
+                                        orderByBuilder.append(", '");
+                                        orderByBuilder.append(ENC.encodeForSQL(CODEC, b.getLabel()));
+                                        orderByBuilder.append("'");
+                                    }
+                                    orderByBuilder.append(")");
+                                }
                             } else {
                                 innerSqlBuilder.append(tableAlias + DOT + generateAggColumnName(am));
                             }
@@ -640,8 +661,7 @@ public abstract class QuerySqlGenerator {
                             } else {
                                 innerGroupByBuilder.markNotFirstOrAppend(DELIM);
                                 if(null != am.getBuckets() && !am.getBuckets().isEmpty() && !injectBucketsIntoSelect(q, am)) {
-                                    innerGroupByBuilder.append(mss.toSelectBucketPseudoColumn(am.getBuckets(),
-                                            tableAlias + DOT + generateAggColumnName(am)));
+                                    innerGroupByBuilder.append( generateAggColumnName(am) + bucketSuffix);
                                 } else {
                                     innerGroupByBuilder.append(tableAlias + DOT + generateAggColumnName(am));
                                 }
@@ -682,7 +702,11 @@ public abstract class QuerySqlGenerator {
                     innerGroupByBuilder.append(generateDimensionFieldSql(q.getFields().get(pos), tableAlias, true));
                 }
             }
+            if(isFirst) {
+                isFirst = false;
+            }
         }
+        innerGroupByBuilder.append(orderByBuilder.toString());
     }
 
     /**
