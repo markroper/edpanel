@@ -235,7 +235,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 edpanelSection.setStartDate(sectionTerm.getStartDate());
                 edpanelSection.setEndDate(sectionTerm.getEndDate());
                 //Resolve the EdPanel Teacher(s) and set on the Section
-                User t = staffAssociator.findBySourceSystemId(powerSection.getStaff_id());
+                User t = staffAssociator.findByUserSourceSystemId(powerSection.getStaff_id());
                 if(null != t) {
                     HashSet<Staff> persons = new HashSet<>();
                     persons.add((Staff) t);

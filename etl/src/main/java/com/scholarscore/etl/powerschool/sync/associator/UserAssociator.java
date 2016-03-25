@@ -22,10 +22,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class UserAssociator<T extends User> {
 
+    private final ConcurrentHashMap<Long, Long> studentScoreIdToIdMapping = new ConcurrentHashMap<>();
+    // This mapping is from "tableId" (which is usually not seen and is only present in responses
+    // directly to the student table) to the more general "id" (called DCID in the DB) returned by the higher-level student API
     private final ConcurrentHashMap<Long, Long> tableIdToIdMapping = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, T> users = new ConcurrentHashMap<>();
 
-    public T findBySourceSystemId(Long ssid) {
+    public T findByUserSourceSystemId(Long ssid) {
         return users.get(ssid);
     }
 
@@ -33,9 +36,11 @@ public abstract class UserAssociator<T extends User> {
         return tableIdToIdMapping.get(tableId);
     }
     
+    public Long findSsidFromStudentScoreId(Long studentScoreId) { return studentScoreIdToIdMapping.get(studentScoreId); }
+    
     public T findByEntityTableId(Long tableId) { 
         Long ssid = findSsidFromTableId(tableId);
-        return (ssid != null) ? findBySourceSystemId(ssid) : null;
+        return (ssid != null) ? findByUserSourceSystemId(ssid) : null;
     }
 
     public void add(Long ssid, T entry) {
@@ -46,6 +51,8 @@ public abstract class UserAssociator<T extends User> {
         tableIdToIdMapping.putAll(mapToAdd);
     }
 
+    public void addIdToStudentScoreIdMapping(Map<Long, Long> mapToAdd) { studentScoreIdToIdMapping.putAll(mapToAdd); }
+    
     public ConcurrentHashMap<Long, T> getUsers() {
         return users;
     }
