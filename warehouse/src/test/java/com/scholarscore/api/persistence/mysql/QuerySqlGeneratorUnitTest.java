@@ -738,10 +738,10 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT CASE \n" +
-                        "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
-                        "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
-                        "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
-                        "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
+                        "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0\\-1'\n" +
+                        "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1\\-2'\n" +
+                        "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2\\-3'\n" +
+                        "WHEN gpa.gpa_score >= 3.0 THEN '4\\+'\n" +
                         "ELSE NULL \n" +
                         "END as count_gpa_group, COUNT(gpa.gpa_score) as count_gpa_agg \n" +
                         "FROM gpa \n" +
@@ -768,10 +768,10 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT CASE \n" +
-                        "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
-                        "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
-                        "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
-                        "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
+                        "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0\\-1'\n" +
+                        "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1\\-2'\n" +
+                        "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2\\-3'\n" +
+                        "WHEN gpa.gpa_score >= 3.0 THEN '4\\+'\n" +
                         "ELSE NULL \n" +
                         "END as count_current_gpa_group, COUNT(gpa.gpa_score) as count_current_gpa_agg \n" +
                         "FROM current_gpa INNER JOIN gpa ON gpa.gpa_id = current_gpa.gpa_fk \n" +
@@ -1008,10 +1008,10 @@ public class QuerySqlGeneratorUnitTest {
             @Override
             public String buildSQL() {
                 return "SELECT school.school_id, CASE \n" +
-                        "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0-1'\n" +
-                        "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1-2'\n" +
-                        "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2-3'\n" +
-                        "WHEN gpa.gpa_score >= 3.0 THEN '4+'\n" +
+                        "WHEN gpa.gpa_score >= 0.0 AND gpa.gpa_score < 1.0 THEN '0\\-1'\n" +
+                        "WHEN gpa.gpa_score >= 1.0 AND gpa.gpa_score < 2.0 THEN '1\\-2'\n" +
+                        "WHEN gpa.gpa_score >= 2.0 AND gpa.gpa_score < 3.0 THEN '2\\-3'\n" +
+                        "WHEN gpa.gpa_score >= 3.0 THEN '4\\+'\n" +
                         "ELSE NULL \n" +
                         "END as count_current_gpa_group, COUNT(gpa.gpa_score) as count_current_gpa_agg \n" +
                         "FROM student LEFT OUTER JOIN gpa ON student.student_user_fk = gpa.student_fk INNER JOIN current_gpa ON gpa.gpa_id = current_gpa.gpa_fk\n" +
