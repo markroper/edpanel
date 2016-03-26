@@ -657,7 +657,7 @@ public abstract class QuerySqlGenerator {
                                 innerSqlBuilder.append(tableAlias + DOT + generateAggColumnName(am));
                             }
                             if(null != function) {
-                                innerSqlBuilder.append(function.name() + ")");
+                                innerSqlBuilder.append(")");
                             } else {
                                 innerGroupByBuilder.markNotFirstOrAppend(DELIM);
                                 if(null != am.getBuckets() && !am.getBuckets().isEmpty() && !injectBucketsIntoSelect(q, am)) {
