@@ -23,10 +23,12 @@ public class StudentDimension extends BaseDimension implements IDimension {
     public static final String PROJECTED_GRADUATION_YEAR = "Proj. Graduation Year";
     public static final String SCHOOL = "School";
     public static final String WITHDRAWAL_DATE = "Withdrawal Date";
+    public static final String ENROLLMENT_STATUS = "Enroll Status";
+    public static final String CURRENT_GRADE = "Grade Level";
     public static final Set<String> DIMENSION_FIELDS = 
             ImmutableSet.of(ID, NAME, GENDER, AGE, ETHNICITY, RACE, CITY_OF_RESIDENCE, 
                     HOME_ADDRESS, MAILING_ADDRESS, PROJECTED_GRADUATION_YEAR, SCHOOL, ELL,
-                    ELL_DETAIL, SPED, SPED_DETAIL, WITHDRAWAL_DATE);
+                    ELL_DETAIL, SPED, SPED_DETAIL, WITHDRAWAL_DATE, ENROLLMENT_STATUS, CURRENT_GRADE);
     public static final Set<Dimension> PARENT_DIMENSIONS = 
             ImmutableSet.of(Dimension.SCHOOL);
     
