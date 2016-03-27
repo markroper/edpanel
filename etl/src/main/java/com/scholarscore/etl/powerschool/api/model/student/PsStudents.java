@@ -53,7 +53,9 @@ public class PsStudents extends ArrayList<PsStudent> implements ITranslateCollec
             }
             if (null != student.ethnicity_race) {
                 model.setFederalEthnicity(student.ethnicity_race.federal_ethnicity);
-                model.setFederalRace(student.ethnicity_race.scheduling_reporting_ethnicity);
+                if(null != student.ethnicity_race.races) {
+                    model.setFederalRace(student.ethnicity_race.races.district_race_code);
+                }
             }
             if (null != student.demographics) {
                 if (null != student.demographics.gender) {
