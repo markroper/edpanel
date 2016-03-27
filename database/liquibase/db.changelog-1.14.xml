@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <changeSet author="Mark" id="changelog-1.14-change1">
+        <addColumn tableName="student">
+            <column name="student_enroll_status"
+                    type="varchar(64)" />
+        </addColumn>
+        <addColumn tableName="student">
+            <column name="student_grade_level"
+                    type="bigint unsigned" />
+        </addColumn>
+        <addColumn tableName="student">
+            <column name="student_state_id"
+                    type="varchar(64)" />
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

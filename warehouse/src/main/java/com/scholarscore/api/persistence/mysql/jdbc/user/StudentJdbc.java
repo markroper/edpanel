@@ -23,7 +23,8 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
             "left join fetch s.homeAddress " +
             "left join fetch s.mailingAddress " +
             "left join fetch s.contactMethods";
-
+    private static final String ACTIVE_STUDENTS_CLAUSE =
+            " and s.withdrawalDate is null and s.enrollStatus = 'CURRENTLY_ENROLLED'";
     @Autowired
     private HibernateTemplate hibernateTemplate;
 
@@ -46,7 +47,7 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
         if(null == activeStudents || !activeStudents) {
             whereClause += " and s.withdrawalDate is not null";
         } else {
-            whereClause += " and s.withdrawalDate is null";
+            whereClause += ACTIVE_STUDENTS_CLAUSE;
         }
         if(null != schoolId) {
             String sql = STUDENT_HQL + whereClause;
@@ -72,7 +73,7 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
         if(null != activeStudents || !activeStudents) {
             studentWhereClause += " and s.withdrawalDate is not null";
         } else {
-            studentWhereClause += " and s.withdrawalDate is null";
+            studentWhereClause += ACTIVE_STUDENTS_CLAUSE;
         }
         if(null != students) {
             if(null != students.getGender()) {

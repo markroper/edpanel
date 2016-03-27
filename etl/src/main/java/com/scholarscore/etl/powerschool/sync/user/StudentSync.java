@@ -5,11 +5,12 @@ import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
+import com.scholarscore.etl.powerschool.api.model.student.PsTableStudent;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.School;
-import com.scholarscore.models.user.Person;
+import com.scholarscore.models.user.EnrollStatus;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.User;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -33,17 +34,20 @@ public class StudentSync implements ISync<Student> {
     protected School school;
     protected StudentAssociator studentAssociator;
     protected Map<Long, MutablePair<String, String>> spedEll;
+    protected Map<Long, PsTableStudent> ssidToHiddenTableFields;
 
     public StudentSync(IAPIClient edPanel,
                        IPowerSchoolClient powerSchool,
                        School s,
                        StudentAssociator studentAssociator,
-                       Map<Long, MutablePair<String, String>> spedEll) {
+                       Map<Long, MutablePair<String, String>> spedEll,
+                       Map<Long, PsTableStudent> ssidToHiddenTableFields) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
         this.studentAssociator = studentAssociator;
         this.spedEll = spedEll;
+        this.ssidToHiddenTableFields = ssidToHiddenTableFields;
     }
 
     @Override
@@ -130,6 +134,7 @@ public class StudentSync implements ISync<Student> {
                     !sourceStudents.containsKey(entry.getKey())) {
                 try {
                     entry.getValue().setWithdrawalDate(LocalDate.now());
+                    entry.getValue().setEnrollStatus(EnrollStatus.INACTIVE);
                     edPanel.replaceUser(entry.getValue());
                 } catch (IOException e) {
                     results.studentUpdateFailed(entry.getKey(), entry.getValue().getId());
@@ -139,20 +144,46 @@ public class StudentSync implements ISync<Student> {
                 results.studentUpdated(entry.getKey(), entry.getValue().getId());
             }
         }
-
         //Note: we never delete users, even if they're removed from the source system.
         return sourceStudents;
     }
 
     protected ConcurrentHashMap<Long, Student> resolveAllFromSourceSystem() throws HttpClientException {
         PsStudents response = powerSchool.getStudentsBySchool(Long.valueOf(school.getSourceSystemId()));
-        Collection<Student> apiListOfStaff = response.toInternalModel();
+        Collection<Student> apiListOfStudents = response.toInternalModel();
         ConcurrentHashMap<Long, Student> source = new ConcurrentHashMap<>();
-        for(Student u : apiListOfStaff) {
+        for(Student u : apiListOfStudents) {
             MutablePair<String, String> se = spedEll.get(Long.parseLong(u.getSourceSystemId()));
             if(null != se) {
                 u.setSped(!"00".equals(se.getLeft()));
                 u.setEll(!"00".equals(se.getRight()));
+            }
+            PsTableStudent pStud = ssidToHiddenTableFields.get(Long.parseLong(u.getSourceSystemId()));
+            if(null != pStud) {
+                u.setStateStudentId(pStud.state_studentnumber);
+                u.setCurrentGradeLevel(pStud.grade_level);
+                //The enrollment status of the student. -2=Inactive, -1=Pre-registered, 0=Currently enrolled, 1=Inactive,
+                // 2=Transferred out, 3=Graduated, 4=Imported as Historical, Any other value =Inactive. Indexed.
+                switch(pStud.enroll_status) {
+                    case -1:
+                        u.setEnrollStatus(EnrollStatus.PRE_REGISTERED);
+                        break;
+                    case 0:
+                        u.setEnrollStatus(EnrollStatus.CURRENTLY_ENROLLED);
+                        break;
+                    case 2:
+                        u.setEnrollStatus(EnrollStatus.TRANSFERRED_OUT);
+                        break;
+                    case 3:
+                        u.setEnrollStatus(EnrollStatus.GRADUATED);
+                        break;
+                    case 4:
+                        u.setEnrollStatus(EnrollStatus.HISTORICAL_IMPORT);
+                        break;
+                    default:
+                        u.setEnrollStatus(EnrollStatus.INACTIVE);
+                        break;
+                }
             }
             u.setCurrentSchoolId(school.getId());
             source.put(Long.valueOf(u.getSourceSystemUserId()), u);

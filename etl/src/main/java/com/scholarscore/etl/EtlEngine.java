@@ -12,6 +12,7 @@ import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetup;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMap;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMapWrapper;
+import com.scholarscore.etl.powerschool.api.model.student.PsTableStudent;
 import com.scholarscore.etl.powerschool.api.model.student.PsTableStudentWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMap;
 import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMapWrapper;
@@ -102,6 +103,7 @@ public class EtlEngine implements IEtlEngine {
     //a mapping of SSID to localId, all of which is encapsulated in the associator below
     private StaffAssociator staffAssociator = new StaffAssociator();
     private StudentAssociator studentAssociator = new StudentAssociator();
+    private HashMap<Long, PsTableStudent> ssidToHiddenStudentFields;
 
     public void setPowerSchool(IPowerSchoolClient powerSchool) {
         this.powerSchool = powerSchool;
@@ -243,9 +245,12 @@ public class EtlEngine implements IEtlEngine {
             // but the "public" ID is required in order to hit the better (REST) endpoint containing richer data
             HashMap<Long, Long> idsToTableIds = new HashMap<>();
             List<PsResponseInner<PsTableStudentWrapper>> records = tableStudents.record;
+            ssidToHiddenStudentFields = new HashMap<>();
             for (PsResponseInner<PsTableStudentWrapper> tableStudentWrapper : records) {
-                Long studentRecordId = tableStudentWrapper.tables.students.id;
-                Long studentPublicId = tableStudentWrapper.tables.students.dcid;
+                PsTableStudent stud = tableStudentWrapper.tables.students;
+                ssidToHiddenStudentFields.put(stud.dcid, stud);
+                Long studentRecordId = stud.id;
+                Long studentPublicId = stud.dcid;
                 idsToTableIds.put(studentRecordId, studentPublicId);
             }
             studentAssociator.addIdToTableIdMapping(idsToTableIds);
@@ -421,7 +426,7 @@ public class EtlEngine implements IEtlEngine {
         }
 
         for (Map.Entry<Long, School> school : this.schools.entrySet()) {
-            StudentSync sync = new StudentSync(edPanel, powerSchool, school.getValue(), studentAssociator, spedEll);
+            StudentSync sync = new StudentSync(edPanel, powerSchool, school.getValue(), studentAssociator, spedEll, ssidToHiddenStudentFields);
             sync.syncCreateUpdateDelete(results);
         }
     }

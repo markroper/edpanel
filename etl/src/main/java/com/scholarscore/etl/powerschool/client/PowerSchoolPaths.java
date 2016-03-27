@@ -42,7 +42,7 @@ public class PowerSchoolPaths {
 
     public String getStudentsFromTablePath() {
         return SCHEMA_BASE +
-                "/students?projection=DCID,ID" + "&" + "pagesize=" + pageSize;
+                "/students?projection=DCID,ID,state_studentnumber,grade_level,classOf,enroll_status" + "&" + "pagesize=" + pageSize;
     }
 
     public String getCalendarDayPath() {
