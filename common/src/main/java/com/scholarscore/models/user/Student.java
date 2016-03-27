@@ -12,6 +12,8 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -51,6 +53,9 @@ public class Student extends Person implements Serializable {
     private String spedDetail;
     private Boolean ell;
     private String ellDetail;
+    private EnrollStatus enrollStatus;
+    private Long currentGradeLevel;
+    private String stateStudentId;
     
     public Student() {
         
@@ -72,6 +77,9 @@ public class Student extends Person implements Serializable {
         this.spedDetail = student.spedDetail;
         this.ell = student.ell;
         this.ellDetail = student.ellDetail;
+        this.enrollStatus = student.enrollStatus;
+        this.currentGradeLevel = student.currentGradeLevel;
+        this.stateStudentId = student.stateStudentId;
     }
     
     public Student(String race, String ethnicity, Long currentSchoolId, Gender gender, String name, Long expectedGraduationYear, Staff advisor) {
@@ -134,7 +142,44 @@ public class Student extends Person implements Serializable {
             if(null == getEllDetail()) {
                 setEllDetail(merge.getEllDetail());
             }
+            if(null == getEnrollStatus()) {
+                setEnrollStatus(merge.getEnrollStatus());
+            }
+            if(null == getCurrentGradeLevel()) {
+                setCurrentGradeLevel(merge.getCurrentGradeLevel());
+            }
+            if(null == getStateStudentId()) {
+                setStateStudentId(merge.getStateStudentId());
+            }
         }
+    }
+
+    @Column(name = HibernateConsts.STUDENT_STATE_ID)
+    public String getStateStudentId() {
+        return stateStudentId;
+    }
+
+    public void setStateStudentId(String stateStudentId) {
+        this.stateStudentId = stateStudentId;
+    }
+
+    @Column(name = HibernateConsts.STUDENT_GRADE_LEVEL)
+    public Long getCurrentGradeLevel() {
+        return currentGradeLevel;
+    }
+
+    public void setCurrentGradeLevel(Long currentGradeLevel) {
+        this.currentGradeLevel = currentGradeLevel;
+    }
+
+    @Column(name = HibernateConsts.STUDENT_ENROLL_STATUS)
+    @Enumerated(EnumType.STRING)
+    public EnrollStatus getEnrollStatus() {
+        return enrollStatus;
+    }
+
+    public void setEnrollStatus(EnrollStatus enrollStatus) {
+        this.enrollStatus = enrollStatus;
     }
 
     @Column(name = HibernateConsts.STUDENT_SPED)
@@ -342,6 +387,9 @@ public class Student extends Person implements Serializable {
                 && Objects.equals(this.ellDetail, other.ellDetail)
                 && Objects.equals(this.sped, other.sped)
                 && Objects.equals(this.spedDetail, other.spedDetail)
+                && Objects.equals(this.enrollStatus, other.enrollStatus)
+                && Objects.equals(this.currentGradeLevel, other.currentGradeLevel)
+                && Objects.equals(this.stateStudentId, other.stateStudentId)
                 && Objects.equals(this.advisor, other.advisor);
     }
 
@@ -351,7 +399,7 @@ public class Student extends Person implements Serializable {
                 + Objects.hash(mailingAddress, gender, birthDate,
                         districtEntryDate, projectedGraduationYear, socialSecurityNumber, 
                         federalRace, federalEthnicity, currentSchoolId, withdrawalDate, advisor,
-                        ell, ellDetail, sped, spedDetail);
+                        ell, ellDetail, sped, spedDetail, stateStudentId, currentGradeLevel, enrollStatus);
     }
 
     @Override
@@ -372,6 +420,9 @@ public class Student extends Person implements Serializable {
                 ", spedDetail=" + spedDetail + '\'' +
                 ", ell=" + ell + '\'' +
                 ", ellDetail=" + ellDetail + '\'' +
+                ", stateStudentId=" + stateStudentId + '\'' +
+                ", currentGradeLevel=" + currentGradeLevel + '\'' +
+                ", enrollStatus=" + enrollStatus + '\'' +
                 '}';
     }
 
@@ -402,6 +453,22 @@ public class Student extends Person implements Serializable {
         private String spedDetail;
         private Boolean ell;
         private String ellDetail;
+        private EnrollStatus enrollStatus;
+        private Long currentGradeLevel;
+        private String stateStudentId;
+
+        public StudentBuilder withEnrollStatus(final EnrollStatus enrollStatus) {
+            this.enrollStatus = enrollStatus;
+            return this;
+        }
+        public StudentBuilder withCurrentGradeLevel(final Long currentGradeLevel) {
+            this.currentGradeLevel = currentGradeLevel;
+            return this;
+        }
+        public StudentBuilder withStateStudentId(final String stateStudentId) {
+            this.stateStudentId = stateStudentId;
+            return this;
+        }
 
         public StudentBuilder withSped(final Boolean sped) {
             this.sped = sped;
@@ -497,6 +564,9 @@ public class Student extends Person implements Serializable {
             student.setEllDetail(ellDetail);
             student.setSped(sped);
             student.setSpedDetail(spedDetail);
+            student.setEnrollStatus(enrollStatus);
+            student.setCurrentGradeLevel(currentGradeLevel);
+            student.setStateStudentId(stateStudentId);
             return student;
         }
 
