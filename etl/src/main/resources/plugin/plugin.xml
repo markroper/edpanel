@@ -288,6 +288,7 @@
 		<field table="Students" field="DCID" access="ViewOnly" />
 		<field table="Students" field="DistrictEntryDate" access="ViewOnly" />
 		<field table="Students" field="DistrictEntryGradeLevel" access="ViewOnly" />
+		<field table="Students" field="Grade_Level" access="ViewOnly" />
 		<field table="Students" field="DistrictOfResidence" access="ViewOnly" />
 		<field table="Students" field="DOB" access="ViewOnly" />
 		<field table="Students" field="Enroll_Status" access="ViewOnly" />
