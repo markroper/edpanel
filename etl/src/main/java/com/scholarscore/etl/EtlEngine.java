@@ -248,7 +248,7 @@ public class EtlEngine implements IEtlEngine {
             ssidToHiddenStudentFields = new HashMap<>();
             for (PsResponseInner<PsTableStudentWrapper> tableStudentWrapper : records) {
                 PsTableStudent stud = tableStudentWrapper.tables.students;
-                ssidToHiddenStudentFields.put(stud.id, stud);
+                ssidToHiddenStudentFields.put(stud.dcid, stud);
                 Long studentRecordId = stud.id;
                 Long studentPublicId = stud.dcid;
                 idsToTableIds.put(studentRecordId, studentPublicId);

@@ -167,16 +167,22 @@ public class StudentSync implements ISync<Student> {
                 switch(pStud.enroll_status) {
                     case -1:
                         u.setEnrollStatus(EnrollStatus.PRE_REGISTERED);
+                        break;
                     case 0:
                         u.setEnrollStatus(EnrollStatus.CURRENTLY_ENROLLED);
+                        break;
                     case 2:
                         u.setEnrollStatus(EnrollStatus.TRANSFERRED_OUT);
+                        break;
                     case 3:
                         u.setEnrollStatus(EnrollStatus.GRADUATED);
+                        break;
                     case 4:
                         u.setEnrollStatus(EnrollStatus.HISTORICAL_IMPORT);
+                        break;
                     default:
                         u.setEnrollStatus(EnrollStatus.INACTIVE);
+                        break;
                 }
             }
             u.setCurrentSchoolId(school.getId());
