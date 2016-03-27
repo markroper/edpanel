@@ -134,6 +134,7 @@ public class StudentSync implements ISync<Student> {
                     !sourceStudents.containsKey(entry.getKey())) {
                 try {
                     entry.getValue().setWithdrawalDate(LocalDate.now());
+                    entry.getValue().setEnrollStatus(EnrollStatus.INACTIVE);
                     edPanel.replaceUser(entry.getValue());
                 } catch (IOException e) {
                     results.studentUpdateFailed(entry.getKey(), entry.getValue().getId());
@@ -143,7 +144,6 @@ public class StudentSync implements ISync<Student> {
                 results.studentUpdated(entry.getKey(), entry.getValue().getId());
             }
         }
-
         //Note: we never delete users, even if they're removed from the source system.
         return sourceStudents;
     }
