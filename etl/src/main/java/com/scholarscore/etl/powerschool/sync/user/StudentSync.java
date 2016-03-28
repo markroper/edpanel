@@ -116,9 +116,9 @@ public class StudentSync implements ISync<Student> {
                         results.studentUpdateFailed(entry.getKey(), sourceUser.getId());
                         continue;
                     }
-                    studentAssociator.add(ssid, (Student) sourceUser);
                     results.studentUpdated(entry.getKey(), sourceUser.getId());
                 }
+                studentAssociator.add(ssid, sourceUser);
             }
         }
 
