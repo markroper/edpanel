@@ -40,6 +40,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
     private Section createdSection;
     private Assignment assignment;
     private Map<Long, MutablePair<Student, PsSectionScoreId>> ssidToStudent;
+    private Map<Long, Long> assignmentTableIdToAssignmentSsid;
     private PowerSchoolSyncResult results;
 
     public StudentAssignmentSyncRunnable(IPowerSchoolClient powerSchool,
@@ -48,12 +49,14 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                                          Section createdSection,
                                          Assignment assignment,
                                          Map<Long, MutablePair<Student, PsSectionScoreId>> ssidToStudent,
+                                         Map<Long, Long> assignmentTableIdToAssignmentSsid,
                                          PowerSchoolSyncResult results) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
         this.school = school;
         this.createdSection = createdSection;
         this.ssidToStudent = ssidToStudent;
+        this.assignmentTableIdToAssignmentSsid = assignmentTableIdToAssignmentSsid;
         this.assignment = assignment;
         this.results = results;
     }
@@ -67,7 +70,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
     public ConcurrentHashMap<Long, StudentAssignment> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<Long, StudentAssignment> source = null;
         try {
-            source = resolveAllFromSourceSystem();
+            source = resolveAllFromSourceSystem(results);
         } catch (HttpClientException e) {
             LOGGER.warn("Unable to resolve student assignments for " +
                     "section with name: " + createdSection.getName() +
@@ -90,6 +93,10 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                     Long.valueOf(this.assignment.getSourceSystemId()),
                     Long.valueOf(this.assignment.getSourceSystemId()),
                     this.assignment.getId());
+            LOGGER.debug("Failed Student Assignment get from EdPanel for createdSection " + 
+            (createdSection!= null ? createdSection.getSourceSystemId() : "null") +
+                    " and assignment " +
+            (assignment != null ? assignment.getSourceSystemId() : "null"));             
             return new ConcurrentHashMap<>();
         }
 
@@ -110,7 +117,9 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                 }
                 if(sourceStudentAssignment.getAssignment().getId().equals(edPanelStudentAssignment.getAssignment().getId())) {
                     sourceStudentAssignment.setAssignment(edPanelStudentAssignment.getAssignment());
-                }
+                } else {
+
+                }  
                 if(!edPanelStudentAssignment.equals(sourceStudentAssignment)) {
                     try {
                         edPanel.replaceStudentAssignment(
@@ -133,6 +142,9 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                             Long.valueOf(this.assignment.getSourceSystemId()),
                             entry.getKey(),
                             sourceStudentAssignment.getId());
+                } else {
+                    LOGGER.warn("edPanelStudentAssignment is not equal to SourceStudentAssignment! Something is wrong. "
+                    + "\nEdPanelStudentAssignment: " + edPanelStudentAssignment + " sourceStudentAssignment: " + sourceStudentAssignment);
                 }
             }
         }
@@ -166,6 +178,10 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                             Long.valueOf(assignment.getSourceSystemId()));
                 }
             }
+        } else {
+            LOGGER.warn("studentAssignmentsToCreate is Empty!! Creating nothing.\n" + 
+            "createdSection.getSourceSystemId(): " + (createdSection != null ? createdSection.getSourceSystemId() : "null") + "\n" +
+            "assignment.getSourceSystemId(): " + (assignment != null ? assignment.getSourceSystemId() : "null") + "\n" );
         }
 
         //Delete anything IN EdPanel that is NOT in source system
@@ -199,10 +215,20 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
         return source;
     }
 
-    protected ConcurrentHashMap<Long, StudentAssignment> resolveAllFromSourceSystem() throws HttpClientException {
+    protected ConcurrentHashMap<Long, StudentAssignment> resolveAllFromSourceSystem(PowerSchoolSyncResult results) throws HttpClientException {
+        // We have assignment.getSourceSystemId(), which is a DCID.
+        // We need to call powerSchool.getStudentScoresByAssignmentId(Long ~) which takes a *tableId* not a DCID
+        // thus we must convert it first.
+        Long assignmentSsid = Long.valueOf(assignment.getSourceSystemId());
+        Long assignmentTableId = assignmentTableIdToAssignmentSsid.get(assignmentSsid);
+        if (assignmentTableId == null) {
+            LOGGER.warn("Big problem: cannot get Assignment TableID for Assignment with SSID " + assignmentSsid);
+        } else {
+            LOGGER.trace("For assignment SSID " + assignmentSsid + ", successfully found tableId " + assignmentTableId);
+        }
         //Retrieve students' scores
         PsResponse<PsAssignmentScoreWrapper> assScores =
-                powerSchool.getStudentScoresByAssignmentId(Long.valueOf(assignment.getSourceSystemId()));
+                powerSchool.getStudentScoresByAssignmentId(assignmentTableId);
         ConcurrentHashMap<Long, StudentAssignment> studentAssignmentsToCreate = new ConcurrentHashMap<>();
         if (null != assScores && null != assScores.record) {
             for (PsResponseInner<PsAssignmentScoreWrapper> sc : assScores.record) {
@@ -228,6 +254,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                 try {
                     awardedPoints = Double.valueOf(score.getScore());
                 } catch (NumberFormatException e) {
+                    // TODO Jordan: record this in sync results, make trace level logging
                     LOGGER.debug("Unable to parse awarded points, will be set to null. " + score.getScore());
                 }
                 studAss.setAwardedPoints(awardedPoints);

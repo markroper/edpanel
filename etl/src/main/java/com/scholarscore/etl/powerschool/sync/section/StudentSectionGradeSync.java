@@ -24,7 +24,6 @@ import com.scholarscore.models.user.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -187,7 +186,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             Map.Entry<Long, StudentSectionGrade> entry = edpanelIterator.next();
             if(!source.containsKey(entry.getKey())) {
                 StudentSectionGrade edPanelSsg = entry.getValue();
-                try {
+                try {   
                     edPanel.deleteStudentSectionGrade(
                             school.getId(),
                             createdSection.getTerm().getSchoolYear().getId(),
@@ -220,7 +219,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                                 + enrollment.id + " pt student ID: " + enrollment.studentid);
                         continue;
                     }
-                    Student edpanelStudent = studentAssociator.findBySourceSystemId(powerSchoolStudentId);
+                    Student edpanelStudent = studentAssociator.findByUserSourceSystemId(powerSchoolStudentId);
                     if(null == edpanelStudent) {
                         edpanelStudent = MissingStudentMigrator.resolveMissingStudent(
                                 school.getId(),

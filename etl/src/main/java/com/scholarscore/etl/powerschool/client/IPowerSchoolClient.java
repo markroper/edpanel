@@ -23,6 +23,7 @@ import com.scholarscore.etl.powerschool.api.model.section.PtSectionMapWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtTermWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PsRankAndGpaWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
+import com.scholarscore.etl.powerschool.api.model.student.PsTableSectionWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PsTableStudentWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMapWrapper;
 import com.scholarscore.etl.powerschool.api.model.term.PsTermBinWrapper;
@@ -56,6 +57,8 @@ public interface IPowerSchoolClient {
 
     PsResponse<PsTableStudentWrapper> getTableStudents() throws HttpClientException;
 
+    PsResponse<PsTableSectionWrapper> getTableSections() throws HttpClientException;
+    
     StudentResponse getStudentById(Long studentId) throws HttpClientException;
 
     PsCourses getCoursesBySchool(Long schoolId) throws HttpClientException;
