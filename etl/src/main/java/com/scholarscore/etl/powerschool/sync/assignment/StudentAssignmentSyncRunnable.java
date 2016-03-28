@@ -182,9 +182,8 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                 }
             }
         } else {
-            LOGGER.warn("studentAssignmentsToCreate is Empty!! Creating nothing.\n" + 
-            "createdSection.getSourceSystemId(): " + (createdSection != null ? createdSection.getSourceSystemId() : "null") + "\n" +
-            "assignment.getSourceSystemId(): " + (assignment != null ? assignment.getSourceSystemId() : "null") + "\n" );
+            // not a problem if the sync is incremental (which the sync engine doesn't currently track) -- sometimes there's
+            // just no new assignments created.
         }
 
         //Delete anything IN EdPanel that is NOT in source system
