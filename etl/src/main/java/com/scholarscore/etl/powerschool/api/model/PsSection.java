@@ -13,7 +13,7 @@ import java.util.Map;
  */
 @XmlRootElement(name = "section")
 public class PsSection {
-
+    
     private final static Logger LOGGER = LoggerFactory.getLogger(PsSection.class);
      
     protected Long id;
