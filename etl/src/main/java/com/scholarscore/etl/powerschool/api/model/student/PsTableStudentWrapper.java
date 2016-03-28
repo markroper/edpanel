@@ -6,5 +6,5 @@ package com.scholarscore.etl.powerschool.api.model.student;
  * Time: 5:19 PM
  */
 public class PsTableStudentWrapper {
-    public PsTableStudent students;
+        public PsTableStudent students;
 }

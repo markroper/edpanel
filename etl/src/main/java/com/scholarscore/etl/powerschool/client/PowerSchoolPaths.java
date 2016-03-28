@@ -28,6 +28,13 @@ public class PowerSchoolPaths {
         return "/ws/v1/district/school?expansions=school_boundary,school_fees_setup";
     }
 
+
+    public String getGpaAndClassRankPaths() {
+        return SCHEMA_BASE +
+        "/ClassRank?q=gpa!=0;gpa!=&projection=DateRanked,OutOf,SchoolName,SchoolId,StoreCode,StudentID,YearID,DCID,ID,GPA,GPAMethod,Grade_Level&pagesize=" +
+        pageSize;
+    }
+
     public String getStudentsPath() {
         return BASE +
             "/school/{0}/student?pagesize=" +
@@ -43,6 +50,11 @@ public class PowerSchoolPaths {
     public String getStudentsFromTablePath() {
         return SCHEMA_BASE +
                 "/students?projection=DCID,ID,state_studentnumber,grade_level,classOf,enroll_status" + "&" + "pagesize=" + pageSize;
+    }
+    
+    public String getSectionsFromTablePath() { 
+        return SCHEMA_BASE + 
+                "/sections?projection=DCID,ID" + "&" + "pagesize=" + pageSize;
     }
 
     public String getCalendarDayPath() {
@@ -185,7 +197,7 @@ public class PowerSchoolPaths {
     public String getSectionAssignmentsPath() {
         return "/ws/schema/table/PGAssignments?" +
             getPageSizeParam() +
-            "&projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
+            "&projection=Name,id,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
     }
 
     public String getSectionAssignmentCategories() {
