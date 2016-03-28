@@ -73,6 +73,7 @@ import java.util.concurrent.TimeUnit;
  * if it fails partway through or completes successfully and is rerun, the end state it generates should
  * always be the same.
  *
+ * 
  * Created by mattg on 7/3/©5.
  */
 public class EtlEngine implements IEtlEngine {
@@ -103,6 +104,11 @@ public class EtlEngine implements IEtlEngine {
     //a mapping of SSID to localId, all of which is encapsulated in the associator below
     private StaffAssociator staffAssociator = new StaffAssociator();
     private StudentAssociator studentAssociator = new StudentAssociator();
+    // map of sections from their SourceSystemID, aka DCID, to each section's database ID.
+    // The SSID is the ID used to identify sections via the /api/v1/ endpoints, and this is the ONLY 
+    // ID returned when querying sections via these high-level endpoints.
+    // However, calls to powerschool's database/table API require that we refer to the sections by database ID.
+    private Map<Long,Long> sectionPublicIdToSectionRecordId = new HashMap<>();
 
     public void setPowerSchool(IPowerSchoolClient powerSchool) {
         this.powerSchool = powerSchool;
@@ -222,14 +228,12 @@ public class EtlEngine implements IEtlEngine {
                 " seconds");
         return results;
     }
-
-    // TODO Jordan: make this into SectionAssociator if it works
-    private Map<Long,Long> sectionPublicIdToSectionRecordId = new HashMap<>();
     
     private void fetchDcidToIdMappings() {
-        // fetch students' ID and DCID
-        // and put into a lookup table so ID can be used to find DCID
-        // (EdPanel data model knows a student's DCID but not their ID)
+        // fetch students' (database/table/internal) ID and their DCID/SourceSystemId
+        // and put into a lookup table so ID can be used to lookup DCID later on.
+        // (This is used when correlating AssignmentScoreIds, which only identify the student by their database ID,
+        // but the ETL and EdPanel can only identify a student by their EdPanel ID or their DCID/SourceSystemId)
         PsResponse<PsTableStudentWrapper> tableStudents = null;
         try {
             tableStudents = powerSchool.getTableStudents();
@@ -239,7 +243,6 @@ public class EtlEngine implements IEtlEngine {
         }
         if (tableStudents != null) {
             LOGGER.debug("Got non-null results for Student records from Student table");
-            // TODO Jordan: move this stuff into a sync object
             
             // "private" student ID (called "id" in the student table)
             // -- mapped to -- 

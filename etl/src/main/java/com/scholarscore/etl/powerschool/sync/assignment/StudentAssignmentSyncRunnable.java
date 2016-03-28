@@ -70,7 +70,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
     public ConcurrentHashMap<Long, StudentAssignment> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<Long, StudentAssignment> source = null;
         try {
-            source = resolveAllFromSourceSystem();
+            source = resolveAllFromSourceSystem(results);
         } catch (HttpClientException e) {
             LOGGER.warn("Unable to resolve student assignments for " +
                     "section with name: " + createdSection.getName() +
@@ -215,7 +215,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
         return source;
     }
 
-    protected ConcurrentHashMap<Long, StudentAssignment> resolveAllFromSourceSystem() throws HttpClientException {
+    protected ConcurrentHashMap<Long, StudentAssignment> resolveAllFromSourceSystem(PowerSchoolSyncResult results) throws HttpClientException {
         // We have assignment.getSourceSystemId(), which is a DCID.
         // We need to call powerSchool.getStudentScoresByAssignmentId(Long ~) which takes a *tableId* not a DCID
         // thus we must convert it first.
@@ -224,7 +224,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
         if (assignmentTableId == null) {
             LOGGER.warn("Big problem: cannot get Assignment TableID for Assignment with SSID " + assignmentSsid);
         } else {
-            LOGGER.debug("For assignment SSID " + assignmentSsid + ", successfully found tableId " + assignmentTableId);
+            LOGGER.trace("For assignment SSID " + assignmentSsid + ", successfully found tableId " + assignmentTableId);
         }
         //Retrieve students' scores
         PsResponse<PsAssignmentScoreWrapper> assScores =
@@ -254,6 +254,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                 try {
                     awardedPoints = Double.valueOf(score.getScore());
                 } catch (NumberFormatException e) {
+                    // TODO Jordan: record this in sync results, make trace level logging
                     LOGGER.debug("Unable to parse awarded points, will be set to null. " + score.getScore());
                 }
                 studAss.setAwardedPoints(awardedPoints);
