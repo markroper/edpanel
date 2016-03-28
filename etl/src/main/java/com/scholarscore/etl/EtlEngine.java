@@ -263,11 +263,9 @@ public class EtlEngine implements IEtlEngine {
     }
 
     private void syncGpa(List<File> gpaFiles) {
-        if (null != gpaFiles && gpaFiles.size() > 0) {
-            // parse the gpa file from disk assuming the file type is CSV and of a specific format
-            GpaSync gpaSync = new GpaSync(gpaFiles, edPanel, powerSchool, studentAssociator, syncCutoff);
-            gpaSync.syncCreateUpdateDelete(results);
-        }
+        // parse the gpa file from disk assuming the file type is CSV and of a specific format
+        GpaSync gpaSync = new GpaSync(gpaFiles, edPanel, powerSchool, studentAssociator, syncCutoff);
+        gpaSync.syncCreateUpdateDelete(results);
     }
 
     private void syncSchoolDaysAndAttendance() {

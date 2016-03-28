@@ -2,7 +2,7 @@
 <plugin xmlns="http://plugin.powerschool.pearson.com"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://plugin.powerschool.pearson.com plugin.xsd"
-		name="EdPanel"
+		name="EdPanel-sasid"
 		version="1.0.0"
 		description="EdPanel">
 
@@ -517,6 +517,20 @@
 		<field table="PGFinalGrades" field="studentid" access="ViewOnly" />
 		<field table="PGFinalGrades" field="varcredit" access="ViewOnly" />
 		<field table="PGFinalGradesSetup" field="dcid" access="ViewOnly" />
+		<field table="ClassRank" field="DateRanked" access="ViewOnly" />
+		<field table="ClassRank" field="DCID" access="ViewOnly" />
+		<field table="ClassRank" field="ID" access="ViewOnly" />
+		<field table="ClassRank" field="Grade_Level" access="ViewOnly" />
+		<field table="ClassRank" field="GPA" access="ViewOnly" />
+		<field table="ClassRank" field="GPAMethod" access="ViewOnly" />
+		<field table="ClassRank" field="OutOf" access="ViewOnly" />
+		<field table="ClassRank" field="Rank" access="ViewOnly" />
+		<field table="ClassRank" field="SchoolID" access="ViewOnly" />
+		<field table="ClassRank" field="SchoolName" access="ViewOnly" />
+		<field table="ClassRank" field="StoreCode" access="ViewOnly" />
+		<field table="ClassRank" field="StudentID" access="ViewOnly" />
+		<field table="ClassRank" field="Unused1" access="ViewOnly" />
+		<field table="ClassRank" field="YearID" access="ViewOnly" />
 		<!-- ACCESS DENIED - REASON - PROCESS
 			{
 			message: "Access Denied. Reason: PROCESS"
