@@ -62,6 +62,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
     private Map<Long, String> powerTeacherCategoryToEdPanelType;
     private BiMap<Long, Long> ptSectionIdToPsSectionId;
     private Map<Long, Long> ptStudentIdToPsStudentId;
+    private Map<Long, Long> sectionPublicIdToSectionRecordId;
     private PowerSchoolSyncResult results;
     private Map<Long, Set<Section>> studentClasses;
 
@@ -77,6 +78,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                                Map<Long, String> powerTeacherCategoryToEdPanelType,
                                BiMap<Long, Long> ptSectionIdToPsSectionId,
                                Map<Long, Long> ptStudentIdToPsStudentId,
+                               Map<Long, Long> sectionPublicIdToSectionRecordId,
                                PowerSchoolSyncResult results,
                                Map<Long, Set<Section>> studentClasses) {
         this.powerSchool = powerSchool;
@@ -91,6 +93,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
         this.powerTeacherCategoryToEdPanelType = powerTeacherCategoryToEdPanelType;
         this.ptSectionIdToPsSectionId = ptSectionIdToPsSectionId;
         this.ptStudentIdToPsStudentId = ptStudentIdToPsStudentId;
+        this.sectionPublicIdToSectionRecordId = sectionPublicIdToSectionRecordId;
         this.results = results;
         this.studentClasses = studentClasses;
     }
@@ -128,8 +131,11 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 return new ConcurrentHashMap<>();
             }
         }
-        LOGGER.debug("Resolved sections for school " + school.getName() +
-                " with ID " + school.getId() + " will now CRUD in EdPanel");
+        String numSectionsResolved = (source != null ? Integer.toString(source.size()) : "null");
+        
+        LOGGER.debug("Resolved " + numSectionsResolved + " sections for school " + school.getName() +
+                " with Powerschool SSID " + school.getSourceSystemId() + " (EdPanel ID: " + school.getId() 
+                + ") will now CRUD in EdPanel");
         Iterator<Map.Entry<Long, Section>> sourceIterator = source.entrySet().iterator();
         //Find & perform the inserts and updates, if any
         while(sourceIterator.hasNext()) {
@@ -146,6 +152,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                             sourceSection);
                 } catch (HttpClientException e) {
                     results.sectionCreateFailed(entry.getKey());
+                    LOGGER.info("Failed to create section...");
                     continue;
                 }
                 sourceSection.setId(created.getId());
@@ -160,6 +167,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                                 sourceSection.getTerm().getId(),
                                 sourceSection);
                     } catch (IOException e) {
+                        LOGGER.info("Failed to update section...");
                         results.sectionUpdateFailed(entry.getKey(), sourceSection.getId());
                         continue;
                     }
@@ -183,6 +191,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                     edPanel,
                     school,
                     studentAssociator,
+                    sectionPublicIdToSectionRecordId,
                     sourceSection
             );
             LOGGER.trace("Section, including assignments and student section grades created/updated. Section ID: " +

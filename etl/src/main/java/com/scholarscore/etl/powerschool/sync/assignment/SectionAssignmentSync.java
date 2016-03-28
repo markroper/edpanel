@@ -51,14 +51,18 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                                    IAPIClient edPanel,
                                    School school,
                                    StudentAssociator studentAssociator,
+                                 Map<Long,Long> sectionPublicIdToSectionRecordId,
                                    Section createdSection) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
         this.school = school;
         this.studentAssociator = studentAssociator;
+        this.sectionPublicIdToSectionRecordId = sectionPublicIdToSectionRecordId;
         this.createdSection = createdSection;
     }
 
+    private Map<Long,Long> sectionPublicIdToSectionRecordId = new HashMap<>();
+    
     @Override
     public ConcurrentHashMap<Long, Assignment> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<Long, Assignment> source = null;
@@ -98,7 +102,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                 try {
                     created = edPanel.createSectionAssignment(
                             school.getId(),
-                            createdSection.getTerm().getSchoolYear().getId(),
+                            createdSection.getTerm().getSchoolYear( ).getId(),
                             createdSection.getTerm().getId(),
                             createdSection.getId(),
                             sourceAssignment);
@@ -140,6 +144,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                         createdSection,
                         sourceAssignment,   
                         ssidToStudent,
+                        assignmentTableIdToAssignmentSsid,
                         results
             );
             executor.execute(runnable);
@@ -175,10 +180,21 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         return source;
     }
 
+    // TODO Jordan: if this works, clean it up
+    private Map<Long, Long> assignmentTableIdToAssignmentSsid = new HashMap<>();
+    
     protected ConcurrentHashMap<Long, Assignment> resolveAllFromSourceSystem(PowerSchoolSyncResult results) throws HttpClientException {
         //first resolve the assignment categories, so we can construct the appropriate EdPanel assignment subclass
+//        PsResponse<PsAssignmentTypeWrapper> powerTypesOld =
+//                powerSchool.getAssignmentCategoriesBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
+        
+        Long sectionPublicId = Long.parseLong(createdSection.getSourceSystemId());
+        Long sectionTableId = sectionPublicIdToSectionRecordId.get(sectionPublicId);
+        LOGGER.debug("For Assignment w/ SSID " + createdSection.getSourceSystemId() + ", got tableId " + sectionTableId);
+        
         PsResponse<PsAssignmentTypeWrapper> powerTypes =
-                powerSchool.getAssignmentCategoriesBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
+                powerSchool.getAssignmentCategoriesBySectionId(sectionTableId);
+        
         if(null != powerTypes && null != powerTypes.record) {
             for (PsResponseInner<PsAssignmentTypeWrapper> pat: powerTypes.record) {
                 if(null != pat.tables && null != pat.tables.pgcategories) {
@@ -187,13 +203,28 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                             pat.tables.pgcategories);
                 }
             }
+        } else {
+            LOGGER.info("PowerTypes response is null!");
         }
+        
         //Now iterate over all the assignments and construct the correct type of EdPanel assignment
+        
+        // OOPS! seems like we're looking up the wrong assignments. Since we're querying the _table_ here,
+        // we are supposed to supply the _internal_ sectionID, not the DCID. So...
+        
+//        PsResponse<PsAssignmentWrapper> powerAssignmentsOld =
+//                powerSchool.getAssignmentsBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
+
         PsResponse<PsAssignmentWrapper> powerAssignments =
-                powerSchool.getAssignmentsBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
+                powerSchool.getAssignmentsBySectionId(sectionTableId);
+        
         //Get the association between student section score ID and student ID
+//        PsResponse<PsSectionScoreIdWrapper> ssids = powerSchool.getStudentScoreIdsBySectionId(
+//                Long.valueOf(createdSection.getSourceSystemId()));
+
         PsResponse<PsSectionScoreIdWrapper> ssids = powerSchool.getStudentScoreIdsBySectionId(
-                Long.valueOf(createdSection.getSourceSystemId()));
+                sectionTableId);
+
         if(null != ssids && null != ssids.record) {
             for(PsResponseInner<PsSectionScoreIdWrapper> sectionScoreIdWrapper: ssids.record) {
                 PsSectionScoreId sectionScoreId = sectionScoreIdWrapper.tables.sectionscoresid;
@@ -203,8 +234,9 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                     Student stud = studentAssociator.findByUserSourceSystemId(studentSsid);
                     if (null != stud) {
                         // Key is PsSectionScoreId SSID/DCID (which still is specific to one kid), not student SSID
-                        Long sectionScoreDcid = Long.valueOf(sectionScoreId.getDcid());
-                        ssidToStudent.put(sectionScoreDcid, new MutablePair<>(stud, sectionScoreId));
+                        Long sectionScoreIdLong = Long.valueOf(sectionScoreId.getDcid());
+//                        studentAssociator.findSsidFromStudentScoreId();
+                        ssidToStudent.put(sectionScoreIdLong, new MutablePair<>(stud, sectionScoreId));
                     } else {
                         // TODO Jordan: if this code path gets hit, need to go back to the high-level student API and ask for this specific student by ssid
                         // Not critical for the ETL right now as it appears these students have all transferred, and we don't include those students anyway (I don't think?)
@@ -215,6 +247,8 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                     LOGGER.warn("Can't resolve (DC)ID from student table. Definitely cannot resolve" + " student with tableId " + entityTableId + ".");
                 }
             }
+        } else {
+            LOGGER.info("getStudentScoreIdsBySectionId returned null or no records for createdSection w/ SSID " + createdSection.getSourceSystemId() + "!");
         }
 
         //THREADING BU SECTION ASSIGNMENT -> STUDENT ASSIGNMENT
@@ -233,7 +267,10 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                 edpanelAssignment.setSectionFK(createdSection.getId());
                 edpanelAssignment.setSourceSystemId(pa.getDcid().toString());
                 source.put(pa.getDcid(), edpanelAssignment);
+                assignmentTableIdToAssignmentSsid.put(pa.getDcid(), pa.getId());
             }
+        } else {
+            LOGGER.warn("PowerAssignments or .record is null!");
         }
         return source;
     }

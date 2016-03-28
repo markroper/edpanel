@@ -12,6 +12,7 @@ import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetup;
 import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMap;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMapWrapper;
+import com.scholarscore.etl.powerschool.api.model.student.PsTableSectionWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PsTableStudentWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMap;
 import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMapWrapper;
@@ -171,7 +172,7 @@ public class EtlEngine implements IEtlEngine {
         endTime = System.currentTimeMillis();
         LOGGER.info("Staff sync complete");
 
-        fetchStudentDcidToIdMappings();
+        fetchDcidToIdMappings();
         long studentTableMappingComplete =  (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();
         LOGGER.info("Student table-id mapping complete");
@@ -222,18 +223,24 @@ public class EtlEngine implements IEtlEngine {
         return results;
     }
 
-    private void fetchStudentDcidToIdMappings() {
+    // TODO Jordan: make this into SectionAssociator if it works
+    private Map<Long,Long> sectionPublicIdToSectionRecordId = new HashMap<>();
+    
+    private void fetchDcidToIdMappings() {
+        // fetch students' ID and DCID
+        // and put into a lookup table so ID can be used to find DCID
+        // (EdPanel data model knows a student's DCID but not their ID)
         PsResponse<PsTableStudentWrapper> tableStudents = null;
         try {
             tableStudents = powerSchool.getTableStudents();
         } catch (HttpClientException e) {
             e.printStackTrace();
+            LOGGER.warn("Cannot resolve Student ID->DCID mapping from student table!");
         }
         if (tableStudents != null) {
             LOGGER.debug("Got non-null results for Student records from Student table");
             // TODO Jordan: move this stuff into a sync object
-
-
+            
             // "private" student ID (called "id" in the student table)
             // -- mapped to -- 
             // "public" student ID (accessible from /student rest API, etc - called "id" in that response, although
@@ -241,14 +248,37 @@ public class EtlEngine implements IEtlEngine {
             // -----
             // (This is useful because SectionAssignmentGrades ONLY return the "private" student ID
             // but the "public" ID is required in order to hit the better (REST) endpoint containing richer data
-            HashMap<Long, Long> idsToTableIds = new HashMap<>();
+            HashMap<Long, Long> studentIdsToStudentTableIds = new HashMap<>();
             List<PsResponseInner<PsTableStudentWrapper>> records = tableStudents.record;
             for (PsResponseInner<PsTableStudentWrapper> tableStudentWrapper : records) {
                 Long studentRecordId = tableStudentWrapper.tables.students.id;
                 Long studentPublicId = tableStudentWrapper.tables.students.dcid;
-                idsToTableIds.put(studentRecordId, studentPublicId);
+                studentIdsToStudentTableIds.put(studentRecordId, studentPublicId);
             }
-            studentAssociator.addIdToTableIdMapping(idsToTableIds);
+            studentAssociator.addIdToTableIdMapping(studentIdsToStudentTableIds);
+        }
+
+        PsResponse<PsTableSectionWrapper> tableSections = null;
+        try {
+
+            tableSections = powerSchool.getTableSections();
+        } catch (HttpClientException e) {
+            e.printStackTrace();
+            LOGGER.warn("cannot resolve Section ID->DCID mapping from section table!");
+        }
+        if (tableSections != null) {
+            LOGGER.debug("got non-null results for Section records from Section table");
+            
+            HashMap<Long,Long> sectionIdsToSectionTableIds = new HashMap<>();
+            List<PsResponseInner<PsTableSectionWrapper>> records = tableSections.record;
+            for (PsResponseInner<PsTableSectionWrapper> tableSectionWrapper : records) {
+                // arg, this is almost the same as the above except we want to put in the 
+                // SSID / public ID as the *key* so that we can look up a section's database ID from it
+                Long sectionPublicId = tableSectionWrapper.tables.sections.dcid;
+                Long sectionRecordId = tableSectionWrapper.tables.sections.id;
+                sectionIdsToSectionTableIds.put(sectionPublicId, sectionRecordId);
+            }
+            sectionPublicIdToSectionRecordId.putAll(sectionIdsToSectionTableIds);
         }
     }
 
@@ -371,6 +401,7 @@ public class EtlEngine implements IEtlEngine {
                     powerTeacherCategoryToEdPanelType,
                     ptSectionIdToPsSectionId,
                     ptStudentIdToPStudentId,
+                    sectionPublicIdToSectionRecordId,
                     results,
                     studentClasses);
             executor.execute(sectionRunnable);
