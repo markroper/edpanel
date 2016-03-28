@@ -24,6 +24,7 @@ import com.scholarscore.etl.powerschool.api.model.section.PtSectionEnrollmentWra
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMapWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtTermWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
+import com.scholarscore.etl.powerschool.api.model.student.PsTableSectionWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PsTableStudentWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMapWrapper;
 import com.scholarscore.etl.powerschool.api.model.term.PsTermBinWrapper;
@@ -140,6 +141,15 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
         return get(
                 new TypeReference<PsResponse<PsTableStudentWrapper>>() {},
                 paths.getStudentsFromTablePath(),
+                PAGE_SIZE,
+                (String[]) null);
+    }
+    
+    @Override
+    public PsResponse<PsTableSectionWrapper> getTableSections() throws HttpClientException { 
+        return get(
+                new TypeReference<PsResponse<PsTableSectionWrapper>>() {},
+                paths.getSectionsFromTablePath(),
                 PAGE_SIZE,
                 (String[]) null);
     }
