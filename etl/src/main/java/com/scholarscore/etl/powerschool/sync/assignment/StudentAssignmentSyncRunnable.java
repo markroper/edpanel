@@ -114,11 +114,17 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                 sourceStudentAssignment.setStudent(edPanelStudentAssignment.getStudent());
                 if(sourceStudentAssignment.getStudent().getId().equals(edPanelStudentAssignment.getStudent().getId())) {
                     sourceStudentAssignment.setStudent(edPanelStudentAssignment.getStudent());
+                } else {
+                    LOGGER.warn("edPanelStudentAssignment.getStudent().getId() " +
+                            "is not equal to SourceStudentAssignment.getStudent().getId()!");
                 }
-                if(sourceStudentAssignment.getAssignment().getId().equals(edPanelStudentAssignment.getAssignment().getId())) {
+                Long sourceStudentAssignmentId = sourceStudentAssignment.getAssignment().getId();
+                Long edPanelStudentAssignmentId = edPanelStudentAssignment.getAssignment().getId();
+                if(sourceStudentAssignmentId.equals(edPanelStudentAssignmentId)) {
                     sourceStudentAssignment.setAssignment(edPanelStudentAssignment.getAssignment());
                 } else {
-
+                    LOGGER.warn("edPanelStudentAssignment.getAssignment().getId() (returned:" + edPanelStudentAssignmentId + ") " + 
+                            "is not equal to SourceStudentAssignment.getAssignment().getId() (" + sourceStudentAssignmentId + ") !");
                 }  
                 if(!edPanelStudentAssignment.equals(sourceStudentAssignment)) {
                     try {
@@ -137,18 +143,15 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                                 sourceStudentAssignment.getId());
                         continue;
                     }
-                    results.studentAssignmentUpdated(
-                            Long.valueOf(createdSection.getSourceSystemId()),
-                            Long.valueOf(this.assignment.getSourceSystemId()),
-                            entry.getKey(),
-                            sourceStudentAssignment.getId());
-                } else {
-                    LOGGER.warn("edPanelStudentAssignment is not equal to SourceStudentAssignment! Something is wrong. "
-                    + "\nEdPanelStudentAssignment: " + edPanelStudentAssignment + " sourceStudentAssignment: " + sourceStudentAssignment);
                 }
+                results.studentAssignmentUpdated(
+                        Long.valueOf(createdSection.getSourceSystemId()),
+                        Long.valueOf(this.assignment.getSourceSystemId()),
+                        entry.getKey(),
+                        sourceStudentAssignment.getId());
             }
         }
-        if(null != studentAssignmentsToCreate && !studentAssignmentsToCreate.isEmpty()) {
+        if(!studentAssignmentsToCreate.isEmpty()) {
             //Perform the bulk creates!
             try {
                 List<Long> ids = edPanel.createStudentAssignments(
