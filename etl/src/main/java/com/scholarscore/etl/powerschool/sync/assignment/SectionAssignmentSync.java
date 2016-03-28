@@ -46,7 +46,10 @@ public class SectionAssignmentSync implements ISync<Assignment> {
     //Lookup mappings populated as a part of powerschool assignment resolution
     Map<Long, MutablePair<Student, PsSectionScoreId>> ssidToStudent = new HashMap<>();
     Map<Long, PsAssignmentType> typeIdToType = new HashMap<>();
-
+    // When calculating section grades, we get back an assignment's table ID from powerschool
+    // and we need to convert this ID into one that identifies the saved assignment in EdPanel (SSID).
+    private Map<Long, Long> assignmentTableIdToAssignmentSsid = new HashMap<>();
+    
     public SectionAssignmentSync(IPowerSchoolClient powerSchool,
                                    IAPIClient edPanel,
                                    School school,
@@ -180,18 +183,16 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         return source;
     }
 
-    // TODO Jordan: if this works, clean it up
-    private Map<Long, Long> assignmentTableIdToAssignmentSsid = new HashMap<>();
-    
     protected ConcurrentHashMap<Long, Assignment> resolveAllFromSourceSystem(PowerSchoolSyncResult results) throws HttpClientException {
-        //first resolve the assignment categories, so we can construct the appropriate EdPanel assignment subclass
-//        PsResponse<PsAssignmentTypeWrapper> powerTypesOld =
-//                powerSchool.getAssignmentCategoriesBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
         
+        // Some endpoints we are about to call require us to identify the section using the section's Database ID 
+        // (aka record Id, table Id, or just 'id' if calling directly to a /table endpoint) instead of its SSID
+        // so let's figure out all of the various ways to identify this section now
         Long sectionPublicId = Long.parseLong(createdSection.getSourceSystemId());
         Long sectionTableId = sectionPublicIdToSectionRecordId.get(sectionPublicId);
-        LOGGER.debug("For Assignment w/ SSID " + createdSection.getSourceSystemId() + ", got tableId " + sectionTableId);
-        
+        LOGGER.trace("For Assignment w/ SSID " + createdSection.getSourceSystemId() + ", got tableId " + sectionTableId);
+
+        // resolve the assignment categories, so we can construct the appropriate EdPanel assignment subclass
         PsResponse<PsAssignmentTypeWrapper> powerTypes =
                 powerSchool.getAssignmentCategoriesBySectionId(sectionTableId);
         
@@ -207,43 +208,45 @@ public class SectionAssignmentSync implements ISync<Assignment> {
             LOGGER.info("PowerTypes response is null!");
         }
         
-        //Now iterate over all the assignments and construct the correct type of EdPanel assignment
-        
-        // OOPS! seems like we're looking up the wrong assignments. Since we're querying the _table_ here,
-        // we are supposed to supply the _internal_ sectionID, not the DCID. So...
-        
-//        PsResponse<PsAssignmentWrapper> powerAssignmentsOld =
-//                powerSchool.getAssignmentsBySectionId(Long.valueOf(createdSection.getSourceSystemId()));
-
+        // Now iterate over all the assignments and construct the correct type of EdPanel assignment.
+        // The .getAssignmentsBySectionId call hits a 'table' endpoint, meaning instead of the section's SSID
+        // we must supply its table ID.
         PsResponse<PsAssignmentWrapper> powerAssignments =
                 powerSchool.getAssignmentsBySectionId(sectionTableId);
-        
-        //Get the association between student section score ID and student ID
-//        PsResponse<PsSectionScoreIdWrapper> ssids = powerSchool.getStudentScoreIdsBySectionId(
-//                Long.valueOf(createdSection.getSourceSystemId()));
 
+        // Also get the studentScoreIds (another table endpoint so we must use the tableId, not the SSID)
         PsResponse<PsSectionScoreIdWrapper> ssids = powerSchool.getStudentScoreIdsBySectionId(
                 sectionTableId);
 
         if(null != ssids && null != ssids.record) {
             for(PsResponseInner<PsSectionScoreIdWrapper> sectionScoreIdWrapper: ssids.record) {
                 PsSectionScoreId sectionScoreId = sectionScoreIdWrapper.tables.sectionscoresid;
+                // We want to know what student this SectionScoreId is talking about, but we only have 'studentid' (tableID)
                 Long entityTableId = Long.valueOf(sectionScoreId.getStudentid());
+                // convert student's tableID into their SSID
                 Long studentSsid = studentAssociator.findSsidFromTableId(entityTableId);
                 if (null != studentSsid) {
                     Student stud = studentAssociator.findByUserSourceSystemId(studentSsid);
                     if (null != stud) {
                         // Key is PsSectionScoreId SSID/DCID (which still is specific to one kid), not student SSID
+                        // This is used later, as SectionScoreAssignments will reference this SectionScoreId SSID
+                        // (the value of FDCID in a SectionScoreAssignment correlates to the SSID of the PsSectionScoreId)
                         Long sectionScoreIdLong = Long.valueOf(sectionScoreId.getDcid());
-//                        studentAssociator.findSsidFromStudentScoreId();
                         ssidToStudent.put(sectionScoreIdLong, new MutablePair<>(stud, sectionScoreId));
                     } else {
-                        // TODO Jordan: if this code path gets hit, need to go back to the high-level student API and ask for this specific student by ssid
-                        // Not critical for the ETL right now as it appears these students have all transferred, and we don't include those students anyway (I don't think?)
-                        LOGGER.warn("Got SSID " + studentSsid + " from (table)ID " + entityTableId + " but couldn't fetch actual User from hashmap - need network call?");
+                        // Here we have a section score with a 'studentid', which is the tableId of a student (not the SSID).
+                        // We look up their SSID and find it, but we didn't pull that student from any of the schools. 
+                        // In every case we've investigated so far, this is because these students have withdrawn.
+                        
+                        // TODO: Tracking and population of withdrawn students
+                        // ... whereas the students we've seen so far are always associated with a school, using this DCID
+                        // we can go directly to the student endpoint and get their information, even though they have withdrawn.
+                        // This will allow us to capture their name, etc, as well as their withdrawn status in the DB. 
+                        // This means we will be able to capture/correlate information on withdrawn students (probably more usefully, their historical grades)
+                        // - As a first step, just record the names of Withdrawn students and print them at the end of the ETL?
+                        LOGGER.warn("Student Presumed withdrawn -- found SSID " + studentSsid + " from (table)ID " + entityTableId + " but no schools returned this student");
                     }
                 } else {
-                    // TODO: no apparent solution here, add a counter for this case in the result object
                     LOGGER.warn("Can't resolve (DC)ID from student table. Definitely cannot resolve" + " student with tableId " + entityTableId + ".");
                 }
             }
