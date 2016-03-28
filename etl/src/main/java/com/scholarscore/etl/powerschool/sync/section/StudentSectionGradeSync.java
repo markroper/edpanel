@@ -228,6 +228,11 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                                 edPanel,
                                 studentAssociator,
                                 results);
+                        if(null == edpanelStudent) {
+                            LOGGER.info("Could not find student enrolled in class with student source system ID: " +
+                                    powerSchoolStudentId);
+                            continue;
+                        }
                     }
                     StudentSectionGrade ssg = new StudentSectionGrade();
                     ssg.setStudent(edpanelStudent);
