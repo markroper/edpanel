@@ -44,6 +44,11 @@ public class PowerSchoolPaths {
         return SCHEMA_BASE +
                 "/students?projection=DCID,ID" + "&" + "pagesize=" + pageSize;
     }
+    
+    public String getSectionsFromTablePath() { 
+        return SCHEMA_BASE + 
+                "/sections?projection=DCID,ID" + "&" + "pagesize=" + pageSize;
+    }
 
     public String getCalendarDayPath() {
         return SCHEMA_BASE +
@@ -185,7 +190,7 @@ public class PowerSchoolPaths {
     public String getSectionAssignmentsPath() {
         return "/ws/schema/table/PGAssignments?" +
             getPageSizeParam() +
-            "&projection=Name,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
+            "&projection=Name,id,SectionID,AssignmentID,Description,DateDue,PointsPossible,Type,Weight,IncludeInFinalGrades,Abbreviation,PGCategoriesID,PublishScores,PublishState&q=SectionID=={0}";
     }
 
     public String getSectionAssignmentCategories() {
