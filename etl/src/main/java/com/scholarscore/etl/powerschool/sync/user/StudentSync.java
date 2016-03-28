@@ -122,7 +122,7 @@ public class StudentSync implements ISync<Student> {
                     }
                     results.studentUpdated(entry.getKey(), sourceUser.getId());
                 }
-                studentAssociator.add(ssid, (Student) sourceUser);
+                studentAssociator.add(ssid, sourceUser);
             }
         }
 

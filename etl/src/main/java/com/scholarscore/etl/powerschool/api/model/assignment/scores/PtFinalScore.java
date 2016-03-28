@@ -15,7 +15,7 @@ public class PtFinalScore {
     public Double score;
     public Long sectionenrollmentid;
     public String commentvalue;
-    public Double actualscoreentered;
+    public String actualscoreentered;
     public String lastupdated;
     public Double pointsearned;
     public Long id;
