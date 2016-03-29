@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -152,8 +153,12 @@ public class StudentSync implements ISync<Student> {
         PsStudents response = powerSchool.getStudentsBySchool(Long.valueOf(school.getSourceSystemId()));
         Collection<Student> apiListOfStudents = response.toInternalModel();
         ConcurrentHashMap<Long, Student> source = new ConcurrentHashMap<>();
+        Map<Long, Long> dcidToTableId = new HashMap<>();
+        for(Map.Entry<Long, MutablePair<String, String>> entry : spedEll.entrySet()) {
+            dcidToTableId.put(studentAssociator.findSsidFromTableId(entry.getKey()), entry.getKey());
+        }
         for(Student u : apiListOfStudents) {
-            MutablePair<String, String> se = spedEll.get(Long.parseLong(u.getSourceSystemId()));
+            MutablePair<String, String> se = spedEll.get(dcidToTableId.get(Long.parseLong(u.getSourceSystemId())));
             if(null != se) {
                 //Match's 500 = no disability.  Excel's 00 = no disability
                 u.setSped(!"00".equals(se.getLeft()) && !"500".equals(se.getLeft()));

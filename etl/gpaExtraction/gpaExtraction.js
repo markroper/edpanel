@@ -1,4 +1,4 @@
-var gpaQuery = '    DCID \n\
+var gpaQuery = '    ID \n\
 ^(*gpa method="added value") \n\
 ^(*gpa method="added value" term="Q1") \n\
 ^(*gpa method="added value" term="Q2")';
