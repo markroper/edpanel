@@ -155,7 +155,8 @@ public class StudentSync implements ISync<Student> {
         for(Student u : apiListOfStudents) {
             MutablePair<String, String> se = spedEll.get(Long.parseLong(u.getSourceSystemId()));
             if(null != se) {
-                u.setSped(!"00".equals(se.getLeft()));
+                //Match's 500 = no disability.  Excel's 00 = no disability
+                u.setSped(!"00".equals(se.getLeft()) && !"500".equals(se.getLeft()));
                 u.setEll(!"00".equals(se.getRight()));
             }
             PsTableStudent pStud = ssidToHiddenTableFields.get(Long.parseLong(u.getSourceSystemId()));
