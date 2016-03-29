@@ -24,12 +24,18 @@ var username = "";
 var password = "";
 var domain = "";
 var enabled = "";
+var screenScrapeGpa = "";
 
 for (var i = 0; i < lines.length; i++) { 
     var usernameIndex = lines[i].search("powerschool.username=");
     if (usernameIndex > -1) { 
         username = lines[i].split("=")[1];
         continue;
+    }
+    var screenScrapeGpa = lines[i].search("powerschool.screenscrape.gpa=");
+    if (screenScrapeGpa > -1) {
+      screenScrapeGpa = lines[i].split("=")[1];
+      continue;
     }
     var passwordIndex = lines[i].search("powerschool.password=");
     if (passwordIndex > -1) { 
@@ -48,7 +54,7 @@ for (var i = 0; i < lines.length; i++) {
     }
 }
 
-if (username.length == 0 || password.length == 0 || domain.length == 0 || enabled.length == 0) {
+if (username.length == 0 || password.length == 0 || domain.length == 0 || enabled.length == 0 || screenScrapeGpa.length == 0) {
 	casper.echo("Credentials, domain, or enabled properties are invalid, did you set the properties file?");
 	casper.exit();
 }
