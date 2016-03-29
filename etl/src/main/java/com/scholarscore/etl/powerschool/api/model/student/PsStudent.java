@@ -38,5 +38,6 @@ public class PsStudent {
     public PsSchoolEnrollment school_enrollment;
 
     public PsEthnicityRace ethnicity_race;
-//    public List<StudentFee> fees;
+
+    public PsExtensionData _extension_data;
 }

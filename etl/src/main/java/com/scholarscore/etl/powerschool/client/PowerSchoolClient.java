@@ -62,14 +62,20 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     private final String clientSecret;
     private final String clientId;
     private OAuthResponse oauthToken;
+    private final String SPED_FLAG;
+    private final String ELL_FLAG;
 
-    public PowerSchoolClient(String clientId, String clientSecret, URI uri) {
+    public PowerSchoolClient(String clientId, String clientSecret, URI uri,
+                             String studentExtension, String spedFlag, String ellFlag) {
         super(uri);
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         authenticate();
         paths.setCutoffDate(LocalDate.now().minusYears(1l));
         paths.setPageSize(PAGE_SIZE);
+        paths.setStudentExtension(studentExtension);
+        SPED_FLAG = spedFlag;
+        ELL_FLAG = ellFlag;
     }
 
     public void authenticate() {
@@ -130,11 +136,14 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
 
     @Override
     public PsStudents getStudentsBySchool(Long schoolId) throws HttpClientException {
-        return get(
+        PsStudents studs = get(
                 new TypeReference<PsStudents>() {},
                 paths.getStudentsPath(),
                 PAGE_SIZE,
                 schoolId.toString());
+        studs.setELL_FLAG(ELL_FLAG);
+        studs.setSPED_FLAG(SPED_FLAG);
+        return studs;
     }
 
     @Override

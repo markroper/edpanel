@@ -22,6 +22,9 @@
         <constructor-arg index="0" type="java.lang.String" value="${powerschool.client.id}"/>
         <constructor-arg index="1" type="java.lang.String" value="${powerschool.client.secret}"/>
         <constructor-arg index="2" type="java.net.URI" value="${powerschool.client.url}"/>
+        <constructor-arg index="3" type="java.lang.String" value="${powerschool.student.spedellextension}"/>
+        <constructor-arg index="4" type="java.lang.String" value="${powerschool.student.spedflag}"/>
+        <constructor-arg index="5" type="java.lang.String" value="${powerschool.student.ellflag}"/>
     </bean>
 
 </beans>

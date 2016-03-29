@@ -13,7 +13,11 @@ public class PowerSchoolPaths {
     private static final String SCHEMA_BASE = "/ws/schema/table";
     private Integer pageSize = PowerSchoolClient.PAGE_SIZE;
     private String cutoffDate = "2015-08-01";
+    private String studentExtension = null;
 
+    public void setStudentExtension(String s ) {
+        studentExtension = s;
+    }
     public void setPageSize(Integer size) {
         pageSize = size;
     }
@@ -36,10 +40,14 @@ public class PowerSchoolPaths {
     }
 
     public String getStudentsPath() {
-        return BASE +
+        String returnVal = BASE +
             "/school/{0}/student?pagesize=" +
             pageSize +
             "&expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup,school_enrollment";
+        if(null != studentExtension) {
+            returnVal += "&extensions=" + studentExtension;
+        }
+        return returnVal;
     }
 
     public String getStudentPath() {

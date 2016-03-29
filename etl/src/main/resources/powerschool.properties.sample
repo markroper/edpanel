@@ -1,3 +1,7 @@
 powerschool.client.url=https://excelacademy.powerschool.com/
 powerschool.client.id=
 powerschool.client.secret=
+#use the following params to designate the extension to use to identify ELL & SPED, and the field name returned
+powerschool.student.spedellextension=u_studentsuserfields
+powerschool.student.ellflag=me_biometrics_ever_englishla01
+powerschool.student.spedflag=me_biometrics_ever_specialed01
