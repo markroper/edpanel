@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  */
 public class GpaParser {
     private final static Logger LOGGER = LoggerFactory.getLogger(GpaParser.class);
-    private final static String ID = "ID";
+    private final static String ID = "DCID";
     private final static Pattern GPA_METHOD_MATCHER = Pattern.compile(".*gpa_method=\"([^\"]+)\"(_term=\"([^\"]+)\")?");
     private final static String GPA_METHOD_MARKER = "*gpa_method";
 

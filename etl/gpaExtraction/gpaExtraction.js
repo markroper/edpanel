@@ -1,4 +1,4 @@
-var gpaQuery = '    ID \n\
+var gpaQuery = '    DCID \n\
 ^(*gpa method="added value") \n\
 ^(*gpa method="added value" term="Q1") \n\
 ^(*gpa method="added value" term="Q2")';
@@ -47,7 +47,7 @@ for (var i = 0; i < lines.length; i++) {
         domain = lines[i].split("=")[1];
         continue;
     }
-    var enabledIndex = lines[i].search("powerschool.screenscraping.enabled=");
+    var enabledIndex = lines[i].search("powerschool.screenscrape.enabled=");
     if (enabledIndex > -1) { 
         enabled = lines[i].split("=")[1];
         continue;
@@ -62,6 +62,10 @@ if (username.length == 0 || password.length == 0 || domain.length == 0 || enable
 if (enabled.toLowerCase() !== "true") { 
     casper.echo("'enabled' property in file is not set to 'true', so skipping screen scraping.");
     casper.exit();
+}
+if (screenScrapeGpa.toLowerCase() !== "true") {
+  casper.echo("'screenScrapeGpa' property in file is not set to 'true', so skipping screen scraping for GPA.");
+  casper.exit();
 }
 
 if (domain.substring(domain.length-1,domain.length) === "/") { 

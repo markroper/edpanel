@@ -21,8 +21,9 @@ import java.util.Map;
  */
 public class SpedEllParser {
     private final static Logger LOGGER = LoggerFactory.getLogger(SpedEllParser.class);
-    private final static String ID = "ID";
+    private final static String ID = "DCID";
     private final static String SPED_MARKER = "MA_SpecEd621";
+    private final static String SPED_MARKER_MATCH = "MA_PrimDisabil";
     private final static String ELL_MARKER = "MA_EngProficiency";
 
     public Map<Long, MutablePair<String, String>> parse(InputStream iis) {
@@ -46,7 +47,7 @@ public class SpedEllParser {
                         } else {
                             break;
                         }
-                    } else if (name.startsWith(SPED_MARKER)) {
+                    } else if (name.startsWith(SPED_MARKER) || name.startsWith(SPED_MARKER_MATCH)) {
                         spedEll.setLeft(record.get(i));
                     } else if (name.startsWith(ELL_MARKER)) {
                         spedEll.setRight(record.get(i));

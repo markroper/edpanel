@@ -36,7 +36,7 @@ for (var i = 0; i < lines.length; i++) {
     domain = lines[i].split("=")[1];
     continue;
   }
-  var enabledIndex = lines[i].search("powerschool.screenscraping.enabled=");
+  var enabledIndex = lines[i].search("powerschool.screenscrape.enabled=");
   if (enabledIndex > -1) {
     enabled = lines[i].split("=")[1];
     continue;
@@ -54,7 +54,7 @@ for (var i = 0; i < lines.length; i++) {
 
 }
 var ellAndSpedQuery =
-  '    ID \n\
+  '    DCID \n\
   ' + spedFieldName + '  \n\
   ' + ellFieldName;
 
