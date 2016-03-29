@@ -1,8 +1,3 @@
-var ellAndSpedQuery =
-  '    ID \n\
-  MA_SpecEd621 \n\
-  MA_EngProficiency';
-
 var exportSelector = "#lnk_QuickExport";
 var formClass = '.noSubmitLoading';
 
@@ -23,7 +18,8 @@ var username = "";
 var password = "";
 var domain = "";
 var enabled = "";
-
+var ellFieldName = "";
+var spedFieldName = "";
 for (var i = 0; i < lines.length; i++) {
   var usernameIndex = lines[i].search("powerschool.username=");
   if (usernameIndex > -1) {
@@ -45,7 +41,22 @@ for (var i = 0; i < lines.length; i++) {
     enabled = lines[i].split("=")[1];
     continue;
   }
+  var ellFieldIndex = lines[i].search("powerschool.ellfield=");
+  if (ellFieldIndex > -1) {
+    ellFieldName = lines[i].split("=")[1];
+    continue;
+  }
+  var spedFieldIndex = lines[i].search("powerschool.spedfield=");
+  if (spedFieldIndex > -1) {
+    spedFieldName = lines[i].split("=")[1];
+    continue;
+  }
+
 }
+var ellAndSpedQuery =
+  '    ID \n\
+  ' + spedFieldName + '  \n\
+  ' + ellFieldName;
 
 if (username.length == 0 || password.length == 0 || domain.length == 0 || enabled.length == 0) {
   casper.echo("Credentials, domain, or enabled properties are invalid, did you set the properties file?");
