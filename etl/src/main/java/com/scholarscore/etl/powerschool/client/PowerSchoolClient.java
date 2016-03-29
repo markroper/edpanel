@@ -62,8 +62,8 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     private final String clientSecret;
     private final String clientId;
     private OAuthResponse oauthToken;
-    private final String SPED_FLAG;
-    private final String ELL_FLAG;
+    private String SPED_FLAG;
+    private String ELL_FLAG;
 
     public PowerSchoolClient(String clientId, String clientSecret, URI uri,
                              String studentExtension, String spedFlag, String ellFlag) {
