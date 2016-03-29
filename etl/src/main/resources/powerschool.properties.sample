@@ -5,7 +5,15 @@ powerschool.client.secret=
 powerschool.screenscraping.enabled=false
 powerschool.username=
 powerschool.password=
-#use the following params to designate the extension to use to identify ELL & SPED, and the field name returned
+
+#IF WE ARE USING STUDENT EXPANSION FIELDS TO RSOLVE ELL & SPED VIA API
 powerschool.student.spedellextension=u_studentsuserfields
 powerschool.student.ellflag=me_biometrics_ever_englishla01
 powerschool.student.spedflag=me_biometrics_ever_specialed01
+
+#IF WE ARE WEB CRAWLING TO RESOLVE ELL & SPED, SET THE UI FIELD NAMES HERE
+powerschool.ellfield=MA_EngProficiency
+#EXCEL:
+#powerschool.spedfield=MA_SpecEd621
+#MATCH:
+powerschool.spedfield=MA_PrimDisabil
