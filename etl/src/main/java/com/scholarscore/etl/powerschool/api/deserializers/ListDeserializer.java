@@ -131,8 +131,12 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
                             System.out.println("Ignoring synthetic field " + field.getName() + " of type " + field.getType());
                             continue;
                         }
-                        Object innerObj = readObj(
-                                node.get(field.getName().toLowerCase()),
+                        JsonNode innerNode = node.get(field.getName().toLowerCase());
+                        if (null == innerNode) {
+                            LOGGER.debug("Can't parse inner node " + field.getName() + " from class " + out.getClass().getSimpleName() + " -- not found!");
+                            continue;
+                        }
+                        Object innerObj = readObj(innerNode,
                                 field.getType());
                         field.set(out, innerObj);
                         break;
@@ -143,14 +147,7 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
                     for(JsonNode n: (ArrayNode)node) {
                         PsExtensionField ef = new PsExtensionField();
                         for(Field f: ef.getClass().getDeclaredFields()) {
-                            if(f.getType().getName() != "java.lang.String") {
-                                Object innerObj = readObj(
-                                        n.findValue(f.getName().toLowerCase()),
-                                        f.getType());
-                                f.set(ef, innerObj);
-                            } else {
-                                f.set(ef, asText(n, f.getName()));
-                            }
+                            f.set(ef, asText(n, f.getName()));
                         }
                         ((PsExtensionFields)out).put(ef.name, ef);
                     }
