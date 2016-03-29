@@ -54,7 +54,7 @@ for (var i = 0; i < lines.length; i++) {
 
 }
 var ellAndSpedQuery =
-  '    DCID \n\
+  '    ID \n\
   ' + spedFieldName + '  \n\
   ' + ellFieldName;
 

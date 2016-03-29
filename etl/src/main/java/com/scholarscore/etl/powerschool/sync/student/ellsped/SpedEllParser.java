@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class SpedEllParser {
     private final static Logger LOGGER = LoggerFactory.getLogger(SpedEllParser.class);
-    private final static String ID = "DCID";
+    private final static String ID = "ID";
     private final static String SPED_MARKER = "MA_SpecEd621";
     private final static String SPED_MARKER_MATCH = "MA_PrimDisabil";
     private final static String ELL_MARKER = "MA_EngProficiency";
