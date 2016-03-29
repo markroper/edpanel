@@ -73,9 +73,15 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
         authenticate();
         paths.setCutoffDate(LocalDate.now().minusYears(1l));
         paths.setPageSize(PAGE_SIZE);
-        paths.setStudentExtension(studentExtension);
-        SPED_FLAG = spedFlag;
-        ELL_FLAG = ellFlag;
+        if(null != studentExtension && !studentExtension.isEmpty()) {
+            paths.setStudentExtension(studentExtension);
+        }
+        if(null != spedFlag && !spedFlag.isEmpty()) {
+            SPED_FLAG = spedFlag;
+        }
+        if(null != ellFlag && !ellFlag.isEmpty()) {
+            ELL_FLAG = ellFlag;
+        }
     }
 
     public void authenticate() {
@@ -137,7 +143,8 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     @Override
     public PsStudents getStudentsBySchool(Long schoolId) throws HttpClientException {
         PsStudents studs = get(
-                new TypeReference<PsStudents>() {},
+                new TypeReference<PsStudents>() {
+                },
                 paths.getStudentsPath(),
                 PAGE_SIZE,
                 schoolId.toString());
