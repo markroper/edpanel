@@ -6,7 +6,8 @@ package com.scholarscore.etl.powerschool.sync.student.gpa;
 public enum GpaType {
     SIMPLE,
     SIMPLE_PERCENT,
-    ADDED_VALUE;
+    ADDED_VALUE,
+    SIMPLE_ADDED_VALUE;
 
     public static GpaType fromString(String value) {
         for (GpaType type : values()) {

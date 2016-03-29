@@ -6,7 +6,10 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
+import com.scholarscore.etl.powerschool.api.model.student.PsExtensionField;
+import com.scholarscore.etl.powerschool.api.model.student.PsExtensionFields;
 import com.scholarscore.util.EdPanelObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -129,10 +132,28 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
                             continue;
                         }
                         Object innerObj = readObj(
-                                node.findValue(field.getName().toLowerCase()),
+                                node.get(field.getName().toLowerCase()),
                                 field.getType());
                         field.set(out, innerObj);
                         break;
+                }
+            }
+            if(out instanceof PsExtensionFields) {
+                if(node instanceof ArrayNode) {
+                    for(JsonNode n: (ArrayNode)node) {
+                        PsExtensionField ef = new PsExtensionField();
+                        for(Field f: ef.getClass().getDeclaredFields()) {
+                            if(f.getType().getName() != "java.lang.String") {
+                                Object innerObj = readObj(
+                                        n.findValue(f.getName().toLowerCase()),
+                                        f.getType());
+                                f.set(ef, innerObj);
+                            } else {
+                                f.set(ef, asText(n, f.getName()));
+                            }
+                        }
+                        ((PsExtensionFields)out).put(ef.name, ef);
+                    }
                 }
             }
             return out;

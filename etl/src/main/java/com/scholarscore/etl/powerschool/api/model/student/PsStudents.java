@@ -15,6 +15,18 @@ import java.util.Collection;
  */
 @JsonDeserialize(using = StudentsDeserializer.class)
 public class PsStudents extends ArrayList<PsStudent> implements ITranslateCollection<Student> {
+    private static final String YES = "Yes";
+
+    private static String SPED_FLAG;
+    private static String ELL_FLAG;
+
+    public String setSPED_FLAG(String sf) {
+        return SPED_FLAG = sf;
+    }
+
+    public String setELL_FLAG(String ef) {
+        return ELL_FLAG = ef;
+    }
 
     @Override
     public Collection<Student> toInternalModel() {
@@ -25,6 +37,20 @@ public class PsStudents extends ArrayList<PsStudent> implements ITranslateCollec
             Student model = new Student();
             if (null != student.name) {
                 model.setName(student.name.toString());
+            }
+            if(null != SPED_FLAG &&
+                    null != ELL_FLAG &&
+                    null != student._extension_data &&
+                    null != student._extension_data._table_extension &&
+                    null != student._extension_data._table_extension._field) {
+                PsExtensionField spedData = student._extension_data._table_extension._field.get(SPED_FLAG);
+                if(null != spedData) {
+                    model.setSped(YES.equals(spedData.value));
+                }
+                PsExtensionField ellData = student._extension_data._table_extension._field.get(ELL_FLAG);
+                if(null != ellData) {
+                    model.setEll(YES.equals(ellData.value));
+                }
             }
             model.setSourceSystemId(student.id.toString());
             model.setSourceSystemUserId(student.local_id.toString());
@@ -53,7 +79,9 @@ public class PsStudents extends ArrayList<PsStudent> implements ITranslateCollec
             }
             if (null != student.ethnicity_race) {
                 model.setFederalEthnicity(student.ethnicity_race.federal_ethnicity);
-                model.setFederalRace(student.ethnicity_race.scheduling_reporting_ethnicity);
+                if(null != student.ethnicity_race.races) {
+                    model.setFederalRace(student.ethnicity_race.races.district_race_code);
+                }
             }
             if (null != student.demographics) {
                 if (null != student.demographics.gender) {

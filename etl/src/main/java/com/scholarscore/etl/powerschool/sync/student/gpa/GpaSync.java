@@ -4,6 +4,10 @@ import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
+import com.scholarscore.etl.powerschool.api.model.student.PsRankAndGpa;
+import com.scholarscore.etl.powerschool.api.model.student.PsRankAndGpaWrapper;
+import com.scholarscore.etl.powerschool.api.response.PsResponse;
+import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.gpa.Gpa;
@@ -56,7 +60,12 @@ public class GpaSync implements ISync<Gpa> {
      */
     @Override
     public ConcurrentHashMap<Long, Gpa> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        ConcurrentHashMap<Long, Gpa> sourceValues = resolveAllFromSourceSystem();
+        ConcurrentHashMap<Long, Gpa> sourceValues = null;
+        try {
+            sourceValues = resolveAllFromSourceSystem();
+        } catch (HttpClientException e) {
+            LOGGER.warn("Unable to resolve source system GPAs for students");
+        }
         ConcurrentHashMap<Long, Gpa> edPanelValues = null;
         try {
             edPanelValues = resolveFromEdPanel();
@@ -91,30 +100,67 @@ public class GpaSync implements ISync<Gpa> {
         return sourceValues;
     }
 
-    protected ConcurrentHashMap<Long, Gpa> resolveAllFromSourceSystem() {
-        GpaParser parser = new GpaParser();
+    protected ConcurrentHashMap<Long, Gpa> resolveAllFromSourceSystem() throws HttpClientException {
         ConcurrentHashMap<Long, Gpa> resultValues = new ConcurrentHashMap<>();
-        try {
-            for(File gpaFile : gpaFiles){
-                if(gpaFile.canRead() && gpaFile.isFile()) {
-                    List<RawGpaValue> gpas = parser.parse(new FileInputStream(gpaFile));
-                    for (RawGpaValue value : gpas) {
-                        Gpa gpa = value.emit();
-                        Student s = studentAssociator.findByUserSourceSystemId(value.getStudentId());
-                        if(null != s) {
-                            gpa.setStudentId(s.getId());
-                            resultValues.put(gpa.getStudentId(), gpa);
-                        } else {
-                            LOGGER.warn("Unable to resolve the student with source system ID of: " +
-                                    gpa.getStudentId());
+        if(null != gpaFiles && gpaFiles.size() > 0) {
+            GpaParser parser = new GpaParser();
+            try {
+                for (File gpaFile : gpaFiles) {
+                    if (gpaFile.canRead() && gpaFile.isFile()) {
+                        List<RawGpaValue> gpas = parser.parse(new FileInputStream(gpaFile));
+                        for (RawGpaValue value : gpas) {
+                            Gpa gpa = value.emit();
+                            Student s = studentAssociator.findByUserSourceSystemId(value.getStudentId());
+                            if (null != s) {
+                                gpa.setStudentId(s.getId());
+                                resultValues.put(gpa.getStudentId(), gpa);
+                            } else {
+                                LOGGER.warn("Unable to resolve the student with source system ID of: " +
+                                        gpa.getStudentId());
+                            }
                         }
                     }
                 }
+            } catch (IOException e) {
+                LOGGER.error("Failed to resolve GPA from file", e);
             }
-        } catch (IOException e) {
-            LOGGER.error("Failed to resolve GPA from file", e);
+        } else {
+            PsResponse<PsRankAndGpaWrapper> gpas = powerSchool.getStudentRankAndGpas();
+            if(null != gpas) {
+                for (PsResponseInner<PsRankAndGpaWrapper> gpa : gpas.record) {
+                    PsRankAndGpa w = gpa.tables.classrank;
+                    RawGpaValue val = new RawGpaValue();
+                    val.setType(resolveType(w.gpamethod));
+                    Gpa edG = val.emit();
+                    Student s = studentAssociator.findByUserSourceSystemId(
+                            studentAssociator.findSsidFromTableId(w.studentid));
+                    if(null != edG && null != s) {
+                        edG.setScore(w.gpa);
+                        edG.setStudentId(s.getId());
+                        resultValues.put(edG.getStudentId(), edG);
+                    }
+                }
+            }
         }
         return resultValues;
+    }
+
+    protected static GpaType resolveType(String input) {
+        if(null != input) {
+            switch (input.toUpperCase()) {
+                case "ADDED_VALUE":
+                    return GpaType.ADDED_VALUE;
+                case "SIMPLE_PERCENT":
+                    return GpaType.SIMPLE_PERCENT;
+                case "SIMPLE":
+                    return GpaType.SIMPLE;
+                case "SIMPLE_ADDED_VALUE":
+                    return GpaType.SIMPLE_ADDED_VALUE;
+                default:
+                    return null;
+            }
+        }
+        return null;
     }
 
     protected ConcurrentHashMap<Long, Gpa> resolveFromEdPanel() throws HttpClientException {

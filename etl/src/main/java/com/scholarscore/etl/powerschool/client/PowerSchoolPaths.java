@@ -13,7 +13,11 @@ public class PowerSchoolPaths {
     private static final String SCHEMA_BASE = "/ws/schema/table";
     private Integer pageSize = PowerSchoolClient.PAGE_SIZE;
     private String cutoffDate = "2015-08-01";
+    private String studentExtension = null;
 
+    public void setStudentExtension(String s ) {
+        studentExtension = s;
+    }
     public void setPageSize(Integer size) {
         pageSize = size;
     }
@@ -28,11 +32,22 @@ public class PowerSchoolPaths {
         return "/ws/v1/district/school?expansions=school_boundary,school_fees_setup";
     }
 
+
+    public String getGpaAndClassRankPaths() {
+        return SCHEMA_BASE +
+        "/ClassRank?q=gpa!=0;gpa!=&projection=DateRanked,OutOf,SchoolName,SchoolId,StoreCode,StudentID,YearID,DCID,ID,GPA,GPAMethod,Grade_Level&pagesize=" +
+        pageSize;
+    }
+
     public String getStudentsPath() {
-        return BASE +
+        String returnVal = BASE +
             "/school/{0}/student?pagesize=" +
             pageSize +
             "&expansions=addresses,alerts,contact,contact_info,demographics,ethnicity_race,fees,initial_enrollment,lunch,phones,schedule_setup,school_enrollment";
+        if(null != studentExtension) {
+            returnVal += "&extensions=" + studentExtension;
+        }
+        return returnVal;
     }
 
     public String getStudentPath() {
@@ -42,7 +57,7 @@ public class PowerSchoolPaths {
 
     public String getStudentsFromTablePath() {
         return SCHEMA_BASE +
-                "/students?projection=DCID,ID" + "&" + "pagesize=" + pageSize;
+                "/students?projection=DCID,ID,state_studentnumber,grade_level,classOf,enroll_status" + "&" + "pagesize=" + pageSize;
     }
     
     public String getSectionsFromTablePath() { 

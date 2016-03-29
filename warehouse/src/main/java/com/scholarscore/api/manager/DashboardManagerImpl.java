@@ -164,7 +164,17 @@ public class DashboardManagerImpl implements DashboardManager {
                 new DimensionOperand(new DimensionField(Dimension.SCHOOL, SchoolDimension.ID)),
                 ComparisonOperator.EQUAL,
                 new NumericPlaceholder("${schoolId}"));
-        gpaBucketQuery.setFilter(new Expression(studentClause, BinaryOperator.AND, whereClause));
+        Expression activeStudents = new Expression(
+                new DimensionOperand(new DimensionField(Dimension.STUDENT, StudentDimension.ENROLLMENT_STATUS)),
+                ComparisonOperator.EQUAL,
+                new StringOperand("CURRENTLY_ENROLLED")
+        );
+        Expression schoolAndActiveStudentClause = new Expression(
+                whereClause,
+                BinaryOperator.AND,
+                activeStudents
+        );
+        gpaBucketQuery.setFilter(new Expression(studentClause, BinaryOperator.AND, schoolAndActiveStudentClause));
         gpa.setChartQuery(gpaBucketQuery);
         Query gpaClick = new Query();
         AggregateMeasure gpaMeasureSum = new AggregateMeasure(Measure.CURRENT_GPA, AggregateFunction.SUM);
@@ -184,7 +194,7 @@ public class DashboardManagerImpl implements DashboardManager {
                 new NumericPlaceholder(QueryPlaceholders.CLICK_VALUE_MAX)
         );
         Expression clickWhere = new Expression(clickWhereMin, BinaryOperator.AND, clickWhereMax);
-        gpaClick.setFilter(new Expression(whereClause, BinaryOperator.AND, clickWhere));
+        gpaClick.setFilter(new Expression(schoolAndActiveStudentClause, BinaryOperator.AND, clickWhere));
         gpa.setClickTableQuery(gpaClick);
         List<ColumnDef> gpaDefs = new ArrayList<>();
         gpaDefs.add(new ColumnDef("values[1]", "Name"));
@@ -232,7 +242,7 @@ public class DashboardManagerImpl implements DashboardManager {
         Expression dateExp = new Expression(dateMin, BinaryOperator.AND, dateMax);
         Expression dateAndAtt = new Expression(dateExp, BinaryOperator.AND, attType);
         Expression dateAndAttAndType = new Expression(dateAndAtt, BinaryOperator.AND, attStatus);
-        Expression attendanceFilter = new Expression(whereClause, BinaryOperator.AND, dateAndAttAndType);
+        Expression attendanceFilter = new Expression(schoolAndActiveStudentClause, BinaryOperator.AND, dateAndAttAndType);
         attendanceQ.setFilter(attendanceFilter);
         attendance.setChartQuery(attendanceQ);
         Query attendanceClick = new Query();
@@ -285,7 +295,7 @@ public class DashboardManagerImpl implements DashboardManager {
                 new DatePlaceholder(QueryPlaceholders.END_DATE)
         );
         Expression dateRange = new Expression(startDate, BinaryOperator.AND, endDate);
-        failingQ.setFilter(new Expression(whereClause, BinaryOperator.AND, dateRange));
+        failingQ.setFilter(new Expression(schoolAndActiveStudentClause, BinaryOperator.AND, dateRange));
         failingClasses.setChartQuery(failingQ);
         row1.getReports().add(failingClasses);
 
@@ -300,7 +310,7 @@ public class DashboardManagerImpl implements DashboardManager {
                 new MeasureOperand(mf),
                 ComparisonOperator.EQUAL,
                 new NumericPlaceholder(QueryPlaceholders.CLICK_VALUE));
-        failingClick.setFilter(new Expression(whereClause, BinaryOperator.AND, dateRange));
+        failingClick.setFilter(new Expression(schoolAndActiveStudentClause, BinaryOperator.AND, dateRange));
         failingClick.setHaving(failingHaving);
         List<ColumnDef> failingDefs = new ArrayList<>();
         failingDefs.add(new ColumnDef("values[1]", "Name"));
@@ -352,7 +362,7 @@ public class DashboardManagerImpl implements DashboardManager {
                 new DatePlaceholder(QueryPlaceholders.END_DATE)
         );
         Expression refRange = new Expression(refStart, BinaryOperator.AND, refEnd);
-        Expression refExp = new Expression(whereClause, BinaryOperator.AND, refRange);
+        Expression refExp = new Expression(schoolAndActiveStudentClause, BinaryOperator.AND, refRange);
         referralQuery.setFilter(refExp);
         ref.setChartQuery(referralQuery);
 

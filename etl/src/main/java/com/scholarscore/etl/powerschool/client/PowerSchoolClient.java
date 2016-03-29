@@ -23,6 +23,7 @@ import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionEnrollmentWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMapWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PtTermWrapper;
+import com.scholarscore.etl.powerschool.api.model.student.PsRankAndGpaWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
 import com.scholarscore.etl.powerschool.api.model.student.PsTableSectionWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PsTableStudentWrapper;
@@ -61,14 +62,20 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     private final String clientSecret;
     private final String clientId;
     private OAuthResponse oauthToken;
+    private final String SPED_FLAG;
+    private final String ELL_FLAG;
 
-    public PowerSchoolClient(String clientId, String clientSecret, URI uri) {
+    public PowerSchoolClient(String clientId, String clientSecret, URI uri,
+                             String studentExtension, String spedFlag, String ellFlag) {
         super(uri);
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         authenticate();
         paths.setCutoffDate(LocalDate.now().minusYears(1l));
         paths.setPageSize(PAGE_SIZE);
+        paths.setStudentExtension(studentExtension);
+        SPED_FLAG = spedFlag;
+        ELL_FLAG = ellFlag;
     }
 
     public void authenticate() {
@@ -129,11 +136,14 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
 
     @Override
     public PsStudents getStudentsBySchool(Long schoolId) throws HttpClientException {
-        return get(
+        PsStudents studs = get(
                 new TypeReference<PsStudents>() {},
                 paths.getStudentsPath(),
                 PAGE_SIZE,
                 schoolId.toString());
+        studs.setELL_FLAG(ELL_FLAG);
+        studs.setSPED_FLAG(SPED_FLAG);
+        return studs;
     }
 
     @Override
@@ -346,6 +356,15 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
                 paths.getSectionGradeFormulaWeights(gradeFormulaId),
                 PAGE_SIZE,
                 (String[]) null);
+    }
+
+    @Override
+    public PsResponse<PsRankAndGpaWrapper> getStudentRankAndGpas() throws HttpClientException {
+        return get(new TypeReference<PsResponse<PsRankAndGpaWrapper>>() {},
+            paths.getGpaAndClassRankPaths(),
+            PAGE_SIZE,
+            (String[]) null
+        );
     }
 
     public Object getAsMap(String path) throws HttpClientException {

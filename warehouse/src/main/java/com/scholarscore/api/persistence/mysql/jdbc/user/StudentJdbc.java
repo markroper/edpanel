@@ -7,6 +7,7 @@ import com.scholarscore.api.util.RoleConstants;
 import com.scholarscore.models.Authority;
 import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.notification.group.FilteredStudents;
+import com.scholarscore.models.user.EnrollStatus;
 import com.scholarscore.models.user.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -23,7 +24,8 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
             "left join fetch s.homeAddress " +
             "left join fetch s.mailingAddress " +
             "left join fetch s.contactMethods";
-
+    private static final String ACTIVE_STUDENTS_CLAUSE =
+            " and s.withdrawalDate is null and s.enrollStatus = '"  + EnrollStatus.CURRENTLY_ENROLLED.name() + "'";
     @Autowired
     private HibernateTemplate hibernateTemplate;
 
@@ -44,9 +46,10 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
     public Collection<Student> selectAll(Long schoolId, Boolean activeStudents) {
         String whereClause = " WHERE s.currentSchoolId = :schoolId";
         if(null == activeStudents || !activeStudents) {
-            whereClause += " and s.withdrawalDate is not null";
+            whereClause += " and s.withdrawalDate is not null or s.enrollStatus != '"
+                    + EnrollStatus.CURRENTLY_ENROLLED.name() + "'";
         } else {
-            whereClause += " and s.withdrawalDate is null";
+            whereClause += ACTIVE_STUDENTS_CLAUSE;
         }
         if(null != schoolId) {
             String sql = STUDENT_HQL + whereClause;
@@ -70,9 +73,10 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
             studentWhereClause += " and s.currentSchoolId = :schoolId";
         }
         if(null != activeStudents || !activeStudents) {
-            studentWhereClause += " and s.withdrawalDate is not null";
+            studentWhereClause += " and s.withdrawalDate is not null or s.enrollStatus != '"
+                    + EnrollStatus.CURRENTLY_ENROLLED.name() + "'";
         } else {
-            studentWhereClause += " and s.withdrawalDate is null";
+            studentWhereClause += ACTIVE_STUDENTS_CLAUSE;
         }
         if(null != students) {
             if(null != students.getGender()) {

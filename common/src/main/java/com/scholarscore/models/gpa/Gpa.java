@@ -32,7 +32,8 @@ import java.util.Objects;
         @JsonSubTypes.Type(value = SimpleGpa.class, name="SIMPLE"),
         @JsonSubTypes.Type(value = SimplePercentGpa.class, name = "SIMPLE_PERCENT"),
         @JsonSubTypes.Type(value = WeightedGpa.class, name = "WEIGHTED"),
-        @JsonSubTypes.Type(value = AddedValueGpa.class, name = "ADDED_VALUE")
+        @JsonSubTypes.Type(value = AddedValueGpa.class, name = "ADDED_VALUE"),
+        @JsonSubTypes.Type(value = SimpleAddedValueGpa.class, name = "SIMPLE_ADDED_VALUE")
 })
 public abstract class Gpa {
     protected Long studentId;
