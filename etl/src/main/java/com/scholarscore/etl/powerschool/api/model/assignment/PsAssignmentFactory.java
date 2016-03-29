@@ -22,7 +22,7 @@ import java.util.HashSet;
  */
 public class PsAssignmentFactory {
     private static final HashSet<String> HW_STRINGS = new HashSet<String>(){{
-        add("HW"); add("HOMEWORK"); add("HOME WORK");
+        add("HW"); add("HOMEWORK"); add("HOME WORK"); add("PRACTICE");
     }};
     private static final HashSet<String> TEST_STRINGS = new HashSet<String>(){{
         add("TST"); add("TEST"); add("TESTS"); add("MASTERY ASSESSMENTS"); add("MQ"); add("ASSESSMENT");

@@ -13,6 +13,7 @@ import com.scholarscore.etl.powerschool.api.model.section.PsFinalGradeSetupWrapp
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMap;
 import com.scholarscore.etl.powerschool.api.model.section.PtSectionMapWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PsTableSectionWrapper;
+import com.scholarscore.etl.powerschool.api.model.student.PsTableStudent;
 import com.scholarscore.etl.powerschool.api.model.student.PsTableStudentWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMap;
 import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMapWrapper;
@@ -109,6 +110,7 @@ public class EtlEngine implements IEtlEngine {
     // ID returned when querying sections via these high-level endpoints.
     // However, calls to powerschool's database/table API require that we refer to the sections by database ID.
     private Map<Long,Long> sectionPublicIdToSectionRecordId = new HashMap<>();
+    private HashMap<Long, PsTableStudent> ssidToHiddenStudentFields;
 
     public void setPowerSchool(IPowerSchoolClient powerSchool) {
         this.powerSchool = powerSchool;
@@ -253,9 +255,12 @@ public class EtlEngine implements IEtlEngine {
             // but the "public" ID is required in order to hit the better (REST) endpoint containing richer data
             HashMap<Long, Long> studentIdsToStudentTableIds = new HashMap<>();
             List<PsResponseInner<PsTableStudentWrapper>> records = tableStudents.record;
+            ssidToHiddenStudentFields = new HashMap<>();
             for (PsResponseInner<PsTableStudentWrapper> tableStudentWrapper : records) {
-                Long studentRecordId = tableStudentWrapper.tables.students.id;
-                Long studentPublicId = tableStudentWrapper.tables.students.dcid;
+                PsTableStudent stud = tableStudentWrapper.tables.students;
+                ssidToHiddenStudentFields.put(stud.dcid, stud);
+                Long studentRecordId = stud.id;
+                Long studentPublicId = stud.dcid;
                 studentIdsToStudentTableIds.put(studentRecordId, studentPublicId);
             }
             studentAssociator.addIdToTableIdMapping(studentIdsToStudentTableIds);
@@ -291,11 +296,9 @@ public class EtlEngine implements IEtlEngine {
     }
 
     private void syncGpa(List<File> gpaFiles) {
-        if (null != gpaFiles && gpaFiles.size() > 0) {
-            // parse the gpa file from disk assuming the file type is CSV and of a specific format
-            GpaSync gpaSync = new GpaSync(gpaFiles, edPanel, powerSchool, studentAssociator, syncCutoff);
-            gpaSync.syncCreateUpdateDelete(results);
-        }
+        // parse the gpa file from disk assuming the file type is CSV and of a specific format
+        GpaSync gpaSync = new GpaSync(gpaFiles, edPanel, powerSchool, studentAssociator, syncCutoff);
+        gpaSync.syncCreateUpdateDelete(results);
     }
 
     private void syncSchoolDaysAndAttendance() {
@@ -455,7 +458,7 @@ public class EtlEngine implements IEtlEngine {
         }
 
         for (Map.Entry<Long, School> school : this.schools.entrySet()) {
-            StudentSync sync = new StudentSync(edPanel, powerSchool, school.getValue(), studentAssociator, spedEll);
+            StudentSync sync = new StudentSync(edPanel, powerSchool, school.getValue(), studentAssociator, spedEll, ssidToHiddenStudentFields);
             sync.syncCreateUpdateDelete(results);
         }
     }

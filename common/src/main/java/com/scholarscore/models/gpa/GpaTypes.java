@@ -10,5 +10,6 @@ public enum GpaTypes {
     SIMPLE,
     SIMPLE_PERCENT,
     WEIGHTED,
-    OTHER
+    OTHER,
+    SIMPLE_ADDED_VALUE
 }
