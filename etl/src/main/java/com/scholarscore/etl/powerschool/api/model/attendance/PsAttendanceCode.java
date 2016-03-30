@@ -82,7 +82,7 @@ public class PsAttendanceCode implements IToApiModel<AttendanceStatus> {
                 return AttendanceStatus.EXCUSED_EARLY_DISMISSAL;
             case "I":   // match
                 return AttendanceStatus.INTERNAL_SUSPENSION;
-            case "L":
+            case "L":   // match
                 return AttendanceStatus.LEAVE_OF_ABSENCE;
             default:
                 LOGGER.warn("WARNING - unknown AttendanceStatus Seen. AttendanceCode: " + attCodeUpper + " with description '" + desc + "'");
