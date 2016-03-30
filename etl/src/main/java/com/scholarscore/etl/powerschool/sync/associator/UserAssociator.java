@@ -56,4 +56,12 @@ public abstract class UserAssociator<T extends User> {
     public ConcurrentHashMap<Long, T> getUsers() {
         return users;
     }
+
+    public ConcurrentHashMap<Long, Long> getDcidToTableIdMap() {
+        ConcurrentHashMap<Long, Long> dcidToTableId = new ConcurrentHashMap<>();
+        for(Map.Entry<Long, Long> entry : tableIdToIdMapping.entrySet()) {
+            dcidToTableId.put(entry.getValue(), entry.getKey());
+        }
+        return dcidToTableId;
+    }
 }

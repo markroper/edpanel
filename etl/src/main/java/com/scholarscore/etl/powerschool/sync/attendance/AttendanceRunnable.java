@@ -44,6 +44,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
     protected Map<Long, PsCycle> schoolCycles;
     protected ConcurrentHashMap<Long, Set<Section>> studentClasses;
     protected ConcurrentHashMap<Long, PsPeriod> periods;
+    protected Map<Long, Long> dcidToTableId;
 
     public AttendanceRunnable(IAPIClient edPanel,
                               IPowerSchoolClient powerSchool,
@@ -55,7 +56,8 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                               Long dailyAbsenceTrigger,
                               ConcurrentHashMap<Long, PsCycle> schoolCycles,
                               ConcurrentHashMap<Long, Set<Section>> studentClasses,
-                              ConcurrentHashMap<Long, PsPeriod> periods) {
+                              ConcurrentHashMap<Long, PsPeriod> periods,
+                              Map<Long, Long> dcidToTableId) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
@@ -67,6 +69,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         this.schoolCycles = schoolCycles;
         this.studentClasses = studentClasses;
         this.periods = periods;
+        this.dcidToTableId = dcidToTableId;
     }
     @Override
     public void run() {
@@ -168,7 +171,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
             codeMap.put(psAttendanceCode.id, psAttendanceCode.toApiModel());
         }
 
-        PsResponse<PsAttendanceWrapper> response = powerSchool.getStudentAttendance(sourceStudentId);
+        PsResponse<PsAttendanceWrapper> response = powerSchool.getStudentAttendance(dcidToTableId.get(sourceStudentId));
         Map<SchoolDay, List<Attendance>> schoolDayToAttendances = new HashMap<>();
         for(PsResponseInner<PsAttendanceWrapper> wrap : response.record) {
             PsAttendance psAttendance = wrap.tables.attendance;
