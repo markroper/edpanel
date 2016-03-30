@@ -267,14 +267,17 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
             PsCycle cycleDay = schoolCycles.get(schoolDay.getCycleId());
             if (null != periods.get(psAttendance.periodid)) {
                 Long periodNumber = periods.get(psAttendance.periodid).period_number;
-                String letter = cycleDay.letter;
+                String letter = null;
+                if(null != cycleDay) {
+                    letter = cycleDay.letter;
+                }
                 //Maybe missing some students here?
                 Set<Section> sections =  studentClasses.get(student.getId());
                 //Need to also make sure teh SchoolDay date are within the term dates
                 if (null != sections) {
                     for (Section section : sections) {
                         Map<String, ArrayList<Long>> expression = section.getExpression();
-                        if (null != expression) {
+                        if (null != expression && null != letter) {
                             if (null != expression.get(letter)) {
                                 for (Long sectionPeriod : expression.get(letter)) {
                                     if (sectionPeriod.equals(periodNumber) &&
