@@ -177,6 +177,10 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
             PsAttendance psAttendance = wrap.tables.attendance;
             Attendance a = psAttendance.toApiModel();
             SchoolDay schoolDay = schoolDays.get(psAttendance.att_date);
+            if(null == schoolDay) {
+                LOGGER.debug("Found an attendance without an associated school day: " + psAttendance.att_date);
+                continue;
+            }
             a = resolveSectionFk(a, schoolDay, psAttendance);
             a.setSchoolDay(schoolDay);
             a.setStudent(student);
