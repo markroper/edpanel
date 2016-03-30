@@ -2,11 +2,16 @@ package com.scholarscore.etl.powerschool.api.model.attendance;
 
 import com.scholarscore.etl.IToApiModel;
 import com.scholarscore.models.attendance.AttendanceStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by markroper on 11/1/15.
  */
 public class PsAttendanceCode implements IToApiModel<AttendanceStatus> {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(PsAttendanceCode.class);
+    
     public String presence_status_cd;
     public Long calculate_adm_yn;
     public String description;
@@ -45,23 +50,42 @@ public class PsAttendanceCode implements IToApiModel<AttendanceStatus> {
                 return AttendanceStatus.PRESENT;
             case "A-UN":
             case "UA":
+            case "A":   // match (UNEXCUSED ABSENCE)
                 return AttendanceStatus.ABSENT;
             case "A-EX":
             case "EA":
+            case "E":   // match
                 return AttendanceStatus.EXCUSED_ABSENT;
             case "T-UN":
             case "UT":
+            case "T":   // match
                 return AttendanceStatus.TARDY;
+            case "M":   // match
+                return AttendanceStatus.MORNING_TARDY;
+            case "R":   // match
+                return AttendanceStatus.MORNING_TARDY_ABSENT;
+            case "N":   // match
+                return AttendanceStatus.AFTERNOON_TARDY;
+            case "S":   // match
+                return AttendanceStatus.AFTERNOON_TARDY_ABSENT;
             case "T-EX":
             case "ET":
+            case "X":   // match
                 return AttendanceStatus.EXCUSED_TARDY;
             case "ED-UN":
             case "UED":
+            case "D":   // match (UNEXCUSED EARLY DISMISSAL)
                 return AttendanceStatus.EARLY_DISMISSAL;
             case "ED-EX":
             case "EED":
+            case "XD":  // match
                 return AttendanceStatus.EXCUSED_EARLY_DISMISSAL;
+            case "I":   // match
+                return AttendanceStatus.INTERNAL_SUSPENSION;
+            case "L":
+                return AttendanceStatus.LEAVE_OF_ABSENCE;
             default:
+                LOGGER.warn("WARNING - unknown AttendanceStatus Seen. AttendanceCode: " + attCodeUpper + " with description '" + desc + "'");
                 break;
         }
 
