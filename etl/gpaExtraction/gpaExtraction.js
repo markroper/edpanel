@@ -32,8 +32,8 @@ for (var i = 0; i < lines.length; i++) {
         username = lines[i].split("=")[1];
         continue;
     }
-    var screenScrapeGpa = lines[i].search("powerschool.screenscrape.gpa=");
-    if (screenScrapeGpa > -1) {
+    var gpaIndex = lines[i].search("powerschool.screenscrape.gpa=");
+    if (gpaIndex > -1) {
       screenScrapeGpa = lines[i].split("=")[1];
       continue;
     }
