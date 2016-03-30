@@ -55,7 +55,7 @@ public class PeriodSync implements ISync<PsPeriod> {
         ConcurrentHashMap<Long, PsPeriod> result = new ConcurrentHashMap<>();
         PsResponse<PsPeriodWrapper> response = powerSchool.getPeriodsBySchool(school.getNumber());
         for (PsResponseInner<PsPeriodWrapper> period : response.record) {
-            result.put(period.id , period.tables.period);
+            result.put(period.tables.period.id , period.tables.period);
         }
         return result;
     }
