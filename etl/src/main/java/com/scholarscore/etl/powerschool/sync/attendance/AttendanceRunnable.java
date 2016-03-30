@@ -44,6 +44,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
     protected Map<Long, PsCycle> schoolCycles;
     protected ConcurrentHashMap<Long, Set<Section>> studentClasses;
     protected ConcurrentHashMap<Long, PsPeriod> periods;
+    protected Map<Long, Long> dcidToTableId;
 
     public AttendanceRunnable(IAPIClient edPanel,
                               IPowerSchoolClient powerSchool,
@@ -55,7 +56,8 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                               Long dailyAbsenceTrigger,
                               ConcurrentHashMap<Long, PsCycle> schoolCycles,
                               ConcurrentHashMap<Long, Set<Section>> studentClasses,
-                              ConcurrentHashMap<Long, PsPeriod> periods) {
+                              ConcurrentHashMap<Long, PsPeriod> periods,
+                              Map<Long, Long> dcidToTableId) {
         this.edPanel = edPanel;
         this.powerSchool = powerSchool;
         this.school = s;
@@ -67,6 +69,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         this.schoolCycles = schoolCycles;
         this.studentClasses = studentClasses;
         this.periods = periods;
+        this.dcidToTableId = dcidToTableId;
     }
     @Override
     public void run() {
@@ -168,12 +171,16 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
             codeMap.put(psAttendanceCode.id, psAttendanceCode.toApiModel());
         }
 
-        PsResponse<PsAttendanceWrapper> response = powerSchool.getStudentAttendance(sourceStudentId);
+        PsResponse<PsAttendanceWrapper> response = powerSchool.getStudentAttendance(dcidToTableId.get(sourceStudentId));
         Map<SchoolDay, List<Attendance>> schoolDayToAttendances = new HashMap<>();
         for(PsResponseInner<PsAttendanceWrapper> wrap : response.record) {
             PsAttendance psAttendance = wrap.tables.attendance;
             Attendance a = psAttendance.toApiModel();
             SchoolDay schoolDay = schoolDays.get(psAttendance.att_date);
+            if(null == schoolDay) {
+                LOGGER.debug("Found an attendance without an associated school day: " + psAttendance.att_date);
+                continue;
+            }
             a = resolveSectionFk(a, schoolDay, psAttendance);
             a.setSchoolDay(schoolDay);
             a.setStudent(student);
@@ -264,14 +271,17 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
             PsCycle cycleDay = schoolCycles.get(schoolDay.getCycleId());
             if (null != periods.get(psAttendance.periodid)) {
                 Long periodNumber = periods.get(psAttendance.periodid).period_number;
-                String letter = cycleDay.letter;
+                String letter = null;
+                if(null != cycleDay) {
+                    letter = cycleDay.letter;
+                }
                 //Maybe missing some students here?
                 Set<Section> sections =  studentClasses.get(student.getId());
                 //Need to also make sure teh SchoolDay date are within the term dates
                 if (null != sections) {
                     for (Section section : sections) {
                         Map<String, ArrayList<Long>> expression = section.getExpression();
-                        if (null != expression) {
+                        if (null != expression && null != letter) {
                             if (null != expression.get(letter)) {
                                 for (Long sectionPeriod : expression.get(letter)) {
                                     if (sectionPeriod.equals(periodNumber) &&

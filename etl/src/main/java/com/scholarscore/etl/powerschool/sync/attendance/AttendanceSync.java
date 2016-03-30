@@ -69,10 +69,12 @@ public class AttendanceSync implements ISync<Attendance> {
         ExecutorService executor = Executors.newFixedThreadPool(EtlEngine.THREAD_POOL_SIZE);
         while(studentIterator.hasNext()) {
             Student s = studentIterator.next().getValue();
+
+            Map<Long, Long> dcidToTableId = studentAssociator.getDcidToTableIdMap();
             if(s.getCurrentSchoolId().equals(school.getId())) {
                 AttendanceRunnable runnable = new AttendanceRunnable(
                         edPanel, powerSchool, school, s, schoolDays, results, syncCutoff,
-                        dailyAbsenceTrigger, schoolCycles, studentClasses, periods);
+                        dailyAbsenceTrigger, schoolCycles, studentClasses, periods, dcidToTableId);
                 executor.execute(runnable);
             }
         }

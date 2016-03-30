@@ -54,7 +54,7 @@ public class CycleSync implements ISync<PsCycle> {
         ConcurrentHashMap<Long, PsCycle> result = new ConcurrentHashMap<>();
         PsResponse<PsCycleWrapper> response = powerSchool.getCyclesBySchool(school.getNumber());
         for (PsResponseInner<PsCycleWrapper> cycle : response.record) {
-            result.put(cycle.id , cycle.tables.cycle_day);
+            result.put(cycle.tables.cycle_day.id , cycle.tables.cycle_day);
         }
         return result;
     }
