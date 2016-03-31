@@ -25,6 +25,7 @@
         <constructor-arg index="3" type="java.lang.String" value="${powerschool.student.spedellextension}"/>
         <constructor-arg index="4" type="java.lang.String" value="${powerschool.student.spedflag}"/>
         <constructor-arg index="5" type="java.lang.String" value="${powerschool.student.ellflag}"/>
+        <constructor-arg index="6" type="java.lang.String" value="${powerschool.gpa.formulastring}"/>
     </bean>
 
 </beans>
