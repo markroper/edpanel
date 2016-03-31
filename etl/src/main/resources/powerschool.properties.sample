@@ -1,8 +1,11 @@
 powerschool.client.url=https://excelacademy.powerschool.com/
 powerschool.client.id=
 powerschool.client.secret=
-#if screenscraping enabled, need powerschool admin username and password
-powerschool.screenscraping.enabled=false
+powerschool.gpa.formulastring=Weighted_Added_Value
+
+#IF SCREEN SCRAPING IS ENABLED, WE NEED THE POWERSCHOOL ADMIN USERNAME AND PASSWORD
+powerschool.screenscrape.enabled=false
+powerschool.screenscrape.gpa=false
 powerschool.username=
 powerschool.password=
 
