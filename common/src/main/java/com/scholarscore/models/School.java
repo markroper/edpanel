@@ -33,6 +33,8 @@ public class School extends ApiModel implements Serializable, IApiModel<School> 
     private String principalEmail;
     private Address address;
     private String mainPhone;
+    private Boolean disableGpa;
+    private Boolean disableBehavior;
     
     public School() {
         super();
@@ -48,6 +50,26 @@ public class School extends ApiModel implements Serializable, IApiModel<School> 
         this.address = clone.address;
         this.mainPhone = clone.mainPhone;
         this.number = clone.number;
+        this.disableBehavior = clone.disableBehavior;
+        this.disableGpa = clone.disableGpa;
+    }
+
+    @Column(name = HibernateConsts.SCHOOL_DISABLE_GPA)
+    public Boolean getDisableGpa() {
+        return disableGpa;
+    }
+
+    public void setDisableGpa(Boolean disableGpa) {
+        this.disableGpa = disableGpa;
+    }
+
+    @Column(name = HibernateConsts.SCHOOL_DISABLE_BEHAVIOR)
+    public Boolean getDisableBehavior() {
+        return disableBehavior;
+    }
+
+    public void setDisableBehavior(Boolean disableBehavior) {
+        this.disableBehavior = disableBehavior;
     }
 
     @Id
@@ -107,55 +129,64 @@ public class School extends ApiModel implements Serializable, IApiModel<School> 
         if (null == number) {
             this.number = mergeFrom.number;
         }
+        if (null == disableGpa) {
+            this.disableGpa = mergeFrom.disableGpa;
+        }
+        if (null == disableBehavior) {
+            this.disableBehavior = mergeFrom.disableBehavior;
+        }
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof School)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
 
         School school = (School) o;
 
-        if (getYears() != null ? !getYears().equals(school.getYears()) : school.getYears() != null) return false;
-        if (getSourceSystemId() != null ? !getSourceSystemId().equals(school.getSourceSystemId()) : school.getSourceSystemId() != null)
+        if (years != null ? !years.equals(school.years) : school.years != null) return false;
+        if (sourceSystemId != null ? !sourceSystemId.equals(school.sourceSystemId) : school.sourceSystemId != null)
             return false;
-        if (getPrincipalName() != null ? !getPrincipalName().equals(school.getPrincipalName()) : school.getPrincipalName() != null)
+        if (number != null ? !number.equals(school.number) : school.number != null) return false;
+        if (principalName != null ? !principalName.equals(school.principalName) : school.principalName != null)
             return false;
-        if (getPrincipalEmail() != null ? !getPrincipalEmail().equals(school.getPrincipalEmail()) : school.getPrincipalEmail() != null)
+        if (principalEmail != null ? !principalEmail.equals(school.principalEmail) : school.principalEmail != null)
             return false;
-        if (getAddress() != null ? !getAddress().equals(school.getAddress()) : school.getAddress() != null)
-            return false;
-        if (getNumber() != null ? !getNumber().equals(school.getNumber()) : school.getNumber() != null)
-            return false;
-        return !(getMainPhone() != null ? !getMainPhone().equals(school.getMainPhone()) : school.getMainPhone() != null);
+        if (address != null ? !address.equals(school.address) : school.address != null) return false;
+        if (mainPhone != null ? !mainPhone.equals(school.mainPhone) : school.mainPhone != null) return false;
+        if (disableGpa != null ? !disableGpa.equals(school.disableGpa) : school.disableGpa != null) return false;
+        return !(disableBehavior != null ? !disableBehavior.equals(school.disableBehavior) : school.disableBehavior != null);
 
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (getYears() != null ? getYears().hashCode() : 0);
-        result = 31 * result + (getSourceSystemId() != null ? getSourceSystemId().hashCode() : 0);
-        result = 31 * result + (getPrincipalName() != null ? getPrincipalName().hashCode() : 0);
-        result = 31 * result + (getPrincipalEmail() != null ? getPrincipalEmail().hashCode() : 0);
-        result = 31 * result + (getAddress() != null ? getAddress().hashCode() : 0);
-        result = 31 * result + (getNumber() != null ? getNumber().hashCode() : 0);
-        result = 31 * result + (getMainPhone() != null ? getMainPhone().hashCode() : 0);
+        result = 31 * result + (years != null ? years.hashCode() : 0);
+        result = 31 * result + (sourceSystemId != null ? sourceSystemId.hashCode() : 0);
+        result = 31 * result + (number != null ? number.hashCode() : 0);
+        result = 31 * result + (principalName != null ? principalName.hashCode() : 0);
+        result = 31 * result + (principalEmail != null ? principalEmail.hashCode() : 0);
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        result = 31 * result + (mainPhone != null ? mainPhone.hashCode() : 0);
+        result = 31 * result + (disableGpa != null ? disableGpa.hashCode() : 0);
+        result = 31 * result + (disableBehavior != null ? disableBehavior.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
         return "School{" +
-                "(super: " + super.toString() + ")" + 
                 "years=" + years +
                 ", sourceSystemId='" + sourceSystemId + '\'' +
+                ", number=" + number +
                 ", principalName='" + principalName + '\'' +
                 ", principalEmail='" + principalEmail + '\'' +
                 ", address=" + address +
-                ", number=" + number +
                 ", mainPhone='" + mainPhone + '\'' +
+                ", disableGpa=" + disableGpa +
+                ", disableBehavior=" + disableBehavior +
                 '}';
     }
 
@@ -221,6 +252,9 @@ public class School extends ApiModel implements Serializable, IApiModel<School> 
         private Address address;
         private String mainPhone;
         private Long number;
+        private Boolean disableGpa;
+        private Boolean disableBehavior;
+
 
         public SchoolBuilder(){
             years = Lists.newArrayList();
@@ -230,7 +264,14 @@ public class School extends ApiModel implements Serializable, IApiModel<School> 
             years.add(year);
             return this;
         }
-
+        public SchoolBuilder withDisableGpa(final Boolean disGpa){
+            this.disableGpa = disGpa;
+            return this;
+        }
+        public SchoolBuilder withDisableBehavior(final Boolean disBeh){
+            this.disableBehavior = disBeh;
+            return this;
+        }
         public SchoolBuilder withNumber(final Long number){
             this.number = number;
             return this;
@@ -279,6 +320,8 @@ public class School extends ApiModel implements Serializable, IApiModel<School> 
             school.setNumber(number);
             school.setAddress(address);
             school.setMainPhone(mainPhone);
+            school.setDisableBehavior(disableBehavior);
+            school.setDisableGpa(disableGpa);
             return school;
         }
 
