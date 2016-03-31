@@ -130,7 +130,7 @@ public class GpaSync implements ISync<Gpa> {
                 for (PsResponseInner<PsRankAndGpaWrapper> gpa : gpas.record) {
                     PsRankAndGpa w = gpa.tables.classrank;
                     RawGpaValue val = new RawGpaValue();
-                    val.setType(resolveType(w.gpamethod));
+                    val.setType(GpaType.fromString(w.gpamethod.toUpperCase()));
                     Gpa edG = val.emit();
                     Student s = studentAssociator.findByUserSourceSystemId(
                             studentAssociator.findSsidFromTableId(w.studentid));
@@ -143,24 +143,6 @@ public class GpaSync implements ISync<Gpa> {
             }
         }
         return resultValues;
-    }
-
-    protected static GpaType resolveType(String input) {
-        if(null != input) {
-            switch (input.toUpperCase()) {
-                case "ADDED_VALUE":
-                    return GpaType.ADDED_VALUE;
-                case "SIMPLE_PERCENT":
-                    return GpaType.SIMPLE_PERCENT;
-                case "SIMPLE":
-                    return GpaType.SIMPLE;
-                case "SIMPLE_ADDED_VALUE":
-                    return GpaType.SIMPLE_ADDED_VALUE;
-                default:
-                    return null;
-            }
-        }
-        return null;
     }
 
     protected ConcurrentHashMap<Long, Gpa> resolveFromEdPanel() throws HttpClientException {

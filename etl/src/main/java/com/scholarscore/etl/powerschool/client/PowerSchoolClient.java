@@ -64,9 +64,10 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     private OAuthResponse oauthToken;
     private String SPED_FLAG;
     private String ELL_FLAG;
+    private String gpaFormulaString;
 
     public PowerSchoolClient(String clientId, String clientSecret, URI uri,
-                             String studentExtension, String spedFlag, String ellFlag) {
+                             String studentExtension, String spedFlag, String ellFlag, String gpaFormulaString) {
         super(uri);
         this.clientId = clientId;
         this.clientSecret = clientSecret;
@@ -81,6 +82,10 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
         }
         if(null != ellFlag && !ellFlag.isEmpty()) {
             ELL_FLAG = ellFlag;
+        }
+        if(null != gpaFormulaString && !gpaFormulaString.isEmpty()) {
+            this.gpaFormulaString = gpaFormulaString;
+            paths.setGpaFormulaString(this.gpaFormulaString);
         }
     }
 
