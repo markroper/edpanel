@@ -79,6 +79,8 @@ public class HibernateConsts {
     public static final String SCHOOL_ID = "school_id";
     public static final String SCHOOL_NAME = "school_name";
     public static final String SCHOOL_NUMBER = "school_number";
+    public static final String SCHOOL_DISABLE_BEHAVIOR = "school_disable_behavior";
+    public static final String SCHOOL_DISABLE_GPA = "school_disable_gpa";
     public static final String SCHOOL_SOURCE_SYSTEM_ID = "source_system_id";
     public static final String SCHOOL_PRINCIPAL_EMAIL = "principal_email";
     public static final String SCHOOL_PRINCIPAL_NAME = "principal_name";
