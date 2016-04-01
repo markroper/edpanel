@@ -112,6 +112,14 @@ public class EtlEngine implements IEtlEngine {
     private Map<Long,Long> sectionPublicIdToSectionRecordId = new HashMap<>();
     private HashMap<Long, PsTableStudent> ssidToHiddenStudentFields;
 
+    public StaffAssociator getStaffAssociator() {
+        return staffAssociator;
+    }
+
+    public StudentAssociator getStudentAssociator() {
+        return studentAssociator;
+    }
+
     public void setPowerSchool(IPowerSchoolClient powerSchool) {
         this.powerSchool = powerSchool;
     }
