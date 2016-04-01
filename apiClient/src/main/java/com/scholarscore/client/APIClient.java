@@ -8,7 +8,6 @@ import com.scholarscore.models.LoginRequest;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
-import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.assignment.StudentAssignment;
@@ -16,6 +15,7 @@ import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.factory.AssignmentFactory;
 import com.scholarscore.models.gpa.Gpa;
+import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
 import com.scholarscore.models.user.User;
@@ -26,6 +26,7 @@ import org.apache.http.entity.ByteArrayEntity;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -229,9 +230,13 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Collection<Behavior> getBehaviors(Long studentId) throws HttpClientException {
-        Behavior[] behaviors = get(Behavior[].class, BASE_API_ENDPOINT
-                + STUDENT_ENDPOINT + "/" + studentId + BEHAVIOR_ENDPOINT);
+    public Collection<Behavior> getBehaviors(Long studentId, LocalDate cutoffDate) throws HttpClientException {
+        String url = BASE_API_ENDPOINT
+                + STUDENT_ENDPOINT + "/" + studentId + BEHAVIOR_ENDPOINT;
+        if(null != cutoffDate) {
+            url += "?cutoffDate=" + cutoffDate.toString();
+        }
+        Behavior[] behaviors = get(Behavior[].class, url);
         return Arrays.asList(behaviors);
     }
 

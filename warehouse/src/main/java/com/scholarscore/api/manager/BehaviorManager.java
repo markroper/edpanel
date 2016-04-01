@@ -4,6 +4,7 @@ import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.Behavior;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Collection;
  * Time: 5:28 PM
  */
 public interface BehaviorManager {
-    public ServiceResponse<Collection<Behavior>> getAllBehaviors(long studentId);
+    public ServiceResponse<Collection<Behavior>> getAllBehaviors(long studentId, LocalDate cuttoffDate);
     
     public StatusCode behaviorExists(long studentId, long behaviorId);
 

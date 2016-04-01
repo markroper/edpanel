@@ -14,6 +14,7 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ public class KickboardEtl implements IEtlEngine {
     private StaffAssociator staffAssociator;
     private Boolean enabled;
     private static final Integer CHUNK_SIZE = 750;
+    private LocalDate CUTOFF = LocalDate.of(2015, 7, 1);
 
     @Override
     public SyncResult syncDistrict(EtlSettings settings) {
@@ -73,7 +75,7 @@ public class KickboardEtl implements IEtlEngine {
                         createBehavior(source);
                     } else {
                         try {
-                            Collection<Behavior> studentsBehaviors = scholarScore.getBehaviors(source.getStudent().getId());
+                            Collection<Behavior> studentsBehaviors = scholarScore.getBehaviors(source.getStudent().getId(), CUTOFF);
                             if(null != studentsBehaviors) {
                                 for(Behavior b: studentsBehaviors) {
                                     //##########
@@ -161,8 +163,8 @@ public class KickboardEtl implements IEtlEngine {
                     firstNameToStaff.put(names[0], new ArrayList<>());
                 }
                 firstNameToStaff.get(names[0]).add(p);
-                if(!firstNameToStaff.containsKey(names[names.length - 1])) {
-                    firstNameToStaff.put(names[names.length - 1], new ArrayList<>());
+                if(!lastNameToStaff.containsKey(names[names.length - 1])) {
+                    lastNameToStaff.put(names[names.length - 1], new ArrayList<>());
                 }
                 lastNameToStaff.get(names[names.length - 1]).add(p);
             }

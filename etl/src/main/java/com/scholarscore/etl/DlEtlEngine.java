@@ -274,7 +274,7 @@ public class DlEtlEngine implements IEtlEngine {
                     // (we need to search for the behavioral event within these results)
                     Collection<Behavior> studentBehaviors = null;
                     try {
-                        studentBehaviors = scholarScore.getBehaviors(studentId);
+                        studentBehaviors = scholarScore.getBehaviors(studentId, null);
                     } catch (HttpClientException e) {
                         e.printStackTrace();
                     }

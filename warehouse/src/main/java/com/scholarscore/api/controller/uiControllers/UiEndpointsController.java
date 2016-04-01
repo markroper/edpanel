@@ -168,7 +168,7 @@ public class UiEndpointsController extends BaseController {
                @PathVariable(value="teacherId") Long teacherId) {
         //TODO THIS SHOULD ALL BE DONE BY QUERY GENERATOR
         Collection<Behavior> teacherAssignedDemerits = new ArrayList<>();
-        Collection<Behavior> behaviors = pm.getBehaviorManager().getAllBehaviors(studentId).getValue();
+        Collection<Behavior> behaviors = pm.getBehaviorManager().getAllBehaviors(studentId, null).getValue();
         for (Behavior b : behaviors) {
             if (b.getAssigner().getId().equals(teacherId)) {
                 //Teacher matches

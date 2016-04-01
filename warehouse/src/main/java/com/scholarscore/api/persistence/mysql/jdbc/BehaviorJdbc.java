@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,9 +37,18 @@ public class BehaviorJdbc implements BehaviorPersistence {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Collection<Behavior> selectAll(long studentId) {
-        return (Collection<Behavior>)hibernateTemplate.findByNamedParam(
-                HQL_BASE  + " where b.student.id = :studentId", "studentId", studentId);
+    public Collection<Behavior> selectAll(long studentId, LocalDate cutoffDate) {
+        if(null == cutoffDate) {
+            return (Collection<Behavior>) hibernateTemplate.findByNamedParam(
+                    HQL_BASE + " where b.student.id = :studentId", "studentId", studentId);
+        } else {
+            String[] params = new String[]{"studentId", "cutoffDate"};
+            Object[] paramValues = new Object[]{ studentId, cutoffDate };
+            return (Collection<Behavior>) hibernateTemplate.findByNamedParam(
+                    HQL_BASE + " where b.student.id = :studentId and b.behaviorDate >= :cutoffDate",
+                    params,
+                    paramValues);
+        }
     }
 
     @Override
@@ -47,6 +57,7 @@ public class BehaviorJdbc implements BehaviorPersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Behavior selectBySourceSystemId(long studentId, long sourceSystemId) {
         String[] params = new String[]{"studentId", "sourceSystemId"};
         Object[] paramValues = new Object[]{ studentId, String.valueOf(sourceSystemId) };
