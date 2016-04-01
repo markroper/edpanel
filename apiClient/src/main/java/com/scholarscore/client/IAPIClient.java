@@ -46,6 +46,7 @@ public interface IAPIClient {
     Collection<Behavior> getBehaviors(Long studentId) throws HttpClientException;
     Behavior createBehavior(Long studentId, Behavior behavior) throws HttpClientException;
     Behavior updateBehavior(Long studentId, Long behaviorId, Behavior behavior) throws HttpClientException;
+    void deleteBehaviorBySourceId(Long studentId, String behaviorId) throws HttpClientException;
 
     //USERS
     Staff createTeacher(Staff teacher) throws HttpClientException;

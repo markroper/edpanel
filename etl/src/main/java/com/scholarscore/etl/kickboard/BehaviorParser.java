@@ -27,8 +27,8 @@ public class BehaviorParser {
     private BufferedReader br;
     private String[] headerRow;
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-    Integer remoteBehaviorIdIdx, remoteStudentIdIdx, behaviorDateIdx, behaviorNameIdx,
-            behaviorCategoryIdx, meritPointsIdx, staffIdx, incidentIdIdx, externalIdIdx;
+    Integer remoteBehaviorIdIdx, remoteStudentIdIdx, behaviorDateIdx, behaviorNameIdx, staffFirstIdx, staffLastIdx,
+            behaviorCategoryIdx, meritPointsIdx, staffIdx, incidentIdIdx, externalIdIdx, firstNameIdx, lastNameIdx;
 
     public BehaviorParser(InputStream iis) {
         this.iis = iis;
@@ -46,6 +46,14 @@ public class BehaviorParser {
                 String header = headerRow[i];
                 if("behavior id".equals(header)) {
                     remoteBehaviorIdIdx = i;
+                } else if("first name".equals(header)) {
+                    firstNameIdx = i;
+                } else if("last name".equals(header)) {
+                    lastNameIdx = i;
+                } else if("staff last name".equals(header)) {
+                    staffLastIdx = i;
+                } else if("staff first name".equals(header)) {
+                    staffFirstIdx = i;
                 } else if("\"student id".equals(header)) {
                     remoteStudentIdIdx = i;
                 } else if("external id".equals(header)) {
@@ -119,6 +127,18 @@ public class BehaviorParser {
                         }
                         if (null != behaviorNameIdx && record.size() > behaviorNameIdx) {
                             behavior.behavior = record.get(behaviorNameIdx);
+                        }
+                        if (null != firstNameIdx && record.size() > firstNameIdx) {
+                            behavior.firstName = record.get(firstNameIdx);
+                        }
+                        if (null != lastNameIdx && record.size() > lastNameIdx) {
+                            behavior.lastName = record.get(lastNameIdx);
+                        }
+                        if (null != staffFirstIdx && record.size() > staffFirstIdx) {
+                            behavior.staffFirstName = record.get(staffFirstIdx);
+                        }
+                        if (null != staffLastIdx && record.size() > staffLastIdx) {
+                            behavior.staffLastName = record.get(staffLastIdx);
                         }
                         if(null != behaviorCategoryIdx && record.size() > behaviorCategoryIdx) {
                             behavior.category = record.get(behaviorCategoryIdx);

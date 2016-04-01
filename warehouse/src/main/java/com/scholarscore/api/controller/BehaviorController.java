@@ -128,5 +128,21 @@ public class BehaviorController extends BaseController {
             @PathVariable(value="behaviorId") Long behaviorId) {
         return respond(pm.getBehaviorManager().deleteBehavior(studentId, behaviorId));
     }
+
+    @ApiOperation(
+            value = "Delete a behavior by source system ID",
+            response = Void.class)
+    @RequestMapping(
+            value = "/{ssid}/ssid",
+            method = RequestMethod.DELETE,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity deleteBehaviorBySsid(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "ssid", required = true, value = "SSID ID")
+            @PathVariable(value="ssid") Long ssid) {
+        return respond(pm.getBehaviorManager().deleteBehaviorBySsid(studentId, ssid));
+    }
     
 }
