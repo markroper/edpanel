@@ -7,7 +7,8 @@ public enum GpaType {
     SIMPLE,
     SIMPLE_PERCENT,
     ADDED_VALUE,
-    SIMPLE_ADDED_VALUE;
+    SIMPLE_ADDED_VALUE,
+    WEIGHTED_ADDED_VALUE;
 
     public static GpaType fromString(String value) {
         for (GpaType type : values()) {

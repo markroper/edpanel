@@ -60,6 +60,9 @@ public class SchoolSync implements ISync<School> {
                 results.schoolCreated(entry.getKey(), sourceSchool.getId());
             } else {
                 sourceSchool.setId(edPanelSchool.getId());
+                //Never update the edpanel GPA|Behavior disabled flags from the source system
+                sourceSchool.setDisableGpa(edPanelSchool.getDisableGpa());
+                sourceSchool.setDisableBehavior(edPanelSchool.getDisableBehavior());
                 edPanelSchool.setYears(sourceSchool.getYears());
                 if(!edPanelSchool.equals(sourceSchool)) {
                     try {

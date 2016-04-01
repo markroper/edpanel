@@ -50,29 +50,28 @@ public class RawGpaValue {
             switch (type) {
                 case ADDED_VALUE:
                     gpa = new AddedValueGpa();
-                    gpa.setScore(value);
-                    gpa.setCalculationDate(LocalDate.now());
                     gpa.setType(GpaTypes.ADDED_VALUE);
                     break;
                 case SIMPLE_PERCENT:
                     gpa = new SimplePercentGpa();
-                    gpa.setScore(value);
-                    gpa.setCalculationDate(LocalDate.now());
                     gpa.setType(GpaTypes.SIMPLE_PERCENT);
                     break;
                 case SIMPLE:
                     gpa = new SimpleGpa();
-                    gpa.setScore(value);
-                    gpa.setCalculationDate(LocalDate.now());
                     gpa.setType(GpaTypes.SIMPLE);
                     break;
                 case SIMPLE_ADDED_VALUE:
                     gpa = new SimpleAddedValueGpa();
-                    gpa.setScore(value);
-                    gpa.setCalculationDate(LocalDate.now());
                     gpa.setType(GpaTypes.SIMPLE);
+                case WEIGHTED_ADDED_VALUE:
+                    gpa = new SimpleAddedValueGpa();
+                    gpa.setType(GpaTypes.WEIGHTED_ADDED_VALUE);
                     break;
+                default:
+                    return null;
             }
+            gpa.setScore(value);
+            gpa.setCalculationDate(LocalDate.now());
         }
         return gpa;
     }

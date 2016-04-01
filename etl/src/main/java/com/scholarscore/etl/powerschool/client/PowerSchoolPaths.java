@@ -1,6 +1,7 @@
 package com.scholarscore.etl.powerschool.client;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * This class is a non-static path factory.  It is not static because a number of things can be dynamically changed
@@ -14,6 +15,12 @@ public class PowerSchoolPaths {
     private Integer pageSize = PowerSchoolClient.PAGE_SIZE;
     private String cutoffDate = "2015-08-01";
     private String studentExtension = null;
+    private String gpaFormulaString = null;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    public void setGpaFormulaString(String gpaFormulaString) {
+        this.gpaFormulaString = gpaFormulaString;
+    }
 
     public void setStudentExtension(String s ) {
         studentExtension = s;
@@ -34,9 +41,16 @@ public class PowerSchoolPaths {
 
 
     public String getGpaAndClassRankPaths() {
-        return SCHEMA_BASE +
-        "/ClassRank?q=gpa!=0;gpa!=&projection=DateRanked,OutOf,SchoolName,SchoolId,StoreCode,StudentID,YearID,DCID,ID,GPA,GPAMethod,Grade_Level&pagesize=" +
-        pageSize;
+        LocalDate d = LocalDate.now();
+        String baseWithQuery = SCHEMA_BASE +
+                "/ClassRank?q=gpa!=0;dateranked==" + d.format(formatter);
+        if(null != gpaFormulaString) {
+            baseWithQuery += ";GPAMethod==" + gpaFormulaString;
+        }
+        String projectionWithPageSize =
+                "&projection=DateRanked,OutOf,SchoolName,SchoolId,StoreCode,StudentID,YearID,DCID,ID,GPA,GPAMethod,Grade_Level&pagesize=" +
+                pageSize;
+        return baseWithQuery + projectionWithPageSize;
     }
 
     public String getStudentsPath() {
