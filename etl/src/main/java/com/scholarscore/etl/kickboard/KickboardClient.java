@@ -59,6 +59,14 @@ public class KickboardClient extends BaseHttpClient {
         return parser.next(chunkSize);
     }
 
+    public void close() {
+        if(null != parser) {
+            parser.close();
+        }
+        if(null != behaviorCsv) {
+            behaviorCsv.delete();
+        }
+    }
     @Override
     protected void authenticate() throws HttpClientException {
         //NO OP, only the API key is required

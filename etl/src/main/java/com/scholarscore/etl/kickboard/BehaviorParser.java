@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class BehaviorParser {
     private InputStream iis;
     private BufferedReader br;
     private String[] headerRow;
-    private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     Integer remoteBehaviorIdIdx, remoteStudentIdIdx, behaviorDateIdx, behaviorNameIdx,
             behaviorCategoryIdx, meritPointsIdx, staffIdx, incidentIdIdx, externalIdIdx;
 
@@ -40,14 +41,14 @@ public class BehaviorParser {
         Reader in = new InputStreamReader(is);
         br = new BufferedReader(new InputStreamReader(is));
         try {
-            headerRow = br.readLine().split(",");
+            headerRow = br.readLine().split("\",\"");
             for(int i = 0; i < headerRow.length; i++) {
                 String header = headerRow[i];
-                if("behaviorId".equals(header)) {
+                if("behavior id".equals(header)) {
                     remoteBehaviorIdIdx = i;
-                } else if("studentId".equals(header)) {
+                } else if("\"student id".equals(header)) {
                     remoteStudentIdIdx = i;
-                } else if("externalId".equals(header)) {
+                } else if("external id".equals(header)) {
                     externalIdIdx = i;
                 } else if("date".equals(header)) {
                     behaviorDateIdx = i;
@@ -55,11 +56,11 @@ public class BehaviorParser {
                     behaviorNameIdx = i;
                 } else if("category".equals(header)) {
                     behaviorCategoryIdx = i;
-                } else if("meritPoints".equals(header)) {
+                } else if("merit points".equals(header)) {
                     meritPointsIdx = i;
-                } else if("staffId".equals(header)) {
+                } else if("staff id".equals(header)) {
                     staffIdx = i;
-                } else if("incidentId".equals(incidentIdIdx)) {
+                } else if("incident id\"".equals(header)) {
                     incidentIdIdx = i;
                 }
             }
@@ -69,6 +70,22 @@ public class BehaviorParser {
         }
     }
 
+    public void close() {
+        if(null != this.iis) {
+            try {
+                this.iis.close();
+            } catch (IOException e) {
+                LOGGER.warn("Unable to close the input stream within the KickBoard CSV parser.");
+            }
+        }
+        if(null != this.br) {
+            try {
+                this.br.close();
+            } catch (IOException e) {
+                LOGGER.warn("Unable to close the buffered reader within the KickBoard CSV parser.");
+            }
+        }
+    }
     public List<KickboardBehavior> next(Integer chunkSize) {
         List<KickboardBehavior> results = new ArrayList<>();
         try {
@@ -86,29 +103,28 @@ public class BehaviorParser {
                 if(null != records && records.size() > 0) {
                     CSVRecord record = records.get(0);
                     KickboardBehavior behavior = new KickboardBehavior();
-                    if(null != remoteBehaviorIdIdx && record.size() > remoteBehaviorIdIdx) {
-                        behavior.behaviorId = Long.parseLong(record.get(remoteBehaviorIdIdx));
-                    }
-                    if(null != remoteStudentIdIdx && record.size() > remoteStudentIdIdx) {
-                        behavior.studentId = Long.parseLong(record.get(remoteStudentIdIdx));
-                    }
-                    if(null != externalIdIdx && record.size() > externalIdIdx) {
-                        behavior.externalId = Long.parseLong(record.get(externalIdIdx));
-                    }
-                    if(null != behaviorDateIdx && record.size() > behaviorDateIdx) {
-                        behavior.date = LocalDate.parse(record.get(behaviorDateIdx), dtf);
-                    }
-                    if(null != behaviorNameIdx && record.size() > behaviorNameIdx) {
-                        behavior.behavior = record.get(behaviorNameIdx);
-                    }
-                    if(null != staffIdx && record.size() > staffIdx) {
-                        behavior.staffId = Long.parseLong(record.get(staffIdx));
-                    }
-                    if(null != meritPointsIdx && record.size() > meritPointsIdx) {
-                        behavior.meritPoints = Long.parseLong(record.get(meritPointsIdx));
-                    }
-                    if(null != incidentIdIdx && record.size() > incidentIdIdx) {
-                        behavior.incidentId = Long.parseLong(record.get(incidentIdIdx));
+                    try {
+                        behavior.behaviorId = resolveLongValue(record, remoteBehaviorIdIdx);
+                        behavior.studentId = resolveLongValue(record, remoteStudentIdIdx);
+                        behavior.externalId = resolveLongValue(record, externalIdIdx);
+                        behavior.staffId = resolveLongValue(record, staffIdx);
+                        behavior.meritPoints = resolveLongValue(record, meritPointsIdx);
+                        behavior.incidentId = resolveLongValue(record, incidentIdIdx);
+                        if (null != behaviorDateIdx && record.size() > behaviorDateIdx) {
+                            try {
+                                behavior.date = LocalDate.parse(record.get(behaviorDateIdx), dtf);
+                            } catch (DateTimeParseException e) {
+                                LOGGER.debug("Unable to parse date from the behavior event: " + e.getMessage());
+                            }
+                        }
+                        if (null != behaviorNameIdx && record.size() > behaviorNameIdx) {
+                            behavior.behavior = record.get(behaviorNameIdx);
+                        }
+                        if(null != behaviorCategoryIdx && record.size() > behaviorCategoryIdx) {
+                            behavior.category = record.get(behaviorCategoryIdx);
+                        }
+                    } catch (NumberFormatException nfe) {
+                        LOGGER.debug("Unable to parse a long from input: " + nfe.getMessage());
                     }
                     results.add(behavior);
                 }
@@ -116,8 +132,20 @@ public class BehaviorParser {
                 count++;
             }
         } catch (IOException e) {
-            LOGGER.error("Unable to parse GPA CSV.", e);
+            LOGGER.error("Unable to parse behavior CSV row: " + e.getMessage());
         }
         return results;
     }
+
+    private static Long resolveLongValue(CSVRecord record, Integer index) {
+        try {
+            if (null != index && record.size() > index) {
+                return Long.parseLong(record.get(index));
+            }
+        } catch(NumberFormatException nfe) {
+            LOGGER.debug("Unable to parse a long from input: " + nfe.getMessage());
+        }
+        return null;
+    }
+
 }
