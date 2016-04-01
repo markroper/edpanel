@@ -25,4 +25,6 @@ public interface BehaviorManager {
     public ServiceResponse<Long> updateBehavior(long studentId, long behaviorId, Behavior behavior);
     
     public ServiceResponse<Long> deleteBehavior(long studentId, long behaviorId);
+
+    public ServiceResponse<Long> deleteBehaviorBySsid(long studentId, long ssid);
 }

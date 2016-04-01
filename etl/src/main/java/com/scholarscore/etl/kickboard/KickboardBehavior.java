@@ -1,12 +1,15 @@
 package com.scholarscore.etl.kickboard;
 
-import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
-import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.BehaviorCategory;
+import com.scholarscore.models.user.Person;
+import com.scholarscore.models.user.Staff;
+import com.scholarscore.models.user.Student;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by markroper on 4/1/16.
@@ -59,12 +62,46 @@ public class KickboardBehavior {
     //"incident id"
     public Long incidentId;
 
-    public Behavior toApiModel(StudentAssociator studentAssociator, StaffAssociator staffAssociator) {
+    @SuppressWarnings("unchecked")
+    public Behavior toApiModel(
+            Map<Long, Student> studentAssociator,
+            Map<String, List<Person>> firstNameToStaff,
+            Map<String, List<Person>> lastNameToStaff) {
         BehaviorCategory cat = resolveBehaviorCategory(category);
         if(null == cat) {
             return null;
         }
+        Student s = null;
+        if(null != externalId) {
+            s = studentAssociator.get(externalId);
+        }
+        Staff staff = null;
+        if(null != staffFirstName && null != staffLastName) {
+            List<Person> firstName = firstNameToStaff.get(staffFirstName);
+            if(null != firstName) {
+                for(Person p: firstName) {
+                    if(p.getName().contains(staffLastName)) {
+                        staff = (Staff) p;
+                        break;
+                    }
+                }
+            }
+            List<Person> lastName = lastNameToStaff.get(staffLastName);
+            if(null == staff && null != lastName) {
+                for(Person p: lastName) {
+                    if(p.getName().contains(staffFirstName)) {
+                        staff = (Staff) p;
+                        break;
+                    }
+                }
+            }
+        }
         Behavior b = new Behavior();
+        if(null == s) {
+            return null;
+        }
+        b.setStudent(s);
+        b.setAssigner(staff);
         b.setPointValue(String.valueOf(meritPoints));
         b.setBehaviorCategory(cat);
         b.setBehaviorDate(date);

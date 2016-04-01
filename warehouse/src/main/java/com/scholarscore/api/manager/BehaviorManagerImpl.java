@@ -101,6 +101,12 @@ public class BehaviorManagerImpl implements BehaviorManager {
     }
 
     @Override
+    public ServiceResponse<Long> deleteBehaviorBySsid(long studentId, long ssid) {
+        behaviorPersistence.deleteBySsid(studentId, ssid);
+        return new ServiceResponse<Long>((Long) null);
+    }
+
+    @Override
     public ServiceResponse<Collection<Behavior>> getAllBehaviors(long studentId) {
         return new ServiceResponse<Collection<Behavior>>
                 (behaviorPersistence.selectAll(studentId));

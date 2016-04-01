@@ -14,11 +14,15 @@ public interface BehaviorPersistence {
     public Collection<Behavior> selectAll(long studentId);
     
     public Behavior select(long studentId, long behaviorId);
+
+    public Behavior selectBySourceSystemId(long studentId, long sourceSystemId);
     
     public Long createBehavior(long studentId, Behavior behavior) /*throws JsonProcessingException*/;
     
     public Long replaceBehavior(long studentId, long behaviorId, Behavior behavior);
     
     public Long delete(long studentId, long behaviorId);
+
+    public Long deleteBySsid(long studentId, long ssid);
 
 }

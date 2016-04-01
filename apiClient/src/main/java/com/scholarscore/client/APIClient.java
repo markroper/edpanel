@@ -253,6 +253,11 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         return response;
     }
 
+    @Override
+    public void deleteBehaviorBySourceId(Long studentId, String ssid) throws HttpClientException {
+        delete(BASE_API_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId + "/" + BEHAVIOR_ENDPOINT + "/" + ssid + "/ssid");
+    }
+
     public Staff createAdministrator(Staff administrator) throws HttpClientException {
         EntityId id = create(administrator, ADMINISTRATOR_ENDPOINT);
         Staff response = new Staff(administrator);

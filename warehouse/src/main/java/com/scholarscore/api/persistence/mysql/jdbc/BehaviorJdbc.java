@@ -4,7 +4,6 @@ import com.scholarscore.api.persistence.AdministratorPersistence;
 import com.scholarscore.api.persistence.BehaviorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
-import com.scholarscore.api.persistence.UserPersistence;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.user.Staff;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * User: jordan, mattg
@@ -29,15 +29,35 @@ public class BehaviorJdbc implements BehaviorPersistence {
     private TeacherPersistence teacherPersistence;
     private AdministratorPersistence administratorPersistence;
 
+    private static String HQL_BASE =
+            "from behavior b join fetch b.student st left join fetch st.homeAddress " +
+            "left join fetch st.mailingAddress left join fetch st.contactMethods " +
+            "left join fetch b.assigner a left join fetch a.homeAddress left join fetch a.contactMethods";
+
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Behavior> selectAll(long studentId) {
-        return (Collection<Behavior>)hibernateTemplate.findByNamedParam("from behavior b where b.student.id = :studentId", "studentId", studentId);
+        return (Collection<Behavior>)hibernateTemplate.findByNamedParam(
+                HQL_BASE  + " where b.student.id = :studentId", "studentId", studentId);
     }
 
     @Override
     public Behavior select(long studentId, long behaviorId) {
         return hibernateTemplate.get(Behavior.class, behaviorId);
+    }
+
+    @Override
+    public Behavior selectBySourceSystemId(long studentId, long sourceSystemId) {
+        String[] params = new String[]{"studentId", "sourceSystemId"};
+        Object[] paramValues = new Object[]{ studentId, String.valueOf(sourceSystemId) };
+        List<Behavior> objects = (List<Behavior>) hibernateTemplate.findByNamedParam(
+                HQL_BASE + " where b.student.id = :studentId and b.remoteBehaviorId = :sourceSystemId",
+                params,
+                paramValues);
+        if(null != objects && objects.size() > 0) {
+            return objects.get(0);
+        }
+        return null;
     }
 
     @Override
@@ -87,6 +107,15 @@ public class BehaviorJdbc implements BehaviorPersistence {
             hibernateTemplate.delete(result);
         }
         return behaviorId;
+    }
+
+    @Override
+    public Long deleteBySsid(long studentId, long ssid) {
+        Behavior result = selectBySourceSystemId(studentId, ssid);
+        if (null != result) {
+            hibernateTemplate.delete(result);
+        }
+        return ssid;
     }
 
     public HibernateTemplate getHibernateTemplate() {
