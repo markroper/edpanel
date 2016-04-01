@@ -2,6 +2,7 @@ package com.scholarscore.api.persistence;
 
 import com.scholarscore.models.Behavior;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Collection;
  */
 public interface BehaviorPersistence {
 
-    public Collection<Behavior> selectAll(long studentId);
+    public Collection<Behavior> selectAll(long studentId, LocalDate cutoffDate);
     
     public Behavior select(long studentId, long behaviorId);
 

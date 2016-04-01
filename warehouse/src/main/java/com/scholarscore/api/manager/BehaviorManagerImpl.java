@@ -8,6 +8,7 @@ import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.Behavior;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 /**
@@ -107,9 +108,9 @@ public class BehaviorManagerImpl implements BehaviorManager {
     }
 
     @Override
-    public ServiceResponse<Collection<Behavior>> getAllBehaviors(long studentId) {
+    public ServiceResponse<Collection<Behavior>> getAllBehaviors(long studentId, LocalDate cutoffDate) {
         return new ServiceResponse<Collection<Behavior>>
-                (behaviorPersistence.selectAll(studentId));
+                (behaviorPersistence.selectAll(studentId, cutoffDate));
     }
 
 }

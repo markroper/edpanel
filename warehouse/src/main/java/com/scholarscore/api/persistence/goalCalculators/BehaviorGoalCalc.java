@@ -24,7 +24,7 @@ public class BehaviorGoalCalc implements GoalCalc<CalculatableBehavior> {
     }
 
     public Double calculateGoal(CalculatableBehavior goal) {
-        Collection<Behavior> studentBehaviors = behaviorPersistence.selectAll(goal.getStudent().getId());
+        Collection<Behavior> studentBehaviors = behaviorPersistence.selectAll(goal.getStudent().getId(), null);
         //Make sure behavior category matches and it is within the dates specified.
         Collection<Behavior> relevantBehaviors;
         if (null == goal.getEndDate()) {
