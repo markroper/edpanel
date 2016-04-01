@@ -122,9 +122,9 @@ public class StaffSync implements ISync<Person> {
                         }
                         continue;
                     }
-                    staffAssociator.add(ssid, (Staff)sourceUser);
                     results.staffUpdated(entry.getKey(), sourceUser.getId());
                 }
+                staffAssociator.add(ssid, (Staff)sourceUser);
             }
         }
         //Note: we never delete users, even if they're removed from the source system.
