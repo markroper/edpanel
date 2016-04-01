@@ -9,6 +9,7 @@ import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
 import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.assignment.StudentAssignment;
+import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.grade.StudentSectionGrade;
@@ -37,7 +38,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 /**
@@ -45,7 +48,7 @@ import static org.mockito.Mockito.when;
  * Date: 3/31/16
  * Time: 2:07 PM
  */
-public class TestApiClient /*extends APIClient*/ {
+public class TestApiClientFactory {
 
     private static Long userCounter = 0L;
     private static Long schoolCounter = 0L;
@@ -54,6 +57,7 @@ public class TestApiClient /*extends APIClient*/ {
     private static Long sectionCounter = 0L;
     private static Long courseCounter = 0L;
     private static Long sectionAssignmentCounter = 0L;
+    private static Long attendanceCounter = 0L;
     
     private static HashMap<Long, School> schools = new HashMap<>();
     private static HashMap<Long, SchoolYear> schoolYears = new HashMap<>();
@@ -74,7 +78,7 @@ public class TestApiClient /*extends APIClient*/ {
     private static HashMap<Long, Assignment> sectionAssignments = new HashMap<>();
     private static HashMap<Long, HashMap<Long, StudentAssignment>> studentAssignments = new HashMap<>();
     
-    public TestApiClient() {
+    public TestApiClientFactory() {
 //        super("badusername", "badpass", getURI());
 //        super(username, password, uri);
     }
@@ -359,27 +363,47 @@ public class TestApiClient /*extends APIClient*/ {
             Long termId = (Long) args[2];
             Long sectionId = (Long) args[3];
             Assignment assignment = (Assignment) args[4];
-            if (schoolId == null) {
-                throw new RuntimeException("SchoolId cannot be null!");
-            }
-            if (schoolYearId == null) {
-                throw new RuntimeException("SchoolYearId cannot be null!");
-            }
-            if (termId == null) {
-                throw new RuntimeException("Term cannot be null!");
-            }
-            if (sectionId == null) {
-                throw new RuntimeException("Section cannot be null!");
-            }
-            if (assignment == null) {
-                throw new RuntimeException("Assignment cannot be null!");
-            }
+            if (schoolId == null) { throw new RuntimeException("SchoolId cannot be null!"); }
+            if (schoolYearId == null) { throw new RuntimeException("SchoolYearId cannot be null!"); }
+            if (termId == null) { throw new RuntimeException("Term cannot be null!"); }
+            if (sectionId == null) { throw new RuntimeException("Section cannot be null!"); }
+            if (assignment == null) { throw new RuntimeException("Assignment cannot be null!"); }
             
             if (assignment.getId() == null) {
                 assignment.setId(sectionAssignmentCounter++);
             }
             sectionAssignments.put(assignment.getId(), assignment);
             return assignment;
+        });
+        
+        //createAttendances
+        doAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            Long schoolId = (Long) args[0];
+            Long studentId = (Long) args[1];
+            List<Attendance> attendances = (List<Attendance>) args[2];
+            if (schoolId == null) {
+                throw new RuntimeException("SchoolId cannot be null!");
+            }
+            if (studentId == null) {
+                throw new RuntimeException("StudentId cannot be null!");
+            }
+
+            attendances.stream().filter(attendance -> attendance.getId() == null).forEach(attendance -> {
+                attendance.setId(attendanceCounter++);
+            });
+
+            return attendances;
+        }).when(testApiClient).createAttendances(anyLong(), anyLong(), anyListOf(Attendance.class));
+        
+        when(testApiClient.getAttendance(anyLong(), anyLong())).thenAnswer(invocation -> {
+            // TODO ETL: support attendance
+            return new Attendance[0];
+        });
+        
+        when(testApiClient.getSchools()).thenAnswer(invocation -> {
+            // TODO ETL: support school storage
+            return new School[0];
         });
         
         return testApiClient;
