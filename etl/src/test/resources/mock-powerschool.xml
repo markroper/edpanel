@@ -25,6 +25,7 @@
         <constructor-arg index="0" type="java.lang.String" value="${powerschool.student.spedellextension}"/>
         <constructor-arg index="1" type="java.lang.String" value="${powerschool.student.spedflag}"/>
         <constructor-arg index="2" type="java.lang.String" value="${powerschool.student.ellflag}"/>
+        <constructor-arg index="3" type="java.lang.String" value="${powerschool.gpa.formulastring}"/>
     </bean>
     
     <!--
@@ -32,7 +33,7 @@
             class="com.scholarscore.etl.TestApiClientHandler" />
     -->
 
-    <bean id="testEdPanelClient" class="com.scholarscore.etl.TestApiClient" factory-method="buildTestApiClient" />
+    <bean id="testEdPanelClient" class="com.scholarscore.etl.TestApiClientFactory" factory-method="buildTestApiClient" />
     
     <bean id="etlEngine" class="com.scholarscore.etl.EtlEngine">
         <property name="powerSchool" ref="testPowerSchoolClient"/>

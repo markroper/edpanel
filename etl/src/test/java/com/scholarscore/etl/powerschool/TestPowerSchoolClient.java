@@ -31,8 +31,8 @@ import static org.mockito.Mockito.when;
  */
 public class TestPowerSchoolClient extends PowerSchoolClient {
 
-    public TestPowerSchoolClient(String studentExtension, String spedFlag, String ellFlag) {
-        super("fakeClientId", "fakeSecret", getURI(), studentExtension, spedFlag, ellFlag);
+    public TestPowerSchoolClient(String studentExtension, String spedFlag, String ellFlag, String gpaFormulaString) {
+        super("fakeClientId", "fakeSecret", getURI(), studentExtension, spedFlag, ellFlag, gpaFormulaString);
 
         System.out.println("TestPowerSchoolClient initialized.");
     }
@@ -108,7 +108,7 @@ public class TestPowerSchoolClient extends PowerSchoolClient {
                         + "&page=.*";
                 final String ALL_CLASSRANKS_REQUEST_REGEX = TABLE_BASE + "classrank\\?"
                        // + "q=gpa!=0;gpa!=" 
-                        + "q=gpa!=0;gpa!=" 
+                        + "q=gpa\\!=0;dateranked=.*" 
                         + "&projection=.*"
                         + "&pagesize=.*" 
                         + "&page=.*";
@@ -171,6 +171,11 @@ public class TestPowerSchoolClient extends PowerSchoolClient {
                         + "pagesize=.*" 
                         + "&projection=.*" 
                         + "&page=.*";
+                final String ATTENDANCE_BY_STUDENT = TABLE_BASE + "attendance\\?"
+                        + "pagesize=.*"
+                        + "&projection=.*"
+                        + "&q=studentid==.*;att_date=gt=.*"
+                        + "&page=.*";
                 
                 regexToResponseNames.put(GET_DISTRICT_REQUEST_REGEX, "district");
                 regexToResponseNames.put(GET_ALL_SCHOOLS_REQUEST_REGEX, "all_schools");
@@ -200,6 +205,7 @@ public class TestPowerSchoolClient extends PowerSchoolClient {
                 regexToResponseNames.put(ALL_CLASSRANKS_REQUEST_REGEX, "all_classranks_empty");
                 regexToResponseNames.put(CALENDAR_DAY_BY_SCHOOL_REQUEST_REGEX, "calendar_day_empty");
                 regexToResponseNames.put(ATTENDANCE_CODE_REQUEST_REGEX, "attendance_code");
+                regexToResponseNames.put(ATTENDANCE_BY_STUDENT, "attendance_by_student");
                 
                 HashMap<String, String> params = new HashMap<>();
                 if (uriString != null) {
