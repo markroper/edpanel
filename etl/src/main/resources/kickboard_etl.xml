@@ -10,7 +10,7 @@
     <bean id="kickboardEtlEngine" class="com.scholarscore.etl.kickboard.KickboardEtl">
         <property name="kickboardClient" ref="kickboardClient"/>
         <property name="scholarScore" ref="edpanelClient"/>
-        <property name="enabled" ref="${kickboard.enabled}"/>
+        <property name="enabled" value="${kickboard.enabled}"/>
     </bean>
 
 </beans>
