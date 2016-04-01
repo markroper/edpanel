@@ -152,7 +152,7 @@ public class BehaviorParser {
                 count++;
             }
         } catch (IOException e) {
-            LOGGER.error("Unable to parse behavior CSV row: " + e.getMessage());
+            LOGGER.warn("Unable to parse behavior CSV row: " + e.getMessage());
         }
         return results;
     }

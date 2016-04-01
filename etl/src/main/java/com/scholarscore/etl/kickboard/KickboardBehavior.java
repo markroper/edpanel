@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Get yer POJOs out! Here is the object to map a CSV row from KickBoards behavior API into a POJO.
+ * In addition to the raw POJO there is a method toInternalModel(..) that generates and returns an
+ * EdPanel Behavior instance from the KickBoard model.
+ *
  * Created by markroper on 4/1/16.
  */
 public class KickboardBehavior {
@@ -75,6 +79,9 @@ public class KickboardBehavior {
         if(null != externalId) {
             s = studentAssociator.get(externalId);
         }
+        if(null == s) {
+            return null;
+        }
         Staff staff = null;
         if(null != staffFirstName && null != staffLastName) {
             List<Person> firstName = firstNameToStaff.get(staffFirstName);
@@ -97,15 +104,12 @@ public class KickboardBehavior {
             }
         }
         Behavior b = new Behavior();
-        if(null == s) {
-            return null;
-        }
         b.setStudent(s);
         b.setAssigner(staff);
         b.setPointValue(String.valueOf(meritPoints));
         b.setBehaviorCategory(cat);
         b.setBehaviorDate(date);
-        b.setRemoteBehaviorId(String.valueOf(behaviorId));
+        b.setRemoteBehaviorId(String.valueOf(incidentId));
         b.setRemoteSystem("Kickboard");
         b.setName(behavior);
         return b;
@@ -128,7 +132,7 @@ public class KickboardBehavior {
             return BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION;
         } else if(CAT.contains("D.O.") || CAT.contains("OFFICE") || CAT.contains("REFERRAL")) {
             return BehaviorCategory.REFERRAL;
-        } else if(CAT.contains("AUTOMATIC")) {
+        } else if(CAT.contains("AUTOMATIC") || CAT.contains("GENERAL") || CAT.contains("STORE")) {
             return null;
         } else {
             return BehaviorCategory.OTHER;
