@@ -2,6 +2,7 @@ package com.scholarscore.etl.kickboard;
 
 import com.scholarscore.client.BaseHttpClient;
 import com.scholarscore.client.HttpClientException;
+import com.scholarscore.models.behavior.BehaviorScore;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +23,14 @@ import java.util.List;
 public class KickboardClient extends BaseHttpClient {
     private final static Logger LOGGER = LoggerFactory.getLogger(KickboardClient.class);
     private File behaviorCsv;
+    private File pointsCsv;
     private BehaviorParser parser;
+    private PointsParser pointsParser;
+    private URI bankUri;
 
-    public KickboardClient(URI uri) {
-        super(uri);
+    public KickboardClient(URI behaviorUri, URI bankUri) {
+        super(behaviorUri);
+        this.bankUri = bankUri;
     }
 
     private void downloadFile() {
@@ -40,6 +45,40 @@ public class KickboardClient extends BaseHttpClient {
             LOGGER.error("Failed to download behavior CSV from KickBoard, unable to open stream.");
         }
     }
+
+    private void downloadScoreFile() {
+        try {
+            InputStream input = bankUri.toURL().openStream();
+            pointsCsv = File.createTempFile("kickboardPoints", ".csv");
+            BufferedWriter bw = new BufferedWriter(new FileWriter(pointsCsv, false));
+            IOUtils.copy(input, bw);
+            input.close();
+            bw.close();
+        } catch (IOException e) {
+            LOGGER.error("Failed to download behavior CSV from KickBoard, unable to open stream.");
+        }
+    }
+
+    public List<BehaviorScore> getBehaviorScore(Integer chunkSize) {
+        if(null == pointsCsv) {
+            downloadScoreFile();
+        }
+        if(null == pointsCsv) {
+            return null;
+        }
+        if(null == pointsParser) {
+            try {
+                InputStream fileInput = new FileInputStream(behaviorCsv);
+                pointsParser = new PointsParser(fileInput);
+            } catch (FileNotFoundException e) {
+                LOGGER.error("Failed to read in the points CSV file.");
+                return null;
+            }
+        }
+        return pointsParser.next(chunkSize);
+    }
+
+
     public List<KickboardBehavior> getBehaviorData(Integer chunkSize) {
         if(null == behaviorCsv) {
             downloadFile();

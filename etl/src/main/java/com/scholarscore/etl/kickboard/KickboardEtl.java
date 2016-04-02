@@ -39,6 +39,8 @@ public class KickboardEtl implements IEtlEngine {
 
     @Override
     public SyncResult syncDistrict(EtlSettings settings) {
+        syncPoints();
+
         List<KickboardBehavior> kbBehaviors =  kickboardClient.getBehaviorData(CHUNK_SIZE);
         //Source system behavior ID to behavior
         Map<String, Behavior> edPanelBehaviors = new HashMap<>();
@@ -97,6 +99,12 @@ public class KickboardEtl implements IEtlEngine {
         kickboardClient.close();
         return result;
     }
+    public void syncPoints() {
+
+        //TODO:implement me
+    }
+
+
     public void updateBehavior(Behavior oldBehavior, Behavior newBehavior) {
         newBehavior.setId(oldBehavior.getId());
         if(!newBehavior.equals(oldBehavior)) {
