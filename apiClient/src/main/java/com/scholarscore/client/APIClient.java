@@ -249,6 +249,11 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
+    public List<Long> createBehaviors(List<Behavior> behavior) throws HttpClientException {
+        return createListResponse(behavior, BEHAVIOR_ENDPOINT);
+    }
+
+    @Override
     public Behavior updateBehavior(Long studentId, Long behaviorId, Behavior behavior) throws HttpClientException {
         if (studentId == null || studentId < 0) { return null; }
         if (behaviorId == null || behaviorId < 0) { return null; } 

@@ -29,9 +29,9 @@ import java.util.List;
  * Performs CRUD operations on student behavior events (e.g. suspensions, demerits, merits, etc)
  */
 @Controller
-@RequestMapping(ApiConsts.API_V1_ENDPOINT + "/students/{studentId}/behaviors")
+@RequestMapping(ApiConsts.API_V1_ENDPOINT)
 public class BehaviorController extends BaseController {
-
+    private static final String STUDENT_BEHAVIOR = "/students/{studentId}/behaviors";
     
     @ApiOperation(
             value = "Get all behaviors",
@@ -39,6 +39,7 @@ public class BehaviorController extends BaseController {
             response = List.class)
     @RequestMapping(
             method = RequestMethod.GET,
+            value = STUDENT_BEHAVIOR,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
     @StudentAccessible(paramName = "studentId")
@@ -55,7 +56,7 @@ public class BehaviorController extends BaseController {
             notes = "Retrieves one specific behavior event by ID",
             response = Behavior.class)
     @RequestMapping(
-            value = "/{behaviorId}",
+            value = STUDENT_BEHAVIOR + "/{behaviorId}",
             method = RequestMethod.GET,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -73,6 +74,7 @@ public class BehaviorController extends BaseController {
             notes = "Creates, assigns an ID to, persists and returns a behavior event",
             response = EntityId.class)
     @RequestMapping(
+            value = STUDENT_BEHAVIOR,
             method = RequestMethod.POST,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
@@ -82,13 +84,27 @@ public class BehaviorController extends BaseController {
             @RequestBody @Valid Behavior behavior) {
         return respond(pm.getBehaviorManager().createBehavior(studentId, behavior));
     }
+
+    @ApiOperation(
+            value = "Create multiple behaviors",
+            notes = "Creates, assigns IDs to, persists behavior events",
+            response = List.class)
+    @RequestMapping(
+            value = "/behaviors",
+            method = RequestMethod.POST,
+            produces = {JSON_ACCEPT_HEADER})
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity bulkCreate(
+            @RequestBody @Valid List<Behavior> behaviors) {
+        return respond(pm.getBehaviorManager().createBehaviors(behaviors));
+    }
     
     @ApiOperation(
             value = "Overwrite an existing behavior",
             notes = "Overwrites an existing behavior entity for the specified student with the ID provided",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{behaviorId}",
+            value = STUDENT_BEHAVIOR + "/{behaviorId}",
             method = RequestMethod.PUT,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -106,7 +122,7 @@ public class BehaviorController extends BaseController {
             notes = "Updates an existing behavior's properties. Will not overwrite existing values with null.",
             response = EntityId.class)
     @RequestMapping(
-            value = "/{behaviorId}",
+            value = STUDENT_BEHAVIOR + "/{behaviorId}",
             method = RequestMethod.PATCH,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -123,7 +139,7 @@ public class BehaviorController extends BaseController {
             value = "Delete a behavior",
             response = Void.class)
     @RequestMapping(
-            value = "/{behaviorId}",
+            value = STUDENT_BEHAVIOR + "/{behaviorId}",
             method = RequestMethod.DELETE,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")
@@ -139,7 +155,7 @@ public class BehaviorController extends BaseController {
             value = "Delete a behavior by source system ID",
             response = Void.class)
     @RequestMapping(
-            value = "/{ssid}/ssid",
+            value = STUDENT_BEHAVIOR + "/{ssid}/ssid",
             method = RequestMethod.DELETE,
             produces = { JSON_ACCEPT_HEADER })
     @SuppressWarnings("rawtypes")

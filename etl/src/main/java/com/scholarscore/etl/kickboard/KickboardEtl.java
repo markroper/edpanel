@@ -34,7 +34,7 @@ public class KickboardEtl implements IEtlEngine {
     private StudentAssociator studentAssociator;
     private StaffAssociator staffAssociator;
     private Boolean enabled;
-    private static final Integer CHUNK_SIZE = 750;
+    private static final Integer CHUNK_SIZE = 1000;
     private LocalDate CUTOFF = LocalDate.of(2015, 7, 1);
 
     @Override
@@ -45,11 +45,16 @@ public class KickboardEtl implements IEtlEngine {
         //Boolean is true if the ssid has been encountered in the source system data, otherwise false
         //At the end of the run, we delete all entries that false because they exist in edpanel but not the source system
         Map<Long, Set<MutablePair<String, Boolean>>> studentToAllExistingSystemIds = new HashMap<>();
+        int page = 1;
         while(kbBehaviors != null) {
+            LOGGER.debug("PAGE NUMBER: " + page);
+            page++;
             HashMap<String, Behavior> ssidToBehavior = new HashMap<>();
             Set<Long> studentBehaviorsFetched = new HashSet<>();
             kbBehaviors = kickboardClient.getBehaviorData(CHUNK_SIZE);
             List<Behavior> edpanelBehaviors = convertToEdPanelBehaviors(kbBehaviors);
+
+            List<Behavior> behaviorsToCreate = new ArrayList<>();
             for(Behavior source: edpanelBehaviors) {
                 //##########
                 //Make sure the current behavior from KickBoard gets put in the map and marked as 'seen' in the source system
@@ -72,7 +77,7 @@ public class KickboardEtl implements IEtlEngine {
                 } else {
                     if(studentBehaviorsFetched.contains(source.getStudent().getId())) {
                         //CREATE
-                        createBehavior(source);
+                        behaviorsToCreate.add(source);
                     } else {
                         try {
                             Collection<Behavior> studentsBehaviors = scholarScore.getBehaviors(source.getStudent().getId(), CUTOFF);
@@ -97,7 +102,7 @@ public class KickboardEtl implements IEtlEngine {
                                     updateBehavior(ssidToBehavior.get(source.getRemoteBehaviorId()), source);
                                 } else {
                                     //CREATE
-                                    createBehavior(source);
+                                    behaviorsToCreate.add(source);
                                 }
                             }
                         } catch (HttpClientException e) {
@@ -107,6 +112,8 @@ public class KickboardEtl implements IEtlEngine {
                     }
                 }
             }
+            createBehaviors(behaviorsToCreate);
+
         }
         //Now that we've handled the entire giant file, go ahead and remove any entries from EdPanel
         //That we never encountered in the source system data set.
@@ -124,7 +131,7 @@ public class KickboardEtl implements IEtlEngine {
             }
         }
         kickboardClient.close();
-
+        //TODO:return a SyncResult
         return null;
     }
     public void updateBehavior(Behavior oldBehavior, Behavior newBehavior) {
@@ -137,11 +144,14 @@ public class KickboardEtl implements IEtlEngine {
             }
         }
     }
-    public void createBehavior(Behavior b) {
-        try {
-            scholarScore.createBehavior(b.getStudent().getId(), b);
-        } catch (HttpClientException e) {
-            LOGGER.warn("Failed to create behavior within EdPanel: " + b.toString());
+
+    public void createBehaviors(List<Behavior> b) {
+        if(null != b && b.size() > 0) {
+            try {
+                scholarScore.createBehaviors(b);
+            } catch (HttpClientException e) {
+                LOGGER.warn("Failed to create behaviors within EdPanel: " + b.toString());
+            }
         }
     }
 

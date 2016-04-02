@@ -11,6 +11,7 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -77,6 +78,23 @@ public class BehaviorJdbc implements BehaviorPersistence {
         injectAssignerIfPresent(behavior);
         Behavior result = hibernateTemplate.merge(behavior);
         return result.getId();
+    }
+
+    @Override
+    public List<Long> createBehaviors(List<Behavior> behaviors) {
+        int i = 0;
+        List<Long> ids = new ArrayList<>();
+        for(Behavior sa : behaviors) {
+            hibernateTemplate.save(sa);
+            ids.add(sa.getId());
+            //Release newly created entities from hibernates session im-memory storage
+            if(i % 20 == 0) {
+                hibernateTemplate.flush();
+                hibernateTemplate.clear();
+            }
+            i++;
+        }
+        return ids;
     }
 
     // adding or updating a behavior with an assigner is supported

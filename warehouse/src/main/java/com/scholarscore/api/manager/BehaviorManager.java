@@ -6,6 +6,7 @@ import com.scholarscore.models.Behavior;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * User: jordan
@@ -20,6 +21,8 @@ public interface BehaviorManager {
     public ServiceResponse<Behavior> getBehavior(long studentId, long behaviorId);
     
     public ServiceResponse<Long> createBehavior(long studentId, Behavior behavior);
+
+    public ServiceResponse<List<Long>> createBehaviors(List<Behavior> behaviors);
     
     public ServiceResponse<Long> replaceBehavior(long studentId, long behaviorId, Behavior behavior);
     
