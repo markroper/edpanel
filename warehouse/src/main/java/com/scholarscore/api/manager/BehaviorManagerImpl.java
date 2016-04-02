@@ -6,6 +6,7 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.Behavior;
+import com.scholarscore.models.behavior.BehaviorScore;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -111,6 +112,37 @@ public class BehaviorManagerImpl implements BehaviorManager {
     public ServiceResponse<Long> deleteBehaviorBySsid(long studentId, long ssid) {
         behaviorPersistence.deleteBySsid(studentId, ssid);
         return new ServiceResponse<Long>((Long) null);
+    }
+
+    @Override
+    public ServiceResponse<BehaviorScore> getBehaviorScore(long studentId, LocalDate date) {
+        return new ServiceResponse<BehaviorScore>(behaviorPersistence.selectScore(studentId, date));
+    }
+
+    @Override
+    public ServiceResponse<Collection<BehaviorScore>> getAllBehaviorScores(long studentId, LocalDate cutoffDate) {
+        return new ServiceResponse<>(behaviorPersistence.selectScores(studentId, cutoffDate));
+    }
+
+    @Override
+    public ServiceResponse<Long> createBehaviorScore(long studentId, BehaviorScore score) {
+        return new ServiceResponse<>(behaviorPersistence.createScore(studentId, score));
+    }
+
+    @Override
+    public ServiceResponse<List<Long>> createBehaviorScores(List<BehaviorScore> scores) {
+        return new ServiceResponse<>(behaviorPersistence.createScores(scores));
+    }
+
+    @Override
+    public ServiceResponse<Long> replaceBehaviorScore(long studentId, LocalDate date, BehaviorScore score) {
+        return new ServiceResponse<>(behaviorPersistence.replaceScore(studentId, date, score));
+    }
+
+    @Override
+    public ServiceResponse<Void> deleteBehaviorScore(long studentId, LocalDate date) {
+        behaviorPersistence.deleteScore(studentId, date);
+        return new ServiceResponse<>((Void) null);
     }
 
     @Override

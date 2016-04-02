@@ -50,6 +50,12 @@ public class HibernateConsts {
     public static final String BEHAVIOR_POINT_VALUE = "point_value";
     public static final String BEHAVIOR_ROSTER = "roster";
     public static final String BEHAVIOR_FK = "behavior_fk";
+
+    public static final String BEHAVIOR_SCORE_TABLE = "behavior_score";
+    public static final String BEHAVIOR_SCORE_ID = "behavior_score_id";
+    public static final String BEHAVIOR_SCORE_DATE = "behavior_score_date";
+    public static final String BEHAVIOR_SCORE_WEEKLY_SCORE = "behavior_score_weekly_score";
+    public static final String BEHAVIOR_SCORE_ANNUAL_SCORE = "behavior_score_annual_score";
     
     // the following column names are used in multiple places in different tables
     public static final String STUDENT_FK = "student_fk";

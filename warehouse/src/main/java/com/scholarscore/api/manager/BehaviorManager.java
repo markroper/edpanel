@@ -3,6 +3,7 @@ package com.scholarscore.api.manager;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.models.Behavior;
+import com.scholarscore.models.behavior.BehaviorScore;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -31,4 +32,11 @@ public interface BehaviorManager {
     public ServiceResponse<Long> deleteBehavior(long studentId, long behaviorId);
 
     public ServiceResponse<Long> deleteBehaviorBySsid(long studentId, long ssid);
+
+    ServiceResponse<BehaviorScore> getBehaviorScore(long studentId, LocalDate date);
+    ServiceResponse<Collection<BehaviorScore>> getAllBehaviorScores(long studentId, LocalDate cuttoffDate);
+    ServiceResponse<Long> createBehaviorScore(long studentId, BehaviorScore score);
+    ServiceResponse<List<Long>> createBehaviorScores(List<BehaviorScore> scores);
+    ServiceResponse<Long> replaceBehaviorScore(long studentId, LocalDate date, BehaviorScore score);
+    ServiceResponse<Void> deleteBehaviorScore(long studentId, LocalDate date);
 }
