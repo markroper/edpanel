@@ -9,7 +9,6 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.Term;
-import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.SchoolDay;
 import com.scholarscore.models.grade.StudentSectionGrade;
@@ -28,7 +27,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.testng.AssertJUnit.assertNotNull;
 
@@ -75,9 +73,11 @@ public class EtlEngineUnitTest extends AbstractTestNGSpringContextTests {
         verify(edPanel, atLeastOnce()).getCourses(anyLong());
         verify(edPanel, atLeastOnce()).getSections(anyLong());
         verify(edPanel, atLeastOnce()).getGpas();
-        
+
+        // these should be called when the remaining empty responses are replaced with populated ones
 //        verify(edPanel, atLeastOnce()).getStudentAssignments(anyLong(),anyLong(),anyLong(),anyLong(),anyLong());
 //        verify(edPanel, atLeastOnce()).getSectionAssignments(anyLong(), anyLong(), anyLong(), anyLong());
+//        verify(edPanel, atLeastOnce()).createSectionAssignment(anyLong(), anyLong(), anyLong(), anyLong(), any(Assignment.class));
         verify(edPanel, atLeastOnce()).getStudentSectionGrades(anyLong(), anyLong(), anyLong(), anyLong());
         verify(edPanel, atLeastOnce()).getSchoolDays(anyLong());
         
@@ -91,7 +91,6 @@ public class EtlEngineUnitTest extends AbstractTestNGSpringContextTests {
         verify(edPanel, atLeastOnce()).createTerm(anyLong(), anyLong(), any(Term.class));
         verify(edPanel, atLeastOnce()).createCourse(anyLong(), any(Course.class));
         verify(edPanel, atLeastOnce()).createSection(anyLong(), anyLong(), anyLong(), any(Section.class));
-//        verify(edPanel, atLeastOnce()).createSectionAssignment(anyLong(), anyLong(), anyLong(), anyLong(), any(Assignment.class));
         verify(edPanel, atLeastOnce()).createStudentSectionGrades(anyLong(), anyLong(), anyLong(), anyLong(), anyListOf(StudentSectionGrade.class));
         verify(edPanel, atLeastOnce()).createSchoolDays(anyLong(), anyListOf(SchoolDay.class));
         verify(edPanel, atLeastOnce()).createAttendances(anyLong(), anyLong(), anyListOf(Attendance.class));        
