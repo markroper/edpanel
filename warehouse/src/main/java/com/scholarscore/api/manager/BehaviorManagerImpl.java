@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by cwallace on 9/16/2015.
@@ -65,6 +66,11 @@ public class BehaviorManagerImpl implements BehaviorManager {
         }
         Long behaviorId = behaviorPersistence.createBehavior(studentId, behavior);
         return new ServiceResponse<Long>(behaviorId);
+    }
+
+    @Override
+    public ServiceResponse<List<Long>> createBehaviors(List<Behavior> behaviors) {
+        return new ServiceResponse<>(behaviorPersistence.createBehaviors(behaviors));
     }
 
     @Override

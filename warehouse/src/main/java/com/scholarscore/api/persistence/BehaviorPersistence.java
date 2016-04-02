@@ -4,6 +4,7 @@ import com.scholarscore.models.Behavior;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * User: jordan
@@ -19,6 +20,8 @@ public interface BehaviorPersistence {
     public Behavior selectBySourceSystemId(long studentId, long sourceSystemId);
     
     public Long createBehavior(long studentId, Behavior behavior) /*throws JsonProcessingException*/;
+
+    public List<Long> createBehaviors(List<Behavior> behaviors) /*throws JsonProcessingException*/;
     
     public Long replaceBehavior(long studentId, long behaviorId, Behavior behavior);
     

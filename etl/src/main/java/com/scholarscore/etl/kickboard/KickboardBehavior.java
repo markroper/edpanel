@@ -72,7 +72,7 @@ public class KickboardBehavior {
             Map<String, List<Person>> firstNameToStaff,
             Map<String, List<Person>> lastNameToStaff) {
         BehaviorCategory cat = resolveBehaviorCategory(category);
-        if(null == cat) {
+        if(null == cat || null == date) {
             return null;
         }
         Student s = null;
