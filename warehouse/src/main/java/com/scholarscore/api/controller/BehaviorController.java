@@ -4,6 +4,7 @@ import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.EntityId;
+import com.scholarscore.models.behavior.BehaviorScore;
 import com.scholarscore.util.EdPanelDateUtil;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -32,7 +33,111 @@ import java.util.List;
 @RequestMapping(ApiConsts.API_V1_ENDPOINT)
 public class BehaviorController extends BaseController {
     private static final String STUDENT_BEHAVIOR = "/students/{studentId}/behaviors";
-    
+    private static final String STUDENT_BEHAVIOR_SCORE = "/students/{studentId}/behaviorscores";
+
+    @ApiOperation(
+            value = "Get a behavior by student and date",
+            notes = "Retrieves one specific behavior score",
+            response = BehaviorScore.class)
+    @RequestMapping(
+            value = STUDENT_BEHAVIOR_SCORE + "/{scoreDate}",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
+    public @ResponseBody ResponseEntity getScore(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "scoreDate", required = true, value = "Date")
+            @PathVariable(value="scoreDate")
+            @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) LocalDate scoreDate) {
+        return respond(pm.getBehaviorManager().getBehaviorScore(studentId, scoreDate));
+    }
+
+    @ApiOperation(
+            value = "Create multiple behavior scores",
+            notes = "Creates, assigns IDs to, persists behavior scores",
+            response = List.class)
+    @RequestMapping(
+            value = "/behaviorscores",
+            method = RequestMethod.POST,
+            produces = {JSON_ACCEPT_HEADER})
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity bulkCreateScores(
+            @RequestBody @Valid List<BehaviorScore> behaviorScores) {
+        return respond(pm.getBehaviorManager().createBehaviorScores(behaviorScores));
+    }
+
+    @ApiOperation(
+            value = "Create a behavior score",
+            notes = "Creates, assigns an ID to, persists and returns a behavior score",
+            response = EntityId.class)
+    @RequestMapping(
+            value = STUDENT_BEHAVIOR_SCORE,
+            method = RequestMethod.POST,
+            produces = {JSON_ACCEPT_HEADER})
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity createScore(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @RequestBody @Valid BehaviorScore score) {
+        return respond(pm.getBehaviorManager().createBehaviorScore(studentId, score));
+    }
+
+    @ApiOperation(
+            value = "Get all behavior scores",
+            notes = "Retrieve all behavior scores",
+            response = List.class)
+    @RequestMapping(
+            method = RequestMethod.GET,
+            value = STUDENT_BEHAVIOR_SCORE,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    @StudentAccessible(paramName = "studentId")
+    public @ResponseBody ResponseEntity getAllScores(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @RequestParam(value="cutoffDate", required = false)
+            @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) LocalDate cuttoffDate) {
+        return respond(pm.getBehaviorManager().getAllBehaviorScores(studentId, cuttoffDate));
+    }
+
+    @ApiOperation(
+            value = "Delete a behavior",
+            response = Void.class)
+    @RequestMapping(
+            value = STUDENT_BEHAVIOR_SCORE + "/{scoreDate}",
+            method = RequestMethod.DELETE,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity deleteBehavior(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "scoreDate", required = true, value = "Date")
+            @PathVariable(value="scoreDate")
+            @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) LocalDate scoreDate) {
+        return respond(pm.getBehaviorManager().deleteBehaviorScore(studentId, scoreDate));
+    }
+
+    @ApiOperation(
+            value = "Overwrite an existing behavior score",
+            notes = "Overwrites an existing behavior entity for the specified student with the date provided",
+            response = EntityId.class)
+    @RequestMapping(
+            value = STUDENT_BEHAVIOR_SCORE + "/{scoreDate}",
+            method = RequestMethod.PUT,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity replaceBehavior(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "scoreDate", required = true, value = "Date")
+            @PathVariable(value="scoreDate")
+            @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) LocalDate scoreDate,
+            @RequestBody @Valid BehaviorScore score) {
+        return respond(pm.getBehaviorManager().replaceBehaviorScore(studentId, scoreDate, score));
+    }
+
     @ApiOperation(
             value = "Get all behaviors",
             notes = "Retrieve all behavior events",

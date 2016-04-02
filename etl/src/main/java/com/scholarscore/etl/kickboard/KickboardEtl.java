@@ -35,7 +35,7 @@ public class KickboardEtl implements IEtlEngine {
     private Boolean enabled;
     private static final Integer CHUNK_SIZE = 2000;
     private LocalDate CUTOFF = LocalDate.of(2015, 7, 1);
-    private KickboardSyncResult result;
+    private KickboardSyncResult result = new KickboardSyncResult();
 
     @Override
     public SyncResult syncDistrict(EtlSettings settings) {
@@ -49,6 +49,9 @@ public class KickboardEtl implements IEtlEngine {
             page++;
             kbBehaviors = kickboardClient.getBehaviorData(CHUNK_SIZE);
             List<Behavior> sourceBehaviors = convertToEdPanelBehaviors(kbBehaviors);
+            if(null == sourceBehaviors) {
+                continue;
+            }
             List<Behavior> behaviorsToCreate = new ArrayList<>();
             for(Behavior source: sourceBehaviors) {
                 //If the current behavior from Kickboard's user's data hasn't been pulled from EdPanel, pull it.

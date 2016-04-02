@@ -5,6 +5,7 @@ import com.scholarscore.api.persistence.BehaviorPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
 import com.scholarscore.api.persistence.TeacherPersistence;
 import com.scholarscore.models.Behavior;
+import com.scholarscore.models.behavior.BehaviorScore;
 import com.scholarscore.models.user.Staff;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -35,6 +36,74 @@ public class BehaviorJdbc implements BehaviorPersistence {
             "from behavior b join fetch b.student st left join fetch st.homeAddress " +
             "left join fetch st.mailingAddress left join fetch st.contactMethods " +
             "left join fetch b.assigner a left join fetch a.homeAddress left join fetch a.contactMethods";
+
+    private static String SCORE_HQL_BASE =
+            "from behavior_score b join fetch b.student st left join fetch st.homeAddress " +
+            "left join fetch st.mailingAddress left join fetch st.contactMethods";
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection<BehaviorScore> selectScores(long studentId, LocalDate cutoffDate) {
+        if(null == cutoffDate) {
+            return (Collection<BehaviorScore>) hibernateTemplate.findByNamedParam(
+                    SCORE_HQL_BASE + " where b.student.id = :studentId", "studentId", studentId);
+        } else {
+            String[] params = new String[]{"studentId", "date"};
+            Object[] paramValues = new Object[]{studentId, cutoffDate};
+            return (Collection<BehaviorScore>) hibernateTemplate.findByNamedParam(
+                    SCORE_HQL_BASE + " where b.student.id = :studentId and b.date >= :cutoffDate",
+                    params,
+                    paramValues);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public BehaviorScore selectScore(long studentId, LocalDate date) {
+        List<BehaviorScore> scores = (List<BehaviorScore>) hibernateTemplate.findByNamedParam(
+                SCORE_HQL_BASE + " where b.student.id = :studentId", "studentId", studentId);
+        if(null != scores && scores.size() > 0) {
+            return scores.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    public Long createScore(long studentId, BehaviorScore score) {
+        BehaviorScore result = hibernateTemplate.merge(score);
+        return result.getId();
+    }
+
+    @Override
+    public List<Long> createScores(List<BehaviorScore> scores) {
+        int i = 0;
+        List<Long> ids = new ArrayList<>();
+        for(BehaviorScore sa : scores) {
+            hibernateTemplate.save(sa);
+            ids.add(sa.getId());
+            //Release newly created entities from hibernates session im-memory storage
+            if(i % 20 == 0) {
+                hibernateTemplate.flush();
+                hibernateTemplate.clear();
+            }
+            i++;
+        }
+        return ids;
+    }
+
+    @Override
+    public Long replaceScore(long studentId, LocalDate date, BehaviorScore score) {
+        hibernateTemplate.merge(score);
+        return score.getId();
+    }
+
+    @Override
+    public void deleteScore(long studentId, LocalDate score) {
+        BehaviorScore result = selectScore(studentId, score);
+        if (null != result) {
+            hibernateTemplate.delete(result);
+        }
+    }
 
     @Override
     @SuppressWarnings("unchecked")
