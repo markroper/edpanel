@@ -47,7 +47,6 @@ public class BehaviorGoalBuilderUnitTest extends AbstractBuilderUnitTest<Behavio
         fullBehaviorGoal.setApproved(date);
         fullBehaviorGoal.setCalculatedValue(calculatedValue);
         fullBehaviorGoal.setDesiredValue(desiredValue);
-        fullBehaviorGoal.setGoalType(goalType);
         fullBehaviorGoal.setName(name);
         fullBehaviorGoal.setStaff(teacher);
 
@@ -60,7 +59,6 @@ public class BehaviorGoalBuilderUnitTest extends AbstractBuilderUnitTest<Behavio
                 withApproved(date).
                 withCalculatedValue(calculatedValue).
                 withDesiredValue(desiredValue).
-                withGoalType(goalType).
                 withName(name).
                 withStaff(teacher).
                 build();
