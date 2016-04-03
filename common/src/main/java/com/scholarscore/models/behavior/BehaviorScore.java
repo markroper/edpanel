@@ -29,6 +29,20 @@ public class BehaviorScore {
     protected Long currentAnnualScore;
     protected Student student;
 
+    public BehaviorScore() {
+
+    }
+
+    public BehaviorScore(BehaviorScore score) {
+        this.id = score.id;
+        this.date = score.date;
+        this.currentAnnualScore = score.currentAnnualScore;
+        this.currentWeeklyScore = score.currentWeeklyScore;
+        if(null != score.student) {
+            this.student = new Student(score.student);
+        }
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = HibernateConsts.BEHAVIOR_SCORE_ID)
