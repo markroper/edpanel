@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public class KickboardEtl implements IEtlEngine {
     private StaffAssociator staffAssociator;
     private Boolean enabled;
     private static final Integer CHUNK_SIZE = 2000;
-    private LocalDate CUTOFF = LocalDate.of(2015, 7, 1);
+    private LocalDate CUTOFF;
     private KickboardSyncResult result = new KickboardSyncResult();
 
     @Override
@@ -43,6 +44,13 @@ public class KickboardEtl implements IEtlEngine {
         syncPoints();
         syncBehavior();
 
+        //Get the most recent July 1 in the past, thats our cutoff date.
+        LocalDate now = LocalDate.now();
+        int currYear = now.getYear();
+        if(now.getMonth().getValue() <= Month.JULY.getValue() ) {
+            currYear = currYear - 1;
+        }
+        CUTOFF = LocalDate.of(currYear, 7, 1);
         kickboardClient.close();
         return result;
     }
