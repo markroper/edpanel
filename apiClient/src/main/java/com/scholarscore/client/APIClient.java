@@ -442,7 +442,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public void createAttendance(Long schoolId, Long studentId, List<Attendance> attends) throws HttpClientException {
+    public void createAttendances(Long schoolId, Long studentId, List<Attendance> attends) throws HttpClientException {
         createVoidResponse(attends,
                 SCHOOL_ENDPOINT + "/" + schoolId +
                 STUDENT_ENDPOINT + "/" + studentId +
