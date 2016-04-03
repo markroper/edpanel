@@ -2,6 +2,7 @@ bin/
 out/
 build/
 test-output/
+classes/
 .gradle
 *.iml
 .project
