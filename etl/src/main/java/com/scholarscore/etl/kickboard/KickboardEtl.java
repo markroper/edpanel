@@ -110,21 +110,26 @@ public class KickboardEtl implements IEtlEngine {
         Map<Long, Set<LocalDate>> studentIdToScoreDateSet = new HashMap<>();
         Map<Long, Set<BehaviorScore>> studentIdToScoreSet = new HashMap<>();
         Set<Long> studentsWithResolvedScores = new HashSet<>();
-        HashMap<Long, Student> sourceSystemUserIdToStudent = new HashMap<>();
+        HashMap<String, Student> sourceSystemUserIdToStudent = new HashMap<>();
         for(Map.Entry<Long, Student> entry: studentAssociator.getUsers().entrySet()) {
-            sourceSystemUserIdToStudent.put(Long.valueOf(entry.getValue().getSourceSystemUserId()), entry.getValue());
+            sourceSystemUserIdToStudent.put(entry.getValue().getSourceSystemUserId(), entry.getValue());
         }
         while(null != sourceScores) {
             List<BehaviorScore> scoresToCreate = new ArrayList<>();
             for(BehaviorScore score: sourceScores) {
                 //Resolve the correct student and set it on the source:
-                score.setStudent(sourceSystemUserIdToStudent.get(score.getStudent().getSourceSystemUserId()));
+                Student stud = sourceSystemUserIdToStudent.get(score.getStudent().getSourceSystemUserId());
+                if(null == stud) {
+                    LOGGER.info("Unable to resolve the student within EdPanel for: " + score.toString());
+                    continue;
+                }
+                score.setStudent(stud);
                 //If the current behavior from Kickboard's user's data hasn't been pulled from EdPanel, pull it.
-                if(!studentsWithResolvedScores.contains(score.getStudent().getId())) {
+                if(!studentsWithResolvedScores.contains(stud.getId())) {
                     try {
                         Collection<BehaviorScore> edPanelScores =
-                                scholarScore.getBehaviorScores(score.getStudent().getId(), CUTOFF);
-                        studentsWithResolvedScores.add(score.getStudent().getId());
+                                scholarScore.getBehaviorScores(stud.getId(), CUTOFF);
+                        studentsWithResolvedScores.add(stud.getId());
                         for(BehaviorScore b : edPanelScores) {
                             Long studentId = b.getStudent().getId();
                             if(!studentIdToScoreDateSet.containsKey(studentId)) {
@@ -139,13 +144,13 @@ public class KickboardEtl implements IEtlEngine {
                                 score.getStudent().getId());
                     }
                     //If the behavior doesn't exist in edpanel, create it, otherwise update it
-                    if(!studentIdToScoreDateSet.containsKey(score.getStudent().getId()) ||
-                            !studentIdToScoreDateSet.get(score.getStudent().getId()).contains(score.getDate())) {
+                    if(!studentIdToScoreDateSet.containsKey(stud.getId()) ||
+                            !studentIdToScoreDateSet.get(stud.getId()).contains(score.getDate())) {
                         //create the behavior
                         scoresToCreate.add(score);
                     } else {
                         BehaviorScore oldScore = null;
-                        Set<BehaviorScore> scoresForStudent = studentIdToScoreSet.get(score.getStudent().getId());
+                        Set<BehaviorScore> scoresForStudent = studentIdToScoreSet.get(stud.getId());
                         for(BehaviorScore s: scoresForStudent) {
                             if(s.getDate().equals(score.getDate())) {
                                 oldScore = s;
@@ -155,8 +160,8 @@ public class KickboardEtl implements IEtlEngine {
                         //update the behavior
                         updateBehaviorScore(oldScore, score);
                         //Then remove it from the set so we know what to delete when we're done...
-                        studentIdToScoreSet.get(score.getStudent().getId()).remove(oldScore);
-                        studentIdToScoreDateSet.get(score.getStudent().getId()).remove(score.getDate());
+                        studentIdToScoreSet.get(stud.getId()).remove(oldScore);
+                        studentIdToScoreDateSet.get(stud.getId()).remove(score.getDate());
                     }
                 }
             }
@@ -180,9 +185,7 @@ public class KickboardEtl implements IEtlEngine {
         if(!newBehavior.equals(oldBehavior)) {
             try {
                 scholarScore.updateBehaviorScore(newBehavior.getStudent().getId(), newBehavior.getDate(), newBehavior);
-                result.addUpdated(1);
             } catch (HttpClientException e) {
-                result.addFailedToUpdate(1);
                 LOGGER.warn("Unable to update the behavior score within EdPanel: " + newBehavior.toString());
             }
         }
@@ -204,9 +207,7 @@ public class KickboardEtl implements IEtlEngine {
         if(null != b && b.size() > 0) {
             try {
                 scholarScore.createBehaviorScores(b);
-                result.addCreated(b.size());
             } catch (HttpClientException e) {
-                result.addFailedToCreate(b.size());
                 LOGGER.warn("Failed to create behavior scores within EdPanel: " + b.toString());
             }
         }

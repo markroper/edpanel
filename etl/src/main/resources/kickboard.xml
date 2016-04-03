@@ -20,6 +20,7 @@
     <bean id="kickboardClient"
           class="com.scholarscore.etl.kickboard.KickboardClient">
         <constructor-arg index="0" type="java.net.URI" value="${kickboard.client.behavior.url}"/>
+        <constructor-arg index="1" type="java.net.URI" value="${kickboard.client.pointbank.url}"/>
     </bean>
 
 </beans>

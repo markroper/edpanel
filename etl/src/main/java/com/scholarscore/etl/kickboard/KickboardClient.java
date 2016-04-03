@@ -68,7 +68,7 @@ public class KickboardClient extends BaseHttpClient {
         }
         if(null == pointsParser) {
             try {
-                InputStream fileInput = new FileInputStream(behaviorCsv);
+                InputStream fileInput = new FileInputStream(pointsCsv);
                 pointsParser = new PointsParser(fileInput);
             } catch (FileNotFoundException e) {
                 LOGGER.error("Failed to read in the points CSV file.");
