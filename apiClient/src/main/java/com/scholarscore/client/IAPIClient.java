@@ -10,6 +10,7 @@ import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.SchoolDay;
+import com.scholarscore.models.behavior.BehaviorScore;
 import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.user.Staff;
@@ -49,6 +50,12 @@ public interface IAPIClient {
     List<Long> createBehaviors(List<Behavior> behavior) throws HttpClientException;
     Behavior updateBehavior(Long studentId, Long behaviorId, Behavior behavior) throws HttpClientException;
     void deleteBehaviorBySourceId(Long studentId, String behaviorId) throws HttpClientException;
+
+    Collection<BehaviorScore> getBehaviorScores(Long studentId, LocalDate cutoffDate) throws HttpClientException;
+    List<Long> createBehaviorScores(List<BehaviorScore> scores) throws HttpClientException;
+    BehaviorScore updateBehaviorScore(Long studentId, LocalDate date, BehaviorScore score) throws HttpClientException;
+    void deleteBehaviorScore(Long studentId, LocalDate scoreDate) throws HttpClientException;
+
 
     //USERS
     Staff createTeacher(Staff teacher) throws HttpClientException;

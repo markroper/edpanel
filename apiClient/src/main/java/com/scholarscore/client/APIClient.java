@@ -13,6 +13,7 @@ import com.scholarscore.models.assignment.Assignment;
 import com.scholarscore.models.assignment.StudentAssignment;
 import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.attendance.SchoolDay;
+import com.scholarscore.models.behavior.BehaviorScore;
 import com.scholarscore.models.factory.AssignmentFactory;
 import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.grade.StudentSectionGrade;
@@ -52,6 +53,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     private static final String STUDENT_SECTION_GRADE_ENDPOINT = "/grades";
     private static final String TEACHER_ENDPOINT = "/teachers";
     private static final String BEHAVIOR_ENDPOINT = "/behaviors";
+    private static final String BEHAVIOR_SCORES_ENDPOINT = "/behaviorscores";
     private static final String DAYS_ENDPOINT = "/days";
     private static final String ATTENDANCE_ENDPOINT = "/attendance";
     private static final String GPA_ENDPOINT = "/gpas";
@@ -266,6 +268,37 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     @Override
     public void deleteBehaviorBySourceId(Long studentId, String ssid) throws HttpClientException {
         delete(BASE_API_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId + "/" + BEHAVIOR_ENDPOINT + "/" + ssid + "/ssid");
+    }
+
+    @Override
+    public Collection<BehaviorScore> getBehaviorScores(Long studentId, LocalDate cutoffDate) throws HttpClientException {
+        String url = BASE_API_ENDPOINT
+                + STUDENT_ENDPOINT + "/" + studentId + BEHAVIOR_SCORES_ENDPOINT;
+        if(null != cutoffDate) {
+            url += "?cutoffDate=" + cutoffDate.toString();
+        }
+        BehaviorScore[] scores = get(BehaviorScore[].class, url);
+        return Arrays.asList(scores);
+    }
+
+    @Override
+    public List<Long> createBehaviorScores(List<BehaviorScore> scores) throws HttpClientException {
+        return createListResponse(scores, BEHAVIOR_SCORES_ENDPOINT);
+    }
+
+    @Override
+    public BehaviorScore updateBehaviorScore(Long studentId, LocalDate date, BehaviorScore score) throws HttpClientException {
+        if (studentId == null || studentId < 0) { return null; }
+        EntityId id = update(score, STUDENT_ENDPOINT + "/" + studentId + "/" + BEHAVIOR_SCORES_ENDPOINT + "/" + date);
+        BehaviorScore response = new BehaviorScore(score);
+        response.setId(id.getId());
+        return response;
+    }
+
+    @Override
+    public void deleteBehaviorScore(Long studentId, LocalDate scoreDate) throws HttpClientException {
+        delete(BASE_API_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId +
+                "/" + BEHAVIOR_SCORES_ENDPOINT + "/" + scoreDate);
     }
 
     public Staff createAdministrator(Staff administrator) throws HttpClientException {
