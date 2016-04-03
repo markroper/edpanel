@@ -63,7 +63,6 @@ public class PointsParser {
                     weekOfIdx = i;
                 }
             }
-            is.reset();
         } catch (IOException e) {
             LOGGER.error("Unable to parse the header row of the behavior CSV file.");
         }

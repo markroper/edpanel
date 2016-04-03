@@ -102,6 +102,9 @@ public class KickboardClient extends BaseHttpClient {
         if(null != parser) {
             parser.close();
         }
+        if(null != pointsParser) {
+            pointsParser.close();
+        }
         if(null != behaviorCsv) {
             behaviorCsv.delete();
         }
