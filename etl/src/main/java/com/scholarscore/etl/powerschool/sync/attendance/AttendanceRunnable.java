@@ -135,7 +135,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         }
         //Perform the bulk creates!
         try {
-            edPanel.createAttendance(school.getId(), student.getId(), attendanceToCreate);
+            edPanel.createAttendances(school.getId(), student.getId(), attendanceToCreate);
         } catch (HttpClientException e) {
             for(Attendance s: attendanceToCreate) {
                 results.attendanceCreateFailed(Long.valueOf(s.getSourceSystemId()));
