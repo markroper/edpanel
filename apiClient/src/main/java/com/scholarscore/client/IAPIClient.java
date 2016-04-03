@@ -84,7 +84,7 @@ public interface IAPIClient {
 
     //Attendance
     Attendance createAttendance(Long schoolId, Long studentId, Attendance attend) throws HttpClientException;
-    void createAttendance(Long schoolId, Long studentId, List<Attendance> attends) throws HttpClientException;
+    void createAttendances(Long schoolId, Long studentId, List<Attendance> attends) throws HttpClientException;
     void deleteAttendance(Long schoolId, Long studentId, Attendance attend) throws HttpClientException;
     Attendance updateAttendance(Long schoolId, Long studentId, Attendance attend) throws IOException;
     Attendance[] getAttendance(Long schoolId, Long studentId) throws HttpClientException;
