@@ -98,8 +98,8 @@ public class BehaviorController extends BaseController {
             @ApiParam(name = "studentId", required = true, value = "Student ID")
             @PathVariable(value="studentId") Long studentId,
             @RequestParam(value="cutoffDate", required = false)
-            @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) LocalDate cuttoffDate) {
-        return respond(pm.getBehaviorManager().getAllBehaviorScores(studentId, cuttoffDate));
+            @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) LocalDate cutoffDate) {
+        return respond(pm.getBehaviorManager().getAllBehaviorScores(studentId, cutoffDate));
     }
 
     @ApiOperation(

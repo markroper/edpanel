@@ -38,8 +38,12 @@
                                  onUpdate="CASCADE"
                                  referencedColumnNames="student_user_fk"
                                  referencedTableName="student"/>
-        <addUniqueConstraint columnNames="behavior_score_date, student_fk"
-                             constraintName="quniq$behavior_score$date$student"
-                             tableName="behavior_score"/>
+        <createIndex indexName="behavior_score$date$student"
+                     tableName="behavior_score"
+                     unique="true">
+            <column name="behavior_score_date"/>
+            <column name="student_fk"/>
+        </createIndex>
+
     </changeSet>
 </databaseChangeLog>

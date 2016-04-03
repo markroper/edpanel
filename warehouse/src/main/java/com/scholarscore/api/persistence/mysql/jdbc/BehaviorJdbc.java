@@ -51,7 +51,7 @@ public class BehaviorJdbc implements BehaviorPersistence {
             String[] params = new String[]{"studentId", "date"};
             Object[] paramValues = new Object[]{studentId, cutoffDate};
             return (Collection<BehaviorScore>) hibernateTemplate.findByNamedParam(
-                    SCORE_HQL_BASE + " where b.student.id = :studentId and b.date >= :cutoffDate",
+                    SCORE_HQL_BASE + " where b.student.id = :studentId and b.date >= :date",
                     params,
                     paramValues);
         }

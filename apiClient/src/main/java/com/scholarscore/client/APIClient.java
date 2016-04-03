@@ -289,7 +289,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     @Override
     public BehaviorScore updateBehaviorScore(Long studentId, LocalDate date, BehaviorScore score) throws HttpClientException {
         if (studentId == null || studentId < 0) { return null; }
-        EntityId id = update(score, STUDENT_ENDPOINT + "/" + studentId + "/" + BEHAVIOR_SCORES_ENDPOINT + "/" + date);
+        EntityId id = update(score, STUDENT_ENDPOINT + "/" + studentId + BEHAVIOR_SCORES_ENDPOINT + "/" + date);
         BehaviorScore response = new BehaviorScore(score);
         response.setId(id.getId());
         return response;
@@ -297,8 +297,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
 
     @Override
     public void deleteBehaviorScore(Long studentId, LocalDate scoreDate) throws HttpClientException {
-        delete(BASE_API_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId +
-                "/" + BEHAVIOR_SCORES_ENDPOINT + "/" + scoreDate);
+        delete(BASE_API_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId + BEHAVIOR_SCORES_ENDPOINT + "/" + scoreDate);
     }
 
     public Staff createAdministrator(Staff administrator) throws HttpClientException {

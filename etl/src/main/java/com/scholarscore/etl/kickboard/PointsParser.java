@@ -30,7 +30,7 @@ public class PointsParser {
     private InputStream iis;
     private BufferedReader br;
     private String[] headerRow;
-    private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    private final DateTimeFormatter dashDtf = DateTimeFormatter.ofPattern("MM-dd-yyyy");
     //"student id","external id","last name","first name","school name","group name","grade level","week of","weekly dollar points","weekly merit points","yearly dollar points","yearly merit points"
     Integer externalIdIdx, remoteStudentIdIdx, weeklyMeritPointsIdx, annualMeritPointsIdx, weekOfIdx;
 
@@ -55,7 +55,7 @@ public class PointsParser {
                     remoteStudentIdIdx = i;
                 } else if("external id".equals(header)) {
                     externalIdIdx = i;
-                } else if("yearly merit points".equals(header)) {
+                } else if("weekly merit points".equals(header)) {
                     weeklyMeritPointsIdx = i;
                 } else if("yearly merit points\"".equals(header)) {
                     annualMeritPointsIdx = i;
@@ -142,7 +142,7 @@ public class PointsParser {
     private BehaviorScore resolveScoreFromLine(String line, BufferedReader br, int retries) {
         for(int i = 0; i < retries; i++) {
             try {
-                BehaviorScore b = resolveBehaviorFromLine(line);
+                BehaviorScore b = resolveScoreFromLine(line);
                 if(null != b) {
                     return b;
                 }
@@ -166,14 +166,14 @@ public class PointsParser {
      * @return
      * @throws IOException
      */
-    private BehaviorScore resolveBehaviorFromLine(String line) throws IOException {
+    private BehaviorScore resolveScoreFromLine(String line) throws IOException {
         CSVParser p = CSVParser.parse(line, CSVFormat.DEFAULT);
         List<CSVRecord> records = p.getRecords();
         if (null != records && records.size() > 0) {
             CSVRecord record = records.get(0);
             BehaviorScore score = new BehaviorScore();
             try {
-                score.setDate(LocalDate.parse(record.get(weekOfIdx), dtf));
+                score.setDate(LocalDate.parse(record.get(weekOfIdx), dashDtf));
             } catch (DateTimeParseException e) {
                 LOGGER.debug("Unable to parse date from the behavior event: " + e.getMessage());
             }
@@ -183,6 +183,9 @@ public class PointsParser {
             st.setSourceSystemId(String.valueOf(resolveLongValue(record, remoteStudentIdIdx)));
             st.setSourceSystemUserId(String.valueOf(resolveLongValue(record, externalIdIdx)));
             score.setStudent(st);
+            if(null == score.getDate()) {
+                return null;
+            }
             return score;
         }
         return null;
