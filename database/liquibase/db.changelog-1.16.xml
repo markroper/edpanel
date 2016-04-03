@@ -17,11 +17,11 @@
                     remarks="The date the scores are as of">
             </column>
             <column name="behavior_score_weekly_score"
-                    type="bigint unsigned"
+                    type="bigint signed"
                     remarks="Weekly score point value">
             </column>
             <column name="behavior_score_annual_score"
-                    type="bigint unsigned"
+                    type="bigint signed"
                     remarks="Annualized score, if any">
                 <constraints nullable="false"/>
             </column>
