@@ -48,9 +48,10 @@ public class BehaviorParser {
         Reader in = new InputStreamReader(is);
         br = new BufferedReader(new InputStreamReader(is));
         try {
-            headerRow = br.readLine().split("\",\"");
+            headerRow = br.readLine().split(",");
             for(int i = 0; i < headerRow.length; i++) {
                 String header = headerRow[i];
+                header = header.replaceAll("^\"|\"$", "");
                 if("behavior id".equals(header)) {
                     remoteBehaviorIdIdx = i;
                 } else if("first name".equals(header)) {
@@ -61,7 +62,7 @@ public class BehaviorParser {
                     staffLastIdx = i;
                 } else if("staff first name".equals(header)) {
                     staffFirstIdx = i;
-                } else if("\"student id".equals(header)) {
+                } else if("student id".equals(header)) {
                     remoteStudentIdIdx = i;
                 } else if("external id".equals(header)) {
                     externalIdIdx = i;
@@ -75,7 +76,7 @@ public class BehaviorParser {
                     meritPointsIdx = i;
                 } else if("staff id".equals(header)) {
                     staffIdx = i;
-                } else if("incident id\"".equals(header)) {
+                } else if("incident id".equals(header)) {
                     incidentIdIdx = i;
                 }
             }

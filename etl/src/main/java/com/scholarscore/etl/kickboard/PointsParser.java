@@ -48,16 +48,17 @@ public class PointsParser {
         is.mark(0);
         br = new BufferedReader(new InputStreamReader(is));
         try {
-            headerRow = br.readLine().split("\",\"");
+            headerRow = br.readLine().split(",");
             for(int i = 0; i < headerRow.length; i++) {
                 String header = headerRow[i];
-                if("\"student id".equals(header)) {
+                header = header.replaceAll("^\"|\"$", "");
+                if("student id".equals(header)) {
                     remoteStudentIdIdx = i;
                 } else if("external id".equals(header)) {
                     externalIdIdx = i;
                 } else if("weekly merit points".equals(header)) {
                     weeklyMeritPointsIdx = i;
-                } else if("yearly merit points\"".equals(header)) {
+                } else if("yearly merit points".equals(header)) {
                     annualMeritPointsIdx = i;
                 } else if("week of".equals(header)) {
                     weekOfIdx = i;
