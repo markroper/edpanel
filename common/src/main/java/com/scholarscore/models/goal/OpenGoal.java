@@ -23,14 +23,11 @@ public class OpenGoal extends Goal {
 
     public OpenGoal() {
         super();
-        setGoalType(GoalType.OPEN);
     }
 
     public OpenGoal(OpenGoal goal) {
         super(goal);
-        this.setGoalType(GoalType.OPEN);
         this.message = goal.message;
-
     }
 
     @Column(name = HibernateConsts.GOAL_MESSAGE, columnDefinition = "blob")
@@ -43,9 +40,8 @@ public class OpenGoal extends Goal {
     }
 
     @Override
-    public void setGoalType(GoalType goalType) {
-        // don't allow the parent class goalType to be set to anything besides OPEN
-        super.setGoalType(GoalType.OPEN);
+    protected GoalType goalType() {
+        return GoalType.OPEN;
     }
 
     @Override

@@ -174,7 +174,7 @@ public class QuerySqlPathHelper {
         // then wire up the edges
         for (Dimension dimension : dimensions) {
             Node node = nodesSoFar.get(dimension);
-            IDimension dimensionClass = Dimension.buildDimension(dimension);
+            IDimension dimensionClass = dimension.buildDimension();
             Set<Dimension> parentDimensions = dimensionClass.getParentDimensions();
             if (parentDimensions != null && parentDimensions.size() > 0) {
                 Node[] neighbors = new Node[parentDimensions.size()];

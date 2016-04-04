@@ -113,7 +113,7 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Long delete(long sectionId, long studentId) {
+    public void delete(long sectionId, long studentId) {
         StudentSectionGrade toDelete = select(sectionId, studentId);
         if (null != toDelete) {
             hibernateTemplate.delete(toDelete);
@@ -126,7 +126,6 @@ public class StudentSectionGradeJdbc implements StudentSectionGradePersistence {
         if(null != sgs) {
             hibernateTemplate.deleteAll(sgs);
         }
-        return toDelete.getId();
     }
 
     @Override

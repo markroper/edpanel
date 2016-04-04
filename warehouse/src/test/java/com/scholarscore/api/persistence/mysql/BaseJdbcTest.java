@@ -31,10 +31,15 @@ import com.scholarscore.models.user.User;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.time.LocalDate;
+
+import static org.testng.Assert.assertNull;
 
 /**
  * Created by mattg on 8/29/15.
@@ -49,8 +54,8 @@ public class BaseJdbcTest {
     protected final Course course = new Course();
     protected final SchoolYear schoolYear = new SchoolYear();
     protected final Term term = new Term();
-    protected final BehaviorGoal behaviorGoal = new BehaviorGoal();
-    protected final AssignmentGoal assignmentGoal = new AssignmentGoal();
+    protected BehaviorGoal behaviorGoal = new BehaviorGoal();
+    protected AssignmentGoal assignmentGoal = new AssignmentGoal();
     protected final StudentAssignment studentAssignment = new StudentAssignment();
     protected final GradedAssignment gradedAssignment = new GradedAssignment();
 
@@ -193,7 +198,7 @@ public class BaseJdbcTest {
         assignmentGoal.setStudentAssignment(studentAssignment);
     }
 
-    public School createSchool() {
+    protected School createSchool() {
         if (null == createdSchool) {
             Long schoolId = schoolDao.createSchool(school);
             this.createdSchool = schoolDao.selectSchool(schoolId);
@@ -201,7 +206,15 @@ public class BaseJdbcTest {
         return createdSchool;
     }
 
-    public SchoolYear createSchoolYear() {
+    protected void deleteSchoolAndVerify() { 
+        if (null != createdSchool) {
+            Long id = createdSchool.getId();
+            schoolDao.delete(id);
+            createdSchool = null;
+        }
+    }
+
+    protected SchoolYear createSchoolYear() {
         if (null == createdSchoolYear) {
             School createdSchool = createSchool();
             createdSchoolYear = new SchoolYear(schoolYear);
@@ -212,7 +225,18 @@ public class BaseJdbcTest {
         return createdSchoolYear;
     }
 
-    public Term createTerm() {
+    protected void deleteSchoolYearAndVerify() {
+        if (createdSchoolYear != null) {
+            Long schoolId = createdSchoolYear.getSchool().getId();
+            Long schoolYearId = createdSchoolYear.getId();
+            schoolYearDao.delete(schoolYearId);
+            assertNull(schoolYearDao.select(schoolId, schoolYearId),
+                    "Expected school year to be removed");
+            createdSchoolYear = null;
+        }
+    }
+
+    protected Term createTerm() {
         if (null == createdTerm) {
             SchoolYear createSchoolYear = createSchoolYear();
             createdTerm = new Term(term);
@@ -223,7 +247,18 @@ public class BaseJdbcTest {
         return createdTerm;
     }
 
-    public Course createCourse() {
+    protected void deleteTermAndVerify() {
+        if (createdTerm != null) {
+            Long schoolYearId = createdTerm.getSchoolYear().getId();
+            Long termId = createdTerm.getId();
+            termDao.delete(termId);
+            assertNull(termDao.select(schoolYearId, termId),
+                    "Expected term to be removed");
+            createdTerm = null;
+        }
+    }
+
+    protected Course createCourse() {
         if (null == createdCourse) {
             createdCourse = new Course(course);
             createdCourse.setSchool(createSchool());
@@ -233,7 +268,18 @@ public class BaseJdbcTest {
         return createdCourse;
     }
 
-    public Section createSection() {
+    protected void deleteCourseAndVerify() {
+        if (createdCourse != null) {
+            Long schoolId = createdCourse.getSchool().getId();
+            Long courseId = createdCourse.getId();
+            courseDao.delete(courseId);
+            assertNull(courseDao.select(schoolId, courseId),
+                    "Expected section to be removed");
+            createdCourse = null;
+        }
+    }
+
+    protected Section createSection() {
         if (null == createdSection) {
             createdSection = new Section();
             createdSection.setTerm(createTerm());
@@ -249,7 +295,18 @@ public class BaseJdbcTest {
         return createdSection;
     }
 
-    public User createUser() {
+    protected void deleteSectionAndVerify() {
+        if (createdSection != null) {
+            Long termId = createdSection.getTerm().getId();
+            Long sectionId = createdSection.getId();
+            sectionDao.delete(sectionId);
+            assertNull(sectionDao.select(termId, sectionId),
+                    "Expected section to be removed");
+            createdSection = null;
+        }
+    }
+
+    protected User createUser() {
         if (null == createdUser) {
             Staff user = new Staff();
             user.setUsername("foobar" + System.currentTimeMillis());
@@ -261,7 +318,18 @@ public class BaseJdbcTest {
         return createdUser;
     }
 
-    public Student createStudent() {
+    protected void deleteUserAndVerify() {
+        if (null != createdUser) {
+            Long id = createdUser.getId();
+            userDao.deleteUser(id);
+            assertNull(userDao.selectUser(id),
+                    "Expected user to be removed");
+            createdUser = null;
+        }
+    }
+
+
+    protected Student createStudent() {
         if (null == createdStudent) {
             createdStudent = new Student(student);
             Address homeAddress = new Address(address);
@@ -277,8 +345,18 @@ public class BaseJdbcTest {
         }
         return createdStudent;
     }
-    
-    public Assignment createAssignment() { 
+
+    protected void deleteStudentAndVerify() {
+        if (createdStudent != null) {
+            Long id = createdStudent.getId();
+            studentDao.delete(id);
+            assertNull(studentDao.select(id),
+                    "Expected student to be removed");
+            createdStudent = null;
+        }
+    }
+
+    protected Assignment createAssignment() { 
         if (null == createdGradedAssignment) {
             createdGradedAssignment = new GradedAssignment(gradedAssignment);
 
@@ -292,8 +370,8 @@ public class BaseJdbcTest {
         }
         return createdGradedAssignment;
     }
-    
-    public StudentAssignment createStudentAssignment() { 
+
+    protected StudentAssignment createStudentAssignment() { 
         if (null == createdStudentAssignment) {
             createdStudentAssignment = new StudentAssignment(studentAssignment);
             createdStudentAssignment.setAssignment(createAssignment());
@@ -307,7 +385,7 @@ public class BaseJdbcTest {
         return createdStudentAssignment;
     }
 
-    public StudentSectionGrade createStudentSectionGrade() {
+    protected StudentSectionGrade createStudentSectionGrade() {
         if (null == createdStudentSectionGrade) {
             createdStudentSectionGrade = new StudentSectionGrade();
             Section createdSection = createSection();
@@ -327,7 +405,7 @@ public class BaseJdbcTest {
         return createdStudentSectionGrade;
     }
 
-    public Staff createTeacher() {
+    protected Staff createTeacher() {
         if (null == createdTeacher) {
             Long id = teacherDao.createTeacher(teacher);
             createdTeacher = teacherDao.select(id);
@@ -336,8 +414,18 @@ public class BaseJdbcTest {
 
         return createdTeacher;
     }
-    
-    public Staff createAdmin() { 
+
+    protected void deleteTeacherAndVerify() {
+        if (createdTeacher != null) {
+            Long id = createdTeacher.getId();
+            teacherDao.delete(id);
+            assertNull(teacherDao.select(id),
+                    "Expected admin to be removed");
+            createdTeacher = null;
+        }
+    }
+
+    protected Staff createAdmin() { 
         if (null == createdAdmin) {
             Long id = adminDao.createAdministrator(admin);
             createdAdmin = adminDao.select(id);
@@ -346,7 +434,17 @@ public class BaseJdbcTest {
         return createdAdmin;
     }
 
-    public Goal createBehaviorGoal() {
+    protected void deleteAdminAndVerify() {
+        if (createdAdmin != null) {
+            Long id = createdAdmin.getId();
+            adminDao.delete(id);
+            assertNull(adminDao.select(id),
+                    "Expected admin to be removed");
+            createdAdmin = null;
+        }
+    }
+
+    protected Goal createBehaviorGoal() {
         if (null == createdBehaviorGoal) {
             createdBehaviorGoal = new BehaviorGoal();
             createdBehaviorGoal.setName("Behaves nicely when created");
@@ -360,7 +458,17 @@ public class BaseJdbcTest {
         return createdBehaviorGoal;
     }
 
-    public Goal createAssignmentGoal() {
+    protected void deleteBehaviorGoalAndVerify() { 
+        if (null != createdBehaviorGoal) {
+            Long studentId = createdBehaviorGoal.getStudent().getId();
+            Long goalId = createdBehaviorGoal.getId();
+            goalDao.delete(studentId, goalId);
+            assertNull(goalDao.select(studentId, goalId), "Expected goal to be removed");
+            createdBehaviorGoal = null;
+        }
+    }
+
+    protected Goal createAssignmentGoal() {
         if (null == createdBehaviorGoal) {
             createdAssignmentGoal = new AssignmentGoal();
             createdAssignmentGoal.setName("Behaves nicely when created");
@@ -377,27 +485,91 @@ public class BaseJdbcTest {
         }
         return createdAssignmentGoal;
     }
+
+    protected void deleteAssignmentGoalAndVerify() {
+        if (null != createdAssignmentGoal) {
+            Long studentId = createdAssignmentGoal.getStudent().getId();
+            Long goalId = createdAssignmentGoal.getId();
+            goalDao.delete(studentId, goalId);
+            assertNull(goalDao.select(studentId, goalId), "Expected goal to be removed");
+            createdAssignmentGoal = null;
+        }
+    }
     
     @BeforeMethod
     public void initialize() {
         // many tests rely on this user not existing so they can create it -- so delete it if it exists
+        String[] usernamesToClear = { adminUsername, teacherUsername, studentUsername };
         
-        User existingAdminUser = userDao.selectUserByName(adminUsername);
-        if (existingAdminUser != null) {
-            userDao.deleteUser(existingAdminUser.getId());
-            // createdAdmin = null (I guess we never use this admin?)
+        for (String usernameToClear : usernamesToClear) {
+            User existingUser = userDao.selectUserByName(usernameToClear);
+            if (createdUser != null && createdUser.equals(existingUser)) {
+                createdUser = null;
+            }
+            if (existingUser != null) {
+                userDao.deleteUser(existingUser.getId());
+            }
         }
-        User existingTeacher = userDao.selectUserByName(teacherUsername);
-        if (existingTeacher != null) {
-            userDao.deleteUser(existingTeacher.getId());
+    }
+    
+    @AfterMethod
+    public void cleanup() {
+        if (createdSchool != null) {
+            schoolDao.delete(createdSchool.getId());
+            createdSchool = null;
+        }
+        if (createdSchoolYear != null) {
+            schoolYearDao.delete(createdSchoolYear.getId());
+            createdSchoolYear = null;
+        }
+        if (createdTerm != null) {
+            termDao.delete(createdTerm.getId());
+            createdTerm = null;
+        }
+        if (createdCourse != null) {
+            courseDao.delete(createdCourse.getId());
+            createdCourse = null;
+        }
+        if (createdSection != null) {
+            sectionDao.delete(createdSection.getId());
+            createdSection = null;
+        }
+        if (createdGradedAssignment != null) {
+            assignmentDao.delete(createdGradedAssignment.getId());
+            createdGradedAssignment = null;
+        }
+        if (createdStudentAssignment != null) {
+            studentAssignmentDao.delete(createdStudentAssignment.getId());
+            createdStudentAssignment = null;
+        }
+        if (createdAssignmentGoal != null) {
+            goalDao.delete(createdAssignmentGoal.getStudent().getId(), createdAssignmentGoal.getId());
+            createdAssignmentGoal = null;
+        }
+        if (createdBehaviorGoal != null) {
+            goalDao.delete(createdBehaviorGoal.getStudent().getId(), createdBehaviorGoal.getId());
+            createdBehaviorGoal = null;
+        }
+        if (createdStudentSectionGrade != null) {
+            studentSectionGradeDao.delete(createdStudentSectionGrade.getSection().getId(), createdStudentSectionGrade.getStudent().getId());
+            createdStudentSectionGrade = null;
+        }
+        if (createdAdmin != null) {
+            adminDao.delete(createdAdmin.getUserId());
+            createdAdmin = null;
+        }
+        if (createdTeacher != null) {
+            teacherDao.delete(createdTeacher.getUserId());
             createdTeacher = null;
         }
-        User existingStudent = userDao.selectUserByName(studentUsername);
-        if (existingStudent != null) {
-            userDao.deleteUser(existingStudent.getId());
+        if (createdStudent != null) {
+            studentDao.delete(createdStudent.getUserId());
             createdStudent = null;
         }
-        
+        if (createdUser != null) {
+            userDao.deleteUser(createdUser.getId());
+            createdUser = null;
+        }
     }
 
 }
