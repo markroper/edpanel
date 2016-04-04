@@ -6,9 +6,12 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.Behavior;
+import com.scholarscore.models.behavior.BehaviorScore;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by cwallace on 9/16/2015.
@@ -67,6 +70,11 @@ public class BehaviorManagerImpl implements BehaviorManager {
     }
 
     @Override
+    public ServiceResponse<List<Long>> createBehaviors(List<Behavior> behaviors) {
+        return new ServiceResponse<>(behaviorPersistence.createBehaviors(behaviors));
+    }
+
+    @Override
     public ServiceResponse<Long> replaceBehavior(long studentId, long behaviorId, Behavior behavior) {
         StatusCode code = behaviorExists(studentId, behaviorId);
         if (!code.isOK()) {
@@ -101,9 +109,46 @@ public class BehaviorManagerImpl implements BehaviorManager {
     }
 
     @Override
-    public ServiceResponse<Collection<Behavior>> getAllBehaviors(long studentId) {
+    public ServiceResponse<Long> deleteBehaviorBySsid(long studentId, long ssid) {
+        behaviorPersistence.deleteBySsid(studentId, ssid);
+        return new ServiceResponse<Long>((Long) null);
+    }
+
+    @Override
+    public ServiceResponse<BehaviorScore> getBehaviorScore(long studentId, LocalDate date) {
+        return new ServiceResponse<BehaviorScore>(behaviorPersistence.selectScore(studentId, date));
+    }
+
+    @Override
+    public ServiceResponse<Collection<BehaviorScore>> getAllBehaviorScores(long studentId, LocalDate cutoffDate) {
+        return new ServiceResponse<>(behaviorPersistence.selectScores(studentId, cutoffDate));
+    }
+
+    @Override
+    public ServiceResponse<Long> createBehaviorScore(long studentId, BehaviorScore score) {
+        return new ServiceResponse<>(behaviorPersistence.createScore(studentId, score));
+    }
+
+    @Override
+    public ServiceResponse<List<Long>> createBehaviorScores(List<BehaviorScore> scores) {
+        return new ServiceResponse<>(behaviorPersistence.createScores(scores));
+    }
+
+    @Override
+    public ServiceResponse<Long> replaceBehaviorScore(long studentId, LocalDate date, BehaviorScore score) {
+        return new ServiceResponse<>(behaviorPersistence.replaceScore(studentId, date, score));
+    }
+
+    @Override
+    public ServiceResponse<Void> deleteBehaviorScore(long studentId, LocalDate date) {
+        behaviorPersistence.deleteScore(studentId, date);
+        return new ServiceResponse<>((Void) null);
+    }
+
+    @Override
+    public ServiceResponse<Collection<Behavior>> getAllBehaviors(long studentId, LocalDate cutoffDate) {
         return new ServiceResponse<Collection<Behavior>>
-                (behaviorPersistence.selectAll(studentId));
+                (behaviorPersistence.selectAll(studentId, cutoffDate));
     }
 
 }

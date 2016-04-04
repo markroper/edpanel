@@ -8,9 +8,10 @@
     <import resource="edpanel.xml"/>
     <import resource="ps_etl.xml"/>
     <import resource="dl_etl.xml"/>
-
+    <import resource="kickboard_etl.xml"/>
     <bean id="etlRunner" class="com.scholarscore.etl.runner.EtlRunner">
         <property name="etlEngine" ref="etlEngine" />
         <property name="dlEtlEngine" ref="dlEtlEngine" />
+        <property name="kickboardEtlEngine" ref="kickboardEtlEngine" />
     </bean>
 </beans>

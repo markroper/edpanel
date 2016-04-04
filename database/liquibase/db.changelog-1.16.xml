@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <changeSet author="Mark" id="changelog-1.16-change1">
+        <createTable tableName="behavior_score">
+            <column name="behavior_score_id"
+                    type="bigint unsigned"
+                    remarks="'Primary key identity column for a behavior score"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="behavior_score_date"
+                    type="date"
+                    remarks="The date the scores are as of">
+            </column>
+            <column name="behavior_score_weekly_score"
+                    type="bigint signed"
+                    remarks="Weekly score point value">
+            </column>
+            <column name="behavior_score_annual_score"
+                    type="bigint signed"
+                    remarks="Annualized score, if any">
+                <constraints nullable="false"/>
+            </column>
+            <column name="student_fk"
+                    type="bigint unsigned"
+                    remarks="The student associated with the score">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="behavior_score"
+                                 baseColumnNames="student_fk"
+                                 constraintName="behavior_score$student_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="student_user_fk"
+                                 referencedTableName="student"/>
+        <createIndex indexName="behavior_score$date$student"
+                     tableName="behavior_score"
+                     unique="true">
+            <column name="behavior_score_date"/>
+            <column name="student_fk"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>

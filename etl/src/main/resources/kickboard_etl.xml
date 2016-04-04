@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                     http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <import resource="kickboard.xml"/>
+    <import resource="edpanel.xml"/>
+    
+    <bean id="kickboardEtlEngine" class="com.scholarscore.etl.kickboard.KickboardEtl">
+        <property name="kickboardClient" ref="kickboardClient"/>
+        <property name="scholarScore" ref="edpanelClient"/>
+        <property name="enabled" value="${kickboard.enabled}"/>
+    </bean>
+
+</beans>

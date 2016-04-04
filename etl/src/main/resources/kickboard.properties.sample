@@ -1,0 +1,4 @@
+#see: https://kickboard.zendesk.com/entries/21854178-Data-Warehouse-Full-School-Year-Data-Export
+kickboard.enabled=true
+kickboard.client.url=https://{yourSubDomain}.kickboardforteachers.com/
+kickboard.client.key=
