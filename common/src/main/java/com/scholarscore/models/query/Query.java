@@ -303,7 +303,7 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
             for(AggregateMeasure am: aggregateMeasures) {
                 if(!measuresInUse.contains(am.getMeasure())) {
                     for(Measure m : measuresInUse) {
-                        if(!Measure.buildMeasure(m).getCompatibleMeasures().contains(am.getMeasure())){
+                        if(!m.buildMeasure().getCompatibleMeasures().contains(am.getMeasure())){
                             return false;
                         }
                     }
@@ -319,15 +319,15 @@ public class Query extends ApiModel implements Serializable, IApiModel<Query> {
                     for(Dimension d : dimensionsInUse) {
                         //If neither the field dimension nor the other dimension are parents of one another
                         //The dimensions are incompatible for a single query.
-                        if(!Dimension.buildDimension(d).getParentDimensions().contains(df.getDimension()) &&
-                                !Dimension.buildDimension(df.getDimension()).getParentDimensions().contains(d)) {
+                        if(!d.buildDimension().getParentDimensions().contains(df.getDimension()) &&
+                                !df.getDimension().buildDimension().getParentDimensions().contains(d)) {
                             return false;
                         }
                     }
                     dimensionsInUse.add(df.getDimension());
                     //Check that all measures in use are compatible with the new dimension
                     for(Measure m: measuresInUse) {
-                        if(!Measure.buildMeasure(m).getCompatibleDimensions().contains(df.getDimension())) {
+                        if(!m.buildMeasure().getCompatibleDimensions().contains(df.getDimension())) {
                             return false;
                         }
                     }
