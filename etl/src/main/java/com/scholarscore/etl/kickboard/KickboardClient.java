@@ -28,13 +28,25 @@ public class KickboardClient extends BaseHttpClient {
     private BehaviorParser parser;
     private PointsParser pointsParser;
     private ConsequenceParser consParser;
-    private URI bankUri;
-    private URI consequenceUri;
 
-    public KickboardClient(URI behaviorUri, URI bankUri, URI consequenceUri) {
-        super(behaviorUri);
-        this.bankUri = bankUri;
-        this.consequenceUri = consequenceUri;
+    private final URI behaviorUri;
+    private final URI bankUri;
+    private final URI consequenceUri;
+
+    // these need the client KEY appended to the end in order to be valid 
+    // in order to keep it simple, just append it to the end (this won't work if we have params not at the end)
+    private static final String BEHAVIOR_PATH = "export/download/file/behavior/key/"; // + CLIENT_ID
+    private static final String BANK_PATH = "export/download/file/points/key/"; // + CLIENT_ID
+    private static final String CONSEQUENCE_PATH = "export/download/file/conroster/key/"; // + CLIENT_ID
+    
+    public KickboardClient(URI baseUri, String key) {
+        super(baseUri);
+        String base = "";
+        if (baseUri != null) { base = baseUri.toString(); }
+        if (!base.endsWith("/")) { base = base + "/"; }
+        this.behaviorUri = URI.create(base + BEHAVIOR_PATH + key);
+        this.bankUri = URI.create(base + BANK_PATH + key);
+        this.consequenceUri = URI.create(base + CONSEQUENCE_PATH + key);
     }
 
     private FileInputStream downloadFile(URI u, String fileName, File file) throws FileNotFoundException {
@@ -68,7 +80,7 @@ public class KickboardClient extends BaseHttpClient {
     public List<KickboardBehavior> getBehaviorData(Integer chunkSize) {
         try {
             if(null == parser) {
-                InputStream fileInput = downloadFile(uri, "kickboardBehavior", behaviorCsv);
+                InputStream fileInput = downloadFile(behaviorUri, "kickboardBehavior", behaviorCsv);
                 parser = new BehaviorParser(fileInput);
             }
             return parser.next(chunkSize);
