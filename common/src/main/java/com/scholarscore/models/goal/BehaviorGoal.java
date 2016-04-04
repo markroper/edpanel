@@ -27,21 +27,16 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
 
     public BehaviorGoal() {
         super();
-        setGoalType(GoalType.BEHAVIOR);
     }
 
     public BehaviorGoal(BehaviorGoal goal) {
         super(goal);
-        this.setGoalType(GoalType.BEHAVIOR);
         this.behaviorCategory = goal.behaviorCategory;
-
     }
-
     
     @Override
-    public void setGoalType(GoalType goalType) {
-        // don't allow the parent class goalType to be set to anything besides BEHAVIOR
-        super.setGoalType(GoalType.BEHAVIOR);
+    protected GoalType goalType() {
+        return GoalType.BEHAVIOR;
     }
 
     @Column(name = HibernateConsts.BEHAVIOR_GOAL_CATEGORY)
@@ -115,7 +110,6 @@ public class BehaviorGoal extends Goal implements CalculatableBehavior {
 
         public BehaviorGoal build(){
             BehaviorGoal goal = super.build();
-            goal.setGoalType(GoalType.BEHAVIOR);
             goal.setStartDate(startDate);
             goal.setEndDate(endDate);
             goal.setBehaviorCategory(behaviorCategory);

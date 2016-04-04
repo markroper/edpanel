@@ -25,13 +25,13 @@ public class AssignmentJdbcTest extends BaseJdbcTest {
         assignment.setAvailablePoints(10L);
         assignment.setType(AssignmentType.ATTENDANCE);
         assignment.setDueDate(LocalDate.now());
-        assignment.setSection(createSection());
+        assignment.setSection(section);
         Long id = assignmentDao.insert(section.getId(), assignment);
         assertNotNull(id, "Expected assignment id to not be null");
 
         GradedAssignment outputAssignment = (GradedAssignment) assignmentDao.select(section.getId(), id);
         assertNotNull(outputAssignment, "Expected select statement to generate non-null assigment output from select method call");
-
+        
         assignmentDao.delete(id);
 
         outputAssignment = (GradedAssignment) assignmentDao.select(section.getId(), id);

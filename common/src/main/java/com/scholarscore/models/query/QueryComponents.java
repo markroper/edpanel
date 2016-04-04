@@ -29,7 +29,7 @@ public class QueryComponents implements Serializable {
     public Set<IDimension> buildAvailableDimensions() { 
         HashSet<IDimension> toReturn = new HashSet<>();
         for (Dimension dimension : Dimension.values()) {
-            toReturn.add(Dimension.buildDimension(dimension));
+            toReturn.add(dimension.buildDimension());
         }
         return toReturn;
     }
@@ -37,7 +37,7 @@ public class QueryComponents implements Serializable {
     public Set<IMeasure> buildAvailableMeasures()  {
         HashSet<IMeasure> toReturn = new HashSet<>();
         for (Measure measure : Measure.values()) {
-            toReturn.add(Measure.buildMeasure(measure));
+            toReturn.add(measure.buildMeasure());
         }
         return toReturn;
     }
