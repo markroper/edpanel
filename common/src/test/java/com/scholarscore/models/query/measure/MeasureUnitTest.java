@@ -16,7 +16,7 @@ public class MeasureUnitTest {
     @Test
     public void testMeasureHasClass() {
         for (Measure measure : Measure.values()) {
-            IMeasure measureClass = Measure.buildMeasure(measure);
+            IMeasure measureClass = measure.buildMeasure();
             assertNotNull(measureClass, "Measure " + measure + " is defined in Measures Enum but Measure.buildMeasure produces null!");
         }
     }
