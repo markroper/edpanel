@@ -35,7 +35,7 @@ public interface StudentSectionGradePersistence {
             long studentId,
             StudentSectionGrade entity);
 
-    public Long delete(long sectionId, long studentId);
+    public void delete(long sectionId, long studentId);
 
     List<SectionGrade> getSectionGradeOverTime(long studentId, long sectionId, LocalDate start, LocalDate end);
 }
