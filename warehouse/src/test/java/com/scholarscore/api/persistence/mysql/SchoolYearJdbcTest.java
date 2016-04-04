@@ -24,11 +24,6 @@ public class SchoolYearJdbcTest extends BaseJdbcTest {
         assertEquals(selectSchoolYear.getId(), createSchoolYear.getId(), "Unexpected id mismatch for school year");
         assertEquals(selectSchoolYear.getName(), createSchoolYear.getName(), "Unexpected name difference");
         assertEquals(selectSchoolYear.getSchool(), createSchoolYear.getSchool(), "Unexpected school difference");
-
-        schoolYearDao.delete(schoolYearId);
-
-        assertNull(schoolYearDao.select(schoolId, schoolYearId), "Expected school year to be null after delete method call");
+        deleteSchoolYearAndVerify();
     }
-
-
 }

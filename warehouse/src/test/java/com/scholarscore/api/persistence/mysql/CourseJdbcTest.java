@@ -25,8 +25,6 @@ public class CourseJdbcTest extends BaseJdbcTest {
         assertEquals(selectCourse, course, "Unexpected course output from select method");
         Collection<Course> courses = courseDao.selectAll(schoolId);
         assertTrue(courses.contains(selectCourse), "Expected a list all for courses shows the inserted course");
-        courseDao.delete(courseId);
-        Course expectNullCourse = courseDao.select(schoolId, courseId);
-        assertNull(expectNullCourse, "Expected the course after delete to be null upon select");
+        deleteCourseAndVerify();
     }
 }

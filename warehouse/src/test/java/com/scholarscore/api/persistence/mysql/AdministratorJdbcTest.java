@@ -15,9 +15,7 @@ public class AdministratorJdbcTest extends BaseJdbcTest {
         Long id = administrator.getId();
         assertEquals(adminDao.select(id), administrator,
                 "Expected administrator from database to equal created administrator");
-        adminDao.delete(id);
-        assertNull(adminDao.select(id),
-                "Expected admin to be removed");
+        deleteAdminAndVerify();
     }
     
 }

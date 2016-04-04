@@ -19,9 +19,8 @@
     <!-- Initialization for data source -->
     <bean id="kickboardClient"
           class="com.scholarscore.etl.kickboard.KickboardClient">
-        <constructor-arg index="0" type="java.net.URI" value="${kickboard.client.behavior.url}"/>
-        <constructor-arg index="1" type="java.net.URI" value="${kickboard.client.pointbank.url}"/>
-        <constructor-arg index="2" type="java.net.URI" value="${kickboard.client.consequense.url}"/>
+        <constructor-arg index="0" type="java.net.URI" value="${kickboard.client.url}"/>
+        <constructor-arg index="1" type="java.lang.String" value="${kickboard.client.key}"/>
     </bean>
 
 </beans>

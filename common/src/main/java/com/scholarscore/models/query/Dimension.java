@@ -1,5 +1,7 @@
 package com.scholarscore.models.query;
 
+import com.scholarscore.models.Section;
+import com.scholarscore.models.attendance.Attendance;
 import com.scholarscore.models.query.dimension.*;
 
 import java.util.ArrayList;
@@ -19,76 +21,43 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("serial")
 public enum Dimension {
-    COURSE,
-    SECTION,
-    ASSIGNMENT,
-    TERM,
-    YEAR,
-    SCHOOL,
-    TEACHER,
-    STUDENT,
-    STAFF,
-    ADMINISTRATOR,
-    USER,
-    STUDENT_ASSIGNMENT,
-    STUDENT_SECTION_GRADE,
-    SECTION_GRADE,
-    SCHOOL_DAY,
-    ATTENDANCE,
-    BEHAVIOR,
-    GPA,
-    CURRENT_GPA,
-    GOAL;
+    COURSE(CourseDimension.class),
+    SECTION(SectionDimension.class),
+    ASSIGNMENT(AssignmentDimension.class),
+    TERM(TermDimension.class),
+    YEAR(SchoolYearDimension.class),
+    SCHOOL(SchoolDimension.class),
+    TEACHER(TeacherDimension.class),
+    STUDENT(StudentDimension.class),
+    STAFF(StaffDimension.class),
+    ADMINISTRATOR(AdministratorDimension.class),
+    USER(UserDimension.class),
+    STUDENT_ASSIGNMENT(StudentAssignmentDimension.class),
+    STUDENT_SECTION_GRADE(StudentSectionGradeDimension.class),
+    SECTION_GRADE(SectionGradeDimension.class),
+    SCHOOL_DAY(SchoolDayDimension.class),
+    ATTENDANCE(AttendanceDimension.class),
+    BEHAVIOR(BehaviorDimension.class),
+    GPA(GpaDimension.class),
+    CURRENT_GPA(CurrentGpaDimension.class),
+    GOAL(GoalDimension.class);
+    
+    public Class<? extends IDimension> dimensionClass;
+    
+    Dimension(Class<? extends IDimension> dimensionClass) { 
+        this.dimensionClass = dimensionClass;
+    }
     
     /**
      * Factory method for constructing an IDimension of time Dimension.
      * @param d
      * @return
      */
-    public static IDimension buildDimension(Dimension d) {
-        switch(d) {
-            case COURSE:
-                return new CourseDimension();
-            case SECTION:
-                return new SectionDimension();
-            case TERM:
-                return new TermDimension();
-            case YEAR:
-                return new SchoolYearDimension();
-            case SCHOOL:
-                return new SchoolDimension();
-            case STAFF:
-                return new StaffDimension();
-            case TEACHER:
-                return new TeacherDimension();
-            case STUDENT:
-                return new StudentDimension();
-            case ADMINISTRATOR:
-                return new AdministratorDimension();
-            case ASSIGNMENT:
-                return new AssignmentDimension();
-            case USER:
-                return new UserDimension();
-            case STUDENT_ASSIGNMENT:
-                return new StudentAssignmentDimension();
-            case STUDENT_SECTION_GRADE:
-                return new StudentSectionGradeDimension();
-            case SECTION_GRADE:
-                return new SectionGradeDimension();
-            case SCHOOL_DAY:
-                return new SchoolDayDimension();
-            case ATTENDANCE:
-                return new AttendanceDimension();
-            case BEHAVIOR:
-                return new BehaviorDimension();
-            case GPA:
-                return new GpaDimension();
-            case CURRENT_GPA:
-                return new CurrentGpaDimension();
-            case GOAL:
-                return new GoalDimension();
-            default:
-                throw new QueryException("Unsupported Dimension " + d + "!");
+    public IDimension buildDimension() {
+        try {
+            return dimensionClass.newInstance();
+        } catch (InstantiationException|IllegalAccessException e) {
+            throw new QueryException("Cannot build dimension class " + this.getClass().getSimpleName() + "!");
         }
     }
     

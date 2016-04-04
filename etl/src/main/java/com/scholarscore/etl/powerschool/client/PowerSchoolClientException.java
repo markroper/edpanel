@@ -11,4 +11,6 @@ public class PowerSchoolClientException extends RuntimeException {
     public PowerSchoolClientException(String msg) {
         super(msg);
     }
+    
+    public PowerSchoolClientException(String msg, Throwable throwable) { super(msg, throwable); }
 }

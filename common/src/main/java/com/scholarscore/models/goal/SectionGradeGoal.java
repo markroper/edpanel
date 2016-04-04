@@ -4,12 +4,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.Section;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import java.beans.Transient;
 import java.util.Objects;
 
 /**
@@ -45,12 +49,11 @@ public class SectionGradeGoal extends Goal implements CalculatableSection {
 
 
     public SectionGradeGoal() {
-        setGoalType(GoalType.SECTION_GRADE);
+        super();
     }
 
     public SectionGradeGoal(SectionGradeGoal goal) {
         super(goal);
-        this.setGoalType(GoalType.SECTION_GRADE);
         this.section = goal.section;
     }
 
@@ -81,9 +84,8 @@ public class SectionGradeGoal extends Goal implements CalculatableSection {
     }
 
     @Override
-    public void setGoalType(GoalType goalType) {
-        // don't allow the parent class goalType to be set to anything besides BEHAVIOR
-        super.setGoalType(GoalType.SECTION_GRADE);
+    public GoalType goalType() { 
+        return GoalType.SECTION_GRADE;    
     }
     
     @Override
@@ -109,7 +111,6 @@ public class SectionGradeGoal extends Goal implements CalculatableSection {
 
         public SectionGradeGoal build(){
             SectionGradeGoal goal = super.build();
-            goal.setGoalType(GoalType.SECTION_GRADE);
             goal.setSection(section);
             return goal;
         }

@@ -48,9 +48,8 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
     private Staff staff;
     private Double desiredValue;
     private Double calculatedValue;
-    //DAte goal was approved
+    //Date goal was approved
     private LocalDate approved;
-    private GoalType goalType;
     private LocalDate startDate;
     private LocalDate endDate;
 
@@ -73,7 +72,6 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         //THis is maybe controversial. Goals should not be completed upon creation and a teacher followup
         //Should not have already happened. So we will set them to initial conditions
         this.goalProgress = GoalProgress.IN_PROGRESS;
-
     }
 
     public Goal(Goal goal) {
@@ -83,7 +81,6 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         this.desiredValue = goal.desiredValue;
         this.calculatedValue = goal.calculatedValue;
         this.approved = goal.approved;
-        this.setGoalType(goal.goalType);
         this.goalProgress = goal.goalProgress;
         this.autocomplete = goal.autocomplete;
         this.startDate = goal.startDate;
@@ -200,8 +197,6 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         this.approved = approved;
     }
 
-
-
     @OneToOne(optional = true)
     @JoinColumn(name=HibernateConsts.STUDENT_FK, nullable = true)
     public Student getStudent() {
@@ -240,19 +235,18 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         this.desiredValue = desiredValue;
     }
 
-    public void setGoalType(GoalType goalType) {
-        this.goalType = goalType;
-    }
-
     @Column(name = HibernateConsts.GOAL_TYPE, insertable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     public GoalType getGoalType() {
-        return goalType;
+        return goalType();
     }
-
-
-
-
+    
+    // overridden setter is required for hibernate validation, but isn't used (and is made private to limit the confusion)
+    private void setGoalType(GoalType goalType) { }
+    
+    // this method is used to actually specify the GoalType of implementation subclasses, but hibernate will ignore it
+    protected abstract GoalType goalType();
+    
     @Override
     public void mergePropertiesIfNull(Goal mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
@@ -264,9 +258,6 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         }
         if (null == approved) {
             this.approved = mergeFrom.approved;
-        }
-        if (null == goalType) {
-            setGoalType(mergeFrom.goalType);
         }
         if (null == student) {
             this.student = mergeFrom.student;
@@ -307,7 +298,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
 
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(student, staff, desiredValue, calculatedValue, approved, goalType, startDate, endDate,
+        return 31 * super.hashCode() + Objects.hash(student, staff, desiredValue, calculatedValue, approved, getGoalType(), startDate, endDate,
                 goalProgress, autocomplete, plan, teacherFollowup, obstacles, outcome, finalValue);
     }
 
@@ -328,7 +319,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
                 && Objects.equals(this.desiredValue, other.desiredValue)
                 && Objects.equals(this.calculatedValue, other.calculatedValue)
                 && Objects.equals(this.approved, other.approved)
-                && Objects.equals(this.goalType, other.goalType)
+                && Objects.equals(this.getGoalType(), other.getGoalType())
                 && Objects.equals(this.startDate, other.startDate)
                 && Objects.equals(this.endDate, other.endDate)
                 && Objects.equals(this.goalProgress, other.goalProgress)
@@ -375,7 +366,6 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
         private Double desiredValue;
         private Double calculatedValue;
         private LocalDate approved;
-        private GoalType goalType;
         private Boolean autocomplete;
         private String plan;
         private String outcome;
@@ -425,12 +415,7 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
             this.approved = approved;
             return me();
         }
-
-        public U withGoalType(final GoalType goalType){
-            this.goalType = goalType;
-            return me();
-        }
-
+        
         public T build(){
             T goal = super.build();
             goal.setStudent(student);
@@ -440,7 +425,6 @@ public abstract class Goal extends ApiModel implements IApiModel<Goal>, IGoal {
             goal.setDesiredValue(desiredValue);
             goal.setCalculatedValue(calculatedValue);
             goal.setApproved(approved);
-            goal.setGoalType(goalType);
             goal.setAutocomplete(autocomplete);
             goal.setObstacles(obstacle);
             goal.setOutcome(outcome);

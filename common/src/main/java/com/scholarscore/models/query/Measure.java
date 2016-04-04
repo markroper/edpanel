@@ -27,33 +27,36 @@ import com.scholarscore.models.query.measure.behavior.ReferralMeasure;
  *
  */
 public enum Measure {
+    // All measures require a specific dimension and a Measure class
     //Section Attendance
-    SECTION_ABSENCE(Dimension.ATTENDANCE),
-    SECTION_TARDY(Dimension.ATTENDANCE),
+    SECTION_ABSENCE(Dimension.ATTENDANCE, SectionAbsenceMeasure.class),
+    SECTION_TARDY(Dimension.ATTENDANCE, SectionTardyMeasure.class),
     //Daily Attendance
-    ATTENDANCE(Dimension.ATTENDANCE),
-    ABSENCE(Dimension.ATTENDANCE),
-    TARDY(Dimension.ATTENDANCE),
+    ATTENDANCE(Dimension.ATTENDANCE, AttendanceMeasure.class),
+    ABSENCE(Dimension.ATTENDANCE, DailyAbsenceMeasure.class),
+    TARDY(Dimension.ATTENDANCE, DailyTardyMeasure.class),
     //Behavioral measures
-    DEMERIT(Dimension.BEHAVIOR),
-    MERIT(Dimension.BEHAVIOR),
-    DETENTION(Dimension.BEHAVIOR),
+    DEMERIT(Dimension.BEHAVIOR, DemeritMeasure.class),
+    MERIT(Dimension.BEHAVIOR, MeritMeasure.class),
+    DETENTION(Dimension.BEHAVIOR, DetentionMeasure.class),
 //    PRIDE_SCORE,  // TODO: need IMeasure class and SqlSerializer for pride-score before it can be used
-    REFERRAL(Dimension.BEHAVIOR),
-    IN_SCHOOL_SUSPENSION(Dimension.BEHAVIOR),
-    OUT_OF_SCHOOL_SUSPENSION(Dimension.BEHAVIOR),
+    REFERRAL(Dimension.BEHAVIOR, ReferralMeasure.class),
+    IN_SCHOOL_SUSPENSION(Dimension.BEHAVIOR, InSchoolSuspensionMeasure.class),
+    OUT_OF_SCHOOL_SUSPENSION(Dimension.BEHAVIOR, OutOfSchoolSuspensionMeasure.class),
     //Academic measures
-    GPA(Dimension.GPA),
-    CURRENT_GPA(Dimension.CURRENT_GPA),
-    COURSE_GRADE(Dimension.STUDENT_SECTION_GRADE),
-    ASSIGNMENT_GRADE(Dimension.STUDENT_ASSIGNMENT),
-    HW_COMPLETION(Dimension.STUDENT_ASSIGNMENT),
-    GOAL(Dimension.GOAL);
+    GPA(Dimension.GPA, GpaMeasure.class),
+    CURRENT_GPA(Dimension.CURRENT_GPA, CurrentGpaMeasure.class),
+    COURSE_GRADE(Dimension.STUDENT_SECTION_GRADE, CourseGradeMeasure.class),
+    ASSIGNMENT_GRADE(Dimension.STUDENT_ASSIGNMENT, AssignmentGradeMeasure.class),
+    HW_COMPLETION(Dimension.STUDENT_ASSIGNMENT, HomeworkCompletionMeasure.class),
+    GOAL(Dimension.GOAL, GoalMeasure.class);
 
     private Dimension dimension;
-
-    Measure(Dimension d) {
+    private Class<? extends IMeasure> measureClass;
+    
+    Measure(Dimension d, Class<? extends IMeasure> measureClass) {
         this.dimension = d;
+        this.measureClass = measureClass;
     }
 
     public Dimension getDimension() {
@@ -61,47 +64,13 @@ public enum Measure {
     }
     /**
      * Factory method for constructing an IMeasure instance of type measure.
-     * @param measure
      * @return
      */
-    public static IMeasure buildMeasure(Measure measure) {
-        switch(measure) {
-            case COURSE_GRADE:
-                return new CourseGradeMeasure();
-            case ASSIGNMENT_GRADE:
-                return new AssignmentGradeMeasure();
-            case HW_COMPLETION:
-                return new HomeworkCompletionMeasure();
-            case GPA:
-                return new GpaMeasure();
-            case MERIT:
-                return new MeritMeasure();
-            case DEMERIT:
-                return new DemeritMeasure();
-            case DETENTION:
-                return new DetentionMeasure();
-            case IN_SCHOOL_SUSPENSION:
-                return new InSchoolSuspensionMeasure();
-            case OUT_OF_SCHOOL_SUSPENSION:
-                return new OutOfSchoolSuspensionMeasure();
-            case REFERRAL:
-                return new ReferralMeasure();
-            case ATTENDANCE:
-                return new AttendanceMeasure();
-            case ABSENCE:
-                return new DailyAbsenceMeasure();
-            case TARDY:
-                return new DailyTardyMeasure();
-            case SECTION_ABSENCE:
-                return new SectionAbsenceMeasure();
-            case SECTION_TARDY:
-                return new SectionTardyMeasure();
-            case CURRENT_GPA:
-                return new CurrentGpaMeasure();
-            case GOAL:
-                return new GoalMeasure();
-            default:
-                throw new QueryException("Unsupported measure " + measure + "!");
+    public IMeasure buildMeasure() {
+        try {
+            return measureClass.newInstance();
+        } catch (InstantiationException|IllegalAccessException e) {
+            throw new QueryException("Cannot build measure class " + this.getClass().getSimpleName() + "!");
         }
-    }
+   }
 }
