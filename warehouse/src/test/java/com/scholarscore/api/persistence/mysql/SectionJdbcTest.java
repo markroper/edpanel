@@ -24,7 +24,5 @@ public class SectionJdbcTest extends BaseJdbcTest {
 
         sectionDao.delete(sectionId);
         assertNull(sectionDao.select(term.getId(), sectionId), "Expected section to be null after delete operation");
-        schoolDao.delete(course.getSchool().getId());
-        courseDao.delete(course.getId());
     }
 }

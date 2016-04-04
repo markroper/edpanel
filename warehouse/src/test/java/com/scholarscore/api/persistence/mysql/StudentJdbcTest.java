@@ -20,7 +20,6 @@ public class StudentJdbcTest extends BaseJdbcTest {
         assertNotNull(studentId, "Expected non-null identifier to be returned");
         Student selectStudent = studentDao.select(studentId);
         assertTrue(selectStudent.equals(createStudent), "Expected saved student to be the same as the selected student");
-        studentDao.delete(studentId);
-        assertNull(studentDao.select(studentId), "Expected admin to be removed");
+        deleteStudentAndVerify();
     }
 }
