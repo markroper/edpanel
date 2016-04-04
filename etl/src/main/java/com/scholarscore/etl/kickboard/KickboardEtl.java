@@ -8,9 +8,11 @@ import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.etl.runner.EtlSettings;
 import com.scholarscore.models.Behavior;
+import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.behavior.BehaviorScore;
 import com.scholarscore.models.user.Person;
 import com.scholarscore.models.user.Student;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +43,6 @@ public class KickboardEtl implements IEtlEngine {
 
     @Override
     public SyncResult syncDistrict(EtlSettings settings) {
-        syncPoints();
-        syncBehavior();
-
         //Get the most recent July 1 in the past, thats our cutoff date.
         LocalDate now = LocalDate.now();
         int currYear = now.getYear();
@@ -51,6 +50,8 @@ public class KickboardEtl implements IEtlEngine {
             currYear = currYear - 1;
         }
         CUTOFF = LocalDate.of(currYear, 7, 1);
+        syncPoints();
+        syncBehavior();
         kickboardClient.close();
         return result;
     }
@@ -61,6 +62,7 @@ public class KickboardEtl implements IEtlEngine {
         Map<String, Behavior> edPanelBehaviors = new HashMap<>();
         Map<Long, Map<LocalDate, Behavior>> edPanelBehaviorsWithoutSsids = new HashMap<>();
         Set<Long> studentsWithResolvedBehaviors = new HashSet<>();
+        Set<String> seenSsids = new HashSet<>();
         int page = 1;
         while(kbBehaviors != null) {
             LOGGER.debug("PAGE NUMBER: " + page);
@@ -72,30 +74,15 @@ public class KickboardEtl implements IEtlEngine {
             }
             List<Behavior> behaviorsToCreate = new ArrayList<>();
             for(Behavior source: sourceBehaviors) {
+                seenSsids.add(source.getRemoteBehaviorId());
                 //If the current behavior from Kickboard's user's data hasn't been pulled from EdPanel, pull it.
                 if(!studentsWithResolvedBehaviors.contains(source.getStudent().getId())) {
-                    try {
-                        Collection<Behavior> studentsBehaviors =
-                                scholarScore.getBehaviors(source.getStudent().getId(), CUTOFF);
-                        studentsWithResolvedBehaviors.add(source.getStudent().getId());
-                        for(Behavior b : studentsBehaviors) {
-                            if(null != b.getRemoteBehaviorId()) {
-                                edPanelBehaviors.put(b.getRemoteBehaviorId(), b);
-                            } else {
-                                //For behaviors without an SSID (kickboard consequences), use alternative data structure
-                                if(!edPanelBehaviorsWithoutSsids.containsKey(b.getStudent().getId())) {
-                                    edPanelBehaviorsWithoutSsids.put(b.getStudent().getId(), new HashMap<>());
-                                }
-                                edPanelBehaviorsWithoutSsids.get(b.getStudent().getId()).put(b.getBehaviorDate(), b);
-                            }
-                        }
-                    } catch (HttpClientException e) {
-                        LOGGER.error("Unable to resolve EdPanel behaviors for student with ID: " +
-                                source.getStudent().getId());
-                    }
+                    studentsWithResolvedBehaviors.add(source.getStudent().getId());
+                    addStudentBehaviorsToCollections(source, edPanelBehaviors, edPanelBehaviorsWithoutSsids);
                 }
                 //If the behavior doesn't exist in edpanel, create it, otherwise update it
-                if(!edPanelBehaviors.containsKey(source.getRemoteBehaviorId())) {
+                if(!edPanelBehaviors.containsKey(source.getRemoteBehaviorId()) &&
+                        !seenSsids.contains(source.getRemoteBehaviorId())) {
                     //create the behavior
                     behaviorsToCreate.add(source);
                 } else {
@@ -110,6 +97,7 @@ public class KickboardEtl implements IEtlEngine {
         //Now resolve the incidents, which are a different table within Kickboard:
         kbBehaviors =  new ArrayList<>();
         page = 1;
+        Map<Long, Set<MutablePair<LocalDate, BehaviorCategory>>> seenBehaviors = new HashMap<>();
         while(kbBehaviors != null) {
             LOGGER.debug("PAGE NUMBER: " + page);
             page++;
@@ -121,17 +109,34 @@ public class KickboardEtl implements IEtlEngine {
             List<Behavior> behaviorsToCreate = new ArrayList<>();
             for(Behavior source: sourceBehaviors) {
                 Long studId = source.getStudent().getId();
+                if(!studentsWithResolvedBehaviors.contains(studId)) {
+                    studentsWithResolvedBehaviors.add(studId);
+                    addStudentBehaviorsToCollections(source, edPanelBehaviors, edPanelBehaviorsWithoutSsids);
+                }
+                if(!seenBehaviors.containsKey(studId)) {
+                    seenBehaviors.put(studId, new HashSet<>());
+                }
+                MutablePair<LocalDate, BehaviorCategory> p =
+                        new MutablePair<>(source.getBehaviorDate(), source.getBehaviorCategory());
                 //If the behavior doesn't exist in edpanel, create it, otherwise update it
-                if(!edPanelBehaviorsWithoutSsids.containsKey(studId) ||
-                        !edPanelBehaviorsWithoutSsids.get(studId).containsKey(source.getBehaviorDate())) {
+                if(!seenBehaviors.get(studId).contains(p) &&
+                        (!edPanelBehaviorsWithoutSsids.containsKey(studId) ||
+                        !edPanelBehaviorsWithoutSsids.get(studId).containsKey(source.getBehaviorDate()))) {
                     //create the behavior
                     behaviorsToCreate.add(source);
                 } else {
                     //update the behavior
-                    updateBehavior(edPanelBehaviorsWithoutSsids.get(studId).get(source.getBehaviorDate()), source);
+                    Behavior old = null;
+                    if(edPanelBehaviorsWithoutSsids.containsKey(studId)) {
+                        old = edPanelBehaviorsWithoutSsids.get(studId).get(source.getBehaviorDate());
+                    }
+                    updateBehavior(old, source);
                     //Then remove it from the set so we know what to delete when we're done...
-                    edPanelBehaviorsWithoutSsids.get(studId).remove(source.getBehaviorDate());
+                    if(edPanelBehaviorsWithoutSsids.containsKey(studId)) {
+                        edPanelBehaviorsWithoutSsids.get(studId).remove(source.getBehaviorDate());
+                    }
                 }
+                seenBehaviors.get(studId).add(p);
             }
             createBehaviors(behaviorsToCreate);
         }
@@ -161,6 +166,33 @@ public class KickboardEtl implements IEtlEngine {
                             bEntry.getValue().getRemoteBehaviorId());
                 }
             }
+        }
+    }
+
+    private void addStudentBehaviorsToCollections(
+            Behavior source,
+            Map<String, Behavior> edPanelBehaviors,
+            Map<Long, Map<LocalDate, Behavior>> edPanelBehaviorsWithoutSsids) {
+        try {
+            if(source.getStudent().getId().equals(2047L)) {
+                LOGGER.info("here we are");
+            }
+            Collection<Behavior> studentsBehaviors =
+                    scholarScore.getBehaviors(source.getStudent().getId(), CUTOFF);
+            for(Behavior b : studentsBehaviors) {
+                if(null != b.getRemoteBehaviorId()) {
+                    edPanelBehaviors.put(b.getRemoteBehaviorId(), b);
+                } else {
+                    //For behaviors without an SSID (kickboard consequences), use alternative data structure
+                    if(!edPanelBehaviorsWithoutSsids.containsKey(b.getStudent().getId())) {
+                        edPanelBehaviorsWithoutSsids.put(b.getStudent().getId(), new HashMap<>());
+                    }
+                    edPanelBehaviorsWithoutSsids.get(b.getStudent().getId()).put(b.getBehaviorDate(), b);
+                }
+            }
+        } catch (HttpClientException e) {
+            LOGGER.error("Unable to resolve EdPanel behaviors for student with ID: " +
+                    source.getStudent().getId());
         }
     }
 
@@ -256,8 +288,10 @@ public class KickboardEtl implements IEtlEngine {
     }
 
     public void updateBehavior(Behavior oldBehavior, Behavior newBehavior) {
-        newBehavior.setId(oldBehavior.getId());
-        if(!newBehavior.equals(oldBehavior)) {
+        if(null != oldBehavior) {
+            newBehavior.setId(oldBehavior.getId());
+        }
+        if(null == oldBehavior || !newBehavior.equals(oldBehavior)) {
             try {
                 scholarScore.updateBehavior(newBehavior.getStudent().getId(), newBehavior.getId(), newBehavior);
                 result.addUpdated(1);
