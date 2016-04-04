@@ -107,7 +107,7 @@ public class KickboardEtl implements IEtlEngine {
             }
             createBehaviors(behaviorsToCreate);
         }
-
+        //Now resolve the incidents, which are a different table within Kickboard:
         kbBehaviors =  new ArrayList<>();
         page = 1;
         while(kbBehaviors != null) {
@@ -286,7 +286,7 @@ public class KickboardEtl implements IEtlEngine {
                 result.addCreated(b.size());
             } catch (HttpClientException e) {
                 result.addFailedToCreate(b.size());
-                LOGGER.warn("Failed to create behaviors within EdPanel: " + b.toString());
+                LOGGER.warn("Failed to create behaviors within EdPanel: " + b.size());
             }
         }
     }

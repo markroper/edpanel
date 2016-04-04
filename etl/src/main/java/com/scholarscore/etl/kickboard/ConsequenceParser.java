@@ -129,7 +129,7 @@ public class ConsequenceParser {
         while(null != currentLine && count < chunkSize) {
             KickboardBehavior behavior;
             try {
-                behavior = resolveBehaviorFromLine(currentLine, br, 50);
+                behavior = resolveBehaviorFromLine(currentLine, br, 20);
                 if(null != behavior) {
                     results.add(behavior);
                 }
