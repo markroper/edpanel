@@ -19,8 +19,6 @@ public class TeacherJdbcTest extends BaseJdbcTest {
         Long id = createdTeacher.getId();
         Staff out = teacherDao.select(id);
         assertEquals(out, createdTeacher, "Expected teacher values to be equal");
-        teacherDao.delete(createdTeacher.getId());
-        Staff deletedTeacher = teacherDao.select(id);
-        assertNull(deletedTeacher, "Expected deleted teacher to be null");
+        deleteTeacherAndVerify();
     }
 }
