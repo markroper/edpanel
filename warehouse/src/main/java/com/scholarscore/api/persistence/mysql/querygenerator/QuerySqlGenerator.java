@@ -328,8 +328,8 @@ public abstract class QuerySqlGenerator {
             //PK/FK relationship between the two, try to join on the measure table directly. If the measure is
             //not compatible with the dimension for joining, try joining on the previous dimension in the hierarchy.
             //If that doesn't match, check the dimension before that.
-            if (Dimension.buildDimension(currTable).getParentDimensions() != null &&
-                    !Dimension.buildDimension(currTable).getParentDimensions().contains(joinDim)) {
+            if (currTable.buildDimension().getParentDimensions() != null &&
+                    !currTable.buildDimension().getParentDimensions().contains(joinDim)) {
                 if (measureIsCompatible(am, joinDim)){
                     currentTableName = DbMappings.DIMENSION_TO_TABLE_NAME.get(mss.toTableDimension());
                 } else {
@@ -358,11 +358,11 @@ public abstract class QuerySqlGenerator {
     private static String getDimensionJoinOrThrowException(List<Dimension> orderedTables, Dimension dimDesc, Dimension joinDim) throws SqlGenerationException {
         //Start with the previous dimension since we're already dealing with i and i-1...
         int descIndex = orderedTables.size()-1;
-        while(descIndex >= 0 && !Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
+        while(descIndex >= 0 && !dimDesc.buildDimension().getParentDimensions().contains(joinDim)) {
             dimDesc = orderedTables.get(descIndex);
             descIndex--;
         }
-        if(Dimension.buildDimension(dimDesc).getParentDimensions().contains(joinDim)) {
+        if(dimDesc.buildDimension().getParentDimensions().contains(joinDim)) {
             return DbMappings.DIMENSION_TO_TABLE_NAME.get(dimDesc);
         } else {
             throw new SqlGenerationException(
@@ -372,7 +372,7 @@ public abstract class QuerySqlGenerator {
 
     private static boolean measureIsCompatible(AggregateMeasure aggregateMeasure, Dimension dimension) {
         return (aggregateMeasure != null && aggregateMeasure.getMeasure() != null
-                && Measure.buildMeasure(aggregateMeasure.getMeasure()).getCompatibleDimensions().contains(dimension));
+                && aggregateMeasure.getMeasure().buildMeasure().getCompatibleDimensions().contains(dimension));
     }
 
     /**

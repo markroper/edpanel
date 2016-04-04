@@ -21,7 +21,7 @@ public class DimensionUnitTest {
     public void testDimensionHasClass() { 
         for (Dimension dimension : Dimension.values()) {
             // this method throws an exception if it can't find the class...
-            IDimension dimensionClass = Dimension.buildDimension(dimension);
+            IDimension dimensionClass = dimension.buildDimension();
             // but just to be safe, assert null here anyways.
             assertNotNull(dimensionClass);
         }
