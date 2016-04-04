@@ -128,7 +128,8 @@ public class KickboardEtl implements IEtlEngine {
                 //Resolve the correct student and set it on the source:
                 Student stud = sourceSystemUserIdToStudent.get(score.getStudent().getSourceSystemUserId());
                 if(null == stud) {
-                    LOGGER.info("Unable to resolve the student within EdPanel for: " + score.toString());
+                    LOGGER.info("Unable to resolve the student within EdPanel for student with ID: " +
+                            score.getStudent().getSourceSystemUserId());
                     continue;
                 }
                 score.setStudent(stud);
@@ -180,10 +181,12 @@ public class KickboardEtl implements IEtlEngine {
             try {
                 for(LocalDate d: entry.getValue()) {
                     scholarScore.deleteBehaviorScore(entry.getKey(), d);
+                    result.addScoreDeleted(1);
                 }
             } catch (HttpClientException e) {
                 LOGGER.warn("Unable to delete the behavior score within EdPanel for student ID: " +
                         entry.getKey() + " for reason: " + e.getMessage());
+                result.addFailedScoreDeleted(1);
             }
         }
     }
@@ -193,8 +196,10 @@ public class KickboardEtl implements IEtlEngine {
         if(!newBehavior.equals(oldBehavior)) {
             try {
                 scholarScore.updateBehaviorScore(newBehavior.getStudent().getId(), newBehavior.getDate(), newBehavior);
+                result.addScoreUpdated(1);
             } catch (HttpClientException e) {
                 LOGGER.warn("Unable to update the behavior score within EdPanel: " + newBehavior.toString());
+                result.addFailedScoreUpdate(1);
             }
         }
     }
@@ -215,8 +220,10 @@ public class KickboardEtl implements IEtlEngine {
         if(null != b && b.size() > 0) {
             try {
                 scholarScore.createBehaviorScores(b);
+                result.addScoreCreated(b.size());
             } catch (HttpClientException e) {
                 LOGGER.warn("Failed to create behavior scores within EdPanel: " + b.toString());
+                result.addFailedScoreCreate(b.size());
             }
         }
     }
