@@ -25,13 +25,17 @@ public class AttendanceGoal extends Goal implements CalculatableAttendance{
     //References the sectionId of the section we have an attendance goal in
     private Section section;
 
+    @Override
+    protected GoalType goalType() {
+        return GoalType.ATTENDANCE;
+    }
+
     public AttendanceGoal() {
-        setGoalType(GoalType.ATTENDANCE);
+        super();
     }
 
     public AttendanceGoal(AttendanceGoal goal) {
         super(goal);
-        this.setGoalType(GoalType.ATTENDANCE);
         this.section = goal.section;
     }
 
@@ -45,7 +49,6 @@ public class AttendanceGoal extends Goal implements CalculatableAttendance{
         this.section = section;
     }
 
-
     @Override
     public void mergePropertiesIfNull(Goal mergeFrom) {
         super.mergePropertiesIfNull(mergeFrom);
@@ -55,7 +58,6 @@ public class AttendanceGoal extends Goal implements CalculatableAttendance{
                 this.section = mergeFromBehavior.section;
             }
         }
-
     }
     
     @Override
