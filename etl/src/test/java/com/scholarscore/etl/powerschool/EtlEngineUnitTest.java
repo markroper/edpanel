@@ -1,4 +1,4 @@
-package com.scholarscore.etl.powerschool.api.model;
+package com.scholarscore.etl.powerschool;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
