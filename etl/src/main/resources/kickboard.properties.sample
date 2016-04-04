@@ -1,4 +1,5 @@
 #see: https://kickboard.zendesk.com/entries/21854178-Data-Warehouse-Full-School-Year-Data-Export
 kickboard.client.url=https://{yourSubDomain}.kickboardforteachers.com/export/download/file/behavior/key/{yourSecurityKey}
 kickboard.client.pointbank.url=https://{yourSubDomain}.kickboardforteachers.com/export/download/file/points/key/{yourSecurityKey}
+kickboard.client.pointbank.url=https://{yourSubDomain}.kickboardforteachers.com/export/download/file/conroster/key/{yourSecurityKey}
 kickboard.enabled=true

@@ -126,11 +126,13 @@ public class KickboardBehavior {
             return BehaviorCategory.MERIT;
         } else if(CAT.contains("HOMEWORK")) {
             return BehaviorCategory.HOMEWORK;
+        } else if(CAT.contains("LUNCH DETENTION")) {
+            return BehaviorCategory.LUNCH_DETENTION;
         } else if(CAT.contains("DETENTION")) {
             return BehaviorCategory.DETENTION;
         } else if(CAT.contains("SUSPENSION")) {
             return BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION;
-        } else if(CAT.contains("D.O.") || CAT.contains("OFFICE") || CAT.contains("REFERRAL")) {
+        } else if(CAT.contains("D.O.") || CAT.contains("OFFICE") || CAT.contains("REFERRAL") || CAT.contains("DEAN")) {
             return BehaviorCategory.REFERRAL;
         } else if(CAT.contains("AUTOMATIC") || CAT.contains("GENERAL") || CAT.contains("STORE")) {
             return null;

@@ -24,78 +24,71 @@ public class KickboardClient extends BaseHttpClient {
     private final static Logger LOGGER = LoggerFactory.getLogger(KickboardClient.class);
     private File behaviorCsv;
     private File pointsCsv;
+    private File consequenceCsv;
     private BehaviorParser parser;
     private PointsParser pointsParser;
+    private ConsequenceParser consParser;
     private URI bankUri;
+    private URI consequenceUri;
 
-    public KickboardClient(URI behaviorUri, URI bankUri) {
+    public KickboardClient(URI behaviorUri, URI bankUri, URI consequenceUri) {
         super(behaviorUri);
         this.bankUri = bankUri;
+        this.consequenceUri = consequenceUri;
     }
 
-    private void downloadFile() {
+    private FileInputStream downloadFile(URI u, String fileName, File file) throws FileNotFoundException {
         try {
-            InputStream input = uri.toURL().openStream();
-            behaviorCsv = File.createTempFile("kickboardBehavior", ".csv");
-            BufferedWriter bw = new BufferedWriter(new FileWriter(behaviorCsv, false));
+            InputStream input = u.toURL().openStream();
+            file = File.createTempFile(fileName, ".csv");
+            BufferedWriter bw = new BufferedWriter(new FileWriter(file, false));
             IOUtils.copy(input, bw);
             input.close();
             bw.close();
         } catch (IOException e) {
             LOGGER.error("Failed to download behavior CSV from KickBoard, unable to open stream.");
         }
-    }
-
-    private void downloadScoreFile() {
-        try {
-            InputStream input = bankUri.toURL().openStream();
-            pointsCsv = File.createTempFile("kickboardPoints", ".csv");
-            BufferedWriter bw = new BufferedWriter(new FileWriter(pointsCsv, false));
-            IOUtils.copy(input, bw);
-            input.close();
-            bw.close();
-        } catch (IOException e) {
-            LOGGER.error("Failed to download behavior CSV from KickBoard, unable to open stream.");
-        }
+        return new FileInputStream(file);
     }
 
     public List<BehaviorScore> getBehaviorScore(Integer chunkSize) {
-        if(null == pointsCsv) {
-            downloadScoreFile();
-        }
-        if(null == pointsCsv) {
-            return null;
-        }
-        if(null == pointsParser) {
-            try {
-                InputStream fileInput = new FileInputStream(pointsCsv);
+        try {
+            if(null == pointsParser) {
+                InputStream fileInput = downloadFile(bankUri, "kickboardPoints", pointsCsv);
                 pointsParser = new PointsParser(fileInput);
-            } catch (FileNotFoundException e) {
-                LOGGER.error("Failed to read in the points CSV file.");
-                return null;
             }
+            return pointsParser.next(chunkSize);
+        } catch (FileNotFoundException e) {
+            LOGGER.error("Failed to read in the points CSV file.");
         }
-        return pointsParser.next(chunkSize);
+        return null;
     }
 
 
     public List<KickboardBehavior> getBehaviorData(Integer chunkSize) {
-        if(null == behaviorCsv) {
-            downloadFile();
-        }
-        if(null == behaviorCsv) {
-            return null;
-        }
-        if(null == parser) {
-            try {
-                InputStream fileInput = new FileInputStream(behaviorCsv);
+        try {
+            if(null == parser) {
+                InputStream fileInput = downloadFile(uri, "kickboardBehavior", behaviorCsv);
                 parser = new BehaviorParser(fileInput);
-            } catch (FileNotFoundException e) {
-                LOGGER.error("Failed to read in the behavior CSV file.");
-                return null;
             }
+            return parser.next(chunkSize);
+        } catch (FileNotFoundException e) {
+            LOGGER.error("Failed to read in the behavior CSV file.");
         }
-        return parser.next(chunkSize);
+        return null;
+    }
+
+    public List<KickboardBehavior> getConsequenceData(Integer chunkSize) {
+        try {
+            if(null == consParser) {
+                InputStream fileInput = downloadFile(consequenceUri, "kickboardConsequence", consequenceCsv);
+                consParser = new ConsequenceParser(fileInput);
+            }
+            return consParser.next(chunkSize);
+        } catch (FileNotFoundException e) {
+            LOGGER.error("Failed to read in the consequence CSV file.");
+        }
+        return null;
     }
 
     public void close() {
@@ -105,8 +98,17 @@ public class KickboardClient extends BaseHttpClient {
         if(null != pointsParser) {
             pointsParser.close();
         }
+        if(null != consParser) {
+            consParser.close();
+        }
         if(null != behaviorCsv) {
             behaviorCsv.delete();
+        }
+        if(null != consequenceCsv) {
+            consequenceCsv.delete();
+        }
+        if(null != pointsCsv) {
+            pointsCsv.delete();
         }
     }
     @Override
