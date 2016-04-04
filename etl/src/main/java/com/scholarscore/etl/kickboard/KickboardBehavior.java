@@ -138,8 +138,6 @@ public class KickboardBehavior {
             return BehaviorCategory.OUT_OF_SCHOOL_SUSPENSION;
         } else if(CAT.contains("D.O.") || CAT.contains("OFFICE") || CAT.contains("REFERRAL") || CAT.contains("DEAN")) {
             return BehaviorCategory.REFERRAL;
-        } else if(CAT.contains("AUTOMATIC") || CAT.contains("GENERAL") || CAT.contains("STORE")) {
-            return null;
         } else {
             return BehaviorCategory.OTHER;
         }
