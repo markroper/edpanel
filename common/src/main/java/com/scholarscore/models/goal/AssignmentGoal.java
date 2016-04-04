@@ -68,12 +68,11 @@ public class AssignmentGoal extends Goal implements CalculatableAssignment {
     }
 
     public AssignmentGoal() {
-        setGoalType(GoalType.ASSIGNMENT);
+        super();
     }
 
     public AssignmentGoal(AssignmentGoal goal) {
         super(goal);
-        this.setGoalType(GoalType.ASSIGNMENT);
         this.studentAssignment = goal.studentAssignment;
         this.section = goal.section;
         this.assignmentText = goal.assignmentText;
@@ -121,10 +120,9 @@ public class AssignmentGoal extends Goal implements CalculatableAssignment {
     }
 
     @Override
-    public void setGoalType(GoalType goalType) {
-        super.setGoalType(GoalType.ASSIGNMENT);
+    protected GoalType goalType() {
+        return GoalType.ASSIGNMENT;
     }
-
 
     @Override
     public String toString() {
@@ -151,7 +149,6 @@ public class AssignmentGoal extends Goal implements CalculatableAssignment {
 
         public AssignmentGoal build(){
             AssignmentGoal goal = super.build();
-            goal.setGoalType(GoalType.ASSIGNMENT);
             goal.setStudentAssignment(studentAssignment);
             return goal;
         }

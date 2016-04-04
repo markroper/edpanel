@@ -20,8 +20,7 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
     
     private AuthorityPersistence authorityPersistence;
 
-    public TeacherJdbc() {
-    }
+    public TeacherJdbc() { }
 
     public TeacherJdbc(HibernateTemplate template) {
         this.hibernateTemplate = template;
