@@ -106,10 +106,14 @@ public class KickboardBehavior {
         Behavior b = new Behavior();
         b.setStudent(s);
         b.setAssigner(staff);
-        b.setPointValue(String.valueOf(meritPoints));
+        if(null != meritPoints) {
+            b.setPointValue(String.valueOf(meritPoints));
+        }
         b.setBehaviorCategory(cat);
         b.setBehaviorDate(date);
-        b.setRemoteBehaviorId(String.valueOf(incidentId));
+        if(null != incidentId) {
+            b.setRemoteBehaviorId(String.valueOf(incidentId));
+        }
         b.setRemoteSystem("Kickboard");
         b.setName(behavior);
         return b;

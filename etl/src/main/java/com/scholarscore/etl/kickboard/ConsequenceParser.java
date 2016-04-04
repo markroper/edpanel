@@ -30,6 +30,7 @@ public class ConsequenceParser {
     private BufferedReader br;
     private String[] headerRow;
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    private final DateTimeFormatter dtfDash = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     //"school name","student id","external id","last name","first name","grade","group id","group name","phone","consequence id","consequence type","consequence name","assigned date","reasons","hours assigned","staff id","staff name","school id","attendance","external school id"
     Integer remoteStudentIdIdx, behaviorDateIdx, behaviorNameIdx, staffFirstIdx, staffLastIdx,
@@ -193,7 +194,11 @@ public class ConsequenceParser {
                     try {
                         behavior.date = LocalDate.parse(record.get(behaviorDateIdx), dtf);
                     } catch (DateTimeParseException e) {
-                        LOGGER.debug("Unable to parse date from the behavior event: " + e.getMessage());
+                        try {
+                            behavior.date = LocalDate.parse(record.get(behaviorDateIdx), dtfDash);
+                        } catch(DateTimeParseException ex) {
+                            LOGGER.debug("Unable to parse date from the behavior event: " + ex.getMessage());
+                        }
                     }
                 }
                 if (null != behaviorNameIdx && record.size() > behaviorNameIdx) {
