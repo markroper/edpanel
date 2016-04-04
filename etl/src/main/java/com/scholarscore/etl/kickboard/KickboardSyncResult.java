@@ -73,7 +73,7 @@ public class KickboardSyncResult extends BaseSyncResult {
     @Override
     public String getResultString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Behavior events created: " + created + "\n");
+        builder.append("\nBehavior events created: " + created + "\n");
         builder.append("Behavior events updated: " + updated + "\n");
         builder.append("Behavior events deleted: " + deleted + "\n");
         builder.append("Behavior scores created: " + scoresCreated + "\n");
