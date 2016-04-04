@@ -35,8 +35,9 @@ for STUDENT_TO_UPDATE in $STUDENT_FKS_TO_UPDATE; do
     if [[ -z "${STUDENT_NEW_NAME// }" ]]; then
         printf "ERROR - insufficient # of person names in list\n"
         exit 1
-    else 
-        OUTPUT_BUFFER="${OUTPUT_BUFFER}update student set student_name='$STUDENT_NEW_NAME' where student_user_fk='$STUDENT_TO_UPDATE';\n"
+    else
+        LOGIN_NAME="$(echo -e "${STUDENT_NEW_NAME}" | tr -d '[[:space:]]')" 
+        OUTPUT_BUFFER="${OUTPUT_BUFFER}update student join user on student.student_user_fk = user.user_id set student_name='$STUDENT_NEW_NAME',username='$LOGIN_NAME',password=NULL,onetime_pass=NULL where student_user_fk='$STUDENT_TO_UPDATE';\n"
         ((PERSON_INDEX++))
     fi
 done
@@ -46,8 +47,9 @@ for STAFF_TO_UPDATE in $STAFF_FKS_TO_UPDATE; do
     if [[ -z "${STAFF_NEW_NAME// }" ]]; then
         printf "ERROR - insufficient # of person names in list\n"
         exit 1
-    else 
-        OUTPUT_BUFFER="${OUTPUT_BUFFER}update staff set staff_name='$STAFF_NEW_NAME' where staff_user_fk='$STAFF_TO_UPDATE';\n"
+    else
+        LOGIN_NAME="$(echo -e "${STAFF_NEW_NAME}" | tr -d '[[:space:]]')"
+        OUTPUT_BUFFER="${OUTPUT_BUFFER}update staff join user on staff.staff_user_fk = user.user_id set staff_name='$STAFF_NEW_NAME',username='$LOGIN_NAME',password=NULL,onetime_pass=NULL where staff_user_fk='$STAFF_TO_UPDATE';\n"
         ((PERSON_INDEX++))
     fi
 done
