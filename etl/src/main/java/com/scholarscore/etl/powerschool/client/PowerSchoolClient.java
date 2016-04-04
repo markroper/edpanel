@@ -39,6 +39,7 @@ import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.api.response.StudentResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 import org.apache.http.HttpRequest;
+import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -95,9 +96,12 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
             post.setHeader(new BasicHeader(HEADER_CONTENT_TYPE_NAME, HEADER_CONTENT_TYPE_X_FORM_URLENCODED));
             post.setEntity(new StringEntity(GRANT_TYPE_CREDS));
             setupCommonHeaders(post);
-            post.addHeader(BasicScheme.authenticate(
-                    new UsernamePasswordCredentials(clientId, clientSecret),
-                    "UTF-8", false));
+            try {
+                post.addHeader(
+                        new BasicScheme().authenticate(new UsernamePasswordCredentials(clientId, clientSecret), post, null));
+            } catch (AuthenticationException e) {
+                throw new PowerSchoolClientException("Unable to authenticate with power school!", e);
+            }
             post.setURI(uri.resolve(URI_PATH_OATH));
             String json = getJSON(post);
             if (null != json) {

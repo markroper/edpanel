@@ -14,7 +14,7 @@ import static org.testng.Assert.assertTrue;
  *
  * Created by mattg on 7/3/15.
  */
-@Test
+@Test(groups = { "functional" })
 @ContextConfiguration(locations = {"classpath:edpanel.xml"})
 public class APIClientFunctionalTest extends AbstractTestNGSpringContextTests {
 
