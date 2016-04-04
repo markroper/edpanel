@@ -128,7 +128,7 @@ public class KickboardEtl implements IEtlEngine {
                     behaviorsToCreate.add(source);
                 } else {
                     //update the behavior
-                    updateBehavior(edPanelBehaviors.get(source.getRemoteBehaviorId()), source);
+                    updateBehavior(edPanelBehaviorsWithoutSsids.get(studId).get(source.getBehaviorDate()), source);
                     //Then remove it from the set so we know what to delete when we're done...
                     edPanelBehaviorsWithoutSsids.get(studId).remove(source.getBehaviorDate());
                 }
