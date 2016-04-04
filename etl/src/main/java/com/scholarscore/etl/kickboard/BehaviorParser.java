@@ -132,7 +132,7 @@ public class BehaviorParser {
         while(null != currentLine && count < chunkSize) {
             KickboardBehavior behavior;
             try {
-                behavior = resolveBehaviorFromLine(currentLine, br, 25);
+                behavior = resolveBehaviorFromLine(currentLine, br, 40);
                 if(null != behavior) {
                     results.add(behavior);
                 }
