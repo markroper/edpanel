@@ -93,6 +93,8 @@ public class BehaviorJdbc implements BehaviorPersistence {
 
     @Override
     public Long replaceScore(long studentId, LocalDate date, BehaviorScore score) {
+        BehaviorScore b = selectScore(studentId, date);
+        score.setId(b.getId());
         hibernateTemplate.merge(score);
         return score.getId();
     }
