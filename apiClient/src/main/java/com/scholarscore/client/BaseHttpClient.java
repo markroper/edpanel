@@ -123,7 +123,11 @@ public abstract class BaseHttpClient {
         } catch (IOException e) {
             throw new HttpClientException(e);
         } finally {
-            response.getEntity().getContent().close();
+            if (response != null && response.getEntity() != null) {
+                response.getEntity().getContent().close();
+            } else {
+                throw new RuntimeException("Cannot close response entity, aborting...");
+            }
         }
     }
 

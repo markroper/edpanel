@@ -116,7 +116,7 @@ public class ModelReflectionTests {
         
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setScanners(new SubTypesScanner(false /* don't exclude Object.class */), new ResourcesScanner())
-                .setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
+                .setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[classLoadersList.size()])))
                 .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(packageToScan))));
 
         return reflections.getSubTypesOf(Object.class);
@@ -126,7 +126,7 @@ public class ModelReflectionTests {
     public void testClassesInPackage() {
         Set<Class<?>> classes = getClassesInPackage(getPackageToScan());
 
-        for (Class clazz : classes) {
+        for (Class<?> clazz : classes) {
             String className = clazz.getName();
             if (className.contains("$")) {
                 logDebug("Skipping inner class " + className + "...");
@@ -158,26 +158,34 @@ public class ModelReflectionTests {
             // just shut up if everything is fine.
             //  debugStringBuilder.append("\nDONE. No problems.");
         } else {
-            debugStringBuilder.append("\nDONE. \n"
-                    + "One or more test(s) (" + numberOfFailedDefaultFieldAttempts + ", " + fieldsThatNeedDefaults.size() + " unique) were skipped because \n"
-                    + "of an inability to construct objects with sensible default values."
-                    + "\n(To fix this, please see the " + this.getClass().getSimpleName() + ".getValueForField method "
-                    + "and follow the example there.)\n\n"
-                    + "The following fields need sensible defaults defined in getValueForField...\n");
+            debugStringBuilder.append("\nDONE. \n");
+            debugStringBuilder.append("One or more test(s) (");
+            debugStringBuilder.append(numberOfFailedDefaultFieldAttempts);
+            debugStringBuilder.append(", ");
+            debugStringBuilder.append(fieldsThatNeedDefaults.size());
+            debugStringBuilder.append(" unique) were skipped because \n");
+            debugStringBuilder.append("of an inability to construct objects with sensible default values.");
+            debugStringBuilder.append("\n(To fix this, please see the ");
+            debugStringBuilder.append(this.getClass().getSimpleName());
+            debugStringBuilder.append(".getValueForField method ");
+            debugStringBuilder.append("and follow the example there.)\n\n");
+            debugStringBuilder.append("The following fields need sensible defaults defined in getValueForField...\n");
             for (String field : fieldsThatNeedDefaults) {
-                debugStringBuilder.append("\n" + field);
+                debugStringBuilder.append("\n");
+                debugStringBuilder.append(field);
             }
         }
         // show this final output regardless of logging flags
         System.out.println(debugStringBuilder.toString());
     }
     
+    @SuppressWarnings("unchecked")
     private void checkMergePropertiesIfNullForApiModel(Class<?> clazz) {
         // this test is only applicable to classes that implement IApiModel
         if (IApiModel.class.isAssignableFrom(clazz)) {
             logDebug("*Class " + clazz + " implements IApiModel, checking mergePropertiesIfNull...");
             try {
-                IApiModel populatedObject = (IApiModel)buildPopulatedObject(clazz);
+                IApiModel<?> populatedObject = (IApiModel<?>)buildPopulatedObject(clazz);
                 IApiModel emptyObject = (IApiModel)clazz.newInstance();
   
                 if (emptyObject == null || populatedObject == null) {
@@ -222,8 +230,8 @@ public class ModelReflectionTests {
         } // else (class does not implement IAPImodel)
     }
 
-    private void checkCopyConstructorForClass(Class<?> clazz) {
-        final Object firstInstance = buildPopulatedObject(clazz);
+    private <T> void checkCopyConstructorForClass(Class<T> clazz) {
+        final T firstInstance = buildPopulatedObject(clazz);
         try {
             Constructor constructor = clazz.getDeclaredConstructor(clazz);
             logDebug("*Found copy constructor for " + clazz.getName() + ", building copy now.");
@@ -240,7 +248,7 @@ public class ModelReflectionTests {
         }
     }
 
-    private void checkEqualsAndHashCodeForClass(Class clazz) {
+    private void checkEqualsAndHashCodeForClass(Class<?> clazz) {
         
         final Object unmodifiedInstance = buildPopulatedObject(clazz);
         String classDescString = "class " + clazz.getSimpleName();
@@ -296,13 +304,13 @@ public class ModelReflectionTests {
     }
 
     // ad hoc (saves a bunch of lines in a method below)
-    private Object buildPopulatedObject(Class clazz, String fieldNameToModify, boolean doModification) {
+    private Object buildPopulatedObject(Class<?> clazz, String fieldNameToModify, boolean doModification) {
         return doModification ? 
                 buildPopulatedObject(clazz, fieldNameToModify) :
                 buildPopulatedObject(clazz);
     }
     
-    private <T> Object buildPopulatedObject(Class<T> clazz) {
+    private <T> T buildPopulatedObject(Class<T> clazz) {
         return buildPopulatedObject(clazz, null);
     }
     
@@ -365,11 +373,9 @@ public class ModelReflectionTests {
     
     private class NoDefaultValueForTypeException extends Exception {
         NoDefaultValueForTypeException() { super(); }
-        NoDefaultValueForTypeException(String msg) { super(); }
     }
     
     private class UnableToSetValueException extends Exception {
-        UnableToSetValueException() { super(); }
         UnableToSetValueException(String msg) { super(msg); }
     }
     
@@ -517,8 +523,7 @@ public class ModelReflectionTests {
     }
 
     private Object getSensibleValueForField(Field field) {
-        Object obj = getValueForField(field, false);
-        return obj;
+        return getValueForField(field, false);
     }
 
     private Object getAnotherValueForField(Field field) {
@@ -532,9 +537,7 @@ public class ModelReflectionTests {
         
         if (returnedFromGenericType == null) {
             // try this backup approach
-            Object returnedFromType = getValueForType(field.getType(), alt);
-//            System.out.println("Fell back to non-generic getValueForType, and got back: " + returnedFromType);
-            return returnedFromType;
+            return getValueForType(field.getType(), alt);
         }
         
         return returnedFromGenericType;
@@ -555,8 +558,7 @@ public class ModelReflectionTests {
 //            }
             // only really need to do this next part if there's more than one frag...?
             String splitClassName = splitClassNameFrags[0];
-            Class<?> derivedObjectClass = Class.forName(splitClassName);
-            type = derivedObjectClass;
+            type = Class.forName(splitClassName);
         } catch (ClassNotFoundException e) {
             logDebug("Could not find class!");
             return null;
@@ -636,11 +638,9 @@ public class ModelReflectionTests {
                 for (int i = 0; i < stp.numberOfArguments(); i++) {
                     typedValuesToPopulate[i] = new Object();
                 }
-                Object populatedCollection = stp.validateAndPopulate(typedValuesToPopulate);
-                return populatedCollection;
+                return stp.validateAndPopulate(typedValuesToPopulate);
             }
         }
-
 
         return getValueForType(type, alt);
     }
@@ -746,7 +746,7 @@ public class ModelReflectionTests {
 
         if (type.isAssignableFrom(SectionGradeWithProgression.class)) { return buildPopulatedObject(SectionGradeWithProgression.class, "currentOverallGrade", alt); } 
         if (type.isAssignableFrom(Record.class)) { 
-            List list = new ArrayList<>();
+            List<Object> list = new ArrayList<>();
             list.add(new Object());
             return new Record(list);
         }
@@ -830,7 +830,7 @@ public class ModelReflectionTests {
                 if (arguments == null) {
                     throw new RuntimeException("Arguments are null on me: " + this.toString());
                 } else if (arguments.length != numberOfArguments()) {
-                    new RuntimeException("Arguments don't match the expected number (" + numberOfArguments() + "): " + this.toString());
+                    throw new RuntimeException("Arguments don't match the expected number (" + numberOfArguments() + "): " + this.toString());
                 }
             }
 
@@ -849,7 +849,7 @@ public class ModelReflectionTests {
 
         @Override
         public Object populate(Object[] arguments) {
-            ArrayList arrayList = new ArrayList();
+            ArrayList<Object> arrayList = new ArrayList<>();
             arrayList.add(arguments[0]);
             return arrayList;
         }
@@ -864,7 +864,7 @@ public class ModelReflectionTests {
 
         @Override
         public Object populate(Object[] arguments) {
-            HashMap hashMap = new HashMap();
+            HashMap<Object, Object> hashMap = new HashMap<>(); //<Object,Object>;
             hashMap.put(arguments[0], arguments[1]);
             return hashMap;
         }
@@ -879,7 +879,7 @@ public class ModelReflectionTests {
 
         @Override
         public Object populate(Object[] arguments) {
-            HashSet hashSet = new HashSet();
+            HashSet<Object> hashSet = new HashSet<>();
             hashSet.add(arguments[0]);
             return hashSet;
         }
