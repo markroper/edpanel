@@ -9,8 +9,13 @@ import com.scholarscore.models.gpa.Gpa;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by markroper on 11/24/15.
@@ -58,9 +63,34 @@ public class GpaManagerImpl implements GpaManager {
 
     @Override
     public ServiceResponse<Collection<Gpa>> getAllGpasForStudents(
-            List<Long> studentIds, LocalDate startDate, LocalDate endDate) {
-        return new ServiceResponse<>(
-                gpaPersistence.selectStudentGpas(studentIds, startDate, endDate));
+            List<Long> studentIds, LocalDate startDate, LocalDate endDate, Boolean groupByWeek) {
+        List<Gpa> gpas = gpaPersistence.selectStudentGpas(studentIds, startDate, endDate);
+        if(null != groupByWeek && groupByWeek) {
+            Map<LocalDate, Set<Gpa>> datesByWeek = new HashMap<>();
+            for (Gpa g : gpas) {
+                LocalDate date = g.getCalculationDate();
+                LocalDate weekDate = date.minusDays(new Long(date.getDayOfWeek().ordinal()));
+                if (!datesByWeek.containsKey(weekDate)) {
+                    datesByWeek.put(weekDate, new HashSet<>());
+                }
+                datesByWeek.get(weekDate).add(g);
+            }
+            List<Gpa> returnVals = new ArrayList<>();
+            for (Map.Entry<LocalDate, Set<Gpa>> entry : datesByWeek.entrySet()) {
+                int denominator = 0;
+                Double val = 0D;
+                Gpa gpaToUse = entry.getValue().iterator().next();
+                for (Gpa g : entry.getValue()) {
+                    denominator++;
+                    val += g.getScore();
+                }
+                gpaToUse.setCalculationDate(entry.getKey());
+                gpaToUse.setScore(val / denominator);
+                returnVals.add(gpaToUse);
+            }
+            return new ServiceResponse<>(returnVals);
+        }
+        return new ServiceResponse<>(gpas);
     }
 
     @Override

@@ -135,7 +135,7 @@ public class SchoolController extends BaseController {
     {
         Map<Long, Double> studentToGpa = new HashMap<>();
         ArrayList<Long> studentIds = new ArrayList<Long>(Arrays.asList(id));
-        ServiceResponse<Collection<Gpa>> resp = pm.getGpaManager().getAllGpasForStudents(studentIds, null, null);
+        ServiceResponse<Collection<Gpa>> resp = pm.getGpaManager().getAllGpasForStudents(studentIds, null, null, null);
         if(null != resp.getValue()) {
             for(Gpa g: resp.getValue()) {
                 studentToGpa.put(g.getStudentId(), g.getScore());
