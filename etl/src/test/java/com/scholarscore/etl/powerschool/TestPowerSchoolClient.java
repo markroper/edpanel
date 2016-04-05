@@ -31,8 +31,8 @@ import static org.mockito.Mockito.when;
  */
 public class TestPowerSchoolClient extends PowerSchoolClient {
 
-    public TestPowerSchoolClient(String studentExtension, String spedFlag, String ellFlag, String gpaFormulaString) {
-        super("fakeClientId", "fakeSecret", getURI(), studentExtension, spedFlag, ellFlag, gpaFormulaString);
+    public TestPowerSchoolClient() {
+        super("fakeClientId", "fakeSecret", getURI(), "", "MA_PrimDisabil", "MA_EngProficiency", "Weighted_Added_Value");
 
         System.out.println("TestPowerSchoolClient initialized.");
     }
