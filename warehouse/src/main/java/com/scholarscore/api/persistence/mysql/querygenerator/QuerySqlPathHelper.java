@@ -48,8 +48,6 @@ public class QuerySqlPathHelper {
             Dimension firstTable = orderedTables.get(0);
             LOGGER.trace("FIRST TABLE: " + firstTable);
             LOGGER.debug("OK, now we have table " + firstTable + " and we're trying to find links to...");
-//            for (Dimension dim : unmatchedDimensions) {
-//            LOGGER.debug("... Unmatched dimension " + dim);
 
             Set<Dimension> neededDimensions = breadthFirstSearch(firstTable, unmatchedDimensions);
             // okay, now we matched at least one unmatched dimension using the 'neededDimensions' returned, but there may be more
@@ -79,7 +77,6 @@ public class QuerySqlPathHelper {
                     calculateAndAddAdditionalNeededDimensions(q);
                 }
             }
-//            }
         } else {
             String exceptionMsg;
             if (unmatchedDimensions == null || unmatchedDimensions.size() <= 0) {
