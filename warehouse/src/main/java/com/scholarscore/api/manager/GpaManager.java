@@ -24,7 +24,7 @@ public interface GpaManager {
     public ServiceResponse<Gpa> getGpa(long studentId);
 
     public ServiceResponse<Collection<Gpa>> getAllGpasForStudents(
-            List<Long> studentIds, LocalDate startDate, LocalDate endDate);
+            List<Long> studentIds, LocalDate startDate, LocalDate endDate, Boolean groupByWeek);
 
     public ServiceResponse<Collection<Gpa>> getAllCurrentGpas(Long schoolId);
 
