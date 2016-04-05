@@ -48,38 +48,38 @@ public class QuerySqlPathHelper {
             Dimension firstTable = orderedTables.get(0);
             LOGGER.trace("FIRST TABLE: " + firstTable);
             LOGGER.debug("OK, now we have table " + firstTable + " and we're trying to find links to...");
-            for (Dimension dim : unmatchedDimensions) {
-                LOGGER.debug("... Unmatched dimension " + dim);
-                // okay, now we matched at least one, but there may be more
-                Set<Dimension> neededDimensions = breadthFirstSearch(firstTable, unmatchedDimensions);
+//            for (Dimension dim : unmatchedDimensions) {
+//            LOGGER.debug("... Unmatched dimension " + dim);
 
-                // not sure about this, but seems reasonable to do here as these tables are already included in the query
-                neededDimensions.remove(firstTable);
-                for (Dimension unmatchedDimension : unmatchedDimensions) {
-                    neededDimensions.remove(unmatchedDimension);
-                }
+            Set<Dimension> neededDimensions = breadthFirstSearch(firstTable, unmatchedDimensions);
+            // okay, now we matched at least one unmatched dimension using the 'neededDimensions' returned, but there may be more
 
-                // add any remaining found tables as hints
-                for (Dimension neededDimension: neededDimensions) {
-                    q.addJoinTable(neededDimension);
-                }
+            // these tables will be included anyway, so don't hint them 
+            for (Dimension alreadyIncludedDimension : orderedTables) {
+                neededDimensions.remove(alreadyIncludedDimension);
+            }
                 
-                List<Dimension> unmatchedDimensionsAfterAdding = returnUnmatchedTables(buildTablesFromQuery(q));
-                if (unmatchedDimensionsAfterAdding == null || unmatchedDimensionsAfterAdding.size() == 0) {
-                    // we're done!
-                    return;
+            // add any remaining found tables as hints
+            for (Dimension neededDimension: neededDimensions) {
+                q.addJoinTable(neededDimension);
+            }
+                
+            List<Dimension> unmatchedDimensionsAfterAdding = returnUnmatchedTables(buildTablesFromQuery(q));
+            if (unmatchedDimensionsAfterAdding == null || unmatchedDimensionsAfterAdding.size() == 0) {
+                // we're done!
+                return;
+            } else {
+                // after we added our new hint tables, see if there are fewer unmatched dimensions. if not, give up.
+                if (unmatchedDimensionsAfterAdding.size() >= unmatchedDimensions.size()) {
+                    LOGGER.warn("UNABLE TO FIND JOIN PATH! Unmatched Dimensions after adding: " + unmatchedDimensionsAfterAdding
+                    + "\n" + "Unmatched Before: " + unmatchedDimensions);
+                    throw new SqlGenerationException("Unable to find join path through tables!");
                 } else {
-                    // after we added our new hint tables, see if there are fewer unmatched dimensions. if not, give up.
-                    if (unmatchedDimensionsAfterAdding.size() >= unmatchedDimensions.size()) {
-                        LOGGER.warn("UNABLE TO FIND JOIN PATH! Unmatched Dimensions after adding: " + unmatchedDimensionsAfterAdding
-                        + "\n" + "Unmatched Before: " + unmatchedDimensions);
-                        throw new SqlGenerationException("Unable to find join path through tables!");
-                    } else {
-                        // okay, we're making progress. keep going.
-                        calculateAndAddAdditionalNeededDimensions(q);
-                    }
+                    // okay, we're making progress. keep going.
+                    calculateAndAddAdditionalNeededDimensions(q);
                 }
             }
+//            }
         } else {
             String exceptionMsg;
             if (unmatchedDimensions == null || unmatchedDimensions.size() <= 0) {
@@ -96,6 +96,7 @@ public class QuerySqlPathHelper {
         return hasCompleteJoinPath(orderedTables);
     }
 
+    // return an ordered list of all tables involved in the ultimate SQL query
     private static List<Dimension> buildDimensionsFromQuery(Query q) {
         //Get the dimensions in the correct order for joining:
         HashSet<Dimension> selectedDims = new HashSet<>();
