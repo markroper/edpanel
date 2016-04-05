@@ -130,8 +130,7 @@ public class StaffSync implements ISync<Person> {
         //Note: we never delete users, even if they're removed from the source system.
         return sourceStaff;
     }
-
-    @SuppressWarnings("unchecked")
+    
     protected ConcurrentHashMap<Long, Person> resolveAllFromSourceSystem() throws HttpClientException {
         PsStaffs response = powerSchool.getStaff(Long.valueOf(school.getSourceSystemId()));
         List<User> apiListOfStaff = response.toInternalModel();
