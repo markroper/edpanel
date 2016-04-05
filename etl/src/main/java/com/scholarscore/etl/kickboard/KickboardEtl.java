@@ -176,9 +176,6 @@ public class KickboardEtl implements IEtlEngine {
             Map<String, Behavior> edPanelBehaviors,
             Map<Long, Map<LocalDate, Behavior>> edPanelBehaviorsWithoutSsids) {
         try {
-            if(source.getStudent().getId().equals(2047L)) {
-                LOGGER.info("Expect an entry on 2015-09-29");
-            }
             Collection<Behavior> studentsBehaviors =
                     scholarScore.getBehaviors(source.getStudent().getId(), CUTOFF);
             for(Behavior b : studentsBehaviors) {
