@@ -58,12 +58,12 @@ public class QuerySqlPathHelper {
                 for (Dimension alreadyIncludedDimension : orderedTables) {
                     neededDimensions.remove(alreadyIncludedDimension);
                 }
-                    
+
                 // add any remaining found tables as hints
                 for (Dimension neededDimension: neededDimensions) {
                     q.addJoinTable(neededDimension);
                 }
-                    
+                
                 List<Dimension> unmatchedDimensionsAfterAdding = returnUnmatchedTables(buildTablesFromQuery(q));
                 if (unmatchedDimensionsAfterAdding == null || unmatchedDimensionsAfterAdding.size() == 0) {
                     // we're done!

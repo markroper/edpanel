@@ -1139,7 +1139,7 @@ public class QuerySqlGeneratorUnitTest {
                 { assignmentGradesIsNotNullTestQuery },
                 { homeworkCompletionByStudentPathfinderTestQuery },
                 { homeworkCompletionByTermPathfinderTestQuery },
-				{ goalTest }
+                { goalTest }
         };
 
         return allTests;
