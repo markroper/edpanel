@@ -15,23 +15,8 @@ import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.grade.StudentSectionGrade;
 import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpStatus;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicStatusLine;
 import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -77,7 +62,8 @@ public class TestApiClientFactory {
     private static HashSet<Gpa> gpas = new HashSet<>();
     private static HashMap<Long, Assignment> sectionAssignments = new HashMap<>();
     private static HashMap<Long, HashMap<Long, StudentAssignment>> studentAssignments = new HashMap<>();
-    
+
+    @SuppressWarnings("unchecked")
     public static IAPIClient buildTestApiClient() throws HttpClientException {
         IAPIClient testApiClient = Mockito.mock(IAPIClient.class);
         

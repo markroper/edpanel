@@ -31,9 +31,7 @@ import com.scholarscore.models.user.User;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.orm.hibernate5.HibernateTemplate;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -101,8 +99,8 @@ public class BaseJdbcTest {
 
     String studentName = "Random McStudentFace";
     String studentUsername = "rmcstudentface";
-    
-    
+
+    @SuppressWarnings("unchecked")
     public BaseJdbcTest() {
 
         // Spring context

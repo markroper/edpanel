@@ -171,7 +171,6 @@ public class MessageControllerIntegrationTest extends IntegrationBase {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void createAndRetrieveAndMarkAsRead() {
         Object[][] msgs = messageProvider();
         MessageThread t = ((Message)msgs[0][1]).getThread();

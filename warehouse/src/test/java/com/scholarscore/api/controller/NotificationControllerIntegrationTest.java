@@ -642,7 +642,6 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
         public void createAndEvaluateAll() {
             Object[][] inputs = createNotificationsProvider();
             for(int i = 0; i < inputs.length; i++) {
