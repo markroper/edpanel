@@ -47,7 +47,6 @@ public class ConsequenceParser {
      */
     private void initialize() {
         BufferedInputStream is = new BufferedInputStream(iis);
-        is.mark(0);
         Reader in = new InputStreamReader(is);
         br = new BufferedReader(new InputStreamReader(is));
         try {
@@ -77,7 +76,6 @@ public class ConsequenceParser {
                     staffIdx = i;
                 }
             }
-            is.reset();
         } catch (IOException e) {
             LOGGER.error("Unable to parse the header row of the behavior CSV file.");
         }

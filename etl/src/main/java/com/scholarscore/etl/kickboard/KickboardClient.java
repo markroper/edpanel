@@ -15,6 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,9 +23,6 @@ import java.util.List;
  */
 public class KickboardClient extends BaseHttpClient {
     private final static Logger LOGGER = LoggerFactory.getLogger(KickboardClient.class);
-    private File behaviorCsv;
-    private File pointsCsv;
-    private File consequenceCsv;
     private BehaviorParser parser;
     private PointsParser pointsParser;
     private ConsequenceParser consParser;
@@ -32,6 +30,7 @@ public class KickboardClient extends BaseHttpClient {
     private final URI behaviorUri;
     private final URI bankUri;
     private final URI consequenceUri;
+    ArrayList<File> files = new ArrayList<>();
 
     // these need the client KEY appended to the end in order to be valid 
     // in order to keep it simple, just append it to the end (this won't work if we have params not at the end)
@@ -49,10 +48,12 @@ public class KickboardClient extends BaseHttpClient {
         this.consequenceUri = URI.create(base + CONSEQUENCE_PATH + key);
     }
 
-    private FileInputStream downloadFile(URI u, String fileName, File file) throws FileNotFoundException {
+    private FileInputStream downloadFile(URI u, String fileName) throws FileNotFoundException {
+        File file = null;
         try {
             InputStream input = u.toURL().openStream();
             file = File.createTempFile(fileName, ".csv");
+            files.add(file);
             BufferedWriter bw = new BufferedWriter(new FileWriter(file, false));
             IOUtils.copy(input, bw);
             input.close();
@@ -66,7 +67,7 @@ public class KickboardClient extends BaseHttpClient {
     public List<BehaviorScore> getBehaviorScore(Integer chunkSize) {
         try {
             if(null == pointsParser) {
-                InputStream fileInput = downloadFile(bankUri, "kickboardPoints", pointsCsv);
+                InputStream fileInput = downloadFile(bankUri, "kickboardPoints");
                 pointsParser = new PointsParser(fileInput);
             }
             return pointsParser.next(chunkSize);
@@ -80,7 +81,7 @@ public class KickboardClient extends BaseHttpClient {
     public List<KickboardBehavior> getBehaviorData(Integer chunkSize) {
         try {
             if(null == parser) {
-                InputStream fileInput = downloadFile(behaviorUri, "kickboardBehavior", behaviorCsv);
+                InputStream fileInput = downloadFile(behaviorUri, "kickboardBehavior");
                 parser = new BehaviorParser(fileInput);
             }
             return parser.next(chunkSize);
@@ -93,7 +94,7 @@ public class KickboardClient extends BaseHttpClient {
     public List<KickboardBehavior> getConsequenceData(Integer chunkSize) {
         try {
             if(null == consParser) {
-                InputStream fileInput = downloadFile(consequenceUri, "kickboardConsequence", consequenceCsv);
+                InputStream fileInput = downloadFile(consequenceUri, "kickboardConsequence");
                 consParser = new ConsequenceParser(fileInput);
             }
             return consParser.next(chunkSize);
@@ -113,14 +114,8 @@ public class KickboardClient extends BaseHttpClient {
         if(null != consParser) {
             consParser.close();
         }
-        if(null != behaviorCsv) {
-            behaviorCsv.delete();
-        }
-        if(null != consequenceCsv) {
-            consequenceCsv.delete();
-        }
-        if(null != pointsCsv) {
-            pointsCsv.delete();
+        for(File f: files) {
+            f.delete();
         }
     }
     @Override
