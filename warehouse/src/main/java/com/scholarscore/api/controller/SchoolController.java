@@ -178,4 +178,20 @@ public class SchoolController extends BaseController {
     ) {
         return respond(pm.getSchoolManager().associateAdvisors(schoolId));
     }
+
+    @ApiOperation(
+            value = "Get all teachers in school",
+            notes = "Retrieve all teachers within a school",
+            response = List.class)
+    @RequestMapping(
+            value = "/{schoolId}/teachers",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    @StudentAccessible
+    public @ResponseBody ResponseEntity getTeachersInSchool(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId) {
+        return respond(pm.getTeacherManager().getAllTeachers(schoolId));
+    }
 }
