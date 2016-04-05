@@ -36,7 +36,7 @@ public class BehaviorController extends BaseController {
     private static final String STUDENT_BEHAVIOR_SCORE = "/students/{studentId}/behaviorscores";
 
     @ApiOperation(
-            value = "Get a behavior by student and date",
+            value = "Get a behavior score by student and date",
             notes = "Retrieves one specific behavior score",
             response = BehaviorScore.class)
     @RequestMapping(

@@ -271,6 +271,11 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
+    public void deleteBehavior(Long studentId, String edpanelId) throws HttpClientException {
+        delete(BASE_API_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId + "/" + BEHAVIOR_ENDPOINT + "/" + edpanelId);
+    }
+
+    @Override
     public Collection<BehaviorScore> getBehaviorScores(Long studentId, LocalDate cutoffDate) throws HttpClientException {
         String url = BASE_API_ENDPOINT
                 + STUDENT_ENDPOINT + "/" + studentId + BEHAVIOR_SCORES_ENDPOINT;

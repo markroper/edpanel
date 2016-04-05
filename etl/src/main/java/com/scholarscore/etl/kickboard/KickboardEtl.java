@@ -59,45 +59,60 @@ public class KickboardEtl implements IEtlEngine {
     private void syncBehavior() {
         List<KickboardBehavior> kbBehaviors =  new ArrayList<>();
         //Source system behavior ID to behavior
-        Map<String, Behavior> edPanelBehaviors = new HashMap<>();
-        Map<Long, Map<LocalDate, Behavior>> edPanelBehaviorsWithoutSsids = new HashMap<>();
-        Set<Long> studentsWithResolvedBehaviors = new HashSet<>();
-        Set<String> seenSsids = new HashSet<>();
+        Map<String, Behavior> seenInEdPanel = new HashMap<>();
+        Map<Long, Map<LocalDate, Behavior>> seenInEdPanelNoSsid = new HashMap<>();
+        Set<Long> sourceSeenStudents = new HashSet<>();
+        Set<String> seenInSourceSystem = new HashSet<>();
         int page = 1;
         while(kbBehaviors != null) {
             LOGGER.debug("PAGE NUMBER: " + page);
             page++;
             kbBehaviors = kickboardClient.getBehaviorData(CHUNK_SIZE);
-            List<Behavior> sourceBehaviors = convertToEdPanelBehaviors(kbBehaviors);
-            if(null == sourceBehaviors) {
+            List<Behavior> sourceChunk = convertToEdPanelBehaviors(kbBehaviors);
+            if(null == sourceChunk) {
                 continue;
             }
             List<Behavior> behaviorsToCreate = new ArrayList<>();
-            for(Behavior source: sourceBehaviors) {
-                seenSsids.add(source.getRemoteBehaviorId());
+            for(Behavior source: sourceChunk) {
                 //If the current behavior from Kickboard's user's data hasn't been pulled from EdPanel, pull it.
-                if(!studentsWithResolvedBehaviors.contains(source.getStudent().getId())) {
-                    studentsWithResolvedBehaviors.add(source.getStudent().getId());
-                    addStudentBehaviorsToCollections(source, edPanelBehaviors, edPanelBehaviorsWithoutSsids);
+                if(!sourceSeenStudents.contains(source.getStudent().getId())) {
+                    sourceSeenStudents.add(source.getStudent().getId());
+                    addStudentBehaviorsToCollections(source, seenInEdPanel, seenInEdPanelNoSsid);
                 }
                 //If the behavior doesn't exist in edpanel, create it, otherwise update it
-                if(!edPanelBehaviors.containsKey(source.getRemoteBehaviorId()) &&
-                        !seenSsids.contains(source.getRemoteBehaviorId())) {
+                if(!seenInEdPanel.containsKey(source.getRemoteBehaviorId()) &&
+                        !seenInSourceSystem.contains(source.getRemoteBehaviorId())) {
                     //create the behavior
                     behaviorsToCreate.add(source);
                 } else {
                     //update the behavior
-                    updateBehavior(edPanelBehaviors.get(source.getRemoteBehaviorId()), source);
+                    updateBehavior(seenInEdPanel.get(source.getRemoteBehaviorId()), source);
                     //Then remove it from the set so we know what to delete when we're done...
-                    edPanelBehaviors.remove(source.getRemoteBehaviorId());
+                    seenInEdPanel.remove(source.getRemoteBehaviorId());
                 }
+                seenInSourceSystem.add(source.getRemoteBehaviorId());
             }
             createBehaviors(behaviorsToCreate);
         }
+        // Now that we've handled the entire giant file, go ahead and delete from EdPanel any entries left in the
+        // edpanel collection that were not updated and removed above.
+        for(Map.Entry<String, Behavior> entry: seenInEdPanel.entrySet()) {
+            try {
+                Behavior b = entry.getValue();
+                scholarScore.deleteBehaviorBySourceId(b.getStudent().getId(), b.getRemoteBehaviorId());
+                result.addDeleted(1);
+            } catch (HttpClientException e) {
+                result.addFailedDeleted(1);
+                LOGGER.warn("Unable to delete the behavior event within EdPanel with SSID: " +
+                        entry.getValue().getRemoteBehaviorId());
+            }
+        }
+
         //Now resolve the incidents, which are a different table within Kickboard:
         kbBehaviors =  new ArrayList<>();
         page = 1;
         Map<Long, Set<MutablePair<LocalDate, BehaviorCategory>>> seenBehaviors = new HashMap<>();
+        sourceSeenStudents = new HashSet<>();
         while(kbBehaviors != null) {
             LOGGER.debug("PAGE NUMBER: " + page);
             page++;
@@ -109,9 +124,9 @@ public class KickboardEtl implements IEtlEngine {
             List<Behavior> behaviorsToCreate = new ArrayList<>();
             for(Behavior source: sourceBehaviors) {
                 Long studId = source.getStudent().getId();
-                if(!studentsWithResolvedBehaviors.contains(studId)) {
-                    studentsWithResolvedBehaviors.add(studId);
-                    addStudentBehaviorsToCollections(source, edPanelBehaviors, edPanelBehaviorsWithoutSsids);
+                if(!sourceSeenStudents.contains(studId)) {
+                    sourceSeenStudents.add(studId);
+                    addStudentBehaviorsToCollections(source, seenInEdPanel, seenInEdPanelNoSsid);
                 }
                 if(!seenBehaviors.containsKey(studId)) {
                     seenBehaviors.put(studId, new HashSet<>());
@@ -120,46 +135,33 @@ public class KickboardEtl implements IEtlEngine {
                         new MutablePair<>(source.getBehaviorDate(), source.getBehaviorCategory());
                 //If the behavior doesn't exist in edpanel, create it, otherwise update it
                 if(!seenBehaviors.get(studId).contains(p) &&
-                        (!edPanelBehaviorsWithoutSsids.containsKey(studId) ||
-                        !edPanelBehaviorsWithoutSsids.get(studId).containsKey(source.getBehaviorDate()))) {
+                        (!seenInEdPanelNoSsid.containsKey(studId) ||
+                        !seenInEdPanelNoSsid.get(studId).containsKey(source.getBehaviorDate()))) {
                     //create the behavior
                     behaviorsToCreate.add(source);
                 } else {
                     //update the behavior
                     Behavior old = null;
-                    if(edPanelBehaviorsWithoutSsids.containsKey(studId)) {
-                        old = edPanelBehaviorsWithoutSsids.get(studId).get(source.getBehaviorDate());
+                    if(seenInEdPanelNoSsid.containsKey(studId)) {
+                        old = seenInEdPanelNoSsid.get(studId).get(source.getBehaviorDate());
                     }
                     updateBehavior(old, source);
-                    //Then remove it from the set so we know what to delete when we're done...
-                    if(edPanelBehaviorsWithoutSsids.containsKey(studId)) {
-                        edPanelBehaviorsWithoutSsids.get(studId).remove(source.getBehaviorDate());
-                    }
                 }
                 seenBehaviors.get(studId).add(p);
             }
             createBehaviors(behaviorsToCreate);
         }
 
-        // Now that we've handled the entire giant file, go ahead and delete from EdPanel any entries left in the
-        // edpanel collection that were not updated and removed above.
-        for(Map.Entry<String, Behavior> entry: edPanelBehaviors.entrySet()) {
-            try {
-                Behavior b = entry.getValue();
-                scholarScore.deleteBehaviorBySourceId(b.getStudent().getId(), b.getRemoteBehaviorId());
-                result.addDeleted(1);
-            } catch (HttpClientException e) {
-                result.addFailedDeleted(1);
-                LOGGER.warn("Unable to delete the behavior event within EdPanel with SSID: " +
-                        entry.getValue().getRemoteBehaviorId());
-            }
-        }
-        for(Map.Entry<Long, Map<LocalDate, Behavior>> entry : edPanelBehaviorsWithoutSsids.entrySet()) {
+        for(Map.Entry<Long, Map<LocalDate, Behavior>> entry : seenInEdPanelNoSsid.entrySet()) {
             for(Map.Entry<LocalDate, Behavior> bEntry : entry.getValue().entrySet()) {
                 try {
                     Behavior b = bEntry.getValue();
-                    scholarScore.deleteBehaviorBySourceId(b.getStudent().getId(), b.getRemoteBehaviorId());
-                    result.addDeleted(1);
+                    MutablePair<LocalDate, BehaviorCategory> p = new MutablePair<>(b.getBehaviorDate(), b.getBehaviorCategory());
+                    if(!seenBehaviors.containsKey(b.getStudent().getId()) ||
+                            !seenBehaviors.get(b.getStudent().getId()).contains(p) ) {
+                        scholarScore.deleteBehavior(b.getStudent().getId(), b.getRemoteBehaviorId());
+                        result.addDeleted(1);
+                    }
                 } catch (HttpClientException e) {
                     result.addFailedDeleted(1);
                     LOGGER.warn("Unable to delete the behavior event within EdPanel with SSID: " +
@@ -174,9 +176,6 @@ public class KickboardEtl implements IEtlEngine {
             Map<String, Behavior> edPanelBehaviors,
             Map<Long, Map<LocalDate, Behavior>> edPanelBehaviorsWithoutSsids) {
         try {
-            if(source.getStudent().getId().equals(2047L)) {
-                LOGGER.info("here we are");
-            }
             Collection<Behavior> studentsBehaviors =
                     scholarScore.getBehaviors(source.getStudent().getId(), CUTOFF);
             for(Behavior b : studentsBehaviors) {
@@ -316,7 +315,7 @@ public class KickboardEtl implements IEtlEngine {
     public void createBehaviors(List<Behavior> b) {
         if(null != b && b.size() > 0) {
             try {
-                scholarScore.createBehaviors(b);
+                List<Long> newIds = scholarScore.createBehaviors(b);
                 result.addCreated(b.size());
             } catch (HttpClientException e) {
                 result.addFailedToCreate(b.size());
