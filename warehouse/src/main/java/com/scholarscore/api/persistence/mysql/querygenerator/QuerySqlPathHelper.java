@@ -48,33 +48,36 @@ public class QuerySqlPathHelper {
             Dimension firstTable = orderedTables.get(0);
             LOGGER.trace("FIRST TABLE: " + firstTable);
             LOGGER.debug("OK, now we have table " + firstTable + " and we're trying to find links to...");
-
-            Set<Dimension> neededDimensions = breadthFirstSearch(firstTable, unmatchedDimensions);
-            // okay, now we matched at least one unmatched dimension using the 'neededDimensions' returned, but there may be more
-
-            // these tables will be included anyway, so don't hint them 
-            for (Dimension alreadyIncludedDimension : orderedTables) {
-                neededDimensions.remove(alreadyIncludedDimension);
-            }
-                
-            // add any remaining found tables as hints
-            for (Dimension neededDimension: neededDimensions) {
-                q.addJoinTable(neededDimension);
-            }
-                
-            List<Dimension> unmatchedDimensionsAfterAdding = returnUnmatchedTables(buildTablesFromQuery(q));
-            if (unmatchedDimensionsAfterAdding == null || unmatchedDimensionsAfterAdding.size() == 0) {
-                // we're done!
-                return;
-            } else {
-                // after we added our new hint tables, see if there are fewer unmatched dimensions. if not, give up.
-                if (unmatchedDimensionsAfterAdding.size() >= unmatchedDimensions.size()) {
-                    LOGGER.warn("UNABLE TO FIND JOIN PATH! Unmatched Dimensions after adding: " + unmatchedDimensionsAfterAdding
-                    + "\n" + "Unmatched Before: " + unmatchedDimensions);
-                    throw new SqlGenerationException("Unable to find join path through tables!");
+            for (Dimension dim : unmatchedDimensions) {
+                LOGGER.debug("... Unmatched dimension " + dim);
+    
+                Set<Dimension> neededDimensions = breadthFirstSearch(firstTable, unmatchedDimensions);
+                // okay, now we matched at least one unmatched dimension using the 'neededDimensions' returned, but there may be more
+    
+                // these tables will be included anyway, so don't hint them 
+                for (Dimension alreadyIncludedDimension : orderedTables) {
+                    neededDimensions.remove(alreadyIncludedDimension);
+                }
+                    
+                // add any remaining found tables as hints
+                for (Dimension neededDimension: neededDimensions) {
+                    q.addJoinTable(neededDimension);
+                }
+                    
+                List<Dimension> unmatchedDimensionsAfterAdding = returnUnmatchedTables(buildTablesFromQuery(q));
+                if (unmatchedDimensionsAfterAdding == null || unmatchedDimensionsAfterAdding.size() == 0) {
+                    // we're done!
+                    return;
                 } else {
-                    // okay, we're making progress. keep going.
-                    calculateAndAddAdditionalNeededDimensions(q);
+                    // after we added our new hint tables, see if there are fewer unmatched dimensions. if not, give up.
+                    if (unmatchedDimensionsAfterAdding.size() >= unmatchedDimensions.size()) {
+                        LOGGER.warn("UNABLE TO FIND JOIN PATH! Unmatched Dimensions after adding: " + unmatchedDimensionsAfterAdding
+                        + "\n" + "Unmatched Before: " + unmatchedDimensions);
+                        throw new SqlGenerationException("Unable to find join path through tables!");
+                    } else {
+                        // okay, we're making progress. keep going.
+                        calculateAndAddAdditionalNeededDimensions(q);
+                    }
                 }
             }
         } else {
