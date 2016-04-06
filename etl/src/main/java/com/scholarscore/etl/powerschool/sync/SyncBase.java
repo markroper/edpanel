@@ -44,6 +44,9 @@ public abstract class SyncBase<T> implements ISync<T> {
             }
         }
 
+        if (null == sourceRecords) { sourceRecords = new ConcurrentHashMap<>(); }
+        if (null == edpanelRecords) { edpanelRecords = new ConcurrentHashMap<>(); }
+        
         for (Map.Entry<Long, T> entry : sourceRecords.entrySet()) {
             T sourceRecord = entry.getValue();
             T edPanelRecord = edpanelRecords.get(entry.getKey());

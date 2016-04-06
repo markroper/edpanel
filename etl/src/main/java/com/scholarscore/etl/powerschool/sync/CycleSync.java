@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by cwallace on 12/23/15.
  */
-public class CycleSync implements ISync<PsCycle> {
+public class CycleSync extends ReadOnlySyncBase<PsCycle> implements ISync<PsCycle> {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(CycleSync.class);
     protected IAPIClient edPanel;
@@ -32,24 +32,8 @@ public class CycleSync implements ISync<PsCycle> {
         this.powerSchool = powerSchool;
         this.school = s;
     }
-    @Override
-    public ConcurrentHashMap<Long, PsCycle> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        ConcurrentHashMap<Long, PsCycle> source = null;
-        try {
-            source = resolveAllFromSourceSystem();
-        } catch (HttpClientException e) {
-            try {
-                source = resolveAllFromSourceSystem();
-            } catch (HttpClientException ex) {
-                LOGGER.error("Unable to extract cycles from PowerSchool for school: " + school.getName() +
-                        " with EdPanel ID: " + school.getId());
-                results.cycleSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-                return new ConcurrentHashMap<>();
-            }
-        }
-        return source;
-    }
 
+    @Override
     protected ConcurrentHashMap<Long, PsCycle> resolveAllFromSourceSystem() throws HttpClientException {
         ConcurrentHashMap<Long, PsCycle> result = new ConcurrentHashMap<>();
         PsResponse<PsCycleWrapper> response = powerSchool.getCyclesBySchool(school.getNumber());
@@ -57,5 +41,12 @@ public class CycleSync implements ISync<PsCycle> {
             result.put(cycle.tables.cycle_day.id , cycle.tables.cycle_day);
         }
         return result;
+    }
+
+    @Override
+    protected void handleSourceGetFailure(PowerSchoolSyncResult results) {
+        LOGGER.error("Unable to extract cycles from PowerSchool for school: " + school.getName() +
+                " with EdPanel ID: " + school.getId());
+        results.cycleSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
     }
 }
