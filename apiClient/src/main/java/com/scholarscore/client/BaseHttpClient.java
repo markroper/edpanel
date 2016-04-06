@@ -176,7 +176,9 @@ public abstract class BaseHttpClient {
         baseRequest.setURI(uri.resolve(path));
         setupCommonHeaders(baseRequest);
         baseRequest.setHeader(HEADER_CONTENT_TYPE_JSON);
-        baseRequest.setEntity(new ByteArrayEntity(data));
+        if (data != null) {
+            baseRequest.setEntity(new ByteArrayEntity(data));
+        }
         HttpResponse response = null;
         try {
             response = httpclient.execute(baseRequest);
@@ -185,7 +187,7 @@ public abstract class BaseHttpClient {
             if (code == HttpStatus.SC_CREATED || code == HttpStatus.SC_OK) {
                 return json;
             } else {
-                throw new HttpClientException("Failed to post to end point: " + baseRequest.getURI().toString() + ", status line: " + response.getStatusLine().toString() + ", payload: " + json);
+                throw new HttpClientException("Failed to make request (type:" + baseRequest.getMethod() + ") to end point: " + baseRequest.getURI().toString() + ", status line: " + response.getStatusLine().toString() + ", payload: " + json);
             }
         } catch (IOException e) {
             throw new HttpClientException(e);
