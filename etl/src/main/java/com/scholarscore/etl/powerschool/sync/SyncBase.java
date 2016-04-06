@@ -44,9 +44,7 @@ public abstract class SyncBase<T> implements ISync<T> {
             }
         }
 
-        Iterator<Map.Entry<Long, T>> sourceIterator = sourceRecords.entrySet().iterator();
-        while(sourceIterator.hasNext()) {
-            Map.Entry<Long, T> entry = sourceIterator.next();
+        for (Map.Entry<Long, T> entry : sourceRecords.entrySet()) {
             T sourceRecord = entry.getValue();
             T edPanelRecord = edpanelRecords.get(entry.getKey());
             if (null == edPanelRecord) {    // doesn't exist, must create
@@ -57,10 +55,8 @@ public abstract class SyncBase<T> implements ISync<T> {
         }
 
         //Delete anything IN EdPanel that is NOT in source system
-        Iterator<Map.Entry<Long, T>> edpanelIterator = edpanelRecords.entrySet().iterator();
-        while(edpanelIterator.hasNext()) {
-            Map.Entry<Long, T> entry = edpanelIterator.next();
-            if(!sourceRecords.containsKey(entry.getKey())) {
+        for (Map.Entry<Long, T> entry : edpanelRecords.entrySet()) {
+            if (!sourceRecords.containsKey(entry.getKey())) {
                 deleteEdPanelRecord(entry.getValue(), results);
             }
         }
