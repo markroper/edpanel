@@ -185,7 +185,7 @@ public abstract class BaseHttpClient {
             if (code == HttpStatus.SC_CREATED || code == HttpStatus.SC_OK) {
                 return json;
             } else {
-                throw new HttpClientException("Failed to post to end point: " + baseRequest.getURI().toString() + ", status line: " + response.getStatusLine().toString() + ", payload: " + json);
+                throw new HttpClientException("Failed to make request (type:" + baseRequest.getMethod() + ") to end point: " + baseRequest.getURI().toString() + ", status line: " + response.getStatusLine().toString() + ", payload: " + json);
             }
         } catch (IOException e) {
             throw new HttpClientException(e);
