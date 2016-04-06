@@ -502,7 +502,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
         notificationValidatingExecutor.delete(n.getId(), msg);
     }
 
-    @Test
+    @Test(enabled = false)
     public void checkOneTimeNotifications() {
         Object[][] inputs = oneTimeNotificationsProvider();
         ArrayList<Notification> nots = new ArrayList<>();
@@ -575,7 +575,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
 
     }
 
-    @Test
+    @Test(enabled=false)
     public void checkCreateNotificationsEndpoint() {
 
         //Create the notifications
@@ -641,7 +641,7 @@ public class NotificationControllerIntegrationTest extends IntegrationBase {
 
     }
 
-    @Test
+    @Test(enabled = false)
         public void createAndEvaluateAll() {
             Object[][] inputs = createNotificationsProvider();
             for(int i = 0; i < inputs.length; i++) {
