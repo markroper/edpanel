@@ -176,7 +176,9 @@ public abstract class BaseHttpClient {
         baseRequest.setURI(uri.resolve(path));
         setupCommonHeaders(baseRequest);
         baseRequest.setHeader(HEADER_CONTENT_TYPE_JSON);
-        baseRequest.setEntity(new ByteArrayEntity(data));
+        if (data != null) {
+            baseRequest.setEntity(new ByteArrayEntity(data));
+        }
         HttpResponse response = null;
         try {
             response = httpclient.execute(baseRequest);
