@@ -23,64 +23,6 @@ public class SchoolSync extends SyncBase<School> implements ISync<School> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, School> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        ConcurrentHashMap<Long, School> source = null;
-        try {
-            source = resolveAllFromSourceSystem();
-        } catch (HttpClientException e) {
-            results.schoolSourceGetFailed(-1L, -1L);
-            return new ConcurrentHashMap<>();
-        }
-        ConcurrentHashMap<Long, School> edpanel = null;
-        try {
-            edpanel = resolveFromEdPanel();
-        } catch (HttpClientException e) {
-            results.schoolEdPanelGetFailed(-1L, -1L);
-            return new ConcurrentHashMap<>();
-        }
-
-        //Find & perform the inserts and updates, if any
-        for (Map.Entry<Long, School> entry : source.entrySet()) {
-            School sourceSchool = entry.getValue();
-            School edPanelSchool = edpanel.get(entry.getKey());
-            if (null == edPanelSchool) {
-                School created = null;
-                try {
-                    created = edPanel.createSchool(sourceSchool);
-                    results.schoolCreated(entry.getKey(), created.getId());
-                } catch (HttpClientException e) {
-                    results.schoolCreateFailed(entry.getKey());;
-                }
-            } else {
-                sourceSchool.setId(edPanelSchool.getId());
-                //Never update the edpanel GPA|Behavior disabled flags from the source system
-                sourceSchool.setDisableGpa(edPanelSchool.getDisableGpa());
-                sourceSchool.setDisableBehavior(edPanelSchool.getDisableBehavior());
-                edPanelSchool.setYears(sourceSchool.getYears());
-                if (!edPanelSchool.equals(sourceSchool)) {
-                    try {
-                        edPanel.updateSchool(sourceSchool);
-                        results.schoolUpdated(entry.getKey(), sourceSchool.getId());
-                    } catch (HttpClientException e) {
-                        results.schoolUpdateFailed(entry.getKey(), sourceSchool.getId());
-                    }
-                }
-            }
-        }
-        //Delete anything IN EdPanel that is NOT in source system
-        for (Map.Entry<Long, School> entry : edpanel.entrySet()) {
-            if (!source.containsKey(entry.getKey())) {
-                try {
-                    edPanel.deleteSchool(entry.getValue());
-                    results.schoolDeleted(entry.getKey(), entry.getValue().getId());
-                } catch (HttpClientException e) {
-                    results.schoolDeleteFailed(entry.getKey(), entry.getValue().getId());
-                }
-            }
-        }
-        return source;
-    }
-
     protected ConcurrentHashMap<Long, School> resolveAllFromSourceSystem() throws HttpClientException {
         SchoolsResponse powerSchools = powerSchool.getSchools();
         ConcurrentHashMap<Long, School> schoolMap = new ConcurrentHashMap<>();
