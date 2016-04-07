@@ -23,7 +23,6 @@ import com.scholarscore.models.user.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -125,7 +124,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                 if(!edPanelAttendance.equals(sourceAttendance)) {
                     try {
                         edPanel.updateAttendance(school.getId(), student.getId(), sourceAttendance);
-                    } catch (IOException e) {
+                    } catch (HttpClientException e) {
                         results.attendanceUpdateFailed(entry.getKey(), sourceAttendance.getId());
                         continue;
                     }

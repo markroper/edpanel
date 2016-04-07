@@ -13,7 +13,6 @@ import com.scholarscore.models.attendance.SchoolDay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -83,7 +82,7 @@ public class SchoolDaySync {
                 if(!edPanelSchoolDay.equals(schoolDay)) {
                     try {
                         edPanel.updateSchoolDay(school.getId(), schoolDay);
-                    } catch (IOException e) {
+                    } catch (HttpClientException e) {
                         results.schoolDayUpdateFailed(
                                 Long.valueOf(schoolDay.getSourceSystemId()),
                                 schoolDay.getId());
