@@ -52,104 +52,6 @@ public class StudentSync extends SyncBase<Student> implements ISync<Student> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Student> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        ConcurrentHashMap<Long, Student> sourceStudents = null;
-        try {
-            sourceStudents = resolveAllFromSourceSystem();
-        } catch (HttpClientException e) {
-            try {
-                sourceStudents = resolveAllFromSourceSystem();
-            } catch (HttpClientException ex) {
-                LOGGER.error("Unable to fetch students from PowerSchool for school " + school.getName() +
-                        " with ID: " + school.getId());
-                results.studentSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-                return new ConcurrentHashMap<>();
-            }
-        }
-        ConcurrentHashMap<Long, Student> ed = null;
-        try {
-            ed = resolveFromEdPanel();
-        } catch (HttpClientException e) {
-            try {
-                ed = resolveFromEdPanel();
-            } catch (HttpClientException ex) {
-                LOGGER.error("Unable to fetch students from EdPanel for school " + school.getName() +
-                        " with ID: " + school.getId());
-                results.studentEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-                return new ConcurrentHashMap<>();
-            }
-        }
-        Iterator<Map.Entry<Long, Student>> sourceIterator = sourceStudents.entrySet().iterator();
-        //Find & perform the inserts and updates, if any
-        while(sourceIterator.hasNext()) {
-            Map.Entry<Long, Student> entry = sourceIterator.next();
-            Student sourceUser = entry.getValue();
-            Student edPanelUser = ed.get(entry.getKey());
-            //Associate the SSID and source system local id (teacher/admin ID and underlying user ID)
-            if(null == edPanelUser){
-                Long ssid = Long.valueOf(sourceUser.getSourceSystemId());
-                sourceUser.setCurrentSchoolId(school.getId());
-                User created = null;
-                try {
-                    created = edPanel.createStudent(sourceUser);
-                } catch (HttpClientException e) {
-                    results.studentCreateFailed(entry.getKey());
-                    continue;
-                }
-                sourceUser.setId(created.getId());
-                studentAssociator.add(ssid, (Student)created);
-                results.studentCreated(entry.getKey(), created.getId());
-            } else {
-                Long ssid = Long.valueOf(sourceUser.getSourceSystemId());
-                sourceUser.setId(edPanelUser.getId());
-                sourceUser.setCurrentSchoolId(school.getId());
-                sourceUser.setSourceSystemId(edPanelUser.getSourceSystemId());
-                sourceUser.setUsername(edPanelUser.getUsername());
-                sourceUser.setEnabled(edPanelUser.getEnabled());
-                edPanelUser.setPassword(null);
-                Address add = sourceUser.getHomeAddress();
-                if(null != add && null != edPanelUser.getHomeAddress()) {
-                    add.setId(edPanelUser.getHomeAddress().getId());
-                }
-                add = sourceUser.getMailingAddress();
-                if(null != add && edPanelUser.getMailingAddress() != null) {
-                    add.setId(edPanelUser.getMailingAddress().getId());
-                }
-                if(!edPanelUser.equals(sourceUser)) {
-                    try {
-                        sourceUser = (Student)edPanel.replaceUser(sourceUser);
-                    } catch (HttpClientException e) {
-                        results.studentUpdateFailed(entry.getKey(), sourceUser.getId());
-                        continue;
-                    }
-                    results.studentUpdated(entry.getKey(), sourceUser.getId());
-                }
-                studentAssociator.add(ssid, sourceUser);
-            }
-        }
-
-        //Withdraw any students not returned by source system
-        for (Map.Entry<Long, Student> entry : ed.entrySet()) {
-            if (!sourceStudents.containsKey(entry.getKey())) {
-                    if (school.getId().equals(entry.getValue().getCurrentSchoolId())) {
-                        try {
-                            entry.getValue().setWithdrawalDate(LocalDate.now());
-                            entry.getValue().setEnrollStatus(EnrollStatus.INACTIVE);
-                            edPanel.replaceUser(entry.getValue());
-                        } catch (HttpClientException e) {
-                            results.studentUpdateFailed(entry.getKey(), entry.getValue().getId());
-                            continue;
-                        }
-                        LOGGER.info("Student withdrawn, student ID: " + entry.getValue().getId());
-                        results.studentUpdated(entry.getKey(), entry.getValue().getId());
-                    }
-            }
-        }
-        //Note: we never delete users, even if they're removed from the source system.
-        return sourceStudents;
-    }
-
-    @Override
     protected ConcurrentHashMap<Long, Student> resolveAllFromSourceSystem() throws HttpClientException {
         PsStudents response = powerSchool.getStudentsBySchool(Long.valueOf(school.getSourceSystemId()));
         Collection<Student> apiListOfStudents = response.toInternalModel();
@@ -271,16 +173,17 @@ public class StudentSync extends SyncBase<Student> implements ISync<Student> {
     protected void deleteEdPanelRecord(Student entityToDelete, PowerSchoolSyncResult results) {
         //Withdraw any students not returned by source system
         if (school.getId().equals(entityToDelete.getCurrentSchoolId())) {
+            Long ssid = Long.parseLong(entityToDelete.getSourceSystemId());
             try {
                 entityToDelete.setWithdrawalDate(LocalDate.now());
                 entityToDelete.setEnrollStatus(EnrollStatus.INACTIVE);
                 edPanel.replaceUser(entityToDelete);
             } catch (HttpClientException e) {
-                results.studentUpdateFailed(entry.getKey(), entry.getValue().getId());
-                continue;
+                results.studentUpdateFailed(ssid, entityToDelete.getId());
+                return;
             }
-            LOGGER.info("Student withdrawn, student ID: " + entry.getValue().getId());
-            results.studentUpdated(entry.getKey(), entry.getValue().getId());
+            LOGGER.info("Student withdrawn, student ID: " + entityToDelete.getId());
+            results.studentUpdated(ssid, entityToDelete.getId());
             //Note: we never delete users, even if they're removed from the source system.
         }
     }
