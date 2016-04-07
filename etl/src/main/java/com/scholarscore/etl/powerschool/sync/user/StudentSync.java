@@ -178,12 +178,11 @@ public class StudentSync extends SyncBase<Student> implements ISync<Student> {
                 entityToDelete.setWithdrawalDate(LocalDate.now());
                 entityToDelete.setEnrollStatus(EnrollStatus.INACTIVE);
                 edPanel.replaceUser(entityToDelete);
+                LOGGER.info("Student withdrawn, student ID: " + entityToDelete.getId());
+                results.studentUpdated(ssid, entityToDelete.getId());
             } catch (HttpClientException e) {
                 results.studentUpdateFailed(ssid, entityToDelete.getId());
-                return;
             }
-            LOGGER.info("Student withdrawn, student ID: " + entityToDelete.getId());
-            results.studentUpdated(ssid, entityToDelete.getId());
             //Note: we never delete users, even if they're removed from the source system.
         }
     }
