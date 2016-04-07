@@ -11,6 +11,7 @@ import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.School;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -112,7 +113,7 @@ public class PowerSchoolResponseCountTest extends AbstractTestNGSpringContextTes
         for (PsSchool school : schoolsResponse.schools.school) {
             PsStaffs response = client.getStaff(school.id);
             assertNotNull(response);
-            Collection<User> internalModel = response.toInternalModel();
+            Collection<Staff> internalModel = response.toInternalModel();
             assertNotNull(internalModel);
             totalCountStaff += internalModel.size();
         }

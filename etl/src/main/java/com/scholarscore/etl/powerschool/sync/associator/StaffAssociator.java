@@ -1,6 +1,6 @@
 package com.scholarscore.etl.powerschool.sync.associator;
 
-import com.scholarscore.models.user.Person;
+import com.scholarscore.models.user.Staff;
 
 /**
  * In PowerSchool, users appear to be globally unique within a powerschool install, but a single user
@@ -16,4 +16,4 @@ import com.scholarscore.models.user.Person;
  *
  * Created by markroper on 10/27/15.
  */
-public class StaffAssociator extends UserAssociator<Person> { }
+public class StaffAssociator extends UserAssociator<Staff> { }
