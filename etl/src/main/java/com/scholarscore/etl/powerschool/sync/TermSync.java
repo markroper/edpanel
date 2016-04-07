@@ -119,7 +119,6 @@ public class TermSync extends SyncBase<Term> implements ISync<Term> {
                 this.edpanelSchoolYears.put(Long.valueOf(year.getName()), year);
             } catch(NumberFormatException | NullPointerException e) {
                 //noop
-                LOGGER.info("TermSync - NumberFormatException OR NullPointerException.");
             }
             Term[] terms = edPanel.getTerms(school.getId(), year.getId());
             for(Term t: terms) {
