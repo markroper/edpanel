@@ -13,7 +13,6 @@ import com.scholarscore.models.Address;
 import com.scholarscore.models.School;
 import com.scholarscore.models.user.EnrollStatus;
 import com.scholarscore.models.user.Student;
-import com.scholarscore.models.user.User;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
