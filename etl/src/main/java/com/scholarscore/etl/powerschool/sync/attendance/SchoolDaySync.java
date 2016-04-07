@@ -13,7 +13,6 @@ import com.scholarscore.models.attendance.SchoolDay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -57,10 +56,10 @@ public class SchoolDaySync {
             }
         }
         try {
-            ed = resolveFromEdPanel(school.getId());
+            ed = resolveFromEdPanel();
         } catch (HttpClientException e) {
             try {
-                ed = resolveFromEdPanel(school.getId());
+                ed = resolveFromEdPanel();
             } catch (HttpClientException ex) {
                 LOGGER.error("Unable to fetch school days from EdPanel for school " + school.getName() +
                         " with ID: " + school.getId());
@@ -83,7 +82,7 @@ public class SchoolDaySync {
                 if(!edPanelSchoolDay.equals(schoolDay)) {
                     try {
                         edPanel.updateSchoolDay(school.getId(), schoolDay);
-                    } catch (IOException e) {
+                    } catch (HttpClientException e) {
                         results.schoolDayUpdateFailed(
                                 Long.valueOf(schoolDay.getSourceSystemId()),
                                 schoolDay.getId());
@@ -115,10 +114,8 @@ public class SchoolDaySync {
             }
         }
         //Delete anything IN EdPanel that is NOT in source system
-        Iterator<Map.Entry<LocalDate, SchoolDay>> edpanelIterator = ed.entrySet().iterator();
-        while(edpanelIterator.hasNext()) {
-            Map.Entry<LocalDate, SchoolDay> entry = edpanelIterator.next();
-            if(!source.containsKey(entry.getKey())
+        for (Map.Entry<LocalDate, SchoolDay> entry : ed.entrySet()) {
+            if (!source.containsKey(entry.getKey())
                     && entry.getValue().getDate().compareTo(syncCutoff) > 0) {
                 try {
                     //We only sync the last year's school days so we can't just delete from ed panel those
@@ -154,11 +151,10 @@ public class SchoolDaySync {
         return result;
     }
 
-    protected ConcurrentHashMap<LocalDate, SchoolDay> resolveFromEdPanel(Long schoolId) throws HttpClientException {
+    protected ConcurrentHashMap<LocalDate, SchoolDay> resolveFromEdPanel() throws HttpClientException {
         SchoolDay[] days = edPanel.getSchoolDays(school.getId());
         ConcurrentHashMap<LocalDate, SchoolDay> dayMap = new ConcurrentHashMap<>();
         for(SchoolDay c: days) {
-            Long id = null;
             Long ssid = c.getSourceSystemOtherId();
             if(null != ssid) {
                 dayMap.put(c.getDate(), c);

@@ -24,7 +24,6 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -132,7 +131,7 @@ public class SectionAssignmentSync implements ISync<Assignment> {
                                 createdSection.getTerm().getId(),
                                 createdSection.getId(),
                                 sourceAssignment);
-                    } catch (IOException e) {
+                    } catch (HttpClientException e) {
                         results.sectionAssignmentCreateFailed(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey());
                         continue;
                     }

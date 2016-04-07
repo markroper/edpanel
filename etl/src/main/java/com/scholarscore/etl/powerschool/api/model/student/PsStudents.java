@@ -8,6 +8,7 @@ import com.scholarscore.models.Gender;
 import com.scholarscore.models.user.Student;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 
 /**
@@ -57,7 +58,10 @@ public class PsStudents extends ArrayList<PsStudent> implements ITranslateCollec
             if (null != student.school_enrollment) {
                 model.setCurrentSchoolId(student.school_enrollment.school_id);
                 if (null != student.school_enrollment.exit_date) {
-                    model.setProjectedGraduationYear(student.school_enrollment.exit_date.getYear() + 1900L);
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(student.school_enrollment.exit_date);
+                    Long projectedGraduationYear = (long)cal.get(Calendar.YEAR);
+                    model.setProjectedGraduationYear(projectedGraduationYear);
                 }
             }
 

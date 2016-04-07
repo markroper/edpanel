@@ -203,7 +203,6 @@ public class NotificationManagerImpl implements NotificationManager {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public ServiceResponse<Void> deleteNotification(Long notificationId) {
         ServiceResponse<Notification> nResp = getNotification(notificationId);
         if(null == nResp.getCode() || nResp.getCode().isOK()) {

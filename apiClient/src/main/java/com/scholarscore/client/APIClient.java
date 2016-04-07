@@ -1,5 +1,6 @@
 package com.scholarscore.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.models.Behavior;
 import com.scholarscore.models.Course;
@@ -110,7 +111,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public School updateSchool(School school) throws IOException {
+    public School updateSchool(School school) throws HttpClientException {
         School response = new School(school);
         patch(convertObjectToJsonBytes(school), BASE_API_ENDPOINT + SCHOOL_ENDPOINT);
         return school;
@@ -198,7 +199,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         return s;
     }
 
-    public void updateAdvisors(Long schoolId) throws IOException{
+    public void updateAdvisors(Long schoolId) throws HttpClientException {
         post(null, BASE_API_ENDPOINT + SCHOOL_ENDPOINT + "/" + schoolId +
                 STUDENT_ENDPOINT + "/advisor");
     }
@@ -319,13 +320,13 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public User updateUser(User user) throws IOException {
+    public User updateUser(User user) throws HttpClientException {
         patch(convertObjectToJsonBytes(user), BASE_API_ENDPOINT + USERS_ENDPOINT + "/" + user.getId());
         return user;
     }
 
     @Override
-    public User replaceUser(User user) throws IOException {
+    public User replaceUser(User user) throws HttpClientException {
         put(convertObjectToJsonBytes(user), BASE_API_ENDPOINT + USERS_ENDPOINT + "/" + user.getId());
         return user;
     }
@@ -345,7 +346,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Course replaceCourse(Long schoolId, Course course) throws IOException {
+    public Course replaceCourse(Long schoolId, Course course) throws HttpClientException {
         String[] params = { schoolId.toString(), course.getId().toString() };
         put(convertObjectToJsonBytes(course), getPath(BASE_API_ENDPOINT + COURSE_ENDPOINT + "/{1}", params));
         return course;
@@ -412,7 +413,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Term updateTerm(Long schoolId, Long schoolYearId, Term term) throws IOException {
+    public Term updateTerm(Long schoolId, Long schoolYearId, Term term) throws HttpClientException {
         Term t = new Term(term);
         patch(convertObjectToJsonBytes(term), BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
@@ -452,7 +453,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public SchoolDay updateSchoolDay(Long schoolId, SchoolDay day) throws IOException {
+    public SchoolDay updateSchoolDay(Long schoolId, SchoolDay day) throws HttpClientException {
         SchoolDay t = new SchoolDay(day);
         patch(convertObjectToJsonBytes(day), BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
@@ -494,7 +495,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Attendance updateAttendance(Long schoolId, Long studentId, Attendance attend) throws IOException {
+    public Attendance updateAttendance(Long schoolId, Long studentId, Attendance attend) throws HttpClientException {
         put(convertObjectToJsonBytes(attend), BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
                 STUDENT_ENDPOINT + "/" + studentId +
@@ -535,7 +536,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Section replaceSection(Long schoolId, Long schoolYearId, Long termId, Section section) throws IOException {
+    public Section replaceSection(Long schoolId, Long schoolYearId, Long termId, Section section) throws HttpClientException {
         Section t = new Section(section);
         put(convertObjectToJsonBytes(section), BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
@@ -590,7 +591,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
                                                           Long yearId,
                                                           Long termId,
                                                           Long sectionId,
-                                                          Long studentId, StudentSectionGrade ssg) throws IOException {
+                                                          Long studentId, StudentSectionGrade ssg) throws HttpClientException {
         StudentSectionGrade studentSectionGrade = new StudentSectionGrade(ssg);
         put(convertObjectToJsonBytes(ssg), BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
@@ -642,7 +643,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Assignment replaceSectionAssignment(Long schoolId, Long yearId, Long termId, Long sectionId, Assignment ssg) throws IOException {
+    public Assignment replaceSectionAssignment(Long schoolId, Long yearId, Long termId, Long sectionId, Assignment ssg) throws HttpClientException {
         put(convertObjectToJsonBytes(ssg), BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
                 SCHOOL_YEAR_ENDPOINT + "/" + yearId +
@@ -666,7 +667,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     @Override
     public Assignment[] getSectionAssignments(Long schoolId, Long yearId, Long termId, Long sectionId)
             throws HttpClientException {
-        Assignment[] assigments = get(
+        Assignment[] assignments = get(
             Assignment[].class,
             BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
@@ -674,7 +675,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
                 TERM_ENDPOINT + "/" + termId +
                 SECTION_ENDPOINT + "/" + sectionId +
                 SECTION_ASSIGNMENT_ENDPOINT);
-        return assigments;
+        return assignments;
     }
 
     @Override
@@ -746,7 +747,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
                                          Long termId,
                                          Long sectionId,
                                          Long assignmentId,
-                                         StudentAssignment studentAssignment) throws IOException {
+                                         StudentAssignment studentAssignment) throws HttpClientException {
         put(convertObjectToJsonBytes(studentAssignment), BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
                 SCHOOL_YEAR_ENDPOINT + "/" + yearId +
@@ -764,7 +765,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public void updateGpa(Long studentId, Gpa gpa) throws IOException {
+    public void updateGpa(Long studentId, Gpa gpa) throws HttpClientException {
         put(convertObjectToJsonBytes(gpa),
                 BASE_API_ENDPOINT + GPA_ENDPOINT + "/" + gpa.getId() + STUDENT_ENDPOINT + "/" + studentId);
     }
@@ -816,19 +817,13 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
      * JSON string representation of supplied object
      */
     private byte[] convertObjectToJsonBytes(Object object) throws HttpClientException {
+        if (null == object) { return new byte[0]; }
 
-        if (null == object) {
-            return new byte[0];
-        }
-
-        byte[] out = null;
         try {
-            out = MAPPER.writeValueAsBytes(object);
-            ////LOGGER.sys().info("JSON: " + new String(out, CHARSET_UTF8_NAME));
-        } catch (Exception e) {
+            return MAPPER.writeValueAsBytes(object);
+        } catch (JsonProcessingException e) {
             throw new HttpClientException(e);
         }
-        return out;
     }
 
 

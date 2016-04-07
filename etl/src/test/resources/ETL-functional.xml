@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="ETLFunctionalTests" verbose="2" thread-count="1">
+<suite name="ETLFunctionalTests" verbose="1" thread-count="1">
 	<test name="ETLFunctionalTests">
 		<groups>
 			<run>

@@ -42,7 +42,7 @@ public class GpaCalc implements NotificationCalculator {
         } else {
             //There is no time window, so we're getting the latest values and comparing against the trigger value
             ServiceResponse<Collection<Gpa>> gpaResp =
-                    manager.getGpaManager().getAllGpasForStudents(studentIds, null, null);
+                    manager.getGpaManager().getAllGpasForStudents(studentIds, null, null, null);
             Double gpaSum = 0D;
             if(null != gpaResp.getValue() && !gpaResp.getValue().isEmpty()) {
                 if(null == agg) {
@@ -93,7 +93,7 @@ public class GpaCalc implements NotificationCalculator {
         LocalDate start = NotificationCalculator.resolveStartDate(dur, manager, notification);
         //Get all the student GPAs within the date range
         ServiceResponse<Collection<Gpa>> gpaResp =
-                manager.getGpaManager().getAllGpasForStudents(studentIds, start, LocalDate.now());
+                manager.getGpaManager().getAllGpasForStudents(studentIds, start, LocalDate.now(), null);
         Map<Long, MutablePair<Gpa, Gpa>> gpasByStudent = new HashMap<>();
         //Find the oldest and newest GPA for each student and put them in a map
         if(null != gpaResp.getValue()) {

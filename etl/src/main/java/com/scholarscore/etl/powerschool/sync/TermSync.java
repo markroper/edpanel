@@ -30,7 +30,7 @@ public class TermSync implements ISync<Term> {
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
     protected School school;
-    //Since powerschool doesnt have a first class 'year', the key here is the 4-digit starting year
+    //Since powerschool doesn't have a first class 'year', the key here is the 4-digit starting year
     protected Map<Long, SchoolYear> sourceSchoolYears = new ConcurrentHashMap<>();
     protected Map<Long, SchoolYear> edpanelSchoolYears = new ConcurrentHashMap<>();
 
@@ -70,14 +70,12 @@ public class TermSync implements ISync<Term> {
                 return new ConcurrentHashMap<>();
             }
         }
-        Iterator<Map.Entry<Long, Term>> sourceIterator = source.entrySet().iterator();
         //Find & perform the inserts and updates, if any
-        while(sourceIterator.hasNext()) {
-            Map.Entry<Long, Term> entry = sourceIterator.next();
+        for (Map.Entry<Long, Term> entry : source.entrySet()) {
             Term sourceTerm = entry.getValue();
             Term edPanelTerm = edpanel.get(entry.getKey());
-            if(null == edPanelTerm){
-                if(!this.edpanelSchoolYears.containsKey(sourceTerm.getSchoolYear().getName())) {
+            if (null == edPanelTerm) {
+                if (!this.edpanelSchoolYears.containsKey(new Long(sourceTerm.getSchoolYear().getName()))) {
                     //create school year
                     SchoolYear createdYear = null;
                     try {
@@ -102,10 +100,10 @@ public class TermSync implements ISync<Term> {
                 sourceTerm.getSchoolYear().setId(edPanelTerm.getSchoolYear().getId());
                 //Don't compare terms, which won't be set on the source school year
                 edPanelTerm.getSchoolYear().setTerms(new ArrayList<>());
-                if(!edPanelTerm.equals(sourceTerm)) {
+                if (!edPanelTerm.equals(sourceTerm)) {
                     //Create/update school year if needed
-                    if(!edPanelTerm.getSchoolYear().equals(sourceTerm.getSchoolYear())) {
-                        if(!this.edpanelSchoolYears.containsKey(sourceTerm.getSchoolYear().getName())) {
+                    if (!edPanelTerm.getSchoolYear().equals(sourceTerm.getSchoolYear())) {
+                        if (!this.edpanelSchoolYears.containsKey(new Long(sourceTerm.getSchoolYear().getName()))) {
                             //create school year
                             SchoolYear createdYear = null;
                             try {
@@ -118,7 +116,7 @@ public class TermSync implements ISync<Term> {
                         } else {
                             sourceTerm.setSchoolYear(
                                     this.edpanelSchoolYears.get(
-                                            sourceTerm.getSchoolYear().getName()));
+                                            new Long(sourceTerm.getSchoolYear().getName())));
                         }
                     }
                     try {
@@ -133,10 +131,8 @@ public class TermSync implements ISync<Term> {
         }
 
         //Delete anything IN EdPanel that is NOT in source system
-        Iterator<Map.Entry<Long, Term>> edpanelIterator = edpanel.entrySet().iterator();
-        while(edpanelIterator.hasNext()) {
-            Map.Entry<Long, Term> entry = edpanelIterator.next();
-            if(!source.containsKey(entry.getKey())) {
+        for (Map.Entry<Long, Term> entry : edpanel.entrySet()) {
+            if (!source.containsKey(entry.getKey())) {
                 try {
                     edPanel.deleteTerm(
                             school.getId(),
@@ -216,10 +212,8 @@ public class TermSync implements ISync<Term> {
         SchoolYear[] years = edPanel.getSchoolYears(school.getId());
         ConcurrentHashMap<Long, Term> termMap = new ConcurrentHashMap<>();
         for(SchoolYear year: years) {
-            Long fourDigitYear = null;
             try {
-                fourDigitYear = Long.valueOf(year.getName());
-                this.edpanelSchoolYears.put(fourDigitYear, year);
+                this.edpanelSchoolYears.put(Long.valueOf(year.getName()), year);
             } catch(NumberFormatException | NullPointerException e) {
                 //noop
             }

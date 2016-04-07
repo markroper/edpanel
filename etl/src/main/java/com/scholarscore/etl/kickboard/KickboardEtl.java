@@ -11,6 +11,7 @@ import com.scholarscore.models.Behavior;
 import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.behavior.BehaviorScore;
 import com.scholarscore.models.user.Person;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
@@ -334,7 +335,7 @@ public class KickboardEtl implements IEtlEngine {
         }
         HashMap<String, List<Person>> firstNameToStaff = new HashMap<>();
         HashMap<String, List<Person>> lastNameToStaff = new HashMap<>();
-        for(Map.Entry<Long, Person> entry: staffAssociator.getUsers().entrySet()) {
+        for(Map.Entry<Long, Staff> entry: staffAssociator.getUsers().entrySet()) {
             Person p = entry.getValue();
             String[] names = p.getName().split(" ");
             if(null != names && names.length > 1) {

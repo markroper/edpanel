@@ -24,12 +24,9 @@ import com.scholarscore.models.user.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -68,8 +65,6 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
 
     @Override
     public ConcurrentHashMap<Long, StudentSectionGrade> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        //To populate and set on the createdSection
-        List<StudentSectionGrade> ssgs = Collections.synchronizedList(new ArrayList<>());
         ConcurrentHashMap<Long, StudentSectionGrade> source = null;
         try {
             source = this.resolveAllFromSourceSystem(results);
@@ -117,7 +112,6 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             Map.Entry<Long, StudentSectionGrade> entry = sourceIterator.next();
             StudentSectionGrade sourceSsg = entry.getValue();
             StudentSectionGrade edPanelSsg = edpanelSsgMap.get(entry.getKey());
-            ssgs.add(sourceSsg);
             
             if (sourceSsg.getStudent() == null) {
                 LOGGER.warn("sourceSsg.getStudent() is Null! Skipping...");
@@ -129,23 +123,23 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             }
             studentClasses.get(sourceSsg.getStudent().getId()).add(sourceSsg.getSection());
 
-            if(null == edPanelSsg){
+            if (null == edPanelSsg) {
                 ssgsToCreate.add(sourceSsg);
                 results.studentSectionGradeCreated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), -1L);
             } else {
                 //Massage the objects to resolve whether or not an update is needed
                 sourceSsg.setId(edPanelSsg.getId());
-                if(sourceSsg.getStudent().getId().equals(edPanelSsg.getStudent().getId())) {
+                if (sourceSsg.getStudent().getId().equals(edPanelSsg.getStudent().getId())) {
                     sourceSsg.setStudent(edPanelSsg.getStudent());
                 }
-                if(null != sourceSsg.getOverallGrade() && null != edPanelSsg.getOverallGrade()) {
+                if (null != sourceSsg.getOverallGrade() && null != edPanelSsg.getOverallGrade()) {
                     sourceSsg.getOverallGrade().setId(edPanelSsg.getOverallGrade().getId());
                 }
-                if(sourceSsg.getSection().getId().equals(edPanelSsg.getSection().getId())) {
+                if (sourceSsg.getSection().getId().equals(edPanelSsg.getSection().getId())) {
                     sourceSsg.setSection(edPanelSsg.getSection());
                 }
-                if(!edPanelSsg.equals(sourceSsg)) {
-                    if(null != sourceSsg.getOverallGrade() &&
+                if (!edPanelSsg.equals(sourceSsg)) {
+                    if (null != sourceSsg.getOverallGrade() &&
                             null != sourceSsg.getOverallGrade().getDate() &&
                             null != edPanelSsg.getOverallGrade() &&
                             !sourceSsg.getOverallGrade().getDate().equals(edPanelSsg.getOverallGrade().getDate())) {
@@ -159,7 +153,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                                 createdSection.getId(),
                                 sourceSsg.getStudent().getId(),
                                 sourceSsg);
-                    } catch (IOException e) {
+                    } catch (HttpClientException e) {
                         results.studentSectionGradeUpdateFailed(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceSsg.getId());
                         continue;
                     }
@@ -181,12 +175,10 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             results.studentSectionGradeCreateFailed(Long.valueOf(createdSection.getSourceSystemId()), createdSection.getId());
         }
         //Delete anything IN EdPanel that is NOT in source system
-        Iterator<Map.Entry<Long, StudentSectionGrade>> edpanelIterator = edpanelSsgMap.entrySet().iterator();
-        while(edpanelIterator.hasNext()) {
-            Map.Entry<Long, StudentSectionGrade> entry = edpanelIterator.next();
-            if(!source.containsKey(entry.getKey())) {
+        for (Map.Entry<Long, StudentSectionGrade> entry : edpanelSsgMap.entrySet()) {
+            if (!source.containsKey(entry.getKey())) {
                 StudentSectionGrade edPanelSsg = entry.getValue();
-                try {   
+                try {
                     edPanel.deleteStudentSectionGrade(
                             school.getId(),
                             createdSection.getTerm().getSchoolYear().getId(),

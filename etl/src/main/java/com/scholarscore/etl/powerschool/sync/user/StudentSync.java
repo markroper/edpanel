@@ -17,7 +17,6 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -117,7 +116,7 @@ public class StudentSync implements ISync<Student> {
                 if(!edPanelUser.equals(sourceUser)) {
                     try {
                         sourceUser = (Student)edPanel.replaceUser(sourceUser);
-                    } catch (IOException e) {
+                    } catch (HttpClientException e) {
                         results.studentUpdateFailed(entry.getKey(), sourceUser.getId());
                         continue;
                     }
@@ -137,7 +136,7 @@ public class StudentSync implements ISync<Student> {
                     entry.getValue().setWithdrawalDate(LocalDate.now());
                     entry.getValue().setEnrollStatus(EnrollStatus.INACTIVE);
                     edPanel.replaceUser(entry.getValue());
-                } catch (IOException e) {
+                } catch (HttpClientException e) {
                     results.studentUpdateFailed(entry.getKey(), entry.getValue().getId());
                     continue;
                 }
@@ -201,11 +200,9 @@ public class StudentSync implements ISync<Student> {
         Collection<Student> users = edPanel.getStudents(null);
         ConcurrentHashMap<Long, Student> userMap = new ConcurrentHashMap<>();
         for(Student u: users) {
-            Long id = null;
             String sourceSystemUserId = u.getSourceSystemUserId();
             if(null != sourceSystemUserId) {
-                id = Long.valueOf(sourceSystemUserId);
-                userMap.put(id, u);
+                userMap.put(Long.valueOf(sourceSystemUserId), u);
             }
         }
         return userMap;

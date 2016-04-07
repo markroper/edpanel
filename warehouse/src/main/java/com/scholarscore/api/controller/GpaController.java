@@ -4,8 +4,10 @@ import com.scholarscore.api.ApiConsts;
 import com.scholarscore.api.annotation.StudentAccessible;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.gpa.Gpa;
+import com.scholarscore.util.EdPanelDateUtil;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -69,11 +71,13 @@ public class GpaController extends BaseController {
     @StudentAccessible(paramName = "studentId")
     public @ResponseBody ResponseEntity getGpasOverTime(
             @ApiParam(name = "studentId", required = true, value = "Student ID")
-            @PathVariable(value = "studentId") Long studentId) {
+            @PathVariable(value = "studentId") Long studentId,
+            @RequestParam(value="groupByWeek", required = false)
+            @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) Boolean groupByWeek) {
         List<Long> studentIds = new ArrayList<>();
         studentIds.add(studentId);
         return respond(pm.getGpaManager().getAllGpasForStudents(
-                studentIds, LocalDate.of(2000, 1, 1), LocalDate.now().plusYears(1L)));
+                studentIds, LocalDate.of(2000, 1, 1), LocalDate.now().plusYears(1L), groupByWeek));
     }
 
     @ApiOperation(

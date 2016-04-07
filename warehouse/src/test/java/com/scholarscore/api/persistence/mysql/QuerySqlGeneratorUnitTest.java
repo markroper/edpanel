@@ -1099,13 +1099,10 @@ public class QuerySqlGeneratorUnitTest {
 
             @Override
             public String buildSQL() {
-                // TODO Jordan: this test cases passes because the SQL matches, but note that the SQL below is invalid -- 
-                // assignment is both the from table and is joined on (not on purpose). Fix this.
                 return "SELECT term.term_id, AVG(if(assignment.type_fk = 'HOMEWORK', if(student_assignment.awarded_points is null, 0, if(student_assignment.awarded_points/assignment.available_points <= .35, 0, 1)), null)) as avg_hw_completion_agg \n" +
-                        "FROM assignment " + 
-                        "LEFT OUTER JOIN student_assignment ON assignment.assignment_id = student_assignment.assignment_fk " + 
-                        "LEFT OUTER JOIN assignment ON student_assignment.assignment_fk = assignment.assignment_id \n" +
-                        "LEFT OUTER JOIN section ON section.section_id = assignment.section_fk \n" +
+                        "FROM section " + 
+                        "LEFT OUTER JOIN assignment ON section.section_id = assignment.section_fk " +
+                        "LEFT OUTER JOIN student_assignment ON assignment.assignment_id = student_assignment.assignment_fk \n" +
                         "LEFT OUTER JOIN term ON term.term_id = section.term_fk \n" +
                         "GROUP BY term.term_id";
             }
@@ -1140,7 +1137,9 @@ public class QuerySqlGeneratorUnitTest {
                 { currGpaBySchoolTestQuery },
                 { assignmentGradesIsNullTestQuery },
                 { assignmentGradesIsNotNullTestQuery },
-				{ goalTest }
+                { homeworkCompletionByStudentPathfinderTestQuery },
+                { homeworkCompletionByTermPathfinderTestQuery },
+                { goalTest }
         };
 
         return allTests;
