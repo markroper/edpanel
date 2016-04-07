@@ -32,7 +32,6 @@ public class PeriodSync extends ReadOnlySyncBase<PsPeriod> implements ISync<PsPe
         this.powerSchool = powerSchool;
         this.school = s;
     }
-
     @Override
     protected ConcurrentHashMap<Long, PsPeriod> resolveAllFromSourceSystem() throws HttpClientException {
         ConcurrentHashMap<Long, PsPeriod> result = new ConcurrentHashMap<>();

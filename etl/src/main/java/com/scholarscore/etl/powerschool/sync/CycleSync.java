@@ -32,7 +32,6 @@ public class CycleSync extends ReadOnlySyncBase<PsCycle> implements ISync<PsCycl
         this.powerSchool = powerSchool;
         this.school = s;
     }
-
     @Override
     protected ConcurrentHashMap<Long, PsCycle> resolveAllFromSourceSystem() throws HttpClientException {
         ConcurrentHashMap<Long, PsCycle> result = new ConcurrentHashMap<>();
