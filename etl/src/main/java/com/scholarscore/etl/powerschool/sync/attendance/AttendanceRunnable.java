@@ -93,10 +93,10 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
             }
         }
         try {
-            ed = resolveFromEdPanel(student.getId());
+            ed = resolveFromEdPanel();
         } catch (HttpClientException e) {
             try {
-                ed = resolveFromEdPanel(student.getId());
+                ed = resolveFromEdPanel();
             } catch (HttpClientException ex) {
                 LOGGER.error("Unable to fetch attendance from from EdPanel for student " + student.getName() +
                         " with ID: " + student.getId());
@@ -143,10 +143,8 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         }
 
         //Delete anything IN EdPanel that is NOT in source system
-        Iterator<Map.Entry<Long, Attendance>> edpanelIterator = ed.entrySet().iterator();
-        while(edpanelIterator.hasNext()) {
-            Map.Entry<Long, Attendance> entry = edpanelIterator.next();
-            if(!source.containsKey(entry.getKey()) &&
+        for (Map.Entry<Long, Attendance> entry : ed.entrySet()) {
+            if (!source.containsKey(entry.getKey()) &&
                     entry.getValue().getSchoolDay().getDate().compareTo(syncCutoff) > 0) {
                 try {
                     edPanel.deleteAttendance(school.getId(), student.getId(), entry.getValue());
@@ -244,15 +242,13 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         return result;
     }
 
-    protected ConcurrentHashMap<Long, Attendance> resolveFromEdPanel(Long edpanelStudentId) throws HttpClientException {
-        Attendance[] attendances = edPanel.getAttendance(school.getId(), edpanelStudentId);
+    protected ConcurrentHashMap<Long, Attendance> resolveFromEdPanel() throws HttpClientException {
+        Attendance[] attendances = edPanel.getAttendance(school.getId(), student.getId());
         ConcurrentHashMap<Long, Attendance> attendanceMap = new ConcurrentHashMap<>();
         for(Attendance c: attendances) {
-            Long id = null;
             String ssid = c.getSourceSystemId();
             if(null != ssid) {
-                id = Long.valueOf(ssid);
-                attendanceMap.put(id, c);
+                attendanceMap.put(Long.valueOf(ssid), c);
             }
         }
         return attendanceMap;

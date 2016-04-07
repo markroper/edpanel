@@ -115,10 +115,8 @@ public class TermSync extends SyncBase<Term> implements ISync<Term> {
         SchoolYear[] years = edPanel.getSchoolYears(school.getId());
         ConcurrentHashMap<Long, Term> termMap = new ConcurrentHashMap<>();
         for(SchoolYear year: years) {
-            Long fourDigitYear = null;
             try {
-                fourDigitYear = Long.valueOf(year.getName());
-                this.edpanelSchoolYears.put(fourDigitYear, year);
+                this.edpanelSchoolYears.put(Long.valueOf(year.getName()), year);
             } catch(NumberFormatException | NullPointerException e) {
                 //noop
                 LOGGER.info("TermSync - NumberFormatException OR NullPointerException.");

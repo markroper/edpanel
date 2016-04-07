@@ -24,12 +24,9 @@ import com.scholarscore.models.user.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -156,7 +153,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                                 createdSection.getId(),
                                 sourceSsg.getStudent().getId(),
                                 sourceSsg);
-                    } catch (IOException e) {
+                    } catch (HttpClientException e) {
                         results.studentSectionGradeUpdateFailed(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceSsg.getId());
                         continue;
                     }
@@ -178,12 +175,10 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             results.studentSectionGradeCreateFailed(Long.valueOf(createdSection.getSourceSystemId()), createdSection.getId());
         }
         //Delete anything IN EdPanel that is NOT in source system
-        Iterator<Map.Entry<Long, StudentSectionGrade>> edpanelIterator = edpanelSsgMap.entrySet().iterator();
-        while(edpanelIterator.hasNext()) {
-            Map.Entry<Long, StudentSectionGrade> entry = edpanelIterator.next();
-            if(!source.containsKey(entry.getKey())) {
+        for (Map.Entry<Long, StudentSectionGrade> entry : edpanelSsgMap.entrySet()) {
+            if (!source.containsKey(entry.getKey())) {
                 StudentSectionGrade edPanelSsg = entry.getValue();
-                try {   
+                try {
                     edPanel.deleteStudentSectionGrade(
                             school.getId(),
                             createdSection.getTerm().getSchoolYear().getId(),
