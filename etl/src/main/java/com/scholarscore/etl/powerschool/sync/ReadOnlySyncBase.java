@@ -1,6 +1,7 @@
 package com.scholarscore.etl.powerschool.sync;
 
 import com.scholarscore.client.HttpClientException;
+import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,18 +10,29 @@ import java.util.concurrent.ConcurrentHashMap;
  * User: jordan
  * Date: 4/6/16
  * Time: 5:36 PM
+ * 
+ * This class can be extended by sync objects that only care about reading from the source system,
+ * but don't need to reconcile anything from edpanel or write back to it
  */
-public abstract class ReadOnlySyncBase<T> extends SyncBase<T> {
+public abstract class ReadOnlySyncBase<T> implements ISync<T> {
 
-    // By ensuring the following methods do nothing, we have a read-only sync object
-    // whose sole purpose is to resolveAllFromSourceSystem and return that value
-    @Override protected final ConcurrentHashMap<Long, T> resolveFromEdPanel() throws HttpClientException { return null; }
+    @Override
+    public ConcurrentHashMap<Long, T> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
+        ConcurrentHashMap<Long, T> sourceRecords = null;
+        try {
+            sourceRecords = resolveAllFromSourceSystem();
+        } catch (HttpClientException e) {
+            try {
+                sourceRecords = resolveAllFromSourceSystem();
+            } catch (HttpClientException ex) {
+                handleSourceGetFailure(results);
+                return new ConcurrentHashMap<>();
+            }
+        }
+        return sourceRecords;
+    }
 
-    @Override protected final void handleEdPanelGetFailure(PowerSchoolSyncResult results) { }
+    protected abstract ConcurrentHashMap<Long, T> resolveAllFromSourceSystem() throws HttpClientException;
 
-    @Override protected final void createEdPanelRecord(T entityToSave, PowerSchoolSyncResult results) { }
-
-    @Override protected final void updateEdPanelRecord(T sourceSystemEntity, T edPanelEntity, PowerSchoolSyncResult results) { }
-
-    @Override protected final void deleteEdPanelRecord(T entityToDelete, PowerSchoolSyncResult results) { }
+    protected abstract void handleSourceGetFailure(PowerSchoolSyncResult results);
 }

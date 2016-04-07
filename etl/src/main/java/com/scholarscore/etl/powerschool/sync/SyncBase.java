@@ -15,23 +15,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * Date: 4/5/16
  * Time: 8:12 PM
  */
-public abstract class SyncBase<T> implements ISync<T> {
+public abstract class SyncBase<T> extends ReadOnlySyncBase<T> {
     private final static Logger LOGGER = LoggerFactory.getLogger(CourseSync.class);
     
     @Override
     public ConcurrentHashMap<Long, T> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        ConcurrentHashMap<Long, T> sourceRecords = null;
-        try {
-            sourceRecords = resolveAllFromSourceSystem();
-        } catch (HttpClientException e) {
-            try {
-                sourceRecords = resolveAllFromSourceSystem();
-            } catch (HttpClientException ex) {
-                handleSourceGetFailure(results);
-                return new ConcurrentHashMap<>();
-            }
-        }
-
+        ConcurrentHashMap<Long, T> sourceRecords = super.syncCreateUpdateDelete(results);
         ConcurrentHashMap<Long, T> edpanelRecords = null;
         try {
             edpanelRecords = resolveFromEdPanel();
@@ -66,9 +55,6 @@ public abstract class SyncBase<T> implements ISync<T> {
         return sourceRecords;
     }
 
-    protected abstract ConcurrentHashMap<Long, T> resolveAllFromSourceSystem() throws HttpClientException;
-    
-    protected abstract void handleSourceGetFailure(PowerSchoolSyncResult results);
 
     protected abstract ConcurrentHashMap<Long, T> resolveFromEdPanel() throws HttpClientException;
 
