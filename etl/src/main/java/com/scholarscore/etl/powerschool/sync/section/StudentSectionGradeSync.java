@@ -68,8 +68,6 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
 
     @Override
     public ConcurrentHashMap<Long, StudentSectionGrade> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        //To populate and set on the createdSection
-        List<StudentSectionGrade> ssgs = Collections.synchronizedList(new ArrayList<>());
         ConcurrentHashMap<Long, StudentSectionGrade> source = null;
         try {
             source = this.resolveAllFromSourceSystem(results);
@@ -117,7 +115,6 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             Map.Entry<Long, StudentSectionGrade> entry = sourceIterator.next();
             StudentSectionGrade sourceSsg = entry.getValue();
             StudentSectionGrade edPanelSsg = edpanelSsgMap.get(entry.getKey());
-            ssgs.add(sourceSsg);
             
             if (sourceSsg.getStudent() == null) {
                 LOGGER.warn("sourceSsg.getStudent() is Null! Skipping...");
@@ -129,23 +126,23 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
             }
             studentClasses.get(sourceSsg.getStudent().getId()).add(sourceSsg.getSection());
 
-            if(null == edPanelSsg){
+            if (null == edPanelSsg) {
                 ssgsToCreate.add(sourceSsg);
                 results.studentSectionGradeCreated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), -1L);
             } else {
                 //Massage the objects to resolve whether or not an update is needed
                 sourceSsg.setId(edPanelSsg.getId());
-                if(sourceSsg.getStudent().getId().equals(edPanelSsg.getStudent().getId())) {
+                if (sourceSsg.getStudent().getId().equals(edPanelSsg.getStudent().getId())) {
                     sourceSsg.setStudent(edPanelSsg.getStudent());
                 }
-                if(null != sourceSsg.getOverallGrade() && null != edPanelSsg.getOverallGrade()) {
+                if (null != sourceSsg.getOverallGrade() && null != edPanelSsg.getOverallGrade()) {
                     sourceSsg.getOverallGrade().setId(edPanelSsg.getOverallGrade().getId());
                 }
-                if(sourceSsg.getSection().getId().equals(edPanelSsg.getSection().getId())) {
+                if (sourceSsg.getSection().getId().equals(edPanelSsg.getSection().getId())) {
                     sourceSsg.setSection(edPanelSsg.getSection());
                 }
-                if(!edPanelSsg.equals(sourceSsg)) {
-                    if(null != sourceSsg.getOverallGrade() &&
+                if (!edPanelSsg.equals(sourceSsg)) {
+                    if (null != sourceSsg.getOverallGrade() &&
                             null != sourceSsg.getOverallGrade().getDate() &&
                             null != edPanelSsg.getOverallGrade() &&
                             !sourceSsg.getOverallGrade().getDate().equals(edPanelSsg.getOverallGrade().getDate())) {
