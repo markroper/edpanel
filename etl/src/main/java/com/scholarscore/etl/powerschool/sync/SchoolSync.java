@@ -50,9 +50,10 @@ public class SchoolSync implements ISync<School> {
                 School created = null;
                 try {
                     created = edPanel.createSchool(sourceSchool);
+                    sourceSchool.setId(created.getId());
                     results.schoolCreated(entry.getKey(), created.getId());
                 } catch (HttpClientException e) {
-                    results.schoolCreateFailed(entry.getKey());;
+                    results.schoolCreateFailed(entry.getKey());
                 }
             } else {
                 sourceSchool.setId(edPanelSchool.getId());
