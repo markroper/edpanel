@@ -124,11 +124,9 @@ public class CourseSync implements ISync<Course> {
         Course[] courses = edPanel.getCourses(school.getId());
         ConcurrentHashMap<Long, Course> courseMap = new ConcurrentHashMap<>();
         for(Course c: courses) {
-            Long id = null;
             String ssid = c.getSourceSystemId();
             if(null != ssid) {
-                id = Long.valueOf(ssid);
-                courseMap.put(id, c);
+                courseMap.put(Long.valueOf(ssid), c);
             }
         }
         return courseMap;

@@ -277,11 +277,9 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                 assignment.getId());
         ConcurrentHashMap<Long, StudentAssignment> saMap = new ConcurrentHashMap<>();
         for(StudentAssignment a : studentAssignments) {
-            Long id = null;
             String ssid = a.getStudent().getSourceSystemId();
             if(null != ssid) {
-                id = Long.valueOf(ssid);
-                saMap.put(id, a);
+                saMap.put(Long.valueOf(ssid), a);
             }
         }
         return saMap;
