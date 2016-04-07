@@ -10,7 +10,7 @@ import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.api.response.TermResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.models.user.User;
+import com.scholarscore.models.user.Staff;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
@@ -46,7 +46,7 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
             PsStaffs response = client.getStaff(school.id);
             System.out.println(response);
             assertNotNull(response);
-            Collection<User> internalModel = response.toInternalModel();
+            Collection<Staff> internalModel = response.toInternalModel();
             assertNotNull(internalModel);
         }
     }

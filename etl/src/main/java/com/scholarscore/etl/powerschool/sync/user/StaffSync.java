@@ -9,14 +9,11 @@ import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.School;
-import com.scholarscore.models.user.Person;
 import com.scholarscore.models.user.Staff;
-import com.scholarscore.models.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by markroper on 10/26/15.
  */
-public class StaffSync implements ISync<Person> {
+public class StaffSync implements ISync<Staff> {
     private final static Logger LOGGER = LoggerFactory.getLogger(StaffSync.class);
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
@@ -42,8 +39,8 @@ public class StaffSync implements ISync<Person> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Person> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        ConcurrentHashMap<Long, Person> sourceStaff = null;
+    public ConcurrentHashMap<Long, Staff> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
+        ConcurrentHashMap<Long, Staff> sourceStaff = null;
         try {
             sourceStaff = resolveAllFromSourceSystem();
         } catch (HttpClientException e) {
@@ -58,7 +55,7 @@ public class StaffSync implements ISync<Person> {
                 return new ConcurrentHashMap<>();
             }
         }
-        ConcurrentHashMap<Long, Person> ed = null;
+        ConcurrentHashMap<Long, Staff> ed = null;
         try {
             ed = resolveFromEdPanel();
         } catch (HttpClientException e) {
@@ -73,85 +70,81 @@ public class StaffSync implements ISync<Person> {
                 return new ConcurrentHashMap<>();
             }
         }
-        Iterator<Map.Entry<Long, Person>> sourceIterator = sourceStaff.entrySet().iterator();
         //Find & perform the inserts and updates, if any
-        while(sourceIterator.hasNext()) {
-            Map.Entry<Long, Person> entry = sourceIterator.next();
-            User sourceUser = entry.getValue();
-            //Associate the SSID and source system local id (teacher/admin ID and underlying user ID)
-            Long ssid = Long.valueOf(sourceUser.getSourceSystemId());
-            Long underlyingUserId = Long.valueOf(((Person) sourceUser).getSourceSystemUserId());
-            User edPanelUser = ed.get(entry.getKey());
-            if(null == edPanelUser){
-                ((Staff) sourceUser).setCurrentSchoolId(school.getId());
+        for (Map.Entry<Long, Staff> entry : sourceStaff.entrySet()) {
+            Staff sourceStaffer = entry.getValue();
+            Staff edPanelUser = ed.get(entry.getKey());
+            if (null == edPanelUser) {
+                Long ssid = Long.valueOf(sourceStaffer.getSourceSystemId());
+                sourceStaffer.setCurrentSchoolId(school.getId());
                 final Staff created;
                 try {
-                    if(((Staff) sourceUser).getIsAdmin()) {
-                        created = edPanel.createAdministrator((Staff)sourceUser);
-
-                    } else if (((Staff)sourceUser).getIsTeacher()) {
-                        created = edPanel.createTeacher((Staff)sourceUser);
+                    if (sourceStaffer.getIsAdmin()) {
+                        created = edPanel.createAdministrator(sourceStaffer);
+                    } else if (sourceStaffer.getIsTeacher()) {
+                        created = edPanel.createTeacher(sourceStaffer);
                     } else {
-                        created = edPanel.createTeacher((Staff)sourceUser);
+                        created = edPanel.createTeacher(sourceStaffer);
                     }
                 } catch (HttpClientException e) {
                     results.staffCreateFailed(ssid);
                     continue;
                 }
-                sourceUser.setId(created.getId());
+                sourceStaffer.setId(created.getId());
                 staffAssociator.add(ssid, created);
                 results.staffCreated(entry.getKey(), created.getId());
             } else {
-                sourceUser.setId(edPanelUser.getId());
-                ((Person) sourceUser).setCurrentSchoolId(school.getId());
-                sourceUser.setSourceSystemId(edPanelUser.getSourceSystemId());
-                sourceUser.setUsername(edPanelUser.getUsername());
-                sourceUser.setEnabled(edPanelUser.getEnabled());
+                Long ssid = Long.valueOf(sourceStaffer.getSourceSystemId());
+                sourceStaffer.setId(edPanelUser.getId());
+                sourceStaffer.setCurrentSchoolId(school.getId());
+                sourceStaffer.setSourceSystemId(edPanelUser.getSourceSystemId());
+                sourceStaffer.setUsername(edPanelUser.getUsername());
+                sourceStaffer.setEnabled(edPanelUser.getEnabled());
                 edPanelUser.setPassword(null);
                 Address add = edPanelUser.getHomeAddress();
-                if(null != add && null != sourceUser.getHomeAddress()) {
-                    sourceUser.getHomeAddress().setId(add.getId());
+                if (null != add && null != sourceStaffer.getHomeAddress()) {
+                    sourceStaffer.getHomeAddress().setId(add.getId());
                 }
-                if(!edPanelUser.equals(sourceUser)) {
+                if (!edPanelUser.equals(sourceStaffer)) {
                     try {
-                        sourceUser = edPanel.replaceUser(sourceUser);
+                        sourceStaffer = (Staff)edPanel.replaceUser(sourceStaffer);
                     } catch (HttpClientException e) {
-                        if(null != sourceUser.getId()) {
-                            results.staffUpdateFailed(entry.getKey(), sourceUser.getId());
+                        if (null != sourceStaffer.getId()) {
+                            results.staffUpdateFailed(entry.getKey(), sourceStaffer.getId());
                         }
                         continue;
                     }
-                    results.staffUpdated(entry.getKey(), sourceUser.getId());
+                    results.staffUpdated(entry.getKey(), sourceStaffer.getId());
                 }
-                staffAssociator.add(ssid, (Staff)sourceUser);
+                staffAssociator.add(ssid, sourceStaffer);
             }
         }
         //Note: we never delete users, even if they're removed from the source system.
         return sourceStaff;
     }
     
-    protected ConcurrentHashMap<Long, Person> resolveAllFromSourceSystem() throws HttpClientException {
+    protected ConcurrentHashMap<Long, Staff> resolveAllFromSourceSystem() throws HttpClientException {
         PsStaffs response = powerSchool.getStaff(Long.valueOf(school.getSourceSystemId()));
-        List<User> apiListOfStaff = response.toInternalModel();
-        ConcurrentHashMap<Long, Person> source = new ConcurrentHashMap<>();
-        for(User u : apiListOfStaff) {
-            source.put(Long.valueOf(((Person) u).getSourceSystemUserId()), (Person)u);
+        List<Staff> apiListOfStaff = response.toInternalModel();
+        ConcurrentHashMap<Long, Staff> source = new ConcurrentHashMap<>();
+        for(Staff u : apiListOfStaff) {
+            source.put(Long.valueOf(u.getSourceSystemUserId()), u);
         }
         return source;
     }
 
-    protected ConcurrentHashMap<Long, Person> resolveFromEdPanel() throws HttpClientException {
+    protected ConcurrentHashMap<Long, Staff> resolveFromEdPanel() throws HttpClientException {
         Collection<Staff> teachers = edPanel.getTeachers();
         Collection<Staff> admins = edPanel.getAdministrators();
 
-        ConcurrentHashMap<Long, Person> userMap = new ConcurrentHashMap<>();
-        for(Person u: teachers) {
+        ConcurrentHashMap<Long, Staff> userMap = new ConcurrentHashMap<>();
+        for(Staff u: teachers) {
             String systemUserId = u.getSourceSystemUserId();
             if(null != systemUserId) {
                 userMap.put(Long.valueOf(systemUserId), u);
             }
         }
-        for(Person u: admins) {
+        for(Staff u: admins) {
             String systemUserId = u.getSourceSystemUserId();
             if(null != systemUserId) {
                 userMap.put(Long.valueOf(systemUserId), u);

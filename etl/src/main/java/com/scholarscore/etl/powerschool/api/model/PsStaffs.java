@@ -5,7 +5,6 @@ import com.scholarscore.etl.powerschool.api.deserializers.StaffsDeserializer;
 import com.scholarscore.etl.powerschool.api.response.ITranslateCollection;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.user.Staff;
-import com.scholarscore.models.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +13,11 @@ import java.util.List;
  * Created by mattg on 7/3/15.
  */
 @JsonDeserialize(using = StaffsDeserializer.class)
-public class PsStaffs extends ArrayList<PsStaff> implements ITranslateCollection<User> {
+public class PsStaffs extends ArrayList<PsStaff> implements ITranslateCollection<Staff> {
 
     @Override
-    public List<User> toInternalModel() {
-        List<User> collection = new ArrayList<>();
+    public List<Staff> toInternalModel() {
+        List<Staff> collection = new ArrayList<>();
         for (PsStaff staff : this) {
 
             // MJG: Should we have a notion of an administrator?
