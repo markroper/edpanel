@@ -8,9 +8,6 @@ import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.School;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
