@@ -188,7 +188,7 @@ public class TermSync extends SyncBase<Term> implements ISync<Term> {
             try {
                 edPanel.updateTerm(school.getId(), sourceSystemEntity.getSchoolYear().getId(), sourceSystemEntity);
                 results.termUpdated(ssid, sourceSystemEntity.getId());
-            } catch (IOException e) {
+            } catch (HttpClientException e) {
                 results.termUpdateFailed(ssid, sourceSystemEntity.getId());
             }
         }
