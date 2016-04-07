@@ -345,8 +345,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
         for(Section s : sections) {
             String ssid = s.getSourceSystemId();
             if(null != ssid) {
-                Long id = Long.valueOf(ssid);
-                sectionMap.put(id, s);
+                sectionMap.put(Long.valueOf(ssid), s);
             }
         }
         return sectionMap;

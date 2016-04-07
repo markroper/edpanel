@@ -201,11 +201,9 @@ public class StudentSync implements ISync<Student> {
         Collection<Student> users = edPanel.getStudents(null);
         ConcurrentHashMap<Long, Student> userMap = new ConcurrentHashMap<>();
         for(Student u: users) {
-            Long id = null;
             String sourceSystemUserId = u.getSourceSystemUserId();
             if(null != sourceSystemUserId) {
-                id = Long.valueOf(sourceSystemUserId);
-                userMap.put(id, u);
+                userMap.put(Long.valueOf(sourceSystemUserId), u);
             }
         }
         return userMap;

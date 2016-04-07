@@ -142,24 +142,20 @@ public class StaffSync implements ISync<Person> {
     }
 
     protected ConcurrentHashMap<Long, Person> resolveFromEdPanel() throws HttpClientException {
-        Collection<Staff> users = edPanel.getTeachers();
+        Collection<Staff> teachers = edPanel.getTeachers();
         Collection<Staff> admins = edPanel.getAdministrators();
 
         ConcurrentHashMap<Long, Person> userMap = new ConcurrentHashMap<>();
-        for(Person u: users) {
-            Long id = null;
+        for(Person u: teachers) {
             String systemUserId = u.getSourceSystemUserId();
             if(null != systemUserId) {
-                id = Long.valueOf(systemUserId);
-                userMap.put(id, u);
+                userMap.put(Long.valueOf(systemUserId), u);
             }
         }
         for(Person u: admins) {
-            Long id = null;
             String systemUserId = u.getSourceSystemUserId();
             if(null != systemUserId) {
-                id = Long.valueOf(systemUserId);
-                userMap.put(id, u);
+                userMap.put(Long.valueOf(systemUserId), u);
             }
         }
         return userMap;
