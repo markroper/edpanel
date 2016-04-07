@@ -19,7 +19,6 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -135,7 +134,7 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                                 createdSection.getId(),
                                 assignment.getId(),
                                 sourceStudentAssignment);
-                    } catch (IOException e) {
+                    } catch (HttpClientException e) {
                         results.studentAssignmentUpdateFailed(
                                 Long.valueOf(createdSection.getSourceSystemId()),
                                 Long.valueOf(this.assignment.getSourceSystemId()),
