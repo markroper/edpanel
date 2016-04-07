@@ -92,7 +92,7 @@ public class GpaSync implements ISync<Gpa> {
                     if(!edPanelGpa.equals(sourceGpa)) {
                         edPanel.updateGpa(sourceGpa.getStudentId(), sourceGpa);
                     }
-                } catch (IOException e) {
+                } catch (HttpClientException e) {
                     LOGGER.error("Failed to update GPA in EdPanel." + sourceGpa.toString());
                 }
             }

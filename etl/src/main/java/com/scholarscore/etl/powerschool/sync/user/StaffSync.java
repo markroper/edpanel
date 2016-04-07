@@ -15,7 +15,6 @@ import com.scholarscore.models.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -116,7 +115,7 @@ public class StaffSync implements ISync<Person> {
                 if(!edPanelUser.equals(sourceUser)) {
                     try {
                         sourceUser = edPanel.replaceUser(sourceUser);
-                    } catch (IOException e) {
+                    } catch (HttpClientException e) {
                         if(null != sourceUser.getId()) {
                             results.staffUpdateFailed(entry.getKey(), sourceUser.getId());
                         }
