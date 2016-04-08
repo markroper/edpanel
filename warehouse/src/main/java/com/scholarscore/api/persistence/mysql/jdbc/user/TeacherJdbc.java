@@ -30,6 +30,11 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
         this.hibernateTemplate = template;
     }
 
+    private static final String HQL_BASE =
+            "select a from staff a " +
+            "left join fetch a.homeAddress " +
+            "left join fetch a.contactMethods ";
+
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Staff> selectAll() {
@@ -38,6 +43,17 @@ public class TeacherJdbc extends UserBaseJdbc implements TeacherPersistence {
                 "left join fetch a.contactMethods " +
                 "where a.isTeacher = true";
         return (List<Staff>)hibernateTemplate.find(query);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection<Staff> selectAll(long schoolId) {
+        String[] params = new String[]{"schoolId"};
+        Object[] paramValues = new Object[]{ schoolId };
+        return (Collection<Staff>) hibernateTemplate.findByNamedParam(
+                HQL_BASE + " where a.isTeacher = true and a.currentSchoolId = :schoolId",
+                params,
+                paramValues);
     }
 
     @Override
