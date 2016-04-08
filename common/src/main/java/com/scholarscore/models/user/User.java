@@ -92,6 +92,12 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	}
 
 	@Transient
+	public int getAnalyticsId() {
+		return Objects.hash(username, ID);
+	}
+
+
+	@Transient
 	public String getEmail() {
 		return getContactValue(ContactType.EMAIL);
 	}
@@ -330,6 +336,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 				", homeAddress=" + homeAddress +
 				", contactMethods=" + contactMethods +
 				", mustResetPassword=" + mustResetPassword +
+				", analyticsId=" + getAnalyticsId() +
 				'}';
 	}
 
