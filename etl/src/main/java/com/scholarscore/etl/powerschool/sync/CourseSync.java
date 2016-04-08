@@ -74,7 +74,8 @@ public class CourseSync extends SyncBase<Course> implements ISync<Course> {
         Long ssid = Long.parseLong(entityToSave.getSourceSystemId());
         try {
             Course created = edPanel.createCourse(school.getId(), entityToSave);
-            results.courseCreated(ssid ,created.getId());
+            entityToSave.setId(created.getId());
+            results.courseCreated(ssid, created.getId());
         } catch (HttpClientException e) {
             results.courseCreateFailed(ssid);
         }

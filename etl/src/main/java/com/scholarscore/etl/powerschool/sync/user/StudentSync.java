@@ -131,6 +131,7 @@ public class StudentSync extends SyncBase<Student> implements ISync<Student> {
         entityToSave.setCurrentSchoolId(school.getId());
         try {
             Student created = edPanel.createStudent(entityToSave);
+            entityToSave.setId(created.getId());
             studentAssociator.add(ssid, created);
             results.studentCreated(ssid, created.getId());
         } catch (HttpClientException e) {

@@ -152,6 +152,7 @@ public class TermSync extends SyncBase<Term> implements ISync<Term> {
         Term created = null;
         try {
             created = edPanel.createTerm(school.getId(), entityToSave.getSchoolYear().getId(), entityToSave);
+            entityToSave.setId(created.getId());
             results.termCreated(ssid, created.getId());
         } catch (HttpClientException e) {
             results.termCreateFailed(ssid);
