@@ -6,6 +6,8 @@ import java.util.Collection;
 
 public interface TeacherPersistence {
     Collection<Staff> selectAll();
+
+    Collection<Staff> selectAll(long schoolId);
     
     Staff select(long teacherId);
 
