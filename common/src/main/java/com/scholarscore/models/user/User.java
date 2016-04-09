@@ -96,6 +96,10 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 		return Objects.hash(username, ID);
 	}
 
+	public void setAnalyticsId(int analyticsID) {
+
+	}
+
 
 	@Transient
 	public String getEmail() {
