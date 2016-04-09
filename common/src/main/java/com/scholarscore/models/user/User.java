@@ -92,6 +92,20 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 	}
 
 	@Transient
+	public int getAnalyticsId() {
+		return Objects.hash(username, ID);
+	}
+
+	/**
+	 * needed so jackson does throw syntax errors when analyticsId is on the object being created
+	 * @param analyticsID
+     */
+	public void setAnalyticsId(int analyticsID) {
+
+	}
+
+
+	@Transient
 	public String getEmail() {
 		return getContactValue(ContactType.EMAIL);
 	}
@@ -330,6 +344,7 @@ public abstract class User extends ApiModel implements Serializable, IApiModel<U
 				", homeAddress=" + homeAddress +
 				", contactMethods=" + contactMethods +
 				", mustResetPassword=" + mustResetPassword +
+				", analyticsId=" + getAnalyticsId() +
 				'}';
 	}
 
