@@ -11,10 +11,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
@@ -24,6 +26,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -37,6 +41,7 @@ import java.security.NoSuchAlgorithmException;
  * Created by mattg on 7/3/15.
  */
 public abstract class BaseHttpClient {
+    private final static Logger LOGGER = LoggerFactory.getLogger(BaseHttpClient.class);
     protected static final String HEADER_CONTENT_TYPE_NAME = "Content-Type";
     protected static final String HEADER_CONTENT_TYPE_X_FORM_URLENCODED = "application/x-www-form-urlencoded;charset=UTF-8";
     protected static final String HEADER_ACCEPT_JSON_VALUE = "application/json";
@@ -100,33 +105,7 @@ public abstract class BaseHttpClient {
             throw new HttpClientException(e);
         }
     }
-
-
-    protected String post(byte[] data, String path) throws IOException, HttpClientException {
-        HttpPost post = new HttpPost();
-        post.setURI(uri.resolve(path));
-        setupCommonHeaders(post);
-        post.setHeader(HEADER_CONTENT_TYPE_JSON);
-        if(null != data) {
-            post.setEntity(new ByteArrayEntity(data));
-        }
-        HttpResponse response = null;
-        try {
-            response = httpclient.execute(post);
-            int code = response.getStatusLine().getStatusCode();
-            String json = EntityUtils.toString(response.getEntity());
-            if (code == HttpStatus.SC_CREATED || code == HttpStatus.SC_OK) {
-                return json;
-            } else {
-                throw new HttpClientException("Failed to post to end point: " + post.getURI().toString() + ", status line: " + response.getStatusLine().toString() + ", payload: " + json);
-            }
-        } catch (IOException e) {
-            throw new HttpClientException(e);
-        } finally {
-            response.getEntity().getContent().close();
-        }
-    }
-
+    
     protected String getPath(String root, String ...params) {
         String path = root;
         if (null != params && params.length > 0) {
@@ -178,71 +157,71 @@ public abstract class BaseHttpClient {
         }
     }
 
-    protected String patch(byte[] data, String path) throws IOException, HttpClientException {
+    protected String post(byte[] data, String path) throws HttpClientException {
+        HttpPost post = new HttpPost();
+        return enclosingRequest(post, data, path);
+    }
+    
+    protected String patch(byte[] data, String path) throws HttpClientException {
         HttpPatch patch = new HttpPatch();
-        patch.setURI(uri.resolve(path));
-        setupCommonHeaders(patch);
-        patch.setHeader(HEADER_CONTENT_TYPE_JSON);
-        patch.setEntity(new ByteArrayEntity(data));
-        HttpResponse response = null;
-        try {
-            response = httpclient.execute(patch);
-            int code = response.getStatusLine().getStatusCode();
-            String json = EntityUtils.toString(response.getEntity());
-            if (code == HttpStatus.SC_CREATED || code == HttpStatus.SC_OK) {
-                return json;
-            }
-            else {
-                throw new HttpClientException("Failed to post to end point: " + patch.getURI().toString() + ", status line: " + response.getStatusLine().toString() + ", payload: " + json);
-            }
-        } catch (IOException e) {
-            throw new HttpClientException(e);
-        } finally {
-            response.getEntity().getContent().close();
-        }
+        return enclosingRequest(patch, data, path);
     }
 
-    protected String put(byte[] data, String path) throws IOException {
+    protected String put(byte[] data, String path) throws HttpClientException {
         HttpPut put = new HttpPut();
-        put.setURI(uri.resolve(path));
-        setupCommonHeaders(put);
-        put.setHeader(HEADER_CONTENT_TYPE_JSON);
-        put.setEntity(new ByteArrayEntity(data));
+        return enclosingRequest(put, data, path);
+    }
+
+    private String enclosingRequest(HttpEntityEnclosingRequestBase baseRequest, byte[] data, String path) throws HttpClientException {
+        baseRequest.setURI(uri.resolve(path));
+        setupCommonHeaders(baseRequest);
+        baseRequest.setHeader(HEADER_CONTENT_TYPE_JSON);
+        if (data != null) {
+            baseRequest.setEntity(new ByteArrayEntity(data));
+        }
         HttpResponse response = null;
         try {
-            response = httpclient.execute(put);
+            response = httpclient.execute(baseRequest);
             int code = response.getStatusLine().getStatusCode();
             String json = EntityUtils.toString(response.getEntity());
             if (code == HttpStatus.SC_CREATED || code == HttpStatus.SC_OK) {
                 return json;
-            }
-            else {
-                throw new HttpClientException("Failed to post to end point: " + put.getURI().toString() + ", status line: " + response.getStatusLine().toString() + ", payload: " + json);
+            } else {
+                throw new HttpClientException("Failed to make request (type:" + baseRequest.getMethod() + ") to end point: " + baseRequest.getURI().toString() + ", status line: " + response.getStatusLine().toString() + ", payload: " + json);
             }
         } catch (IOException e) {
             throw new HttpClientException(e);
         } finally {
-            if (response != null) {
-                response.getEntity().getContent().close();
+            if (response != null && response.getEntity() != null) {
+                try {
+                    response.getEntity().getContent().close();
+                } catch (IOException ioe) {
+                    LOGGER.debug("Unable to close response.getEntity().getContent()...");
+                }
             }
         }
     }
 
-    protected String getJSON(HttpUriRequest request) throws IOException, HttpClientException {
-        HttpResponse response = httpclient.execute(request);
+    protected String getJSON(HttpUriRequest request) throws HttpClientException {
+        HttpResponse response = null;
         try {
+            response = httpclient.execute(request);
             if (response.getStatusLine().getStatusCode() == 200) {
-                if (null != response) {
-                    String responseValue = EntityUtils.toString(response.getEntity());
-                    return responseValue;
-                }
+                    return EntityUtils.toString(response.getEntity());
             } else {
                 throw new HttpClientException("Failed to make request to end point: " + request.getURI() + ", status line: " + response.getStatusLine().toString());
             }
+        } catch (IOException e) {
+            throw new HttpClientException(e);
         } finally {
-            response.getEntity().getContent().close();
+            if (response != null && response.getEntity() != null) {
+                try {
+                    response.getEntity().getContent().close();
+                } catch (IOException ioe) {
+                    LOGGER.debug("Unable to close response.getEntity().getContent()...");
+                }
+            }
         }
-        return null;
     }
 
     protected void setupCommonHeaders(HttpRequest request) {

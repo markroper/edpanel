@@ -66,7 +66,6 @@ public class KickboardBehavior {
     //"incident id"
     public Long incidentId;
 
-    @SuppressWarnings("unchecked")
     public Behavior toApiModel(
             Map<Long, Student> studentAssociator,
             Map<String, List<Person>> firstNameToStaff,

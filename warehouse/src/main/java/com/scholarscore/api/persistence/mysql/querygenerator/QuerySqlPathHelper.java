@@ -50,13 +50,13 @@ public class QuerySqlPathHelper {
             LOGGER.debug("OK, now we have table " + firstTable + " and we're trying to find links to...");
             for (Dimension dim : unmatchedDimensions) {
                 LOGGER.debug("... Unmatched dimension " + dim);
-                // okay, now we matched at least one, but there may be more
+    
                 Set<Dimension> neededDimensions = breadthFirstSearch(firstTable, unmatchedDimensions);
-
-                // not sure about this, but seems reasonable to do here as these tables are already included in the query
-                neededDimensions.remove(firstTable);
-                for (Dimension unmatchedDimension : unmatchedDimensions) {
-                    neededDimensions.remove(unmatchedDimension);
+                // okay, now we matched at least one unmatched dimension using the 'neededDimensions' returned, but there may be more
+    
+                // these tables will be included anyway, so don't hint them 
+                for (Dimension alreadyIncludedDimension : orderedTables) {
+                    neededDimensions.remove(alreadyIncludedDimension);
                 }
 
                 // add any remaining found tables as hints
@@ -96,6 +96,7 @@ public class QuerySqlPathHelper {
         return hasCompleteJoinPath(orderedTables);
     }
 
+    // return an ordered list of all tables involved in the ultimate SQL query
     private static List<Dimension> buildDimensionsFromQuery(Query q) {
         //Get the dimensions in the correct order for joining:
         HashSet<Dimension> selectedDims = new HashSet<>();

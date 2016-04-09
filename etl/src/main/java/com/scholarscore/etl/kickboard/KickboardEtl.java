@@ -11,6 +11,7 @@ import com.scholarscore.models.Behavior;
 import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.behavior.BehaviorScore;
 import com.scholarscore.models.user.Person;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
@@ -57,65 +58,21 @@ public class KickboardEtl implements IEtlEngine {
     }
 
     private void syncBehavior() {
-        List<KickboardBehavior> kbBehaviors =  new ArrayList<>();
-        //Source system behavior ID to behavior
-        Map<String, Behavior> seenInEdPanel = new HashMap<>();
         Map<Long, Map<LocalDate, Behavior>> seenInEdPanelNoSsid = new HashMap<>();
-        Set<Long> sourceSeenStudents = new HashSet<>();
-        Set<String> seenInSourceSystem = new HashSet<>();
-        int page = 1;
-        while(kbBehaviors != null) {
-            LOGGER.debug("PAGE NUMBER: " + page);
-            page++;
-            kbBehaviors = kickboardClient.getBehaviorData(CHUNK_SIZE);
-            List<Behavior> sourceChunk = convertToEdPanelBehaviors(kbBehaviors);
-            if(null == sourceChunk) {
-                continue;
-            }
-            List<Behavior> behaviorsToCreate = new ArrayList<>();
-            for(Behavior source: sourceChunk) {
-                //If the current behavior from Kickboard's user's data hasn't been pulled from EdPanel, pull it.
-                if(!sourceSeenStudents.contains(source.getStudent().getId())) {
-                    sourceSeenStudents.add(source.getStudent().getId());
-                    addStudentBehaviorsToCollections(source, seenInEdPanel, seenInEdPanelNoSsid);
-                }
-                //If the behavior doesn't exist in edpanel, create it, otherwise update it
-                if(!seenInEdPanel.containsKey(source.getRemoteBehaviorId()) &&
-                        !seenInSourceSystem.contains(source.getRemoteBehaviorId())) {
-                    //create the behavior
-                    behaviorsToCreate.add(source);
-                } else {
-                    //update the behavior
-                    updateBehavior(seenInEdPanel.get(source.getRemoteBehaviorId()), source);
-                    //Then remove it from the set so we know what to delete when we're done...
-                    seenInEdPanel.remove(source.getRemoteBehaviorId());
-                }
-                seenInSourceSystem.add(source.getRemoteBehaviorId());
-            }
-            createBehaviors(behaviorsToCreate);
-        }
-        // Now that we've handled the entire giant file, go ahead and delete from EdPanel any entries left in the
-        // edpanel collection that were not updated and removed above.
-        for(Map.Entry<String, Behavior> entry: seenInEdPanel.entrySet()) {
-            try {
-                Behavior b = entry.getValue();
-                scholarScore.deleteBehaviorBySourceId(b.getStudent().getId(), b.getRemoteBehaviorId());
-                result.addDeleted(1);
-            } catch (HttpClientException e) {
-                result.addFailedDeleted(1);
-                LOGGER.warn("Unable to delete the behavior event within EdPanel with SSID: " +
-                        entry.getValue().getRemoteBehaviorId());
-            }
-        }
 
+        // resolve the part, behavior data
+        getBehaviorData(seenInEdPanelNoSsid);
+        
+        LOGGER.warn("DONE 1/2 of sync behavior step - getBehaviorData is done.");
+        
         //Now resolve the incidents, which are a different table within Kickboard:
-        kbBehaviors =  new ArrayList<>();
-        page = 1;
+        List<KickboardBehavior> kbBehaviors = new ArrayList<>();
+        // <studentId, Set<Pair<BehaviorDate,BehaviorCategory>>>
         Map<Long, Set<MutablePair<LocalDate, BehaviorCategory>>> seenBehaviors = new HashMap<>();
-        sourceSeenStudents = new HashSet<>();
+        Set<Long> studentsPulledFromEdPanel = new HashSet<>();
+        int page = 0;
         while(kbBehaviors != null) {
-            LOGGER.debug("PAGE NUMBER: " + page);
-            page++;
+            LOGGER.debug("PAGE NUMBER: " + ++page);
             kbBehaviors = kickboardClient.getConsequenceData(CHUNK_SIZE);
             List<Behavior> sourceBehaviors = convertToEdPanelBehaviors(kbBehaviors);
             if(null == sourceBehaviors) {
@@ -124,9 +81,9 @@ public class KickboardEtl implements IEtlEngine {
             List<Behavior> behaviorsToCreate = new ArrayList<>();
             for(Behavior source: sourceBehaviors) {
                 Long studId = source.getStudent().getId();
-                if(!sourceSeenStudents.contains(studId)) {
-                    sourceSeenStudents.add(studId);
-                    addStudentBehaviorsToCollections(source, seenInEdPanel, seenInEdPanelNoSsid);
+                if(!studentsPulledFromEdPanel.contains(studId)) {
+                    studentsPulledFromEdPanel.add(studId);
+                    addStudentBehaviorsToCollections(source, null, seenInEdPanelNoSsid);
                 }
                 if(!seenBehaviors.containsKey(studId)) {
                     seenBehaviors.put(studId, new HashSet<>());
@@ -171,6 +128,59 @@ public class KickboardEtl implements IEtlEngine {
         }
     }
 
+    private void getBehaviorData(Map<Long, Map<LocalDate, Behavior>> seenInEdPanelNoSsid) {
+        Set<Long> studentsPulledFromEdPanel = new HashSet<>();
+        List<KickboardBehavior> kbBehaviors =  new ArrayList<>();
+        Set<String> behaviorsSeenInSourceSystem = new HashSet<>();
+        Map<String, Behavior> behaviorsSeenInEdPanel = new HashMap<>();
+        int page = 0;
+        while(kbBehaviors != null) {
+            LOGGER.debug("PAGE NUMBER: " + ++page);
+            kbBehaviors = kickboardClient.getBehaviorData(CHUNK_SIZE);
+            List<Behavior> sourceChunk = convertToEdPanelBehaviors(kbBehaviors);
+            if(null == sourceChunk) {
+                continue;
+            }
+            List<Behavior> behaviorsToCreate = new ArrayList<>();
+            for(Behavior currentBehavior: sourceChunk) {
+                Long studId = currentBehavior.getStudent().getId();
+                //If the current behavior from Kickboard's user's data hasn't been pulled from EdPanel, pull it.
+                if(!studentsPulledFromEdPanel.contains(studId)) {
+                    studentsPulledFromEdPanel.add(studId);
+                    addStudentBehaviorsToCollections(currentBehavior, behaviorsSeenInEdPanel, seenInEdPanelNoSsid);
+                }
+                //If the behavior doesn't exist in edpanel, create it, otherwise update it
+                if(!behaviorsSeenInEdPanel.containsKey(currentBehavior.getRemoteBehaviorId()) &&
+                        !behaviorsSeenInSourceSystem.contains(currentBehavior.getRemoteBehaviorId())) {
+                    //create the behavior
+                    behaviorsToCreate.add(currentBehavior);
+                } else {
+                    //update the behavior
+                    updateBehavior(behaviorsSeenInEdPanel.get(currentBehavior.getRemoteBehaviorId()), currentBehavior);
+                    //Then remove it from the set so we know what to delete when we're done...
+                    behaviorsSeenInEdPanel.remove(currentBehavior.getRemoteBehaviorId());
+                }
+                behaviorsSeenInSourceSystem.add(currentBehavior.getRemoteBehaviorId());
+            }
+            createBehaviors(behaviorsToCreate);
+        }
+
+        // Now that we've handled the entire giant file, go ahead and delete from EdPanel any entries left in the
+        // edpanel collection that were not updated and removed above.
+        for(Map.Entry<String, Behavior> entry: behaviorsSeenInEdPanel.entrySet()) {
+            try {
+                Behavior b = entry.getValue();
+                scholarScore.deleteBehaviorBySourceId(b.getStudent().getId(), b.getRemoteBehaviorId());
+                result.addDeleted(1);
+            } catch (HttpClientException e) {
+                result.addFailedDeleted(1);
+                LOGGER.warn("Unable to delete the behavior event within EdPanel with SSID: " +
+                        entry.getValue().getRemoteBehaviorId());
+            }
+        }
+    }
+
+
     private void addStudentBehaviorsToCollections(
             Behavior source,
             Map<String, Behavior> edPanelBehaviors,
@@ -180,7 +190,11 @@ public class KickboardEtl implements IEtlEngine {
                     scholarScore.getBehaviors(source.getStudent().getId(), CUTOFF);
             for(Behavior b : studentsBehaviors) {
                 if(null != b.getRemoteBehaviorId()) {
-                    edPanelBehaviors.put(b.getRemoteBehaviorId(), b);
+                    if (edPanelBehaviors != null) {
+                        edPanelBehaviors.put(b.getRemoteBehaviorId(), b);
+                    } else {
+                        LOGGER.debug("NULL EdPanelBehavior, addStudentBehavior skipping the EdPanelBehavior.put()");
+                    }
                 } else {
                     //For behaviors without an SSID (kickboard consequences), use alternative data structure
                     if(!edPanelBehaviorsWithoutSsids.containsKey(b.getStudent().getId())) {
@@ -328,26 +342,8 @@ public class KickboardEtl implements IEtlEngine {
         if(null == sourceBehaviors) {
             return null;
         }
-        HashMap<Long, Student> sourceSystemUserIdToStudent = new HashMap<>();
-        for(Map.Entry<Long, Student> entry: studentAssociator.getUsers().entrySet()) {
-            sourceSystemUserIdToStudent.put(Long.valueOf(entry.getValue().getSourceSystemUserId()), entry.getValue());
-        }
-        HashMap<String, List<Person>> firstNameToStaff = new HashMap<>();
-        HashMap<String, List<Person>> lastNameToStaff = new HashMap<>();
-        for(Map.Entry<Long, Person> entry: staffAssociator.getUsers().entrySet()) {
-            Person p = entry.getValue();
-            String[] names = p.getName().split(" ");
-            if(null != names && names.length > 1) {
-                if(!firstNameToStaff.containsKey(names[0])) {
-                    firstNameToStaff.put(names[0], new ArrayList<>());
-                }
-                firstNameToStaff.get(names[0]).add(p);
-                if(!lastNameToStaff.containsKey(names[names.length - 1])) {
-                    lastNameToStaff.put(names[names.length - 1], new ArrayList<>());
-                }
-                lastNameToStaff.get(names[names.length - 1]).add(p);
-            }
-        }
+        
+        initializeStudentAndStaffMaps();
         List<Behavior> edpanelBehaviors = new ArrayList<>();
         for(KickboardBehavior kB: sourceBehaviors) {
             Behavior b = kB.toApiModel(sourceSystemUserIdToStudent, firstNameToStaff, lastNameToStaff);
@@ -356,6 +352,40 @@ public class KickboardEtl implements IEtlEngine {
             }
         }
         return edpanelBehaviors;
+    }
+
+    private HashMap<Long, Student> sourceSystemUserIdToStudent;
+    HashMap<String, List<Person>> firstNameToStaff;
+    HashMap<String, List<Person>> lastNameToStaff;
+    
+    // these maps are based off student and staff associator, which aren't updated -- 
+    // so they only need to be initialized once (to save time, not space)
+    private void initializeStudentAndStaffMaps() {
+        if (null == sourceSystemUserIdToStudent) {
+            sourceSystemUserIdToStudent = new HashMap<>();
+            for (Map.Entry<Long, Student> entry : studentAssociator.getUsers().entrySet()) {
+                sourceSystemUserIdToStudent.put(Long.valueOf(entry.getValue().getSourceSystemUserId()), entry.getValue());
+            }
+        }
+
+        if (firstNameToStaff == null || lastNameToStaff == null) {
+            firstNameToStaff = new HashMap<>();
+            lastNameToStaff = new HashMap<>();
+            for (Map.Entry<Long, Staff> entry : staffAssociator.getUsers().entrySet()) {
+                Person p = entry.getValue();
+                String[] names = p.getName().split(" ");
+                if (names.length > 1) {
+                    if (!firstNameToStaff.containsKey(names[0])) {
+                        firstNameToStaff.put(names[0], new ArrayList<>());
+                    }
+                    firstNameToStaff.get(names[0]).add(p);
+                    if (!lastNameToStaff.containsKey(names[names.length - 1])) {
+                        lastNameToStaff.put(names[names.length - 1], new ArrayList<>());
+                    }
+                    lastNameToStaff.get(names[names.length - 1]).add(p);
+                }
+            }
+        }
     }
 
     @Override

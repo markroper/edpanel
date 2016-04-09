@@ -129,7 +129,7 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
                 }
                 Collection<StudentAssignment> assignments = assignmentResp.getValue();
                 if(null != formula && null != assignments) {
-                    HashSet<StudentAssignment> assignmentSet = new HashSet<StudentAssignment>(assignments);
+                    HashSet<StudentAssignment> assignmentSet = new HashSet<>(assignments);
                     Double calculatedGrade = formula.calculateGrade(assignmentSet);
                     SectionGrade overall = new SectionGrade();
                     overall.setDate(LocalDate.now());
@@ -142,7 +142,6 @@ public class StudentSectionGradeManagerImpl implements StudentSectionGradeManage
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public ServiceResponse<SectionGradeWithProgression> getStudentSectionGradeByWeek(
             long schoolId, long yearId, long termId, long sectionId, long studentId, LocalDate categoryStart, LocalDate categoryEnd) {
         StatusCode code = studentSectionGradeExists(

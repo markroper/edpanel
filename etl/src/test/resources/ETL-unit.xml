@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="DLETLUnitTests" verbose="2" parallel="classes" thread-count="1">
+<suite name="DLETLUnitTests" verbose="1" parallel="classes" thread-count="1">
 	<test name="DLETLUnitTests">
 		<groups>
 			<run>

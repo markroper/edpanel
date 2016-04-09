@@ -135,7 +135,7 @@ public class SchoolController extends BaseController {
     {
         Map<Long, Double> studentToGpa = new HashMap<>();
         ArrayList<Long> studentIds = new ArrayList<Long>(Arrays.asList(id));
-        ServiceResponse<Collection<Gpa>> resp = pm.getGpaManager().getAllGpasForStudents(studentIds, null, null);
+        ServiceResponse<Collection<Gpa>> resp = pm.getGpaManager().getAllGpasForStudents(studentIds, null, null, null);
         if(null != resp.getValue()) {
             for(Gpa g: resp.getValue()) {
                 studentToGpa.put(g.getStudentId(), g.getScore());
@@ -177,5 +177,21 @@ public class SchoolController extends BaseController {
             @PathVariable(value="schoolId") Long schoolId
     ) {
         return respond(pm.getSchoolManager().associateAdvisors(schoolId));
+    }
+
+    @ApiOperation(
+            value = "Get all teachers in school",
+            notes = "Retrieve all teachers within a school",
+            response = List.class)
+    @RequestMapping(
+            value = "/{schoolId}/teachers",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    @StudentAccessible
+    public @ResponseBody ResponseEntity getTeachersInSchool(
+            @ApiParam(name = "schoolId", required = true, value = "School ID")
+            @PathVariable(value="schoolId") Long schoolId) {
+        return respond(pm.getTeacherManager().getAllTeachers(schoolId));
     }
 }

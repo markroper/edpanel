@@ -177,8 +177,8 @@ dependencies {
             "commons-codec:commons-codec:1.10",
 
             //MySQL dependencies
-//            'mysql:mysql-connector-java:5.1.6',
-            "org.mariadb.jdbc:mariadb-java-client:1.3.4",
+            "org.mariadb.jdbc:mariadb-java-client:1.3.4",   // mariaDB connector
+            "c3p0:c3p0:0.9.1.2",        // c3p0 connection pool
             //Spring dependencies
             "org.springframework:spring-aop:$springVersion",
             "org.springframework:spring-aspects:$springVersion",
@@ -199,9 +199,8 @@ dependencies {
             "org.springframework.security:spring-security-config:$springSecurityVersion",
             //SQL injection Lib
             "org.owasp.esapi:esapi:2.1.0.1",
-
-
-    //Jackson for JSON & XML API serialization
+            
+            //Jackson for JSON & XML API serialization
             "com.fasterxml.jackson.module:jackson-module-scala_2.10:$jacksonVersion",
 
             //Swagger for API documentation, & dependent JARs
@@ -213,7 +212,10 @@ dependencies {
             "org.javassist:javassist:3.17.1-GA",
             //Needed for hibernate bean validation which was added to support swagger
             "javax.validation:validation-api:1.1.0.Final",
-            "c3p0:c3p0:0.9.1.2"
+
+            // this project uses some libraries that depend on log4j, pipe it through existing slf4j config
+            "org.slf4j:slf4j-api:1.7.21",
+            "org.slf4j:log4j-over-slf4j:1.7.21"
 
     testCompile "org.testng:testng:6.8.8",
             "org.apache.httpcomponents:httpclient:$apacheHttpVersion",
