@@ -76,6 +76,11 @@ public class TeacherManagerImpl implements TeacherManager {
     }
 
     @Override
+    public ServiceResponse<Collection<Staff>> getAllTeachers(long schoolId) {
+        return new ServiceResponse<>(teacherPersistence.selectAll(schoolId));
+    }
+
+    @Override
     public ServiceResponse<Staff> getTeacher(long teacherId) {
         StatusCode code = teacherExists(teacherId);
         if(!code.isOK()) {
