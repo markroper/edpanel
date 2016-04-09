@@ -239,7 +239,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                             withComment(ptScore.commentvalue).
                             withLetterGrade(ptScore.lettergrade).
                             withScore(ptScore.score).
-                            withManuallyOverridden("1".equals(ptScore.manualoverride)).
+                            withManuallyOverridden(Long.valueOf("1").equals(ptScore.manualoverride)).
                             withTermId(powerTeacherReportingTermId).
                             build();
                         termScores.put(powerTeacherReportingTermId, score);

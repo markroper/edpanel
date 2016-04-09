@@ -133,7 +133,7 @@ public abstract class ListDeserializer<T extends List, E> extends JsonDeserializ
                         }
                         JsonNode innerNode = node.get(field.getName().toLowerCase());
                         if (null == innerNode) {
-                            LOGGER.debug("Can't parse inner node " + field.getName() + " from class " + out.getClass().getSimpleName() + " -- not found!");
+                            LOGGER.trace("Can't parse inner node " + field.getName() + " from class " + out.getClass().getSimpleName() + " -- not found!");
                             continue;
                         }
                         Object innerObj = readObj(innerNode,
