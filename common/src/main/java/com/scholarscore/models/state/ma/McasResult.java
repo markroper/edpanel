@@ -1,16 +1,30 @@
 package com.scholarscore.models.state.ma;
 
+import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.user.Student;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 import java.util.Objects;
 
 /**
  * Created by markroper on 4/10/16.
  */
+@Entity(name = HibernateConsts.MA_MCAS_TABLE)
 public class McasResult {
     protected Long id;
     protected String schoolName;
     protected Long schoolId;
+    protected Long adminYear;
     protected Student student;
     protected Long examGradeLevel;
     protected Long studentGradeLevel;
@@ -23,6 +37,7 @@ public class McasResult {
     //Science & Tech
     protected McasTopicScore scienceScore;
 
+    @Transient
     public String getSchoolName() {
         return schoolName;
     }
@@ -31,6 +46,7 @@ public class McasResult {
         this.schoolName = schoolName;
     }
 
+    @Column(name = HibernateConsts.SCHOOL_FK)
     public Long getSchoolId() {
         return schoolId;
     }
@@ -39,6 +55,9 @@ public class McasResult {
         this.schoolId = schoolId;
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = HibernateConsts.MA_MCAS_ID)
     public Long getId() {
         return id;
     }
@@ -47,6 +66,9 @@ public class McasResult {
         this.id = id;
     }
 
+    @OneToOne(fetch= FetchType.EAGER)
+    @JoinColumn(name = HibernateConsts.STUDENT_FK)
+    @Fetch(FetchMode.JOIN)
     public Student getStudent() {
         return student;
     }
@@ -55,6 +77,7 @@ public class McasResult {
         this.student = student;
     }
 
+    @Column(name = HibernateConsts.MA_MCAS_EXAM_GRADE_LEVEL)
     public Long getExamGradeLevel() {
         return examGradeLevel;
     }
@@ -63,6 +86,7 @@ public class McasResult {
         this.examGradeLevel = examGradeLevel;
     }
 
+    @Column(name = HibernateConsts.MA_MCAS_STUD_GRADE_LEVEL)
     public Long getStudentGradeLevel() {
         return studentGradeLevel;
     }
@@ -71,6 +95,9 @@ public class McasResult {
         this.studentGradeLevel = studentGradeLevel;
     }
 
+    @OneToOne(fetch= FetchType.EAGER)
+    @JoinColumn(name = HibernateConsts.MA_MCAS_ENGLISH_FK)
+    @Fetch(FetchMode.JOIN)
     public McasTopicScore getEnglishScore() {
         return englishScore;
     }
@@ -79,6 +106,7 @@ public class McasResult {
         this.englishScore = englishScore;
     }
 
+    @Column(name = HibernateConsts.MA_MCAS_TOPIC_SCORE)
     public Double getEnglishTopicScore() {
         return englishTopicScore;
     }
@@ -87,6 +115,7 @@ public class McasResult {
         this.englishTopicScore = englishTopicScore;
     }
 
+    @Column(name = HibernateConsts.MA_MCAS_COMPOSITION_SCORE)
     public Double getEnglishCompositionScore() {
         return englishCompositionScore;
     }
@@ -95,6 +124,18 @@ public class McasResult {
         this.englishCompositionScore = englishCompositionScore;
     }
 
+    @Column(name = HibernateConsts.MA_MCAS_ADMIN_YEAR)
+    public Long getAdminYear() {
+        return adminYear;
+    }
+
+    public void setAdminYear(Long adminYear) {
+        this.adminYear = adminYear;
+    }
+
+    @OneToOne(fetch= FetchType.EAGER)
+    @JoinColumn(name = HibernateConsts.MA_MCAS_MATH_FK)
+    @Fetch(FetchMode.JOIN)
     public McasTopicScore getMathScore() {
         return mathScore;
     }
@@ -103,6 +144,9 @@ public class McasResult {
         this.mathScore = mathScore;
     }
 
+    @OneToOne(fetch= FetchType.EAGER)
+    @JoinColumn(name = HibernateConsts.MA_MCAS_SCIENCE_FK)
+    @Fetch(FetchMode.JOIN)
     public McasTopicScore getScienceScore() {
         return scienceScore;
     }
@@ -113,7 +157,7 @@ public class McasResult {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, student, examGradeLevel, studentGradeLevel, englishScore,
+        return Objects.hash(id, student, examGradeLevel, studentGradeLevel, englishScore, adminYear,
                 englishTopicScore, englishCompositionScore, mathScore, scienceScore, schoolName, schoolId);
     }
 
@@ -136,6 +180,7 @@ public class McasResult {
                 && Objects.equals(this.mathScore, other.mathScore)
                 && Objects.equals(this.schoolName, other.schoolName)
                 && Objects.equals(this.schoolId, other.schoolId)
+                && Objects.equals(this.adminYear, other.adminYear)
                 && Objects.equals(this.scienceScore, other.scienceScore);
     }
 }

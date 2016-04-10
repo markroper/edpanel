@@ -241,6 +241,7 @@ public class McasParser {
                 } catch (NumberFormatException nfe) {
                     LOGGER.debug("Unable to parse school ID from input: " + rec.get(SCHOOL_ID));
                 }
+                result.setAdminYear(parseLongOrReturnNull(rec.get(ADMIN_YEAR)));
                 result.setSchoolName(rec.get(SCHOOL_NAME));
                 result.setStudent(new Student());
                 result.getStudent().setStateStudentId(rec.get(SASID));

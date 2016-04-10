@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <changeSet author="Mark" id="changelog-1.17-change1">
+        <createTable tableName="ma_mcas_results">
+            <column name="ma_mcas_results_id"
+                    type="bigint unsigned"
+                    remarks="'Primary key identity column for an MCAS score"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="school_fk"
+                    type="bigint unsigned"
+                    remarks="school foreign key field">
+                <constraints nullable="false"/>
+            </column>
+            <column name="admin_year"
+                    type="bigint unsigned"
+                    remarks="4 digit year the test was administered">
+            </column>
+            <column name="student_fk"
+                    type="bigint unsigned"
+                    remarks="Annualized score, if any">
+                <constraints nullable="false"/>
+            </column>
+            <column name="exam_grade_level"
+                    type="bigint unsigned"
+                    remarks="Grade level of the exam itself">
+            </column>
+            <column name="student_grade_level"
+                    type="bigint unsigned"
+                    remarks="Grade level of student when they took the exam">
+            </column>
+            <column name="english_topic_score"
+                    type="double"
+                    remarks="topic score">
+            </column>
+            <column name="english_composition_score"
+                    type="double"
+                    remarks="composition score">
+            </column>
+            <column name="english_fk"
+                    type="bigint unsigned"
+                    remarks="FK to english results">
+                <constraints nullable="true"/>
+            </column>
+            <column name="math_fk"
+                    type="bigint unsigned"
+                    remarks="FK to math results">
+                <constraints nullable="true"/>
+            </column>
+            <column name="science_fk"
+                    type="bigint unsigned"
+                    remarks="FK to science results">
+                <constraints nullable="true"/>
+            </column>
+
+        </createTable>
+
+        <createTable tableName="ma_mcas_topic_scores">
+            <column name="ma_mcas_topic_scores_id"
+                    type="bigint unsigned"
+                    remarks="'Primary key identity column for an MCAS topic score"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="alt_test"
+                    type="bit(1)"
+                    remarks="true if the student took an alternative science exam">
+            </column>
+            <column name="complexity"
+                    type="varchar(16)"
+                    remarks="If the student took an alt science exam, indicates complexity level">
+            </column>
+            <column name="exam_status"
+                    type="varchar(16)"
+                    remarks="complete, not complete, and so on">
+            </column>
+            <column name="raw_score"
+                    type="double"
+                    remarks="raw science score">
+            </column>
+            <column name="scaled_score"
+                    type="double"
+                    remarks="science scaled score">
+            </column>
+            <column name="perf"
+                    type="varchar(16)"
+                    remarks="performance level">
+            </column>
+            <column name="perf_2"
+                    type="varchar(16)"
+                    remarks="performance level second enum">
+            </column>
+            <column name="quartile"
+                    type="bigint unsigned"
+                    remarks="quartile (0, 25, 50, 75, 100)">
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="ma_mcas_results"
+                                 baseColumnNames="student_fk"
+                                 constraintName="ma_mcas_results$student_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="student_user_fk"
+                                 referencedTableName="student"/>
+        <addForeignKeyConstraint baseTableName="ma_mcas_results"
+                                 baseColumnNames="school_fk"
+                                 constraintName="ma_mcas_results$school_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="school_id"
+                                 referencedTableName="school"/>
+        <addForeignKeyConstraint baseTableName="ma_mcas_results"
+                                 baseColumnNames="math_fk"
+                                 constraintName="ma_mcas_results$math_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="ma_mcas_topic_scores_id"
+                                 referencedTableName="ma_mcas_topic_scores"/>
+        <addForeignKeyConstraint baseTableName="ma_mcas_results"
+                                 baseColumnNames="english_fk"
+                                 constraintName="ma_mcas_results$english_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="ma_mcas_topic_scores_id"
+                                 referencedTableName="ma_mcas_topic_scores"/>
+        <addForeignKeyConstraint baseTableName="ma_mcas_results"
+                                 baseColumnNames="science_fk"
+                                 constraintName="ma_mcas_results$science_fk"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="ma_mcas_topic_scores_id"
+                                 referencedTableName="ma_mcas_topic_scores"/>
+    </changeSet>
+</databaseChangeLog>

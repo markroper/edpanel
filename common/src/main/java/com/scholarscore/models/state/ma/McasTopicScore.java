@@ -1,5 +1,14 @@
 package com.scholarscore.models.state.ma;
 
+import com.scholarscore.models.HibernateConsts;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Objects;
 
 /**
@@ -7,7 +16,9 @@ import java.util.Objects;
  *
  * Created by markroper on 4/10/16.
  */
+@Entity(name = HibernateConsts.MA_MCAS_TOPIC_TABLE)
 public class McasTopicScore {
+    protected Long id;
     protected Boolean alternateExam;
     protected McasComplexity complexity;
     protected McasStatus examStatus;
@@ -17,6 +28,18 @@ public class McasTopicScore {
     protected McasPerfLevel2 performanceLevel2;
     protected Long quartile;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = HibernateConsts.MA_MCAS_TOPIC_ID)
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Column(name = HibernateConsts.ALT_TEST)
     public Boolean getAlternateExam() {
         return alternateExam;
     }
@@ -25,6 +48,8 @@ public class McasTopicScore {
         this.alternateExam = alternateExam;
     }
 
+    @Column(name = HibernateConsts.COMPLEXITY)
+    @Enumerated(EnumType.STRING)
     public McasComplexity getComplexity() {
         return complexity;
     }
@@ -33,6 +58,8 @@ public class McasTopicScore {
         this.complexity = complexity;
     }
 
+    @Column(name = HibernateConsts.EXAM_STATUS)
+    @Enumerated(EnumType.STRING)
     public McasStatus getExamStatus() {
         return examStatus;
     }
@@ -41,6 +68,7 @@ public class McasTopicScore {
         this.examStatus = examStatus;
     }
 
+    @Column(name = HibernateConsts.RAW_SCORE)
     public Double getRawScore() {
         return rawScore;
     }
@@ -49,6 +77,7 @@ public class McasTopicScore {
         this.rawScore = rawScore;
     }
 
+    @Column(name = HibernateConsts.SCALED_SCORE)
     public Double getScaledScore() {
         return scaledScore;
     }
@@ -57,6 +86,8 @@ public class McasTopicScore {
         this.scaledScore = scaledScore;
     }
 
+    @Column(name = HibernateConsts.PERF)
+    @Enumerated(EnumType.STRING)
     public McasPerfLevel getPerformanceLevel() {
         return performanceLevel;
     }
@@ -65,6 +96,8 @@ public class McasTopicScore {
         this.performanceLevel = performanceLevel;
     }
 
+    @Column(name = HibernateConsts.PERF_2)
+    @Enumerated(EnumType.STRING)
     public McasPerfLevel2 getPerformanceLevel2() {
         return performanceLevel2;
     }
@@ -73,6 +106,7 @@ public class McasTopicScore {
         this.performanceLevel2 = performanceLevel2;
     }
 
+    @Column(name = HibernateConsts.QUARTILE)
     public Long getQuartile() {
         return quartile;
     }
@@ -83,7 +117,8 @@ public class McasTopicScore {
 
     @Override
     public int hashCode() {
-        return Objects.hash(alternateExam, complexity, examStatus, rawScore, scaledScore, performanceLevel, performanceLevel2, quartile);
+        return Objects.hash(alternateExam, complexity, examStatus, rawScore, scaledScore,
+                performanceLevel, performanceLevel2, quartile, id);
     }
 
     @Override
@@ -100,6 +135,7 @@ public class McasTopicScore {
                 && Objects.equals(this.examStatus, other.examStatus)
                 && Objects.equals(this.rawScore, other.rawScore)
                 && Objects.equals(this.scaledScore, other.scaledScore)
+                && Objects.equals(this.id, other.id)
                 && Objects.equals(this.performanceLevel, other.performanceLevel)
                 && Objects.equals(this.performanceLevel2, other.performanceLevel2)
                 && Objects.equals(this.quartile, other.quartile);
