@@ -123,22 +123,16 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     private void createVoidResponse(Object obj, String path) throws HttpClientException {
-        String json = null;
         try {
-            json = post(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
+            post(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
         } catch (IOException e) {
             throw new HttpClientException(e);
         }
     }
 
     private List<Long> createListResponse(Object obj, String path) throws HttpClientException {
-        String json = null;
         try {
-            json = post(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
-        } catch (IOException e) {
-            throw new HttpClientException(e);
-        }
-        try {
+            String json = post(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
             return MAPPER.readValue(json, new TypeReference<List<Long>>() {});
         } catch (IOException e) {
             throw new HttpClientException(e);
@@ -146,13 +140,8 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     private EntityId create(Object obj, String path) throws HttpClientException {
-        String jsonCreateResponse = null;
         try {
-            jsonCreateResponse = post(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
-        } catch (IOException e) {
-            throw new HttpClientException(e);
-        }
-        try {
+            String jsonCreateResponse = post(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
             return MAPPER.readValue(jsonCreateResponse, EntityId.class);
         } catch (IOException e) {
             throw new HttpClientException(e);
@@ -160,13 +149,8 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
     
     private EntityId update(Object obj, String path) throws HttpClientException {
-        String jsonCreateResponse = null;
         try {
-            jsonCreateResponse = patch(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
-        } catch (IOException e) {
-            throw new HttpClientException(e);
-        }
-        try {
+            String jsonCreateResponse = patch(convertObjectToJsonBytes(obj), BASE_API_ENDPOINT + path);
             return MAPPER.readValue(jsonCreateResponse, EntityId.class);
         } catch (IOException e) {
             throw new HttpClientException(e);
@@ -272,7 +256,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public void deleteBehavior(Long studentId, String edpanelId) throws HttpClientException {
+    public void deleteBehavior(Long studentId, Long edpanelId) throws HttpClientException {
         delete(BASE_API_ENDPOINT + STUDENT_ENDPOINT + "/" + studentId + "/" + BEHAVIOR_ENDPOINT + "/" + edpanelId);
     }
 

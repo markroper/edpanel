@@ -1,5 +1,7 @@
 package com.scholarscore.api.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.io.IOException;
@@ -31,6 +33,8 @@ public class UTF8Control extends ResourceBundle.Control {
     private final static String BUNDLE_NAME = "localizedStrings";
     private final static String FILE_TYPE = "properties";
     private final static String ENCODING = "UTF-8";
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(UTF8Control.class);
 
     /**
      * Returns a ResourceBundle read in from a .properties file with UTF-8 encoding.
@@ -154,7 +158,14 @@ public class UTF8Control extends ResourceBundle.Control {
         ResourceBundle bundle = ResourceBundle.getBundle(bundleName, locale, new UTF8Control());
         MessageFormat formatter = new MessageFormat("");
         formatter.setLocale(locale);
-        formatter.applyPattern(bundle.getString(messageKey));
+        String pattern = null;
+        try {
+            pattern = bundle.getString(messageKey);
+        } catch (MissingResourceException mre) {
+            LOGGER.info("Could not load resource for messageKey " + messageKey + ", so just returning key.");
+            return messageKey;
+        }
+        formatter.applyPattern(pattern);
         return formatter.format(args);
     }
 }

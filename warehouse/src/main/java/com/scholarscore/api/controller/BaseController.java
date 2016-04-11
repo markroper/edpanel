@@ -60,7 +60,7 @@ public abstract class BaseController {
         StatusCodeResponseFactory factory = new StatusCodeResponseFactory();
         StatusCode returnError = new StatusCode(code);
         returnError.setArguments(args);
-        return new ResponseEntity<StatusCode>(
+        return new ResponseEntity<>(
                 factory.localizeError(returnError), 
                 StatusCodeToHttpCode.resolveHttpStatus(returnError.getCode()));
     }
