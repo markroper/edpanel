@@ -209,7 +209,7 @@ public abstract class BaseHttpClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                     return EntityUtils.toString(response.getEntity());
             } else {
-                throw new HttpClientException("Failed to make request to end point: " + request.getURI() + ", status line: " + response.getStatusLine().toString());
+                throw new HttpClientException("Failed to make request (Type: " + request.getMethod() + ") to end point: " + request.getURI() + ", status line: " + response.getStatusLine().toString());
             }
         } catch (IOException e) {
             throw new HttpClientException(e);

@@ -25,7 +25,7 @@ public class BehaviorManagerImpl implements BehaviorManager {
     private OrchestrationManager pm;
 
     private static final String BEHAVIOR = "behavior";
-
+    private static final String BEHAVIOR_SCORE = "behavior_score";
 
     public void setBehaviorPersistence(BehaviorPersistence behaviorPersistence) {
         this.behaviorPersistence = behaviorPersistence;
@@ -50,6 +50,19 @@ public class BehaviorManagerImpl implements BehaviorManager {
     }
 
     @Override
+    public StatusCode behaviorScoreExists(long studentId, LocalDate date) {
+        StatusCode code = pm.getStudentManager().studentExists(studentId);
+        if (!code.isOK()) {
+            return code;
+        }
+        BehaviorScore behaviorScore = behaviorPersistence.selectScore(studentId, date);
+        if (null == behaviorScore) {
+            return StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{BEHAVIOR_SCORE, "(s:" + studentId + "/d:" + date + ")"});
+        }
+        return StatusCodes.getStatusCode(StatusCodeType.OK);
+    }
+
+    @Override
     public ServiceResponse<Behavior> getBehavior(long studentId, long behaviorId) {
         StatusCode code = behaviorExists(studentId, behaviorId);
         if (!code.isOK()) {
@@ -63,10 +76,10 @@ public class BehaviorManagerImpl implements BehaviorManager {
     public ServiceResponse<Long> createBehavior(long studentId, Behavior behavior) {
         StatusCode code = pm.getStudentManager().studentExists(studentId);
         if (!code.isOK()) {
-            return new ServiceResponse<Long>(code);
+            return new ServiceResponse<>(code);
         }
         Long behaviorId = behaviorPersistence.createBehavior(studentId, behavior);
-        return new ServiceResponse<Long>(behaviorId);
+        return new ServiceResponse<>(behaviorId);
     }
 
     @Override
@@ -89,7 +102,7 @@ public class BehaviorManagerImpl implements BehaviorManager {
     public ServiceResponse<Long> updateBehavior(long studentId, long behaviorId, Behavior behavior) {
         StatusCode code = behaviorExists(studentId, behaviorId);
         if (!code.isOK()) {
-            return new ServiceResponse<Long>(code);
+            return new ServiceResponse<>(code);
         }
         behavior.setId(behaviorId);
         Behavior originalBehavior =
@@ -102,21 +115,21 @@ public class BehaviorManagerImpl implements BehaviorManager {
     public ServiceResponse<Long> deleteBehavior(long studentId, long behaviorId) {
         StatusCode code = behaviorExists(studentId, behaviorId);
         if (!code.isOK()) {
-            return new ServiceResponse<Long>(code);
+            return new ServiceResponse<>(code);
         }
         behaviorPersistence.delete(studentId, behaviorId);
-        return new ServiceResponse<Long>((Long) null);
+        return new ServiceResponse<>((Long) null);
     }
 
     @Override
     public ServiceResponse<Long> deleteBehaviorBySsid(long studentId, long ssid) {
         behaviorPersistence.deleteBySsid(studentId, ssid);
-        return new ServiceResponse<Long>((Long) null);
+        return new ServiceResponse<>((Long) null);
     }
 
     @Override
     public ServiceResponse<BehaviorScore> getBehaviorScore(long studentId, LocalDate date) {
-        return new ServiceResponse<BehaviorScore>(behaviorPersistence.selectScore(studentId, date));
+        return new ServiceResponse<>(behaviorPersistence.selectScore(studentId, date));
     }
 
     @Override
@@ -135,6 +148,19 @@ public class BehaviorManagerImpl implements BehaviorManager {
     }
 
     @Override
+    public ServiceResponse<Long> updateBehaviorScore(long studentId, LocalDate date, BehaviorScore score) {
+        StatusCode code = behaviorScoreExists(studentId, date);
+        if (!code.isOK()) {
+            return new ServiceResponse<>(code);
+        }
+        score.setDate(date);
+        BehaviorScore originalBehaviorScore =
+                behaviorPersistence.selectScore(studentId, date);
+        score.mergePropertiesIfNull(originalBehaviorScore);
+        return replaceBehaviorScore(studentId, date, score);
+    }
+    
+    @Override
     public ServiceResponse<Long> replaceBehaviorScore(long studentId, LocalDate date, BehaviorScore score) {
         return new ServiceResponse<>(behaviorPersistence.replaceScore(studentId, date, score));
     }
@@ -147,7 +173,7 @@ public class BehaviorManagerImpl implements BehaviorManager {
 
     @Override
     public ServiceResponse<Collection<Behavior>> getAllBehaviors(long studentId, LocalDate cutoffDate) {
-        return new ServiceResponse<Collection<Behavior>>
+        return new ServiceResponse<>
                 (behaviorPersistence.selectAll(studentId, cutoffDate));
     }
 

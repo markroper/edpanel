@@ -2,6 +2,7 @@ package com.scholarscore.models.behavior;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.scholarscore.models.HibernateConsts;
+import com.scholarscore.models.IApiModel;
 import com.scholarscore.models.user.Student;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -22,16 +23,14 @@ import java.util.Objects;
 @Entity(name = HibernateConsts.BEHAVIOR_SCORE_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BehaviorScore {
+public class BehaviorScore implements IApiModel<BehaviorScore> {
     protected Long id;
     protected LocalDate date;
     protected Long currentWeeklyScore;
     protected Long currentAnnualScore;
     protected Student student;
 
-    public BehaviorScore() {
-
-    }
+    public BehaviorScore() { }
 
     public BehaviorScore(BehaviorScore score) {
         this.id = score.id;
@@ -122,5 +121,24 @@ public class BehaviorScore {
                 ", student=" + student +
                 ", currentAnnualScore=" + currentAnnualScore +
                 '}';
+    }
+
+    @Override
+    public void mergePropertiesIfNull(BehaviorScore mergeFrom) {
+        if (null == this.id) {
+            this.id = mergeFrom.id;
+        }
+        if (null == this.date) {
+            this.date = mergeFrom.date;
+        }
+        if (null == this.currentAnnualScore) {
+            this.currentAnnualScore = mergeFrom.currentAnnualScore;
+        }
+        if (null == this.currentWeeklyScore) {
+            this.currentWeeklyScore = mergeFrom.currentWeeklyScore;
+        }
+        if (null == this.student && null != mergeFrom.student) {
+            this.student = mergeFrom.student;
+        }
     }
 }
