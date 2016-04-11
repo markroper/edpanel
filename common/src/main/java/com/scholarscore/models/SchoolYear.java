@@ -219,7 +219,6 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
             schoolYear.setStartDate(startDate);
             schoolYear.setEndDate(endDate);
             schoolYear.setTerms(terms);
-            //TODO: does this need to be reciprocal here? how do we want to handle this?
             schoolYear.setSchool(school);
             return schoolYear;
         }

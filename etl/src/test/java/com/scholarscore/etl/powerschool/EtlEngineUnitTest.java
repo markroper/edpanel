@@ -2,7 +2,10 @@ package com.scholarscore.etl.powerschool;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
+import com.scholarscore.etl.EntitySyncResult;
 import com.scholarscore.etl.IEtlEngine;
+import com.scholarscore.etl.PowerSchoolSyncResult;
+import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
@@ -28,6 +31,7 @@ import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
+import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
 
 /**
@@ -59,10 +63,25 @@ public class EtlEngineUnitTest extends AbstractTestNGSpringContextTests {
     }
     
     @Test
-    // TODO: fix .updateAdvisors method to not throw IOException and remove it here
-    public void testEtlMigration() throws HttpClientException, IOException { 
-        etlEngine.syncDistrict();
+    public void testEtlMigration() throws HttpClientException { 
+        SyncResult result = etlEngine.syncDistrict();
+        PowerSchoolSyncResult powerSchoolSyncResult = null;
+        if (result instanceof PowerSchoolSyncResult) {
+            powerSchoolSyncResult = (PowerSchoolSyncResult) result;
+        } else throw new RuntimeException("Cannot cast result to PowerschoolSyncResult");
 
+        final int EXPECTED_SCHOOLS_CREATED = 4;
+        final int EXPECTED_TERMS_CREATED = 7;
+        final int EXPECTED_COURSES_CREATED = 27;
+        final int EXPECTED_SECTIONS_CREATED = 81;
+
+        // verify the results reported match what we expect
+        checkResults(powerSchoolSyncResult.getSchools(), "schools", SyncType.CREATED, EXPECTED_SCHOOLS_CREATED);
+        checkResults(powerSchoolSyncResult.getTerms(), "terms", SyncType.CREATED, EXPECTED_TERMS_CREATED);
+        checkResults(powerSchoolSyncResult.getCourses(), "courses", SyncType.CREATED, EXPECTED_COURSES_CREATED);
+        checkResults(powerSchoolSyncResult.getSections(), "sections", SyncType.CREATED, EXPECTED_SECTIONS_CREATED);
+        
+        // verify that what was actually written back to edpanel is the same as what's expected
         // TODO ETL: add specific counts for calls to ensure they don't subtly change due to bugs
         verify(edPanel, atLeastOnce()).getStudents(anyLong());
         verify(edPanel, atLeastOnce()).getTeachers();
@@ -100,6 +119,23 @@ public class EtlEngineUnitTest extends AbstractTestNGSpringContextTests {
         
         // uncommenting this line throws an exception if any edpanel method is called but not verified above
 //        Mockito.verifyNoMoreInteractions(edPanel);
+    }
+    
+    enum SyncType { CREATED, UPDATED }
+    
+    private void checkResults(EntitySyncResult result, String entityName, SyncType type, int expected) {
+        int entityResults = -1;
+        switch (type) {
+            case CREATED:
+                entityResults = result.getCreated().size();
+                break;
+            case UPDATED:
+                entityResults = result.getUpdated().size();
+                break;
+        }
+        assertEquals("Expected " + expected + " " + entityName + " in PowerSchoolResults, but found " + entityResults + " instead",
+                entityResults, expected);
+
     }
     
 }
