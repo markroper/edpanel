@@ -29,6 +29,7 @@
         <property name="notificationManager" ref="notificationManager"/>
         <property name="messageManager" ref="messageManager"/>
         <property name="dashboardManager" ref="dashboardManager"/>
+        <property name="mcasManager" ref="mcasManager"/>
     </bean>
 
     <bean id="adminManager"
@@ -175,5 +176,11 @@
           class="com.scholarscore.api.manager.UiAttributesManagerImpl">
            <property name="uiAttributesPersistence" ref="uiAttributesPersistence"/>
            <property name="pm" ref="PM"/>
+    </bean>
+
+    <bean id="mcasManager"
+          class="com.scholarscore.api.manager.MaMcasManagerImpl">
+        <property name="mcasPersistence" ref="mcasPersistence"/>
+        <property name="pm" ref="PM"/>
     </bean>
 </beans>

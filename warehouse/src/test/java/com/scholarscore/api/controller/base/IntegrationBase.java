@@ -18,6 +18,7 @@ import com.scholarscore.api.controller.service.DashboardValidatingExecutor;
 import com.scholarscore.api.controller.service.GoalValidatingExecutor;
 import com.scholarscore.api.controller.service.GpaValidatingExecutor;
 import com.scholarscore.api.controller.service.LocaleServiceUtil;
+import com.scholarscore.api.controller.service.McasValidatingExecutor;
 import com.scholarscore.api.controller.service.MessageValidatingExecutor;
 import com.scholarscore.api.controller.service.NotificationValidatingExecutor;
 import com.scholarscore.api.controller.service.QueryValidatingExecutor;
@@ -108,6 +109,7 @@ public class IntegrationBase {
     private static final String MESSAGE_THREADS_ENDPOINT = "/messagethreads";
     private static final String MESSAGE_ENDPOINT = "/messages";
     private static final String DASHBOARD_ENDPOINT = "/dashboards";
+    private static final String MCAS_ENDPOINT = "/mcas";
 
     public LocaleServiceUtil localeServiceUtil;
     public CourseValidatingExecutor courseValidatingExecutor;
@@ -135,6 +137,7 @@ public class IntegrationBase {
     public NotificationValidatingExecutor notificationValidatingExecutor;
     public MessageValidatingExecutor messageValidatingExecutor;
     public DashboardValidatingExecutor dashboardValidatingExecutor;
+    public McasValidatingExecutor mcasValidatinExecutor;
 
     public CopyOnWriteArrayList<School> schoolsCreated = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Student> studentsCreated = new CopyOnWriteArrayList<>();
@@ -203,6 +206,7 @@ public class IntegrationBase {
         notificationValidatingExecutor = new NotificationValidatingExecutor(this);
         messageValidatingExecutor = new MessageValidatingExecutor(this);
         dashboardValidatingExecutor = new DashboardValidatingExecutor(this);
+        mcasValidatinExecutor = new McasValidatingExecutor(this);
         validateServiceConfig();
         initializeTestConfig();
         EdPanelObjectMapper.MAPPER.registerModule(new JavaTimeModule());
@@ -262,6 +266,7 @@ public class IntegrationBase {
         Assert.assertNotNull(notificationValidatingExecutor, "Unable to configure notification service");
         Assert.assertNotNull(messageValidatingExecutor, "Unable to configure message service");
         Assert.assertNotNull(dashboardValidatingExecutor, "Unable to configure dashboard service");
+        Assert.assertNotNull(mcasValidatinExecutor, "Unable to configure MCAS service");
     }
 
     /**
@@ -965,6 +970,19 @@ public class IntegrationBase {
     public String getMarkMessageReadEndpoint(Long threadId, Long messageId, Long userId) {
         return getMessageEndpoint(threadId, messageId) + "/participants/" + userId + "/readreciepts";
     }
+
+    public String getMcasEndpoint() {
+        return BASE_API_ENDPOINT + MCAS_ENDPOINT;
+    }
+
+    public String getMcasEndpoint(Long schoolId, Long studentId) {
+        return getSchoolEndpoint(schoolId) + STUDENT_ENDPOINT + pathify(studentId) + MCAS_ENDPOINT;
+    }
+
+    public String getMcasEndpoint(Long schoolId, Long studentId, Long mcasId) {
+        return getMcasEndpoint(schoolId, studentId) + pathify(mcasId);
+    }
+
 
     protected void invalidateCookie() { mockMvc.setjSessionId(null); }
     

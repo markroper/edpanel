@@ -35,6 +35,15 @@ public class OrchestrationManager {
     private NotificationManager notificationManager;
     private MessageManager messageManager;
     private DashboardManager dashboardManager;
+    private MaMcasManager mcasManager;
+
+    public MaMcasManager getMcasManager() {
+        return mcasManager;
+    }
+
+    public void setMcasManager(MaMcasManager mcasManager) {
+        this.mcasManager = mcasManager;
+    }
 
     public DashboardManager getDashboardManager() {
         return dashboardManager;

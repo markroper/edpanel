@@ -349,4 +349,26 @@ public class HibernateConsts {
     public static final String DASHBOARD_REPORT_COLUMN_DEFS = "dashboard_report_column_defs";
     public static final String DASHBOARD_REPORT_POSITION = "dashboard_report_position";
     public static final String DASHBOARD_REPORT_CLICK_REPORT_FK = "click_report_fk";
+
+    public static final String MA_MCAS_TABLE = "ma_mcas_results";
+    public static final String MA_MCAS_ID = "ma_mcas_results_id";
+    public static final String MA_MCAS_STUD_GRADE_LEVEL = "student_grade_level";
+    public static final String MA_MCAS_ADMIN_YEAR = "admin_year";
+    public static final String MA_MCAS_EXAM_GRADE_LEVEL = "exam_grade_level";
+    public static final String MA_MCAS_TOPIC_SCORE = "english_topic_score";
+    public static final String MA_MCAS_COMPOSITION_SCORE = "english_composition_score";
+    public static final String MA_MCAS_MATH_FK = "math_fk";
+    public static final String MA_MCAS_ENGLISH_FK = "english_fk";
+    public static final String MA_MCAS_SCIENCE_FK = "science_fk";
+
+    public static final String MA_MCAS_TOPIC_TABLE = "ma_mcas_topic_scores";
+    public static final String MA_MCAS_TOPIC_ID = "ma_mcas_topic_scores_id";
+    public static final String ALT_TEST = "alt_test";
+    public static final String COMPLEXITY = "complexity";
+    public static final String EXAM_STATUS = "exam_status";
+    public static final String RAW_SCORE = "raw_score";
+    public static final String SCALED_SCORE = "scaled_score";
+    public static final String PERF = "perf";
+    public static final String PERF_2 = "perf_2";
+    public static final String QUARTILE = "quartile";
 }
