@@ -25,7 +25,7 @@ public class MaMcasJdbc implements MaMcasPersistence {
         String[] params = new String[]{"schoolId", "studentId" };
         Object[] paramValues = new Object[]{ schoolId, studentId };
         List<McasResult> objects = (List<McasResult>) hibernateTemplate.findByNamedParam(
-               BASE_HQL + " where m.studentId = :studentId " +
+               BASE_HQL + " where m.student.id = :studentId " +
                         "and m.schoolId = :schoolId",
                 params,
                 paramValues);

@@ -2,6 +2,8 @@ package com.scholarscore.models.state.ma;
 
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.user.Student;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -96,6 +98,7 @@ public class McasResult {
     }
 
     @OneToOne(fetch= FetchType.EAGER)
+    @Cascade(CascadeType.ALL)
     @JoinColumn(name = HibernateConsts.MA_MCAS_ENGLISH_FK)
     @Fetch(FetchMode.JOIN)
     public McasTopicScore getEnglishScore() {
@@ -134,6 +137,7 @@ public class McasResult {
     }
 
     @OneToOne(fetch= FetchType.EAGER)
+    @Cascade(CascadeType.ALL)
     @JoinColumn(name = HibernateConsts.MA_MCAS_MATH_FK)
     @Fetch(FetchMode.JOIN)
     public McasTopicScore getMathScore() {
@@ -145,6 +149,7 @@ public class McasResult {
     }
 
     @OneToOne(fetch= FetchType.EAGER)
+    @Cascade(CascadeType.ALL)
     @JoinColumn(name = HibernateConsts.MA_MCAS_SCIENCE_FK)
     @Fetch(FetchMode.JOIN)
     public McasTopicScore getScienceScore() {

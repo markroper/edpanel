@@ -2,6 +2,8 @@ package com.scholarscore.api.manager;
 
 import com.scholarscore.api.persistence.MaMcasPersistence;
 import com.scholarscore.api.util.ServiceResponse;
+import com.scholarscore.api.util.StatusCodeType;
+import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.state.ma.McasResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +38,12 @@ public class MaMcasManagerImpl implements MaMcasManager {
 
     @Override
     public ServiceResponse<McasResult> getMcasResult(Long schoolId, Long studentId, Long mcasId) {
-        return new ServiceResponse<>(mcasPersistence.select(mcasId));
+        McasResult result = mcasPersistence.select(mcasId);
+        if(null == result) {
+            return new ServiceResponse<>(
+                    StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{"MCAS result"}));
+        }
+        return new ServiceResponse<>(result);
     }
 
     @Override
