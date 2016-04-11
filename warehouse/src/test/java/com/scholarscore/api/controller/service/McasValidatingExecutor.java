@@ -153,17 +153,7 @@ public class McasValidatingExecutor {
         Assert.assertEquals(createdMcas, expectedMcas, "Unexpected term created for case: " + msg);
         return createdMcas;
     }
-    /**
-     * Given a submitted section assignment object and a section assignment instance returned by the API after creation,
-     * this method returns a new Assignment instance that represents the expected state of the submitted
-     * Assignment after creation.  The reason that there are differences in the submitted and expected
-     * instances is that there may be system assigned values not in the initially submitted object, for
-     * example, the id property.
-     *
-     * @param submitted
-     * @param created
-     * @return
-     */
+
     protected McasResult generateExpectationMcas(McasResult submitted, McasResult created, HttpMethod method) {
         McasResult returnAssignment = submitted;
         returnAssignment.setId(created.getId());
