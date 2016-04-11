@@ -49,7 +49,7 @@ public interface IAPIClient {
     List<Long> createBehaviors(List<Behavior> behavior) throws HttpClientException;
     Behavior updateBehavior(Long studentId, Long behaviorId, Behavior behavior) throws HttpClientException;
     void deleteBehaviorBySourceId(Long studentId, String behaviorId) throws HttpClientException;
-    void deleteBehavior(Long studentId, String edpanelId) throws HttpClientException;
+    void deleteBehavior(Long studentId, Long edpanelId) throws HttpClientException;
 
     Collection<BehaviorScore> getBehaviorScores(Long studentId, LocalDate cutoffDate) throws HttpClientException;
     List<Long> createBehaviorScores(List<BehaviorScore> scores) throws HttpClientException;
