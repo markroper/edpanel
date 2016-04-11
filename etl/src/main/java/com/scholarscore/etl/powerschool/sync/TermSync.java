@@ -13,7 +13,6 @@ import com.scholarscore.models.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by markroper on 10/26/15.
  */
-public class TermSync implements ISync<Term> {
+public class TermSync extends SyncBase<Term> implements ISync<Term> {
     private final static Logger LOGGER = LoggerFactory.getLogger(TermSync.class);
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
@@ -43,111 +42,6 @@ public class TermSync implements ISync<Term> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Term> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        ConcurrentHashMap<Long, Term> source = null;
-        try {
-            source = resolveAllFromSourceSystem();
-        } catch (HttpClientException e) {
-            try {
-                source = resolveAllFromSourceSystem();
-            } catch (HttpClientException ex) {
-                LOGGER.error("Unable to resolve terms from PowerSchool for school: " + school.getName() +
-                        " with EdPanel ID " + school.getId());
-                results.termSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-                return new ConcurrentHashMap<>();
-            }
-        }
-        ConcurrentHashMap<Long, Term> edpanel = null;
-        try {
-            edpanel = resolveFromEdPanel();
-        } catch (HttpClientException e) {
-            try {
-                edpanel = resolveFromEdPanel();
-            } catch (HttpClientException ex) {
-                LOGGER.error("Unable to resolve terms from EdPanel for school: " + school.getName() +
-                        " with EdPanel ID " + school.getId());
-                results.termEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-                return new ConcurrentHashMap<>();
-            }
-        }
-        //Find & perform the inserts and updates, if any
-        for (Map.Entry<Long, Term> entry : source.entrySet()) {
-            Term sourceTerm = entry.getValue();
-            Term edPanelTerm = edpanel.get(entry.getKey());
-            if (null == edPanelTerm) {
-                if (!this.edpanelSchoolYears.containsKey(new Long(sourceTerm.getSchoolYear().getName()))) {
-                    //create school year
-                    SchoolYear createdYear = null;
-                    try {
-                        createdYear = edPanel.createSchoolYear(school.getId(), sourceTerm.getSchoolYear());
-                    } catch (HttpClientException e) {
-                        results.termCreateFailed(entry.getKey());
-                        continue;
-                    }
-                    sourceTerm.getSchoolYear().setId(createdYear.getId());
-                }
-                Term created = null;
-                try {
-                    created = edPanel.createTerm(school.getId(), sourceTerm.getSchoolYear().getId(), sourceTerm);
-                } catch (HttpClientException e) {
-                    results.termCreateFailed(entry.getKey());
-                    continue;
-                }
-                sourceTerm.setId(created.getId());
-                results.termCreated(entry.getKey(), sourceTerm.getId());
-            } else {
-                sourceTerm.setId(edPanelTerm.getId());
-                sourceTerm.getSchoolYear().setId(edPanelTerm.getSchoolYear().getId());
-                //Don't compare terms, which won't be set on the source school year
-                edPanelTerm.getSchoolYear().setTerms(new ArrayList<>());
-                if (!edPanelTerm.equals(sourceTerm)) {
-                    //Create/update school year if needed
-                    if (!edPanelTerm.getSchoolYear().equals(sourceTerm.getSchoolYear())) {
-                        if (!this.edpanelSchoolYears.containsKey(new Long(sourceTerm.getSchoolYear().getName()))) {
-                            //create school year
-                            SchoolYear createdYear = null;
-                            try {
-                                createdYear = edPanel.createSchoolYear(school.getId(), sourceTerm.getSchoolYear());
-                            } catch (HttpClientException e) {
-                                results.termUpdateFailed(entry.getKey(), sourceTerm.getId());
-                                continue;
-                            }
-                            sourceTerm.getSchoolYear().setId(createdYear.getId());
-                        } else {
-                            sourceTerm.setSchoolYear(
-                                    this.edpanelSchoolYears.get(
-                                            new Long(sourceTerm.getSchoolYear().getName())));
-                        }
-                    }
-                    try {
-                        edPanel.updateTerm(school.getId(), sourceTerm.getSchoolYear().getId(), sourceTerm);
-                    } catch (IOException e) {
-                        results.termUpdateFailed(entry.getKey(), sourceTerm.getId());
-                        continue;
-                    }
-                    results.termUpdated(entry.getKey(), sourceTerm.getId());
-                }
-            }
-        }
-
-        //Delete anything IN EdPanel that is NOT in source system
-        for (Map.Entry<Long, Term> entry : edpanel.entrySet()) {
-            if (!source.containsKey(entry.getKey())) {
-                try {
-                    edPanel.deleteTerm(
-                            school.getId(),
-                            entry.getValue().getSchoolYear().getId(),
-                            entry.getValue());
-                } catch (HttpClientException e) {
-                    results.termDeleteFailed(entry.getKey(), entry.getValue().getId());
-                    continue;
-                }
-                results.termDeleted(entry.getKey(), entry.getValue().getId());
-            }
-        }
-        return source;
-    }
-
     protected ConcurrentHashMap<Long, Term> resolveAllFromSourceSystem() throws HttpClientException {
         //Get all the terms from PowerSchool for the current School
         String sourceSystemIdString = school.getSourceSystemId();
@@ -208,6 +102,14 @@ public class TermSync implements ISync<Term> {
         return sourceTerms;
     }
 
+    @Override
+    protected void handleSourceGetFailure(PowerSchoolSyncResult results) {
+        LOGGER.error("Unable to resolve terms from PowerSchool for school: " + school.getName() +
+                " with EdPanel ID " + school.getId());
+        results.termSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+    }
+
+    @Override
     protected ConcurrentHashMap<Long, Term> resolveFromEdPanel() throws HttpClientException {
         SchoolYear[] years = edPanel.getSchoolYears(school.getId());
         ConcurrentHashMap<Long, Term> termMap = new ConcurrentHashMap<>();
@@ -224,5 +126,85 @@ public class TermSync implements ISync<Term> {
             }
         }
         return termMap;
+    }
+
+    @Override
+    protected void handleEdPanelGetFailure(PowerSchoolSyncResult results) {
+        LOGGER.error("Unable to resolve terms from EdPanel for school: " + school.getName() +
+                " with EdPanel ID " + school.getId());
+        results.termEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+    }
+
+    @Override
+    protected void createEdPanelRecord(Term entityToSave, PowerSchoolSyncResult results) {
+        Long ssid = Long.parseLong(entityToSave.getSourceSystemId());
+        if (!this.edpanelSchoolYears.containsKey(new Long(entityToSave.getSchoolYear().getName()))) {
+            SchoolYear createdYear = null;
+            try {
+                createdYear = edPanel.createSchoolYear(school.getId(), entityToSave.getSchoolYear());
+            } catch (HttpClientException e) {
+                results.termCreateFailed(ssid);
+                return;
+            }
+            // TODO: keep track of created school year?
+            entityToSave.getSchoolYear().setId(createdYear.getId());
+        }
+        Term created = null;
+        try {
+            created = edPanel.createTerm(school.getId(), entityToSave.getSchoolYear().getId(), entityToSave);
+            entityToSave.setId(created.getId());
+            results.termCreated(ssid, created.getId());
+        } catch (HttpClientException e) {
+            results.termCreateFailed(ssid);
+        }
+    }
+
+    @Override
+    protected void updateEdPanelRecord(Term sourceSystemEntity, Term edPanelEntity, PowerSchoolSyncResult results) {
+        Long ssid = Long.parseLong(sourceSystemEntity.getSourceSystemId());
+        sourceSystemEntity.setId(edPanelEntity.getId());
+        sourceSystemEntity.getSchoolYear().setId(edPanelEntity.getSchoolYear().getId());
+        //Don't compare terms, which won't be set on the source school year
+        edPanelEntity.getSchoolYear().setTerms(new ArrayList<>());
+        if (!edPanelEntity.equals(sourceSystemEntity)) {
+            //Create/update school year if needed
+            if (!edPanelEntity.getSchoolYear().equals(sourceSystemEntity.getSchoolYear())) {
+                if (!this.edpanelSchoolYears.containsKey(new Long(sourceSystemEntity.getSchoolYear().getName()))) {
+                    //create school year
+                    SchoolYear createdYear = null;
+                    try {
+                        createdYear = edPanel.createSchoolYear(school.getId(), sourceSystemEntity.getSchoolYear());
+                    } catch (HttpClientException e) {
+                        results.termUpdateFailed(ssid, sourceSystemEntity.getId());
+                        return;
+                    }
+                    sourceSystemEntity.getSchoolYear().setId(createdYear.getId());
+                } else {
+                    sourceSystemEntity.setSchoolYear(
+                            this.edpanelSchoolYears.get(
+                                    new Long(sourceSystemEntity.getSchoolYear().getName())));
+                }
+            }
+            try {
+                edPanel.updateTerm(school.getId(), sourceSystemEntity.getSchoolYear().getId(), sourceSystemEntity);
+                results.termUpdated(ssid, sourceSystemEntity.getId());
+            } catch (HttpClientException e) {
+                results.termUpdateFailed(ssid, sourceSystemEntity.getId());
+            }
+        }
+    }
+
+    @Override
+    protected void deleteEdPanelRecord(Term entityToDelete, PowerSchoolSyncResult results) {
+        Long ssid = Long.parseLong(entityToDelete.getSourceSystemId());
+        try {
+            edPanel.deleteTerm(
+                    school.getId(),
+                    entityToDelete.getSchoolYear().getId(),
+                    entityToDelete);
+            results.termDeleted(ssid, entityToDelete.getId());
+        } catch (HttpClientException e) {
+            results.termDeleteFailed(ssid, entityToDelete.getId());
+        }
     }
 }

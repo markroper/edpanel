@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by cwallace on 12/29/15.
  */
-public class PeriodSync implements ISync<PsPeriod> {
+public class PeriodSync extends ReadOnlySyncBase<PsPeriod> implements ISync<PsPeriod> {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(PeriodSync.class);
     protected IAPIClient edPanel;
@@ -33,24 +33,6 @@ public class PeriodSync implements ISync<PsPeriod> {
         this.school = s;
     }
     @Override
-    public ConcurrentHashMap<Long, PsPeriod> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        ConcurrentHashMap<Long, PsPeriod> source = null;
-        try {
-            source = resolveAllFromSourceSystem();
-        } catch (HttpClientException e) {
-            try {
-                source = resolveAllFromSourceSystem();
-            } catch (HttpClientException ex) {
-                LOGGER.error("Unable to extract periods from PowerSchool for school: " + school.getName() +
-                        " with EdPanel ID: " + school.getId());
-                results.periodSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-                return new ConcurrentHashMap<>();
-            }
-        }
-        return source;
-    }
-
-
     protected ConcurrentHashMap<Long, PsPeriod> resolveAllFromSourceSystem() throws HttpClientException {
         ConcurrentHashMap<Long, PsPeriod> result = new ConcurrentHashMap<>();
         PsResponse<PsPeriodWrapper> response = powerSchool.getPeriodsBySchool(school.getNumber());
@@ -58,5 +40,12 @@ public class PeriodSync implements ISync<PsPeriod> {
             result.put(period.tables.period.id , period.tables.period);
         }
         return result;
+    }
+
+    @Override
+    protected void handleSourceGetFailure(PowerSchoolSyncResult results) {
+        LOGGER.error("Unable to extract periods from PowerSchool for school: " + school.getName() +
+                " with EdPanel ID: " + school.getId());
+        results.periodSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
     }
 }
