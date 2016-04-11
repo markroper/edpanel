@@ -55,6 +55,25 @@ public class BehaviorController extends BaseController {
     }
 
     @ApiOperation(
+            value = "Update an existing behavior score",
+            notes = "Updates an existing behavior score's properties. Will not overwrite existing values with null.",
+            response = EntityId.class)
+    @RequestMapping(
+            value = STUDENT_BEHAVIOR_SCORE + "/{scoreDate}",
+            method = RequestMethod.PATCH,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity updateBehaviorScore(
+            @ApiParam(name = "studentId", required = true, value = "Student ID")
+            @PathVariable(value="studentId") Long studentId,
+            @ApiParam(name = "scoreDate", required = true, value = "Date")
+            @PathVariable(value="scoreDate")
+            @DateTimeFormat(pattern = EdPanelDateUtil.EDPANEL_DATE_FORMAT) LocalDate scoreDate,
+            @RequestBody @Valid BehaviorScore score) {
+        return respond(pm.getBehaviorManager().updateBehaviorScore(studentId, scoreDate, score));
+    }
+
+    @ApiOperation(
             value = "Create multiple behavior scores",
             notes = "Creates, assigns IDs to, persists behavior scores",
             response = List.class)
