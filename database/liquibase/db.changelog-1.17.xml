@@ -136,5 +136,13 @@
                                  onUpdate="CASCADE"
                                  referencedColumnNames="ma_mcas_topic_scores_id"
                                  referencedTableName="ma_mcas_topic_scores"/>
+
+        <createIndex indexName="ma_mcas_results$year$student"
+                     tableName="ma_mcas_results"
+                     unique="true">
+            <column name="admin_year"/>
+            <column name="student_fk"/>
+        </createIndex>
+
     </changeSet>
 </databaseChangeLog>
