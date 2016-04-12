@@ -1,4 +1,4 @@
-package com.scholarscore.utils;
+package com.scholarscore.etl.state.ma;
 
 import com.scholarscore.models.state.ma.McasResult;
 import com.scholarscore.util.McasParser;
