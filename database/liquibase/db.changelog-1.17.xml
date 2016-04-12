@@ -75,11 +75,11 @@
                     remarks="true if the student took an alternative science exam">
             </column>
             <column name="complexity"
-                    type="varchar(16)"
+                    type="varchar(32)"
                     remarks="If the student took an alt science exam, indicates complexity level">
             </column>
             <column name="exam_status"
-                    type="varchar(16)"
+                    type="varchar(32)"
                     remarks="complete, not complete, and so on">
             </column>
             <column name="raw_score"
