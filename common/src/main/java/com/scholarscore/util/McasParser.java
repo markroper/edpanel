@@ -1,4 +1,4 @@
-package com.scholarscore.etl.state.ma;
+package com.scholarscore.util;
 
 import com.scholarscore.models.state.ma.McasComplexity;
 import com.scholarscore.models.state.ma.McasPerfLevel;
