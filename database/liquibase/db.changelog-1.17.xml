@@ -24,7 +24,7 @@
             <column name="student_fk"
                     type="bigint unsigned"
                     remarks="Annualized score, if any">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="exam_grade_level"
                     type="bigint unsigned"
@@ -57,7 +57,10 @@
                     remarks="FK to science results">
                 <constraints nullable="true"/>
             </column>
-
+            <column name="student_state_id"
+                    type="varchar(32)"
+                    remarks="state assigned student ID">
+            </column>
         </createTable>
 
         <createTable tableName="ma_mcas_topic_scores">
@@ -88,11 +91,11 @@
                     remarks="science scaled score">
             </column>
             <column name="perf"
-                    type="varchar(16)"
+                    type="varchar(32)"
                     remarks="performance level">
             </column>
             <column name="perf_2"
-                    type="varchar(16)"
+                    type="varchar(32)"
                     remarks="performance level second enum">
             </column>
             <column name="quartile"
@@ -104,7 +107,7 @@
         <addForeignKeyConstraint baseTableName="ma_mcas_results"
                                  baseColumnNames="student_fk"
                                  constraintName="ma_mcas_results$student_fk"
-                                 onDelete="CASCADE"
+                                 onDelete="SET NULL"
                                  onUpdate="CASCADE"
                                  referencedColumnNames="student_user_fk"
                                  referencedTableName="student"/>
@@ -141,7 +144,7 @@
                      tableName="ma_mcas_results"
                      unique="true">
             <column name="admin_year"/>
-            <column name="student_fk"/>
+            <column name="student_state_id"/>
         </createIndex>
 
     </changeSet>
