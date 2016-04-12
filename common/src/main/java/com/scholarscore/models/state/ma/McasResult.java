@@ -24,6 +24,7 @@ import java.util.Objects;
 @Entity(name = HibernateConsts.MA_MCAS_TABLE)
 public class McasResult {
     protected Long id;
+    protected String sasid;
     protected String schoolName;
     protected Long schoolId;
     protected Long adminYear;
@@ -160,9 +161,18 @@ public class McasResult {
         this.scienceScore = scienceScore;
     }
 
+    @Column(name = HibernateConsts.STUDENT_STATE_ID)
+    public String getSasid() {
+        return sasid;
+    }
+
+    public void setSasid(String sasid) {
+        this.sasid = sasid;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, student, examGradeLevel, studentGradeLevel, englishScore, adminYear,
+        return Objects.hash(id, student, examGradeLevel, studentGradeLevel, englishScore, adminYear, sasid,
                 englishTopicScore, englishCompositionScore, mathScore, scienceScore, schoolName, schoolId);
     }
 
@@ -186,6 +196,7 @@ public class McasResult {
                 && Objects.equals(this.schoolName, other.schoolName)
                 && Objects.equals(this.schoolId, other.schoolId)
                 && Objects.equals(this.adminYear, other.adminYear)
+                && Objects.equals(this.sasid, other.sasid)
                 && Objects.equals(this.scienceScore, other.scienceScore);
     }
 }
