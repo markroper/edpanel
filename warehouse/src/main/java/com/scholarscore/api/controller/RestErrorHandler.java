@@ -5,6 +5,8 @@ import com.scholarscore.api.util.StatusCode;
 import com.scholarscore.api.util.StatusCodeType;
 import com.scholarscore.api.util.StatusCodes;
 import org.hibernate.exception.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -27,10 +29,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class RestErrorHandler extends BaseController {
 
+    private final static Logger LOGGER = LoggerFactory.getLogger(RestErrorHandler.class);
+    
     @Autowired
-    public RestErrorHandler(MessageSource messageSource) {
-        
-    }
+    public RestErrorHandler(MessageSource messageSource) { }
     
     @ExceptionHandler(MethodArgumentNotValidException.class) 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -69,6 +71,7 @@ public class RestErrorHandler extends BaseController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ResponseEntity<StatusCode> processGeneralException(Exception ex) {
+        LOGGER.warn("UNHANDLED EXCEPTION!", ex);
         StatusCode returnCode = StatusCodes.getStatusCode(StatusCodeType.UNKNOWN_INTERNAL_SERVER_ERROR);
         returnCode.setMessage(ex.getMessage());
         return respond(returnCode);

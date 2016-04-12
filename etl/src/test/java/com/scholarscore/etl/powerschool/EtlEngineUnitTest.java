@@ -30,6 +30,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
@@ -105,7 +106,8 @@ public class EtlEngineUnitTest extends AbstractTestNGSpringContextTests {
         verify(edPanel, atLeastOnce()).createAdministrator(any(Staff.class));
         verify(edPanel, atLeastOnce()).getAttendance(anyLong(), anyLong());
         
-        verify(edPanel, atLeastOnce()).createSchool(any(School.class));
+        // schools aren't bulk created, so we can expect this endpoint to be called the same # of times as 'schools created' reported above
+        verify(edPanel, times(EXPECTED_SCHOOLS_CREATED)).createSchool(any(School.class));
         verify(edPanel, atLeastOnce()).createSchoolYear(anyLong(), any(SchoolYear.class));
         verify(edPanel, atLeastOnce()).createTerm(anyLong(), anyLong(), any(Term.class));
         verify(edPanel, atLeastOnce()).createCourse(anyLong(), any(Course.class));
