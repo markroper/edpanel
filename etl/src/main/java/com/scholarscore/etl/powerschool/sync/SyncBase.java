@@ -1,12 +1,12 @@
 package com.scholarscore.etl.powerschool.sync;
 
 import com.scholarscore.client.HttpClientException;
-import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,9 +17,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class SyncBase<T> extends ReadOnlySyncBase<T> {
     private final static Logger LOGGER = LoggerFactory.getLogger(CourseSync.class);
-    
+
+    private List<T> objectsToBulkCreate;
+
     @Override
     public ConcurrentHashMap<Long, T> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
+        objectsToBulkCreate = new ArrayList<>();
         ConcurrentHashMap<Long, T> sourceRecords = super.syncCreateUpdateDelete(results);
         ConcurrentHashMap<Long, T> edpanelRecords = null;
         try {
@@ -46,6 +49,8 @@ public abstract class SyncBase<T> extends ReadOnlySyncBase<T> {
             }
         }
 
+        createBulkEdPanelRecords(objectsToBulkCreate);
+        
         //Delete anything IN EdPanel that is NOT in source system
         for (Map.Entry<Long, T> entry : edpanelRecords.entrySet()) {
             if (!sourceRecords.containsKey(entry.getKey())) {
@@ -55,7 +60,14 @@ public abstract class SyncBase<T> extends ReadOnlySyncBase<T> {
         return sourceRecords;
     }
 
-
+    protected void enqueueForBulkCreate(T entityToCreate) { objectsToBulkCreate.add(entityToCreate); }
+    
+    protected void createBulkEdPanelRecords(List<T> entitiesToCreate) { 
+        if (objectsToBulkCreate != null && objectsToBulkCreate.size() > 0) {
+            throw new RuntimeException("Records added to bulk collection but createBulkEdPanelRecords not overridden!");
+        }
+    }
+    
     protected abstract ConcurrentHashMap<Long, T> resolveFromEdPanel() throws HttpClientException;
 
     protected abstract void handleEdPanelGetFailure(PowerSchoolSyncResult results);
