@@ -1,4 +1,4 @@
-package com.scholarscore.etl.state.ma;
+package com.scholarscore.util;
 
 import com.scholarscore.models.state.ma.McasComplexity;
 import com.scholarscore.models.state.ma.McasPerfLevel;
@@ -249,6 +249,7 @@ public class McasParser {
                 result.setStudentGradeLevel(parseLongOrReturnNull(rec.get(STUDENT_GRADE_LEVEL)));
                 result.setEnglishTopicScore(parseDoubleOrReturnNull(rec.get(ELA_TOPIC_SCORE)));
                 result.setEnglishCompositionScore(parseDoubleOrReturnNull(rec.get(ELA_COMPOSITION_SCORE)));
+                result.setSasid(rec.get(SASID));
                 //ENGLISH - ADD GRADES
                 McasTopicScore ela = new McasTopicScore();
                 ela.setAlternateExam("1".equals(rec.get(ELA_ALT)));

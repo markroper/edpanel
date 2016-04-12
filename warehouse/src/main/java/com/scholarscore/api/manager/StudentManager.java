@@ -31,6 +31,8 @@ public interface StudentManager {
 
     public ServiceResponse<Student> getStudentBySourceSystemId(Long ssid);
 
+    public ServiceResponse<Student> getStudentByStateId(String sasid);
+
     // Creates a student and populates the Id field (if ID is specified it will be ignored)
     public ServiceResponse<Long> createStudent(Student student);
 
