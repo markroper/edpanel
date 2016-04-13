@@ -9,7 +9,7 @@ import com.scholarscore.etl.powerschool.api.model.student.PsRankAndGpaWrapper;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.sync.SyncBase;
+import com.scholarscore.etl.powerschool.sync.LongIndexSyncBase;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.user.Student;
@@ -21,7 +21,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -29,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * Created by mattg on 11/24/15.
  */
-public class GpaSync extends SyncBase<Gpa> implements ISync<Gpa> {
+public class GpaSync extends LongIndexSyncBase<Gpa> implements ISync<Gpa> {
     private final static Logger LOGGER = LoggerFactory.getLogger(GpaSync.class);
 
     private final LocalDate syncCutoff;

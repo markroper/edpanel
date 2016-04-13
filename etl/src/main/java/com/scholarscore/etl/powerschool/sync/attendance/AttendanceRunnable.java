@@ -13,7 +13,7 @@ import com.scholarscore.etl.powerschool.api.model.cycles.PsCycle;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.sync.SyncBase;
+import com.scholarscore.etl.powerschool.sync.LongIndexSyncBase;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.attendance.Attendance;
@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by markroper on 11/1/15.
  */
-public class AttendanceRunnable extends SyncBase<Attendance> implements Runnable, ISync<Attendance> {
+public class AttendanceRunnable extends LongIndexSyncBase<Attendance> implements Runnable, ISync<Attendance> {
     private final static Logger LOGGER = LoggerFactory.getLogger(AttendanceRunnable.class);
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
@@ -284,7 +284,6 @@ public class AttendanceRunnable extends SyncBase<Attendance> implements Runnable
                     }
                 }
             }
-
         }
         return a;
     }

@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by markroper on 10/26/15.
  */
-public class TermSync extends SyncBase<Term> implements ISync<Term> {
+public class TermSync extends LongIndexSyncBase<Term> implements ISync<Term> {
     private final static Logger LOGGER = LoggerFactory.getLogger(TermSync.class);
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
