@@ -55,7 +55,7 @@ public class SchoolManagerImpl implements SchoolManager {
                 ServiceResponse<Collection<SchoolYear>> sr =
                         pm.getSchoolYearManager().getAllSchoolYears(s.getId());
                 if(null != sr.getValue() && !sr.getValue().isEmpty()) {
-                    s.setYears(new ArrayList<SchoolYear>(sr.getValue()));
+                    s.setYears(new ArrayList<>(sr.getValue()));
                 }
             }
         }
@@ -75,14 +75,14 @@ public class SchoolManagerImpl implements SchoolManager {
     public ServiceResponse<School> getSchool(long schoolId) {
         StatusCode code = schoolExists(schoolId);
         if(!code.isOK()) {
-            return new ServiceResponse<School>(code);
+            return new ServiceResponse<>(code);
         }
         School school = schoolPersistence.selectSchool(schoolId);
         ServiceResponse<Collection<SchoolYear>> years = pm.getSchoolYearManager().getAllSchoolYears(schoolId);
         if(null != years.getValue() && !years.getValue().isEmpty()) {
-            school.setYears(new ArrayList<SchoolYear>(years.getValue()));
+            school.setYears(new ArrayList<>(years.getValue()));
         }
-        return new ServiceResponse<School>(school);
+        return new ServiceResponse<>(school);
     }
 
     @Override
@@ -93,14 +93,14 @@ public class SchoolManagerImpl implements SchoolManager {
                 pm.getSchoolYearManager().createSchoolYear(schoolId, year);
             }
         }
-        return new ServiceResponse<Long>(schoolId);
+        return new ServiceResponse<>(schoolId);
     }
 
     @Override
     public ServiceResponse<Long> replaceSchool(long schoolId, School school) {
         StatusCode code = schoolExists(schoolId);
         if(!code.isOK()) {
-            return new ServiceResponse<Long>(code);
+            return new ServiceResponse<>(code);
         }
         //Resolve the set of previously existing terms
         Collection<SchoolYear> originalYears = schoolYearPersistence.selectAll(schoolId);
@@ -126,7 +126,7 @@ public class SchoolManagerImpl implements SchoolManager {
             pm.getSchoolYearManager().deleteSchoolYear(schoolId, id);
         }
 
-        return new ServiceResponse<Long>(
+        return new ServiceResponse<>(
                 schoolPersistence.replaceSchool(schoolId, school));
     }
 
@@ -134,30 +134,28 @@ public class SchoolManagerImpl implements SchoolManager {
     public ServiceResponse<Long> updateSchool(long schoolId, School partialSchool) {
         ServiceResponse<School> sr = getSchool(schoolId);
         if(null == sr.getValue()) {
-            return new ServiceResponse<Long>(sr.getCode());
+            return new ServiceResponse<>(sr.getCode());
         }
         partialSchool.mergePropertiesIfNull(schoolPersistence.selectSchool(schoolId));
         replaceSchool(schoolId, partialSchool);
-        return new ServiceResponse<Long>(schoolId);
+        return new ServiceResponse<>(schoolId);
     }
 
     @Override
     public ServiceResponse<Long> deleteSchool(long schoolId) {
         StatusCode code = schoolExists(schoolId);
         if(!code.isOK()) {
-            return new ServiceResponse<Long>(code);
+            return new ServiceResponse<>(code);
         }
         //Only need to delete the parent row, FK cascades deletes
         schoolPersistence.delete(schoolId);
-        return new ServiceResponse<Long>((Long) null);
+        return new ServiceResponse<>((Long) null);
     }
 
     @Override
     public ServiceResponse<Long> associateAdvisors(long schoolId) {
-        Comparator<SchoolYear> schoolYearComparator = new Comparator<SchoolYear>() {
-            public int compare(SchoolYear c1, SchoolYear c2) {
-                return c2.getEndDate().compareTo(c1.getEndDate()); // use your logic
-            }
+        Comparator<SchoolYear> schoolYearComparator = (schoolYear1, schoolYear2) -> {
+            return schoolYear2.getEndDate().compareTo(schoolYear1.getEndDate()); // use your logic
         };
 
         try {
@@ -184,9 +182,9 @@ public class SchoolManagerImpl implements SchoolManager {
                     }
                 }
             }
-            return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.OK));
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.OK));
         } catch (Exception e) {
-            return new ServiceResponse<Long>(StatusCodes.getStatusCode(StatusCodeType.UNKNOWN_INTERNAL_SERVER_ERROR));
+            return new ServiceResponse<>(StatusCodes.getStatusCode(StatusCodeType.UNKNOWN_INTERNAL_SERVER_ERROR));
         }
 
 

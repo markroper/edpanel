@@ -56,7 +56,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -333,9 +332,7 @@ public class EtlEngine implements IEtlEngine {
     }
 
     private void syncStudentAdvisors() {
-        Iterator<Map.Entry<Long,School>> it = schools.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<Long,School> pair = it.next();
+        for (Map.Entry<Long, School> pair : schools.entrySet()) {
             try {
                 edPanel.updateAdvisors(pair.getValue().getId());
             } catch (IOException ex) {

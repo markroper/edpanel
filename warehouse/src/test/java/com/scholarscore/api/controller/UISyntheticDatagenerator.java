@@ -30,7 +30,6 @@ import org.testng.annotations.Test;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -133,9 +132,7 @@ public class UISyntheticDatagenerator extends IntegrationBase {
                 studentIdToAttendance.get(s.getId()).add(a);
             }
         }
-        Iterator<Map.Entry<Long, List<Attendance>>> it = studentIdToAttendance.entrySet().iterator();
-        while(it.hasNext()) {
-            Map.Entry<Long, List<Attendance>> entry = it.next();
+        for (Map.Entry<Long, List<Attendance>> entry : studentIdToAttendance.entrySet()) {
             attendanceValidatingExecutor.createAll(
                     school.getId(),
                     entry.getKey(),
