@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,13 +64,12 @@ public class AttendanceSync implements ISync<Attendance> {
     @Override
     public ConcurrentHashMap<Long, Attendance> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<Long, Attendance> response = new ConcurrentHashMap<>();
-        Iterator<Map.Entry<Long, Student>> studentIterator = studentAssociator.getUsers().entrySet().iterator();
         ExecutorService executor = Executors.newFixedThreadPool(EtlEngine.THREAD_POOL_SIZE);
-        while(studentIterator.hasNext()) {
-            Student s = studentIterator.next().getValue();
+        for (Map.Entry<Long, Student> longStudentEntry : studentAssociator.getUsers().entrySet()) {
+            Student s = longStudentEntry.getValue();
 
             Map<Long, Long> dcidToTableId = studentAssociator.getDcidToTableIdMap();
-            if(s.getCurrentSchoolId().equals(school.getId())) {
+            if (s.getCurrentSchoolId().equals(school.getId())) {
                 AttendanceRunnable runnable = new AttendanceRunnable(
                         edPanel, powerSchool, school, s, schoolDays, results, syncCutoff,
                         dailyAbsenceTrigger, schoolCycles, studentClasses, periods, dcidToTableId);

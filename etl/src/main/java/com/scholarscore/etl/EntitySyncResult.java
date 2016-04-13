@@ -16,6 +16,7 @@ public class EntitySyncResult {
     protected ConcurrentHashMap<Long, Long> created = new ConcurrentHashMap<>();
     protected ConcurrentHashMap<Long, Long> updated = new ConcurrentHashMap<>();
     protected ConcurrentHashMap<Long, Long> deleted = new ConcurrentHashMap<>();
+    protected ConcurrentHashMap<Long, Long> untouched = new ConcurrentHashMap<>();
     //Unsuccessful operations
     protected List<Long> failedCreates = Collections.synchronizedList(new ArrayList<>());
     protected ConcurrentHashMap<Long, Long> failedUpdates = new ConcurrentHashMap<>();
@@ -38,6 +39,8 @@ public class EntitySyncResult {
     public void deleted(long ssid, long edPanelId) {
         deleted.put(ssid, edPanelId);
     }
+    
+    public void untouched(long ssid, long edPanelId) { untouched.put(ssid, edPanelId); }
 
     public void failedCreate(long ssid) {
         failedCreates.add(ssid);

@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -99,19 +98,17 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
             return new ConcurrentHashMap<>();
         }
 
-        Iterator<Map.Entry<Long, StudentAssignment>> sourceIterator = source.entrySet().iterator();
         List<StudentAssignment> studentAssignmentsToCreate = new ArrayList<>();
         //Find & perform the inserts and updates, if any
-        while(sourceIterator.hasNext()) {
-            Map.Entry<Long, StudentAssignment> entry = sourceIterator.next();
+        for (Map.Entry<Long, StudentAssignment> entry : source.entrySet()) {
             StudentAssignment sourceStudentAssignment = entry.getValue();
             StudentAssignment edPanelStudentAssignment = ed.get(entry.getKey());
-            if(null == edPanelStudentAssignment){
+            if (null == edPanelStudentAssignment) {
                 studentAssignmentsToCreate.add(sourceStudentAssignment);
             } else {
                 sourceStudentAssignment.setId(edPanelStudentAssignment.getId());
                 sourceStudentAssignment.setStudent(edPanelStudentAssignment.getStudent());
-                if(sourceStudentAssignment.getStudent().getId().equals(edPanelStudentAssignment.getStudent().getId())) {
+                if (sourceStudentAssignment.getStudent().getId().equals(edPanelStudentAssignment.getStudent().getId())) {
                     sourceStudentAssignment.setStudent(edPanelStudentAssignment.getStudent());
                 } else {
                     LOGGER.warn("edPanelStudentAssignment.getStudent().getId() " +
@@ -119,13 +116,13 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
                 }
                 Long sourceStudentAssignmentId = sourceStudentAssignment.getAssignment().getId();
                 Long edPanelStudentAssignmentId = edPanelStudentAssignment.getAssignment().getId();
-                if(sourceStudentAssignmentId.equals(edPanelStudentAssignmentId)) {
+                if (sourceStudentAssignmentId.equals(edPanelStudentAssignmentId)) {
                     sourceStudentAssignment.setAssignment(edPanelStudentAssignment.getAssignment());
                 } else {
-                    LOGGER.warn("edPanelStudentAssignment.getAssignment().getId() (returned:" + edPanelStudentAssignmentId + ") " + 
+                    LOGGER.warn("edPanelStudentAssignment.getAssignment().getId() (returned:" + edPanelStudentAssignmentId + ") " +
                             "is not equal to SourceStudentAssignment.getAssignment().getId() (" + sourceStudentAssignmentId + ") !");
-                }  
-                if(!edPanelStudentAssignment.equals(sourceStudentAssignment)) {
+                }
+                if (!edPanelStudentAssignment.equals(sourceStudentAssignment)) {
                     try {
                         edPanel.replaceStudentAssignment(
                                 school.getId(),
@@ -186,10 +183,8 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
         }
 
         //Delete anything IN EdPanel that is NOT in source system
-        Iterator<Map.Entry<Long, StudentAssignment>> edpanelIterator = ed.entrySet().iterator();
-        while(edpanelIterator.hasNext()) {
-            Map.Entry<Long, StudentAssignment> entry = edpanelIterator.next();
-            if(!source.containsKey(entry.getKey())) {
+        for (Map.Entry<Long, StudentAssignment> entry : ed.entrySet()) {
+            if (!source.containsKey(entry.getKey())) {
                 try {
                     edPanel.deleteStudentAssignment(
                             school.getId(),

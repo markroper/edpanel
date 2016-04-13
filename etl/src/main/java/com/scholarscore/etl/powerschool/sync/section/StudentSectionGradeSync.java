@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -105,14 +104,13 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                 return new ConcurrentHashMap<>();
             }
         }
-        Iterator<Map.Entry<Long, StudentSectionGrade>> sourceIterator = source.entrySet().iterator();
+
         ArrayList<StudentSectionGrade> ssgsToCreate = new ArrayList<>();
         //Find & perform the inserts and updates, if any
-        while(sourceIterator.hasNext()) {
-            Map.Entry<Long, StudentSectionGrade> entry = sourceIterator.next();
+        for (Map.Entry<Long, StudentSectionGrade> entry : source.entrySet()) {
             StudentSectionGrade sourceSsg = entry.getValue();
             StudentSectionGrade edPanelSsg = edpanelSsgMap.get(entry.getKey());
-            
+
             if (sourceSsg.getStudent() == null) {
                 LOGGER.warn("sourceSsg.getStudent() is Null! Skipping...");
                 continue;
