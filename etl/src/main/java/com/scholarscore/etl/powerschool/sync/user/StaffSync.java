@@ -6,7 +6,7 @@ import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.sync.LongIndexSyncBase;
+import com.scholarscore.etl.powerschool.sync.SyncBase;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.School;
@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by markroper on 10/26/15.
  */
-public class StaffSync extends LongIndexSyncBase<Staff> implements ISync<Staff> {
+public class StaffSync extends SyncBase<Staff> implements ISync<Staff> {
     private final static Logger LOGGER = LoggerFactory.getLogger(StaffSync.class);
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;

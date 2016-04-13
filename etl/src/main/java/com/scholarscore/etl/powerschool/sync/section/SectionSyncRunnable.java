@@ -15,7 +15,7 @@ import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.sync.LongIndexSyncBase;
+import com.scholarscore.etl.powerschool.sync.SyncBase;
 import com.scholarscore.etl.powerschool.sync.assignment.SectionAssignmentSync;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
@@ -47,7 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * Created by markroper on 10/25/15.
  */
-public class SectionSyncRunnable extends LongIndexSyncBase<Section> implements Runnable, ISync<Section> {
+public class SectionSyncRunnable extends SyncBase<Section> implements Runnable, ISync<Section> {
     private final static Logger LOGGER = LoggerFactory.getLogger(SectionSyncRunnable.class);
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;

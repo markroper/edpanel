@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by markroper on 10/26/15.
  */
-public class SchoolSync extends LongIndexSyncBase<School> implements ISync<School> {
+public class SchoolSync extends SyncBase<School> implements ISync<School> {
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
 

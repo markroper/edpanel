@@ -7,7 +7,7 @@ import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
 import com.scholarscore.etl.powerschool.api.model.student.PsTableStudent;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
-import com.scholarscore.etl.powerschool.sync.LongIndexSyncBase;
+import com.scholarscore.etl.powerschool.sync.SyncBase;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.School;
@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by markroper on 10/26/15.
  */
-public class StudentSync extends LongIndexSyncBase<Student> implements ISync<Student> {
+public class StudentSync extends SyncBase<Student> implements ISync<Student> {
     private final static Logger LOGGER = LoggerFactory.getLogger(StudentSync.class);
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;

@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by markroper on 10/27/15.
  */
-public class CourseSync extends LongIndexSyncBase<Course> implements ISync<Course> {
+public class CourseSync extends SyncBase<Course> implements ISync<Course> {
     private final static Logger LOGGER = LoggerFactory.getLogger(CourseSync.class);
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
