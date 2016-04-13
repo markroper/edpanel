@@ -24,7 +24,7 @@ public abstract class SyncBase<T> extends ReadOnlySyncBase<T> {
     public ConcurrentHashMap<Long, T> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         objectsToBulkCreate = new ArrayList<>();
         ConcurrentHashMap<Long, T> sourceRecords = super.syncCreateUpdateDelete(results);
-        ConcurrentHashMap<Long, T> edpanelRecords = null;
+        ConcurrentHashMap<Long, T> edpanelRecords;
         try {
             edpanelRecords = resolveFromEdPanel();
         } catch (HttpClientException e) {
@@ -47,7 +47,13 @@ public abstract class SyncBase<T> extends ReadOnlySyncBase<T> {
             } else {                        // already exists, must update
                 updateEdPanelRecord(sourceRecord, edPanelRecord, results);
             }
+            
+            // for some entities -- like Section, which usually has many StudentSectionGrades and Attendance for each section -- 
+            // we want a chance to do something (e.g. create a new instance of some Child Sync classes) for every parent record we encounter
+            entitySynced(sourceRecord, results);
         }
+        // ... and sometimes we may want a chance to perform other actions, once after completion
+        allEntitiesSynced(results);
 
         createBulkEdPanelRecords(objectsToBulkCreate);
         
@@ -60,7 +66,15 @@ public abstract class SyncBase<T> extends ReadOnlySyncBase<T> {
         return sourceRecords;
     }
 
-    protected void enqueueForBulkCreate(T entityToCreate) { objectsToBulkCreate.add(entityToCreate); }
+    protected void entitySynced(T sourceRecord, PowerSchoolSyncResult results) {
+        // overriding this method is purely optional, providing a hook for any additional actions that need to be done on EVERY record
+    }
+    
+    protected void allEntitiesSynced(PowerSchoolSyncResult results) {
+        // overriding this method is purely optional, providing a hook for any additional actions that need to be done ONCE, after all records
+    }
+
+    protected final void enqueueForBulkCreate(T entityToCreate) { objectsToBulkCreate.add(entityToCreate); }
     
     protected void createBulkEdPanelRecords(List<T> entitiesToCreate) { 
         if (objectsToBulkCreate != null && objectsToBulkCreate.size() > 0) {
