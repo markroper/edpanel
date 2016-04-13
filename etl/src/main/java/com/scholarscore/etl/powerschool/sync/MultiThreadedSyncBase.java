@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  * Time: 10:02 PM
  */
 public abstract class MultiThreadedSyncBase<T> extends SyncBase<T> {
-    private final static Logger LOGGER = LoggerFactory.getLogger(MultiThreadedSyncBase.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MultiThreadedSyncBase.class);
     
     ExecutorService executor;
     

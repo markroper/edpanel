@@ -8,7 +8,7 @@ import java.util.List;
  * Created by markroper on 4/10/16.
  */
 public interface MaMcasPersistence {
-    List<McasResult> selectMcasForStudent(Long schoolId, Long studentId);
+    List<McasResult> selectMcasForStudent(Long studentId);
     McasResult select(Long mcasId);
     Long insertMcasResult(Long schoolId, Long studentId, McasResult result);
     List<Long> insertMcasResults(List<McasResult> results);
