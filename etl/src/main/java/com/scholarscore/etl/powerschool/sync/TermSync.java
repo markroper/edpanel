@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,21 +65,18 @@ public class TermSync extends SyncBase<Term> implements ISync<Term> {
                 yearToTerms.get(t.getStart_year()).add(edpanelTerm);
             }
             //Then we create the needed school years in EdPanel given the terms from PowerSchool
-            Iterator<Map.Entry<Long, List<Term>>> it =
-                    yearToTerms.entrySet().iterator();
-            while(it.hasNext()) {
-                Map.Entry<Long, List<Term>> entry = it.next();
+            for (Map.Entry<Long, List<Term>> entry : yearToTerms.entrySet()) {
                 SchoolYear schoolYear = new SchoolYear();
                 schoolYear.setSchool(school);
                 schoolYear.setName(entry.getKey().toString());
                 //For each school year, we need to set the start & end dates as the smallest
                 //of the terms' start dates and the largest of the terms' end dates
-                for(Term t: entry.getValue()) {
-                    if(null == schoolYear.getStartDate() ||
+                for (Term t : entry.getValue()) {
+                    if (null == schoolYear.getStartDate() ||
                             schoolYear.getStartDate().compareTo(t.getStartDate()) > 0) {
                         schoolYear.setStartDate(t.getStartDate());
                     }
-                    if(null == schoolYear.getEndDate() ||
+                    if (null == schoolYear.getEndDate() ||
                             schoolYear.getEndDate().compareTo(t.getEndDate()) < 0) {
                         schoolYear.setEndDate(t.getEndDate());
                     }
@@ -88,10 +84,8 @@ public class TermSync extends SyncBase<Term> implements ISync<Term> {
                 this.sourceSchoolYears.put(new Long(schoolYear.getName()), schoolYear);
             }
             //Finally, having created the EdPanel SchoolYears, we can create the terms in EdPanel
-            it = yearToTerms.entrySet().iterator();
-            while(it.hasNext()) {
-                Map.Entry<Long, List<Term>> entry = it.next();
-                for(Term t: entry.getValue()) {
+            for (Map.Entry<Long, List<Term>> entry : yearToTerms.entrySet()) {
+                for (Term t : entry.getValue()) {
                     //Now that the school Year has been created, cache it on the
                     SchoolYear y = sourceSchoolYears.get(entry.getKey());
                     t.setSchoolYear(y);
@@ -142,14 +136,15 @@ public class TermSync extends SyncBase<Term> implements ISync<Term> {
             SchoolYear createdYear = null;
             try {
                 createdYear = edPanel.createSchoolYear(school.getId(), entityToSave.getSchoolYear());
+                // school years don't have SSIDs so use term SSID
+                results.yearCreated(ssid, createdYear.getId());  
             } catch (HttpClientException e) {
-                results.termCreateFailed(ssid);
+                results.yearCreateFailed(ssid);
                 return;
             }
-            // TODO: keep track of created school year?
             entityToSave.getSchoolYear().setId(createdYear.getId());
         }
-        Term created = null;
+        Term created;
         try {
             created = edPanel.createTerm(school.getId(), entityToSave.getSchoolYear().getId(), entityToSave);
             entityToSave.setId(created.getId());
