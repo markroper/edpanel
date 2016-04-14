@@ -44,35 +44,6 @@ public abstract class BaseParser<T> {
                 String header = headerRow[i];
                 header = header.replaceAll("^\"|\"$", "");
                 parseHeaderRow(header, i);
-                /*
-                if("behavior id".equals(header)) {
-                    remoteBehaviorIdIdx = i;
-                } else if("first name".equals(header)) {
-                    firstNameIdx = i;
-                } else if("last name".equals(header)) {
-                    lastNameIdx = i;
-                } else if("staff last name".equals(header)) {
-                    staffLastIdx = i;
-                } else if("staff first name".equals(header)) {
-                    staffFirstIdx = i;
-                } else if("student id".equals(header)) {
-                    remoteStudentIdIdx = i;
-                } else if("external id".equals(header)) {
-                    externalIdIdx = i;
-                } else if("date".equals(header)) {
-                    behaviorDateIdx = i;
-                } else if("behavior".equals(header)) {
-                    behaviorNameIdx = i;
-                } else if("category".equals(header)) {
-                    behaviorCategoryIdx = i;
-                } else if("merit points".equals(header)) {
-                    meritPointsIdx = i;
-                } else if("staff id".equals(header)) {
-                    staffIdx = i;
-                } else if("incident id".equals(header)) {
-                    incidentIdIdx = i;
-                }
-                */
             }
             bis.reset();
         } catch (IOException e) {
