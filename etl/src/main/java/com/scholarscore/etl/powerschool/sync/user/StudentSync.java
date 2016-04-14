@@ -164,6 +164,8 @@ public class StudentSync extends SyncBase<Student> implements ISync<Student> {
                 results.studentUpdateFailed(ssid, sourceSystemEntity.getId());
                 return;
             }
+        } else {
+            results.studentUntouched(ssid, sourceSystemEntity.getId());
         }
         studentAssociator.add(ssid, sourceSystemEntity);
     }
