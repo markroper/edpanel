@@ -41,4 +41,21 @@ public abstract class BaseParser<T> {
             return null;
         }
     }
+
+    public Double parseDoubleOrReturnNull(String input) {
+        try {
+            return Double.parseDouble(input);
+        } catch(NumberFormatException | NullPointerException e) {
+            LOGGER.debug("Unable to parse double from input: " + input);
+        }
+        return null;
+    }
+    public Long parseLongOrReturnNull(String input) {
+        try {
+            return Long.parseLong(input);
+        } catch(NumberFormatException | NullPointerException e) {
+            LOGGER.debug("Unable to parse long from input: " + input);
+        }
+        return null;
+    }
 }
