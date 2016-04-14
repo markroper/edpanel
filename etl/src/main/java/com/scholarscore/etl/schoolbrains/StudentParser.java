@@ -14,6 +14,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 /**
+ * Parses EdPanel student instances from the SchoolBrains student csv extract file.
+ *
  * Created by markroper on 4/14/16.
  */
 public class StudentParser extends BaseParser<Student> {

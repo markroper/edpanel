@@ -11,13 +11,13 @@ import java.util.List;
  * Created by markroper on 4/14/16.
  */
 @Test(groups = {"unit"})
-public class StudentParserTest {
+public class StudentEnrollmentParserTest {
 
     @Test
     public void parserTest() {
-        File input = new File(getClass().getClassLoader().getResource("schoolbrains/EdPanelStudents.csv").getFile());
-        StudentParser parser = new StudentParser(input);
+        File input = new File(getClass().getClassLoader().getResource("schoolbrains/EdPanelEnrollment.csv").getFile());
+        StudentEnrollmentParser parser = new StudentEnrollmentParser(input);
         List<Student> results = parser.parse();
-        Assert.assertEquals(results.size(), 515, "Unexpected number of Students parsed from schoolbrains CSV generated");
+        Assert.assertEquals(results.size(), 1723, "Unexpected number of Students parsed from schoolbrains enrollment CSV");
     }
 }
