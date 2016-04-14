@@ -211,6 +211,8 @@ public class AttendanceRunnable extends SyncBase<Attendance> implements Runnable
             } catch (HttpClientException e) {
                 results.attendanceUpdateFailed(ssid, sourceSystemEntity.getId());
             }
+        } else {
+            results.attendanceUntouched(ssid, sourceSystemEntity.getId());
         }
     }
 

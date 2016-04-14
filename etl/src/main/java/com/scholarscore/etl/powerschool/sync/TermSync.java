@@ -186,6 +186,8 @@ public class TermSync extends SyncBase<Term> implements ISync<Term> {
             } catch (HttpClientException e) {
                 results.termUpdateFailed(ssid, sourceSystemEntity.getId());
             }
+        } else {
+            results.termUntouched(ssid, sourceSystemEntity.getId());
         }
     }
 
