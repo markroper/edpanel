@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public abstract class BaseParser<T> {
     public BaseParser(File file) {
         this.input = file;
     }
+    protected static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("M/d/yyyy");
 
     public abstract T parseRec(CSVRecord rec);
 
