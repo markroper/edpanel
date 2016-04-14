@@ -1,12 +1,17 @@
 package com.scholarscore.etl.schoolbrains;
 
 import com.scholarscore.models.Address;
+import com.scholarscore.models.Gender;
+import com.scholarscore.models.user.Ethnicity;
+import com.scholarscore.models.user.Race;
 import com.scholarscore.models.user.Student;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Created by markroper on 4/14/16.
@@ -44,6 +49,7 @@ public class StudentParser extends BaseParser<Student> {
     private static final int SPECIAL_ED_LEVEL_OF_NEED = 24;
     private static final int ELL_STATUS = 25;
 
+    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("M/d/yyyy");
     @Override
     public Student parseRec(CSVRecord rec) {
         Student s = new Student();
@@ -55,15 +61,19 @@ public class StudentParser extends BaseParser<Student> {
         String school = rec.get(CURRENT_SCHOOL);
         String schoolId = rec.get(SCHOOL_ID);
         String schoolStateId = rec.get(SCHOOL_STATE_ID);
-        //TODO: convert me.
-        String DOB = rec.get(DATE_OF_BIRTH);
+        s.setCurrentSchoolId(parseLongOrReturnNull(rec.get(SCHOOL_ID)));
+        //DOB
+        String dob = rec.get(DATE_OF_BIRTH);
+        String[] strings = dob.split("\\s+");
+        if(strings.length > 0) {
+            dob = strings[0];
+        }
+        s.setBirthDate(LocalDate.parse(dob, dtf));
         //TODO: convert me
         s.setEmail(rec.get(EMAIL));
         //ETHNICITY
-        String ethnicCat = rec.get(ETHNIC_CATEGORY);
-        String ethnicCode = rec.get(ETHNIC_CODE);
-        String ethnicId = rec.get(ETHNIC_ID);
-        //TODO: resolve me
+        s.setFederalEthnicity(resolveEthnicity(rec.get(ETHNIC_CATEGORY)));
+        s.setFederalRace(resolveRace(rec.get(ETHNIC_ID)));
         //NAME RESOLUTION
         String first = rec.get(FIRST_NAME);
         String middle = rec.get(MIDDlE_NAME);
@@ -77,9 +87,8 @@ public class StudentParser extends BaseParser<Student> {
         }
         s.setName(name);
         //GENDER
-        String gender = rec.get(GENDER);
-        //TODO: convert me
-
+        s.setGender(resolveGender(rec.get(GENDER)));
+        //HOME ADDRESS
         Address a = new Address();
         a.setStreet(rec.get(HOME_ADDRESS_LINE_1));
         String line2 = rec.get(HOME_ADDRESS_LINE_2);
@@ -92,11 +101,83 @@ public class StudentParser extends BaseParser<Student> {
         s.setHomeAddress(a);
         s.setProjectedGraduationYear(parseLongOrReturnNull(rec.get(YEAR_OF_GRADUATION)));
         //SPED
-        String spedEvalResults = rec.get(SPECIAL_ED_EVAL_RESULTS);
-        String spedLevel = rec.get(SPECIAL_ED_LEVEL_OF_NEED);
-        //TODO: convert me
+        s.setSped(resolveSped(rec.get(SPECIAL_ED_LEVEL_OF_NEED)));
+        s.setSpedDetail(rec.get(SPECIAL_ED_EVAL_RESULTS));
         //ELL
         String ellStatus = rec.get(ELL_STATUS);
+        s.setEll(resolveEll(ellStatus));
         return s;
+    }
+
+    public static Boolean resolveEll(String s) {
+        if(null == s || s.trim().length() == 0) {
+            return false;
+        }
+        String lower = s.toLowerCase();
+        if(lower.contains("not enrolled")) {
+            return false;
+        }
+        return true;
+    }
+    public static Boolean resolveSped(String s) {
+        if(null == s || s.trim().length() == 0) {
+            return false;
+        }
+        String lower = s.toLowerCase();
+        if(lower.contains("500")) {
+            return false;
+        }
+        return true;
+    }
+
+    public static final Gender resolveGender(String g) {
+        if(null == g || g.trim().length() == 0) {
+            return Gender.OTHER;
+        }
+        String l = g.toLowerCase();
+        if(l.contains("female") || l.contains("girl")){
+            return Gender.FEMALE;
+        }
+        if(l.contains("male")) {
+            return Gender.MALE;
+        }
+        return Gender.OTHER;
+    }
+
+    public static final String resolveEthnicity(String e) {
+        if(null == e || e.length() == 0) {
+            return Ethnicity.UNSPECIFIED.name();
+        }
+        String lower = e.toLowerCase();
+        if(lower.contains("not") || lower.contains("non")) {
+            return Ethnicity.NON_HISPANIC_LATINO.name();
+        }
+        if(lower.contains("hispanic") || lower.contains("latino") || lower.contains("latina")) {
+            return Ethnicity.HISPANIC_LATINO.name();
+        }
+        return Ethnicity.NON_HISPANIC_LATINO.name();
+    }
+
+    public static final String resolveRace(String e) {
+        if(null == e || e.length() == 0) {
+            return Race.UNSPECIFIED.name();
+        }
+        String lower = e.toLowerCase();
+        if(lower.contains("white") || lower.contains("caucasian")) {
+            return Race.CAUCASIAN.name();
+        }
+        if(lower.contains("black") || lower.contains("african")) {
+            return Race.AFRICAN_AMERICAN.name();
+        }
+        if(lower.contains("asian")) {
+            return Race.ASIAN.name();
+        }
+        if(lower.contains("indian") || lower.contains("american indian") || lower.contains("alaska")) {
+            return Race.AMERICAN_INDIAN.name();
+        }
+        if(lower.contains("pacific") || lower.contains("island")) {
+            return Race.PACIFIC_ISLANDER.name();
+        }
+        return Race.UNSPECIFIED.name();
     }
 }
