@@ -13,6 +13,7 @@ import com.scholarscore.models.dashboard.ColumnDef;
 import com.scholarscore.models.dashboard.Dashboard;
 import com.scholarscore.models.dashboard.DashboardRow;
 import com.scholarscore.models.dashboard.Report;
+import com.scholarscore.models.dashboard.ReportAssignmentAnalysis;
 import com.scholarscore.models.dashboard.ReportType;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.AggregateMeasure;
@@ -46,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -414,5 +416,12 @@ public class DashboardManagerImpl implements DashboardManager {
         goal.setChartQuery(goalQuery);
         row4.setReports(new ArrayList<>());
         row4.getReports().add(goal);
+
+        ReportAssignmentAnalysis qa = new ReportAssignmentAnalysis();
+        qa.setName("Quarterly Assessment Results, Biology");
+        qa.setType(ReportType.ASSIGNMENT_ANALYSIS);
+        qa.setAssignmentIds(Arrays.asList(9388L));
+        row4.getReports().add(qa);
+
     }
 }

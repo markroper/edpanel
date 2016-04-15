@@ -3,7 +3,7 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 import com.scholarscore.api.persistence.DashboardPersistence;
 import com.scholarscore.models.dashboard.Dashboard;
 import com.scholarscore.models.dashboard.DashboardRow;
-import com.scholarscore.models.dashboard.Report;
+import com.scholarscore.models.dashboard.ReportBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -49,14 +49,14 @@ public class DashboardJdbc extends BaseJdbc implements DashboardPersistence {
             for(DashboardRow row: rows) {
                 row.setDashboardFk(d.getId());
                 row.setPosition(rowIndex);
-                List<Report> reports = new ArrayList<>();
+                List<ReportBase> reports = new ArrayList<>();
                 if(null != row.getReports()) {
                     reports = row.getReports();
                     row.setReports(null);
                 }
                 DashboardRow createdRow = hibernateTemplate.merge(row);
                 long reportIndex = 0;
-                for(Report rpt: reports) {
+                for(ReportBase rpt: reports) {
                     rpt.setPosition(reportIndex);
                     rpt.setRowFk(createdRow.getId());
                     hibernateTemplate.merge(rpt);
@@ -116,7 +116,7 @@ public class DashboardJdbc extends BaseJdbc implements DashboardPersistence {
     public void updateDashboard(Long schoolId, Long dashboardId, Dashboard dash) {
         dash.setId(dashboardId);
         dash.setSchoolId(schoolId);
-        Map<Integer, List<Report>> reportsToCreate = new HashMap<>();
+        Map<Integer, List<ReportBase>> reportsToCreate = new HashMap<>();
         if(null != dash.getRows()) {
             long rowPos = 0;
             for(DashboardRow row : dash.getRows()) {
@@ -125,7 +125,7 @@ public class DashboardJdbc extends BaseJdbc implements DashboardPersistence {
                 if(null != row.getReports()) {
                     if(null != row.getId()) {
                         long rptPos = 0;
-                        for(Report rpt: row.getReports()) {
+                        for(ReportBase rpt: row.getReports()) {
                             rpt.setRowFk(row.getId());
                             rpt.setPosition(rptPos);
                             rptPos++;
@@ -141,10 +141,10 @@ public class DashboardJdbc extends BaseJdbc implements DashboardPersistence {
         }
         hibernateTemplate.merge(dash);
         Dashboard d = selectDashboard(schoolId, dashboardId);
-        for(Map.Entry<Integer, List<Report>> entry: reportsToCreate.entrySet()) {
+        for(Map.Entry<Integer, List<ReportBase>> entry: reportsToCreate.entrySet()) {
             DashboardRow row = d.getRows().get(entry.getKey());
             long rptPos = 0;
-            for(Report rpt: entry.getValue()) {
+            for(ReportBase rpt: entry.getValue()) {
                 rpt.setRowFk(row.getId());
                 rpt.setPosition(rptPos);
                 hibernateTemplate.merge(rpt);
