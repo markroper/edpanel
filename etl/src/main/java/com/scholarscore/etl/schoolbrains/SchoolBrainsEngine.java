@@ -1,11 +1,11 @@
 package com.scholarscore.etl.schoolbrains;
 
-import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.IEtlEngine;
 import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.runner.EtlSettings;
 import com.scholarscore.etl.schoolbrains.client.ISchoolBrainsClient;
+import com.scholarscore.etl.schoolbrains.sync.SchoolSync;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,17 +38,9 @@ public class SchoolBrainsEngine implements IEtlEngine {
     }
 
     private void syncSchools() {
-        try {
-            List<School> schools = schoolBrains.getSchools();
-            School[] edPanelSchools = edPanel.getSchools();
-            if(null != schools) {
-                for(School s: schools) {
-                    ssidToSchool.put(s.getSourceSystemId(), s);
-                }
-            }
-        } catch (HttpClientException e) {
-            LOGGER.error("Failed to resolve schools from schoolbrains: " + e.getMessage());
-        }
+        SchoolSync sync = new SchoolSync(schoolBrains, edPanel);
+        //TODO: init a sync result
+        this.ssidToSchool = sync.syncCreateUpdateDelete(null);
     }
 
     @Override
