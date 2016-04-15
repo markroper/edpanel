@@ -653,50 +653,56 @@ public class PowerSchoolSyncResult extends BaseSyncResult implements SyncResult 
     
     private static String getResultString(PowerSchoolSyncResult results) {
         StringBuilder output = new StringBuilder();
+        appendWithNewLine(output, "");
         appendWithNewLine(output, "-----------------------");
         appendWithNewLine(output, " SUCCESSFUL OPERATIONS ");
         appendWithNewLine(output, "-----------------------");
         appendSucceeded(output, "Schools", results.getSchools());
-//        appendWithNewLine(output, "Created Schools: ", results.getSchools().getCreated().size());
-//        appendWithNewLine(output, "Updated Schools: ", results.getSchools().getUpdated().size());
-//        appendWithNewLine(output, "Deleted Schools: ", results.getSchools().getDeleted().size());
-//        appendWithNewLine(output, "Untouched Schools: ", results.getSchools().getUntouched().size());
         appendWithNewLine(output, "--");
         appendSucceeded(output, "School years", results.getSchoolYears());
         appendWithNewLine(output, "--");
         appendSucceeded(output, "Courses", results.getCourses());
-//        appendWithNewLine(output, "Created Courses: " + results.getCourses().getCreated().size());
-//        appendWithNewLine(output, "Updated Courses: " + results.getCourses().getUpdated().size());
-//        appendWithNewLine(output, "Deleted Courses: " + results.getCourses().getDeleted().size());
-//        appendWithNewLine(output, "Untouched Courses: " + results.getCourses().getUntouched().size());
         appendWithNewLine(output, "--");
         appendSucceeded(output, "Terms", results.getTerms());
-//        appendWithNewLine(output, "Created Terms: " + results.getTerms().getCreated().size());
-//        appendWithNewLine(output, "Updated Terms: " + results.getTerms().getUpdated().size());
-//        appendWithNewLine(output, "Deleted Terms: " + results.getTerms().getDeleted().size());
-//        appendWithNewLine(output, "Untouched Terms: " + results.getTerms().getUntouched().size());
         appendWithNewLine(output, "--");
         appendSucceeded(output, "staff", results.getStaff());
-//        appendWithNewLine(output, "Created staff: " + results.getStaff().getCreated().size());
-//        appendWithNewLine(output, "Updated staff: " + results.getStaff().getUpdated().size());
-//        appendWithNewLine(output, "Deleted staff: " + results.getStaff().getDeleted().size());
-//        appendWithNewLine(output, "Untouched staff: " + results.getStaff().getUntouched().size());
         appendWithNewLine(output, "--");
         appendSucceeded(output, "students", results.getStudents());
-//        appendWithNewLine(output, "Created students: " + results.getStudents().getCreated().size());
-//        appendWithNewLine(output, "Updated students: " + results.getStudents().getUpdated().size());
-//        appendWithNewLine(output, "Deleted students: " + results.getStudents().getDeleted().size());
-//        appendWithNewLine(output, "Untouched students: " + results.getStudents().getUntouched().size());
         appendWithNewLine(output, "--");
         appendSucceeded(output, "sections", results.getSections());
         appendWithNewLine(output, "--");
-        
-//        appendWithNewLine(output, "Created sections: " + results.getSections().getCreated().size());
-//        appendWithNewLine(output, "Updated sections: " + results.getSections().getUpdated().size());
-//        appendWithNewLine(output, "Deleted sections: " + results.getSections().getDeleted().size());
-//        appendWithNewLine(output, "Failed sections creations: " + results.getSections().getFailedCreates().size());
-//        appendWithNewLine(output, "Failed sections source gets: " + results.getSections().getSourceGetFailed().size());
-//        appendWithNewLine(output, "Failed sections edpanel gets: " + results.getSections().getEdPanelGetFailed().size());
+        appendSucceeded(output, "section assignments", results.getSectionAssignments());
+        appendWithNewLine(output, "--");
+        appendSucceeded(output, "section student grades", results.getStudentSectionGrades());
+        appendWithNewLine(output, "--");
+
+        Integer created = 0;
+        Integer updated = 0;
+        Integer deleted = 0;
+        Integer untouched = 0;
+        Integer failedSourceGets = 0;
+        Integer failedEdPanelGets = 0;
+        Integer failedCreates = 0;
+        Integer failedUpdates = 0;
+        Integer failedDeletes = 0;
+        for(Map.Entry<Long, ConcurrentHashMap<Long, EntitySyncResult>> sa : results.getStudentAssignments().entrySet()) {
+            for(Map.Entry<Long, EntitySyncResult> a : sa.getValue().entrySet()) {
+                created += a.getValue().getCreated().size();
+                updated += a.getValue().getUpdated().size();
+                deleted += a.getValue().getDeleted().size();
+                untouched += a.getValue().getUntouched().size();
+                failedSourceGets += a.getValue().getSourceGetFailed().size();
+                failedEdPanelGets += a.getValue().getEdPanelGetFailed().size();
+                failedCreates += a.getValue().getFailedCreates().size();
+                failedUpdates += a.getValue().getFailedUpdates().size();
+                failedDeletes += a.getValue().getFailedDeletes().size();
+            }
+        }
+        appendWithNewLine(output, "Created student assignments: ", created);
+        appendWithNewLine(output, "Updated student assignments: ", updated);
+        appendWithNewLine(output, "Deleted student assignments: ", deleted);
+        appendWithNewLine(output, "Untouched student assignments: ", untouched);
+
         appendWithNewLine(output, "-----------------------");
         appendWithNewLine(output, "   FAILED OPERATIONS   ");
         appendWithNewLine(output, "-----------------------");
@@ -713,87 +719,90 @@ public class PowerSchoolSyncResult extends BaseSyncResult implements SyncResult 
         appendFailed(output, "student", results.getStudents());
         appendWithNewLine(output, "--");
         appendFailed(output, "sections", results.getSections());
-
-        Integer studAssignments = 0;
-        Integer studUpdatedAssignments = 0;
-        Integer studDeletedAssignments = 0;
-        Integer studAssFailedCreates = 0;
-        Integer studAssFailedSourceGets = 0;
-        Integer studAssFailedEdPanelGets = 0;
-        for(Map.Entry<Long, EntitySyncResult> sa : results.getSectionAssignments().entrySet()) {
-            studAssignments += sa.getValue().getCreated().size();
-            studUpdatedAssignments += sa.getValue().getUpdated().size();
-            studDeletedAssignments += sa.getValue().getDeleted().size();
-            studAssFailedCreates += sa.getValue().getFailedCreates().size();
-            studAssFailedSourceGets += sa.getValue().getSourceGetFailed().size();
-            studAssFailedEdPanelGets += sa.getValue().getEdPanelGetFailed().size();
-        }
-        appendWithNewLine(output, "Created section assignments: " + studAssignments);
-        appendWithNewLine(output, "Updated section assignments: " + studUpdatedAssignments);
-        appendWithNewLine(output, "Deleted section assignments: " + studDeletedAssignments);
-        appendWithNewLine(output, "Failed section assignments creations: " + studAssFailedCreates);
-        appendWithNewLine(output, "Failed section assignments source gets: " + studAssFailedSourceGets);
-        appendWithNewLine(output, "Failed section assignments edpanel gets: " + studAssFailedEdPanelGets);
         appendWithNewLine(output, "--");
-
-        Integer ssgs = 0;
-        Integer ssgsUpdated = 0;
-        Integer ssgsDeleted = 0;
-        Integer ssgFailedCreates = 0;
-        Integer ssgFailedSourceGets = 0;
-        Integer ssgFailedEdPanelGets = 0;
-        for(Map.Entry<Long, EntitySyncResult> sa : results.getStudentSectionGrades().entrySet()) {
-            ssgs += sa.getValue().getCreated().size();
-            ssgsUpdated += sa.getValue().getUpdated().size();
-            ssgsDeleted += sa.getValue().getDeleted().size();
-            ssgFailedCreates += sa.getValue().getFailedCreates().size();
-            ssgFailedSourceGets += sa.getValue().getSourceGetFailed().size();
-            ssgFailedEdPanelGets += sa.getValue().getEdPanelGetFailed().size();
-        }
-        appendWithNewLine(output, "Created section student grades: " + ssgs);
-        appendWithNewLine(output, "Updated section student grades: " + ssgsUpdated);
-        appendWithNewLine(output, "Deleted section student grades: " + ssgsDeleted);
-        appendWithNewLine(output, "Failed ssg creations: " + ssgFailedCreates);
-        appendWithNewLine(output, "Failed ssg source gets: " + ssgFailedSourceGets);
-        appendWithNewLine(output, "Failed ssg edpanel gets: " + ssgFailedEdPanelGets);
+        appendFailed(output, "section assignments", results.getSectionAssignments());
         appendWithNewLine(output, "--");
-        Integer sectAss = 0;
-        Integer sectAssUpdated = 0;
-        Integer sectAssDeleted = 0;
-        Integer sectAssFailedCreates = 0;
-        Integer sectAssFailedSourceGets = 0;
-        Integer sectAssFailedEdPanelGets = 0;
-        for(Map.Entry<Long, ConcurrentHashMap<Long, EntitySyncResult>> sa : results.getStudentAssignments().entrySet()) {
-            for(Map.Entry<Long, EntitySyncResult> a : sa.getValue().entrySet()) {
-                sectAss += a.getValue().getCreated().size();
-                sectAssUpdated += a.getValue().getUpdated().size();
-                sectAssDeleted += a.getValue().getDeleted().size();
-                sectAssFailedCreates += a.getValue().getFailedCreates().size();
-                sectAssFailedSourceGets += a.getValue().getSourceGetFailed().size();
-                sectAssFailedEdPanelGets += a.getValue().getEdPanelGetFailed().size();
-            }
-        }
-        appendWithNewLine(output, "Created student assignments: " + sectAss);
-        appendWithNewLine(output, "Updated student assignments: " + sectAssUpdated);
-        appendWithNewLine(output, "Deleted student assignments: " + sectAssDeleted);
-        appendWithNewLine(output, "Failed student assignments creations: " + sectAssFailedCreates);
-        appendWithNewLine(output, "Failed student assignments source gets: " + sectAssFailedSourceGets);
-        appendWithNewLine(output, "Failed student assignments edpanel gets: " + sectAssFailedEdPanelGets);
+        appendFailed(output, "section student grades", results.getStudentSectionGrades());
+        appendWithNewLine(output, "--");
+        appendWithNewLine(output, "Failed student assignments source gets: ", failedSourceGets);
+        appendWithNewLine(output, "Failed student assignments edpanel gets: ", failedEdPanelGets);
+        appendWithNewLine(output, "Failed student assignments creations: ", failedCreates);
+        appendWithNewLine(output, "Failed student assignments updates: ", failedUpdates);
+        appendWithNewLine(output, "Failed student assignments deletes: ", failedDeletes);
+
         return output.toString();
     }
-    
+
     private static void appendSucceeded(StringBuilder output, String entityName, EntitySyncResult entity) {
-        appendWithNewLine(output, "Created " + entityName + ": ", entity.getCreated().size());
-        appendWithNewLine(output, "Updated " + entityName + ": ", entity.getUpdated().size());
-        appendWithNewLine(output, "Deleted " + entityName + ": ", entity.getDeleted().size());
-        appendWithNewLine(output, "Untouched " + entityName + ": ", entity.getUntouched().size());
+        appendSucceeded(output, entityName, toSuccessRecord(new SuccessRecord(), entity));
+    }
+
+    private static void appendFailed(StringBuilder output, String entityName, EntitySyncResult entity) {
+        appendFailed(output, entityName, toFailureRecord(new FailureRecord(), entity));
+    }
+
+    private static void appendSucceeded(StringBuilder output, String entityName, Map<Long, EntitySyncResult> entities) {
+        SuccessRecord successRecord = new SuccessRecord();
+        for(Map.Entry<Long, EntitySyncResult> a : entities.entrySet()) {
+            toSuccessRecord(successRecord, a.getValue());
+        }
+        appendSucceeded(output, entityName, successRecord);
     }
     
-    private static void appendFailed(StringBuilder output, String entityName, EntitySyncResult entity) {
-        appendWithNewLine(output, "Failed " + entityName + " source gets: ", entity.getSourceGetFailed().size());
-        appendWithNewLine(output, "Failed " + entityName + " edpanel gets: ", entity.getEdPanelGetFailed().size());
-        appendWithNewLine(output, "Failed " + entityName + " creations: ", entity.getFailedCreates().size());
-        appendWithNewLine(output, "Failed " + entityName + " updates: ", entity.getFailedUpdates().size());
-        appendWithNewLine(output, "Failed " + entityName + " deletes: ", entity.getFailedDeletes().size());
+    private static void appendFailed(StringBuilder output, String entityName, Map<Long, EntitySyncResult> entities) {
+        FailureRecord failureRecord = new FailureRecord();
+        for(Map.Entry<Long, EntitySyncResult> a : entities.entrySet()) {
+            toFailureRecord(failureRecord, a.getValue());
+        }
+        appendFailed(output, entityName, failureRecord);
+    }
+    
+    private static void appendSucceeded(StringBuilder output, String entityName, 
+                                        SuccessRecord successRecord) {
+        appendWithNewLine(output, "Created " + entityName + ": ", successRecord.created);
+        appendWithNewLine(output, "Updated " + entityName + ": ", successRecord.updated);
+        appendWithNewLine(output, "Deleted " + entityName + ": ", successRecord.deleted);
+        appendWithNewLine(output, "Untouched " + entityName + ": ", successRecord.untouched);
+    }
+
+    private static void appendFailed(StringBuilder output, String entityName,
+                                     FailureRecord failureRecord) {
+        appendWithNewLine(output, "Failed " + entityName + " source gets: ", failureRecord.sourceGetFailed);
+        appendWithNewLine(output, "Failed " + entityName + " edpanel gets: ", failureRecord.edPanelGetFailed);
+        appendWithNewLine(output, "Failed " + entityName + " creations: ", failureRecord.failedCreates);
+        appendWithNewLine(output, "Failed " + entityName + " updates: ", failureRecord.failedUpdates);
+        appendWithNewLine(output, "Failed " + entityName + " deletes: ", failureRecord.failedDeletes);
+    }
+    
+    private static SuccessRecord toSuccessRecord(SuccessRecord existingRecord, EntitySyncResult entity) {
+        existingRecord.created += entity.getCreated().size();
+        existingRecord.updated += entity.getUpdated().size();
+        existingRecord.deleted += entity.getDeleted().size();
+        existingRecord.untouched += entity.getUntouched().size();
+        return existingRecord;
+    }
+
+    private static FailureRecord toFailureRecord(FailureRecord existingRecord, EntitySyncResult entity) {
+        existingRecord.sourceGetFailed += entity.getSourceGetFailed().size();
+        existingRecord.edPanelGetFailed += entity.getEdPanelGetFailed().size();
+        existingRecord.failedCreates += entity.getFailedCreates().size();
+        existingRecord.failedUpdates += entity.getFailedUpdates().size();
+        existingRecord.failedDeletes += entity.getFailedDeletes().size();
+        return existingRecord;
+    }
+
+    private static class SuccessRecord {
+        int created = 0;
+        int updated = 0;
+        int deleted = 0;
+        int untouched = 0;
+    }
+    
+    private static class FailureRecord { 
+        int sourceGetFailed = 0;
+        int edPanelGetFailed = 0;
+        int failedCreates = 0;
+        int failedUpdates = 0;
+        int failedDeletes = 0;
     }
 }

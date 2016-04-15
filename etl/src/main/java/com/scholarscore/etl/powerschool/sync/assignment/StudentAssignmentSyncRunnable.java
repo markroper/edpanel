@@ -227,6 +227,11 @@ public class StudentAssignmentSyncRunnable extends SyncBase<StudentAssignment> i
                         createdSection.getId(),
                         assignment.getId(),
                         sourceSystemEntity);
+                results.studentAssignmentUpdated(
+                        Long.valueOf(createdSection.getSourceSystemId()),
+                        Long.valueOf(this.assignment.getSourceSystemId()),
+                        studentSsid,
+                        sourceSystemEntity.getId());
             } catch (HttpClientException e) {
                 results.studentAssignmentUpdateFailed(
                         Long.valueOf(createdSection.getSourceSystemId()),
@@ -235,12 +240,13 @@ public class StudentAssignmentSyncRunnable extends SyncBase<StudentAssignment> i
                         sourceSystemEntity.getId());
                 return;
             }
+        } else {
+            results.studentAssignmentUntouched(
+                    Long.valueOf(createdSection.getSourceSystemId()),
+                    Long.valueOf(this.assignment.getSourceSystemId()),
+                    studentSsid,
+                    sourceSystemEntity.getId());
         }
-        results.studentAssignmentUpdated(
-                Long.valueOf(createdSection.getSourceSystemId()),
-                Long.valueOf(this.assignment.getSourceSystemId()),
-                studentSsid,
-                sourceSystemEntity.getId());
     }
 
     @Override
