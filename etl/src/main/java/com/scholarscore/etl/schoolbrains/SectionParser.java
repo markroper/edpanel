@@ -46,10 +46,14 @@ public class SectionParser extends MultiEntityCsvParser<SectionContainer> {
         Set<Staff> teachers = new HashSet<>();
         Staff t = new Staff();
         t.setSourceSystemId(rec.get(TeacherID));
+        t.setName(rec.get(Teacher));
+        t.setIsTeacher(true);
         String teacher2Id = rec.get(SecondTeacherID);
         if(null != teacher2Id && !teacher2Id.trim().isEmpty()) {
             Staff t2 = new Staff();
+            t2.setIsTeacher(true);
             t2.setSourceSystemId(teacher2Id);
+            t2.setName(rec.get(SecondTeacher));
             teachers.add(t2);
         }
         s.setTeachers(teachers);

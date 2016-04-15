@@ -34,6 +34,7 @@ public abstract class MultiEntityCsvParser<T> extends BaseParser<T> {
     protected static final int TeacherID = 25;
     protected static final int SecondTeacherID = 26;
     protected static final int SecondTeacher = 27;
+    protected static final int FullYearCourse = 28;
 
     public MultiEntityCsvParser(File file) {
         super(file);

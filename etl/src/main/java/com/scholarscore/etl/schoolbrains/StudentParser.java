@@ -50,6 +50,7 @@ public class StudentParser extends BaseParser<Student> {
     private static final int SPECIAL_ED_EVAL_RESULTS = 23;
     private static final int SPECIAL_ED_LEVEL_OF_NEED = 24;
     private static final int ELL_STATUS = 25;
+    protected static final int Gpa = 26;
 
     private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("M/d/yyyy");
     @Override

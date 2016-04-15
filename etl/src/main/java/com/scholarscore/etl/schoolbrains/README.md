@@ -2,7 +2,7 @@
 Below are the Haverhill SchoolBrains report names and the associated CSV file column lists.  Sample files in `etl/src/test/resources`.
 
 ## EdPanelStudents
-    SASID, StudentID, GradeID, CurrentGradeID, CurrentSchool, DateOfBirth, Email, EthnicCategory, EthnicCode, EthnicID, FirstName, MiddleName, LastName, Gender, HomeAddressLine1, HomeAddressLine2, HomeCity, HomeStateID, HomePostalCode, LASID, SchoolStateID, YearOfGraduation, SchoolID, SpecialEducationEvaluationResults, SpecialEducationLevelOfNeed, EnglishLanguageLearnersProgramStatus
+    SASID, StudentID, GradeID, CurrentGradeID, CurrentSchool, DateOfBirth, Email, EthnicCategory, EthnicCode, EthnicID, FirstName, MiddleName, LastName, Gender, HomeAddressLine1, HomeAddressLine2, HomeCity, HomeStateID, HomePostalCode, LASID, SchoolStateID, YearOfGraduation, SchoolID, SpecialEducationEvaluationResults, SpecialEducationLevelOfNeed, EnglishLanguageLearnersProgramStatus, Gpa
 ## EdPanelAttendance
     SASID, AttendanceCode, AttendanceCode2, AttendanceCodeCategory, AttendanceComment, AttendanceDate, AttendanceGradeEnrollmentId, AttendanceSchoolId, AttendanceGradeId, YTDAbsence, YTDTardy, YTDDismissal, AttendanceDate
 ## EdPanelBehavior
@@ -20,7 +20,7 @@ Below are the Haverhill SchoolBrains report names and the associated CSV file co
 ## EdPanelSectionRoster
     LASID, SASID, StudentID, StartDate, EndDate, CourseEnrollmentStatus, GradeID, SectionID
 ## EdPanelSections
-    SchoolID, SectionID, SectionName, NumberOfCredits, SchoolIdentificationNumber, SchoolName, SchoolYearEnd, SchoolYearStart, SchoolYearNumber, StandardCourseDifficulty, StandardCourseType, SchoolYearID, CourseCode, CourseEAID, CourseName, Department, IsActive, IsTerm1, IsTerm2, IsTerm3, IsTerm4, IsTerm5, IsTerm6, UsedInGPA, Teacher, TeacherID, SecondTeacherID, SecondTeacher
+    SchoolID, SectionID, SectionName, NumberOfCredits, SchoolIdentificationNumber, SchoolName, SchoolYearEnd, SchoolYearStart, SchoolYearNumber, StandardCourseDifficulty, StandardCourseType, SchoolYearID, CourseCode, CourseEAID, CourseName, Department, IsActive, IsTerm1, IsTerm2, IsTerm3, IsTerm4, IsTerm5, IsTerm6, UsedInGPA, Teacher, TeacherID, SecondTeacherID, SecondTeacher, FullYearCourse
 ## EdPanelStudentAssignments
     StudentID, SectionID, GradebookWorkID, Number, Work, Name, Category, DateDue, Possible, Symbol, Score, Percent, Letter, Dropped, Missing, _ID, _Current
 ## EdPanelStudentCategoryGrades
