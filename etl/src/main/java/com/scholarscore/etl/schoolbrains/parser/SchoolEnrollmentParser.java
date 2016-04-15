@@ -1,4 +1,4 @@
-package com.scholarscore.etl.schoolbrains;
+package com.scholarscore.etl.schoolbrains.parser;
 
 import com.scholarscore.models.user.EnrollStatus;
 import com.scholarscore.models.user.Student;

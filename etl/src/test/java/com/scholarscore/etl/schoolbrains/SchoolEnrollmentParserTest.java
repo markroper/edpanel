@@ -1,5 +1,6 @@
 package com.scholarscore.etl.schoolbrains;
 
+import com.scholarscore.etl.schoolbrains.parser.SchoolEnrollmentParser;
 import com.scholarscore.models.user.Student;
 import org.testng.Assert;
 import org.testng.annotations.Test;

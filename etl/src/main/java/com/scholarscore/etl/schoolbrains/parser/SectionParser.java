@@ -1,5 +1,6 @@
-package com.scholarscore.etl.schoolbrains;
+package com.scholarscore.etl.schoolbrains.parser;
 
+import com.scholarscore.etl.schoolbrains.SectionContainer;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.user.Staff;

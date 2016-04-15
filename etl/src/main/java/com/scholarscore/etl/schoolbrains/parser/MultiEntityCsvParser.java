@@ -1,4 +1,4 @@
-package com.scholarscore.etl.schoolbrains;
+package com.scholarscore.etl.schoolbrains.parser;
 
 import java.io.File;
 

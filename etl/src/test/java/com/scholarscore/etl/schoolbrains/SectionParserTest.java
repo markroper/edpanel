@@ -1,5 +1,6 @@
 package com.scholarscore.etl.schoolbrains;
 
+import com.scholarscore.etl.schoolbrains.parser.SectionParser;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

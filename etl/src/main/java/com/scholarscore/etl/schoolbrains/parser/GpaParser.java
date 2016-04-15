@@ -1,4 +1,4 @@
-package com.scholarscore.etl.schoolbrains;
+package com.scholarscore.etl.schoolbrains.parser;
 
 import com.scholarscore.models.gpa.Gpa;
 import com.scholarscore.models.gpa.SimpleGpa;

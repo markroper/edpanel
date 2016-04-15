@@ -1,5 +1,6 @@
 package com.scholarscore.etl.schoolbrains;
 
+import com.scholarscore.etl.schoolbrains.parser.GpaParser;
 import com.scholarscore.models.gpa.Gpa;
 import org.testng.Assert;
 import org.testng.annotations.Test;
