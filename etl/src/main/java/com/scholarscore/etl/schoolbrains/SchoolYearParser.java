@@ -18,6 +18,7 @@ public class SchoolYearParser extends MultiEntityCsvParser<SchoolYear> {
     @Override
     public SchoolYear parseRec(CSVRecord rec) {
         SchoolYear y = new SchoolYear();
+        y.setId(parseLongOrReturnNull(rec.get(SchoolYearID)));
         School sch = new School();
         sch.setSourceSystemId(rec.get(SchoolID));
         y.setSchool(sch);
@@ -29,14 +30,12 @@ public class SchoolYearParser extends MultiEntityCsvParser<SchoolYear> {
             start = st[0];
         }
         y.setStartDate(LocalDate.parse(start, dtf));
-
         String end = rec.get(SchoolYearEnd);
         String[] ed = end.split("\\s+");
         if(null != ed && st.length > 0) {
             end = ed[0];
         }
         y.setEndDate(LocalDate.parse(end, dtf));
-
         return y;
     }
 }

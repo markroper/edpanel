@@ -10,8 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by markroper on 4/14/16.
@@ -27,15 +27,18 @@ public abstract class BaseParser<T> {
 
     public abstract T parseRec(CSVRecord rec);
 
-    public List<T> parse() {
+    public Set<T> parse() {
         if(null == input) {
             return null;
         }
         try {
-            List<T> results = new ArrayList<>();
+            Set<T> results = new HashSet<>();
             CSVParser parser = CSVParser.parse(input, Charset.defaultCharset(), CSVFormat.DEFAULT.withHeader());
             for (CSVRecord rec : parser) {
-               results.add(parseRec(rec));
+                T item = parseRec(rec);
+                if(null != item) {
+                    results.add(parseRec(rec));
+                }
             }
             return results;
         } catch (IOException e) {

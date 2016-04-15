@@ -13,6 +13,21 @@ public class SectionContainer {
     //Terms in which the section is active within the year
     //position 0 -> term 1, position 1 -> term 2 and so on.
     List<Boolean> terms;
+    String schoolYearId;
+
+    public SectionContainer(Section section,  List<Boolean> terms, String schoolYearId) {
+        this.section = section;
+        this.terms = terms;
+        this.schoolYearId = schoolYearId;
+    }
+
+    public String getSchoolYearId() {
+        return schoolYearId;
+    }
+
+    public void setSchoolYearId(String schoolYearId) {
+        this.schoolYearId = schoolYearId;
+    }
 
     public Section getSection() {
         return section;
@@ -32,7 +47,7 @@ public class SectionContainer {
 
     @Override
     public int hashCode() {
-        return Objects.hash(section, terms);
+        return Objects.hash(section, terms, schoolYearId);
     }
 
     @Override
@@ -45,6 +60,7 @@ public class SectionContainer {
         }
         final SectionContainer other = (SectionContainer) obj;
         return Objects.equals(this.section, other.section)
+                && Objects.equals(this.schoolYearId, other.schoolYearId)
                 && Objects.equals(this.terms, other.terms);
     }
 }
