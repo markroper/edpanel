@@ -658,23 +658,23 @@ public class PowerSchoolSyncResult extends BaseSyncResult implements SyncResult 
         appendWithNewLine(output, " SUCCESSFUL OPERATIONS ");
         appendWithNewLine(output, "-----------------------");
         appendSucceeded(output, "Schools", results.getSchools());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendSucceeded(output, "School years", results.getSchoolYears());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendSucceeded(output, "Courses", results.getCourses());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendSucceeded(output, "Terms", results.getTerms());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendSucceeded(output, "staff", results.getStaff());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendSucceeded(output, "students", results.getStudents());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendSucceeded(output, "sections", results.getSections());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendSucceeded(output, "section assignments", results.getSectionAssignments());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendSucceeded(output, "section student grades", results.getStudentSectionGrades());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
 
         Integer created = 0;
         Integer updated = 0;
@@ -707,23 +707,23 @@ public class PowerSchoolSyncResult extends BaseSyncResult implements SyncResult 
         appendWithNewLine(output, "   FAILED OPERATIONS   ");
         appendWithNewLine(output, "-----------------------");
         appendFailed(output, "school", results.getSchools());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendFailed(output, "school year", results.getSchoolYears());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendFailed(output, "course", results.getCourses());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendFailed(output, "term", results.getTerms());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendFailed(output, "staff", results.getStaff());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendFailed(output, "student", results.getStudents());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendFailed(output, "sections", results.getSections());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendFailed(output, "section assignments", results.getSectionAssignments());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendFailed(output, "section student grades", results.getStudentSectionGrades());
-        appendWithNewLine(output, "--");
+//        appendWithNewLine(output, "--");
         appendWithNewLine(output, "Failed student assignments source gets: ", failedSourceGets);
         appendWithNewLine(output, "Failed student assignments edpanel gets: ", failedEdPanelGets);
         appendWithNewLine(output, "Failed student assignments creations: ", failedCreates);
@@ -759,21 +759,33 @@ public class PowerSchoolSyncResult extends BaseSyncResult implements SyncResult 
     
     private static void appendSucceeded(StringBuilder output, String entityName, 
                                         SuccessRecord successRecord) {
-        appendWithNewLine(output, "Created " + entityName + ": ", successRecord.created);
-        appendWithNewLine(output, "Updated " + entityName + ": ", successRecord.updated);
-        appendWithNewLine(output, "Deleted " + entityName + ": ", successRecord.deleted);
-        appendWithNewLine(output, "Untouched " + entityName + ": ", successRecord.untouched);
+        StringBuilder temp = new StringBuilder();
+        appendWithNewLine(temp, "Created " + entityName + ": ", successRecord.created);
+        appendWithNewLine(temp, "Updated " + entityName + ": ", successRecord.updated);
+        appendWithNewLine(temp, "Deleted " + entityName + ": ", successRecord.deleted);
+        appendWithNewLine(temp, "Untouched " + entityName + ": ", successRecord.untouched);
+        String tempOutput = temp.toString();
+        if (tempOutput.length() > 0) {
+            output.append(temp);
+            appendWithNewLine(output, "--");
+        }
     }
 
     private static void appendFailed(StringBuilder output, String entityName,
                                      FailureRecord failureRecord) {
-        appendWithNewLine(output, "Failed " + entityName + " source gets: ", failureRecord.sourceGetFailed);
-        appendWithNewLine(output, "Failed " + entityName + " edpanel gets: ", failureRecord.edPanelGetFailed);
-        appendWithNewLine(output, "Failed " + entityName + " creations: ", failureRecord.failedCreates);
-        appendWithNewLine(output, "Failed " + entityName + " updates: ", failureRecord.failedUpdates);
-        appendWithNewLine(output, "Failed " + entityName + " deletes: ", failureRecord.failedDeletes);
+        StringBuilder temp = new StringBuilder();
+        appendWithNewLine(temp, "Failed " + entityName + " source gets: ", failureRecord.sourceGetFailed);
+        appendWithNewLine(temp, "Failed " + entityName + " edpanel gets: ", failureRecord.edPanelGetFailed);
+        appendWithNewLine(temp, "Failed " + entityName + " creations: ", failureRecord.failedCreates);
+        appendWithNewLine(temp, "Failed " + entityName + " updates: ", failureRecord.failedUpdates);
+        appendWithNewLine(temp, "Failed " + entityName + " deletes: ", failureRecord.failedDeletes);
+        String tempOutput = temp.toString();
+        if (tempOutput.length() > 0) {
+            output.append(temp);
+            appendWithNewLine(output, "--");
+        }
     }
-    
+
     private static SuccessRecord toSuccessRecord(SuccessRecord existingRecord, EntitySyncResult entity) {
         existingRecord.created += entity.getCreated().size();
         existingRecord.updated += entity.getUpdated().size();
