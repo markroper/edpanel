@@ -25,7 +25,7 @@
     
     <bean id="testEdPanelClient" class="com.scholarscore.etl.TestApiClientFactory" factory-method="buildTestApiClient" />
     
-    <bean id="etlEngine" class="com.scholarscore.etl.EtlEngine">
+    <bean id="etlEngine" class="com.scholarscore.etl.PsEtlEngine">
         <property name="powerSchool" ref="testPowerSchoolClient"/>
         <property name="edPanel" ref="testEdPanelClient"/>
         <property name="dailyAbsenceTrigger" value="${scholarscore.etl.sectionabsencestriggeringdailyabsence}"/>

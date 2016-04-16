@@ -1,7 +1,7 @@
 package com.scholarscore.etl.powerschool.sync.attendance;
 
 import com.scholarscore.client.IAPIClient;
-import com.scholarscore.etl.EtlEngine;
+import com.scholarscore.etl.PsEtlEngine;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.PsPeriod;
@@ -64,7 +64,7 @@ public class AttendanceSync implements ISync<Attendance> {
     @Override
     public ConcurrentHashMap<Long, Attendance> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<Long, Attendance> response = new ConcurrentHashMap<>();
-        ExecutorService executor = Executors.newFixedThreadPool(EtlEngine.THREAD_POOL_SIZE);
+        ExecutorService executor = Executors.newFixedThreadPool(PsEtlEngine.THREAD_POOL_SIZE);
         for (Map.Entry<Long, Student> longStudentEntry : studentAssociator.getUsers().entrySet()) {
             Student s = longStudentEntry.getValue();
 
@@ -79,7 +79,7 @@ public class AttendanceSync implements ISync<Attendance> {
         executor.shutdown();
         //Spin while we wait for all the threads to complete
         try {
-            if (!executor.awaitTermination(EtlEngine.TOTAL_TTL_MINUTES, TimeUnit.MINUTES)) {
+            if (!executor.awaitTermination(PsEtlEngine.TOTAL_TTL_MINUTES, TimeUnit.MINUTES)) {
                 executor.shutdownNow();
             }
         } catch(InterruptedException e) {

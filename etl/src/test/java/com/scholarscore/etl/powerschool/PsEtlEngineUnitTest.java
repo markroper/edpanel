@@ -42,7 +42,7 @@ import static org.testng.AssertJUnit.assertNotNull;
  */
 @Test(groups = { "unit" })
 @ContextConfiguration(locations = { "classpath:mock-powerschool.xml" })
-public class EtlEngineUnitTest extends AbstractTestNGSpringContextTests {
+public class PsEtlEngineUnitTest extends AbstractTestNGSpringContextTests {
 
     @Autowired
     @Qualifier("testPowerSchoolClient")

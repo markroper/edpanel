@@ -76,8 +76,8 @@ import java.util.concurrent.TimeUnit;
  * 
  * Created by mattg on 7/3/©5.
  */
-public class EtlEngine implements IEtlEngine {
-    private final static Logger LOGGER = LoggerFactory.getLogger(EtlEngine.class);
+public class PsEtlEngine implements IEtlEngine {
+    private final static Logger LOGGER = LoggerFactory.getLogger(PsEtlEngine.class);
     public static final Long TOTAL_TTL_MINUTES = 120L;
     public static final int THREAD_POOL_SIZE = 5;
     //After a certain point in the past, we no longer want to sync expensive and large tables, like attendance
