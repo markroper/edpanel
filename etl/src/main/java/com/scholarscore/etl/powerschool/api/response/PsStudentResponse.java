@@ -8,6 +8,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Created by markroper on 10/22/15.
  */
 @XmlRootElement(name = "student")
-public class StudentResponse {
+public class PsStudentResponse {
     public PsStudent student;
 }

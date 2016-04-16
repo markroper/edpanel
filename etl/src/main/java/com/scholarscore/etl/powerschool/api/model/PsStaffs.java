@@ -2,7 +2,7 @@ package com.scholarscore.etl.powerschool.api.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.scholarscore.etl.powerschool.api.deserializers.StaffsDeserializer;
-import com.scholarscore.etl.powerschool.api.response.ITranslateCollection;
+import com.scholarscore.etl.ITranslateCollection;
 import com.scholarscore.models.Address;
 import com.scholarscore.models.user.Staff;
 

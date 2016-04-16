@@ -5,7 +5,7 @@ import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.term.PsTerm;
-import com.scholarscore.etl.powerschool.api.response.TermResponse;
+import com.scholarscore.etl.powerschool.api.response.PsTermResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
@@ -46,7 +46,7 @@ public class TermSync extends SyncBase<Term> implements ISync<Term> {
         //Get all the terms from PowerSchool for the current School
         String sourceSystemIdString = school.getSourceSystemId();
         Long sourceSystemSchoolId = new Long(sourceSystemIdString);
-        TermResponse tr = powerSchool.getTermsBySchoolId(sourceSystemSchoolId);
+        PsTermResponse tr = powerSchool.getTermsBySchoolId(sourceSystemSchoolId);
         ConcurrentHashMap<Long, Term> sourceTerms =
                 new ConcurrentHashMap<>();
         if(null != tr && null != tr.terms && null != tr.terms.term) {

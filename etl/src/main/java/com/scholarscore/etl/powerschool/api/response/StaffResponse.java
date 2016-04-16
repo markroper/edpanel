@@ -1,5 +1,6 @@
 package com.scholarscore.etl.powerschool.api.response;
 
+import com.scholarscore.etl.ITranslateCollection;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.models.user.User;
 
@@ -13,7 +14,7 @@ import java.util.Collection;
  * Created by mattg on 7/2/15.
  */
 @XmlRootElement(name = "staffs")
-public class StaffResponse implements ITranslateCollection<com.scholarscore.models.user.User> {
+public class StaffResponse implements ITranslateCollection<User> {
 
     public PsStaffs staffs;
 

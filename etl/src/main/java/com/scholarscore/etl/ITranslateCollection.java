@@ -1,4 +1,4 @@
-package com.scholarscore.etl.powerschool.api.response;
+package com.scholarscore.etl;
 
 import com.scholarscore.models.IApiModel;
 

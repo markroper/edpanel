@@ -1,6 +1,7 @@
 package com.scholarscore.etl.powerschool.client;
 
 import com.scholarscore.client.HttpClientException;
+import com.scholarscore.etl.IStudentInformationSystemClient;
 import com.scholarscore.etl.powerschool.api.model.PsCourses;
 import com.scholarscore.etl.powerschool.api.model.PsPeriodWrapper;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
@@ -29,27 +30,27 @@ import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMapWrapper;
 import com.scholarscore.etl.powerschool.api.model.term.PsTermBinWrapper;
 import com.scholarscore.etl.powerschool.api.model.term.PtPsTermBinReportingTermWrapper;
 import com.scholarscore.etl.powerschool.api.model.term.PtPsTermMapWrapper;
-import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
+import com.scholarscore.etl.powerschool.api.response.PsDistrictResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
-import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
+import com.scholarscore.etl.powerschool.api.response.PsSchoolsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionEnrollmentsResponse;
-import com.scholarscore.etl.powerschool.api.response.SectionResponse;
-import com.scholarscore.etl.powerschool.api.response.StudentResponse;
-import com.scholarscore.etl.powerschool.api.response.TermResponse;
+import com.scholarscore.etl.powerschool.api.response.PsSectionResponse;
+import com.scholarscore.etl.powerschool.api.response.PsStudentResponse;
+import com.scholarscore.etl.powerschool.api.response.PsTermResponse;
 
 import java.time.LocalDate;
 
 /**
  * Created by mattg on 7/2/15.
  */
-public interface IPowerSchoolClient {
+public interface IPowerSchoolClient extends IStudentInformationSystemClient {
     void setSyncCutoff(LocalDate date);
 
-    SchoolsResponse getSchools() throws HttpClientException;
+    PsSchoolsResponse getSchools() throws HttpClientException;
 
     PsResponse<PsPeriodWrapper> getPeriodsBySchool(Long schoolId) throws HttpClientException;
 
-    DistrictResponse getDistrict() throws HttpClientException;
+    PsDistrictResponse getDistrict() throws HttpClientException;
 
     PsStaffs getStaff(Long schoolId) throws HttpClientException;
 
@@ -59,7 +60,7 @@ public interface IPowerSchoolClient {
 
     PsResponse<PsTableSectionWrapper> getTableSections() throws HttpClientException;
     
-    StudentResponse getStudentById(Long studentId) throws HttpClientException;
+    PsStudentResponse getStudentById(Long studentId) throws HttpClientException;
 
     PsCourses getCoursesBySchool(Long schoolId) throws HttpClientException;
 
@@ -67,11 +68,11 @@ public interface IPowerSchoolClient {
 
     Object getAsMap(String path) throws HttpClientException;
 
-    TermResponse getTermsBySchoolId(Long schoolId) throws HttpClientException;
+    PsTermResponse getTermsBySchoolId(Long schoolId) throws HttpClientException;
 
     PsResponse<PsTermBinWrapper> getTermBins() throws HttpClientException;
 
-    SectionResponse getSectionsBySchoolId(Long schoolId) throws HttpClientException;
+    PsSectionResponse getSectionsBySchoolId(Long schoolId) throws HttpClientException;
     
     SectionEnrollmentsResponse getEnrollmentBySectionId(Long sectionId) throws HttpClientException;
 

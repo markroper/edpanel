@@ -5,7 +5,7 @@ import com.scholarscore.etl.powerschool.api.model.PsDistrict;
 /**
  * Created by mattg on 7/2/15.
  */
-public class DistrictResponse {
+public class PsDistrictResponse {
     public PsDistrict district;
 
     @Override

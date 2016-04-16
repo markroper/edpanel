@@ -31,13 +31,13 @@ import com.scholarscore.etl.powerschool.api.model.student.PtPsStudentMapWrapper;
 import com.scholarscore.etl.powerschool.api.model.term.PsTermBinWrapper;
 import com.scholarscore.etl.powerschool.api.model.term.PtPsTermBinReportingTermWrapper;
 import com.scholarscore.etl.powerschool.api.model.term.PtPsTermMapWrapper;
-import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
+import com.scholarscore.etl.powerschool.api.response.PsDistrictResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
-import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
+import com.scholarscore.etl.powerschool.api.response.PsSchoolsResponse;
 import com.scholarscore.etl.powerschool.api.response.SectionEnrollmentsResponse;
-import com.scholarscore.etl.powerschool.api.response.SectionResponse;
-import com.scholarscore.etl.powerschool.api.response.StudentResponse;
-import com.scholarscore.etl.powerschool.api.response.TermResponse;
+import com.scholarscore.etl.powerschool.api.response.PsSectionResponse;
+import com.scholarscore.etl.powerschool.api.response.PsStudentResponse;
+import com.scholarscore.etl.powerschool.api.response.PsTermResponse;
 import org.apache.http.HttpRequest;
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -127,8 +127,8 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
 
     @Override
-    public SchoolsResponse getSchools() throws HttpClientException {
-        return get(SchoolsResponse.class, paths.getSchoolPath());
+    public PsSchoolsResponse getSchools() throws HttpClientException {
+        return get(PsSchoolsResponse.class, paths.getSchoolPath());
     }
 
     @Override
@@ -140,8 +140,8 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
 
     @Override
-    public DistrictResponse getDistrict() throws HttpClientException {
-        return get(DistrictResponse.class, PATH_RESOURCE_DISTRICT);
+    public PsDistrictResponse getDistrict() throws HttpClientException {
+        return get(PsDistrictResponse.class, PATH_RESOURCE_DISTRICT);
     }
 
     @Override
@@ -181,8 +181,8 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
 
     @Override
-    public StudentResponse getStudentById(Long studentId) throws HttpClientException {
-        return get(StudentResponse.class, paths.getStudentPath(), studentId.toString());
+    public PsStudentResponse getStudentById(Long studentId) throws HttpClientException {
+        return get(PsStudentResponse.class, paths.getStudentPath(), studentId.toString());
     }
     @Override
     public PsCourses getCoursesBySchool(Long schoolId) throws HttpClientException {
@@ -201,8 +201,8 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
 
     @Override
-    public SectionResponse getSectionsBySchoolId(Long schoolId) throws HttpClientException {
-        return get(SectionResponse.class, paths.getSectionPath(), schoolId.toString());
+    public PsSectionResponse getSectionsBySchoolId(Long schoolId) throws HttpClientException {
+        return get(PsSectionResponse.class, paths.getSectionPath(), schoolId.toString());
     }
 
     @Override
@@ -388,8 +388,8 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     }
 
     @Override
-    public TermResponse getTermsBySchoolId(Long schoolId) throws HttpClientException {
-        return get(TermResponse.class, paths.getTermPath(), schoolId.toString());
+    public PsTermResponse getTermsBySchoolId(Long schoolId) throws HttpClientException {
+        return get(PsTermResponse.class, paths.getTermPath(), schoolId.toString());
     }
 
     @Override

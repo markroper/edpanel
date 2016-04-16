@@ -5,10 +5,10 @@ import com.scholarscore.etl.powerschool.api.model.PsCourses;
 import com.scholarscore.etl.powerschool.api.model.PsSchool;
 import com.scholarscore.etl.powerschool.api.model.PsStaffs;
 import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
-import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
-import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
-import com.scholarscore.etl.powerschool.api.response.SectionResponse;
-import com.scholarscore.etl.powerschool.api.response.TermResponse;
+import com.scholarscore.etl.powerschool.api.response.PsDistrictResponse;
+import com.scholarscore.etl.powerschool.api.response.PsSchoolsResponse;
+import com.scholarscore.etl.powerschool.api.response.PsSectionResponse;
+import com.scholarscore.etl.powerschool.api.response.PsTermResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.user.Staff;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
     private IPowerSchoolClient client;
 
     public void testLoadSchools() throws HttpClientException {
-        SchoolsResponse response = client.getSchools();
+        PsSchoolsResponse response = client.getSchools();
         assertNotNull(response);
         assertNotNull(response.schools);
         assertTrue(response.schools.school.size() > 0);
@@ -53,16 +53,16 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
 
     public void testGetSectionsBySchool() throws HttpClientException {
         for (PsSchool school : client.getSchools().schools.school) {
-            SectionResponse sectionResponse = client.getSectionsBySchoolId(school.id);
-            assertNotNull(sectionResponse);
-            assertNotNull(sectionResponse.sections.section);
+            PsSectionResponse psSectionResponse = client.getSectionsBySchoolId(school.id);
+            assertNotNull(psSectionResponse);
+            assertNotNull(psSectionResponse.sections.section);
         }
     }
 
     public void testGetTermBySchool() throws HttpClientException {
         for (PsSchool school : client.getSchools().schools.school) {
-            TermResponse termResponse = client.getTermsBySchoolId(school.id);
-            assertNotNull(termResponse);
+            PsTermResponse psTermResponse = client.getTermsBySchoolId(school.id);
+            assertNotNull(psTermResponse);
         }
     }
 
@@ -75,7 +75,7 @@ public class PowerSchoolFunctionalTest extends AbstractTestNGSpringContextTests 
     }
 
     public void testLoadDistrict() throws HttpClientException {
-        DistrictResponse response = client.getDistrict();
+        PsDistrictResponse response = client.getDistrict();
         assertNotNull(response);
         assertNotNull(response.district);
         assertNotNull(response.district.uuid);

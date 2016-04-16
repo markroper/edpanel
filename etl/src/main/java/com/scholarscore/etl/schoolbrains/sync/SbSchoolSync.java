@@ -11,9 +11,9 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by markroper on 4/15/16.
  */
-public class SchoolSync extends SchoolBrainsBaseSync<School> {
+public class SbSchoolSync extends SchoolBrainsBaseSync<School> {
 
-    public SchoolSync(ISchoolBrainsClient schoolBrains, IAPIClient edPanel) {
+    public SbSchoolSync(ISchoolBrainsClient schoolBrains, IAPIClient edPanel) {
         super(schoolBrains, edPanel);
     }
 

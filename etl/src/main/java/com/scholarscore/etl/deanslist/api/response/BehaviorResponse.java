@@ -1,7 +1,7 @@
 package com.scholarscore.etl.deanslist.api.response;
 
 import com.scholarscore.etl.deanslist.api.model.DlBehavior;
-import com.scholarscore.etl.powerschool.api.response.ITranslateCollection;
+import com.scholarscore.etl.ITranslateCollection;
 import com.scholarscore.models.BehaviorCategory;
 import com.scholarscore.models.user.Staff;
 import org.apache.commons.lang3.StringUtils;

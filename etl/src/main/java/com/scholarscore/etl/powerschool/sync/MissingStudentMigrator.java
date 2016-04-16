@@ -4,7 +4,7 @@ import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
-import com.scholarscore.etl.powerschool.api.response.StudentResponse;
+import com.scholarscore.etl.powerschool.api.response.PsStudentResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.user.Student;
@@ -33,7 +33,7 @@ public class MissingStudentMigrator {
             IAPIClient edPanel,
             StudentAssociator studentAssociator,
             PowerSchoolSyncResult results) {
-        StudentResponse powerStudent = null;
+        PsStudentResponse powerStudent = null;
 
         try {
             powerStudent = powerSchool.getStudentById(powerSchoolStudentId);

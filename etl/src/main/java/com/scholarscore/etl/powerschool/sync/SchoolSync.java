@@ -4,7 +4,7 @@ import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
-import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
+import com.scholarscore.etl.powerschool.api.response.PsSchoolsResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.School;
 
@@ -24,7 +24,7 @@ public class SchoolSync extends SyncBase<School> implements ISync<School> {
 
     @Override
     protected ConcurrentHashMap<Long, School> resolveAllFromSourceSystem() throws HttpClientException {
-        SchoolsResponse powerSchools = powerSchool.getSchools();
+        PsSchoolsResponse powerSchools = powerSchool.getSchools();
         ConcurrentHashMap<Long, School> schoolMap = new ConcurrentHashMap<>();
         for(School s: powerSchools.toInternalModel()) {
             schoolMap.put(Long.valueOf(s.getSourceSystemId()), s);

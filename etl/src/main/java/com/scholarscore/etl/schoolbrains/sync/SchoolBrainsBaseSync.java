@@ -23,7 +23,7 @@ public abstract class SchoolBrainsBaseSync<T> {
         this.edPanel = edPanel;
     }
 
-    protected ConcurrentHashMap<String, T> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
+    public ConcurrentHashMap<String, T> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
         ConcurrentHashMap<String, T> source = null;
         try {
             source = this.resolveSourceSystem();

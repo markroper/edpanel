@@ -13,7 +13,7 @@ import com.scholarscore.etl.powerschool.api.model.section.PtTerm;
 import com.scholarscore.etl.powerschool.api.model.section.PtTermWrapper;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
-import com.scholarscore.etl.powerschool.api.response.SectionResponse;
+import com.scholarscore.etl.powerschool.api.response.PsSectionResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.etl.powerschool.sync.assignment.SectionAssignmentSync;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
@@ -222,7 +222,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
 
     protected ConcurrentHashMap<Long, Section> resolveAllFromSourceSystem() throws HttpClientException {
         ConcurrentHashMap<Long, Section> result = new ConcurrentHashMap<>();
-        SectionResponse sr = powerSchool.getSectionsBySchoolId(Long.valueOf(school.getSourceSystemId()));
+        PsSectionResponse sr = powerSchool.getSectionsBySchoolId(Long.valueOf(school.getSourceSystemId()));
         if(null != sr && null != sr.sections && null != sr.sections.section) {
             List<PsSection> powerSchoolSections
                     = sr.sections.section;

@@ -5,7 +5,6 @@ import com.scholarscore.etl.powerschool.api.model.term.PsTerms;
 /**
  * Created by mattg on 7/3/15.
  */
-public class TermResponse {
-
+public class PsTermResponse {
     public PsTerms terms;
 }

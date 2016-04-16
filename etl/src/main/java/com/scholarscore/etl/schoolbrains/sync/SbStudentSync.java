@@ -16,14 +16,14 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by markroper on 4/15/16.
  */
-public class StudentSync extends SchoolBrainsBaseSync<Student> {
+public class SbStudentSync extends SchoolBrainsBaseSync<Student> {
     Long schoolId;
     Map<String, School> schools;
 
-    public StudentSync(ISchoolBrainsClient schoolBrains,
-                       IAPIClient edPanel,
-                       Long schoolId,
-                       Map<String, School> schools) {
+    public SbStudentSync(ISchoolBrainsClient schoolBrains,
+                         IAPIClient edPanel,
+                         Long schoolId,
+                         Map<String, School> schools) {
         super(schoolBrains, edPanel);
         this.schoolId = schoolId;
         this.schools = schools;

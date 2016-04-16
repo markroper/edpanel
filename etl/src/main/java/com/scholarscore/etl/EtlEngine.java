@@ -203,7 +203,6 @@ public class EtlEngine implements IEtlEngine {
         endTime = System.currentTimeMillis();
         LOGGER.info("GPA sync complete");
 
-
         createCourses();
         long courseCreationComplete = (System.currentTimeMillis() - endTime)/1000;
         endTime = System.currentTimeMillis();

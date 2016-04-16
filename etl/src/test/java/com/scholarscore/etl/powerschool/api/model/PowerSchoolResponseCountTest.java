@@ -4,15 +4,14 @@ import com.scholarscore.client.HttpClientException;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignmentWrapper;
 import com.scholarscore.etl.powerschool.api.model.section.PsSectionGradeWrapper;
 import com.scholarscore.etl.powerschool.api.model.student.PsStudents;
-import com.scholarscore.etl.powerschool.api.response.DistrictResponse;
+import com.scholarscore.etl.powerschool.api.response.PsDistrictResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
-import com.scholarscore.etl.powerschool.api.response.SchoolsResponse;
-import com.scholarscore.etl.powerschool.api.response.SectionResponse;
-import com.scholarscore.etl.powerschool.api.response.TermResponse;
+import com.scholarscore.etl.powerschool.api.response.PsSchoolsResponse;
+import com.scholarscore.etl.powerschool.api.response.PsSectionResponse;
+import com.scholarscore.etl.powerschool.api.response.PsTermResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.School;
 import com.scholarscore.models.user.Staff;
-import com.scholarscore.models.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -52,7 +51,7 @@ public class PowerSchoolResponseCountTest extends AbstractTestNGSpringContextTes
 
     @Test
     public void testLoadDistrict() throws HttpClientException {
-        DistrictResponse response = client.getDistrict();
+        PsDistrictResponse response = client.getDistrict();
         assertNotNull(response);
         assertNotNull(response.district);
         assertNotNull(response.district.uuid);
@@ -60,7 +59,7 @@ public class PowerSchoolResponseCountTest extends AbstractTestNGSpringContextTes
 
     @Test
     public void testLoadingSchoolEntitiesAndCounts() throws HttpClientException {
-        SchoolsResponse response = testLoadSchools();
+        PsSchoolsResponse response = testLoadSchools();
 
         testGetStaffBySchool(response);
         testGetAllStudentsBySchoolId(response);
@@ -70,25 +69,25 @@ public class PowerSchoolResponseCountTest extends AbstractTestNGSpringContextTes
         testGetAllSectionsBySchoolId(response);
     }
     
-    private void testGetAllSectionsBySchoolId(SchoolsResponse response) throws HttpClientException {
+    private void testGetAllSectionsBySchoolId(PsSchoolsResponse response) throws HttpClientException {
         int totalSectionCount = 0;
         for (PsSchool school : response.schools.school) {
-            SectionResponse sectionResponse = client.getSectionsBySchoolId(school.id);
-            assertNotNull(sectionResponse);
-            assertNotNull(sectionResponse.sections.section);
-            totalSectionCount += sectionResponse.sections.section.size();
+            PsSectionResponse psSectionResponse = client.getSectionsBySchoolId(school.id);
+            assertNotNull(psSectionResponse);
+            assertNotNull(psSectionResponse.sections.section);
+            totalSectionCount += psSectionResponse.sections.section.size();
             
             // get all assignments for section while we're here!
-            testGetAssignmentsBySectionId(sectionResponse);
-            testGetStudentSectionGradesBySectionId(sectionResponse);
+            testGetAssignmentsBySectionId(psSectionResponse);
+            testGetStudentSectionGradesBySectionId(psSectionResponse);
         }
         assertEquals(totalSectionCount, TOTAL_SECTIONS, "Total section expected is " 
                 + TOTAL_SECTIONS + " but got " + totalSectionCount );
     }
     
-    private void testGetStudentSectionGradesBySectionId(SectionResponse sectionResponse) throws HttpClientException { 
+    private void testGetStudentSectionGradesBySectionId(PsSectionResponse psSectionResponse) throws HttpClientException { 
         int totalStudentSectionGradesCount = 0;
-        for (PsSection section : sectionResponse.sections.section) {
+        for (PsSection section : psSectionResponse.sections.section) {
             PsResponse<PsSectionGradeWrapper> studentSectionGradeResponse = client.getSectionScoresBySectionId(section.id);
             assertNotNull(studentSectionGradeResponse);
             assertNotNull(studentSectionGradeResponse.record);
@@ -98,8 +97,8 @@ public class PowerSchoolResponseCountTest extends AbstractTestNGSpringContextTes
                 + TOTAL_STUDENT_SECTION_GRADES + " but got " + totalStudentSectionGradesCount );
     }
 
-    private SchoolsResponse testLoadSchools() throws HttpClientException {
-        SchoolsResponse response = client.getSchools();
+    private PsSchoolsResponse testLoadSchools() throws HttpClientException {
+        PsSchoolsResponse response = client.getSchools();
         assertNotNull(response);
         assertNotNull(response.schools);
         assertEquals(response.schools.school.size(), TOTAL_SCHOOLS);
@@ -108,9 +107,9 @@ public class PowerSchoolResponseCountTest extends AbstractTestNGSpringContextTes
         return response;
     }
     
-    private void testGetStaffBySchool(SchoolsResponse schoolsResponse) throws HttpClientException {
+    private void testGetStaffBySchool(PsSchoolsResponse psSchoolsResponse) throws HttpClientException {
         int totalCountStaff = 0;
-        for (PsSchool school : schoolsResponse.schools.school) {
+        for (PsSchool school : psSchoolsResponse.schools.school) {
             PsStaffs response = client.getStaff(school.id);
             assertNotNull(response);
             Collection<Staff> internalModel = response.toInternalModel();
@@ -120,22 +119,22 @@ public class PowerSchoolResponseCountTest extends AbstractTestNGSpringContextTes
         assertEquals(totalCountStaff, TOTAL_STAFF, "Total Staff expected is " + TOTAL_STAFF + " but got " + totalCountStaff );
     }
     
-    private void testGetTermBySchool(SchoolsResponse schoolsResponse) throws HttpClientException {
+    private void testGetTermBySchool(PsSchoolsResponse psSchoolsResponse) throws HttpClientException {
         int totalCount = 0;
-        for (PsSchool school : schoolsResponse.schools.school) {
-            TermResponse termResponse = client.getTermsBySchoolId(school.id);
-            assertNotNull(termResponse);
-            assertNotNull(termResponse.terms);
-            assertNotNull(termResponse.terms.term);
-            assertTrue(termResponse.terms.term.size() > 0);
-            totalCount += termResponse.terms.term.size();
+        for (PsSchool school : psSchoolsResponse.schools.school) {
+            PsTermResponse psTermResponse = client.getTermsBySchoolId(school.id);
+            assertNotNull(psTermResponse);
+            assertNotNull(psTermResponse.terms);
+            assertNotNull(psTermResponse.terms.term);
+            assertTrue(psTermResponse.terms.term.size() > 0);
+            totalCount += psTermResponse.terms.term.size();
         }
         assertEquals(totalCount, TOTAL_TERMS, "Total Terms expected is " + TOTAL_TERMS + " but got " + totalCount );
     }
     
-    private void testGetCoursesBySchool(SchoolsResponse schoolsResponse) throws HttpClientException {
+    private void testGetCoursesBySchool(PsSchoolsResponse psSchoolsResponse) throws HttpClientException {
         int totalCount = 0;
-        for (PsSchool school : schoolsResponse.schools.school) {
+        for (PsSchool school : psSchoolsResponse.schools.school) {
             PsCourses response = client.getCoursesBySchool(school.id);
             assertNotNull(response);
             // no data is in any of the 3 schools thus we cannot verify the data in powerschool
@@ -144,9 +143,9 @@ public class PowerSchoolResponseCountTest extends AbstractTestNGSpringContextTes
         assertEquals(totalCount, TOTAL_COURSES, "Total Courses expected is " + TOTAL_COURSES + " but got " + totalCount);
     }
     
-    private void testGetAllStudentsBySchoolId(SchoolsResponse schoolsResponse) throws HttpClientException {
+    private void testGetAllStudentsBySchoolId(PsSchoolsResponse psSchoolsResponse) throws HttpClientException {
         int totalCount = 0;
-        for (PsSchool school : schoolsResponse.schools.school) {
+        for (PsSchool school : psSchoolsResponse.schools.school) {
             PsStudents response = client.getStudentsBySchool(school.id);
             Assert.assertNotNull(response);
             totalCount += response.toInternalModel().size();
@@ -154,9 +153,9 @@ public class PowerSchoolResponseCountTest extends AbstractTestNGSpringContextTes
         assertEquals(totalCount, TOTAL_STUDENTS, "Total Students expected is " + TOTAL_STUDENTS + " but got " + totalCount);
     }
     
-    private void testGetAssignmentsBySectionId(SectionResponse sectionResponse) throws HttpClientException {
+    private void testGetAssignmentsBySectionId(PsSectionResponse psSectionResponse) throws HttpClientException {
         int assignmentCount = 0;
-        for (PsSection section : sectionResponse.sections.section) {
+        for (PsSection section : psSectionResponse.sections.section) {
             PsResponse<PsAssignmentWrapper> assignmentResponse = client.getAssignmentsBySectionId(section.id);
             assignmentCount += assignmentResponse.record.size();
         }

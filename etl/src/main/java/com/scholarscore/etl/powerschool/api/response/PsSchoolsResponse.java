@@ -1,7 +1,9 @@
 package com.scholarscore.etl.powerschool.api.response;
 
 
+import com.scholarscore.etl.ITranslateCollection;
 import com.scholarscore.etl.powerschool.api.model.PsSchool;
+import com.scholarscore.models.School;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,7 +12,7 @@ import java.util.List;
 /**
  * Created by mattg on 7/2/15.
  */
-public class SchoolsResponse implements ITranslateCollection<com.scholarscore.models.School> {
+public class PsSchoolsResponse implements ITranslateCollection<School> {
     public PsSchools schools;
 
     @Override
