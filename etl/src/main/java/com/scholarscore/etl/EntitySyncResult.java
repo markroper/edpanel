@@ -69,55 +69,31 @@ public class EntitySyncResult {
         return updated;
     }
 
-    public void setUpdated(ConcurrentHashMap<Long, Long> updated) {
-        this.updated = updated;
-    }
-
     public ConcurrentHashMap<Long, Long> getDeleted() {
         return deleted;
     }
 
-    public void setDeleted(ConcurrentHashMap<Long, Long> deleted) {
-        this.deleted = deleted;
+    public ConcurrentHashMap<Long, Long> getUntouched() {
+        return untouched;
     }
 
     public List<Long> getFailedCreates() {
         return failedCreates;
     }
 
-    public void setFailedCreates(List<Long> failedCreates) {
-        this.failedCreates = failedCreates;
-    }
-
     public ConcurrentHashMap<Long, Long> getFailedUpdates() {
         return failedUpdates;
-    }
-
-    public void setFailedUpdates(ConcurrentHashMap<Long, Long> failedUpdates) {
-        this.failedUpdates = failedUpdates;
     }
 
     public ConcurrentHashMap<Long, Long> getFailedDeletes() {
         return failedDeletes;
     }
 
-    public void setFailedDeletes(ConcurrentHashMap<Long, Long> failedDeletes) {
-        this.failedDeletes = failedDeletes;
-    }
-
     public ConcurrentHashMap<Long, Long> getSourceGetFailed() {
         return sourceGetFailed;
     }
 
-    public void setSourceGetFailed(ConcurrentHashMap<Long, Long> sourceGetFailed) {
-        this.sourceGetFailed = sourceGetFailed;
-    }
-
     public ConcurrentHashMap<Long, Long> getEdPanelGetFailed() {
         return edPanelGetFailed;
-    }
-
-    public void setEdPanelGetFailed(ConcurrentHashMap<Long, Long> edPanelGetFailed) {
-        this.edPanelGetFailed = edPanelGetFailed;
     }
 }

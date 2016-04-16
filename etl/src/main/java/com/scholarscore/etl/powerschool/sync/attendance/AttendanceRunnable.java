@@ -13,6 +13,7 @@ import com.scholarscore.etl.powerschool.api.model.cycles.PsCycle;
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
+import com.scholarscore.etl.powerschool.sync.SyncBase;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.attendance.Attendance;
@@ -30,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by markroper on 11/1/15.
  */
-public class AttendanceRunnable implements Runnable, ISync<Attendance> {
+public class AttendanceRunnable extends SyncBase<Attendance> implements Runnable, ISync<Attendance> {
     private final static Logger LOGGER = LoggerFactory.getLogger(AttendanceRunnable.class);
     protected IAPIClient edPanel;
     protected IPowerSchoolClient powerSchool;
@@ -76,88 +77,8 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Attendance> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        ConcurrentHashMap<Long, Attendance> source = null;
-        ConcurrentHashMap<Long, Attendance> ed = null;
-        try {
-            source = resolveAllFromSourceSystem(Long.valueOf(student.getSourceSystemId()));
-        } catch (HttpClientException e) {
-            try {
-                source = resolveAllFromSourceSystem(Long.valueOf(student.getSourceSystemId()));
-            } catch (HttpClientException ex) {
-                LOGGER.error("Unable to fetch attendance from from PowerSchool for student " + student.getName() +
-                        " with ID: " + student.getId());
-                results.attendanceSourceGetFailed(Long.valueOf(student.getSourceSystemId()), student.getId());
-                return new ConcurrentHashMap<>();
-            }
-        }
-        try {
-            ed = resolveFromEdPanel();
-        } catch (HttpClientException e) {
-            try {
-                ed = resolveFromEdPanel();
-            } catch (HttpClientException ex) {
-                LOGGER.error("Unable to fetch attendance from from EdPanel for student " + student.getName() +
-                        " with ID: " + student.getId());
-                results.attendanceEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-                return new ConcurrentHashMap<>();
-            }
-        }
-        Iterator<Map.Entry<Long, Attendance>> sourceIterator = source.entrySet().iterator();
-        List<Attendance> attendanceToCreate = new ArrayList<>();
-        //Find & perform the inserts and updates, if any
-        while(sourceIterator.hasNext()) {
-            Map.Entry<Long, Attendance> entry = sourceIterator.next();
-            Attendance sourceAttendance = entry.getValue();
-            Attendance edPanelAttendance = ed.get(entry.getKey());
-            if(null == edPanelAttendance){
-                attendanceToCreate.add(sourceAttendance);
-                results.attendanceCreated(Long.valueOf(sourceAttendance.getSourceSystemId()), -1L);
-            } else {
-                sourceAttendance.setId(edPanelAttendance.getId());
-                if(edPanelAttendance.getStudent().getId().equals(sourceAttendance.getStudent().getId())) {
-                    sourceAttendance.setStudent(edPanelAttendance.getStudent());
-                }
-                if(edPanelAttendance.getSchoolDay().getId().equals(sourceAttendance.getSchoolDay().getId())) {
-                    sourceAttendance.setSchoolDay(edPanelAttendance.getSchoolDay());
-                }
-                if(!edPanelAttendance.equals(sourceAttendance)) {
-                    try {
-                        edPanel.updateAttendance(school.getId(), student.getId(), sourceAttendance);
-                    } catch (HttpClientException e) {
-                        results.attendanceUpdateFailed(entry.getKey(), sourceAttendance.getId());
-                        continue;
-                    }
-                    results.attendanceUpdated(entry.getKey(), sourceAttendance.getId());
-                }
-            }
-        }
-        //Perform the bulk creates!
-        try {
-            edPanel.createAttendances(school.getId(), student.getId(), attendanceToCreate);
-        } catch (HttpClientException e) {
-            for(Attendance s: attendanceToCreate) {
-                results.attendanceCreateFailed(Long.valueOf(s.getSourceSystemId()));
-            }
-        }
-
-        //Delete anything IN EdPanel that is NOT in source system
-        for (Map.Entry<Long, Attendance> entry : ed.entrySet()) {
-            if (!source.containsKey(entry.getKey()) &&
-                    entry.getValue().getSchoolDay().getDate().compareTo(syncCutoff) > 0) {
-                try {
-                    edPanel.deleteAttendance(school.getId(), student.getId(), entry.getValue());
-                } catch (HttpClientException e) {
-                    results.attendanceDeleteFailed(entry.getKey(), entry.getValue().getId());
-                    continue;
-                }
-                results.attendanceDeleted(entry.getKey(), entry.getValue().getId());
-            }
-        }
-        return source;
-    }
-
-    protected ConcurrentHashMap<Long, Attendance> resolveAllFromSourceSystem(Long sourceStudentId) throws HttpClientException {
+    protected ConcurrentHashMap<Long, Attendance> resolveAllFromSourceSystem() throws HttpClientException {
+        Long sourceStudentId = Long.valueOf(student.getSourceSystemId());
         ConcurrentHashMap<Long, Attendance> result = new ConcurrentHashMap<>();
         long syntheticDcid = -1;
         //First, get the attendance codes.
@@ -241,6 +162,14 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         return result;
     }
 
+    @Override
+    protected void handleSourceGetFailure(PowerSchoolSyncResult results) {
+        LOGGER.error("Unable to fetch attendance from from PowerSchool for student " + student.getName() +
+                " with ID: " + student.getId());
+        results.attendanceSourceGetFailed(Long.valueOf(student.getSourceSystemId()), student.getId());
+    }
+
+    @Override
     protected ConcurrentHashMap<Long, Attendance> resolveFromEdPanel() throws HttpClientException {
         Attendance[] attendances = edPanel.getAttendance(school.getId(), student.getId());
         ConcurrentHashMap<Long, Attendance> attendanceMap = new ConcurrentHashMap<>();
@@ -253,6 +182,68 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
         return attendanceMap;
     }
 
+    @Override
+    protected void handleEdPanelGetFailure(PowerSchoolSyncResult results) {
+        LOGGER.error("Unable to fetch attendance from from EdPanel for student " + student.getName() +
+                " with ID: " + student.getId());
+        results.attendanceEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+    }
+
+    @Override
+    protected void createEdPanelRecord(Attendance entityToSave, PowerSchoolSyncResult results) {
+        enqueueForBulkCreate(entityToSave);
+    }
+
+    @Override
+    protected void updateEdPanelRecord(Attendance sourceSystemEntity, Attendance edPanelEntity, PowerSchoolSyncResult results) {
+        Long ssid = Long.valueOf(sourceSystemEntity.getSourceSystemId());
+        sourceSystemEntity.setId(edPanelEntity.getId());
+        if (edPanelEntity.getStudent().getId().equals(sourceSystemEntity.getStudent().getId())) {
+            sourceSystemEntity.setStudent(edPanelEntity.getStudent());
+        }
+        if (edPanelEntity.getSchoolDay().getId().equals(sourceSystemEntity.getSchoolDay().getId())) {
+            sourceSystemEntity.setSchoolDay(edPanelEntity.getSchoolDay());
+        }
+        if (!edPanelEntity.equals(sourceSystemEntity)) {
+            try {
+                edPanel.updateAttendance(school.getId(), student.getId(), sourceSystemEntity);
+                results.attendanceUpdated(ssid, sourceSystemEntity.getId());
+            } catch (HttpClientException e) {
+                results.attendanceUpdateFailed(ssid, sourceSystemEntity.getId());
+            }
+        } else {
+            results.attendanceUntouched(ssid, sourceSystemEntity.getId());
+        }
+    }
+
+    @Override
+    protected void deleteEdPanelRecord(Attendance entityToDelete, PowerSchoolSyncResult results) {
+        Long ssid = Long.valueOf(entityToDelete.getSourceSystemId());
+        if (entityToDelete.getSchoolDay().getDate().compareTo(syncCutoff) > 0) {
+            try {
+                edPanel.deleteAttendance(school.getId(), student.getId(), entityToDelete);
+                results.attendanceDeleted(ssid, entityToDelete.getId());
+            } catch (HttpClientException e) {
+                results.attendanceDeleteFailed(ssid, entityToDelete.getId());
+            }
+        }
+    }
+
+    @Override
+    protected void createBulkEdPanelRecords(List<Attendance> entitiesToBulkCreate) {
+        //Perform the bulk creates!
+        try {
+            edPanel.createAttendances(school.getId(), student.getId(), entitiesToBulkCreate);
+            for (Attendance s : entitiesToBulkCreate) {
+                results.attendanceCreated(Long.valueOf(s.getSourceSystemId()), -1);
+            }
+        } catch (HttpClientException e) {
+            for(Attendance s: entitiesToBulkCreate) {
+                results.attendanceCreateFailed(Long.valueOf(s.getSourceSystemId()));
+            }
+        }
+    }
+
     /**
      * Using the period_id, cycle_day, school_day and classes the student is enrolled in we generate
      * the section_fk that the attendance should be associated with.
@@ -261,7 +252,7 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
      * @param psAttendance THe psAttendance Object
      * @return the attendance object with the section_fk set
      */
-    protected Attendance resolveSectionFk(Attendance a, SchoolDay schoolDay, PsAttendance psAttendance) {
+    private Attendance resolveSectionFk(Attendance a, SchoolDay schoolDay, PsAttendance psAttendance) {
         if (null != schoolDay) {
             PsCycle cycleDay = schoolCycles.get(schoolDay.getCycleId());
             if (null != periods.get(psAttendance.periodid)) {
@@ -295,7 +286,6 @@ public class AttendanceRunnable implements Runnable, ISync<Attendance> {
                     }
                 }
             }
-
         }
         return a;
     }

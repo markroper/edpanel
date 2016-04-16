@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -147,6 +148,14 @@ public class StudentSync extends SyncBase<Student> implements ISync<Student> {
         sourceSystemEntity.setSourceSystemId(edPanelEntity.getSourceSystemId());
         sourceSystemEntity.setUsername(edPanelEntity.getUsername());
         sourceSystemEntity.setEnabled(edPanelEntity.getEnabled());
+        //If the current school has changed, set the previous school ID on the source entity.
+        //Otherwise, we have no way of knowing the previous school ID, so we should set it to whatever
+        //was previously stored on the EdPanel student entity
+        if(!Objects.equals(edPanelEntity.getCurrentSchoolId(), sourceSystemEntity.getCurrentSchoolId())) {
+            sourceSystemEntity.setPreviousSchoolId(edPanelEntity.getCurrentSchoolId());
+        } else{
+            sourceSystemEntity.setPreviousSchoolId(edPanelEntity.getPreviousSchoolId());
+        }
         edPanelEntity.setPassword(null);
         Address add = sourceSystemEntity.getHomeAddress();
         if(null != add && null != edPanelEntity.getHomeAddress()) {
@@ -164,6 +173,8 @@ public class StudentSync extends SyncBase<Student> implements ISync<Student> {
                 results.studentUpdateFailed(ssid, sourceSystemEntity.getId());
                 return;
             }
+        } else {
+            results.studentUntouched(ssid, sourceSystemEntity.getId());
         }
         studentAssociator.add(ssid, sourceSystemEntity);
     }

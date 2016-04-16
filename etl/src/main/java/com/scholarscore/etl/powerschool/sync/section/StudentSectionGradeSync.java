@@ -156,6 +156,8 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
                         continue;
                     }
                     results.studentSectionGradeUpdated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceSsg.getId());
+                } else {
+                    results.studentSectionGradeUntouched(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceSsg.getId());
                 }
             }
         }

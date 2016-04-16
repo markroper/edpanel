@@ -82,6 +82,8 @@ public class SchoolSync extends SyncBase<School> implements ISync<School> {
             } catch (HttpClientException e) {
                 results.schoolUpdateFailed(ssid, sourceSystemEntity.getId());
             }
+        } else {
+            results.schoolUntouched(ssid, sourceSystemEntity.getId());
         }
     }
 

@@ -88,6 +88,8 @@ public class SchoolDaySync {
                     results.schoolDayUpdated(
                             Long.valueOf(schoolDay.getSourceSystemId()),
                             schoolDay.getId());
+                } else {
+                    results.schoolDayUntouched(new Long(schoolDay.getSourceSystemId()), schoolDay.getId());
                 }
             }
         }
