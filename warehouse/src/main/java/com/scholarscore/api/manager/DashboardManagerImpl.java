@@ -75,7 +75,6 @@ public class DashboardManagerImpl implements DashboardManager {
     @Override
     public ServiceResponse<Dashboard> getDashboard(Long schoolId) {
         UserDetailsProxy udp = pm.getUserManager().getCurrentUserDetails();
-
         Dashboard d = dashboardPersistence.selectDashboardForUser(schoolId, udp.getUser().getId());
         if(null == d) {
             d = dashboardPersistence.selectDashboardForUser(schoolId, null);
@@ -417,11 +416,10 @@ public class DashboardManagerImpl implements DashboardManager {
         row4.setReports(new ArrayList<>());
         row4.getReports().add(goal);
 
-        ReportAssignmentAnalysis qa = new ReportAssignmentAnalysis();
-        qa.setName("Quarterly Assessment Results, Biology");
-        qa.setType(ReportType.ASSIGNMENT_ANALYSIS);
-        qa.setAssignmentIds(Arrays.asList(9388L));
-        row4.getReports().add(qa);
-
+//        ReportAssignmentAnalysis qa = new ReportAssignmentAnalysis();
+//        qa.setName("Quarterly Assessment Results, Biology");
+//        qa.setType(ReportType.ASSIGNMENT_ANALYSIS);
+//        qa.setAssignmentIds(Arrays.asList(9388L));
+//        row4.getReports().add(qa);
     }
 }
