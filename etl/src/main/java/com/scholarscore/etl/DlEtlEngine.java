@@ -105,10 +105,14 @@ public class DlEtlEngine implements IEtlEngine {
         LOGGER.debug("got " + behaviorsToMerge.size() + " behavior events from deanslist.");
         if (existingStudents != null) {
             for (Student student : existingStudents) {
-                LOGGER.debug("Got scholarScore student: " + student);
+                LOGGER.trace("Got EdPanel student: " + student);
             }
             LOGGER.debug("got " + existingStudents.size() + " existing students as potential merge targets.");
-            LOGGER.debug("got " + existingTeachers.size() + " existing teachers as potential merge targets.");
+            if (existingTeachers != null) {
+                LOGGER.debug("got " + existingTeachers.size() + " existing teachers as potential merge targets.");
+            } else {
+                LOGGER.warn("Could not get existing teachers from edpanel!");
+            }
         }
 
         existingBehaviorLookup = new HashMap<>();

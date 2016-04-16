@@ -193,7 +193,8 @@ public class KickboardEtl implements IEtlEngine {
                     if (edPanelBehaviors != null) {
                         edPanelBehaviors.put(b.getRemoteBehaviorId(), b);
                     } else {
-                        LOGGER.debug("NULL EdPanelBehavior, addStudentBehavior skipping the EdPanelBehavior.put()");
+                        // this is expected if edPanelBehaviors is not passed in
+                        LOGGER.trace("NULL EdPanelBehavior, addStudentBehavior skipping the EdPanelBehavior.put()");
                     }
                 } else {
                     //For behaviors without an SSID (kickboard consequences), use alternative data structure

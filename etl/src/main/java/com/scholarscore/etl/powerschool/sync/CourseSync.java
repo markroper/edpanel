@@ -86,11 +86,15 @@ public class CourseSync extends SyncBase<Course> implements ISync<Course> {
         Long ssid = Long.parseLong(sourceSystemEntity.getSourceSystemId());
         sourceSystemEntity.setId(edPanelEntity.getId());
         sourceSystemEntity.setSchool(edPanelEntity.getSchool());
-        try {
-            Course created = edPanel.replaceCourse(school.getId(), sourceSystemEntity);
-            results.courseUpdated(ssid, created.getId());
-        } catch (HttpClientException e) {
-            results.courseUpdateFailed(ssid, sourceSystemEntity.getId());
+        if (!edPanelEntity.equals(sourceSystemEntity)) {
+            try {
+                Course created = edPanel.replaceCourse(school.getId(), sourceSystemEntity);
+                results.courseUpdated(ssid, created.getId());
+            } catch (HttpClientException e) {
+                results.courseUpdateFailed(ssid, sourceSystemEntity.getId());
+            }
+        } else {
+            results.courseUntouched(ssid, sourceSystemEntity.getId());
         }
     }
 
