@@ -137,6 +137,7 @@ public class HibernateConsts {
     public static final String STUDENT_ENROLL_STATUS = "student_enroll_status";
     public static final String STUDENT_GRADE_LEVEL = "student_grade_level";
     public static final String STUDENT_STATE_ID = "student_state_id";
+    public static final String STUDENT_PREVIOUS_SCHOOL_ID = "student_previous_school_id";
     
     //Student section grade constants
     public static final String STUDENT_SECTION_GRADE_TABLE = "student_section_grade";
