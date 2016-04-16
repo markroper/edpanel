@@ -15,6 +15,7 @@ import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.api.response.SectionResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
+import com.scholarscore.etl.powerschool.sync.SyncBase;
 import com.scholarscore.etl.powerschool.sync.assignment.SectionAssignmentSync;
 import com.scholarscore.etl.powerschool.sync.associator.StaffAssociator;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
@@ -33,7 +34,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * Created by markroper on 10/25/15.
  */
-public class SectionSyncRunnable implements Runnable, ISync<Section> {
+public class SectionSyncRunnable extends SyncBase<Section> implements Runnable, ISync<Section> {
     private final static Logger LOGGER = LoggerFactory.getLogger(SectionSyncRunnable.class);
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
@@ -103,123 +103,6 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
     }
 
     @Override
-    public ConcurrentHashMap<Long, Section> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        ConcurrentHashMap<Long, Section> source = null;
-        try {
-            source = resolveAllFromSourceSystem();
-        } catch (HttpClientException e) {
-            try {
-                source = resolveAllFromSourceSystem();
-            } catch (HttpClientException ex) {
-                LOGGER.error("Failed to retrieve sections from PowerSchool for the school " +
-                        school.getName() + ", with ID: " + school.getId());
-                results.sectionSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-                return new ConcurrentHashMap<>();
-            }
-        }
-        ConcurrentHashMap<Long, Section> ed = null;
-        try {
-            ed = resolveFromEdPanel();
-        } catch (HttpClientException e) {
-            try {
-                ed = resolveFromEdPanel();
-            } catch (HttpClientException ex) {
-                LOGGER.error("Failed to retrieve sections from EdPanel for the school " +
-                        school.getName() + ", with ID: " + school.getId());
-                results.sectionEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
-                return new ConcurrentHashMap<>();
-            }
-        }
-        String numSectionsResolved = (source != null ? Integer.toString(source.size()) : "null");
-        
-        LOGGER.debug("Resolved " + numSectionsResolved + " sections for school " + school.getName() +
-                " with Powerschool SSID " + school.getSourceSystemId() + " (EdPanel ID: " + school.getId() 
-                + ") will now CRUD in EdPanel");
-        Iterator<Map.Entry<Long, Section>> sourceIterator = source.entrySet().iterator();
-        //Find & perform the inserts and updates, if any
-        while(sourceIterator.hasNext()) {
-            Map.Entry<Long, Section> entry = sourceIterator.next();
-            Section sourceSection = entry.getValue();
-            Section edPanelSection = ed.get(entry.getKey());
-            if(null == edPanelSection){
-                Section created = null;
-                try {
-                    created = edPanel.createSection(
-                           school.getId(),
-                            sourceSection.getTerm().getSchoolYear().getId(),
-                            sourceSection.getTerm().getId(),
-                            sourceSection);
-                } catch (HttpClientException e) {
-                    results.sectionCreateFailed(entry.getKey());
-                    LOGGER.info("Failed to create section...");
-                    continue;
-                }
-                sourceSection.setId(created.getId());
-                results.sectionCreated(entry.getKey(), sourceSection.getId());
-                this.sections.put(new Long(sourceSection.getSourceSystemId()), sourceSection);
-            } else {
-                sourceSection.setId(edPanelSection.getId());
-                if(!edPanelSection.equals(sourceSection)) {
-                    try {
-                        edPanel.replaceSection(school.getId(),
-                                sourceSection.getTerm().getSchoolYear().getId(),
-                                sourceSection.getTerm().getId(),
-                                sourceSection);
-                    } catch (HttpClientException e) {
-                        LOGGER.info("Failed to update section...");
-                        results.sectionUpdateFailed(entry.getKey(), sourceSection.getId());
-                        continue;
-                    }
-                    this.sections.put(new Long(sourceSection.getSourceSystemId()), sourceSection);
-                    results.sectionUpdated(entry.getKey(), sourceSection.getId());
-                }
-            }
-            StudentSectionGradeSync ssgSync = new StudentSectionGradeSync(
-                    powerSchool,
-                    edPanel,
-                    school,
-                    studentAssociator,
-                    ptSectionIdToPsSectionId,
-                    ptStudentIdToPsStudentId,
-                    sourceSection,
-                    studentClasses);
-            ssgSync.syncCreateUpdateDelete(results);
-
-            SectionAssignmentSync assignmentSync = new SectionAssignmentSync(
-                    powerSchool,
-                    edPanel,
-                    school,
-                    studentAssociator,
-                    sectionPublicIdToSectionRecordId,
-                    sourceSection
-            );
-            LOGGER.trace("Section, including assignments and student section grades created/updated. Section ID: " +
-                    sourceSection.getId() + ", school ID: " + school.getId());
-            assignmentSync.syncCreateUpdateDelete(results);
-        }
-        LOGGER.info("All sections created and updated in EdPanel for school " + school.getName() +
-                " with ID " + school.getId());
-        //Delete anything IN EdPanel that is NOT in source system
-        Iterator<Map.Entry<Long, Section>> edpanelIterator = ed.entrySet().iterator();
-        while(edpanelIterator.hasNext()) {
-            Map.Entry<Long, Section> entry = edpanelIterator.next();
-            if(!source.containsKey(entry.getKey())) {
-                Section edPanelSection = entry.getValue();
-                try {
-                    edPanel.deleteSection(school.getId(),
-                            edPanelSection.getTerm().getSchoolYear().getId(),
-                            edPanelSection.getTerm().getId(),
-                            edPanelSection);
-                } catch (HttpClientException e) {
-                    results.sectionDeleteFailed(entry.getKey(), edPanelSection.getId());
-                    continue;
-                }
-                results.sectionDeleted(entry.getKey(), edPanelSection.getId());
-            }
-        }
-        return source;
-    }
-
     protected ConcurrentHashMap<Long, Section> resolveAllFromSourceSystem() throws HttpClientException {
         ConcurrentHashMap<Long, Section> result = new ConcurrentHashMap<>();
         SectionResponse sr = powerSchool.getSectionsBySchoolId(Long.valueOf(school.getSourceSystemId()));
@@ -256,15 +139,19 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
         return result;
     }
 
-    protected GradeFormula resolveSectionGradeFormula(PsSection powerSection) throws HttpClientException {
+    @Override
+    protected void handleSourceGetFailure(PowerSchoolSyncResult results) {
+        LOGGER.error("Failed to retrieve sections from PowerSchool for the school " +
+                school.getName() + ", with ID: " + school.getId());
+        results.sectionSourceGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+    }
+
+    private GradeFormula resolveSectionGradeFormula(PsSection powerSection) throws HttpClientException {
         //If there is a formula other than using assignment points and weights to calculate the grade,
         //Resolve that formula and set it on the section.
         if(null != powerSection.getId() && sectionIdToGradeFormula.containsKey(powerSection.getId())) {
-            Iterator<Map.Entry<Long, PsFinalGradeSetup>> it =
-                    sectionIdToGradeFormula.get(powerSection.getId()).entrySet().iterator();
             HashMap<Long, GradeFormula> allSectionFormulas = new HashMap<>();
-            while(it.hasNext()) {
-                Map.Entry<Long, PsFinalGradeSetup> setupEntry = it.next();
+            for (Map.Entry<Long, PsFinalGradeSetup> setupEntry : sectionIdToGradeFormula.get(powerSection.getId()).entrySet()) {
                 GradeFormula gradeFormula = new GradeFormula();
                 PsFinalGradeSetup setup = setupEntry.getValue();
                 gradeFormula.setId(setupEntry.getKey());
@@ -273,7 +160,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 //Get the term so we can set the term date ranges on the formula & set the formula ID to the powerschool term id
                 PsResponse<PtTermWrapper> powerTeacherTermResponse =
                         powerSchool.getPowerTeacherTerm(setupEntry.getKey());
-                if(null != powerTeacherTermResponse && powerTeacherTermResponse.record.size() > 0) {
+                if (null != powerTeacherTermResponse && powerTeacherTermResponse.record.size() > 0) {
                     DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                     PtTerm term = powerTeacherTermResponse.record.get(0).tables.psm_reportingterm;
                     String startDate = term.startdate;
@@ -289,7 +176,7 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 }
                 //Now if the powerschool grade setup has a formula ID, we need to resolve the weights for that formula
                 //and set them on the EdPanel GradeFormula instance
-                if(null != setup.gradingformulaid && !setup.gradingformulaid.equals(0L)) {
+                if (null != setup.gradingformulaid && !setup.gradingformulaid.equals(0L)) {
                     PsResponse<PsSectionGradeFormulaWeightingWrapper> formulaWeightResponse =
                             powerSchool.getGradeFormulaWeights(setup.gradingformulaid);
                     Map<Long, Double> assignmentIdToPoints = new HashMap<>();
@@ -298,11 +185,11 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                             formulaWeightResponse.record) {
                         //Powerschool supports assignment category weights and specific assignment weights
                         PsSectionGradeFormulaWeighting psWeight = psweightwrapper.tables.psm_gradingformulaweighting;
-                        if(null != psWeight.assignmentcategoryid && !psWeight.assignmentcategoryid.equals(0L)) {
+                        if (null != psWeight.assignmentcategoryid && !psWeight.assignmentcategoryid.equals(0L)) {
                             assignmentTypeToPoints.put(
                                     powerTeacherCategoryToEdPanelType.get(psWeight.assignmentcategoryid),
                                     psWeight.weighting);
-                        } else if(null != psWeight.assignmentid && !psWeight.assignmentid.equals(0L)) {
+                        } else if (null != psWeight.assignmentid && !psWeight.assignmentid.equals(0L)) {
                             assignmentIdToPoints.put(
                                     psWeight.assignmentid,
                                     psWeight.weighting);
@@ -313,31 +200,34 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
                 }
 
                 //Put the formula in the map, and add it as a child to the parent
-                if(allSectionFormulas.containsKey(gradeFormula.getParentId())) {
+                if (allSectionFormulas.containsKey(gradeFormula.getParentId())) {
                     allSectionFormulas.get(gradeFormula.getParentId()).getChildren().add(gradeFormula);
-                } else if(null != gradeFormula.getParentId()){
+                } else if (null != gradeFormula.getParentId()) {
                     GradeFormula parent = new GradeFormula();
                     parent.setId(gradeFormula.getParentId());
-                    parent.setChildren(new HashSet<GradeFormula>(){{ add(gradeFormula); }});
+                    parent.setChildren(new HashSet<GradeFormula>() {{
+                        add(gradeFormula);
+                    }});
                     allSectionFormulas.put(gradeFormula.getParentId(), parent);
                 }
-                if(allSectionFormulas.containsKey(gradeFormula.getId())) {
+                if (allSectionFormulas.containsKey(gradeFormula.getId())) {
                     GradeFormula imposter = allSectionFormulas.get(gradeFormula.getId());
                     gradeFormula.setChildren(imposter.getChildren());
                 }
                 allSectionFormulas.put(gradeFormula.getId(), gradeFormula);
             }
             //Find the root formula and return it
-            Iterator<Map.Entry<Long, GradeFormula>> resultsIt = allSectionFormulas.entrySet().iterator();
-            while(resultsIt.hasNext()) {
-                GradeFormula formula = resultsIt.next().getValue();
-                if(null == formula.getParentId() || formula.getParentId().equals(0L)) {
+            for (Map.Entry<Long, GradeFormula> longGradeFormulaEntry : allSectionFormulas.entrySet()) {
+                GradeFormula formula = longGradeFormulaEntry.getValue();
+                if (null == formula.getParentId() || formula.getParentId().equals(0L)) {
                     return formula;
                 }
             }
         }
         return null;
     }
+    
+    @Override
     protected ConcurrentHashMap<Long, Section> resolveFromEdPanel() throws HttpClientException {
         Section[] sections = edPanel.getSections(school.getId());
         ConcurrentHashMap<Long, Section> sectionMap = new ConcurrentHashMap<>();
@@ -348,5 +238,100 @@ public class SectionSyncRunnable implements Runnable, ISync<Section> {
             }
         }
         return sectionMap;
+    }
+
+    @Override
+    protected void handleEdPanelGetFailure(PowerSchoolSyncResult results) {
+        LOGGER.error("Failed to retrieve sections from EdPanel for the school " +
+                school.getName() + ", with ID: " + school.getId());
+        results.sectionEdPanelGetFailed(Long.valueOf(school.getSourceSystemId()), school.getId());
+    }
+
+    @Override
+    protected void createEdPanelRecord(Section entityToSave, PowerSchoolSyncResult results) {
+        Long ssid = Long.valueOf(entityToSave.getSourceSystemId());
+        Section created = null;
+        try {
+            created = edPanel.createSection(
+                    school.getId(),
+                    entityToSave.getTerm().getSchoolYear().getId(),
+                    entityToSave.getTerm().getId(),
+                    entityToSave);
+        } catch (HttpClientException e) {
+            results.sectionCreateFailed(ssid);
+            LOGGER.info("Failed to create section...");
+            return;
+        }
+        entityToSave.setId(created.getId());
+        results.sectionCreated(ssid, entityToSave.getId());
+        this.sections.put(ssid, entityToSave);
+    }
+
+    @Override
+    protected void updateEdPanelRecord(Section sourceSystemEntity, Section edPanelEntity, PowerSchoolSyncResult results) {
+        sourceSystemEntity.setId(edPanelEntity.getId());
+        Long ssid = Long.valueOf(sourceSystemEntity.getSourceSystemId());
+        if (!edPanelEntity.equals(sourceSystemEntity)) {
+            try {
+                edPanel.replaceSection(school.getId(),
+                        sourceSystemEntity.getTerm().getSchoolYear().getId(),
+                        sourceSystemEntity.getTerm().getId(),
+                        sourceSystemEntity);
+            } catch (HttpClientException e) {
+                LOGGER.info("Failed to update section...");
+                results.sectionUpdateFailed(ssid, sourceSystemEntity.getId());
+            }
+            this.sections.put(ssid, sourceSystemEntity);
+            results.sectionUpdated(ssid, sourceSystemEntity.getId());
+        } else {
+            // records are the same! need to record sameness
+            results.sectionUntouched(ssid, sourceSystemEntity.getId());
+        }
+    }
+
+    @Override
+    protected void deleteEdPanelRecord(Section entityToDelete, PowerSchoolSyncResult results) {
+        Long ssid = Long.valueOf(entityToDelete.getSourceSystemId());
+        try {
+            edPanel.deleteSection(school.getId(),
+                    entityToDelete.getTerm().getSchoolYear().getId(),
+                    entityToDelete.getTerm().getId(),
+                    entityToDelete);
+            results.sectionDeleted(ssid, entityToDelete.getId());
+        } catch (HttpClientException e) {
+            results.sectionDeleteFailed(ssid, entityToDelete.getId());
+        }
+    }
+
+    @Override
+    protected void entitySynced(Section sourceRecord, PowerSchoolSyncResult results) {
+        StudentSectionGradeSync ssgSync = new StudentSectionGradeSync(
+                powerSchool,
+                edPanel,
+                school,
+                studentAssociator,
+                ptSectionIdToPsSectionId,
+                ptStudentIdToPsStudentId,
+                sourceRecord,
+                studentClasses);
+        ssgSync.syncCreateUpdateDelete(results);
+
+        SectionAssignmentSync assignmentSync = new SectionAssignmentSync(
+                powerSchool,
+                edPanel,
+                school,
+                studentAssociator,
+                sectionPublicIdToSectionRecordId,
+                sourceRecord
+        );
+        assignmentSync.syncCreateUpdateDelete(results);
+        LOGGER.trace("Section, including assignments and student section grades created/updated. Section ID: " +
+                sourceRecord.getId() + ", school ID: " + school.getId());
+    }
+
+    @Override
+    protected void allEntitiesSynced(PowerSchoolSyncResult results) {
+        LOGGER.info("All sections created and updated in EdPanel for school " + school.getName() +
+                " with ID " + school.getId());
     }
 }
