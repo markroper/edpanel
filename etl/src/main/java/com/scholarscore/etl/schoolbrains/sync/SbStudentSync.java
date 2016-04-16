@@ -17,15 +17,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by markroper on 4/15/16.
  */
 public class SbStudentSync extends SchoolBrainsBaseSync<Student> {
-    Long schoolId;
+    Long edPanelId;
     Map<String, School> schools;
 
     public SbStudentSync(ISchoolBrainsClient schoolBrains,
                          IAPIClient edPanel,
-                         Long schoolId,
+                         Long edPanelId,
                          Map<String, School> schools) {
         super(schoolBrains, edPanel);
-        this.schoolId = schoolId;
+        this.edPanelId = edPanelId;
         this.schools = schools;
     }
 
@@ -62,7 +62,7 @@ public class SbStudentSync extends SchoolBrainsBaseSync<Student> {
 
     @Override
     protected ConcurrentHashMap<String, Student> resolveFromEdPanel() throws HttpClientException {
-        Collection<Student> students = edPanel.getStudents(schoolId);
+        Collection<Student> students = edPanel.getStudents(edPanelId);
         ConcurrentHashMap<String, Student> edpanel = new ConcurrentHashMap<>();
         for(Student s: students) {
             edpanel.put(s.getSourceSystemId(), s);
@@ -76,7 +76,7 @@ public class SbStudentSync extends SchoolBrainsBaseSync<Student> {
         ConcurrentHashMap<String, Student> sourceMap = new ConcurrentHashMap<>();
 
         for(Student s : source) {
-            if(schoolId.equals(schools.get(s.getCurrentSchoolId()).getId())) {
+            if(edPanelId.equals(schools.get(s.getCurrentSchoolId()).getId())) {
                 sourceMap.put(s.getSourceSystemId(), s);
             }
         }

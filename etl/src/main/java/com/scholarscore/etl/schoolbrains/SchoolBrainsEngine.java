@@ -8,7 +8,6 @@ import com.scholarscore.etl.runner.EtlSettings;
 import com.scholarscore.etl.schoolbrains.client.ISchoolBrainsClient;
 import com.scholarscore.etl.schoolbrains.sync.SbSchoolSync;
 import com.scholarscore.etl.schoolbrains.sync.SbSectionSync;
-import com.scholarscore.etl.schoolbrains.sync.SbStaffSync;
 import com.scholarscore.etl.schoolbrains.sync.SbStudentSync;
 import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
@@ -44,51 +43,23 @@ public class SchoolBrainsEngine implements IEtlEngine {
     public SyncResult syncDistrict(EtlSettings settings) {
 
         syncSchools();
-        
-//        syncSchoolEnrollment();
-//        syncSchoolYears();
 
-        syncStaff();
         syncStudents(); 
 
-//        syncGpa();
-//        syncTerms();
-//        syncCourses();
-        
         syncSections();
+
+        // syncSectionEnrollment()
         
-//        syncSectionEnrollment();
-        
-        /* 
-         * (steps pasted from original ETL)
-         *
-         *  1) Synchronize all schools in the district (CRUD)
-         *  2) Synchronize all students and staff for all schools (CRUD)
-         *  3) Synchronize all courses for the district (CRUD)
-         *  4) Synchronize all school years for all schools in the district (CRUD)
-         *  5) Synchronize all terms for all schools (CRUD)
-         *  6) Synchronize all sections for all schools (Recommend adding multi-threading here)
-         *      i.   Synchronize the section definition
-         *      ii.  Synchronize the Student section grades
-         *      iii. Synchronize the assignments
-         *      iv.  Synchronize the student scores on the assignments
-        * */
-        
-        // sync section assignments
-        
-        // sync 
-        
-        // sync attendance
         return null;
     }
 
-    private void syncStaff() {
-        SbStaffSync staffSync = new SbStaffSync(schoolBrains, edPanel);
-    }
-
     private void syncStudents() {
-//        SbStudentSync studentSync = new SbStudentSync(schoolBrains, edPanel);
+        for (School school : ssidToSchool.values()) {
+            Long edPanelId = school.getId();
+            SbStudentSync studentSync = new SbStudentSync(schoolBrains, edPanel, edPanelId, ssidToSchool);
+        }
     }
+    
 
     private void syncSchools() {
         SbSchoolSync schoolSync = new SbSchoolSync(schoolBrains, edPanel);

@@ -22,6 +22,7 @@ public class SbSchoolSync extends SchoolBrainsBaseSync<School> {
         School created = null;
         try {
             created = edPanel.createSchool(input);
+            input.setId(created.getId());
         } catch (HttpClientException e) {
             LOGGER.warn("Failed to create school: " + e.getMessage());
         }

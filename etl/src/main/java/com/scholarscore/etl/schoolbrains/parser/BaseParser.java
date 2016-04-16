@@ -17,7 +17,7 @@ import java.util.Set;
  * Created by markroper on 4/14/16.
  */
 public abstract class BaseParser<T> {
-    private final static Logger LOGGER = LoggerFactory.getLogger(BaseParser.class);
+    protected final static Logger LOGGER = LoggerFactory.getLogger(BaseParser.class);
     protected File input;
     protected CSVParser parser;
     public BaseParser(File file) {
