@@ -1,6 +1,9 @@
 package com.scholarscore.models.dashboard;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.HibernateConsts;
 
@@ -26,17 +29,26 @@ import java.util.Objects;
         name="discriminator",
         discriminatorType= DiscriminatorType.STRING
 )
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Report.class, name="BAR"),
+        @JsonSubTypes.Type(value = Report.class, name = "SPLINE"),
+        @JsonSubTypes.Type(value = Report.class, name = "PIE"),
+        @JsonSubTypes.Type(value = ReportAssignmentAnalysis.class, name = "ASSIGNMENT_ANALYSIS")
+})
 public abstract class ReportBase extends ApiModel {
     protected Long rowFk;
     protected ReportType type;
     protected Long position;
 
     public ReportBase() {
-
     }
 
     public ReportBase(ReportBase b) {
         super(b);
+        this.rowFk = b.rowFk;
+        this.position = b.position;
         this.type = b.getType();
     }
 
@@ -80,7 +92,7 @@ public abstract class ReportBase extends ApiModel {
 
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(rowFk, type);
+        return 31 * super.hashCode() + Objects.hash(rowFk, type, position);
     }
 
     @Override
@@ -96,6 +108,7 @@ public abstract class ReportBase extends ApiModel {
         }
         final ReportBase other = (ReportBase) obj;
         return Objects.equals(this.rowFk, other.rowFk)
+                && Objects.equals(this.position, other.position)
                 && Objects.equals(this.type, other.type);
     }
 }

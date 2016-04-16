@@ -24,14 +24,13 @@ public class ReportAssignmentAnalysis extends ReportBase {
     List<Long> assignmentIds;
 
     public ReportAssignmentAnalysis() {
-
+        this.type = ReportType.ASSIGNMENT_ANALYSIS;
     }
 
     public ReportAssignmentAnalysis(ReportAssignmentAnalysis r) {
         super(r);
         this.assignmentIds = r.assignmentIds;
     }
-
 
     @Column(name = HibernateConsts.DASHBOARD_REPORT_ASSIGNMENT_IDS,  columnDefinition = "blob")
     @JsonIgnore
