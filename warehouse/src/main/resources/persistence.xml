@@ -65,6 +65,7 @@
         <property name="behaviorGoalCalc" ref="behaviorCalc"/>
         <property name="sectionGoalCalc" ref="cumulativeGradeCalc"/>
         <property name="attendanceGoalCalc" ref="attendanceGoalCalc"/>
+        <property name="watchPersistence" ref="watchPersistence"/>
     </bean>
 
     <bean id="teacherPersistence"

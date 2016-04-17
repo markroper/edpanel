@@ -2,13 +2,16 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 
 import com.scholarscore.api.persistence.WatchPersistence;
 import com.scholarscore.models.StudentWatch;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
  * Created by cwallace on 4/16/16.
  */
+@Transactional
 public class WatchJdbc implements WatchPersistence {
 
     private static final String WATCH_HQL_BASE = "from watch w " +
@@ -16,6 +19,11 @@ public class WatchJdbc implements WatchPersistence {
             "left join fetch st.contactMethods join fetch w.staff t left join fetch t.homeAddress " +
             "left join fetch t.contactMethods";
 
+    public WatchJdbc() {
+
+    }
+
+    @Autowired
     private HibernateTemplate hibernateTemplate;
 
     public HibernateTemplate getHibernateTemplate() {
