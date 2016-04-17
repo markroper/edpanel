@@ -13,6 +13,16 @@ import javax.persistence.OneToOne;
 import java.util.Objects;
 
 /**
+ * This entity maintains a many to many relationship between students and teachers
+ * for the purpose of allowing teachers to watch certain students. While this could be
+ * accomplished with hibernate, it woudl require a collection of students to be stored on each staff object
+ * and a collection of staff to be stored on every student.
+ * The fear was that this would negatively impact the query time of the frequently run "get a student or staff" query
+ * Instead, this separate entity allows us to maintain this relationship, but without affecting the structure of
+ * student or staff objects. The cost to this is that for instance to get the goals of all students that a teacher is
+ * watching, two queries are required instead of one. One to get all the watches the staff has and one to get all
+ * the goals that group of students has. Since this is done infrequently the cost of the additional query was determined
+ * to be more worth it.
  * Created by cwallace on 4/14/16.
  */
 @Entity(name = HibernateConsts.WATCH_TABLE)
@@ -78,7 +88,5 @@ public class StudentWatch {
                 ", student=" + student +
                 ", id=" + id +
                 '}';
-    }
-
-    //Query is basically like, join watch table student_fk = student_fk select all from goal where w.tacher_fk =
+    };
 }

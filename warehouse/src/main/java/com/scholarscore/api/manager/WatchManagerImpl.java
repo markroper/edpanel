@@ -53,4 +53,8 @@ public class WatchManagerImpl implements WatchManager {
 
     }
 
+    public ServiceResponse<Long> deleteWatch(long watchId) {
+        return new ServiceResponse<Long>(watchPersistence.deleteWatch(watchId));
+    }
+
 }

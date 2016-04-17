@@ -12,4 +12,6 @@ public interface WatchPersistence {
     public Long createWatch(StudentWatch watch);
 
     public List<StudentWatch> getAllForStaff(long staffId);
+
+    public Long deleteWatch(long watchId);
 }

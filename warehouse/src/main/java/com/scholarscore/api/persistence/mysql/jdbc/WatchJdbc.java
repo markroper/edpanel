@@ -9,6 +9,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 /**
+ *
  * Created by cwallace on 4/16/16.
  */
 @Transactional
@@ -54,6 +55,13 @@ public class WatchJdbc implements WatchPersistence {
             return null;
         }
         return objects;
+
+    }
+
+    public Long deleteWatch(long watchId) {
+        StudentWatch watch = hibernateTemplate.get(StudentWatch.class, watchId);
+        hibernateTemplate.delete(watch);
+        return watchId;
 
     }
 }

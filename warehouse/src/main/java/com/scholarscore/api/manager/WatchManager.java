@@ -14,6 +14,8 @@ public interface WatchManager {
 
     public ServiceResponse<List<StudentWatch>> getAllForStaff(long staffId);
 
+    public ServiceResponse<Long> deleteWatch(long watchId);
+
 
 
 }
