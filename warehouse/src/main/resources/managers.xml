@@ -30,6 +30,13 @@
         <property name="messageManager" ref="messageManager"/>
         <property name="dashboardManager" ref="dashboardManager"/>
         <property name="mcasManager" ref="mcasManager"/>
+        <property name="watchManager" ref="watchManager"/>
+    </bean>
+
+    <bean id="watchManager"
+        class="com.scholarscore.api.manager.WatchManagerImpl">
+        <property name="pm" ref="PM"/>
+        <property name="watchPersistence" ref="watchPersistence"/>
     </bean>
 
     <bean id="adminManager"

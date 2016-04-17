@@ -36,6 +36,15 @@ public class OrchestrationManager {
     private MessageManager messageManager;
     private DashboardManager dashboardManager;
     private MaMcasManager mcasManager;
+    private WatchManager watchManager;
+
+    public WatchManager getWatchManager() {
+        return watchManager;
+    }
+
+    public void setWatchManager(WatchManager watchManager) {
+        this.watchManager = watchManager;
+    }
 
     public MaMcasManager getMcasManager() {
         return mcasManager;

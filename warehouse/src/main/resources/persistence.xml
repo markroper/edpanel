@@ -190,6 +190,11 @@
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
     </bean>
 
+    <bean id="watchPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.WatchJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
        <!-- Required so that we can inject an instance into Spring Security -->
 
    <bean id="authorityPersistence"
