@@ -51,6 +51,10 @@ public class StudentAssignmentManagerImpl implements  StudentAssignmentManager {
         if(!code.isOK()) {
             return new ServiceResponse<Collection<StudentAssignment>>(code);
         }
+        return getAllStudentAssignments(schoolId, sectAssignmentId);
+    }
+
+    private ServiceResponse<Collection<StudentAssignment>> getAllStudentAssignments(long schoolId, long sectAssignmentId) {
         Collection<StudentAssignment> sas = studentAssignmentPersistence.selectAll(sectAssignmentId);
         User curr = pm.getUserManager().getCurrentUserDetails().getUser();
         if(UserType.STUDENT.equals(curr.getType())) {
@@ -64,6 +68,18 @@ public class StudentAssignmentManagerImpl implements  StudentAssignmentManager {
             }
         }
         return new ServiceResponse<Collection<StudentAssignment>>(sas);
+    }
+
+    @Override
+    public ServiceResponse<Collection<StudentAssignment>> getAllStudentAssignments(long schoolId, List<Long> sectAssignmentIds) {
+        List<StudentAssignment> asses = new ArrayList<>();
+        for(Long l: sectAssignmentIds) {
+            ServiceResponse<Collection<StudentAssignment>> r = getAllStudentAssignments(schoolId, l);
+            if(null != r.getValue()) {
+                asses.addAll(r.getValue());
+            }
+        }
+        return new ServiceResponse<>(asses);
     }
 
     @Override

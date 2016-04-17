@@ -6,5 +6,6 @@ package com.scholarscore.models.dashboard;
 public enum ReportType {
     BAR,
     SPLINE,
-    PIE;
+    PIE,
+    ASSIGNMENT_ANALYSIS
 }

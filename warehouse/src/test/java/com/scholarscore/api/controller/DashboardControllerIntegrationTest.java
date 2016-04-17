@@ -6,6 +6,8 @@ import com.scholarscore.models.dashboard.ColumnDef;
 import com.scholarscore.models.dashboard.Dashboard;
 import com.scholarscore.models.dashboard.DashboardRow;
 import com.scholarscore.models.dashboard.Report;
+import com.scholarscore.models.dashboard.ReportBase;
+import com.scholarscore.models.dashboard.ReportType;
 import com.scholarscore.models.query.AggregateFunction;
 import com.scholarscore.models.query.AggregateMeasure;
 import com.scholarscore.models.query.Dimension;
@@ -77,11 +79,13 @@ public class DashboardControllerIntegrationTest extends IntegrationBase {
         ColumnDef col1 = new ColumnDef("values[1]", "name");
         ColumnDef col2 = new ColumnDef("values[2]", "referrals");
         List<ColumnDef> defs = new ArrayList<ColumnDef>(){{add(col1); add(col2); }};
+
         Report referralReport = new Report();
+        referralReport.setType(ReportType.BAR);
         referralReport.setChartQuery(referralQuery);
         referralReport.setClickTableQuery(referralClick);
         referralReport.setColumnDefs(defs);
-        row1.setReports(new ArrayList<Report>(){{ add(referralReport); }});
+        row1.setReports(new ArrayList<ReportBase>(){{ add(referralReport); }});
         completeDash.setRows(new ArrayList<DashboardRow>(){{ add(row1); }});
 
 

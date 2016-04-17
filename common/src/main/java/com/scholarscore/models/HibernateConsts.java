@@ -350,6 +350,7 @@ public class HibernateConsts {
     public static final String DASHBOARD_REPORT_COLUMN_DEFS = "dashboard_report_column_defs";
     public static final String DASHBOARD_REPORT_POSITION = "dashboard_report_position";
     public static final String DASHBOARD_REPORT_CLICK_REPORT_FK = "click_report_fk";
+    public static final String DASHBOARD_REPORT_ASSIGNMENT_IDS = "dashboard_report_assignment_ids";
 
     public static final String MA_MCAS_TABLE = "ma_mcas_results";
     public static final String MA_MCAS_ID = "ma_mcas_results_id";
