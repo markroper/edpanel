@@ -14,6 +14,8 @@ import org.hibernate.annotations.FetchMode;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
@@ -25,8 +27,9 @@ import java.util.Objects;
 /**
  * Created by markroper on 2/15/16.
  */
-@Entity(name = HibernateConsts.DASHBOARD_REPORT_TABLE)
+@Entity
 @DiscriminatorValue("CHART")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Report extends ReportBase {
     //Required.  The query that returns the data constituting the chart
     @NotNull

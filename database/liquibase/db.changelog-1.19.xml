@@ -13,5 +13,9 @@
             <column name="dashboard_report_assignment_ids"
                     type="blob" />
         </addColumn>
+
+        <dropNotNullConstraint columnDataType="bigint unsigned"
+                               columnName="report_fk"
+                               tableName="dashboard_report"/>
     </changeSet>
 </databaseChangeLog>

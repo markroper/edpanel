@@ -1,27 +1,33 @@
 package com.scholarscore.models.dashboard;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.scholarscore.models.HibernateConsts;
-import com.scholarscore.util.EdPanelObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 
+import javax.persistence.AttributeConverter;
 import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Converter;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Transient;
-import java.io.IOException;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by markroper on 4/15/16.
  */
-@Entity(name = HibernateConsts.DASHBOARD_REPORT_TABLE)
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorValue("ASSIGNMENT_ANALYSIS")
 public class ReportAssignmentAnalysis extends ReportBase {
-    List<Long> assignmentIds;
+    @Column(name = HibernateConsts.DASHBOARD_REPORT_ASSIGNMENT_IDS,  columnDefinition = "blob")
+    protected List<Long> assignmentIds;
+//    String assignmentIdsString;
 
     public ReportAssignmentAnalysis() {
         this.type = ReportType.ASSIGNMENT_ANALYSIS;
@@ -32,40 +38,70 @@ public class ReportAssignmentAnalysis extends ReportBase {
         this.assignmentIds = r.assignmentIds;
     }
 
+    @Override
+    @Column(name = HibernateConsts.DASHBOARD_REPORT_NAME)
+    public String getName() {
+        return super.getName();
+    }
+
+//    @JsonIgnore
+//    @Column(name = HibernateConsts.DASHBOARD_REPORT_ASSIGNMENT_IDS,  columnDefinition = "blob")
+//    public String getAssignmentIdsString() {
+//        try {
+//            if(null == assignmentIds) {
+//                return null;
+//            } else {
+//                return EdPanelObjectMapper.MAPPER.writeValueAsString(assignmentIds);
+//            }
+//        } catch (JsonProcessingException | NullPointerException e) {
+//            return null;
+//        }
+//    }
+
+//    @JsonIgnore
+//    public void setAssignmentIdsString(String input) {
+//        try {
+//            if(null != assignmentIds) {
+//                this.assignmentIds = EdPanelObjectMapper.MAPPER.readValue(
+//                        input, new TypeReference<ArrayList<Long>>(){});
+//            } else {
+//                assignmentIds = null;
+//            }
+//        } catch (IOException | NullPointerException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+
     @Column(name = HibernateConsts.DASHBOARD_REPORT_ASSIGNMENT_IDS,  columnDefinition = "blob")
-    @JsonIgnore
-    public String getAssignmentIdString() {
-        try {
-            if(null == assignmentIds) {
-                return null;
-            } else {
-                return EdPanelObjectMapper.MAPPER.writeValueAsString(assignmentIds);
-            }
-        } catch (JsonProcessingException e) {
-            return null;
-        }
-    }
-
-    @JsonIgnore
-    public void setAssignmentIdString(String input) {
-        try {
-            if(null != assignmentIds) {
-                this.assignmentIds = EdPanelObjectMapper.MAPPER.readValue(
-                        input, new TypeReference<ArrayList<Long>>(){});
-            }
-        } catch (IOException e) {
-
-        }
-    }
-
-    @Transient
+    @Convert(converter = ReportAssignmentAnalysis.LongArrayToStringConverter.class)
     public List<Long> getAssignmentIds() {
         return assignmentIds;
     }
 
-    @Transient
     public void setAssignmentIds(List<Long> assignmentIds) {
         this.assignmentIds = assignmentIds;
+    }
+
+    @Converter
+    public static class LongArrayToStringConverter implements AttributeConverter<List<Long>,String> {
+        public LongArrayToStringConverter() {
+
+        }
+        @Override
+        public String convertToDatabaseColumn(List<Long> attribute) {
+            return attribute == null ? null : StringUtils.join(attribute, ",");
+        }
+
+        @Override
+        public List<Long> convertToEntityAttribute(String dbData) {
+            if (StringUtils.isBlank(dbData))
+                return new ArrayList<>();
+
+            try (Stream<String> stream = Arrays.stream(dbData.split(","))) {
+                return stream.map(Long::parseLong).collect(Collectors.toList());
+            }
+        }
     }
 
     @Override

@@ -22,7 +22,7 @@ public class DashboardJdbc extends BaseJdbc implements DashboardPersistence {
     public static final String DASH_HQL = "from dashboard d " +
             "join fetch d.rows r " +
             "join fetch r.reports rs " +
-            "join fetch rs.chartQuery " +
+            "left join fetch rs.chartQuery " +
             "left join fetch rs.clickTableQuery";
     @Autowired
     private HibernateTemplate hibernateTemplate;
@@ -59,7 +59,7 @@ public class DashboardJdbc extends BaseJdbc implements DashboardPersistence {
                 for(ReportBase rpt: reports) {
                     rpt.setPosition(reportIndex);
                     rpt.setRowFk(createdRow.getId());
-                    hibernateTemplate.merge(rpt);
+                    hibernateTemplate.save(rpt);
                     reportIndex++;
                 }
                 rowIndex++;
