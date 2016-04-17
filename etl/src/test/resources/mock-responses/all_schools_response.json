@@ -1,1 +1,204 @@
-{"schools":{"@expansions":"school_boundary, full_time_equivalencies, school_fees_setup","@extensions":"schoolscorefields,c_school_registrar,s_sch_crdc_x,schoolssuccessnetfields","school":[{"id":3,"name":"some-name","school_number":3001,"state_province_id":"04100000","low_grade":9,"high_grade":12,"alternate_school_number":0,"addresses":{"physical":{"street":"7 Elkins Street","city":"Boston","state_province":"MA","postal_code":"02127"}},"phones":{"main":{"number":"999-999-9999"}},"principal":{"name":{"first_name":"firsty","middle_name":"middle"},"email":"nkeough@excelacademy.com"},"school_fees_setup":{"exemption_status":3,"fee_types":{"fee_type":[{"id":3,"name":"some-name","category":"Student","priority_order":0,"creation_date":"2015-06-22"},{"id":5,"name":"some-name","category":"Student","priority_order":0,"creation_date":"2015-06-22"},{"id":2,"name":"some-name","category":"Student","priority_order":0,"creation_date":"2015-06-22"},{"id":8,"name":"some-name","category":"Student","priority_order":0,"creation_date":"2015-06-22"},{"id":6,"name":"some-name","category":"Student","priority_order":0,"creation_date":"2015-06-22"},{"id":1,"name":"some-name","description":"Field Trip","category":"Student","priority_order":0,"creation_date":"2015-06-19"},{"id":4,"name":"some-name","category":"Student","priority_order":0,"creation_date":"2015-06-22"},{"id":7,"name":"some-name","category":"Student","priority_order":0,"creation_date":"2015-06-22"}]}}},{"id":54,"name":"some-name","school_number":3003,"state_province_id":"04100000","low_grade":5,"high_grade":8,"alternate_school_number":0,"addresses":{"physical":{"street":"180 2nd Street","city":"Chelsea","state_province":"MA","postal_code":"02150"}},"phones":{"main":{"number":"999-999-9999"}},"principal":{"name":{"first_name":"firsty","middle_name":"middle"},"email":"kpereira@excelacademy.org"},"school_fees_setup":{"exemption_status":3}},{"id":53,"name":"some-name","school_number":3004,"state_province_id":"04100000","low_grade":5,"high_grade":8,"alternate_school_number":0,"addresses":{"physical":{"street":"58 Moore Street","city":"East Boston","state_province":"MA","postal_code":"02128"}},"phones":{"main":{"number":"999-999-9999"}},"principal":{"name":{"first_name":"firsty","middle_name":"middle"},"email":"jfoulke@excelacademy.org"},"assistant_principal":{"name":{"first_name":"firsty","middle_name":"middle"},"email":"jgallaspy@excelacademy.org"},"school_fees_setup":{"exemption_status":3}},{"id":55,"name":"some-name","school_number":3002,"state_province_id":"04100000","low_grade":5,"high_grade":8,"alternate_school_number":0,"addresses":{"physical":{"street":"1150 Saratoga Street","city":"East Boston","state_province":"MA","postal_code":"02128"}},"phones":{"main":{"number":"999-999-9999"}},"principal":{"name":{"first_name":"firsty","middle_name":"middle"},"email":"ncronan@excelacademy.org"},"school_fees_setup":{"exemption_status":3}}]}}
+{
+  "schools": {
+    "@expansions": "school_boundary, full_time_equivalencies, school_fees_setup",
+    "@extensions": "schoolscorefields,c_school_registrar,s_sch_crdc_x,schoolssuccessnetfields",
+    "school": [
+      {
+        "id": 3,
+        "name": "some-name",
+        "school_number": 3001,
+        "state_province_id": "04100000",
+        "low_grade": 9,
+        "high_grade": 12,
+        "alternate_school_number": 0,
+        "addresses": {
+          "physical": {
+            "street": "7 Elkins Street",
+            "city": "Boston",
+            "state_province": "MA",
+            "postal_code": "02127"
+          }
+        },
+        "phones": {
+          "main": {
+            "number": "999-999-9999"
+          }
+        },
+        "principal": {
+          "name": {
+            "first_name": "firsty",
+            "middle_name": "middle"
+          },
+          "email": "nkeough@excelacademy.com"
+        },
+        "school_fees_setup": {
+          "exemption_status": 3,
+          "fee_types": {
+            "fee_type": [
+              {
+                "id": 3,
+                "name": "some-name",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-22"
+              },
+              {
+                "id": 5,
+                "name": "some-name",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-22"
+              },
+              {
+                "id": 2,
+                "name": "some-name",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-22"
+              },
+              {
+                "id": 8,
+                "name": "some-name",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-22"
+              },
+              {
+                "id": 6,
+                "name": "some-name",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-22"
+              },
+              {
+                "id": 1,
+                "name": "some-name",
+                "description": "Field Trip",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-19"
+              },
+              {
+                "id": 4,
+                "name": "some-name",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-22"
+              },
+              {
+                "id": 7,
+                "name": "some-name",
+                "category": "Student",
+                "priority_order": 0,
+                "creation_date": "2015-06-22"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": 54,
+        "name": "some-name",
+        "school_number": 3003,
+        "state_province_id": "04100000",
+        "low_grade": 5,
+        "high_grade": 8,
+        "alternate_school_number": 0,
+        "addresses": {
+          "physical": {
+            "street": "180 2nd Street",
+            "city": "Chelsea",
+            "state_province": "MA",
+            "postal_code": "02150"
+          }
+        },
+        "phones": {
+          "main": {
+            "number": "999-999-9999"
+          }
+        },
+        "principal": {
+          "name": {
+            "first_name": "firsty",
+            "middle_name": "middle"
+          },
+          "email": "kpereira@excelacademy.org"
+        },
+        "school_fees_setup": {
+          "exemption_status": 3
+        }
+      },
+      {
+        "id": 53,
+        "name": "some-name",
+        "school_number": 3004,
+        "state_province_id": "04100000",
+        "low_grade": 5,
+        "high_grade": 8,
+        "alternate_school_number": 0,
+        "addresses": {
+          "physical": {
+            "street": "58 Moore Street",
+            "city": "East Boston",
+            "state_province": "MA",
+            "postal_code": "02128"
+          }
+        },
+        "phones": {
+          "main": {
+            "number": "999-999-9999"
+          }
+        },
+        "principal": {
+          "name": {
+            "first_name": "firsty",
+            "middle_name": "middle"
+          },
+          "email": "jfoulke@excelacademy.org"
+        },
+        "assistant_principal": {
+          "name": {
+            "first_name": "firsty",
+            "middle_name": "middle"
+          },
+          "email": "jgallaspy@excelacademy.org"
+        },
+        "school_fees_setup": {
+          "exemption_status": 3
+        }
+      },
+      {
+        "id": 55,
+        "name": "some-name",
+        "school_number": 3002,
+        "state_province_id": "04100000",
+        "low_grade": 5,
+        "high_grade": 8,
+        "alternate_school_number": 0,
+        "addresses": {
+          "physical": {
+            "street": "1150 Saratoga Street",
+            "city": "East Boston",
+            "state_province": "MA",
+            "postal_code": "02128"
+          }
+        },
+        "phones": {
+          "main": {
+            "number": "999-999-9999"
+          }
+        },
+        "principal": {
+          "name": {
+            "first_name": "firsty",
+            "middle_name": "middle"
+          },
+          "email": "ncronan@excelacademy.org"
+        },
+        "school_fees_setup": {
+          "exemption_status": 3
+        }
+      }
+    ]
+  }
+}

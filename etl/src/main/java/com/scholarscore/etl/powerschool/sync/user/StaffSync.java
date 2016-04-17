@@ -132,6 +132,8 @@ public class StaffSync extends SyncBase<Staff> implements ISync<Staff> {
                 return;
             }
             results.staffUpdated(ssid, sourceSystemEntity.getId());
+        } else {
+            results.staffUntouched(ssid, sourceSystemEntity.getId());
         }
         staffAssociator.add(ssid, sourceSystemEntity);
     }
@@ -139,5 +141,6 @@ public class StaffSync extends SyncBase<Staff> implements ISync<Staff> {
     @Override
     protected void deleteEdPanelRecord(Staff entityToDelete, PowerSchoolSyncResult results) {
         //Note: we never delete users, even if they're removed from the source system.
+        LOGGER.debug("ETL attempting to delete teacher with EdPanel Id " + entityToDelete.getId() + ", but StaffSync never removes teachers!");
     }
 }

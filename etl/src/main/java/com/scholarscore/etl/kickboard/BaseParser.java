@@ -153,7 +153,7 @@ public abstract class BaseParser<T> {
         CSVParser p = CSVParser.parse(line, CSVFormat.DEFAULT);
         List<CSVRecord> records = p.getRecords();
         if (null != records && records.size() > 0) {
-            LOGGER.warn("Taking record 0 only, but other records also found.");
+            LOGGER.trace("Taking record 0 only, but other records also found.");
             CSVRecord record = records.get(0);
             return resolveFromRecord(record);
         }

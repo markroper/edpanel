@@ -45,7 +45,7 @@ public interface ISync<T> {
      * had been run for the first time.
      * </p>
      *
-     * @param results A SynchResult instance to update as the sync proceeds
+     * @param results A SyncResult instance to update as the sync proceeds
      * @return A thread safe map of source system ID to EdPanel model that represents the
      *          end state of what is in EdPanel after all the CREATE/UPDATE/DELETE operations have been
      *          performed to synchronize EdPanel's state with the source system state.
