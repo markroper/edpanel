@@ -20,9 +20,6 @@
 
     <!-- Initialization for data source -->
     <bean id="schoolbrainsClient"
-          class="com.scholarscore.etl.schoolbrains.">
-        <constructor-arg index="0" type="java.net.URI" value="${kickboard.client.url}"/>
-        <constructor-arg index="1" type="java.lang.String" value="${kickboard.client.key}"/>
-    </bean>
+          class="com.scholarscore.etl.schoolbrains.client.DummySchoolBrainsClient" />
 
 </beans>
