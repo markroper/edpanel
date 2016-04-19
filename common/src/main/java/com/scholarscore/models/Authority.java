@@ -1,5 +1,6 @@
 package com.scholarscore.models;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Objects;
  * @author mattg
  *
  */
-public class Authority {
+public class Authority implements Serializable {
 	private Long userId;
 	private String authority;
 	public String getAuthority() {

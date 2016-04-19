@@ -4,45 +4,18 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
-    <changeSet author="Chris" id="changelog-1.18-change1">
-        <createTable tableName="watch">
-            <column name="watch_id"
-                    type="bigint unsigned"
-                    remarks="'Primary key identity column for a watch"
-                    autoIncrement="true">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column name="student_fk"
-                    type="bigint unsigned"
-                    remarks="Student foreign key">
-                <constraints nullable="false"/>
-            </column>
-            <column name="staff_fk"
-                    type="bigint unsigned"
-                    remarks="Staff foreign key">
-                <constraints nullable="false"/>
-            </column>
+    <changeSet author="Mark" id="changelog-1.19-change1">
+        <addColumn tableName="student">
+            <column name="student_previous_school_id"
+                    type="bigint unsigned" />
+        </addColumn>
 
-        </createTable>
-
-        <addForeignKeyConstraint baseTableName="watch"
-                                 baseColumnNames="student_fk"
-                                 constraintName="watch$student_fk"
-                                 onDelete="CASCADE"
+        <addForeignKeyConstraint baseTableName="student"
+                                 baseColumnNames="student_previous_school_id"
+                                 constraintName="student$previous_school_id"
+                                 onDelete="SET NULL"
                                  onUpdate="CASCADE"
-                                 referencedColumnNames="student_user_fk"
-                                 referencedTableName="student"/>
-
-        <addForeignKeyConstraint baseTableName="watch"
-                                 baseColumnNames="staff_fk"
-                                 constraintName="watch$staff_fk"
-                                 onDelete="CASCADE"
-                                 onUpdate="CASCADE"
-                                 referencedColumnNames="staff_user_fk"
-                                 referencedTableName="staff"/>
-
-
-
-
+                                 referencedColumnNames="school_id"
+                                 referencedTableName="school"/>
     </changeSet>
 </databaseChangeLog>

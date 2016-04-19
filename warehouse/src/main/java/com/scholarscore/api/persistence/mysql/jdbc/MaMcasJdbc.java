@@ -21,12 +21,11 @@ public class MaMcasJdbc implements MaMcasPersistence {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<McasResult> selectMcasForStudent(Long schoolId, Long studentId) {
-        String[] params = new String[]{"schoolId", "studentId" };
-        Object[] paramValues = new Object[]{ schoolId, studentId };
+    public List<McasResult> selectMcasForStudent(Long studentId) {
+        String[] params = new String[]{ "studentId" };
+        Object[] paramValues = new Object[]{ studentId };
         List<McasResult> objects = (List<McasResult>) hibernateTemplate.findByNamedParam(
-               BASE_HQL + " where m.student.id = :studentId " +
-                        "and m.schoolId = :schoolId",
+               BASE_HQL + " where m.student.id = :studentId",
                 params,
                 paramValues);
         return objects;

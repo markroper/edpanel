@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,19 +66,17 @@ public class SchoolDaySync {
                 return new ConcurrentHashMap<>();
             }
         }
-        Iterator<Map.Entry<LocalDate, SchoolDay>> sourceIterator = source.entrySet().iterator();
         List<SchoolDay> daysToCreate = new ArrayList<>();
         //Find & perform the inserts and updates, if any
-        while(sourceIterator.hasNext()) {
-            Map.Entry<LocalDate, SchoolDay> entry = sourceIterator.next();
+        for (Map.Entry<LocalDate, SchoolDay> entry : source.entrySet()) {
             SchoolDay schoolDay = entry.getValue();
             SchoolDay edPanelSchoolDay = ed.get(entry.getKey());
-            if(null == edPanelSchoolDay){
+            if (null == edPanelSchoolDay) {
                 daysToCreate.add(schoolDay);
             } else {
                 schoolDay.setId(edPanelSchoolDay.getId());
                 schoolDay.setSchool(edPanelSchoolDay.getSchool());
-                if(!edPanelSchoolDay.equals(schoolDay)) {
+                if (!edPanelSchoolDay.equals(schoolDay)) {
                     try {
                         edPanel.updateSchoolDay(school.getId(), schoolDay);
                     } catch (HttpClientException e) {
@@ -91,6 +88,8 @@ public class SchoolDaySync {
                     results.schoolDayUpdated(
                             Long.valueOf(schoolDay.getSourceSystemId()),
                             schoolDay.getId());
+                } else {
+                    results.schoolDayUntouched(new Long(schoolDay.getSourceSystemId()), schoolDay.getId());
                 }
             }
         }
@@ -99,10 +98,9 @@ public class SchoolDaySync {
             List<Long> ids = edPanel.createSchoolDays(school.getId(), daysToCreate);
             //Update the IDS on the source instances for future reference
             if(ids.size() == source.size()) {
-                sourceIterator = source.entrySet().iterator();
                 int i = 0;
-                while(sourceIterator.hasNext()) {
-                    SchoolDay curr = sourceIterator.next().getValue();
+                for (Map.Entry<LocalDate, SchoolDay> localDateSchoolDayEntry : source.entrySet()) {
+                    SchoolDay curr = localDateSchoolDayEntry.getValue();
                     curr.setId(ids.get(i));
                     results.schoolDayCreated(Long.valueOf(curr.getSourceSystemId()), curr.getId());
                     i++;

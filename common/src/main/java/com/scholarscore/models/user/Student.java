@@ -56,6 +56,8 @@ public class Student extends Person implements Serializable {
     private EnrollStatus enrollStatus;
     private Long currentGradeLevel;
     private String stateStudentId;
+    //Indicates the previous school the student was in, if its within the district in EdPanel
+    private Long previousSchoolId;
     
     public Student() {
         
@@ -80,6 +82,7 @@ public class Student extends Person implements Serializable {
         this.enrollStatus = student.enrollStatus;
         this.currentGradeLevel = student.currentGradeLevel;
         this.stateStudentId = student.stateStudentId;
+        this.previousSchoolId = student.previousSchoolId;
     }
     
     public Student(String race, String ethnicity, Long currentSchoolId, Gender gender, String name, Long expectedGraduationYear, Staff advisor) {
@@ -151,7 +154,19 @@ public class Student extends Person implements Serializable {
             if(null == getStateStudentId()) {
                 setStateStudentId(merge.getStateStudentId());
             }
+            if(null == previousSchoolId) {
+                this.previousSchoolId = merge.previousSchoolId;
+            }
         }
+    }
+
+    @Column(name = HibernateConsts.STUDENT_PREVIOUS_SCHOOL_ID)
+    public Long getPreviousSchoolId() {
+        return previousSchoolId;
+    }
+
+    public void setPreviousSchoolId(Long previousSchoolId) {
+        this.previousSchoolId = previousSchoolId;
     }
 
     @Column(name = HibernateConsts.STUDENT_STATE_ID)
@@ -389,6 +404,7 @@ public class Student extends Person implements Serializable {
                 && Objects.equals(this.spedDetail, other.spedDetail)
                 && Objects.equals(this.enrollStatus, other.enrollStatus)
                 && Objects.equals(this.currentGradeLevel, other.currentGradeLevel)
+                && Objects.equals(this.previousSchoolId, other.previousSchoolId)
                 && Objects.equals(this.stateStudentId, other.stateStudentId)
                 && Objects.equals(this.advisor, other.advisor);
     }
@@ -398,7 +414,7 @@ public class Student extends Person implements Serializable {
         return 31 * super.hashCode()
                 + Objects.hash(mailingAddress, gender, birthDate,
                         districtEntryDate, projectedGraduationYear, socialSecurityNumber, 
-                        federalRace, federalEthnicity, currentSchoolId, withdrawalDate, advisor,
+                        federalRace, federalEthnicity, currentSchoolId, withdrawalDate, advisor, previousSchoolId,
                         ell, ellDetail, sped, spedDetail, stateStudentId, currentGradeLevel, enrollStatus);
     }
 
@@ -414,6 +430,7 @@ public class Student extends Person implements Serializable {
                 ", federalRace='" + federalRace + '\'' +
                 ", federalEthnicity='" + federalEthnicity + '\'' +
                 ", currentSchoolId=" + currentSchoolId + '\'' +
+                ", previousSchoolId=" + previousSchoolId + '\'' +
                 ", withdrawalDate=" + withdrawalDate + '\'' +
                 ", advisor=" + advisor + '\'' +
                 ", sped=" + sped + '\'' +
@@ -448,6 +465,7 @@ public class Student extends Person implements Serializable {
         private String federalRace;
         private String federalEthnicity;
         private Long currentSchoolId;
+        private Long previousSchoolId;
         private LocalDate withdrawalDate;
         private Boolean sped;
         private String spedDetail;
@@ -457,6 +475,10 @@ public class Student extends Person implements Serializable {
         private Long currentGradeLevel;
         private String stateStudentId;
 
+        public StudentBuilder withPreviousSchoolId(final Long psid) {
+            this.previousSchoolId = psid;
+            return this;
+        }
         public StudentBuilder withEnrollStatus(final EnrollStatus enrollStatus) {
             this.enrollStatus = enrollStatus;
             return this;
@@ -567,6 +589,7 @@ public class Student extends Person implements Serializable {
             student.setEnrollStatus(enrollStatus);
             student.setCurrentGradeLevel(currentGradeLevel);
             student.setStateStudentId(stateStudentId);
+            student.setPreviousSchoolId(previousSchoolId);
             return student;
         }
 

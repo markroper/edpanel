@@ -2,7 +2,6 @@ package com.scholarscore.etl.powerschool.sync.assignment;
 
 import com.scholarscore.client.HttpClientException;
 import com.scholarscore.client.IAPIClient;
-import com.scholarscore.etl.EtlEngine;
 import com.scholarscore.etl.ISync;
 import com.scholarscore.etl.PowerSchoolSyncResult;
 import com.scholarscore.etl.powerschool.api.model.assignment.PsAssignment;
@@ -15,6 +14,7 @@ import com.scholarscore.etl.powerschool.api.model.assignment.type.PsAssignmentTy
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
+import com.scholarscore.etl.powerschool.sync.MultiThreadedSyncBase;
 import com.scholarscore.etl.powerschool.sync.associator.StudentAssociator;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
@@ -25,17 +25,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by markroper on 10/28/15.
  */
-public class SectionAssignmentSync implements ISync<Assignment> {
+public class SectionAssignmentSync extends MultiThreadedSyncBase<Assignment> implements ISync<Assignment> {
     private final static Logger LOGGER = LoggerFactory.getLogger(SectionAssignmentSync.class);
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
@@ -66,123 +62,22 @@ public class SectionAssignmentSync implements ISync<Assignment> {
     private Map<Long,Long> sectionPublicIdToSectionRecordId = new HashMap<>();
     
     @Override
-    public ConcurrentHashMap<Long, Assignment> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        ConcurrentHashMap<Long, Assignment> source = null;
-        try {
-            source = this.resolveAllFromSourceSystem(results);
-        } catch (HttpClientException e) {
-            LOGGER.warn("Unable to resolve section assignments for section with name: " +
-                    createdSection.getName() +
-                    ", ID: " + createdSection.getId() +
-                    ", SSID: " + createdSection.getSourceSystemId() +
-                    ", & School ID: " + school.getId());
-            results.sectionAssignmentSourceGetFailed(
-                    Long.valueOf(createdSection.getSourceSystemId()),
-                    Long.valueOf(createdSection.getSourceSystemId()),
-                    createdSection.getId());
-            return new ConcurrentHashMap<>();
-        }
-        ConcurrentHashMap<Long, Assignment> ed = null;
-        try {
-            ed = this.resolveFromEdPanel();
-        } catch (HttpClientException e) {
-            results.sectionAssignmentEdPanelGetFailed(
-                    Long.valueOf(createdSection.getSourceSystemId()),
-                    Long.valueOf(createdSection.getSourceSystemId()),
-                    createdSection.getId());
-            return new ConcurrentHashMap<>();
-        }
-        Iterator<Map.Entry<Long, Assignment>> sourceIterator = source.entrySet().iterator();
-        //Find & perform the inserts and updates, if any
-        ExecutorService executor = Executors.newFixedThreadPool(EtlEngine.THREAD_POOL_SIZE);
-        while(sourceIterator.hasNext()) {
-            Map.Entry<Long, Assignment> entry = sourceIterator.next();
-            Assignment sourceAssignment = entry.getValue();
-            Assignment edPanelAssignment = ed.get(entry.getKey());
-            if(null == edPanelAssignment){
-                Assignment created = null;
-                try {
-                    created = edPanel.createSectionAssignment(
-                            school.getId(),
-                            createdSection.getTerm().getSchoolYear( ).getId(),
-                            createdSection.getTerm().getId(),
-                            createdSection.getId(),
-                            sourceAssignment);
-                } catch (HttpClientException e) {
-                    results.sectionAssignmentCreateFailed(
-                            Long.valueOf(createdSection.getSourceSystemId()),
-                            Long.valueOf(sourceAssignment.getSourceSystemId()));
-                    continue;
-                }
-                sourceAssignment.setId(created.getId());
-                results.sectionAssignmentCreated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceAssignment.getId());
-            } else {
-                //Massage discrepancies to determine
-                sourceAssignment.setId(edPanelAssignment.getId());
-                if(sourceAssignment.getSectionFK().equals(edPanelAssignment.getSectionFK())) {
-                    edPanelAssignment.setSection(sourceAssignment.getSection());
-                }
-                if(!edPanelAssignment.equals(sourceAssignment)) {
-                    Assignment replaced = null;
-                    try {
-                        replaced = edPanel.replaceSectionAssignment(
-                                school.getId(),
-                                createdSection.getTerm().getSchoolYear().getId(),
-                                createdSection.getTerm().getId(),
-                                createdSection.getId(),
-                                sourceAssignment);
-                    } catch (HttpClientException e) {
-                        results.sectionAssignmentCreateFailed(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey());
-                        continue;
-                    }
-                    results.sectionAssignmentUpdated(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), sourceAssignment.getId());
-                }
-            }
-            //Regardless of whether or not we're creating, updating or no-op-ing, sync the StudentAssignments
-            StudentAssignmentSyncRunnable runnable = new StudentAssignmentSyncRunnable(
-                        powerSchool,
-                        edPanel,
-                        school,
-                        createdSection,
-                        sourceAssignment,   
-                        ssidToStudent,
-                        assignmentTableIdToAssignmentSsid,
-                        results
-            );
-            executor.execute(runnable);
-        }
-        executor.shutdown();
-        //Delete anything IN EdPanel that is NOT in source system
-        Iterator<Map.Entry<Long, Assignment>> edpanelIterator = ed.entrySet().iterator();
-        while(edpanelIterator.hasNext()) {
-            Map.Entry<Long, Assignment> entry = edpanelIterator.next();
-            if(!source.containsKey(entry.getKey())) {
-                try {
-                    edPanel.deleteSectionAssignment(
-                            school.getId(),
-                            createdSection.getTerm().getSchoolYear().getId(),
-                            createdSection.getTerm().getId(),
-                            createdSection.getId(),
-                            entry.getValue());
-                } catch (HttpClientException e) {
-                    results.sectionAssignmentDeleteFailed(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), entry.getValue().getId());
-                    continue;
-                }
-                results.sectionAssignmentDeleted(Long.valueOf(createdSection.getSourceSystemId()), entry.getKey(), entry.getValue().getId());
-            }
-        }
-        //Spin while we wait for all the threads to complete
-        try {
-            if (!executor.awaitTermination(EtlEngine.TOTAL_TTL_MINUTES, TimeUnit.MINUTES)) {
-                executor.shutdownNow();
-            }
-        } catch(InterruptedException e) {
-            LOGGER.error("Executor thread pool interrupted " + e.getMessage());
-        }
-        return source;
+    protected Runnable buildRunnable(Assignment sourceRecord, PowerSchoolSyncResult results) {
+                     //Regardless of whether or not we're creating, updating or no-op-ing, sync the StudentAssignments
+        return new StudentAssignmentSyncRunnable(
+                powerSchool,
+                edPanel,
+                school,
+                createdSection,
+                sourceRecord,
+                ssidToStudent,
+                assignmentTableIdToAssignmentSsid,
+                results
+        );
     }
 
-    protected ConcurrentHashMap<Long, Assignment> resolveAllFromSourceSystem(PowerSchoolSyncResult results) throws HttpClientException {
+    @Override
+    protected ConcurrentHashMap<Long, Assignment> resolveAllFromSourceSystem() throws HttpClientException {
         
         // Some endpoints we are about to call require us to identify the section using the section's Database ID 
         // (aka record Id, table Id, or just 'id' if calling directly to a /table endpoint) instead of its SSID
@@ -277,6 +172,20 @@ public class SectionAssignmentSync implements ISync<Assignment> {
         return source;
     }
 
+    @Override
+    protected void handleSourceGetFailure(PowerSchoolSyncResult results) {
+        LOGGER.warn("Unable to resolve section assignments for section with name: " +
+                createdSection.getName() +
+                ", ID: " + createdSection.getId() +
+                ", SSID: " + createdSection.getSourceSystemId() +
+                ", & School ID: " + school.getId());
+        results.sectionAssignmentSourceGetFailed(
+                Long.valueOf(createdSection.getSourceSystemId()),
+                Long.valueOf(createdSection.getSourceSystemId()),
+                createdSection.getId());
+    }
+
+    @Override
     protected ConcurrentHashMap<Long, Assignment> resolveFromEdPanel() throws HttpClientException {
         ConcurrentHashMap<Long, Assignment> edpanelAssignments = new ConcurrentHashMap<>();
         Assignment[] edPanelAssignmentMap = edPanel.getSectionAssignments(
@@ -291,5 +200,75 @@ public class SectionAssignmentSync implements ISync<Assignment> {
             );
         }
         return edpanelAssignments;
+    }
+
+    @Override
+    protected void handleEdPanelGetFailure(PowerSchoolSyncResult results) {
+        results.sectionAssignmentEdPanelGetFailed(
+                Long.valueOf(createdSection.getSourceSystemId()),
+                Long.valueOf(createdSection.getSourceSystemId()),
+                createdSection.getId());
+    }
+
+    @Override
+    protected void createEdPanelRecord(Assignment entityToSave, PowerSchoolSyncResult results) {
+        Long sectionSsid = Long.valueOf(createdSection.getSourceSystemId());
+        Long ssid = Long.valueOf(entityToSave.getSourceSystemId());
+        try {
+            Assignment created = edPanel.createSectionAssignment(
+                    school.getId(),
+                    createdSection.getTerm().getSchoolYear().getId(),
+                    createdSection.getTerm().getId(),
+                    createdSection.getId(),
+                    entityToSave);
+            entityToSave.setId(created.getId());
+            results.sectionAssignmentCreated(sectionSsid, ssid, entityToSave.getId());
+        } catch (HttpClientException e) {
+            results.sectionAssignmentCreateFailed(
+                    sectionSsid,
+                    ssid);
+        }
+    }
+
+    @Override
+    protected void updateEdPanelRecord(Assignment sourceSystemEntity, Assignment edPanelEntity, PowerSchoolSyncResult results) {
+        //Massage discrepancies to determine
+        sourceSystemEntity.setId(edPanelEntity.getId());
+        Long ssid = Long.valueOf(sourceSystemEntity.getSourceSystemId());
+        Long sectionSsid = Long.valueOf(createdSection.getSourceSystemId());
+        if (sourceSystemEntity.getSectionFK().equals(edPanelEntity.getSectionFK())) {
+            edPanelEntity.setSection(sourceSystemEntity.getSection());
+        }
+        if (!edPanelEntity.equals(sourceSystemEntity)) {
+            try {
+                edPanel.replaceSectionAssignment(
+                        school.getId(),
+                        createdSection.getTerm().getSchoolYear().getId(),
+                        createdSection.getTerm().getId(),
+                        createdSection.getId(),
+                        sourceSystemEntity);
+                results.sectionAssignmentUpdated(sectionSsid, ssid, sourceSystemEntity.getId());
+            } catch (HttpClientException e) {
+                results.sectionAssignmentCreateFailed(sectionSsid, ssid);
+            }
+        } else {
+            results.sectionAssignmentUntouched(sectionSsid, ssid, sourceSystemEntity.getId());
+        }
+    }
+
+    @Override
+    protected void deleteEdPanelRecord(Assignment entityToDelete, PowerSchoolSyncResult results) {
+        Long ssid = Long.valueOf(entityToDelete.getSourceSystemId());
+        try {
+            edPanel.deleteSectionAssignment(
+                    school.getId(),
+                    createdSection.getTerm().getSchoolYear().getId(),
+                    createdSection.getTerm().getId(),
+                    createdSection.getId(),
+                    entityToDelete);
+            results.sectionAssignmentDeleted(Long.valueOf(createdSection.getSourceSystemId()), ssid, entityToDelete.getId());
+        } catch (HttpClientException e) {
+            results.sectionAssignmentDeleteFailed(Long.valueOf(createdSection.getSourceSystemId()), ssid, entityToDelete.getId());
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.scholarscore.etl.state.ma;
 
 import com.scholarscore.models.state.ma.McasResult;
+import com.scholarscore.util.McasParser;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

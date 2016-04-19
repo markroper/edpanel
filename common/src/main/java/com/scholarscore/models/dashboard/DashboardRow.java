@@ -30,20 +30,25 @@ public class DashboardRow implements Serializable {
     protected Long dashboardFk;
     protected Long position;
     @Size(min = 1, max = 3)
-    protected List<Report> reports;
+    protected List<ReportBase> reports;
 
     public DashboardRow() {
 
     }
 
+    @SuppressWarnings("unchecked")
     public DashboardRow(DashboardRow r) {
         this.id = r.id;
         this.dashboardFk = r.dashboardFk;
         this.position = r.position;
         if(null != r.getReports()) {
             this.reports = new ArrayList<>();
-            for(Report rpt: r.getReports()) {
-                this.reports.add(new Report(rpt));
+            for(ReportBase rpt: r.getReports()) {
+                if(rpt instanceof Report) {
+                    this.reports.add(new Report((Report)rpt));
+                } else if(rpt instanceof ReportAssignmentAnalysis) {
+                    this.reports.add(new ReportAssignmentAnalysis((ReportAssignmentAnalysis)rpt));
+                }
             }
         }
     }
@@ -53,11 +58,11 @@ public class DashboardRow implements Serializable {
     @Fetch(FetchMode.JOIN)
     @Cascade(CascadeType.ALL)
     @OrderColumn(name = HibernateConsts.DASHBOARD_REPORT_POSITION)
-    public List<Report> getReports() {
+    public List<ReportBase> getReports() {
         return reports;
     }
 
-    public void setReports(List<Report> reports) {
+    public void setReports(List<ReportBase> reports) {
         this.reports = reports;
     }
 

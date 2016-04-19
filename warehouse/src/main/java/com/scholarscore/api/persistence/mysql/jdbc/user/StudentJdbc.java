@@ -166,6 +166,17 @@ public class StudentJdbc extends UserBaseJdbc implements StudentPersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public Student selectByStateId(String sasid) {
+        List<Student> students = (List<Student>) hibernateTemplate.findByNamedParam(
+                STUDENT_HQL + " where s.stateStudentId = :sasid", "sasid", sasid.toString());
+        if (students.size() == 1) {
+            return students.get(0);
+        }
+        return null;
+    }
+
+    @Override
     public Long createStudent(Student student) {
         transformUserValues(student, null);
         Student out = hibernateTemplate.merge(student);

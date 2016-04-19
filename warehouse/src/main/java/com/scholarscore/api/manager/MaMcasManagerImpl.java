@@ -33,7 +33,7 @@ public class MaMcasManagerImpl implements MaMcasManager {
 
     @Override
     public ServiceResponse<List<McasResult>> getAllMcasResultsForStudent(Long schoolId, Long studentId) {
-        return new ServiceResponse<>(mcasPersistence.selectMcasForStudent(schoolId, studentId));
+        return new ServiceResponse<>(mcasPersistence.selectMcasForStudent(studentId));
     }
 
     @Override

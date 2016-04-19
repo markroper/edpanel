@@ -10,6 +10,7 @@ import com.scholarscore.etl.powerschool.api.model.assignment.scores.PsSectionSco
 import com.scholarscore.etl.powerschool.api.response.PsResponse;
 import com.scholarscore.etl.powerschool.api.response.PsResponseInner;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
+import com.scholarscore.etl.powerschool.sync.SyncBase;
 import com.scholarscore.models.School;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.assignment.Assignment;
@@ -19,8 +20,6 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * Created by markroper on 10/25/15.
  */
-public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAssignment> {
+public class StudentAssignmentSyncRunnable extends SyncBase<StudentAssignment> implements Runnable, ISync<StudentAssignment> {
     private final static Logger LOGGER = LoggerFactory.getLogger(StudentAssignmentSyncRunnable.class);
     private IPowerSchoolClient powerSchool;
     private IAPIClient edPanel;
@@ -64,159 +63,9 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
     public void run() {
         this.syncCreateUpdateDelete(results);
     }
-
+    
     @Override
-    public ConcurrentHashMap<Long, StudentAssignment> syncCreateUpdateDelete(PowerSchoolSyncResult results) {
-        ConcurrentHashMap<Long, StudentAssignment> source = null;
-        try {
-            source = resolveAllFromSourceSystem(results);
-        } catch (HttpClientException e) {
-            LOGGER.warn("Unable to resolve student assignments for " +
-                    "section with name: " + createdSection.getName() +
-                    ", ID: " + createdSection.getId() +
-                    ", SSID: " + createdSection.getSourceSystemId() +
-                    ", & School ID: " + school.getId());
-            results.studentAssignmentSourceGetFailed(
-                    Long.valueOf(createdSection.getSourceSystemId()),
-                    Long.valueOf(this.assignment.getSourceSystemId()),
-                    Long.valueOf(this.assignment.getSourceSystemId()),
-                    this.assignment.getId());
-            return new ConcurrentHashMap<>();
-        }
-        ConcurrentHashMap<Long, StudentAssignment> ed = null;
-        try {
-            ed = resolveFromEdPanel();
-        } catch (HttpClientException e) {
-            results.studentAssignmentEdPanelGetFailed(
-                    Long.valueOf(createdSection.getSourceSystemId()),
-                    Long.valueOf(this.assignment.getSourceSystemId()),
-                    Long.valueOf(this.assignment.getSourceSystemId()),
-                    this.assignment.getId());
-            LOGGER.debug("Failed Student Assignment get from EdPanel for createdSection " + 
-            (createdSection!= null ? createdSection.getSourceSystemId() : "null") +
-                    " and assignment " +
-            (assignment != null ? assignment.getSourceSystemId() : "null"));             
-            return new ConcurrentHashMap<>();
-        }
-
-        Iterator<Map.Entry<Long, StudentAssignment>> sourceIterator = source.entrySet().iterator();
-        List<StudentAssignment> studentAssignmentsToCreate = new ArrayList<>();
-        //Find & perform the inserts and updates, if any
-        while(sourceIterator.hasNext()) {
-            Map.Entry<Long, StudentAssignment> entry = sourceIterator.next();
-            StudentAssignment sourceStudentAssignment = entry.getValue();
-            StudentAssignment edPanelStudentAssignment = ed.get(entry.getKey());
-            if(null == edPanelStudentAssignment){
-                studentAssignmentsToCreate.add(sourceStudentAssignment);
-            } else {
-                sourceStudentAssignment.setId(edPanelStudentAssignment.getId());
-                sourceStudentAssignment.setStudent(edPanelStudentAssignment.getStudent());
-                if(sourceStudentAssignment.getStudent().getId().equals(edPanelStudentAssignment.getStudent().getId())) {
-                    sourceStudentAssignment.setStudent(edPanelStudentAssignment.getStudent());
-                } else {
-                    LOGGER.warn("edPanelStudentAssignment.getStudent().getId() " +
-                            "is not equal to SourceStudentAssignment.getStudent().getId()!");
-                }
-                Long sourceStudentAssignmentId = sourceStudentAssignment.getAssignment().getId();
-                Long edPanelStudentAssignmentId = edPanelStudentAssignment.getAssignment().getId();
-                if(sourceStudentAssignmentId.equals(edPanelStudentAssignmentId)) {
-                    sourceStudentAssignment.setAssignment(edPanelStudentAssignment.getAssignment());
-                } else {
-                    LOGGER.warn("edPanelStudentAssignment.getAssignment().getId() (returned:" + edPanelStudentAssignmentId + ") " + 
-                            "is not equal to SourceStudentAssignment.getAssignment().getId() (" + sourceStudentAssignmentId + ") !");
-                }  
-                if(!edPanelStudentAssignment.equals(sourceStudentAssignment)) {
-                    try {
-                        edPanel.replaceStudentAssignment(
-                                school.getId(),
-                                createdSection.getTerm().getSchoolYear().getId(),
-                                createdSection.getTerm().getId(),
-                                createdSection.getId(),
-                                assignment.getId(),
-                                sourceStudentAssignment);
-                    } catch (HttpClientException e) {
-                        results.studentAssignmentUpdateFailed(
-                                Long.valueOf(createdSection.getSourceSystemId()),
-                                Long.valueOf(this.assignment.getSourceSystemId()),
-                                entry.getKey(),
-                                sourceStudentAssignment.getId());
-                        continue;
-                    }
-                }
-                results.studentAssignmentUpdated(
-                        Long.valueOf(createdSection.getSourceSystemId()),
-                        Long.valueOf(this.assignment.getSourceSystemId()),
-                        entry.getKey(),
-                        sourceStudentAssignment.getId());
-            }
-        }
-        if(!studentAssignmentsToCreate.isEmpty()) {
-            //Perform the bulk creates!
-            try {
-                List<Long> ids = edPanel.createStudentAssignments(
-                        school.getId(),
-                        createdSection.getTerm().getSchoolYear().getId(),
-                        createdSection.getTerm().getId(),
-                        createdSection.getId(),
-                        assignment.getId(),
-                        studentAssignmentsToCreate);
-
-                int i = 0;
-                for (StudentAssignment s : studentAssignmentsToCreate) {
-                    results.studentAssignmentCreated(
-                            Long.valueOf(createdSection.getSourceSystemId()),
-                            Long.valueOf(this.assignment.getSourceSystemId()),
-                            Long.valueOf(s.getStudent().getSourceSystemId()),
-                            ids.get(i));
-                    i++;
-                }
-            } catch (HttpClientException e) {
-                for (StudentAssignment s : studentAssignmentsToCreate) {
-                    // NOTE - we couldn't create the student assignments for any of the assignment,
-                    // so use the parent ID in this case.
-                    results.studentAssignmentCreateFailed(
-                            Long.valueOf(createdSection.getSourceSystemId()),
-                            Long.valueOf(this.assignment.getSourceSystemId()),
-                            Long.valueOf(assignment.getSourceSystemId()));
-                }
-            }
-        } else {
-            // not a problem if the sync is incremental (which the sync engine doesn't currently track) -- sometimes there's
-            // just no new assignments created.
-        }
-
-        //Delete anything IN EdPanel that is NOT in source system
-        Iterator<Map.Entry<Long, StudentAssignment>> edpanelIterator = ed.entrySet().iterator();
-        while(edpanelIterator.hasNext()) {
-            Map.Entry<Long, StudentAssignment> entry = edpanelIterator.next();
-            if(!source.containsKey(entry.getKey())) {
-                try {
-                    edPanel.deleteStudentAssignment(
-                            school.getId(),
-                            createdSection.getTerm().getSchoolYear().getId(),
-                            createdSection.getTerm().getId(),
-                            createdSection.getId(),
-                            assignment.getId(),
-                            entry.getValue());
-                } catch (HttpClientException e) {
-                    results.studentAssignmentDeleteFailed(
-                            Long.valueOf(createdSection.getSourceSystemId()),
-                            Long.valueOf(this.assignment.getSourceSystemId()),
-                            entry.getKey(),
-                            entry.getValue().getId());
-                    continue;
-                }
-                results.studentAssignmentDeleted(
-                        Long.valueOf(createdSection.getSourceSystemId()),
-                        Long.valueOf(this.assignment.getSourceSystemId()),
-                        entry.getKey(),
-                        entry.getValue().getId());
-            }
-        }
-        return source;
-    }
-
-    protected ConcurrentHashMap<Long, StudentAssignment> resolveAllFromSourceSystem(PowerSchoolSyncResult results) throws HttpClientException {
+    protected ConcurrentHashMap<Long, StudentAssignment> resolveAllFromSourceSystem() throws HttpClientException {
         // We have assignment.getSourceSystemId(), which is a DCID.
         // We need to call powerSchool.getStudentScoresByAssignmentId(Long ~) which takes a *tableId* not a DCID
         // thus we must convert it first.
@@ -267,6 +116,21 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
         return studentAssignmentsToCreate;
     }
 
+    @Override
+    protected void handleSourceGetFailure(PowerSchoolSyncResult results) {
+        LOGGER.warn("Unable to resolve student assignments for " +
+                "section with name: " + createdSection.getName() +
+                ", ID: " + createdSection.getId() +
+                ", SSID: " + createdSection.getSourceSystemId() +
+                ", & School ID: " + school.getId());
+        results.studentAssignmentSourceGetFailed(
+                Long.valueOf(createdSection.getSourceSystemId()),
+                Long.valueOf(this.assignment.getSourceSystemId()),
+                Long.valueOf(this.assignment.getSourceSystemId()),
+                this.assignment.getId());
+    }
+
+    @Override
     protected ConcurrentHashMap<Long, StudentAssignment> resolveFromEdPanel() throws HttpClientException {
         StudentAssignment[] studentAssignments = edPanel.getStudentAssignments(
                 school.getId(),
@@ -282,5 +146,130 @@ public class StudentAssignmentSyncRunnable implements Runnable, ISync<StudentAss
             }
         }
         return saMap;
+    }
+
+    @Override
+    protected void handleEdPanelGetFailure(PowerSchoolSyncResult results) {
+        results.studentAssignmentEdPanelGetFailed(
+                Long.valueOf(createdSection.getSourceSystemId()),
+                Long.valueOf(this.assignment.getSourceSystemId()),
+                Long.valueOf(this.assignment.getSourceSystemId()),
+                this.assignment.getId());
+        LOGGER.debug("Failed Student Assignment get from EdPanel for createdSection " +
+                (createdSection!= null ? createdSection.getSourceSystemId() : "null") +
+                " and assignment " +
+                (assignment != null ? assignment.getSourceSystemId() : "null"));
+    }
+
+    @Override
+    protected void createEdPanelRecord(StudentAssignment entityToSave, PowerSchoolSyncResult results) {
+        enqueueForBulkCreate(entityToSave);
+    }
+
+    @Override
+    protected void createBulkEdPanelRecords(List<StudentAssignment> entitiesToCreate) {
+        //Perform the bulk creates!
+        try {
+            List<Long> ids = edPanel.createStudentAssignments(
+                    school.getId(),
+                    createdSection.getTerm().getSchoolYear().getId(),
+                    createdSection.getTerm().getId(),
+                    createdSection.getId(),
+                    assignment.getId(),
+                    entitiesToCreate);
+
+            int i = 0;
+            for (StudentAssignment s : entitiesToCreate) {
+                results.studentAssignmentCreated(
+                        Long.valueOf(createdSection.getSourceSystemId()),
+                        Long.valueOf(assignment.getSourceSystemId()),
+                        Long.valueOf(s.getStudent().getSourceSystemId()),
+                        ids.get(i));
+                i++;
+            }
+        } catch (HttpClientException e) {
+            for (StudentAssignment s : entitiesToCreate) {
+                // NOTE - we couldn't create the student assignments for any of the assignment,
+                // so use the parent ID in this case.
+                results.studentAssignmentCreateFailed(
+                        Long.valueOf(createdSection.getSourceSystemId()),
+                        Long.valueOf(assignment.getSourceSystemId()),
+                        Long.valueOf(s.getStudent().getSourceSystemId()));
+            }
+        }
+    }
+
+    @Override
+    protected void updateEdPanelRecord(StudentAssignment sourceSystemEntity, StudentAssignment edPanelEntity, PowerSchoolSyncResult results) {
+        sourceSystemEntity.setId(edPanelEntity.getId());
+        sourceSystemEntity.setStudent(edPanelEntity.getStudent());
+        if (sourceSystemEntity.getStudent().getId().equals(edPanelEntity.getStudent().getId())) {
+            sourceSystemEntity.setStudent(edPanelEntity.getStudent());
+        } else {
+            LOGGER.warn("edPanelEntity.getStudent().getId() " +
+                    "is not equal to SourceStudentAssignment.getStudent().getId()!");
+        }
+        Long sourceSystemAssignmentId = sourceSystemEntity.getAssignment().getId();
+        Long edPanelAssignmentId = edPanelEntity.getAssignment().getId();
+        if (sourceSystemAssignmentId.equals(edPanelAssignmentId)) {
+            sourceSystemEntity.setAssignment(edPanelEntity.getAssignment());
+        } else {
+            LOGGER.warn("edPanelEntity.getAssignment().getId() (returned:" + edPanelAssignmentId + ") " +
+                    "is not equal to SourceStudentAssignment.getAssignment().getId() (" + sourceSystemAssignmentId + ") !");
+        }
+        Long studentSsid = Long.valueOf(sourceSystemEntity.getStudent().getSourceSystemId());
+        if (!edPanelEntity.equals(sourceSystemEntity)) {
+            try {
+                edPanel.replaceStudentAssignment(
+                        school.getId(),
+                        createdSection.getTerm().getSchoolYear().getId(),
+                        createdSection.getTerm().getId(),
+                        createdSection.getId(),
+                        assignment.getId(),
+                        sourceSystemEntity);
+                results.studentAssignmentUpdated(
+                        Long.valueOf(createdSection.getSourceSystemId()),
+                        Long.valueOf(this.assignment.getSourceSystemId()),
+                        studentSsid,
+                        sourceSystemEntity.getId());
+            } catch (HttpClientException e) {
+                results.studentAssignmentUpdateFailed(
+                        Long.valueOf(createdSection.getSourceSystemId()),
+                        Long.valueOf(this.assignment.getSourceSystemId()),
+                        studentSsid,
+                        sourceSystemEntity.getId());
+                return;
+            }
+        } else {
+            results.studentAssignmentUntouched(
+                    Long.valueOf(createdSection.getSourceSystemId()),
+                    Long.valueOf(this.assignment.getSourceSystemId()),
+                    studentSsid,
+                    sourceSystemEntity.getId());
+        }
+    }
+
+    @Override
+    protected void deleteEdPanelRecord(StudentAssignment entityToDelete, PowerSchoolSyncResult results) {
+        try {
+            edPanel.deleteStudentAssignment(
+                    school.getId(),
+                    createdSection.getTerm().getSchoolYear().getId(),
+                    createdSection.getTerm().getId(),
+                    createdSection.getId(),
+                    assignment.getId(),
+                    entityToDelete);
+            results.studentAssignmentDeleted(
+                    Long.valueOf(createdSection.getSourceSystemId()),
+                    Long.valueOf(assignment.getSourceSystemId()),
+                    Long.valueOf(entityToDelete.getStudent().getSourceSystemId()),
+                    entityToDelete.getId());
+        } catch (HttpClientException e) {
+            results.studentAssignmentDeleteFailed(
+                    Long.valueOf(createdSection.getSourceSystemId()),
+                    Long.valueOf(assignment.getSourceSystemId()),
+                    Long.valueOf(entityToDelete.getStudent().getSourceSystemId()),
+                    entityToDelete.getId());
+        }
     }
 }

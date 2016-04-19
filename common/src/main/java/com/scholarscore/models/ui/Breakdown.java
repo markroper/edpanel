@@ -4,7 +4,6 @@ import com.scholarscore.models.user.Student;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -44,12 +43,10 @@ public abstract class Breakdown {
             studentDatapoints.add(0);
         }
 
-        Iterator<Map.Entry<Student, Integer>> it = studentsFailing.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<Student, Integer> entry = it.next();
-            Integer failingIndex = entry.getValue()+1;
-            Integer presentNumberFailing = (Integer)studentDatapoints.get(failingIndex);
-            studentDatapoints.set(failingIndex,presentNumberFailing+1);
+        for (Map.Entry<Student, Integer> entry : studentsFailing.entrySet()) {
+            Integer failingIndex = entry.getValue() + 1;
+            Integer presentNumberFailing = (Integer) studentDatapoints.get(failingIndex);
+            studentDatapoints.set(failingIndex, presentNumberFailing + 1);
 
         }
         if (totalStudents.size() != 0) {

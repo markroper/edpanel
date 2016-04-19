@@ -15,28 +15,38 @@ import java.util.List;
  * Time: 5:28 PM
  */
 public interface BehaviorManager {
-    public ServiceResponse<Collection<Behavior>> getAllBehaviors(long studentId, LocalDate cuttoffDate);
+    ServiceResponse<Collection<Behavior>> getAllBehaviors(long studentId, LocalDate cutoffDate);
     
-    public StatusCode behaviorExists(long studentId, long behaviorId);
+    StatusCode behaviorExists(long studentId, long behaviorId);
 
-    public ServiceResponse<Behavior> getBehavior(long studentId, long behaviorId);
+    ServiceResponse<Behavior> getBehavior(long studentId, long behaviorId);
     
-    public ServiceResponse<Long> createBehavior(long studentId, Behavior behavior);
+    ServiceResponse<Long> createBehavior(long studentId, Behavior behavior);
 
-    public ServiceResponse<List<Long>> createBehaviors(List<Behavior> behaviors);
+    ServiceResponse<List<Long>> createBehaviors(List<Behavior> behaviors);
     
-    public ServiceResponse<Long> replaceBehavior(long studentId, long behaviorId, Behavior behavior);
+    ServiceResponse<Long> replaceBehavior(long studentId, long behaviorId, Behavior behavior);
     
-    public ServiceResponse<Long> updateBehavior(long studentId, long behaviorId, Behavior behavior);
+    ServiceResponse<Long> updateBehavior(long studentId, long behaviorId, Behavior behavior);
     
-    public ServiceResponse<Long> deleteBehavior(long studentId, long behaviorId);
+    ServiceResponse<Long> deleteBehavior(long studentId, long behaviorId);
 
-    public ServiceResponse<Long> deleteBehaviorBySsid(long studentId, long ssid);
+    ServiceResponse<Long> deleteBehaviorBySsid(long studentId, long ssid);
+
+    // behavior scores
+    StatusCode behaviorScoreExists(long studentId, LocalDate date);
 
     ServiceResponse<BehaviorScore> getBehaviorScore(long studentId, LocalDate date);
+
     ServiceResponse<Collection<BehaviorScore>> getAllBehaviorScores(long studentId, LocalDate cuttoffDate);
+
     ServiceResponse<Long> createBehaviorScore(long studentId, BehaviorScore score);
+
     ServiceResponse<List<Long>> createBehaviorScores(List<BehaviorScore> scores);
+
+    ServiceResponse<Long> updateBehaviorScore(long studentId, LocalDate date, BehaviorScore score);
+
     ServiceResponse<Long> replaceBehaviorScore(long studentId, LocalDate date, BehaviorScore score);
+
     ServiceResponse<Void> deleteBehaviorScore(long studentId, LocalDate date);
 }

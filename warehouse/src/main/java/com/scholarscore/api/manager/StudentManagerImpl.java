@@ -111,6 +111,11 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
+    public ServiceResponse<Student> getStudentByStateId(String sasid) {
+        return new ServiceResponse<>(studentPersistence.selectByStateId(sasid));
+    }
+
+    @Override
     public ServiceResponse<Long> replaceStudent(long studentId, Student student) {
         StatusCode code = studentExists(studentId);
         if(!code.isOK()) {

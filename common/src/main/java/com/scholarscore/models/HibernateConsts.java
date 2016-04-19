@@ -140,6 +140,7 @@ public class HibernateConsts {
     public static final String STUDENT_ENROLL_STATUS = "student_enroll_status";
     public static final String STUDENT_GRADE_LEVEL = "student_grade_level";
     public static final String STUDENT_STATE_ID = "student_state_id";
+    public static final String STUDENT_PREVIOUS_SCHOOL_ID = "student_previous_school_id";
     
     //Student section grade constants
     public static final String STUDENT_SECTION_GRADE_TABLE = "student_section_grade";
@@ -353,6 +354,7 @@ public class HibernateConsts {
     public static final String DASHBOARD_REPORT_COLUMN_DEFS = "dashboard_report_column_defs";
     public static final String DASHBOARD_REPORT_POSITION = "dashboard_report_position";
     public static final String DASHBOARD_REPORT_CLICK_REPORT_FK = "click_report_fk";
+    public static final String DASHBOARD_REPORT_ASSIGNMENT_IDS = "dashboard_report_assignment_ids";
 
     public static final String MA_MCAS_TABLE = "ma_mcas_results";
     public static final String MA_MCAS_ID = "ma_mcas_results_id";

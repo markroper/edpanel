@@ -116,7 +116,7 @@ public class KickboardEtl implements IEtlEngine {
                     MutablePair<LocalDate, BehaviorCategory> p = new MutablePair<>(b.getBehaviorDate(), b.getBehaviorCategory());
                     if(!seenBehaviors.containsKey(b.getStudent().getId()) ||
                             !seenBehaviors.get(b.getStudent().getId()).contains(p) ) {
-                        scholarScore.deleteBehavior(b.getStudent().getId(), b.getRemoteBehaviorId());
+                        scholarScore.deleteBehavior(b.getStudent().getId(), b.getId());
                         result.addDeleted(1);
                     }
                 } catch (HttpClientException e) {
@@ -193,7 +193,8 @@ public class KickboardEtl implements IEtlEngine {
                     if (edPanelBehaviors != null) {
                         edPanelBehaviors.put(b.getRemoteBehaviorId(), b);
                     } else {
-                        LOGGER.debug("NULL EdPanelBehavior, addStudentBehavior skipping the EdPanelBehavior.put()");
+                        // this is expected if edPanelBehaviors is not passed in
+                        LOGGER.trace("NULL EdPanelBehavior, addStudentBehavior skipping the EdPanelBehavior.put()");
                     }
                 } else {
                     //For behaviors without an SSID (kickboard consequences), use alternative data structure
