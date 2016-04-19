@@ -51,7 +51,7 @@ public class WatchController extends BaseController {
             notes = "Creates, assigns an ID to, persists and returns a student",
             response = EntityId.class)
     @RequestMapping(
-            value = "/watches/{watchId}",
+            value = "/{watchId}",
             method = RequestMethod.DELETE,
             produces = {JSON_ACCEPT_HEADER})
     @SuppressWarnings("rawtypes")
