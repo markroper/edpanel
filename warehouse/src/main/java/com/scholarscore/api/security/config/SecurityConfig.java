@@ -85,6 +85,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String MESSAGE_THREADS_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/messagethreads";
     private static final String MESSAGES_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/messagethreads/*/messages";
     private static final String NOTIFICATION_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/notifications";
+    private static final String WATCH_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/watches";
+    private static final String WATCHES_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/watches/*";
     private static final String GOAL_NOTIFICATIONS_ENDPOINT = ApiConsts.API_V1_ENDPOINT + "/notifications/schools/*/students/*/goals/*";
     private static final String ACCESS_DENIED_JSON = "{\"message\":\"You are not privileged to request this resource.\","
             + " \"access-denied\":true,\"cause\":\"AUTHORIZATION_FAILURE\"}";
@@ -237,6 +239,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             and().
             authorizeRequests().
             antMatchers(HttpMethod.POST, LOGIN_ENDPOINT).permitAll().
+            antMatchers(HttpMethod.POST, WATCH_ENDPOINT).hasAnyRole(RoleConstants.TEACHER, RoleConstants.ADMINISTRATOR, RoleConstants.SUPER_ADMINISTRATOR).
+            antMatchers(HttpMethod.DELETE, WATCHES_ENDPOINT).hasAnyRole(RoleConstants.TEACHER, RoleConstants.ADMINISTRATOR, RoleConstants.SUPER_ADMINISTRATOR).
+                antMatchers(HttpMethod.GET, WATCHES_ENDPOINT).hasAnyRole(RoleConstants.TEACHER, RoleConstants.ADMINISTRATOR, RoleConstants.SUPER_ADMINISTRATOR).
             antMatchers(HttpMethod.POST, SURVEY_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.PUT, SURVEY_ENDPOINT).hasAnyRole(AUTHENTICATED).
             antMatchers(HttpMethod.POST, SURVEY_RESPONSES).hasAnyRole(AUTHENTICATED).

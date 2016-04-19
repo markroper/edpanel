@@ -115,12 +115,16 @@ public class GoalJdbc implements GoalPersistence {
     @SuppressWarnings("unchecked")
     public Collection<Goal> selectAllWatched(long teacherId) {
         List<StudentWatch> watches =  watchPersistence.getAllForStaff(teacherId);
-        List<Long> studentIds = new ArrayList<>();
-        for (int i = 0; i < watches.size(); i++) {
-            studentIds.add(watches.get(i).getStudent().getId());
+        if (null != watches) {
+            List<Long> studentIds = new ArrayList<>();
+            for (int i = 0; i < watches.size(); i++) {
+                studentIds.add(watches.get(i).getStudent().getId());
+            }
+            return addCalculatedValue((Collection<Goal>)hibernateTemplate.findByNamedParam(
+                    GOAL_BASE_HQL + " where g.student.id in (:ids)","ids",studentIds));
+        } else {
+            return new ArrayList<>();
         }
-        return addCalculatedValue((Collection<Goal>)hibernateTemplate.findByNamedParam(
-        GOAL_BASE_HQL + " where g.student.id in (:ids)","ids",studentIds));
 
 
     }
