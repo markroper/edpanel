@@ -19,7 +19,7 @@
     -->
 
     <!-- Initialization for data source -->
-    <bean id="schoolbrainsClient"
+    <bean id="schoolBrainsClient"
           class="com.scholarscore.etl.schoolbrains.client.DummySchoolBrainsClient" />
 
 </beans>

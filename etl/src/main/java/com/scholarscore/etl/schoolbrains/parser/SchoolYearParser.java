@@ -17,11 +17,13 @@ public class SchoolYearParser extends MultiEntityCsvParser<SchoolYear> {
 
     @Override
     public SchoolYear parseRec(CSVRecord rec) {
-        SchoolYear y = new SchoolYear();
-        y.setId(parseLongOrReturnNull(rec.get(SchoolYearID)));
+        SchoolYear schoolYear = new SchoolYear();
+        // don't set edpanel id...
+//        y.setId(parseLongOrReturnNull(rec.get(SchoolYearID)));
+        // TODO SchoolBrains
         School sch = new School();
         sch.setSourceSystemId(rec.get(SchoolID));
-        y.setSchool(sch);
+        schoolYear.setSchool(sch);
         //TODO:figure out how to handle terms with schoolbrains
         //y.setTerms();
         String start = rec.get(SchoolYearStart);
@@ -29,13 +31,13 @@ public class SchoolYearParser extends MultiEntityCsvParser<SchoolYear> {
         if(null != st && st.length > 0) {
             start = st[0];
         }
-        y.setStartDate(LocalDate.parse(start, dtf));
+        schoolYear.setStartDate(LocalDate.parse(start, dtf));
         String end = rec.get(SchoolYearEnd);
         String[] ed = end.split("\\s+");
         if(null != ed && st.length > 0) {
             end = ed[0];
         }
-        y.setEndDate(LocalDate.parse(end, dtf));
-        return y;
+        schoolYear.setEndDate(LocalDate.parse(end, dtf));
+        return schoolYear;
     }
 }

@@ -17,7 +17,7 @@ public abstract class MultiEntityCsvParser<T> extends BaseParser<T> {
     protected static final int SchoolYearNumber = 8;
     protected static final int StandardCourseDifficulty = 9;
     protected static final int StandardCourseType = 10;
-    protected static final int SchoolYearID = 11;
+    protected static final int SchoolYearID = 11;   
     protected static final int CourseCode = 12;
     protected static final int CourseEAID = 13;
     protected static final int CourseName = 14;

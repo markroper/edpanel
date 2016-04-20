@@ -20,6 +20,7 @@ import java.util.Map;
 public class DummySchoolBrainsClient implements ISchoolBrainsClient {
     @Override
     public List<School> getSchools() throws HttpClientException {
+        
         throw new RuntimeException("not implemented in dummy client!");
     }
 
