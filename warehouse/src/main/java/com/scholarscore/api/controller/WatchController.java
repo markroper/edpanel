@@ -48,7 +48,7 @@ public class WatchController extends BaseController {
 
     @ApiOperation(
             value = "Delete a watch",
-            notes = "Creates, assigns an ID to, persists and returns a student",
+            notes = "Deletes a watch",
             response = EntityId.class)
     @RequestMapping(
             value = "/{watchId}",
@@ -60,6 +60,23 @@ public class WatchController extends BaseController {
             @PathVariable(value="watchId") Long watchId
     ) {
         return respond(pm.getWatchManager().deleteWatch(watchId));
+    }
+
+
+    @ApiOperation(
+            value = "Get a watch",
+            notes = "Get a watch",
+            response = EntityId.class)
+    @RequestMapping(
+            value = "/{watchId}",
+            method = RequestMethod.GET,
+            produces = {JSON_ACCEPT_HEADER})
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody ResponseEntity getWatch(
+            @ApiParam(name = "watchId", required = true, value = "The watch ID")
+            @PathVariable(value="watchId") Long watchId
+    ) {
+        return respond(pm.getWatchManager().getWatch(watchId));
     }
 
 

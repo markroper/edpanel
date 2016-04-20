@@ -60,8 +60,17 @@ public class WatchJdbc implements WatchPersistence {
 
     public Long deleteWatch(long watchId) {
         StudentWatch watch = hibernateTemplate.get(StudentWatch.class, watchId);
-        hibernateTemplate.delete(watch);
-        return watchId;
+        if (null != watch) {
+            hibernateTemplate.delete(watch);
+            return watchId;
+        } else {
+            return null;
+        }
 
+    }
+
+    public StudentWatch getWatch(long watchId) {
+        StudentWatch watch = hibernateTemplate.get(StudentWatch.class, watchId);
+        return watch;
     }
 }

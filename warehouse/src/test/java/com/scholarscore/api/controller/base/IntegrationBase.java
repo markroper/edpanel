@@ -35,6 +35,7 @@ import com.scholarscore.api.controller.service.TeacherValidatingExecutor;
 import com.scholarscore.api.controller.service.TermValidatingExecutor;
 import com.scholarscore.api.controller.service.UiAttributesValidatingExecutor;
 import com.scholarscore.api.controller.service.UserValidatingExecutor;
+import com.scholarscore.api.controller.service.WatchValidatingExecutor;
 import com.scholarscore.models.LoginRequest;
 import com.scholarscore.models.School;
 import com.scholarscore.models.user.Staff;
@@ -98,6 +99,7 @@ public class IntegrationBase {
     private static final String AUTH_ENDPOINT = "/auth";
     private static final String USERS_ENDPOINT = "/users";
     private static final String GOAL_ENDPOINT = "/goals";
+    private static final String WATCHES_ENDPOINT = "/watches";
     private static final String SCHOOL_DAY_ENDPOINT = "/days";
     private static final String ATTENDANCE_ENDPOINT = "/attendance";
     private static final String UI_ATTRIBUTES_ENDPOINT = "/uiattributes";
@@ -112,6 +114,7 @@ public class IntegrationBase {
     private static final String MCAS_ENDPOINT = "/mcas";
 
     public LocaleServiceUtil localeServiceUtil;
+    public WatchValidatingExecutor watchValidatingExecutor;
     public CourseValidatingExecutor courseValidatingExecutor;
     public SchoolValidatingExecutor schoolValidatingExecutor;
     public SchoolYearValidatingExecutor schoolYearValidatingExecutor;
@@ -180,6 +183,7 @@ public class IntegrationBase {
     @BeforeClass(alwaysRun=true)
     public void configureServices() {
         this.mockMvc = new NetMvc();
+        watchValidatingExecutor = new WatchValidatingExecutor(this);
         localeServiceUtil = new LocaleServiceUtil(this);
         courseValidatingExecutor = new CourseValidatingExecutor(this);
         schoolValidatingExecutor = new SchoolValidatingExecutor(this);
@@ -817,6 +821,18 @@ public class IntegrationBase {
 
     public String getGoalEndpoint(Long studentId) {
         return getStudentEndpoint(studentId) + GOAL_ENDPOINT;
+    }
+
+    public String getWatchEndpoint() {
+        return BASE_API_ENDPOINT  + WATCHES_ENDPOINT;
+    }
+
+    public String getWatchEndpoint(Long watchId) {
+        return getWatchEndpoint() + pathify(watchId);
+    }
+
+    public String getStaffWatchEndpoint(long staffId) {
+        return getWatchEndpoint() + "/staff" + pathify(staffId);
     }
 
     public String getGoalEndpoint(Long studentId, Long goalId) {

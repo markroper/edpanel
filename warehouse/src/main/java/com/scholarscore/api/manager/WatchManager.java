@@ -16,6 +16,8 @@ public interface WatchManager {
 
     public ServiceResponse<Long> deleteWatch(long watchId);
 
+    public ServiceResponse<StudentWatch> getWatch(long watchId);
+
 
 
 }

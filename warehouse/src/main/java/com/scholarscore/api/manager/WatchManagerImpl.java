@@ -3,6 +3,8 @@ package com.scholarscore.api.manager;
 import com.scholarscore.api.persistence.WatchPersistence;
 import com.scholarscore.api.util.ServiceResponse;
 import com.scholarscore.api.util.StatusCode;
+import com.scholarscore.api.util.StatusCodeType;
+import com.scholarscore.api.util.StatusCodes;
 import com.scholarscore.models.StudentWatch;
 
 import java.util.List;
@@ -15,6 +17,8 @@ public class WatchManagerImpl implements WatchManager {
     private OrchestrationManager pm;
 
     private WatchPersistence watchPersistence;
+    private static final String WATCH = "watch";
+
 
     public WatchPersistence getWatchPersistence() {
         return watchPersistence;
@@ -54,7 +58,18 @@ public class WatchManagerImpl implements WatchManager {
     }
 
     public ServiceResponse<Long> deleteWatch(long watchId) {
-        return new ServiceResponse<Long>(watchPersistence.deleteWatch(watchId));
+        Long watch = watchPersistence.deleteWatch(watchId);
+        if (null == watch) {
+            return new ServiceResponse<Long>(
+                    StatusCodes.getStatusCode(StatusCodeType.MODEL_NOT_FOUND, new Object[]{WATCH, watchId}));
+        } else {
+            return new ServiceResponse<Long>(watch);
+        }
+
+    }
+
+    public ServiceResponse<StudentWatch> getWatch(long watchId) {
+        return new ServiceResponse<StudentWatch>(watchPersistence.getWatch(watchId));
     }
 
 }
