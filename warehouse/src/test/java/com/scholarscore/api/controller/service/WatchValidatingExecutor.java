@@ -77,8 +77,8 @@ public class WatchValidatingExecutor {
     }
 
     /**
-     * Given a submitted behavior object and an behavior instance returned by the API after creation,
-     * this method returns a new Behavior instance that represents the expected state of the submitted
+     * Given a submitted watch object and an watch instance returned by the API after creation,
+     * this method returns a new StudentWatch instance that represents the expected state of the submitted
      * Behavior after creation.  The reason that there are differences in the submitted and expected
      * instances is that there may be system assigned values not in the initially submitted object, for
      * example, the id property.
