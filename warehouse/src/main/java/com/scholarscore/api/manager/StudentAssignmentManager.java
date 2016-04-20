@@ -31,6 +31,8 @@ public interface StudentAssignmentManager {
     public ServiceResponse<Collection<StudentAssignment>> getAllStudentAssignments(long schoolId, long yearId, 
             long termId, long sectionId, long sectAssignmentId);
 
+    ServiceResponse<Collection<StudentAssignment>> getAllStudentAssignments(long schoolId, List<Long> sectAssignmentIds);
+
     /**
      * Return all student assignments for a single student in a single section
      * @param studentId

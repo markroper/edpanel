@@ -31,7 +31,7 @@ public class Dashboard extends ApiModel {
     @NotNull
     protected Long schoolId;
     protected Long userId;
-    @Size(min = 0, max = 5)
+    @Size(min = 0, max = 7)
     protected List<DashboardRow> rows;
 
     public Dashboard() {
