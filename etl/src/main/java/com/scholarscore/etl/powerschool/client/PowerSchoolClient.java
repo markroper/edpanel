@@ -65,32 +65,35 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
     private OAuthResponse oauthToken;
     private String SPED_FLAG;
     private String ELL_FLAG;
-    private String gpaFormulaString;
+    private boolean enabled;
 
-    public PowerSchoolClient(String clientId, String clientSecret, URI uri,
+    public PowerSchoolClient(boolean enabled, String clientId, String clientSecret, URI uri,
                              String studentExtension, String spedFlag, String ellFlag, String gpaFormulaString) {
         super(uri);
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        authenticate();
-        paths.setCutoffDate(LocalDate.now().minusYears(1l));
-        paths.setPageSize(PAGE_SIZE);
-        if(null != studentExtension && !studentExtension.isEmpty()) {
-            paths.setStudentExtension(studentExtension);
-        }
-        if(null != spedFlag && !spedFlag.isEmpty()) {
-            SPED_FLAG = spedFlag;
-        }
-        if(null != ellFlag && !ellFlag.isEmpty()) {
-            ELL_FLAG = ellFlag;
-        }
-        if(null != gpaFormulaString && !gpaFormulaString.isEmpty()) {
-            this.gpaFormulaString = gpaFormulaString;
-            paths.setGpaFormulaString(this.gpaFormulaString);
+        this.enabled = enabled;
+        if (enabled) {
+            authenticate();
+            paths.setCutoffDate(LocalDate.now().minusYears(1l));
+            paths.setPageSize(PAGE_SIZE);
+            if (null != studentExtension && !studentExtension.isEmpty()) {
+                paths.setStudentExtension(studentExtension);
+            }
+            if (null != spedFlag && !spedFlag.isEmpty()) {
+                SPED_FLAG = spedFlag;
+            }
+            if (null != ellFlag && !ellFlag.isEmpty()) {
+                ELL_FLAG = ellFlag;
+            }
+            if (null != gpaFormulaString && !gpaFormulaString.isEmpty()) {
+                paths.setGpaFormulaString(gpaFormulaString);
+            }
         }
     }
 
     public void authenticate() {
+        if (!enabled) { return; } 
         try {
             HttpPost post = new HttpPost();
             post.setHeader(new BasicHeader(HEADER_CONTENT_TYPE_NAME, HEADER_CONTENT_TYPE_X_FORM_URLENCODED));
@@ -405,5 +408,9 @@ public class PowerSchoolClient extends PowerSchoolHttpClient implements IPowerSc
         if (null != oauthToken) {
             req.setHeader(new BasicHeader(HEADER_AUTH_NAME, oauthToken.token_type + " " + oauthToken.access_token));
         }
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 }

@@ -144,6 +144,10 @@ public class PsEtlEngine implements IEtlEngine {
     }
 
     public void triggerNotificationEvaluation() {
+        if (!powerSchool.isEnabled()) { 
+            LOGGER.debug("PowerschoolClient is disabled so triggerNotificationEvaluation doing nothing and returning...");
+            return; 
+        }
         for(Map.Entry<Long, School> schoolEntry: schools.entrySet()) {
             try {
                 edPanel.triggerNotificationEvaluation(schoolEntry.getValue().getId());
@@ -156,6 +160,10 @@ public class PsEtlEngine implements IEtlEngine {
 
     @Override
     public SyncResult syncDistrict(EtlSettings settings) {
+        if (!powerSchool.isEnabled()) {
+            LOGGER.debug("PowerSchool disabled, syncDistrict returning null...");
+            return null;
+        }
         this.syncCutoff = LocalDate.now().minusYears(1l);
         this.powerSchool.setSyncCutoff(this.syncCutoff);
         

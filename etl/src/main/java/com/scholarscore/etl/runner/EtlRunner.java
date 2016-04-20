@@ -22,7 +22,11 @@ public class EtlRunner {
     public void migrateDistrict(EtlSettings settings) {
         System.out.println("Migration running...");
         SyncResult psResult = psEtlEngine.syncDistrict(settings);
-        System.out.println("Done! PS Migration result: " + psResult);
+        if (psResult != null) {
+            System.out.println("Done! PS Migration result: " + psResult);
+        } else {
+            
+        }
         SyncResult dlResult = dlEtlEngine.syncDistrict(settings);
         System.out.println("Done! Migration result: " + dlResult);
         if(null != kickboardEtlEngine.getEnabled() && kickboardEtlEngine.getEnabled()) {

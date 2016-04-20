@@ -117,4 +117,6 @@ public interface IPowerSchoolClient extends IStudentInformationSystemClient {
     PsResponse<PsSectionGradeFormulaWeightingWrapper> getGradeFormulaWeights(Long gradeFormulaId) throws HttpClientException;
 
     PsResponse<PsRankAndGpaWrapper> getStudentRankAndGpas() throws HttpClientException;
+    
+    boolean isEnabled();
 }

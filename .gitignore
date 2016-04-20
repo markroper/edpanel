@@ -16,3 +16,4 @@ logback-test.xml
 etl/src/main/resources/powerschool.properties
 etl/src/main/resources/deanslist.properties
 etl/src/main/resources/kickboard.properties
+etl/gpaExtraction/powerschool.properties

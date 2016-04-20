@@ -1,5 +1,6 @@
 package com.scholarscore.etl.schoolbrains.parser;
 
+import com.scholarscore.models.user.Person;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -28,6 +29,8 @@ public abstract class BaseParser<T> {
     public abstract T parseRec(CSVRecord rec);
 
     public Set<T> parse() {
+        int numRecs = 0;
+        int dupes = 0;
         if(null == input) {
             return null;
         }
@@ -35,11 +38,25 @@ public abstract class BaseParser<T> {
             Set<T> results = new HashSet<>();
             CSVParser parser = CSVParser.parse(input, Charset.defaultCharset(), CSVFormat.DEFAULT.withHeader());
             for (CSVRecord rec : parser) {
+                numRecs++;
                 T item = parseRec(rec);
                 if(null != item) {
-                    results.add(parseRec(rec));
+                    T parsedRecord = parseRec(rec);
+                    if (results.contains(parsedRecord)) {
+                        dupes++;
+                        if (parsedRecord instanceof Person) {
+                            LOGGER.warn("In " + getClass().getSimpleName() + " parser, inserting already-found record with SSID:" + ((Person)parsedRecord).getSourceSystemId() 
+                                    +"," + "" + "!");
+                        } else {
+                            LOGGER.warn("In " + getClass().getSimpleName() + " parser, inserting already-found record!");
+                        }
+                    }
+                    results.add(parsedRecord);
+                } else {
+                    LOGGER.warn("got null item...");
                 }
             }
+            LOGGER.warn("num recs: " + numRecs + ", dupes: " + dupes);
             return results;
         } catch (IOException e) {
             LOGGER.error("Unable to parse CSV file. " + e.getMessage());
@@ -47,7 +64,7 @@ public abstract class BaseParser<T> {
         }
     }
 
-    public Double parseDoubleOrReturnNull(String input) {
+    public static Double parseDoubleOrReturnNull(String input) {
         try {
             return Double.parseDouble(input);
         } catch(NumberFormatException | NullPointerException e) {
@@ -55,7 +72,7 @@ public abstract class BaseParser<T> {
         }
         return null;
     }
-    public Long parseLongOrReturnNull(String input) {
+    public static Long parseLongOrReturnNull(String input) {
         try {
             return Long.parseLong(input);
         } catch(NumberFormatException | NullPointerException e) {

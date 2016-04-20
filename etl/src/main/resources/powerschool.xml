@@ -19,13 +19,14 @@
     <!-- Initialization for data source -->
     <bean id="powerSchoolClient"
           class="com.scholarscore.etl.powerschool.client.PowerSchoolClient">
-        <constructor-arg index="0" type="java.lang.String" value="${powerschool.client.id}"/>
-        <constructor-arg index="1" type="java.lang.String" value="${powerschool.client.secret}"/>
-        <constructor-arg index="2" type="java.net.URI" value="${powerschool.client.url}"/>
-        <constructor-arg index="3" type="java.lang.String" value="${powerschool.student.spedellextension}"/>
-        <constructor-arg index="4" type="java.lang.String" value="${powerschool.student.spedflag}"/>
-        <constructor-arg index="5" type="java.lang.String" value="${powerschool.student.ellflag}"/>
-        <constructor-arg index="6" type="java.lang.String" value="${powerschool.gpa.formulastring}"/>
+        <constructor-arg index="0" type="boolean" value="${powerschool.enabled}"/>
+        <constructor-arg index="1" type="java.lang.String" value="${powerschool.client.id}"/>
+        <constructor-arg index="2" type="java.lang.String" value="${powerschool.client.secret}"/>
+        <constructor-arg index="3" type="java.net.URI" value="${powerschool.client.url}"/>
+        <constructor-arg index="4" type="java.lang.String" value="${powerschool.student.spedellextension}"/>
+        <constructor-arg index="5" type="java.lang.String" value="${powerschool.student.spedflag}"/>
+        <constructor-arg index="6" type="java.lang.String" value="${powerschool.student.ellflag}"/>
+        <constructor-arg index="7" type="java.lang.String" value="${powerschool.gpa.formulastring}"/>
     </bean>
 
 </beans>

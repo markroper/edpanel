@@ -6,6 +6,7 @@ import com.scholarscore.models.School;
 import com.scholarscore.models.SchoolYear;
 import com.scholarscore.models.Section;
 import com.scholarscore.models.gpa.Gpa;
+import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
 
 import java.util.List;
@@ -49,6 +50,11 @@ public class DummySchoolBrainsClient implements ISchoolBrainsClient {
 
     @Override
     public List<Gpa> getGpas() throws HttpClientException {
+        throw new RuntimeException("not implemented in dummy client!");
+    }
+
+    @Override
+    public List<Staff> getStaff() throws HttpClientException {
         throw new RuntimeException("not implemented in dummy client!");
     }
 }
