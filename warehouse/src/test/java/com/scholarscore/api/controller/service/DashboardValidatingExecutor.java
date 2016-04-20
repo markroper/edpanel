@@ -5,6 +5,7 @@ import com.scholarscore.api.controller.base.IntegrationBase;
 import com.scholarscore.models.EntityId;
 import com.scholarscore.models.dashboard.Dashboard;
 import com.scholarscore.models.dashboard.Report;
+import com.scholarscore.models.dashboard.ReportBase;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.ResultActions;
@@ -126,6 +127,7 @@ public class DashboardValidatingExecutor {
      * @param created
      * @return
      */
+    @SuppressWarnings("unchecked")
     protected Dashboard generateExpectationDashboard(Dashboard submitted, Dashboard created, HttpMethod method) {
         Dashboard returnDashboard = new Dashboard(submitted);
 
@@ -138,11 +140,15 @@ public class DashboardValidatingExecutor {
                     returnDashboard.getRows().get(i).setId(created.getRows().get(i).getId());
                     if(null != returnDashboard.getRows().get(i).getReports()) {
                         for(int j = 0; j < returnDashboard.getRows().get(i).getReports().size(); j++) {
-                            Report rpt = returnDashboard.getRows().get(i).getReports().get(j);
+                            ReportBase rpt = returnDashboard.getRows().get(i).getReports().get(j);
                             rpt.setId(created.getRows().get(i).getReports().get(j).getId());
-                            rpt.getChartQuery().setId(created.getRows().get(i).getReports().get(j).getChartQuery().getId());
-                            if(null != rpt.getClickTableQuery()) {
-                                rpt.getClickTableQuery().setId(created.getRows().get(i).getReports().get(j).getClickTableQuery().getId());
+                            if(rpt instanceof Report) {
+                                Report r = (Report)rpt;
+                                Report r2 = (Report) created.getRows().get(i).getReports().get(j);
+                                r.getChartQuery().setId(r2.getChartQuery().getId());
+                                if(null != r.getClickTableQuery()) {
+                                    r.getClickTableQuery().setId(r2.getClickTableQuery().getId());
+                                }
                             }
                         }
                     }
