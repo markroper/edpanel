@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 public class TestPowerSchoolClient extends PowerSchoolClient {
 
     public TestPowerSchoolClient() {
-        super("fakeClientId", "fakeSecret", getURI(), "", "MA_PrimDisabil", "MA_EngProficiency", "Weighted_Added_Value");
+        super(true, "fakeClientId", "fakeSecret", getURI(), "", "MA_PrimDisabil", "MA_EngProficiency", "Weighted_Added_Value");
 
         System.out.println("TestPowerSchoolClient initialized.");
     }
