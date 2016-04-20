@@ -8,10 +8,9 @@
     <import resource="schoolbrains.xml"/>
     <import resource="edpanel.xml"/>
 
-    <bean id="schoolbrainsEtlEngine" class="com.scholarscore.etl.PsEtlEngine">
-        <property name="powerSchool" ref="powerSchoolClient"/>
+    <bean id="schoolbrainsEtlEngine" class="com.scholarscore.etl.schoolbrains.SchoolBrainsEngine">
+        <property name="schoolBrains" ref="schoolBrainsClient"/>
         <property name="edPanel" ref="edpanelClient"/>
-        <property name="dailyAbsenceTrigger" value="${scholarscore.etl.sectionabsencestriggeringdailyabsence}"/>
     </bean>
 
 </beans>

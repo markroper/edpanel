@@ -59,4 +59,8 @@ public class EtlRunner {
     public void setKickboardEtlEngine(KickboardEtl kickboardEtlEngine) {
         this.kickboardEtlEngine = kickboardEtlEngine;
     }
+
+    public void setSbEtlEngine(SchoolBrainsEngine sbEtlEngine) {
+        this.sbEtlEngine = sbEtlEngine;
+    }
 }

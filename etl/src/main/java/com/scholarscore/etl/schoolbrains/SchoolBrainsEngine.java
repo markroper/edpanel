@@ -36,8 +36,7 @@ public class SchoolBrainsEngine implements IEtlEngine {
     private Map<String, Staff> ssidToStaff = new HashMap<>();
     private Map<String, Section> ssidToSection = new HashMap<>();
 
-    // TODO: not the right result
-    private PowerSchoolSyncResult result = new PowerSchoolSyncResult();
+    private SchoolBrainsSyncResult result = new SchoolBrainsSyncResult();
     
     @Override
     public SyncResult syncDistrict(EtlSettings settings) {
@@ -48,9 +47,16 @@ public class SchoolBrainsEngine implements IEtlEngine {
 
         syncSections();
 
-        // syncSectionEnrollment()
+        syncAttendance();
+        
+        syncBehavior();
         
         return null;
+    }
+
+    @Override
+    public SyncResult syncDistrict() {
+        return syncDistrict(new EtlSettings());
     }
 
     private void syncStudents() {
@@ -71,9 +77,12 @@ public class SchoolBrainsEngine implements IEtlEngine {
         ssidToSection = sectionSync.syncCreateUpdateDelete(result);
     }
 
-    @Override
-    public SyncResult syncDistrict() {
-        return syncDistrict(new EtlSettings());
+    private void syncAttendance() { 
+        // TODO SchoolBrains
+    }
+
+    private void syncBehavior() {
+        // TODO SchoolBrains
     }
 
     public ISchoolBrainsClient getSchoolBrains() {
@@ -92,7 +101,7 @@ public class SchoolBrainsEngine implements IEtlEngine {
         this.edPanel = edPanel;
     }
     
-    // TODO: rename this results stuff after merging the other branch
+    // TODO SchoolBrains: rename this results stuff after merging the other branch
     private class SchoolBrainsSyncResult extends PowerSchoolSyncResult { 
     
     }

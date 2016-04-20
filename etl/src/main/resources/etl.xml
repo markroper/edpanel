@@ -5,14 +5,21 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                      http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <!-- core -->
     <import resource="edpanel.xml"/>
-    <import resource="ps_etl.xml"/>
     
+    <!-- SISes - powerschool and schoolbrains -->
+    <import resource="ps_etl.xml"/>
+    <import resource="sb_etl.xml"/>
+    
+    <!-- behavior systems - deanslist, kickboard -->
     <import resource="dl_etl.xml"/>
     <import resource="kickboard_etl.xml"/>
+    
     <bean id="etlRunner" class="com.scholarscore.etl.runner.EtlRunner">
         <property name="psEtlEngine" ref="etlEngine" />
         <property name="dlEtlEngine" ref="dlEtlEngine" />
         <property name="kickboardEtlEngine" ref="kickboardEtlEngine" />
+        <property name="sbEtlEngine" ref="schoolbrainsEtlEngine" />
     </bean>
 </beans>
