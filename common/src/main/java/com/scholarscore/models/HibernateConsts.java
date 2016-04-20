@@ -99,6 +99,7 @@ public class HibernateConsts {
     public static final String SCHOOL_YEAR_NAME = "school_year_name";
     public static final String SCHOOL_YEAR_START_DATE = "school_year_start_date";
     public static final String SCHOOL_YEAR_END_DATE = "school_year_end_date";
+    public static final String SCHOOL_YEAR_SOURCE_SYSTEM_ID = "school_year_source_system_id";
     
     //Section constants
     public static final String SECTION_TABLE = "section";

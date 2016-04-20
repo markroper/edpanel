@@ -12,7 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -35,6 +34,7 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
     protected LocalDate endDate;
     protected List<Term> terms;
     protected School school;
+    protected String sourceSystemId;
     
     public SchoolYear() {
         super();
@@ -47,12 +47,22 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         this.endDate = year.endDate;
         this.terms = year.terms;
         this.school = year.school;
+        this.sourceSystemId = year.sourceSystemId;
     }
     
     public SchoolYear(LocalDate startDate, LocalDate endDate) {
         this();
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    @Column(name = HibernateConsts.SCHOOL_YEAR_SOURCE_SYSTEM_ID)
+    public String getSourceSystemId() {
+        return sourceSystemId;
+    }
+
+    public void setSourceSystemId(String sourceSystemId) {
+        this.sourceSystemId = sourceSystemId;
     }
 
     @OneToOne(optional = true)
@@ -139,11 +149,14 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         if(null == this.school){
             this.school = mergeFrom.school;
         }
+        if(null == this.sourceSystemId) {
+            this.sourceSystemId = mergeFrom.sourceSystemId;
+        }
     }
 
     @Override
     public int hashCode() {
-        return 31 * super.hashCode() + Objects.hash(startDate, endDate, school, terms);
+        return 31 * super.hashCode() + Objects.hash(startDate, endDate, school, terms, sourceSystemId);
     }
 
     @Override
@@ -161,6 +174,7 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         return Objects.equals(this.startDate, other.startDate)
                 && Objects.equals(this.endDate, other.endDate)
                 && Objects.equals(this.school, other.school)
+                && Objects.equals(this.sourceSystemId, other.sourceSystemId)
                 && Objects.equals(this.terms, other.terms);
     }
 
@@ -169,6 +183,7 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         return "SchoolYear{" +
                 "startDate=" + startDate +
                 ", endDate=" + endDate +
+                ", sourceSystemId=" + sourceSystemId +
                 ", school=" + school +
                 '}';
     }
@@ -184,6 +199,7 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
         protected LocalDate endDate;
         protected List<Term> terms;
         protected School school;
+        protected String sourceSystemId;
 
         public SchoolYearBuilder(){
             terms = Lists.newArrayList();
@@ -191,6 +207,10 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
 
         public SchoolYearBuilder withStartDate(final LocalDate startDate){
             this.startDate = startDate;
+            return this;
+        }
+        public SchoolYearBuilder withStartDate(final String ssid){
+            this.sourceSystemId = ssid;
             return this;
         }
 
@@ -220,6 +240,7 @@ public class SchoolYear extends ApiModel implements Serializable, IApiModel<Scho
             schoolYear.setEndDate(endDate);
             schoolYear.setTerms(terms);
             schoolYear.setSchool(school);
+            schoolYear.setSourceSystemId(sourceSystemId);
             return schoolYear;
         }
 
