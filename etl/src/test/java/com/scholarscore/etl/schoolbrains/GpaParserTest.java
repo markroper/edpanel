@@ -17,8 +17,8 @@ public class GpaParserTest {
     @Test
     public void parserTest() {
         File input = new File(getClass().getClassLoader().getResource("schoolbrains/EdPanelStudents.csv").getFile());
-        GpaParser parser = new GpaParser(input);
-        Set<Gpa> results = parser.parse();
+        GpaParser parser = new GpaParser();
+        Set<Gpa> results = parser.parse(input);
         Assert.assertEquals(results.size(), 515, "Unexpected number of Students parsed from schoolbrains CSV generated");
     }
 }

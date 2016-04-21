@@ -9,6 +9,7 @@ import com.scholarscore.models.Address;
 import com.scholarscore.models.ApiModel;
 import com.scholarscore.models.HibernateConsts;
 import com.scholarscore.models.IApiModel;
+import com.scholarscore.models.ISourceModel;
 import com.scholarscore.models.query.Dimension;
 import com.scholarscore.models.query.DimensionField;
 import org.hibernate.annotations.Cascade;
@@ -47,7 +48,7 @@ import java.util.Set;
 	@JsonSubTypes.Type(value = Staff.class, name = "ADMINISTRATOR"),
 	@JsonSubTypes.Type(value = Staff.class, name = "TEACHER")
 })
-public abstract class User extends ApiModel implements Serializable, IApiModel<User> {
+public abstract class User extends ApiModel implements Serializable, IApiModel<User>, ISourceModel<String> {
 	public static final DimensionField ID = new DimensionField(Dimension.USER, "ID");
 	private static final long serialVersionUID = 1L;
 	// login name

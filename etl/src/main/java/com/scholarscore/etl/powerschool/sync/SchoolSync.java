@@ -8,10 +8,13 @@ import com.scholarscore.etl.powerschool.api.response.PsSchoolsResponse;
 import com.scholarscore.etl.powerschool.client.IPowerSchoolClient;
 import com.scholarscore.models.School;
 
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by markroper on 10/26/15.
+ * 
+ * School sync object
  */
 public class SchoolSync extends SyncBase<School> implements ISync<School> {
     protected IAPIClient edPanel;
@@ -39,7 +42,7 @@ public class SchoolSync extends SyncBase<School> implements ISync<School> {
 
     @Override
     protected ConcurrentHashMap<Long, School> resolveFromEdPanel() throws HttpClientException {
-        School[] schools = edPanel.getSchools();
+        Collection<School> schools = edPanel.getSchools();
         ConcurrentHashMap<Long, School> schoolMap = new ConcurrentHashMap<>();
         for(School s: schools) {
             String ssid = s.getSourceSystemId();

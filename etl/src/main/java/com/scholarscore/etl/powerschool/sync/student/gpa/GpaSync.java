@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -103,7 +104,7 @@ public class GpaSync extends SyncBase<Gpa> implements ISync<Gpa> {
 
     @Override
     protected ConcurrentHashMap<Long, Gpa> resolveFromEdPanel() throws HttpClientException {
-        Gpa[] gpas = edPanel.getGpas();
+        Collection<Gpa> gpas = edPanel.getGpas();
         ConcurrentHashMap<Long, Gpa> gpaMap = new ConcurrentHashMap<>();
         for(Gpa gpa: gpas) {
             gpaMap.put(gpa.getStudentId(), gpa);

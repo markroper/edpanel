@@ -25,7 +25,7 @@ import java.util.List;
 @Entity(name = "school")
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class School extends ApiModel implements Serializable, IApiModel<School> {
+public class School extends ApiModel implements Serializable, IApiModel<School>, ISourceModel<String> {
     private List<SchoolYear> years;
     private String sourceSystemId;
     private Long number;

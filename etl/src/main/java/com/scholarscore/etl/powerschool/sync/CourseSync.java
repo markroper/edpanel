@@ -16,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by markroper on 10/27/15.
+ * 
+ * Course sync object
  */
 public class CourseSync extends SyncBase<Course> implements ISync<Course> {
     private final static Logger LOGGER = LoggerFactory.getLogger(CourseSync.class);
@@ -51,7 +53,7 @@ public class CourseSync extends SyncBase<Course> implements ISync<Course> {
 
     @Override
     protected ConcurrentHashMap<Long, Course> resolveFromEdPanel() throws HttpClientException {
-        Course[] courses = edPanel.getCourses(school.getId());
+        Collection<Course> courses = edPanel.getCourses(school.getId());
         ConcurrentHashMap<Long, Course> courseMap = new ConcurrentHashMap<>();
         for(Course c: courses) {
             String ssid = c.getSourceSystemId();

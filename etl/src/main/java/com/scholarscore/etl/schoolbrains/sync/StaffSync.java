@@ -36,26 +36,16 @@ public class StaffSync extends SchoolBrainsBaseSync<Staff> {
 
     @Override
     protected void delete(Staff oldVal) {
-        //TODO: figure out how to handle deletion of teachers...
+        //TODO SchoolBrains: figure out how to handle deletion of teachers... (I think this is also an issue in PS)
     }
 
     @Override
-    protected ConcurrentHashMap<String, Staff> resolveFromEdPanel() throws HttpClientException {
-        Collection<Staff> staff = edPanel.getTeachers();
-        ConcurrentHashMap<String, Staff> edpanel = new ConcurrentHashMap<>();
-        for(Staff s: staff) {
-            edpanel.put(s.getSourceSystemId(), s);
-        }
-        return edpanel;
+    protected Collection<Staff> fetchSourceRecords() throws HttpClientException {
+        return schoolBrains.getStaff();
     }
 
     @Override
-    protected ConcurrentHashMap<String, Staff> resolveSourceSystem() throws HttpClientException {
-        List<Staff> source = schoolBrains.getStaff();
-        ConcurrentHashMap<String, Staff> sourceMap = new ConcurrentHashMap<>();
-        for(Staff s : source) {
-            sourceMap.put(s.getSourceSystemId(), s);
-        }
-        return sourceMap;
+    protected Collection<Staff> fetchEdPanelRecords() throws HttpClientException {
+        return edPanel.getTeachers();
     }
 }

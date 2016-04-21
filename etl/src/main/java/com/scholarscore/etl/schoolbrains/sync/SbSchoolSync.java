@@ -5,11 +5,13 @@ import com.scholarscore.client.IAPIClient;
 import com.scholarscore.etl.schoolbrains.client.ISchoolBrainsClient;
 import com.scholarscore.models.School;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by markroper on 4/15/16.
+ * 
+ * SchoolBrains School Sync class
  */
 public class SbSchoolSync extends SchoolBrainsBaseSync<School> {
 
@@ -51,26 +53,12 @@ public class SbSchoolSync extends SchoolBrainsBaseSync<School> {
     }
 
     @Override
-    protected ConcurrentHashMap<String, School> resolveFromEdPanel() throws HttpClientException {
-        ConcurrentHashMap<String, School> ed = new ConcurrentHashMap<>();
-        School[] schools = edPanel.getSchools();
-        if(null != schools) {
-            for(School s: schools) {
-                ed.put(s.getSourceSystemId(), s);
-            }
-        }
-        return ed;
+    protected List<School> fetchSourceRecords() throws HttpClientException {
+        return schoolBrains.getSchools();
     }
 
     @Override
-    protected ConcurrentHashMap<String, School> resolveSourceSystem() throws HttpClientException {
-        ConcurrentHashMap<String, School> source = new ConcurrentHashMap<>();
-        List<School> schools = schoolBrains.getSchools();
-        if(null != schools) {
-            for(School s: schools) {
-                source.put(s.getSourceSystemId(), s);
-            }
-        }
-        return source;
+    protected Collection<School> fetchEdPanelRecords() throws HttpClientException {
+        return edPanel.getSchools();
     }
 }

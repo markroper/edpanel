@@ -4,6 +4,10 @@ import java.io.File;
 
 /**
  * Created by markroper on 4/14/16.
+ * 
+ * This class (i.e. right now, just the column indices) is for parsers designed to 
+ * parse the EdPanelSections.csv report. Other reports will not necessarily have the 
+ * same indices.
  */
 public abstract class MultiEntityCsvParser<T> extends BaseParser<T> {
     protected static final int SchoolID = 0;
@@ -35,8 +39,4 @@ public abstract class MultiEntityCsvParser<T> extends BaseParser<T> {
     protected static final int SecondTeacherID = 26;
     protected static final int SecondTeacher = 27;
     protected static final int FullYearCourse = 28;
-
-    public MultiEntityCsvParser(File file) {
-        super(file);
-    }
 }

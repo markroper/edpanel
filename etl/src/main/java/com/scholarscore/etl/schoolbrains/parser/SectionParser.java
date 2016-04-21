@@ -18,10 +18,6 @@ import java.util.Set;
 public class SectionParser extends MultiEntityCsvParser<SectionContainer> {
     private static final String TRUE = "true";
 
-    public SectionParser(File file) {
-        super(file);
-    }
-
     @Override
     public SectionContainer parseRec(CSVRecord rec) {
         Section s = new Section();

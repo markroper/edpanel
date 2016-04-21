@@ -30,6 +30,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by markroper on 11/1/15.
+ * 
+ * Attendance Runnable 
  */
 public class AttendanceRunnable extends SyncBase<Attendance> implements Runnable, ISync<Attendance> {
     private final static Logger LOGGER = LoggerFactory.getLogger(AttendanceRunnable.class);
@@ -171,7 +173,7 @@ public class AttendanceRunnable extends SyncBase<Attendance> implements Runnable
 
     @Override
     protected ConcurrentHashMap<Long, Attendance> resolveFromEdPanel() throws HttpClientException {
-        Attendance[] attendances = edPanel.getAttendance(school.getId(), student.getId());
+        Collection<Attendance> attendances = edPanel.getAttendance(school.getId(), student.getId());
         ConcurrentHashMap<Long, Attendance> attendanceMap = new ConcurrentHashMap<>();
         for(Attendance c: attendances) {
             String ssid = c.getSourceSystemId();

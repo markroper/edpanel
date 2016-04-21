@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -72,13 +73,13 @@ public class SectionSyncRunnable extends SyncBase<Section> implements Runnable, 
                                ConcurrentHashMap<Long, Term> terms,
                                StaffAssociator staffAssociator,
                                StudentAssociator studentAssociator,
-                               ConcurrentHashMap<Long, Section> sections,
+                               ConcurrentHashMap<Long, Section> sections,   // this is for output -- results are added to this
                                Map<Long, Map<Long, PsFinalGradeSetup>> sectionIdToGradeFormula,
                                Map<Long, String> powerTeacherCategoryToEdPanelType,
                                BiMap<Long, Long> ptSectionIdToPsSectionId,
                                Map<Long, Long> ptStudentIdToPsStudentId,
                                Map<Long, Long> sectionPublicIdToSectionRecordId,
-                               PowerSchoolSyncResult results,
+                               PowerSchoolSyncResult results,               // this is for output -- results are added to this
                                Map<Long, Set<Section>> studentClasses) {
         this.powerSchool = powerSchool;
         this.edPanel = edPanel;
@@ -229,7 +230,7 @@ public class SectionSyncRunnable extends SyncBase<Section> implements Runnable, 
     
     @Override
     protected ConcurrentHashMap<Long, Section> resolveFromEdPanel() throws HttpClientException {
-        Section[] sections = edPanel.getSections(school.getId());
+        Collection<Section> sections = edPanel.getSections(school.getId());
         ConcurrentHashMap<Long, Section> sectionMap = new ConcurrentHashMap<>();
         for(Section s : sections) {
             String ssid = s.getSourceSystemId();

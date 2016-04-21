@@ -19,16 +19,13 @@ import java.util.Set;
  */
 public abstract class BaseParser<T> {
     protected final static Logger LOGGER = LoggerFactory.getLogger(BaseParser.class);
-    protected File input;
-    protected CSVParser parser;
-    public BaseParser(File file) {
-        this.input = file;
-    }
     protected static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("M/d/yyyy");
 
+    protected CSVParser parser;
+    
     public abstract T parseRec(CSVRecord rec);
 
-    public Set<T> parse() {
+    public Set<T> parse(File input) {
         int numRecs = 0;
         int dupes = 0;
         if(null == input) {

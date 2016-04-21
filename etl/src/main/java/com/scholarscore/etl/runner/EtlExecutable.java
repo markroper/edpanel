@@ -23,7 +23,6 @@ public class EtlExecutable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(EtlExecutable.class);
 
-
     public static final String ARGS_GPA_DIR = "d";  
     public static final String ARGS_GPA_DIR_LONG = "dir-path";
 

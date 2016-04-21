@@ -7,6 +7,7 @@ import com.scholarscore.etl.SyncResult;
 import com.scholarscore.etl.runner.EtlSettings;
 import com.scholarscore.etl.schoolbrains.client.ISchoolBrainsClient;
 import com.scholarscore.etl.schoolbrains.sync.SbSchoolSync;
+import com.scholarscore.etl.schoolbrains.sync.SbSchoolYearSync;
 import com.scholarscore.etl.schoolbrains.sync.SbSectionSync;
 import com.scholarscore.etl.schoolbrains.sync.SbStudentSync;
 import com.scholarscore.models.Course;
@@ -18,8 +19,10 @@ import com.scholarscore.models.user.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by markroper on 4/15/16.
@@ -42,16 +45,51 @@ public class SchoolBrainsEngine implements IEtlEngine {
     public SyncResult syncDistrict(EtlSettings settings) {
 
         syncSchools();
+        
+        syncSchoolYears();
+        
+        syncTerms();
+        
+        syncStaff();
 
         syncStudents(); 
 
+        syncCourses();
+        
         syncSections();
 
         syncAttendance();
         
         syncBehavior();
         
+        // TODO SchoolBrains: proper result measurement
         return null;
+    }
+
+    private void syncSchoolYears() {
+        for (School school : ssidToSchool.values()) {
+            SbSchoolYearSync schoolYearSync = new SbSchoolYearSync(schoolBrains, edPanel, school);
+            ConcurrentHashMap<String, SchoolYear> schoolYears = schoolYearSync.syncCreateUpdateDelete(result);
+            for (Map.Entry<String, SchoolYear> schoolYear : schoolYears.entrySet()) {
+                if (ssidToSchoolYear.containsKey(schoolYear.getKey())) {
+                    LOGGER.warn("Warning! Duplicate school year detected with key " + schoolYear.getKey());
+                }
+                ssidToSchoolYear.put(schoolYear.getKey(), schoolYear.getValue());
+            }
+        }
+    }
+
+    private void syncCourses() {
+        throw new RuntimeException("TODO Schoolbrains");
+    }
+
+    private void syncStaff() {
+        throw new RuntimeException("TODO Schoolbrains");
+    }
+
+    private void syncTerms() {
+        // TODO SchoolBrains - sync terms
+//        throw new RuntimeException("TODO Schoolbrains");
     }
 
     @Override
@@ -60,10 +98,10 @@ public class SchoolBrainsEngine implements IEtlEngine {
     }
 
     private void syncStudents() {
-        for (School school : ssidToSchool.values()) {
-            Long edPanelId = school.getId();
-            SbStudentSync studentSync = new SbStudentSync(schoolBrains, edPanel, edPanelId, ssidToSchool);
-        }
+        // For now, one call syncs all students. This differs from powerschool ETL which syncs students by school
+        SbStudentSync studentSync = new SbStudentSync(schoolBrains, edPanel);
+        Map<String,Student> results = studentSync.syncCreateUpdateDelete(result);
+        ssidToStudent.putAll(results);
     }
     
 
@@ -73,16 +111,22 @@ public class SchoolBrainsEngine implements IEtlEngine {
     }
 
     private void syncSections() {
-        SbSectionSync sectionSync = new SbSectionSync(schoolBrains, edPanel);
-        ssidToSection = sectionSync.syncCreateUpdateDelete(result);
+        for (School school : ssidToSchool.values()) {
+            // TODO SchoolBrains: if mirroring powerschool, we need terms and courses populated before we do this
+            Long schoolYearId = -1L;
+            Long termId = -1L;
+            SbSectionSync sectionSync = new SbSectionSync(schoolBrains, edPanel, school.getId(), schoolYearId, termId);
+            ssidToSection = sectionSync.syncCreateUpdateDelete(result);
+        }
+
     }
 
-    private void syncAttendance() { 
-        // TODO SchoolBrains
+    private void syncAttendance() {
+        throw new RuntimeException("TODO Schoolbrains - attendance sync not implemented");
     }
 
     private void syncBehavior() {
-        // TODO SchoolBrains
+//        throw new RuntimeException("TODO Schoolbrains - behavior sync not implemented");
     }
 
     public ISchoolBrainsClient getSchoolBrains() {

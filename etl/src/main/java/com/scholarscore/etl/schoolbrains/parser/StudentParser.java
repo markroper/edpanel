@@ -20,9 +20,6 @@ import java.time.format.DateTimeFormatter;
  */
 public class StudentParser extends BaseParser<Student> {
     private final static Logger LOGGER = LoggerFactory.getLogger(StudentParser.class);
-    public StudentParser(File f) {
-        super(f);
-    }
 
     private static final int SASID = 0;
     private static final int STUDENT_ID = 1;

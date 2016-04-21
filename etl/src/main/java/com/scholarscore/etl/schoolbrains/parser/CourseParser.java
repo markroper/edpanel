@@ -4,15 +4,10 @@ import com.scholarscore.models.Course;
 import com.scholarscore.models.School;
 import org.apache.commons.csv.CSVRecord;
 
-import java.io.File;
-
 /**
  * Created by markroper on 4/14/16.
  */
 public class CourseParser extends MultiEntityCsvParser<Course> {
-    public CourseParser(File file) {
-        super(file);
-    }
 
     @Override
     public Course parseRec(CSVRecord rec) {

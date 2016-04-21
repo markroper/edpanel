@@ -17,8 +17,8 @@ public class SchoolYearParserTest {
     @Test
     public void parserTest() {
         File input = new File(getClass().getClassLoader().getResource("schoolbrains/EdPanelSections.csv").getFile());
-        SchoolYearParser parser = new SchoolYearParser(input);
-        Set<SchoolYear> results = parser.parse();
+        SchoolYearParser parser = new SchoolYearParser();
+        Set<SchoolYear> results = parser.parse(input);
         Assert.assertEquals(results.size(), 1, "Unexpected number of School Years parsed from schoolbrains enrollment CSV");
     }
 }

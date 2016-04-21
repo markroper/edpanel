@@ -68,7 +68,7 @@ public class TestApiClientFactory {
         IAPIClient testApiClient = Mockito.mock(IAPIClient.class);
         
         // getSchools()
-        when(testApiClient.getSchools()).thenReturn(schools.values().toArray(new School[schools.values().size()]));
+        when(testApiClient.getSchools()).thenReturn(schools.values());
 
         // getCourses()
         when(testApiClient.getCourses(anyLong())).thenAnswer(invocation -> {
@@ -79,12 +79,12 @@ public class TestApiClientFactory {
             }
             HashSet<Course> courses = schoolIdToCourses.get(schoolId);
             if (courses == null) { courses = new HashSet<>(); }
-            return courses.toArray(new Course[courses.size()]);
+            return courses;
         });
 
         // getGpas()
         when(testApiClient.getGpas()).thenAnswer(invocation -> {
-            return gpas.toArray(new Gpa[gpas.size()]);
+            return new ArrayList(gpas);
         });
         
         // getSections()
@@ -96,7 +96,7 @@ public class TestApiClientFactory {
             }
             HashSet<Section> schoolSections = schoolIdToSections.get(schoolId);
             if (schoolSections == null) { schoolSections = new HashSet<>(); }
-            return schoolSections.toArray(new Section[schoolSections.size()]);
+            return schoolSections;
         });
         
         // edPanel.getStudentSectionGrades(
@@ -125,7 +125,7 @@ public class TestApiClientFactory {
 
             HashSet<StudentSectionGrade> ssgs = sectionIdToStudentSectionGrades.get(sectionId);
             if (ssgs == null) { ssgs = new HashSet<>(); } 
-            return ssgs.toArray(new StudentSectionGrade[ssgs.size()]);
+            return ssgs;
         });
 
         when(testApiClient.getStudentAssignments(anyLong(), anyLong(), anyLong(), anyLong(), anyLong())).thenAnswer(invocation -> {
@@ -152,7 +152,7 @@ public class TestApiClientFactory {
             }
 
             // TODO ETL Tests - capture and return student assignments
-            return new StudentAssignment[0];
+            return new ArrayList<StudentAssignment>();
         });
 
         //edPanel.getSectionAssignments(
@@ -162,7 +162,7 @@ public class TestApiClientFactory {
         //        createdSection.getId());
         when(testApiClient.getSectionAssignments(anyLong(), anyLong(), anyLong(), anyLong())).thenAnswer(invocation -> {
             // TODO ETL Tests - capture and return section assignments
-            return new Assignment[0];
+            return new ArrayList<Assignment>();
         });
         
         // createSchool(School school)
@@ -181,7 +181,7 @@ public class TestApiClientFactory {
         
         when(testApiClient.getSchoolDays(anyLong())).thenAnswer(invocation -> {
             // TODO ETL Tests - capture and return school days
-           return new SchoolDay[0]; 
+           return new ArrayList<SchoolDay>(); 
         });
         
         // createSection
@@ -230,7 +230,7 @@ public class TestApiClientFactory {
                 schoolYears = school.getYears();
             }
             if (schoolYears == null) { schoolYears = new ArrayList<>(); }
-            return schoolYears.toArray(new SchoolYear[schoolYears.size()]);
+            return schoolYears;
         });
         
         // createSchoolYear(Long schoolId, SchoolYear schoolYear);
@@ -379,12 +379,12 @@ public class TestApiClientFactory {
         
         when(testApiClient.getAttendance(anyLong(), anyLong())).thenAnswer(invocation -> {
             // TODO ETL: support attendance
-            return new Attendance[0];
+            return new ArrayList<Attendance>();
         });
         
         when(testApiClient.getSchools()).thenAnswer(invocation -> {
             // TODO ETL: support school storage
-            return new School[0];
+            return new ArrayList<School>();
         });
         
         return testApiClient;

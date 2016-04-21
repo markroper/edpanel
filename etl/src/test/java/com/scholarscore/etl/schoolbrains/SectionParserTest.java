@@ -16,8 +16,8 @@ public class SectionParserTest {
     @Test
     public void parserTest() {
         File input = new File(getClass().getClassLoader().getResource("schoolbrains/EdPanelSections.csv").getFile());
-        SectionParser parser = new SectionParser(input);
-        Set<SectionContainer> results = parser.parse();
+        SectionParser parser = new SectionParser();
+        Set<SectionContainer> results = parser.parse(input);
         Assert.assertEquals(results.size(), 400, "Unexpected number of Students parsed from schoolbrains CSV generated");
     }
 }

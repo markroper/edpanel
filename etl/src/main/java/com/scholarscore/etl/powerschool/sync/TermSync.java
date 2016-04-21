@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -105,7 +106,7 @@ public class TermSync extends SyncBase<Term> implements ISync<Term> {
 
     @Override
     protected ConcurrentHashMap<Long, Term> resolveFromEdPanel() throws HttpClientException {
-        SchoolYear[] years = edPanel.getSchoolYears(school.getId());
+        Collection<SchoolYear> years = edPanel.getSchoolYears(school.getId());
         ConcurrentHashMap<Long, Term> termMap = new ConcurrentHashMap<>();
         for(SchoolYear year: years) {
             try {
@@ -113,7 +114,7 @@ public class TermSync extends SyncBase<Term> implements ISync<Term> {
             } catch(NumberFormatException | NullPointerException e) {
                 //noop
             }
-            Term[] terms = edPanel.getTerms(school.getId(), year.getId());
+            Collection<Term> terms = edPanel.getTerms(school.getId(), year.getId());
             for(Term t: terms) {
                 t.setSchoolYear(year);
                 termMap.put(Long.valueOf(t.getSourceSystemId()), t);
@@ -133,7 +134,7 @@ public class TermSync extends SyncBase<Term> implements ISync<Term> {
     protected void createEdPanelRecord(Term entityToSave, PowerSchoolSyncResult results) {
         Long ssid = Long.parseLong(entityToSave.getSourceSystemId());
         if (!this.edpanelSchoolYears.containsKey(new Long(entityToSave.getSchoolYear().getName()))) {
-            SchoolYear createdYear = null;
+            SchoolYear createdYear;
             try {
                 createdYear = edPanel.createSchoolYear(school.getId(), entityToSave.getSchoolYear());
                 // school years don't have SSIDs so use term SSID
@@ -166,7 +167,7 @@ public class TermSync extends SyncBase<Term> implements ISync<Term> {
             if (!edPanelEntity.getSchoolYear().equals(sourceSystemEntity.getSchoolYear())) {
                 if (!this.edpanelSchoolYears.containsKey(new Long(sourceSystemEntity.getSchoolYear().getName()))) {
                     //create school year
-                    SchoolYear createdYear = null;
+                    SchoolYear createdYear;
                     try {
                         createdYear = edPanel.createSchoolYear(school.getId(), sourceSystemEntity.getSchoolYear());
                     } catch (HttpClientException e) {

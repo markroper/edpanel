@@ -29,7 +29,7 @@ import java.util.Objects;
 @Entity(name = HibernateConsts.SCHOOL_YEAR_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SchoolYear extends ApiModel implements Serializable, IApiModel<SchoolYear>{
+public class SchoolYear extends ApiModel implements Serializable, IApiModel<SchoolYear>, ISourceModel<String> {
     protected LocalDate startDate;
     protected LocalDate endDate;
     protected List<Term> terms;

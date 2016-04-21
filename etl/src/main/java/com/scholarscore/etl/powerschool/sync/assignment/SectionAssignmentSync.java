@@ -24,12 +24,15 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by markroper on 10/28/15.
+ * 
+ * Section Assignment sync class
  */
 public class SectionAssignmentSync extends MultiThreadedSyncBase<Assignment> implements ISync<Assignment> {
     private final static Logger LOGGER = LoggerFactory.getLogger(SectionAssignmentSync.class);
@@ -188,7 +191,7 @@ public class SectionAssignmentSync extends MultiThreadedSyncBase<Assignment> imp
     @Override
     protected ConcurrentHashMap<Long, Assignment> resolveFromEdPanel() throws HttpClientException {
         ConcurrentHashMap<Long, Assignment> edpanelAssignments = new ConcurrentHashMap<>();
-        Assignment[] edPanelAssignmentMap = edPanel.getSectionAssignments(
+        Collection<Assignment> edPanelAssignmentMap = edPanel.getSectionAssignments(
                 school.getId(),
                 createdSection.getTerm().getSchoolYear().getId(),
                 createdSection.getTerm().getId(),

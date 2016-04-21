@@ -20,6 +20,7 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -132,7 +133,7 @@ public class StudentAssignmentSyncRunnable extends SyncBase<StudentAssignment> i
 
     @Override
     protected ConcurrentHashMap<Long, StudentAssignment> resolveFromEdPanel() throws HttpClientException {
-        StudentAssignment[] studentAssignments = edPanel.getStudentAssignments(
+        Collection<StudentAssignment> studentAssignments = edPanel.getStudentAssignments(
                 school.getId(),
                 createdSection.getTerm().getSchoolYear().getId(),
                 createdSection.getTerm().getId(),

@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
  * Created by markroper on 4/14/16.
  */
 public class SchoolEnrollmentParser extends BaseParser<Student> {
+    
     private static final int STUDENT_ID = 0;
     private static final int GRADE_ID = 1;
     private static final int SCHOOL_ID = 2;
@@ -26,9 +27,6 @@ public class SchoolEnrollmentParser extends BaseParser<Student> {
     private static final int CURRENT_SCHOOL = 8;
     private static final int SCHOOL_YEAR = 9;
     private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("M/d/yyyy");
-    public SchoolEnrollmentParser(File file) {
-        super(file);
-    }
 
     @Override
     public Student parseRec(CSVRecord rec) {

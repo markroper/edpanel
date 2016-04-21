@@ -99,20 +99,16 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
 
     @Override
     public School getSchool(Long schoolId) throws HttpClientException {
-        School response = get(School.class,
-                BASE_API_ENDPOINT + SCHOOL_ENDPOINT + "/" + schoolId);
-        return response;
+        return get(School.class, BASE_API_ENDPOINT + SCHOOL_ENDPOINT + "/" + schoolId);
     }
 
     @Override
-    public School[] getSchools() throws HttpClientException {
-        School[] response = get(School[].class, BASE_API_ENDPOINT + SCHOOL_ENDPOINT);
-        return response;
+    public Collection<School> getSchools() throws HttpClientException {
+        return Arrays.asList(get(School[].class, BASE_API_ENDPOINT + SCHOOL_ENDPOINT));
     }
 
     @Override
     public School updateSchool(School school) throws HttpClientException {
-        School response = new School(school);
         patch(convertObjectToJsonBytes(school), BASE_API_ENDPOINT + SCHOOL_ENDPOINT);
         return school;
     }
@@ -174,13 +170,16 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
         Student[] students = get(Student[].class, path);
         return Arrays.asList(students);
     }
+    
+    @Override
+    public Collection<Student> getAllStudents() throws HttpClientException { 
+        return getStudents(null);
+    }
 
     @Override
     public Student getStudent(Long ssid) throws HttpClientException {
-        Student s = get(
-                Student.class,
+        return get(Student.class,
                 BASE_API_ENDPOINT + STUDENT_ENDPOINT + SSIDS_ENDPOINT + "/" + ssid);
-        return s;
     }
 
     public void updateAdvisors(Long schoolId) throws HttpClientException {
@@ -298,9 +297,8 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public User[] getUsers(Long schoolId) throws HttpClientException {
-        User[] response = get(User[].class, BASE_API_ENDPOINT + USERS_ENDPOINT + "?enabled=&schoolId=" + schoolId);
-        return response;
+    public Collection<User> getUsers(Long schoolId) throws HttpClientException {
+        return Arrays.asList(get(User[].class, BASE_API_ENDPOINT + USERS_ENDPOINT + "?enabled=&schoolId=" + schoolId));
     }
 
     @Override
@@ -337,10 +335,9 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Course[] getCourses(Long schoolId) throws HttpClientException {
+    public Collection<Course> getCourses(Long schoolId) throws HttpClientException {
         String[] params = { schoolId.toString() };
-        Course[] courses = get(Course[].class, getPath(BASE_API_ENDPOINT + COURSE_ENDPOINT, params));
-        return courses;
+        return Arrays.asList(get(Course[].class, getPath(BASE_API_ENDPOINT + COURSE_ENDPOINT, params)));
     }
 
 
@@ -360,24 +357,19 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public SchoolYear updateSchoolYear(Long schoolId, SchoolYear year) {
+    public SchoolYear updateSchoolYear(Long schoolId, SchoolYear year) throws HttpClientException {
         SchoolYear y = new SchoolYear(year);
-        try {
             patch(convertObjectToJsonBytes(year), BASE_API_ENDPOINT +
                     SCHOOL_ENDPOINT + "/" + schoolId +
                     SCHOOL_YEAR_ENDPOINT + "/" + year.getId());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return y;
     }
 
     @Override
-    public SchoolYear[] getSchoolYears(Long schoolId) throws HttpClientException {
-        SchoolYear[] years = get(SchoolYear[].class, BASE_API_ENDPOINT +
+    public Collection<SchoolYear> getSchoolYears(Long schoolId) throws HttpClientException {
+        return Arrays.asList(get(SchoolYear[].class, BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
-                SCHOOL_YEAR_ENDPOINT);
-        return years;
+                SCHOOL_YEAR_ENDPOINT));
     }
 
     @Override
@@ -408,12 +400,11 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
 
 
     @Override
-    public Term[] getTerms(Long schoolId, Long schoolYearId) throws HttpClientException {
-        Term[] terms = get(Term[].class, BASE_API_ENDPOINT +
+    public Collection<Term> getTerms(Long schoolId, Long schoolYearId) throws HttpClientException {
+        return Arrays.asList(get(Term[].class, BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
                 SCHOOL_YEAR_ENDPOINT + "/" + schoolYearId +
-                TERM_ENDPOINT);
-        return terms;
+                TERM_ENDPOINT));
     }
 
     @Override
@@ -446,11 +437,10 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public SchoolDay[] getSchoolDays(Long schoolId) throws HttpClientException {
-        SchoolDay[] days = get(SchoolDay[].class, BASE_API_ENDPOINT +
+    public Collection<SchoolDay> getSchoolDays(Long schoolId) throws HttpClientException {
+        return Arrays.asList(get(SchoolDay[].class, BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
-                DAYS_ENDPOINT);
-        return days;
+                DAYS_ENDPOINT));
     }
 
     @Override
@@ -488,12 +478,11 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Attendance[] getAttendance(Long schoolId, Long studentId) throws HttpClientException {
-        Attendance[] attendances = get(Attendance[].class, BASE_API_ENDPOINT +
+    public Collection<Attendance> getAttendance(Long schoolId, Long studentId) throws HttpClientException {
+        return Arrays.asList(get(Attendance[].class, BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
                 STUDENT_ENDPOINT + "/" + studentId +
-                ATTENDANCE_ENDPOINT);
-        return attendances;
+                ATTENDANCE_ENDPOINT));
     }
 
     @Override
@@ -512,11 +501,10 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Section[] getSections(Long schoolId) throws HttpClientException {
-        Section[] sections = get(Section[].class, BASE_API_ENDPOINT +
+    public Collection<Section> getSections(Long schoolId) throws HttpClientException {
+        return Arrays.asList(get(Section[].class, BASE_API_ENDPOINT +
                 SCHOOL_ENDPOINT + "/" + schoolId +
-                SECTION_ENDPOINT);
-        return sections;
+                SECTION_ENDPOINT));
     }
 
     @Override
@@ -602,17 +590,16 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public StudentSectionGrade[] getStudentSectionGrades(Long schoolId, Long yearId, Long termId, Long sectionId)
+    public Collection<StudentSectionGrade> getStudentSectionGrades(Long schoolId, Long yearId, Long termId, Long sectionId)
             throws HttpClientException {
-        StudentSectionGrade[] ssgs = get(
+        return Arrays.asList(get(
                 StudentSectionGrade[].class,
                 BASE_API_ENDPOINT +
                     SCHOOL_ENDPOINT + "/" + schoolId +
                     SCHOOL_YEAR_ENDPOINT + "/" + yearId +
                     TERM_ENDPOINT + "/" + termId +
                     SECTION_ENDPOINT + "/" + sectionId +
-                    STUDENT_SECTION_GRADE_ENDPOINT);
-        return ssgs;
+                    STUDENT_SECTION_GRADE_ENDPOINT));
     }
 
     @Override
@@ -649,7 +636,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Assignment[] getSectionAssignments(Long schoolId, Long yearId, Long termId, Long sectionId)
+    public Collection<Assignment> getSectionAssignments(Long schoolId, Long yearId, Long termId, Long sectionId)
             throws HttpClientException {
         Assignment[] assignments = get(
             Assignment[].class,
@@ -659,7 +646,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
                 TERM_ENDPOINT + "/" + termId +
                 SECTION_ENDPOINT + "/" + sectionId +
                 SECTION_ASSIGNMENT_ENDPOINT);
-        return assignments;
+        return Arrays.asList(assignments);
     }
 
     @Override
@@ -692,7 +679,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public StudentAssignment[] getStudentAssignments(Long schoolId,
+    public Collection<StudentAssignment> getStudentAssignments(Long schoolId,
                                                      Long yearId,
                                                      Long termId,
                                                      Long sectionId,
@@ -706,7 +693,7 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
                         SECTION_ENDPOINT + "/" + sectionId +
                         SECTION_ASSIGNMENT_ENDPOINT + "/" + assignmentId +
                         STUDENT_ASSIGNMENT_ENDPOINT);
-        return ssgs;
+        return Arrays.asList(ssgs);
     }
 
     @Override
@@ -755,11 +742,10 @@ public class APIClient extends BaseHttpClient implements IAPIClient {
     }
 
     @Override
-    public Gpa[] getGpas() throws HttpClientException {
-        Gpa[] gpas = get(
+    public List<Gpa> getGpas() throws HttpClientException {
+        return Arrays.asList(get(
                 Gpa[].class,
-                BASE_API_ENDPOINT + GPA_ENDPOINT);
-        return gpas;
+                BASE_API_ENDPOINT + GPA_ENDPOINT));
     }
 
     /**

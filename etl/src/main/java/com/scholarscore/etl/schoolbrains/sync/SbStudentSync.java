@@ -17,16 +17,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by markroper on 4/15/16.
  */
 public class SbStudentSync extends SchoolBrainsBaseSync<Student> {
-    Long edPanelId;
-    Map<String, School> schools;
 
     public SbStudentSync(ISchoolBrainsClient schoolBrains,
-                         IAPIClient edPanel,
-                         Long edPanelId,
-                         Map<String, School> schools) {
+                         IAPIClient edPanel) {
         super(schoolBrains, edPanel);
-        this.edPanelId = edPanelId;
-        this.schools = schools;
     }
 
     @Override
@@ -61,25 +55,12 @@ public class SbStudentSync extends SchoolBrainsBaseSync<Student> {
     }
 
     @Override
-    protected ConcurrentHashMap<String, Student> resolveFromEdPanel() throws HttpClientException {
-        Collection<Student> students = edPanel.getStudents(edPanelId);
-        ConcurrentHashMap<String, Student> edpanel = new ConcurrentHashMap<>();
-        for(Student s: students) {
-            edpanel.put(s.getSourceSystemId(), s);
-        }
-        return edpanel;
+    protected Collection<Student> fetchSourceRecords() throws HttpClientException {
+        return schoolBrains.getStudents();
     }
 
     @Override
-    protected ConcurrentHashMap<String, Student> resolveSourceSystem() throws HttpClientException {
-        List<Student> source = schoolBrains.getStudents();
-        ConcurrentHashMap<String, Student> sourceMap = new ConcurrentHashMap<>();
-
-        for(Student s : source) {
-            if(edPanelId.equals(schools.get(s.getCurrentSchoolId()).getId())) {
-                sourceMap.put(s.getSourceSystemId(), s);
-            }
-        }
-        return sourceMap;
+    protected Collection<Student> fetchEdPanelRecords() throws HttpClientException {
+        return edPanel.getAllStudents();
     }
 }

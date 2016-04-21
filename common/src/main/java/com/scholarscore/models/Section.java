@@ -47,7 +47,7 @@ import java.util.Set;
 @Entity(name = HibernateConsts.SECTION_TABLE)
 @SuppressWarnings("serial")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Section extends ApiModel implements Serializable, IApiModel<Section> {
+public class Section extends ApiModel implements Serializable, IApiModel<Section>, ISourceModel<String> {
     protected LocalDate startDate;
     protected LocalDate endDate;
     protected String room;

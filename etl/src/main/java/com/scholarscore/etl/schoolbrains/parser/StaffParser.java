@@ -15,9 +15,6 @@ import java.util.Set;
  * Created by markroper on 4/15/16.
  */
 public class StaffParser extends MultiEntityCsvParser<Staff> {
-    public StaffParser(File file) {
-        super(file);
-    }
 
     @Override
     public Staff parseRec(CSVRecord rec) {
@@ -42,7 +39,7 @@ public class StaffParser extends MultiEntityCsvParser<Staff> {
     }
 
     @Override
-    public Set<Staff> parse() {
+    public Set<Staff> parse(File input) {
         if(null == input) {
             return null;
         }

@@ -11,19 +11,19 @@ import java.time.LocalDate;
  * Created by markroper on 4/14/16.
  */
 public class SchoolYearParser extends MultiEntityCsvParser<SchoolYear> {
-    public SchoolYearParser(File file) {
-        super(file);
-    }
 
     @Override
     public SchoolYear parseRec(CSVRecord rec) {
         SchoolYear schoolYear = new SchoolYear();
-        // don't set edpanel id...
+
+        String schoolId = rec.get(SchoolID);
+        
+        // ('we', the ETL, doesn't set edpanel id - this is the job of the server
 //        y.setId(parseLongOrReturnNull(rec.get(SchoolYearID)));
         // TODO SchoolBrains
-        School sch = new School();
-        sch.setSourceSystemId(rec.get(SchoolID));
-        schoolYear.setSchool(sch);
+//        School sch = new School();
+//        sch.setSourceSystemId();
+//        schoolYear.setSchool(sch);
         //TODO:figure out how to handle terms with schoolbrains
         //y.setTerms();
         String start = rec.get(SchoolYearStart);

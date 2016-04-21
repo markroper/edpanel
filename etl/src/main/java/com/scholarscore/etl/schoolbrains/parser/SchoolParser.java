@@ -22,10 +22,6 @@ public class SchoolParser extends BaseParser<School> {
     private static final int GraduationRequirementCredits = 5;
     private static final int PrincipalID = 6;
 
-    public SchoolParser(File file) {
-        super(file);
-    } 
-
     @Override
     public School parseRec(CSVRecord rec) {
         School school = new School();

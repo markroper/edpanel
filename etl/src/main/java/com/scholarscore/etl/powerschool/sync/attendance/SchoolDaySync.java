@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -150,7 +151,7 @@ public class SchoolDaySync {
     }
 
     protected ConcurrentHashMap<LocalDate, SchoolDay> resolveFromEdPanel() throws HttpClientException {
-        SchoolDay[] days = edPanel.getSchoolDays(school.getId());
+        Collection<SchoolDay> days = edPanel.getSchoolDays(school.getId());
         ConcurrentHashMap<LocalDate, SchoolDay> dayMap = new ConcurrentHashMap<>();
         for(SchoolDay c: days) {
             Long ssid = c.getSourceSystemOtherId();

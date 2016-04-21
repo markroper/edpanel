@@ -11,9 +11,7 @@ import java.time.LocalDate;
  * Created by markroper on 4/14/16.
  */
 public class GpaParser extends BaseParser<Gpa> {
-    public GpaParser(File file) {
-        super(file);
-    }
+    
     private static final int SASID = 0;
     private static final int STUDENT_ID = 1;
     protected static final int Gpa = 26;

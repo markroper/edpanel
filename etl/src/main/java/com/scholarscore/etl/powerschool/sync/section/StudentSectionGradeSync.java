@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -261,7 +262,7 @@ public class StudentSectionGradeSync implements ISync<StudentSectionGrade> {
 
     protected ConcurrentHashMap<Long, StudentSectionGrade> resolveFromEdPanel() throws HttpClientException {
         ConcurrentHashMap<Long, StudentSectionGrade> edpanelSsgMap = new ConcurrentHashMap<>();
-        StudentSectionGrade[] edPanelSsgs = edPanel.getStudentSectionGrades(
+        Collection<StudentSectionGrade> edPanelSsgs = edPanel.getStudentSectionGrades(
                 school.getId(),
                 createdSection.getTerm().getSchoolYear().getId(),
                 createdSection.getTerm().getId(),

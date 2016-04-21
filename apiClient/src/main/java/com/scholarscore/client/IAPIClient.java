@@ -31,13 +31,14 @@ public interface IAPIClient {
 
     School createSchool(School school) throws HttpClientException;
     School getSchool(Long id) throws HttpClientException;
-    School[] getSchools() throws HttpClientException;
+    Collection<School> getSchools() throws HttpClientException;
     School updateSchool(School school) throws HttpClientException;
     void deleteSchool(School school) throws HttpClientException;
 
     Student createStudent(Student student) throws HttpClientException;
     Student updateStudent(Long studentId, Student student) throws HttpClientException;
     Collection<Student> getStudents(Long schoolId) throws HttpClientException;
+    Collection<Student> getAllStudents() throws HttpClientException;
     Student getStudent(Long ssid) throws HttpClientException;
     void updateAdvisors(Long schoolId) throws HttpClientException;
     
@@ -60,7 +61,7 @@ public interface IAPIClient {
     //USERS
     Staff createTeacher(Staff teacher) throws HttpClientException;
     Staff createAdministrator(Staff administrator) throws HttpClientException;
-    User[] getUsers(Long schoolId) throws HttpClientException;
+    Collection<User> getUsers(Long schoolId) throws HttpClientException;
     User updateUser(User user) throws HttpClientException;
     User replaceUser(User user) throws HttpClientException;
 
@@ -68,38 +69,37 @@ public interface IAPIClient {
     Course createCourse(Long schoolId, Course course) throws HttpClientException;
     void deleteCourse(Long schoolId, Course course) throws HttpClientException;
     Course replaceCourse(Long schoolId, Course course) throws HttpClientException;
-    Course[] getCourses(Long schoolId) throws HttpClientException;
+    Collection<Course> getCourses(Long schoolId) throws HttpClientException;
 
     //SCHOOL YEARS
     SchoolYear createSchoolYear(Long schoolId, SchoolYear year) throws HttpClientException;
     void deleteSchoolYear(Long schoolId, SchoolYear year) throws HttpClientException;
-    SchoolYear updateSchoolYear(Long schoolId, SchoolYear year);
-    SchoolYear[] getSchoolYears(Long schoolId) throws HttpClientException;
+    SchoolYear updateSchoolYear(Long schoolId, SchoolYear year) throws HttpClientException;
+    Collection<SchoolYear> getSchoolYears(Long schoolId) throws HttpClientException;
 
     //TERMS
     Term createTerm(Long schoolId, Long schoolYearId, Term year) throws HttpClientException;
     void deleteTerm(Long schoolId, Long schoolYearId, Term term) throws HttpClientException;
     Term updateTerm(Long schoolId, Long schoolYearId, Term term) throws HttpClientException;
-    Term[] getTerms(Long schoolId, Long schoolYearId) throws HttpClientException;
+    Collection<Term> getTerms(Long schoolId, Long schoolYearId) throws HttpClientException;
 
     //School days
     SchoolDay createSchoolDays(Long schoolId, SchoolDay day) throws HttpClientException;
     List<Long> createSchoolDays(Long schoolId, List<SchoolDay> days) throws HttpClientException;
     void deleteSchoolDay(Long schoolId, SchoolDay day) throws HttpClientException;
     SchoolDay updateSchoolDay(Long schoolId, SchoolDay day) throws HttpClientException;
-    SchoolDay[] getSchoolDays(Long schoolId) throws HttpClientException;
+    Collection<SchoolDay> getSchoolDays(Long schoolId) throws HttpClientException;
 
     //Attendance
     Attendance createAttendance(Long schoolId, Long studentId, Attendance attend) throws HttpClientException;
     void createAttendances(Long schoolId, Long studentId, List<Attendance> attends) throws HttpClientException;
     void deleteAttendance(Long schoolId, Long studentId, Attendance attend) throws HttpClientException;
     Attendance updateAttendance(Long schoolId, Long studentId, Attendance attend) throws HttpClientException;
-    Attendance[] getAttendance(Long schoolId, Long studentId) throws HttpClientException;
-
+    Collection<Attendance> getAttendance(Long schoolId, Long studentId) throws HttpClientException;
 
     //SECTIONS
     Section createSection(Long schoolId, Long schoolYearId, Long termId, Section section) throws HttpClientException;
-    Section[] getSections(Long schoolId) throws HttpClientException;
+    Collection<Section> getSections(Long schoolId) throws HttpClientException;
     Section replaceSection(Long schoolId, Long schoolYearId, Long termId, Section section) throws HttpClientException;
     void deleteSection(Long schoolId, Long schoolYearId, Long termId, Section section) throws HttpClientException;
 
@@ -131,7 +131,7 @@ public interface IAPIClient {
             Long sectionId,
             Long studentId,
             StudentSectionGrade ssg) throws HttpClientException;
-    StudentSectionGrade[] getStudentSectionGrades(
+    Collection<StudentSectionGrade> getStudentSectionGrades(
             Long schoolId,
             Long yearId,
             Long termId,
@@ -156,7 +156,7 @@ public interface IAPIClient {
             Long termId,
             Long sectionId,
             Assignment ssg) throws HttpClientException;
-    Assignment[] getSectionAssignments(
+    Collection<Assignment> getSectionAssignments(
             Long schoolId,
             Long yearId,
             Long termId,
@@ -180,7 +180,7 @@ public interface IAPIClient {
             Long assignmentId,
             List<StudentAssignment> studentAssignment
     ) throws HttpClientException;
-    StudentAssignment[] getStudentAssignments(
+    Collection<StudentAssignment> getStudentAssignments(
             Long schoolId,
             Long yearId,
             Long termId,
@@ -207,5 +207,5 @@ public interface IAPIClient {
     // GPA
     Gpa createGpa(Long studentId, Gpa gpa) throws HttpClientException;
     void updateGpa(Long studentId, Gpa gpa) throws HttpClientException;
-    Gpa[] getGpas() throws HttpClientException;
+    List<Gpa> getGpas() throws HttpClientException;
 }
