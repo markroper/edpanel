@@ -2,10 +2,12 @@ package com.scholarscore.api.persistence.mysql.jdbc;
 
 import com.scholarscore.api.persistence.GoalPersistence;
 import com.scholarscore.api.persistence.StudentPersistence;
+import com.scholarscore.api.persistence.WatchPersistence;
 import com.scholarscore.api.persistence.goalCalculators.AssignmentGoalCalc;
 import com.scholarscore.api.persistence.goalCalculators.AttendanceGoalCalc;
 import com.scholarscore.api.persistence.goalCalculators.BehaviorGoalCalc;
 import com.scholarscore.api.persistence.goalCalculators.SectionGoalCalc;
+import com.scholarscore.models.StudentWatch;
 import com.scholarscore.models.goal.AssignmentGoal;
 import com.scholarscore.models.goal.AttendanceGoal;
 import com.scholarscore.models.goal.BehaviorGoal;
@@ -17,6 +19,7 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by cwallace on 9/17/2015.
@@ -34,10 +37,22 @@ public class GoalJdbc implements GoalPersistence {
 
     private StudentPersistence studentPersistence;
 
+    private WatchPersistence watchPersistence;
+
+
+
     private SectionGoalCalc sectionGoalCalc;
     private BehaviorGoalCalc behaviorGoalCalc;
     private AssignmentGoalCalc assignmentGoalCalc;
     private AttendanceGoalCalc attendanceGoalCalc;
+
+    public WatchPersistence getWatchPersistence() {
+        return watchPersistence;
+    }
+
+    public void setWatchPersistence(WatchPersistence watchPersistence) {
+        this.watchPersistence = watchPersistence;
+    }
 
     public void setAttendanceGoalCalc(AttendanceGoalCalc attendanceGoalCalc) {
         this.attendanceGoalCalc = attendanceGoalCalc;
@@ -94,6 +109,24 @@ public class GoalJdbc implements GoalPersistence {
     public Collection<Goal> selectAllTeacher(long teacherId) {
         return addCalculatedValue((Collection<Goal>)hibernateTemplate.findByNamedParam(
                 GOAL_BASE_HQL + " where g.staff.id = :teacherId", "teacherId", teacherId));
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection<Goal> selectAllWatched(long teacherId) {
+        List<StudentWatch> watches =  watchPersistence.getAllForStaff(teacherId);
+        if (null != watches) {
+            List<Long> studentIds = new ArrayList<>();
+            for (int i = 0; i < watches.size(); i++) {
+                studentIds.add(watches.get(i).getStudent().getId());
+            }
+            return addCalculatedValue((Collection<Goal>)hibernateTemplate.findByNamedParam(
+                    GOAL_BASE_HQL + " where g.student.id in (:ids)","ids",studentIds));
+        } else {
+            return new ArrayList<>();
+        }
+
+
     }
 
     @Override

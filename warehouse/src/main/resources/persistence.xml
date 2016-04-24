@@ -65,6 +65,7 @@
         <property name="behaviorGoalCalc" ref="behaviorCalc"/>
         <property name="sectionGoalCalc" ref="cumulativeGradeCalc"/>
         <property name="attendanceGoalCalc" ref="attendanceGoalCalc"/>
+        <property name="watchPersistence" ref="watchPersistence"/>
     </bean>
 
     <bean id="teacherPersistence"
@@ -187,6 +188,11 @@
 
     <bean id="mcasPersistence"
           class="com.scholarscore.api.persistence.mysql.jdbc.MaMcasJdbc">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
+    <bean id="watchPersistence"
+          class="com.scholarscore.api.persistence.mysql.jdbc.WatchJdbc">
         <property name="hibernateTemplate" ref="hibernateTemplate"/>
     </bean>
 

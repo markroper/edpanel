@@ -41,6 +41,22 @@ public class GoalsController extends BaseController {
         return respond(pm.getGoalManager().getAllGoalsTeacher(teacherId));
     }
 
+    @ApiOperation(
+            value = "Get all goals for students that are watched by a teacher",
+            notes = "Retrieve all goals",
+            response = List.class)
+    @RequestMapping(
+            value =  "/watches/teacher/{teacherId}/goals",
+            method = RequestMethod.GET,
+            produces = { JSON_ACCEPT_HEADER })
+    @SuppressWarnings("rawtypes")
+    public @ResponseBody
+    ResponseEntity getAllWatchedGoals(
+            @ApiParam(name = "teacherId", required = true, value = "teacher id")
+            @PathVariable(value="teacherId") Long teacherId){
+        return respond(pm.getGoalManager().getAllWatchedGoals(teacherId));
+    }
+
 
     @ApiOperation(
             value = "Get all goals for a student",

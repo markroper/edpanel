@@ -2,6 +2,10 @@ package com.scholarscore.models;
 
 public class HibernateConsts {
 
+    //Watvh constants
+    public static final String WATCH_ID = "watch_id";
+    public static final String WATCH_TABLE ="watch";
+
     //Address constants
     public static final String ADDRESS_TABLE = "address";
     public static final String ADDRESS_STREET = "address_street";

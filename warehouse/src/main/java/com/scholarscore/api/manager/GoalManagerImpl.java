@@ -118,6 +118,10 @@ public class GoalManagerImpl implements GoalManager {
         );
     }
 
+    public ServiceResponse<Collection<Goal>> getAllWatchedGoals(long teacherId) {
+        return new ServiceResponse<Collection<Goal>>(goalPersistence.selectAllWatched(teacherId));
+    }
+
     @Override
     public ServiceResponse<Long> replaceGoal(long studentId, long goalId, Goal goal) {
         StatusCode code = goalExists(studentId, goalId);

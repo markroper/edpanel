@@ -22,6 +22,8 @@ public interface GoalManager {
 
     public ServiceResponse<Collection<Goal>> getAllGoalsTeacher(long teacherId);
 
+    public ServiceResponse<Collection<Goal>> getAllWatchedGoals(long teacherId);
+
     public ServiceResponse<Long> replaceGoal(long studentId, long goalId, Goal goal);
 
     public ServiceResponse<Long> updateGoal(long studentId, long goalId, Goal goal);
