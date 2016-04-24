@@ -24,7 +24,7 @@ cargo {
     containerId = 'tomcat7x'
     port = local_https_portnum
 
-    def tomcatVersion = '7.0.68'
+    def tomcatVersion = '7.0.69'
 
     local {
         installer {
