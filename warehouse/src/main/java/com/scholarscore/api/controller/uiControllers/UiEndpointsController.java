@@ -20,6 +20,8 @@ import com.scholarscore.models.user.Staff;
 import com.scholarscore.models.user.Student;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +45,7 @@ import java.util.Set;
 @Controller
 @RequestMapping(ApiConsts.API_V1_ENDPOINT + "/ui/students/{studentId}")
 public class UiEndpointsController extends BaseController {
+    private final static Logger LOGGER = LoggerFactory.getLogger(UiEndpointsController.class);
 
     @ApiOperation(
             value = "Get all the data for a single student needed for the student dashboard",
@@ -91,7 +94,12 @@ public class UiEndpointsController extends BaseController {
         for (Goal goal: goalsResponse.getValue()) {
             if (goal.getGoalType() == GoalType.SECTION_GRADE) {
                 SectionGradeGoal cumGoal = (SectionGradeGoal)goal;
-                sectionGoalMap.put(cumGoal.getSection().getId(), cumGoal);
+                if(null != cumGoal.getSection()) {
+                    sectionGoalMap.put(cumGoal.getSection().getId(), cumGoal);
+                } else {
+                    LOGGER.warn("Student section goal missing section for student: " +
+                            studentId + " and goal: " + cumGoal.getId());
+                }
             }
         }
         Student onlyIdStudent = new Student.StudentBuilder().withId(studentId).build();
