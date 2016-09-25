@@ -46,6 +46,10 @@ public class NotificationTriggerEvaluator {
      */
     public List<TriggeredNotification> evaluate(Notification notification) {
         //If its a one time notification and it was already triggered, don't trigger it again and can skip all this
+        if (null == notification) {
+            return null;
+        }
+
         if (notification.getOneTime() && notification.getTriggered()) {
             return null;
         }
