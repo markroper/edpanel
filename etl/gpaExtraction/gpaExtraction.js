@@ -1,7 +1,9 @@
 var gpaQuery = '    ID \n\
 ^(*gpa method="added value") \n\
 ^(*gpa method="added value" term="Q1") \n\
-^(*gpa method="added value" term="Q2")';
+^(*gpa method="added value" term="Q2") \n\
+^(*gpa method="added value" term="Q3") \n\
+^(*gpa method="added value" term="Q4")';
 
 var exportSelector = "#lnk_QuickExport";
 var formClass = '.noSubmitLoading';
@@ -114,11 +116,15 @@ function downloadStudents(casper, selector, fileName, attempt) {
 
 			//This text is Current Student Selection(xStudents) It changing indicates that we have finished loading
 			casper.waitForSelectorTextChange(".box-round h2", function() {
+				if(casper.exists('#selectFeedback')){
+					casper.exit()
+				}
 				casper.click("#selectFunctionDropdownButton");
 			}, function() {
 				login(casper);
 				downloadStudents(casper, selector, fileName, attempt+1);
 			});
+
 			
 			//Appears from a dropdown, moves us the page we can select new prompt
 			casper.waitUntilVisible(exportSelector, function() {
