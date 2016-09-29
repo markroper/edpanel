@@ -19,6 +19,8 @@ var lines = propFile.read().split("\n");
 casper.userAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X)');
 var utils = require('utils');
 casper.options.viewportSize = {width: 900, height: 600};
+var selector = casper.cli.get("selector");
+var number = casper.cli.get("number");
 
 var username = "";
 var password = "";
@@ -86,8 +88,8 @@ function login(casper) {
 }
 
 login(casper);
-downloadStudents(casper, "#selectMaleStudents", "1", 0);
-downloadStudents(casper, "#selectFemaleStudents", "2", 0);
+//downloadStudents(casper, "#selectMaleStudents", "1", 0);
+downloadStudents(casper, selector, number, 0);
 
 
 

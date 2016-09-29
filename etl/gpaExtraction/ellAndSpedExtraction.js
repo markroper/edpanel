@@ -86,7 +86,8 @@ function login(casper) {
 }
 
 login(casper);
-downloadStudents(casper, "#selectAllStudents", "1", 0);
+downloadStudents(casper, "#selectMaleStudents", "1", 0);
+downloadStudents(casper, "#selectFemaleStudents", "2", 0);
 
 //Downlaods the information for a selection of students
 function downloadStudents(casper, selector, fileName, attempt) {

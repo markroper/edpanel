@@ -4,7 +4,34 @@
 rm -f *.csv
 
 # To run the casper extract using Chris's gpaExtraction.js
-casperjs --ssl-protocol=any gpaExtraction.js
+#casperjs --ssl-protocol=any gpaExtraction.js
+#Casperjs is stupid is the short story here
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_A --number=1
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_B --number=2
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_C --number=3
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_D --number=4
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_E --number=5
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_F --number=6
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_G --number=7
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_H --number=8
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_I --number=9
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_J --number=10
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_K --number=11
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_L --number=12
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_M --number=13
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_N --number=14
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_O --number=15
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_P --number=16
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_Q --number=17
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_R --number=18
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_S --number=19
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_T --number=20
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_U --number=21
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_V --number=22
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_W --number=23
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_X --number=24
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_Y --number=25
+casperjs --ssl-protocol=any gpaExtraction.js --selector=#selectStudents_Z --number=26
 casperjs --ssl-protocol=any ellAndSpedExtraction.js
 
 ## after running this, there will be one or more .csv files in this directory. 
