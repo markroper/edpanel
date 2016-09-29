@@ -70,7 +70,7 @@ public class GpaParser {
                 }
             }
 
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             LOGGER.error("Unable to parse GPA CSV.", e);
         }
         return results;
