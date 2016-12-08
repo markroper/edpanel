@@ -21,7 +21,7 @@ public class PsSection {
     protected String course_id;
     protected Long term_id;
     protected String section_number;
-    protected String expression;
+    protected String internal_expression;
     protected Long staff_id;
     
     public Long getId() {
@@ -54,11 +54,11 @@ public class PsSection {
     public void setSection_number(String section_number) {
         this.section_number = section_number;
     }
-    public String getExpression() {
-        return expression;
+    public String getInternal_expression() {
+        return internal_expression;
     }
-    public void setExpression(String expression) {
-        this.expression = expression;
+    public void setInternal_expression(String internal_expression) {
+        this.internal_expression = internal_expression;
     }
     public Long getStaff_id() {
         return staff_id;
@@ -68,13 +68,13 @@ public class PsSection {
     }
 
     /**
-     * Static factory method for converting powerschool schedule expression into
+     * Static factory method for converting powerschool schedule internal_expression into
      * a map that is workable in EdPanel
      * @param expression
      * @return
      */
     public static Map<String,ArrayList<Long>> evaluateExpression(String expression) {
-        //Example expression is this: 2(A-D) 3-4(E) 6(C-D) 7(B)
+        //Example internal_expression is this: 2(A-D) 3-4(E) 6(C-D) 7(B)
         //We want to convert that to a map like {A:[2], B:[2,7], C:[2,6], D:[2,6], E:[3,4] }'
         Map<String, ArrayList<Long>> cyclePeriods = new HashMap<>();
         for (String periodExpression : expression.split("\\)")) {
@@ -126,7 +126,7 @@ public class PsSection {
     }
 
     private static void addDashValues(String cycleDays, ArrayList<Long> periodIds, Map<String, ArrayList<Long>> cyclePeriods) {
-        if (cycleDays.length() > 3) { LOGGER.warn("Unexpected Schedule Expression seen when trying to parse dash expression in PsSection"); }
+        if (cycleDays.length() > 3) { LOGGER.warn("Unexpected Schedule Expression seen when trying to parse dash internal_expression in PsSection"); }
         int startingChar = (int) cycleDays.charAt(0);
         int endChar = (int) cycleDays.charAt(2);
         for (int i = startingChar; i <= endChar; i++) {
@@ -141,7 +141,7 @@ public class PsSection {
         }
     }
     
-    // Takes in the first part of a period expression (referred to above as 'period') 
+    // Takes in the first part of a period internal_expression (referred to above as 'period')
     // which contains numeric strings representing periodIds. This method handles cases when...
     // the period Id is a single integer (e.g. 7)
     // the period Ids contains commas (e.g. 7,10)
