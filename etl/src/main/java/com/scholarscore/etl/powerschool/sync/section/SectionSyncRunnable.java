@@ -112,13 +112,13 @@ public class SectionSyncRunnable extends SyncBase<Section> implements Runnable, 
             for (PsSection powerSection : powerSchoolSections) {
                 Section edpanelSection = new Section();
 
-                edpanelSection.setExpression(PsSection.evaluateExpression(powerSection.getExpression()));
+                edpanelSection.setExpression(PsSection.evaluateExpression(powerSection.getInternal_expression()));
                 edpanelSection.setSourceSystemId(powerSection.getId().toString());
                 //Resolve the EdPanel Course and set it on the EdPanel section
                 Course c = this.courses.get(Long.valueOf(powerSection.getCourse_id()));
                 if(null != c) {
                     edpanelSection.setCourse(c);
-                    edpanelSection.setName(c.getName() + " " + powerSection.getExpression());
+                    edpanelSection.setName(c.getName() + " " + powerSection.getInternal_expression());
                 }
                 //Resolve the EdPanel Term and set it on the Section
                 Term sectionTerm = this.terms.get(powerSection.getTerm_id());
