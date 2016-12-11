@@ -8,4 +8,4 @@ cd ..
 
 ## todo - what is the correct way to specify path here? this path should *always* be relative to this script's current directory, not the userdir
 ## run the java ETL, which does the bulk of the work
-java -Done-jar.silent=true -XX:ReservedCodeCacheSize=96M -jar -XX:ReservedCodeCacheSize=96M build/libs/etl-standalone.jar --dir-path ./gpaExtraction --prefix extractedGpa --spedell spedAndEll
+java -Done-jar.silent=true -XX:ReservedCodeCacheSize=96M -jar build/libs/etl-standalone.jar --dir-path ./gpaExtraction --prefix extractedGpa --spedell spedAndEll
